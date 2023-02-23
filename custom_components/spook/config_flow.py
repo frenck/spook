@@ -21,7 +21,7 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
     ) -> FlowResult:
         """Handle a flow initialized someone that didn't read the warnings."""
         if self._async_current_entries():
-            return self.async_abort(reason="single_instance_allowed")
+            return self.async_abort(reason="already_spooked")
 
         if user_input is not None:
             return self.async_create_entry(title="Not your homey", data={})
