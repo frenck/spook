@@ -6,8 +6,6 @@
 
 ![Spook - Not your homey](https://raw.githubusercontent.com/frenck/spook/main/logos/logo3.png)
 
-[![Sponsor Frenck via GitHub Sponsors][github-sponsors-shield]][github-sponsors]
-
 ## About
 
 Spook is a custom integration for Home Assistant, which is not your homey.
@@ -82,8 +80,6 @@ SOFTWARE.
 
 [contributors]: https://github.com/frenck/spook/graphs/contributors
 [frenck]: https://github.com/frenck
-[github-sponsors-shield]: https://frenck.dev/wp-content/uploads/2019/12/github_sponsor.png
-[github-sponsors]: https://github.com/sponsors/frenck
 [keepchangelog]: http://keepachangelog.com/en/1.0.0/
 [license-shield]: https://img.shields.io/github/license/frenck/spook.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-DESTRUCTIVE-red.svg
