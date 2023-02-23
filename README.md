@@ -4,6 +4,8 @@
 ![Project Stage][project-stage-shield]
 [![License][license-shield]](LICENSE.md)
 
+![Spook - Not your homey](https://raw.githubusercontent.com/frenck/spook/main/logos/logo3.png)
+
 [![Sponsor Frenck via GitHub Sponsors][github-sponsors-shield]][github-sponsors]
 
 ## About
