@@ -6,7 +6,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.backports.enum import StrEnum
 from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.loader import async_get_integration
-from homeassistant.helpers.service import _load_services_file, async_set_service_schema
+from homeassistant.helpers.service import (
     async_set_service_schema,
     _load_services_file,
 )
