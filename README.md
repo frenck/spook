@@ -34,12 +34,16 @@ Don't.
 
 You shouldn't.
 
+## Sensors
+
+- Number of automations
+
 ## Services
 
-`spook.random_fail` - Will randomly fail and raise an error.
+- `spook.random_fail` - Will randomly fail and raise an error.
 
-`homeassistant.disable_config_entry` - Will disable an integration config entry.
-`homeassistant.enable_config_entry` - Will enable an integration config entry.
+- `homeassistant.disable_config_entry` - Will disable an integration config entry.
+- `homeassistant.enable_config_entry` - Will enable an integration config entry.
 
 ## Changelog & Releases
 
