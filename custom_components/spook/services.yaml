@@ -1,3 +1,27 @@
 random_fail:
-  name: Random fail
+  name: Random fail 👻
   description: A call to this service will randomly fail.
+
+disable_config_entry:
+  name: Disable a config entry 👻
+  description: >-
+    Disables a integration configuration entry.
+  fields:
+    config_entry_id:
+      name: Config entry
+      description: The integration configuration entry to disable.
+      required: true
+      selector:
+        config_entry:
+
+enable_config_entry:
+  name: Enable a config entry 👻
+  description: >-
+    Enables a integration configuration entry.
+  fields:
+    config_entry_id:
+      name: Config entry
+      description: The integration configuration entry to enable.
+      required: true
+      selector:
+        config_entry:

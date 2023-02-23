@@ -32,7 +32,14 @@ Don't.
 
 ## Configuration
 
-You shouldn't
+You shouldn't.
+
+## Services
+
+`spook.random_fail` - Will randomly fail and raise an error.
+
+`homeassistant.disable_config_entry` - Will disable an integration config entry.
+`homeassistant.enable_config_entry` - Will enable an integration config entry.
 
 ## Changelog & Releases
 
@@ -51,7 +58,6 @@ the version will be incremented based on the following:
 
 We've set up a separate document for our
 [contribution guidelines](CONTRIBUTING.md).
-
 
 ## Authors & contributors
 
