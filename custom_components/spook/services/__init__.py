@@ -29,8 +29,6 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         _load_services_file, hass, integration
     )
 
-    print(services_file)
-
     async def _async_random_fail(_: ServiceCall) -> None:
         """Randomly let this service call fail."""
         if random.choice([True, False]):
