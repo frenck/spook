@@ -85,6 +85,13 @@ of the box.
 - **Number of suns**: Answers how godlike you are. _#burn_
 - **Number of zones**: How many comfort zones you have on a map. _#zoneing_
 
+## Switches
+
+- **Home Assistant Cloud**: Switch to control behavior of Nabu Casa's Home Assistant Cloud. _#love_
+  - **Alexa**: Enable/disable Alexa connection. _#amazon_
+  - **Google Assistant**: Enable/disable Google Assistant connection. _#bigtech_
+  - **Remote**: Enable/disable remote access to the Home Asistant frontend. _#rdp_
+
 # Services
 
 There are quite a few useless and horrible services available for you to explore
