@@ -77,7 +77,7 @@ of the box.
   - Number of `update` entities.
   - Number of `water_heater` entities.
   - Number of `weather` entities.
-- **Number of areas**: In case you forgot how many rooms your house has. _#_
+- **Number of areas**: In case you forgot how many rooms your house has. _#1_
 - **Number of automations**: Because that is such a useful metric. _#robots_
 - **Number of devices**: That are in the device registry. _#bling_
 - **Number of persons**: How many people are you constantly tracking the location of? _#privacy_
