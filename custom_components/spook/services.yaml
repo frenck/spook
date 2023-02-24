@@ -25,3 +25,27 @@ enable_config_entry:
       required: true
       selector:
         config_entry:
+
+disable_device:
+  name: Disable a device 👻
+  description: >-
+    Disables a device on the fly.
+  fields:
+    device_id:
+      name: Device
+      description: The device to disable.
+      required: true
+      selector:
+        device:
+
+enable_device:
+  name: Enable a device 👻
+  description: >-
+    Enables a device on the fly.
+  fields:
+    device_id:
+      name: Device
+      description: The device to disable.
+      required: true
+      selector:
+        device:

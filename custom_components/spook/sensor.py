@@ -4,8 +4,11 @@ from __future__ import annotations
 from homeassistant.components import automation, homeassistant
 from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, EntityCategory
-from homeassistant.const import __version__ as HA_VERSION
+from homeassistant.const import (
+    EVENT_HOMEASSISTANT_STARTED,
+    EntityCategory,
+    __version__ as HA_VERSION,
+)
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback

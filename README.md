@@ -73,7 +73,19 @@ Call it using: [`homeassistant.disable_config_entry`](https://my.home-assistant.
 
 Call it using: [`homeassistant.enable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
 
-> Be amazed... this service does the reverse of [`homeassistant.disable_config_entry`](#service-homeassistantdisable_config_entry). _#mindblown_
+> Be amazed... this service does the reverse of [`homeassistant.disable_config_entry`](#service-disable-a-config-entry). _#mindblown_
+
+## Service: Disable a device
+
+Call it using: [`homeassistant.disable_device`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device)
+
+> This service can be used to disable a device on the fly. _#whatever_
+
+## Service: Enable a device
+
+Call it using: [`homeassistant.enable_device`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device)
+
+> Guess what... this service does the reverse of [`homeassistant.disable_device`](#service-disable-a-device). _#noway_
 
 ## Service: Random fail
 

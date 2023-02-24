@@ -6,6 +6,7 @@ from homeassistant.components import homeassistant
 from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.service import _load_services_file, async_set_service_schema
 from homeassistant.loader import async_get_integration
 
@@ -16,7 +17,9 @@ class SpookServices(StrEnum):
     """Spook services."""
 
     DISABLE_CONFIG_ENTRY = "disable_config_entry"
+    DISABLE_DEVICE = "disable_device"
     ENABLE_CONFIG_ENTRY = "enable_config_entry"
+    ENABLE_DEVICE = "enable_device"
     RANDOM_FAIL = "random_fail"
 
 
@@ -76,4 +79,46 @@ async def async_setup_services(hass: HomeAssistant) -> None:
         homeassistant.DOMAIN,
         SpookServices.ENABLE_CONFIG_ENTRY,
         services_file[SpookServices.ENABLE_CONFIG_ENTRY],
+    )
+
+    async def _async_disable_device(call: ServiceCall) -> None:
+        """Service to disable a device."""
+        device_registry = dr.async_get(hass)
+        device_registry.async_update_device(
+            device_id=call.data["device_id"],
+            disabled_by=dr.DeviceEntryDisabler.USER,
+        )
+
+    hass.services.async_register(
+        homeassistant.DOMAIN,
+        SpookServices.DISABLE_DEVICE,
+        _async_disable_device,
+    )
+
+    async_set_service_schema(
+        hass,
+        homeassistant.DOMAIN,
+        SpookServices.DISABLE_DEVICE,
+        services_file[SpookServices.DISABLE_DEVICE],
+    )
+
+    async def _async_enable_device(call: ServiceCall) -> None:
+        """Service to enable a device."""
+        device_registry = dr.async_get(hass)
+        device_registry.async_update_device(
+            device_id=call.data["device_id"],
+            disabled_by=None,
+        )
+
+    hass.services.async_register(
+        homeassistant.DOMAIN,
+        SpookServices.ENABLE_DEVICE,
+        _async_enable_device,
+    )
+
+    async_set_service_schema(
+        hass,
+        homeassistant.DOMAIN,
+        SpookServices.ENABLE_DEVICE,
+        services_file[SpookServices.ENABLE_DEVICE],
     )
