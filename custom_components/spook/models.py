@@ -5,6 +5,7 @@ from abc import ABC, abstractmethod
 from typing import final
 
 import voluptuous as vol
+
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 
 

@@ -4,6 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from hass_nabucasa import Cloud
+
 from homeassistant.components import homeassistant
 from homeassistant.components.cloud.const import DOMAIN as CLOUD_DOMAIN
 from homeassistant.const import __version__ as HA_VERSION

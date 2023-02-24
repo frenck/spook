@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import voluptuous as vol
+
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.core import ServiceCall

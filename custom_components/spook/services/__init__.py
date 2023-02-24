@@ -1,8 +1,8 @@
 """Spook - Not your homey."""
 from __future__ import annotations
 
-import importlib
 from dataclasses import dataclass, field
+import importlib
 from pathlib import Path
 from typing import Any
 

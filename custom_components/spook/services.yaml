@@ -102,3 +102,53 @@ homeassistant_unhide_entity:
       selector:
         entity:
           multiple: true
+
+recorder_import_statistics:
+  name: Import statistics 👻
+  description: >-
+    Import long-term statistics.
+  fields:
+    statistics_id:
+      name: Statistics ID
+      description: The statistics ID (entity ID) to import for.
+      required: true
+      selector:
+        entity_id:
+          multiple: true
+    name:
+      name: Name
+      required: false
+      selector:
+        text:
+    source:
+      name: Source
+      required: true
+      selector:
+        text:
+    unit_of_measurement:
+      name: Unit of measurement
+      required: false
+      selector:
+        text:
+    has_mean:
+      name: Has a mean
+      required: true
+      selector:
+        boolean:
+    has_sum:
+      name: Has a sum
+      required: true
+      selector:
+        boolean:
+    stats:
+      name: Statistics
+      description: >-
+        A list of mappings/dictionaries with statistics to import.
+        The dictionaries must contain a "start" key with a datetime string
+        other valid options are "mean", "sum", "min", "max", "last_reset", and
+        "state". All of those are optional and either an integer or a float,
+        except for "last_reset" which is a datetime string.
+      required: true
+      selector:
+        object:
+    

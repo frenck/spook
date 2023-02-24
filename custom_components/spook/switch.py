@@ -6,6 +6,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from hass_nabucasa import Cloud
+
 from homeassistant.components.cloud.const import DOMAIN as CLOUD_DOMAIN
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.config_entries import ConfigEntry
