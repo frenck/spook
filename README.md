@@ -88,6 +88,30 @@ Call it using: [`homeassistant.enable_device`](https://my.home-assistant.io/redi
 
 > Guess what... this service does the reverse of [`homeassistant.disable_device`](#service-disable-a-device). _#noway_
 
+## Service: Disable an entity
+
+Call it using: [`homeassistant.disable_entity`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
+
+> This service can be used to disable a entity on the fly. _#rocketship_
+
+## Service: Enable an entity
+
+Call it using: [`homeassistant.enable_entity`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
+
+> Really... this service does the reverse of [`homeassistant.disable_entity`](#service-disable-an-entity). _#true_
+
+## Service: Hide an entity
+
+Call it using: [`homeassistant.hide_entity`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
+
+> This service can be used to hide a entity on the fly. _#secret_
+
+## Service: Unhide an entity
+
+Call it using: [`homeassistant.unhide_entity`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
+
+> Do the math... this service does the reverse of [`homeassistant.hide_entity`](#service-hide-an-entity). _#reveal_
+
 ## Service: Random fail
 
 Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)

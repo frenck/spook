@@ -11,9 +11,9 @@ from homeassistant.const import (
     __version__ as HA_VERSION,
 )
 from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
-from homeassistant.helpers import entity_registry as er
 
 from .const import DOMAIN
 from .entity import SpookEntity

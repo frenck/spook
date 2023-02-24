@@ -49,3 +49,56 @@ enable_device:
       required: true
       selector:
         device:
+
+disable_entity:
+  name: Disable an entity 👻
+  description: >-
+    Disables an entity (or entities) on the fly.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to disable.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+enable_entity:
+  name: Enable an entity 👻
+  description: >-
+    Enables an entity (or entities) on the fly.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to enable.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+
+hide_entity:
+  name: Hide an entity 👻
+  description: >-
+    Hides an entity (or entities) on the fly.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to hide.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+unhide_entity:
+  name: Unhide an entity 👻
+  description: >-
+    Unhides an entity (or entities) on the fly.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to unhide.
+      required: true
+      selector:
+        entity:
+          multiple: true
