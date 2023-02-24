@@ -52,7 +52,8 @@ All of them are enabled by default to ensure you have a bad time, straight
 of the box.
 ## Sensors
 
-- Number of automations: Because that is such a useful metric.
+- Number of automations: Because that is such a useful metric. _#robots_
+- Number of entities: To show your friends how big your setup is. _#compensation_
 
 # Services
 
