@@ -62,14 +62,6 @@ to get you into such a situation.
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 
-## Service: Random fail
-
-Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)
-
-> This service call will randomly fail (and thus randomly stop your automation or
-> script). Especially combined with `continue_on_error: true` this can be a great
-> way add a useless service call to your automation or script. _#random_
-
 ## Service: Disable a config entry
 
 Call it using: [`homeassistant.disable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
@@ -82,6 +74,14 @@ Call it using: [`homeassistant.disable_config_entry`](https://my.home-assistant.
 Call it using: [`homeassistant.enable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
 
 > Be amazed... this service does the reverse of [`homeassistant.disable_config_entry`](#service-homeassistantdisable_config_entry). _#mindblown_
+
+## Service: Random fail
+
+Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)
+
+> This service call will randomly fail (and thus randomly stop your automation or
+> script). Especially combined with `continue_on_error: true` this can be a great
+> way add a useless service calls to your automation or script. _#random_
 
 # Changelog & Releases
 
