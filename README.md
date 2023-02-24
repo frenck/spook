@@ -108,6 +108,16 @@ The original setup of this repository is by [Franck Nijhof][frenck].
 For a full list of all authors and contributors,
 check [the contributor's page][contributors].
 
+# Disclaimer
+
+At this point, I guess it goes without saying that this integration is
+not affiliated with, endorsed or recommended by with Home Assistant project.
+
+**It is not supported by the Home Assistant project.**
+
+If you experience issue with this integration, or as a result
+of this integration, please go cry a lot on your own. _#sorrynotsorry_
+
 # License
 
 Copyright (c) 2023 Franck Nijhof
