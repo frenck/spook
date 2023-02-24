@@ -1,22 +1,63 @@
 """Spook - Not your homey."""
 from __future__ import annotations
 
-from homeassistant.components import automation, homeassistant
-from homeassistant.components.sensor import SensorEntity, SensorStateClass
+from collections.abc import Callable
+from dataclasses import dataclass, field
+from homeassistant.components import automation
+from homeassistant.components.sensor import (
+    SensorEntity,
+    SensorStateClass,
+    SensorEntityDescription,
+)
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_HOMEASSISTANT_STARTED,
     EntityCategory,
-    __version__ as HA_VERSION,
 )
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.entity import DeviceInfo
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN
-from .entity import SpookEntity
+from .entity import HomeAssistantSpookEntity
+
+
+@dataclass
+class HomeAssistantSpookSensorEntityDescriptionMixin:
+    """Mixin values for Home Assistant related sensors."""
+
+    value_fn: Callable[[HomeAssistant], int | None]
+
+
+@dataclass
+class HomeAssistantSpookSensorEntityDescription(
+    SensorEntityDescription, HomeAssistantSpookSensorEntityDescriptionMixin
+):
+    """Class describing LaMetric sensor entities."""
+
+    update_events: set[str] = field(default_factory=set)
+
+
+SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
+    HomeAssistantSpookSensorEntityDescription(
+        key="automations",
+        name="Automations",
+        icon="mdi:robot",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.MEASUREMENT,
+        update_events={automation.EVENT_AUTOMATION_RELOADED},
+        value_fn=lambda hass: len(hass.states.async_entity_ids(automation.DOMAIN)),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
+        key="entities",
+        name="Entities",
+        icon="mdi:counter",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.MEASUREMENT,
+        update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
+        value_fn=lambda hass: len(hass.states.async_entity_ids()),
+    ),
+)
 
 
 async def async_setup_entry(
@@ -26,73 +67,14 @@ async def async_setup_entry(
 ) -> None:
     """Set up Spook sensor."""
     async_add_entities(
-        [
-            SpookAutomationsCountSensorEntity(),
-            SpookEntityCountSensorEntity(),
-        ]
+        HomeAssistantSpookSensorEntity(description) for description in SENSORS
     )
 
 
-class SpookAutomationsCountSensorEntity(SpookEntity, SensorEntity):
-    """Spook sensor providig automation count."""
+class HomeAssistantSpookSensorEntity(HomeAssistantSpookEntity, SensorEntity):
+    """Spook sensor providig Home Asistant information."""
 
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_icon = "mdi:robot"
-    _attr_name = "Automations"
-    _attr_should_poll = False
-    _attr_state_class = SensorStateClass.MEASUREMENT
-
-    def __init__(self) -> None:
-        """Initiate Spook sensor."""
-        super().__init__()
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, homeassistant.DOMAIN)},
-            manufacturer="Home Assistant",
-            name="Home Assistant Information",
-            sw_version=HA_VERSION,
-        )
-        self._attr_unique_id = f"{homeassistant.DOMAIN}_automations"
-
-    async def async_added_to_hass(self) -> None:
-        """Register for sensor updates."""
-
-        @callback
-        def _update_state(_: Event) -> None:
-            """Update state."""
-            self._attr_native_value = len(
-                self.hass.states.async_entity_ids(automation.DOMAIN)
-            )
-            self.async_schedule_update_ha_state()
-
-        self.async_on_remove(
-            self.hass.bus.async_listen(
-                automation.EVENT_AUTOMATION_RELOADED, _update_state
-            )
-        )
-        self.async_on_remove(
-            self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _update_state)
-        )
-
-
-class SpookEntityCountSensorEntity(SpookEntity, SensorEntity):
-    """Spook sensor providig entity count."""
-
-    _attr_entity_category = EntityCategory.DIAGNOSTIC
-    _attr_icon = "mdi:counter"
-    _attr_name = "Entities"
-    _attr_should_poll = False
-    _attr_state_class = SensorStateClass.MEASUREMENT
-
-    def __init__(self) -> None:
-        """Initiate Spook sensor."""
-        super().__init__()
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, homeassistant.DOMAIN)},
-            manufacturer="Home Assistant",
-            name="Home Assistant Information",
-            sw_version=HA_VERSION,
-        )
-        self._attr_unique_id = f"{homeassistant.DOMAIN}_entities"
+    entity_description: HomeAssistantSpookSensorEntityDescription
 
     async def async_added_to_hass(self) -> None:
         """Register for sensor updates."""
@@ -102,17 +84,14 @@ class SpookEntityCountSensorEntity(SpookEntity, SensorEntity):
             """Update state."""
             self.async_schedule_update_ha_state()
 
-        self.async_on_remove(
-            self.hass.bus.async_listen(EVENT_COMPONENT_LOADED, _update_state)
-        )
-        self.async_on_remove(
-            self.hass.bus.async_listen(er.EVENT_ENTITY_REGISTRY_UPDATED, _update_state)
-        )
+        for event in self.entity_description.update_events:
+            self.async_on_remove(self.hass.bus.async_listen(event, _update_state))
+
         self.async_on_remove(
             self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _update_state)
         )
 
     @property
-    def native_value(self) -> int:
-        """Return the state of the sensor."""
-        return len(self.hass.states.async_entity_ids())
+    def native_value(self) -> int | None:
+        """Return the sensor value."""
+        return self.entity_description.value_fn(self.hass)
