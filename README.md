@@ -20,7 +20,7 @@ and has less documentation then the quirks of my partner.
 
 Above all, this integration may just break your setup in an way
 that is not recoverable. Nor will it provide you with a tissue
-to dry up your tears when you are in a fetal position
+to dry up your tears when you are crying in a fetal position
 under your desk after ignoring all of the above.
 
 I've warned you :D
