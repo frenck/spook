@@ -6,7 +6,7 @@
 
 ![Spook - Not your homey](https://raw.githubusercontent.com/frenck/spook/main/logos/logo3.png)
 
-## About
+# About
 
 Spook is a custom integration for Home Assistant, which is not your homey.
 
@@ -27,7 +27,7 @@ I've warned you :D
 
 ../Frenck
 
-## Installation
+# Installation
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=frenck&repository=spook&category=integration)
 
@@ -39,17 +39,22 @@ integrations.
 
 Just don't.
 
-## Configuration
+# Configuration
 
 [![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=spook)
 
 You shouldn't.
 
+# Entities
+
+This integration will provide you with entities you'd absolutely do not need.
+All of them are enabled by default to ensure you have a bad time, straight
+of the box.
 ## Sensors
 
 - Number of automations: Because that is such a useful metric.
 
-## Services
+# Services
 
 There are quite a few useless and horrible services available for you to explore
 and self-descruct your setup with. The developer service tools are great
@@ -57,7 +62,7 @@ to get you into such a situation.
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 
-### Service: Random fail
+## Service: Random fail
 
 Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)
 
@@ -65,20 +70,20 @@ This service call will randomly fail (and thus randomly stop your automation or
 script). Especially combined with `continue_on_error: true` this can be a great
 way add a useless service call to your automation or script. #random
 
-### Service: Disable a config entry
+## Service: Disable a config entry
 
 Call it using: [`homeassistant.disable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
 
 This service can be used to disable a integration configuration entry (those
 you see on your integrations dashboard) on the fly. #bye
 
-### Service `homeassistant.enable_config_entry`
+## Service `homeassistant.enable_config_entry`
 
 Call it using: [`homeassistant.enable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
 
 Be amazed... this service does the reverse of [`homeassistant.disable_config_entry`](#service-homeassistantdisable_config_entry). #mindblown
 
-## Changelog & Releases
+# Changelog & Releases
 
 This repository does not keep a change log using [GitHub's releases][releases]
 functionality. The format of the log is based on the direction the wind blows.
@@ -91,19 +96,19 @@ the version will be incremented based on the following:
 - `MINOR`: I have no idea, possibily breaking.
 - `PATCH`: I didn't care enough to change more numbers.
 
-## Contributing
+# Contributing
 
 We've set up a separate document for our
 [contribution guidelines](CONTRIBUTING.md).
 
-## Authors & contributors
+# Authors & contributors
 
 The original setup of this repository is by [Franck Nijhof][frenck].
 
 For a full list of all authors and contributors,
 check [the contributor's page][contributors].
 
-## License
+# License
 
 Copyright (c) 2023 Franck Nijhof
 
@@ -128,7 +133,7 @@ SOFTWARE.
 [contributors]: https://github.com/frenck/spook/graphs/contributors
 [frenck]: https://github.com/frenck
 [keepchangelog]: http://keepachangelog.com/en/1.0.0/
-[license-shield]: https://img.shields.io/github/license/frenck/spook.svg
+[license-shield]: https://img.shields.io/badge/license-Passive%20Aggressive%20License-lightgrey.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-DESTRUCTIVE-red.svg
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
