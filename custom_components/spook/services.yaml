@@ -2,7 +2,7 @@ random_fail:
   name: Random fail 👻
   description: A call to this service will randomly fail.
 
-homeassistant.disable_config_entry:
+homeassistant_disable_config_entry:
   name: Disable a config entry 👻
   description: >-
     Disables a integration configuration entry.
@@ -14,7 +14,7 @@ homeassistant.disable_config_entry:
       selector:
         config_entry:
 
-homeassistant.enable_config_entry:
+homeassistant_enable_config_entry:
   name: Enable a config entry 👻
   description: >-
     Enables a integration configuration entry.
@@ -26,7 +26,7 @@ homeassistant.enable_config_entry:
       selector:
         config_entry:
 
-homeassistant.disable_device:
+homeassistant_disable_device:
   name: Disable a device 👻
   description: >-
     Disables a device on the fly.
@@ -38,7 +38,7 @@ homeassistant.disable_device:
       selector:
         device:
 
-homeassistant.enable_device:
+homeassistant_enable_device:
   name: Enable a device 👻
   description: >-
     Enables a device on the fly.
@@ -50,7 +50,7 @@ homeassistant.enable_device:
       selector:
         device:
 
-homeassistant.disable_entity:
+homeassistant_disable_entity:
   name: Disable an entity 👻
   description: >-
     Disables an entity (or entities) on the fly.
@@ -63,7 +63,7 @@ homeassistant.disable_entity:
         entity:
           multiple: true
 
-homeassistant.enable_entity:
+homeassistant_enable_entity:
   name: Enable an entity 👻
   description: >-
     Enables an entity (or entities) on the fly.
@@ -77,7 +77,7 @@ homeassistant.enable_entity:
           multiple: true
 
 
-homeassistant.hide_entity:
+homeassistant_hide_entity:
   name: Hide an entity 👻
   description: >-
     Hides an entity (or entities) on the fly.
@@ -90,7 +90,7 @@ homeassistant.hide_entity:
         entity:
           multiple: true
 
-homeassistant.unhide_entity:
+homeassistant_unhide_entity:
   name: Unhide an entity 👻
   description: >-
     Unhides an entity (or entities) on the fly.

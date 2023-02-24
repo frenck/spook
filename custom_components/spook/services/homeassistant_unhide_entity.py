@@ -14,7 +14,7 @@ class SpookService(AbstractSpookService):
     """Home Assistant Core integration service to unhide an entity."""
 
     domain = DOMAIN
-    service = "disable_entity"
+    service = "unhide_entity"
     schema = vol.Schema(
         {
             vol.Required("entity_id"): vol.All(cv.ensure_list, [cv.string]),

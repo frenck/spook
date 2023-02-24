@@ -48,7 +48,7 @@ class SpookServiceManager:
         # for the Spook integration.
         if service.domain != DOMAIN and (
             service_schema := self._service_schemas.get(
-                f"{service.domain}.{service.service}"
+                f"{service.domain}_{service.service}"
             )
         ):
             async_set_service_schema(
