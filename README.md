@@ -52,8 +52,38 @@ All of them are enabled by default to ensure you have a bad time, straight
 of the box.
 ## Sensors
 
+- **Total number of entities**: To show your friends how big your setup is. _#compensation_
+- **Number of entities for each entity type**: So you know how many lightbulbs you have. _#count_
+  - Number of `air_quality` entities.
+  - Number of `alarm_control_panel` entities.
+  - Number of `binary_sensor` entities.
+  - Number of `button` entities.
+  - Number of `camera` entities.
+  - Number of `climate` entities.
+  - Number of `cover` entities.
+  - Number of `device_tracker` entities.
+  - Number of `fan` entities.
+  - Number of `humidifier` entities.
+  - Number of `light` entities.
+  - Number of `lock` entities.
+  - Number of `media_player` entities.
+  - Number of `number` entities.
+  - Number of `remote` entities.
+  - Number of `select` entities.
+  - Number of `sensor` entities.
+  - Number of `siren` entities.
+  - Number of `switch` entities.
+  - Number of `text` entities.
+  - Number of `update` entities.
+  - Number of `water_heater` entities.
+  - Number of `weather` entities.
+- **Number of areas**: In case you forgot how many rooms your house has. _#_
 - **Number of automations**: Because that is such a useful metric. _#robots_
-- **Number of entities**: To show your friends how big your setup is. _#compensation_
+- **Number of devices**: That are in the device registry. _#bling_
+- **Number of persons**: How many people are you constantly tracking the location of? _#privacy_
+- **Number of scenes**: Maybe you can ask your partner to make a scene... _#fight_
+- **Number of suns**: Answers how godlike you are. _#burn_
+- **Number of zones**: How many comfort zones you have on a map. _#zoneing_
 
 # Services
 
