@@ -1,0 +1,19 @@
+---
+name: "Bot with issues"
+on:
+  issues:
+    types: [opened]
+jobs:
+  handle_issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Thanks for the issue!
+        uses: peter-evans/close-issue@v2.2.0
+        with:
+          close-reason: not_planned
+          comment: |
+            Thanks for the issue!
+
+            However, I'm not your homey 👻
+
+            [More information](https://github.com/frenck/spook/blob/main/CONTRIBUTING.md)
