@@ -77,7 +77,7 @@ Call it using: [`homeassistant.disable_config_entry`](https://my.home-assistant.
 This service can be used to disable a integration configuration entry (those
 you see on your integrations dashboard) on the fly. #bye
 
-## Service `homeassistant.enable_config_entry`
+## Service: Enable a config entry
 
 Call it using: [`homeassistant.enable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
 
