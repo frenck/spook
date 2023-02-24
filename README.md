@@ -35,7 +35,7 @@ You could manually add this repository to HACS, but you shouldn't. You can
 also install it manually by copying the `spook` folder into your
 `custom_components` folder, but you shouldn't. It might be available on the
 HACS store at some point (or not) from which you should not install this
-integrations.
+integration.
 
 Just don't.
 
