@@ -52,6 +52,8 @@ All of them are enabled by default to ensure you have a bad time, straight
 of the box.
 ## Sensors
 
+- **Number of integrations in use**: Consider using less integrations. _#lessismore_
+- **Number of custom integrations in use**: In this case... _#lessisevenmore_ (delete this one! 🙃)
 - **Total number of entities**: To show your friends how big your setup is. _#compensation_
 - **Number of entities for each entity type**: So you know how many lightbulbs you have. _#count_
   - Number of `air_quality` entities.
