@@ -27,6 +27,33 @@ I've warned you :D
 
 ../Frenck
 
+- [Configuration](#configuration)
+- [Entities](#entities)
+  - [Sensors](#sensors)
+  - [Switches](#switches)
+- [Services](#services)
+  - [Service: Import Blueprint](#service-import-blueprint)
+  - [Service: Disable a config entry](#service-disable-a-config-entry)
+  - [Service: Enable a config entry](#service-enable-a-config-entry)
+  - [Service: Disable a device](#service-disable-a-device)
+  - [Service: Enable a device](#service-enable-a-device)
+  - [Service: Disable an entity](#service-disable-an-entity)
+  - [Service: Enable an entity](#service-enable-an-entity)
+  - [Service: Hide an entity](#service-hide-an-entity)
+  - [Service: Unhide an entity](#service-unhide-an-entity)
+  - [Service: Ignore all discovered devices \& services](#service-ignore-all-discovered-devices--services)
+  - [Service: Import statistics](#service-import-statistics)
+  - [Service: Random fail](#service-random-fail)
+- [Entity component services](#entity-component-services)
+  - [Services for `input_select` entities: Select random option](#services-for-input_select-entities-select-random-option)
+  - [Services for `select` entities: Select random option](#services-for-select-entities-select-random-option)
+- [Changelog \& Releases](#changelog--releases)
+- [Contributing](#contributing)
+- [Authors \& contributors](#authors--contributors)
+- [Disclaimer](#disclaimer)
+- [License](#license)
+
+
 # Installation
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=frenck&repository=spook&category=integration)
