@@ -233,14 +233,16 @@ class SpookServiceManager:
 
             if isinstance(
                 service, ReplaceExistingService
-            ) and self.hass.services.has_service(self.domain, self.service):
+            ) and self.hass.services.has_service(service.domain, service.service):
                 LOGGER.debug(
-                    "Unregistering service that will be overriden service: %s.%s"
+                    "Unregistering service that will be overriden service: %s.%s",
+                    service.domain,
+                    service.service,
                 )
-                service.overriden_service = self.hass.services.services()[self.domain][
-                    self.service
-                ]
-                self.hass.services.async_remove(self.domain, self.service)
+                # pylint: disable=protected-access
+                service.overriden_service = self.hass.services._services[
+                    service.domain
+                ].pop(service.service)
 
             await self.async_register_service(service)
 
@@ -279,7 +281,11 @@ class SpookServiceManager:
             service.async_unregister()
 
             if isinstance(service, ReplaceExistingService):
-                LOGGER.debug("Restoring service that was overriden previously: %s.%s")
+                LOGGER.debug(
+                    "Restoring service that was overriden previously: %s.%s",
+                    service.domain,
+                    service.service,
+                )
 
                 # pylint: disable-nect=protected-access
                 self.hass.services._services.setdefault(service.domain, {})[
