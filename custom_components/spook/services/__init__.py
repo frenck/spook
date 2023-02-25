@@ -37,7 +37,15 @@ class SpookServiceManager:
             if module_file.name == "__init__.py":
                 continue
             module = importlib.import_module(f".{module_file.name[:-3]}", __package__)
-            await self.async_register_service(module.SpookService(self.hass))
+            service = module.SpookService(self.hass)
+
+            # Only register the service if the domain is the spook integration
+            # or if the target integration is loaded.
+            if (
+                service.domain == DOMAIN
+                or service.domain in self.hass.config.components
+            ):
+                await self.async_register_service(module.SpookService(self.hass))
 
     async def async_register_service(self, service: AbstractSpookService) -> None:
         """Register a Spook service."""
