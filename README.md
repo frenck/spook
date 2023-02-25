@@ -1,4 +1,4 @@
-# Spook - Not your homie. 
+# Spook - Not your homie. <!-- omit from toc -->
 
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
@@ -6,7 +6,7 @@
 
 ![Spook - Not your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo3.png)
 
-# About
+# About <!-- omit from toc -->
 
 Spook is a custom integration for Home Assistant, which is not your homie.
 
@@ -27,7 +27,7 @@ I've warned you :D
 
 ../Frenck
 
-## Cool, but why? What is it?
+## Cool, but why? What is it? <!-- omit from toc -->
 
 So, there a lot of things, that will never end up in Home Assistant itself.
 
@@ -43,8 +43,9 @@ However, remember, Spook is not your homie. All stuff in here, is not part of
 Home Assistant for a reason. So, don't expect it to work, or to be supported,
 or well, for starters, to be a good idea.
 
-## Some guidance for the brave
+## Some guidance for the brave <!-- omit from toc --> 
 
+- [Installation](#installation)
 - [Configuration](#configuration)
 - [Entities](#entities)
   - [Sensors](#sensors)
@@ -63,8 +64,8 @@ or well, for starters, to be a good idea.
   - [Service: Import statistics](#service-import-statistics)
   - [Service: Random fail](#service-random-fail)
 - [Entity component services](#entity-component-services)
-  - [Services for `input_select` entities: Select random option](#services-for-input_select-entities-select-random-option)
-  - [Services for `select` entities: Select random option](#services-for-select-entities-select-random-option)
+  - [Service for `input_select` entities: Select random option](#service-for-input_select-entities-select-random-option)
+  - [Service for `select` entities: Select random option](#service-for-select-entities-select-random-option)
 - [Changelog \& Releases](#changelog--releases)
 - [Contributing](#contributing)
 - [Authors \& contributors](#authors--contributors)
@@ -232,14 +233,14 @@ extend the functionality if entity components (like `select`)
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 
-## Services for `input_select` entities: Select random option
+## Service for `input_select` entities: Select random option
 
 Call it using: [`input_select.ramdom`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
 
 > This service select a random option from the list of options of a select entity.
 > Optionally this can be limited to a set of given options. _#shuffle_
 
-## Services for `select` entities: Select random option
+## Service for `select` entities: Select random option
 
 Call it using: [`select.ramdom`](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
 
