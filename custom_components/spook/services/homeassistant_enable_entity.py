@@ -15,6 +15,7 @@ class SpookService(AbstractSpookService):
 
     domain = DOMAIN
     service = "disable_entity"
+    admin = True
     schema = vol.Schema(
         {
             vol.Required("entity_id"): vol.All(cv.ensure_list, [cv.string]),

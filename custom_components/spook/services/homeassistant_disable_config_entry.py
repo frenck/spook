@@ -16,6 +16,7 @@ class SpookService(AbstractSpookService):
 
     domain = DOMAIN
     service = "disable_config_entry"
+    admin = True
     schema = vol.Schema(
         {
             vol.Required("config_entry_id"): cv.string,

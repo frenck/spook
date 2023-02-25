@@ -15,6 +15,7 @@ class SpookService(AbstractSpookService):
 
     domain = DOMAIN
     service = "disable_device"
+    admin = True
     schema = vol.Schema(
         {
             vol.Required("device_id"): cv.string,
