@@ -100,6 +100,13 @@ to get you into such a situation.
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 
+## Service: Import Blueprint
+
+Call it using: [`blueprint.import`](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
+
+> Downloads and imports a automation/script Blueprint, directly from the
+> URL you pass into this service. _#noquestionsasked_
+
 ## Service: Disable a config entry
 
 Call it using: [`homeassistant.disable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
