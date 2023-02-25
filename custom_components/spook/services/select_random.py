@@ -9,10 +9,10 @@ from homeassistant.components.select import DOMAIN, SelectEntity
 from homeassistant.core import ServiceCall
 from homeassistant.helpers import config_validation as cv
 
-from . import AbstractSpookEntityService
+from . import AbstractSpookEntityComponentService
 
 
-class SpookService(AbstractSpookEntityService):
+class SpookService(AbstractSpookEntityComponentService):
     """Select entity service, select a random option."""
 
     domain = DOMAIN
