@@ -237,28 +237,28 @@ extend the functionality if entity components (like `select`)
 
 ## Service for `input_select`: Select random option
 
-Call it using: [`input_select.ramdom`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
+Call it using: [`input_select.random`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
 
 > This service select a random option from the list of options of a select entity.
 > Optionally this can be limited to a set of given options. _#shuffle_
 
 ## Service for `number`: Decrease value
 
-Call it using: [`number.decrease`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrease)
+Call it using: [`number.decrement`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
 
 > Decrease the value of a number entity, either by a single step or by a
 > provided amount. _#downboy_
 
 ## Service for `number`: Increase value
 
-Call it using: [`number.increase`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increase)
+Call it using: [`number.increment`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
 
 > Increase the value of a number entity, either by a single step or by a
 > provided amount. _#up #greatmovie_
 
 ## Service for `select`: Select random option
 
-Call it using: [`select.ramdom`](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
+Call it using: [`select.random`](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
 
 > This service select a random option from the list of options of a select entity.
 > Optionally this can be limited to a set of given options. _#random_

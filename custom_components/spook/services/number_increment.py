@@ -10,10 +10,10 @@ from . import AbstractSpookEntityComponentService
 
 
 class SpookService(AbstractSpookEntityComponentService):
-    """Number entity service, decrease value by a single step."""
+    """Number entity service, increase value by a single step."""
 
     domain = DOMAIN
-    service = "decrease"
+    service = "increment"
     schema = {vol.Optional("amount"): vol.Coerce(float)}
 
     async def async_handle_service(
@@ -26,5 +26,5 @@ class SpookService(AbstractSpookEntityComponentService):
                 f"it needs to be a multiple of {entity.step}"
             )
         await entity.set_native_value(
-            min(entity.native_value - amount, entity.max_value)
+            max(entity.native_value + amount, entity.min_value)
         )
