@@ -180,6 +180,27 @@ Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/devel
 > script). Especially combined with `continue_on_error: true` this can be a great
 > way add a useless service calls to your automation or script. _#random_
 
+# Entity component services
+
+Spook also extends the services available for entities. These services may
+extend the functionality if entity components (like `select`)
+
+[![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
+
+## Services for `input_select` entities: Select random option
+
+Call it using: [`input_select.ramdom`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
+
+> This service select a random option from the list of options of a select entity.
+> Optionally this can be limited to a set of given options. _#shuffle_
+
+## Services for `select` entities: Select random option
+
+Call it using: [`select.ramdom`](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
+
+> This service select a random option from the list of options of a select entity.
+> Optionally this can be limited to a set of given options. _#random_
+
 # Changelog & Releases
 
 This repository does not keep a change log using [GitHub's releases][releases]
