@@ -156,6 +156,13 @@ Call it using: [`homeassistant.unhide_entity`](https://my.home-assistant.io/redi
 
 > Do the math... this service does the reverse of [`homeassistant.hide_entity`](#service-hide-an-entity). _#reveal_
 
+## Service: Import statistics
+
+Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
+
+> Advanced service to directly inject historical statistics data into
+> >the recorder long-term stats database. _#easy_
+
 ## Service: Random fail
 
 Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)
