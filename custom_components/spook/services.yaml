@@ -128,26 +128,31 @@ recorder_import_statistics:
         entity:
     name:
       name: Name
+      description: The name of the statistics.
       required: false
       selector:
         text:
     source:
       name: Source
+      description: The source of the statistics data.
       required: true
       selector:
         text:
     unit_of_measurement:
       name: Unit of measurement
+      description: The unit of measurement of the statistics.
       required: false
       selector:
         text:
     has_mean:
       name: Has a mean
+      description: If the statistics has a mean value.
       required: true
       selector:
         boolean:
     has_sum:
       name: Has a sum
+      description: If the statistics has a sum value.
       required: true
       selector:
         boolean:
