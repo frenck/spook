@@ -27,6 +27,24 @@ I've warned you :D
 
 ../Frenck
 
+## Cool, but why? What is it?
+
+So, there a lot of things, that will never end up in Home Assistant itself.
+
+This can have various reasons, for example: It is just to random, out of scope,
+not matching the Home Assistant philosophy, violating architectural design
+or just freaking useless.
+
+Spook doesn't care. He is nobodies homey.
+
+So, maybe, that one feature you wanted Home Assistant to have, is in Spook.
+
+However, remember, Spook is not your homey. All stuff in here, is not part of
+Home Assistant for a reason. So, don't expect it to work, or to be supported,
+or well, for starters, to be a good idea.
+
+## Some guidance for the brave
+
 - [Configuration](#configuration)
 - [Entities](#entities)
   - [Sensors](#sensors)
