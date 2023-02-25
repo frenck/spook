@@ -156,6 +156,13 @@ Call it using: [`homeassistant.unhide_entity`](https://my.home-assistant.io/redi
 
 > Do the math... this service does the reverse of [`homeassistant.hide_entity`](#service-hide-an-entity). _#reveal_
 
+## Service: Ignore all discovered devices & services
+
+Call it using: [`homeassistant.ignore_all_discovered`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered)
+
+> Click ignore on all discovered items on the integration dashboard; optionally
+> only for specific integration (e.g., bluetooth). _#talktothehand_
+
 ## Service: Import statistics
 
 Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)

@@ -115,6 +115,21 @@ homeassistant_unhide_entity:
         entity:
           multiple: true
 
+homeassistant_ignore_all_discovered:
+  name: Ignore all currently discovered devices 👻
+  description: >-
+    Ignore all currently discovered devices that are shown on the integrations
+    dashboard. This will not ignore devices that are discovered after this.
+  fields:
+    domain:
+      name: Integration domain
+      description: >-
+        The integration domain to ignore all discovered devices for.
+        If not provided, all domains will be considered to be ignored.
+      required: false
+      selector:
+        text:
+
 recorder_import_statistics:
   name: Import statistics 👻
   description: >-
