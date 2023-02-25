@@ -10,11 +10,12 @@ from typing import Any, final, overload
 import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.core import HomeAssistant, Service, ServiceCall, callback
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.helpers.service import (
+    SERVICE_DESCRIPTION_CACHE,
     _load_services_file,
     async_register_admin_service,
     async_set_service_schema,
@@ -61,6 +62,12 @@ class AbstractSpookServiceBase(ABC):
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
         raise NotImplementedError
+
+
+class ReplaceExistingService(AbstractSpookServiceBase):
+    """This service replaces an existing service."""
+
+    overriden_service: Service
 
 
 class AbstractSpookService(AbstractSpookServiceBase):
@@ -222,7 +229,20 @@ class SpookServiceManager:
             if module_file.name == "__init__.py":
                 continue
             module = importlib.import_module(f".{module_file.name[:-3]}", __package__)
-            await self.async_register_service(module.SpookService(self.hass))
+            service = module.SpookService(self.hass)
+
+            if isinstance(
+                service, ReplaceExistingService
+            ) and self.hass.services.has_service(self.domain, self.service):
+                LOGGER.debug(
+                    "Unregistering service that will be overriden service: %s.%s"
+                )
+                service.overriden_service = self.hass.services.services()[self.domain][
+                    self.service
+                ]
+                self.hass.services.async_remove(self.domain, self.service)
+
+            await self.async_register_service(service)
 
     async def async_register_service(self, service: AbstractSpookService) -> None:
         """Register a Spook service."""
@@ -257,3 +277,14 @@ class SpookServiceManager:
                 "Unregistering service: %s.%s", service.domain, service.service
             )
             service.async_unregister()
+
+            if isinstance(service, ReplaceExistingService):
+                LOGGER.debug("Restoring service that was overriden previously: %s.%s")
+
+                # pylint: disable-nect=protected-access
+                self.hass.services._services.setdefault(service.domain, {})[
+                    service.service
+                ] = service.overriden_service
+
+                # Flush service description schema cache
+                self.hass.data.pop(SERVICE_DESCRIPTION_CACHE, None)
