@@ -16,7 +16,7 @@ Home Assistant upgrade. Heck, it will most likely not even survive its own
 next release.
 
 This integration comes with absolutely 0/zero/zip/nada/noppes support,
-and has less documentation then the quirks of my partner.
+and has less documentation than the quirks of my partner.
 
 Above all, this integration may just break your setup in an way
 that is not recoverable. Nor will it provide you with a tissue
@@ -29,9 +29,9 @@ I've warned you :D
 
 ## Cool, but why? What is it? <!-- omit from toc -->
 
-So, there a lot of things, that will never end up in Home Assistant itself.
+So, there a lot of things/features, that will never end up in Home Assistant itself.
 
-This can have various reasons, for example: It is just to random, out of scope,
+This can have various reasons, for example: It is just too random, out of scope,
 not matching the Home Assistant philosophy, violating architectural design
 or just freaking useless.
 
