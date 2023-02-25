@@ -1,14 +1,14 @@
-# Spook - Not your homey. 
+# Spook - Not your homie. 
 
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
 [![License][license-shield]](LICENSE.md)
 
-![Spook - Not your homey](https://raw.githubusercontent.com/frenck/spook/main/logos/logo3.png)
+![Spook - Not your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo3.png)
 
 # About
 
-Spook is a custom integration for Home Assistant, which is not your homey.
+Spook is a custom integration for Home Assistant, which is not your homie.
 
 You should not use this custom integration, nor should you expect it to work.
 The integration will break a lot, and will probably not survive the next
@@ -35,11 +35,11 @@ This can have various reasons, for example: It is just to random, out of scope,
 not matching the Home Assistant philosophy, violating architectural design
 or just freaking useless.
 
-Spook doesn't care. He is nobodies homey.
+Spook doesn't care. He is nobodies homie.
 
 So, maybe, that one feature you wanted Home Assistant to have, is in Spook.
 
-However, remember, Spook is not your homey. All stuff in here, is not part of
+However, remember, Spook is not your homie. All stuff in here, is not part of
 Home Assistant for a reason. So, don't expect it to work, or to be supported,
 or well, for starters, to be a good idea.
 

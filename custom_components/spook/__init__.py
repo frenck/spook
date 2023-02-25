@@ -1,4 +1,4 @@
-"""Spook - Not your homey. Custom integration for Home Assistant."""
+"""Spook - Not your homie. Custom integration for Home Assistant."""
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 

@@ -1,4 +1,4 @@
-"""Spook - Not your homey."""
+"""Spook - Not your homie."""
 from __future__ import annotations
 
 from homeassistant.components.input_select import DOMAIN

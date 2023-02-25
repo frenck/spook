@@ -1,4 +1,4 @@
-"""Spook - Not your homey."""
+"""Spook - Not your homie."""
 from __future__ import annotations
 
 from typing import Any
@@ -24,6 +24,6 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="already_spooked")
 
         if user_input is not None:
-            return self.async_create_entry(title="Not your homey", data={})
+            return self.async_create_entry(title="Not your homie", data={})
 
         return self.async_show_form(step_id="user", data_schema=vol.Schema({}))
