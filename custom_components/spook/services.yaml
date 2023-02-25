@@ -199,3 +199,20 @@ select_random:
       required: false
       selector:
         object:
+
+input_select_random:
+  name: Select random option 👻
+  description: >-
+    Select an random option for a input_select entity.
+  target:
+    entity:
+      domain: input_select
+  fields:
+    options:
+      name: Options
+      description: >-
+        Limits the options to select from. If not provided, all options will be
+        considered.
+      required: false
+      selector:
+        object:
