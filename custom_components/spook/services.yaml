@@ -2,6 +2,18 @@ random_fail:
   name: Random fail 👻
   description: A call to this service will randomly fail.
 
+blueprint_import:
+  name: Import blueprint 👻
+  description: >-
+    Import a blueprint.
+  fields:
+    url:
+      name: URL
+      description: The URL to import the blueprint from.
+      required: true
+      selector:
+        text:
+
 homeassistant_disable_config_entry:
   name: Disable a config entry 👻
   description: >-
