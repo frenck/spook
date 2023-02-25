@@ -234,6 +234,20 @@ extend the functionality if entity components (like `select`)
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 
+## Service for `input_number`: Decrease value
+
+Call it using: [`input_number.decrement`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
+
+> Override of the existing service, which provides the option to specify
+> the amount to decrease the value by. _#evenlower_
+
+## Service for `input_number`: Increase value
+
+Call it using: [`input_number.increment`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
+
+> Override of the existing service, which provides the option to specify
+> the amount to increase the value by. _#moreoptions_
+
 ## Service for `input_select`: Select random option
 
 Call it using: [`input_select.random`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)

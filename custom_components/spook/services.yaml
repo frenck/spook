@@ -250,3 +250,37 @@ number_increment:
       required: false
       selector:
         number:
+
+input_number_decrement:
+  name: Decrease a input number value 👻
+  description: >-
+    Decrease an input number entity value by a certain amount.
+  target:
+    entity:
+      domain: number
+  fields:
+    step:
+      name: Amount
+      description: >-
+        The step to decrease the input number with. If not provided, the step
+        of the number entity will be used.
+      required: false
+      selector:
+        number:
+
+input_number_increment:
+  name: Increase a input number value 👻
+  description: >-
+    Increase a input number entity value by a certain amount.
+  target:
+    entity:
+      domain: number
+  fields:
+    step:
+      name: Amount
+      description: >-
+        The step to increase the input number with. If not provided, the step
+        of the number entity will be used.
+      required: false
+      selector:
+        number:
