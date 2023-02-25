@@ -7,6 +7,7 @@ from typing import final
 import voluptuous as vol
 
 from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.helpers.service import async_register_admin_service
 
 
 class AbstractSpookService(ABC):
@@ -16,6 +17,7 @@ class AbstractSpookService(ABC):
     domain: str
     service: str
     schema: vol.Schema | None = None
+    admin: bool = False
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the service."""
@@ -25,6 +27,15 @@ class AbstractSpookService(ABC):
     @callback
     def async_register(self) -> None:
         """Register the service with Home Assistant."""
+        if self.admin:
+            return async_register_admin_service(
+                hass=self.hass,
+                domain=self.domain,
+                service=self.service,
+                service_func=self.async_handle_service,
+                schema=self.schema,
+            )
+
         self.hass.services.async_register(
             domain=self.domain,
             service=self.service,
