@@ -233,14 +233,28 @@ extend the functionality if entity components (like `select`)
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 
-## Service for `input_select` entities: Select random option
+## Service for `input_select`: Select random option
 
 Call it using: [`input_select.ramdom`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
 
 > This service select a random option from the list of options of a select entity.
 > Optionally this can be limited to a set of given options. _#shuffle_
 
-## Service for `select` entities: Select random option
+## Service for `number`: Decrease value
+
+Call it using: [`number.decrease`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrease)
+
+> Decrease the value of a number entity, either by a single step or by a
+> provided amount. _#downboy_
+
+## Service for `number`: Increase value
+
+Call it using: [`number.increase`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increase)
+
+> Increase the value of a number entity, either by a single step or by a
+> provided amount. _#up #greatmovie_
+
+## Service for `select`: Select random option
 
 Call it using: [`select.ramdom`](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
 

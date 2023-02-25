@@ -216,3 +216,37 @@ input_select_random:
       required: false
       selector:
         object:
+
+number_decrease:
+  name: Decrease a number value 👻
+  description: >-
+    Decrease a number entity value by a certain amount.
+  target:
+    entity:
+      domain: number
+  fields:
+    step:
+      name: Amount
+      description: >-
+        The step to decrease the number with. If not provided, the step of the
+        number entity will be used.
+      required: false
+      selector:
+        number:
+
+number_increase:
+  name: Increase a number value 👻
+  description: >-
+    Increase a number entity value by a certain amount.
+  target:
+    entity:
+      domain: number
+  fields:
+    step:
+      name: Amount
+      description: >-
+        The step to increase the number with. If not provided, the step of the
+        number entity will be used.
+      required: false
+      selector:
+        number:
