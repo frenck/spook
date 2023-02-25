@@ -64,6 +64,8 @@ or well, for starters, to be a good idea.
   - [Service: Import statistics](#service-import-statistics)
   - [Service: Random fail](#service-random-fail)
 - [Entity component services](#entity-component-services)
+  - [Service for `input_number`: Decrease value](#service-for-input_number-decrease-value)
+  - [Service for `input_number`: Increase value](#service-for-input_number-increase-value)
   - [Service for `input_select`: Select random option](#service-for-input_select-select-random-option)
   - [Service for `number`: Decrease value](#service-for-number-decrease-value)
   - [Service for `number`: Increase value](#service-for-number-increase-value)
