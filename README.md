@@ -79,11 +79,10 @@ or well, for starters, to be a good idea.
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=frenck&repository=spook&category=integration)
 
+You can find it in the HACS store by searching for "Spook", but you shoudn't.
 You could manually add this repository to HACS, but you shouldn't. You can
 also install it manually by copying the `spook` folder into your
-`custom_components` folder, but you shouldn't. It might be available on the
-HACS store at some point (or not) from which you should not install this
-integration.
+`custom_components` folder, but you shouldn't.
 
 Just don't.
 
