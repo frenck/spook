@@ -183,3 +183,19 @@ recorder_import_statistics:
       selector:
         object:
     
+select_random:
+  name: Select random option 👻
+  description: >-
+    Select an random option for a select entity.
+  target:
+    entity:
+      domain: select
+  fields:
+    options:
+      name: Options
+      description: >-
+        Limits the options to select from. If not provided, all options will be
+        considered.
+      required: false
+      selector:
+        object:
