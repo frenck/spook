@@ -12,7 +12,8 @@ import voluptuous as vol
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, ServiceCall, callback
 from homeassistant.helpers.entity import Entity
-from homeassistant.helpers.entity_component import EntityComponent
+from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
+from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.helpers.service import (
     _load_services_file,
     async_register_admin_service,
@@ -127,20 +128,63 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
 class AbstractSpookEntityService(AbstractSpookServiceBase):
     """Abstract class to hold a Spook entity service."""
 
+    platform: str
     required_features: list[int] | None = None
 
     @final
     @callback
     def async_register(self) -> None:
         """Register the service with Home Assistant."""
-        component: EntityComponent[Entity] = self.hass.data[self.domain]
-
         LOGGER.debug(
-            "Registering Spook %s entity service: %s.%s",
-            component.domain,
+            "Registering Spook entity service: %s.%s for platform %s",
+            self.domain,
+            self.service,
+            self.platform,
+        )
+
+        if not (
+            platform := next(
+                platform
+                for platform in self.hass.data[DATA_ENTITY_PLATFORM][self.domain]
+                if platform.domain == self.platform
+            )
+        ):
+            raise RuntimeError(
+                f"Could not find platform {self.platform} for domain "
+                f"{self.domain} to register service: "
+                f"{self.domain}.{self.service}"
+            )
+
+        platform.async_register_entity_service(
+            name=self.service,
+            func=self.async_handle_service,
+            schema=self.schema,
+            required_features=self.required_features,
+        )
+
+
+class AbstractSpookEntityComponentService(AbstractSpookServiceBase):
+    """Abstract class to hold a Spook entity component service."""
+
+    required_features: list[int] | None = None
+
+    @final
+    @callback
+    def async_register(self) -> None:
+        """Register the service with Home Assistant."""
+        LOGGER.debug(
+            "Registering Spook entity component service: %s.%s",
             self.domain,
             self.service,
         )
+
+        if self.domain not in self.hass.data[DATA_INSTANCES]:
+            raise RuntimeError(
+                f"Could not find entity component {self.domain} to register "
+                f"service: {self.domain}.{self.service}"
+            )
+
+        component: EntityComponent[Entity] = self.hass.data[DATA_INSTANCES][self.domain]
 
         component.async_register_entity_service(
             name=self.service,
