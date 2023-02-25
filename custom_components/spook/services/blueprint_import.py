@@ -15,20 +15,15 @@ from homeassistant.core import ServiceCall
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
-from ..models import AbstractSpookService
+from . import AbstractSpookAdminService
 
 
-class SpookService(AbstractSpookService):
+class SpookService(AbstractSpookAdminService):
     """Blueprint integration service to import an Blueprint from an URL."""
 
     domain = DOMAIN
     service = "import"
-    admin = True
-    schema = vol.Schema(
-        {
-            vol.Required("url"): cv.url,
-        }
-    )
+    schema = {vol.Required("url"): cv.url}
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""

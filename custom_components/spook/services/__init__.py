@@ -1,18 +1,153 @@
 """Spook - Not your homey."""
 from __future__ import annotations
 
+from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
-from typing import Any
+from typing import Any, final, overload
+
+import voluptuous as vol
 
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.service import _load_services_file, async_set_service_schema
+from homeassistant.core import HomeAssistant, ServiceCall, callback
+from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.entity_component import EntityComponent
+from homeassistant.helpers.service import (
+    _load_services_file,
+    async_register_admin_service,
+    async_set_service_schema,
+)
 from homeassistant.loader import async_get_integration
 
-from ..const import DOMAIN
-from ..models import AbstractSpookService
+from ..const import DOMAIN, LOGGER
+
+
+class AbstractSpookServiceBase(ABC):
+    """Abstract base class to hold a Spook service."""
+
+    hass: HomeAssistant
+    domain: str
+    service: str
+    schema: dict[str | vol.Marker, Any] | None = None
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the service."""
+        self.hass = hass
+
+    @abstractmethod
+    async def async_register(self) -> None:
+        """Handle the service call."""
+        raise NotImplementedError
+
+    @final
+    @callback
+    def async_unregister(self) -> None:
+        """Unregister the service from Home Assistant."""
+        LOGGER.debug(
+            "Unregistering Spook service: %s.%s",
+            self.domain,
+            self.service,
+        )
+
+        self.hass.services.async_remove(self.domain, self.service)
+
+    @overload
+    async def async_handle_service(self, entity: Entity, call: ServiceCall) -> None:
+        ...
+
+    @abstractmethod
+    async def async_handle_service(self, call: ServiceCall) -> None:
+        """Handle the service call."""
+        raise NotImplementedError
+
+
+class AbstractSpookService(AbstractSpookServiceBase):
+    """Abstract class to hold a Spook service."""
+
+    @final
+    @callback
+    def async_register(self) -> None:
+        """Register the service with Home Assistant."""
+        # Only register the service if the domain is the spook integration
+        # or if the target integration is loaded.
+        if self.domain != DOMAIN and self.domain not in self.hass.config.components:
+            LOGGER.debug(
+                "Not registering Spook %s.%s service, %s is not loaded",
+                self.domain,
+                self.service,
+                self.domain,
+            )
+
+        LOGGER.debug(
+            "Registering Spook service: %s.%s",
+            self.domain,
+            self.service,
+        )
+
+        self.hass.services.async_register(
+            domain=self.domain,
+            service=self.service,
+            service_func=self.async_handle_service,
+            schema=vol.Schema(self.schema),
+        )
+
+
+class AbstractSpookAdminService(AbstractSpookServiceBase):
+    """Abstract class to hold a Spook admin service."""
+
+    @final
+    @callback
+    def async_register(self) -> bool:
+        """Register the service with Home Assistant."""
+        if self.domain != DOMAIN and self.domain not in self.hass.config.components:
+            LOGGER.debug(
+                "Not registering Spook %s.%s admin service, %s is not loaded",
+                self.domain,
+                self.service,
+                self.domain,
+            )
+            return False
+
+        LOGGER.debug(
+            "Registering Spook admin service: %s.%s",
+            self.domain,
+            self.service,
+        )
+        async_register_admin_service(
+            hass=self.hass,
+            domain=self.domain,
+            service=self.service,
+            service_func=self.async_handle_service,
+            schema=vol.Schema(self.schema),
+        )
+        return True
+
+
+class AbstractSpookEntityService(AbstractSpookServiceBase):
+    """Abstract class to hold a Spook entity service."""
+
+    required_features: list[int] | None = None
+
+    @final
+    @callback
+    def async_register(self) -> None:
+        """Register the service with Home Assistant."""
+        component: EntityComponent[Entity] = self.hass.data[self.domain]
+
+        LOGGER.debug(
+            "Registering Spook %s entity service: %s.%s",
+            component.domain,
+            self.domain,
+            self.service,
+        )
+
+        component.async_register_entity_service(
+            name=self.service,
+            func=self.async_handle_service,
+            schema=self.schema,
+            required_features=self.required_features,
+        )
 
 
 @dataclass
@@ -24,8 +159,14 @@ class SpookServiceManager:
     _services: set[AbstractSpookService] = field(default_factory=set)
     _service_schemas: dict[str, Any] = field(default_factory=dict)
 
+    def __post_init__(self) -> None:
+        """Post initialization."""
+        LOGGER.debug("Spook service manager initialized")
+
     async def async_setup(self, entry: ConfigEntry) -> None:
         """Set up the Spook services."""
+        LOGGER.debug("Setting up Spook services")
+
         entry.async_on_unload(self.async_on_unload)
         integration = await async_get_integration(self.hass, DOMAIN)
         self._service_schemas = await self.hass.async_add_executor_job(  # type: ignore
@@ -37,15 +178,7 @@ class SpookServiceManager:
             if module_file.name == "__init__.py":
                 continue
             module = importlib.import_module(f".{module_file.name[:-3]}", __package__)
-            service = module.SpookService(self.hass)
-
-            # Only register the service if the domain is the spook integration
-            # or if the target integration is loaded.
-            if (
-                service.domain == DOMAIN
-                or service.domain in self.hass.config.components
-            ):
-                await self.async_register_service(module.SpookService(self.hass))
+            await self.async_register_service(module.SpookService(self.hass))
 
     async def async_register_service(self, service: AbstractSpookService) -> None:
         """Register a Spook service."""
@@ -59,6 +192,11 @@ class SpookServiceManager:
                 f"{service.domain}_{service.service}"
             )
         ):
+            LOGGER.debug(
+                "Injecting Spook service schema for: %s.%s",
+                service.domain,
+                service.service,
+            )
             async_set_service_schema(
                 self.hass,
                 domain=service.domain,
@@ -69,5 +207,9 @@ class SpookServiceManager:
     @callback
     def async_on_unload(self) -> None:
         """Tear down the Spook services."""
+        LOGGER.debug("Tearing down Spook services")
         for service in self._services:
+            LOGGER.debug(
+                "Unregistering service: %s.%s", service.domain, service.service
+            )
             service.async_unregister()

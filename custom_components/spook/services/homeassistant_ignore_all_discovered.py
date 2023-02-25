@@ -11,20 +11,15 @@ from homeassistant.core import ServiceCall
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.translation import async_get_translations
 
-from ..models import AbstractSpookService
+from . import AbstractSpookAdminService
 
 
-class SpookService(AbstractSpookService):
+class SpookService(AbstractSpookAdminService):
     """Home Assistant Core integration service to ignore all discovered devices."""
 
     domain = DOMAIN
     service = "ignore_all_discovered"
-    admin = True
-    schema = vol.Schema(
-        {
-            vol.Optional("domain"): vol.All(cv.ensure_list, [cv.string]),
-        }
-    )
+    schema = {vol.Optional("domain"): vol.All(cv.ensure_list, [cv.string])}
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""

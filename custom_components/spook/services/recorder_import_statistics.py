@@ -11,36 +11,34 @@ from homeassistant.components.recorder.statistics import (
 from homeassistant.core import ServiceCall, valid_entity_id
 from homeassistant.helpers import config_validation as cv
 
-from ..models import AbstractSpookService
+from . import AbstractSpookAdminService
 
 
-class SpookService(AbstractSpookService):
+class SpookService(AbstractSpookAdminService):
     """Recorder integration service to import statistics."""
 
     domain = DOMAIN
     service = "import_statistics"
     admin = True
-    schema = vol.Schema(
-        {
-            vol.Required("has_mean"): bool,
-            vol.Required("has_sum"): bool,
-            vol.Optional("name", default=None): str,
-            vol.Required("source"): str,
-            vol.Required("statistic_id"): str,
-            vol.Optional("unit_of_measurement", default=None): str,
-            vol.Required("stats"): [
-                {
-                    vol.Required("start"): cv.datetime,
-                    vol.Optional("mean"): vol.Any(float, int),
-                    vol.Optional("min"): vol.Any(float, int),
-                    vol.Optional("max"): vol.Any(float, int),
-                    vol.Optional("last_reset", default=None): cv.datetime,
-                    vol.Optional("state"): vol.Any(float, int),
-                    vol.Optional("sum"): vol.Any(float, int),
-                }
-            ],
-        }
-    )
+    schema = {
+        vol.Required("has_mean"): bool,
+        vol.Required("has_sum"): bool,
+        vol.Optional("name", default=None): str,
+        vol.Required("source"): str,
+        vol.Required("statistic_id"): str,
+        vol.Optional("unit_of_measurement", default=None): str,
+        vol.Required("stats"): [
+            {
+                vol.Required("start"): cv.datetime,
+                vol.Optional("mean"): vol.Any(float, int),
+                vol.Optional("min"): vol.Any(float, int),
+                vol.Optional("max"): vol.Any(float, int),
+                vol.Optional("last_reset", default=None): cv.datetime,
+                vol.Optional("state"): vol.Any(float, int),
+                vol.Optional("sum"): vol.Any(float, int),
+            }
+        ],
+    }
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""

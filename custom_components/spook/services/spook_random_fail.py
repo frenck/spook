@@ -6,8 +6,8 @@ import random
 from homeassistant.core import ServiceCall
 from homeassistant.exceptions import HomeAssistantError
 
+from . import AbstractSpookService
 from ..const import DOMAIN
-from ..models import AbstractSpookService
 
 
 class SpookService(AbstractSpookService):

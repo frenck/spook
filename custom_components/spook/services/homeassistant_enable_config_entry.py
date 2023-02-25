@@ -7,20 +7,15 @@ from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.core import ServiceCall
 from homeassistant.helpers import config_validation as cv
 
-from ..models import AbstractSpookService
+from . import AbstractSpookAdminService
 
 
-class SpookService(AbstractSpookService):
+class SpookService(AbstractSpookAdminService):
     """Home Assistant Core integration service to enable a config entry."""
 
     domain = DOMAIN
     service = "enable_config_entry"
-    admin = True
-    schema = vol.Schema(
-        {
-            vol.Required("config_entry_id"): cv.string,
-        }
-    )
+    schema = {vol.Required("config_entry_id"): cv.string}
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
