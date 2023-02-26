@@ -56,7 +56,7 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
     HomeAssistantCloudSpookSwitchEntityDescription(
         key="alexa_report_state",
         entity_id="switch.cloud_alexa_report_state",
-        name="Alexa report state",
+        name="Alexa state reporting",
         icon="mdi:account-voice",
         entity_category=EntityCategory.CONFIG,
         is_on_fn=lambda cloud: cloud.client.prefs.alexa_report_state,
@@ -78,7 +78,7 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
     HomeAssistantCloudSpookSwitchEntityDescription(
         key="google_report_state",
         entity_id="switch.cloud_google_report_state",
-        name="Google Assistant report state",
+        name="Google Assistant state reporting",
         icon="mdi:google-assistant",
         entity_category=EntityCategory.CONFIG,
         is_on_fn=lambda cloud: cloud.client.prefs.google_report_state,

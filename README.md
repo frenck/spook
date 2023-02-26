@@ -141,7 +141,9 @@ of the box.
 
 - **Home Assistant Cloud**: Switch to control behavior of Nabu Casa's Home Assistant Cloud. _#love_
   - **Alexa**: Enable/disable Alexa connection. _#amazon_
+  - **Alexa state reporting**: Enable/disable Alexa state reporting. _#ping_
   - **Google Assistant**: Enable/disable Google Assistant connection. _#bigtech_
+  - **Google Assistant state reporting**: Enable/disable Google Assistant state reporting connection. _#pong_
   - **Remote**: Enable/disable remote access to the Home Asistant frontend. _#rdp_
 
 # Services
