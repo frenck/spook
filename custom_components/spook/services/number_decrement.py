@@ -26,7 +26,7 @@ class SpookService(AbstractSpookEntityComponentService):
                 f"it needs to be a multiple of {entity.step}"
             )
 
-        value = entity.native_value + amount
+        value = entity.value + amount
 
         if entity.min_value is not None:
             value = max(value, entity.min_value)
