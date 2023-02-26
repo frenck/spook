@@ -1,0 +1,35 @@
+---
+name: "Release"
+
+on:
+  issues:
+    types: [published]
+
+jobs:
+  release:
+    name: "Release the Spook! 👻"
+    runs-on: ubuntu-latest
+    steps:
+      - name: "⬇️ Checkout the repository"
+        uses: actions/checkout@v3
+
+      - name: "🔢 Adjust version number"
+        shell: bash
+        run: |
+          version="${{ github.event.release.tag_name }}"
+          version="${version,,}"
+          version="${version#v}"
+          yq e -P -o=json \
+            -i ".version = \"${version}\"" \
+            "custom_components/spook/manifest.json"
+
+      - name: "📦 Created zipped release package"
+        shell: bash
+        run: |
+          cd "${{ github.workspace }}/custom_components/spook"
+          zip spook.zip -r ./
+
+      - name: "⬆️ Upload zip to release"
+        uses: softprops/action-gh-release@v0.1.15
+        with:
+          files: ${{ github.workspace }}/custom_components/spook/spook.zip
