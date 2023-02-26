@@ -221,6 +221,13 @@ Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redir
 > Advanced service to directly inject historical statistics data into
 > >the recorder long-term stats database. _#easy_
 
+## Service: Fail
+
+Call it using: [`spook.fail`](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.fail)
+
+> This service call will just always spook the hell out of Home Assistant.
+> Home Assistant will shit its pants and abort the automation or script. _#spooked_
+
 ## Service: Random fail
 
 Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)
