@@ -71,6 +71,8 @@ or well, for starters, to be a good idea.
   - [Service for `number`: Decrease value](#service-for-number-decrease-value)
   - [Service for `number`: Increase value](#service-for-number-increase-value)
   - [Service for `select`: Select random option](#service-for-select-select-random-option)
+- [Repairs](#repairs)
+  - [**Obsolete integration YAML configuration**](#obsolete-integration-yaml-configuration)
 - [Changelog \& Releases](#changelog--releases)
 - [Contributing](#contributing)
 - [Authors \& contributors](#authors--contributors)
@@ -288,6 +290,22 @@ Call it using: [`select.random`](https://my.home-assistant.io/redirect/developer
 
 > This service select a random option from the list of options of a select entity.
 > Optionally this can be limited to a set of given options. _#random_
+
+# Repairs
+
+Spook will float around your Home Assistant instance, and while it does, it
+might be able to find things that need your attention. Spook will notify you
+about these things using an Home Assistant repair issue. _#whoyougonnacall_
+
+[![Open your Home Assistant instance and show your repairs.](https://my.home-assistant.io/badges/repairs.svg)](https://my.home-assistant.io/redirect/repairs/)
+
+Currently Spook will detect the following issues:
+
+## Obsolete integration YAML configuration
+
+> Finds YAML configuration for an integrations that no longer support it.
+> Unless you like having unneeded shizzle in your YAML, it can be removed
+> safely. _#ghostbusters_
 
 # Changelog & Releases
 
