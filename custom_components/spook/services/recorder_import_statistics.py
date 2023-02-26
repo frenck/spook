@@ -19,7 +19,6 @@ class SpookService(AbstractSpookAdminService):
 
     domain = DOMAIN
     service = "import_statistics"
-    admin = True
     schema = {
         vol.Required("has_mean"): bool,
         vol.Required("has_sum"): bool,
