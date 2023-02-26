@@ -63,7 +63,7 @@ or well, for starters, to be a good idea.
   - [Service: Ignore all discovered devices \& services](#service-ignore-all-discovered-devices--services)
   - [Service: Import statistics](#service-import-statistics)
   - [Service: Random fail](#service-random-fail)
-- [Entity component services](#entity-component-services)
+- [Entity services](#entity-services)
   - [Service for `input_number`: Decrease value](#service-for-input_number-decrease-value)
   - [Service for `input_number`: Increase value](#service-for-input_number-increase-value)
   - [Service for `input_select`: Select random option](#service-for-input_select-select-random-option)
@@ -158,14 +158,14 @@ Call it using: [`blueprint.import`](https://my.home-assistant.io/redirect/develo
 > Downloads and imports a automation/script Blueprint, directly from the
 > URL you pass into this service. _#noquestionsasked_
 
-## Service: Disable a config entry
+## Service: Disable an integration
 
 Call it using: [`homeassistant.disable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
 
 > This service can be used to disable a integration configuration entry (those
 > you see on your integrations dashboard) on the fly. _#bye_
 
-## Service: Enable a config entry
+## Service: Enable an integration
 
 Call it using: [`homeassistant.enable_config_entry`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
 
@@ -229,10 +229,11 @@ Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/devel
 > script). Especially combined with `continue_on_error: true` this can be a great
 > way add a useless service calls to your automation or script. _#random_
 
-# Entity component services
+# Entity services
 
 Spook also extends the services available for entities. These services may
-extend the functionality if entity components (like `select`)
+extend the functionality if entity components (like `select`) or platform
+specific services provided by integrations.
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 
@@ -306,7 +307,7 @@ check [the contributor's page][contributors].
 # Disclaimer
 
 At this point, I guess it goes without saying that this integration is
-not affiliated with, endorsed or recommended by Home Assistant project.
+not affiliated with, endorsed or recommended by the Home Assistant project.
 
 **It is not supported by the Home Assistant project.**
 
