@@ -12,7 +12,7 @@ class SpookService(AbstractSpookService):
     """Spook service to fail a service call."""
 
     domain = DOMAIN
-    service = "fail"
+    service = "boo"
 
     async def async_handle_service(self, _: ServiceCall) -> None:
         """Handle the service call."""
