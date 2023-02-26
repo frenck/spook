@@ -223,7 +223,7 @@ input_select_random:
         object:
 
 number_decrement:
-  name: Decrease a number value 👻
+  name: Decrease value 👻
   description: >-
     Decrease a number entity value by a certain amount.
   target:
@@ -240,7 +240,7 @@ number_decrement:
         number:
 
 number_increment:
-  name: Increase a number value 👻
+  name: Increase value 👻
   description: >-
     Increase a number entity value by a certain amount.
   target:
@@ -273,7 +273,7 @@ number_min:
       domain: number
 
 input_number_decrement:
-  name: Decrease an input number value 👻
+  name: Decrease value 👻
   description: >-
     Decrease an input number entity value by a certain amount.
   target:
@@ -290,7 +290,7 @@ input_number_decrement:
         number:
 
 input_number_increment:
-  name: Increase an input number value 👻
+  name: Increase value 👻
   description: >-
     Increase an input number entity value by a certain amount.
   target:
@@ -307,7 +307,7 @@ input_number_increment:
         number:
 
 input_number_max:
-  name: Set an input number to its maximum value 👻
+  name: Set maximum value 👻
   description: >-
     Set an input number entity to its maximum value.
   target:
@@ -315,7 +315,7 @@ input_number_max:
       domain: input_number
 
 input_number_min:
-  name: Set an input number to its minimum value 👻
+  name: Set minimum value 👻
   description: >-
     Set an input number entity to its minimum value.
   target:
@@ -323,7 +323,7 @@ input_number_min:
       domain: input_number
 
 repairs_create:
-  name: Create a repairs issue 👻
+  name: Create issue 👻
   description: >-
     Manually create and raise a issue in Home Assistant repairs.
   fields:
@@ -390,7 +390,7 @@ repairs_ignore_all:
     Ignore all issues currently raised in Home Assistant Repairs.
 
 repairs_remove:
-  name: Remove a repairs issue 👻
+  name: Remove issue 👻
   description: >-
     Removes a manually created Home Assistant repairs issue. This service
     can only remove issues created with the `repairs_create` service.
