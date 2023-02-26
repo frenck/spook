@@ -36,7 +36,7 @@ class SpookService(AbstractSpookService):
             is_fixable=True,
             is_persistent=call.data["persistent"],
             issue_domain=call.data["domain"],
-            issue_id=call.data["issue_id"],
+            issue_id=f"user_{call.data['issue_id']}",
             severity=call.data["severity"],
             translation_key="user_issue",
             translation_placeholders={
