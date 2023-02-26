@@ -62,6 +62,7 @@ or well, for starters, to be a good idea.
   - [Service: Unhide an entity](#service-unhide-an-entity)
   - [Service: Ignore all discovered devices \& services](#service-ignore-all-discovered-devices--services)
   - [Service: Import statistics](#service-import-statistics)
+  - [Service: Create repair issue](#service-create-repair-issue)
   - [Service: Boo! 👻](#service-boo-)
   - [Service: Random fail](#service-random-fail)
 - [Entity services](#entity-services)
@@ -225,6 +226,13 @@ Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redir
 
 > Advanced service to directly inject historical statistics data into
 > >the recorder long-term stats database. _#easy_
+
+## Service: Create repair issue
+
+Call it using: [`repairs.create`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
+
+> Battery empty? Raise a issue in Home Assistant repairs. Although, you
+> should probably just use a notification for this. _#issues_
 
 ## Service: Boo! 👻
 

@@ -1,8 +1,8 @@
 boo:
   name: Boo! 👻
   description: >-
-   Calling this service, spookes Home Assistant.
-   The service call will always fail.
+    Calling this service, spookes Home Assistant.
+    The service call will always fail.
 
 random_fail:
   name: Random fail 👻
@@ -93,7 +93,6 @@ homeassistant_enable_entity:
       selector:
         entity:
           multiple: true
-
 
 homeassistant_hide_entity:
   name: Hide an entity 👻
@@ -188,7 +187,7 @@ recorder_import_statistics:
       required: true
       selector:
         object:
-    
+
 select_random:
   name: Select random option 👻
   description: >-
@@ -290,3 +289,65 @@ input_number_increment:
       required: false
       selector:
         number:
+
+repairs_create:
+  name: Create a repairs issue 👻
+  description: >-
+    Manually create and raise a issue in Home Assistant repairs.
+  fields:
+    title:
+      name: Title
+      description: The title of the issue.
+      required: true
+      selector:
+        text:
+    description:
+      name: Description
+      description: The description of the issue. Supports Markdown.
+      required: true
+      selector:
+        text:
+          multiline: true
+    issue_id:
+      name: Issue ID
+      description: >-
+        The issue can have an identifier, which allows you to cancel it
+        later with that ID if needed. It also prevent duplicate issues
+        to be created. If not provided, a random ID will be generated.
+      required: false
+      selector:
+        text:
+    domain:
+      name: Domain
+      description: >-
+        This field can be used to set the domain of the issue. For example,
+        by default (if not set), it will use "spook". This causes Spook to
+        be shown in the logo/image of the issue. If you set it to
+        "homeassistant", the Home Assistant logo will be used, or use "hue",
+        "zwave_js", "mqtt", etc. to use the logo of that integration.
+      required: false
+      selector:
+        text:
+    severity:
+      name: Severity
+      description: >-
+        The severity of the issue. This will be used to determine the
+        priority of the issue. If not set, "warning" will be used
+      required: false
+      selector:
+        select:
+          options:
+            - label: Warning
+              value: warning
+            - label: Error
+              value: error
+            - label: Critical
+              value: critical
+    persistent:
+      name: Persistent
+      description: >-
+        If the issue should be persistent, which means it will survive
+        restarts of Home Assistant. By default, issues are not persistent.
+      required: false
+      selector:
+        boolean:

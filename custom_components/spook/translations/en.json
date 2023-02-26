@@ -1,15 +1,26 @@
 {
   "config": {
-      "abort": {
-          "already_spooked": "Yeah... well... no. K, thx, bye!"
-      },
-      "step": {
-          "user": {
-              "description": "Did you read the readme? Did you read the license? Are you really sure?"
-          }
+    "abort": {
+      "already_spooked": "Yeah... well... no. K, thx, bye!"
+    },
+    "step": {
+      "user": {
+        "description": "Did you read the readme? Did you read the license? Are you really sure?"
       }
+    }
   },
   "issues": {
+    "user_issue": {
+      "title": "{title}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "{title}",
+            "description": "{description}"
+          }
+        }
+      }
+    },
     "spook_obsolete_integration_yaml_config": {
       "title": "Obsolete YAML for `{domain}`",
       "description": "Spook has found a ghost in your YAML configuration 👻\n\nWhile floating around, Spook came aroud YAML configuration for the `{domain}` integration, which is obsolete (as it is no longer configured via YAML) and thus should be removed/cleaned up. This issue will automatically disappear once your configuration has been adjusted and Home Assistant has been restarted.\n\nSpook 👻 Not your homie."
