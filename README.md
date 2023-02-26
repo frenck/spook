@@ -72,7 +72,7 @@ or well, for starters, to be a good idea.
   - [Service for `number`: Increase value](#service-for-number-increase-value)
   - [Service for `select`: Select random option](#service-for-select-select-random-option)
 - [Repairs](#repairs)
-  - [**Obsolete integration YAML configuration**](#obsolete-integration-yaml-configuration)
+  - [Obsolete integration YAML configuration](#obsolete-integration-yaml-configuration)
 - [Changelog \& Releases](#changelog--releases)
 - [Contributing](#contributing)
 - [Authors \& contributors](#authors--contributors)
