@@ -10,8 +10,8 @@ from hass_nabucasa import Cloud
 from homeassistant.components.cloud.const import DOMAIN as CLOUD_DOMAIN
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.config_entries import ConfigEntry
-from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import HomeAssistantCloudSpookEntity, SpookEntityDescription
