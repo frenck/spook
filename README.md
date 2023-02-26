@@ -234,6 +234,19 @@ Call it using: [`repairs.create`](https://my.home-assistant.io/redirect/develope
 > Battery empty? Raise a issue in Home Assistant repairs. Although, you
 > should probably just use a notification for this. _#issues_
 
+## Service: Ignore all repair issues
+
+Call it using: [`repairs.ignore_all`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
+
+> Whatever issue is bothering you, just ignore it all and all your
+> problems will magically be gone. _#allgood_
+
+## Service: Unignore all repair issues
+
+Call it using: [`repairs.unignore_all`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
+
+> Will unignore all issues marked ignored, and shows them all again. _#faceit_
+
 ## Service: Boo! 👻
 
 Call it using: [`spook.boo`](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo)
