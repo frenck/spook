@@ -25,6 +25,10 @@ class SpookService(AbstractSpookEntityComponentService):
                 f"Amount {amount} not valid for {entity.entity_id}, "
                 f"it needs to be a multiple of {entity.step}"
             )
-        await entity.set_native_value(
-            min(entity.native_value - amount, entity.max_value)
-        )
+
+        value = entity.native_value + amount
+
+        if entity.min_value is not None:
+            value = max(value, entity.min_value)
+
+        await entity.set_native_value(value)
