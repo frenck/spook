@@ -20,7 +20,7 @@ class SpookService(AbstractSpookEntityComponentService):
         self, entity: NumberEntity, call: ServiceCall
     ) -> None:
         """Handle the service call."""
-        if (amount := call.data.get("amount", entity.step)) % entity.step != 0:
+        if (amount := call.data.get("amount", entity.step or 1)) % entity.step != 0:
             raise ValueError(
                 f"Amount {amount} not valid for {entity.entity_id}, "
                 f"it needs to be a multiple of {entity.step}"
