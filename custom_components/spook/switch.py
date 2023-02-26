@@ -54,6 +54,17 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
         ),
     ),
     HomeAssistantCloudSpookSwitchEntityDescription(
+        key="alexa_report_state",
+        entity_id="switch.cloud_alexa_report_state",
+        name="Alexa report state",
+        icon="mdi:account-voice",
+        entity_category=EntityCategory.CONFIG,
+        is_on_fn=lambda cloud: cloud.client.prefs.alexa_report_state,
+        set_fn=lambda cloud, enabled: cloud.client.prefs.async_update(
+            alexa_report_state=enabled
+        ),
+    ),
+    HomeAssistantCloudSpookSwitchEntityDescription(
         key="google",
         entity_id="switch.cloud_google",
         name="Google Assistant",
@@ -62,6 +73,17 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
         is_on_fn=lambda cloud: cloud.client.prefs.google_enabled,
         set_fn=lambda cloud, enabled: cloud.client.prefs.async_update(
             google_enabled=enabled
+        ),
+    ),
+    HomeAssistantCloudSpookSwitchEntityDescription(
+        key="google_report_state",
+        entity_id="switch.cloud_google_report_state",
+        name="Google Assistant report state",
+        icon="mdi:google-assistant",
+        entity_category=EntityCategory.CONFIG,
+        is_on_fn=lambda cloud: cloud.client.prefs.google_report_state,
+        set_fn=lambda cloud, enabled: cloud.client.prefs.async_update(
+            google_report_state=enabled
         ),
     ),
     HomeAssistantCloudSpookSwitchEntityDescription(
