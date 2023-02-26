@@ -256,6 +256,22 @@ number_increment:
       selector:
         number:
 
+number_max:
+  name: Set maximum value 👻
+  description: >-
+    Set a number entity to its maximum value.
+  target:
+    entity:
+      domain: number
+
+number_min:
+  name: Set minimum value 👻
+  description: >-
+    Set a number entity to its minimum value.
+  target:
+    entity:
+      domain: number
+
 input_number_decrement:
   name: Decrease an input number value 👻
   description: >-
@@ -289,6 +305,22 @@ input_number_increment:
       required: false
       selector:
         number:
+
+input_number_max:
+  name: Set an input number to its maximum value 👻
+  description: >-
+    Set an input number entity to its maximum value.
+  target:
+    entity:
+      domain: input_number
+
+input_number_min:
+  name: Set an input number to its minimum value 👻
+  description: >-
+    Set an input number entity to its minimum value.
+  target:
+    entity:
+      domain: input_number
 
 repairs_create:
   name: Create a repairs issue 👻

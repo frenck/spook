@@ -71,9 +71,13 @@ or well, for starters, to be a good idea.
 - [Entity services](#entity-services)
   - [Service for `input_number`: Decrease value](#service-for-input_number-decrease-value)
   - [Service for `input_number`: Increase value](#service-for-input_number-increase-value)
+  - [Service for `input_number`: Min value](#service-for-input_number-min-value)
+  - [Service for `input_number`: Max value](#service-for-input_number-max-value)
   - [Service for `input_select`: Select random option](#service-for-input_select-select-random-option)
   - [Service for `number`: Decrease value](#service-for-number-decrease-value)
   - [Service for `number`: Increase value](#service-for-number-increase-value)
+  - [Service for `number`: Min value](#service-for-number-min-value)
+  - [Service for `number`: Max value](#service-for-number-max-value)
   - [Service for `select`: Select random option](#service-for-select-select-random-option)
 - [Repairs](#repairs)
   - [Obsolete integration YAML configuration](#obsolete-integration-yaml-configuration)
@@ -294,6 +298,18 @@ Call it using: [`input_number.increment`](https://my.home-assistant.io/redirect/
 > Override of the existing service, which provides the option to specify
 > the amount to increase the value by. _#moreoptions_
 
+## Service for `input_number`: Min value
+
+Call it using: [`input_number.min`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
+
+> Set the value of a input_number entity to its minimum value. _#lowout_
+
+## Service for `input_number`: Max value
+
+Call it using: [`input_number.max`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
+
+> Set the value of a input_number entity to the maximum value. _#maxout_
+
 ## Service for `input_select`: Select random option
 
 Call it using: [`input_select.random`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
@@ -314,6 +330,18 @@ Call it using: [`number.increment`](https://my.home-assistant.io/redirect/develo
 
 > Increase the value of a number entity, either by a single step or by a
 > provided amount. _#up #greatmovie_
+
+## Service for `number`: Min value
+
+Call it using: [`number.min`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
+
+> Set the value of a number entity to its minimum value. _#lowout_
+
+## Service for `number`: Max value
+
+Call it using: [`number.max`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
+
+> Set the value of a number entity to the maximum value. _#maxout_
 
 ## Service for `select`: Select random option
 
