@@ -63,6 +63,9 @@ or well, for starters, to be a good idea.
   - [Service: Ignore all discovered devices \& services](#service-ignore-all-discovered-devices--services)
   - [Service: Import statistics](#service-import-statistics)
   - [Service: Create repair issue](#service-create-repair-issue)
+  - [Service: Remove repair issue](#service-remove-repair-issue)
+  - [Service: Ignore all repair issues](#service-ignore-all-repair-issues)
+  - [Service: Unignore all repair issues](#service-unignore-all-repair-issues)
   - [Service: Boo! 👻](#service-boo-)
   - [Service: Random fail](#service-random-fail)
 - [Entity services](#entity-services)
@@ -231,8 +234,15 @@ Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redir
 
 Call it using: [`repairs.create`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
 
-> Battery empty? Raise a issue in Home Assistant repairs. Although, you
+> Battery empty? Raise a issue in Home Assistant Repairs. Although, you
 > should probably just use a notification for this. _#issues_
+
+## Service: Remove repair issue
+
+Call it using: [`repairs.remove`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
+
+> Removes a issue from Home Assistant Repairs. Can only remove repair issues
+> that have been created using the `repairs.create` service. _#trashit_
 
 ## Service: Ignore all repair issues
 

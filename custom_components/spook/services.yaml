@@ -357,6 +357,20 @@ repairs_ignore_all:
   description: >-
     Ignore all issues currently raised in Home Assistant Repairs.
 
+repairs_remove:
+  name: Remove a repairs issue 👻
+  description: >-
+    Removes a manually created Home Assistant repairs issue. This service
+    can only remove issues created with the `repairs_create` service.
+  fields:
+    issue_id:
+      name: Issue ID
+      description: >-
+        The issue ID to remove.
+      required: true
+      selector:
+        text:
+
 repairs_unignore_all:
   name: Unignore all issues 👻
   description: >-
