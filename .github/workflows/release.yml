@@ -2,8 +2,9 @@
 name: "Release"
 
 on:
-  issues:
-    types: [published]
+  release:
+    types:
+      - published
 
 jobs:
   release:
