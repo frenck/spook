@@ -97,7 +97,7 @@ class AbstractSpookService(AbstractSpookServiceBase):
             domain=self.domain,
             service=self.service,
             service_func=self.async_handle_service,
-            schema=vol.Schema(self.schema),
+            schema=vol.Schema(self.schema) if self.schema else None,
         )
 
 
@@ -127,7 +127,7 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
             domain=self.domain,
             service=self.service,
             service_func=self.async_handle_service,
-            schema=vol.Schema(self.schema),
+            schema=vol.Schema(self.schema) if self.schema else None,
         )
         return True
 
