@@ -67,7 +67,7 @@ class AbstractSpookServiceBase(ABC):
 class ReplaceExistingService(AbstractSpookServiceBase):
     """This service replaces an existing service."""
 
-    overriden_service: Service
+    overriden_service: Service | None = None
 
 
 class AbstractSpookService(AbstractSpookServiceBase):
@@ -280,7 +280,10 @@ class SpookServiceManager:
             )
             service.async_unregister()
 
-            if isinstance(service, ReplaceExistingService):
+            if (
+                isinstance(service, ReplaceExistingService)
+                and service.overriden_service
+            ):
                 LOGGER.debug(
                     "Restoring service that was overriden previously: %s.%s",
                     service.domain,
