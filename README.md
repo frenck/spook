@@ -1,4 +1,4 @@
-# Spook - Not your homie. <!-- omit from toc -->
+# Spook 👻 Not your homie. <!-- omit from toc -->
 
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
@@ -376,6 +376,61 @@ Currently Spook will detect the following issues:
 > Finds scripts that use non-existing areas, devices or entities in, for
 > example, their service calls. _#void_
 
+# Frequently Asked Questions
+
+In the first few days after putting Spook out, some of the same questions
+kept popping up. So, here are some answers to those questions.
+
+## Is this a serious thing?
+
+Yes! It is not a normal integration, like one that connects to a device or
+service, or one that provides a helper of some sort. But is is a serious
+integration, that is meant to be used in a serious way.
+
+## Why is Spook called Spook?
+
+I (Frenck) am Dutch. I grew up with "Casper het vriendelijke spookje", also
+known as "Casper the friendly ghost". "Spook" is the Dutch for "ghost".
+
+Casper was scary at first, but you could really love him in the end. Which
+seems fitting for a custom integration, as custom integrations are more like
+to break, thus being a little scared of them is not a bad thing.
+
+"Not your homie" is a refence to my the livestreams I used to do. I called my
+viewer "My Home Assistant Homies", or just "Homies". It is thus referring
+to you, the Home Assistant user, as my friend, my homie. However, "Spook" is
+not your homie, it is a ghost, a spooky thing, he is suposed to make you think
+a little about what you are doing before you use it.
+
+Nice little fact, I did use "homey" at first (to maybe annoy the Homey users a
+bit in SEO), but I decided not to be that _badword_ and to change it back to
+just "homie".
+
+Lastly, the little ghost logo & use of the emoji. This is great inspiration
+from the Mushroom card project (I love it!). They use a simple mushroom emoji
+and you see it everywhere in the Home Assistant community, thus decided to do
+a similar thing.
+
+## Does this integration break my Home Assistant instance?
+
+Well, that is not the goal of course. But, it is a custom integration, so
+there is a chance it might break your instance. This applies to any custom
+integration, not just Spook.
+
+I'm just sharing what I have, without any warranty. I've decided to be blunt
+about it, and make is at least fun to read. I could have written a small
+warning, that would have been boring.
+
+## Does Spook do random things to my home?
+
+No. It does not do random things. It is not a chaos testing thing and
+it will not turn lights on/off randomly in the night. Unless it is a bug
+or broken of course.
+
+## Ok, so should I use Spook?
+
+No! The license doesn't allow that (see below).
+
 # Changelog & Releases
 
 This repository does not keep a change log using [GitHub's releases][releases]
@@ -437,7 +492,7 @@ SOFTWARE.
 [frenck]: https://github.com/frenck
 [keepchangelog]: http://keepachangelog.com/en/1.0.0/
 [license-shield]: https://img.shields.io/badge/license-Passive%20Aggressive%20License-lightgrey.svg
-[project-stage-shield]: https://img.shields.io/badge/project%20stage-DESTRUCTIVE-red.svg
+[project-stage-shield]: https://img.shields.io/badge/project%20stage-SPOOKED-red.svg
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
 [semver]: http://semver.org/spec/v2.0.0.html
