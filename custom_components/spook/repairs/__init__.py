@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
@@ -9,12 +10,17 @@ from typing import final
 
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers import (
+    area_registry as ar,
+    device_registry as dr,
+    entity_registry as er,
+    issue_registry as ir,
+)
 
 from ..const import DOMAIN, LOGGER
 
 
-class AbstractSpookRepair(ABC):
+class AbstractSpookRepairBase(ABC):
     """Abstract base class to hold a Spook repairs."""
 
     domain: str
@@ -22,15 +28,21 @@ class AbstractSpookRepair(ABC):
 
     hass: HomeAssistant
     issue_registry: ir.IssueRegistry
+    area_registry: ar.AreaRegistry
+    device_registry: dr.DeviceRegistry
+    entity_registry: er.EntityRegistry
 
-    def __init__(self, hass: HomeAssistant, issue_registry: ir.IssueRegistry) -> None:
+    def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the service."""
         self.hass = hass
-        self.issue_registry = issue_registry
+        self.issue_registry = ir.async_get(hass)
+        self.area_registry = ar.async_get(hass)
+        self.device_registry = dr.async_get(hass)
+        self.entity_registry = er.async_get(hass)
 
     @final
     @callback
-    def _async_create_issue(
+    def async_create_issue(
         self,
         *,
         breaks_in_ha_version: str | None = None,
@@ -55,29 +67,73 @@ class AbstractSpookRepair(ABC):
             issue_id=f"{self.repair}_{issue_id}",
             learn_more_url=learn_more_url,
             severity=severity,
-            translation_key=f"{self.domain}_{self.repair}",
+            translation_key=self.repair,
             translation_placeholders=translation_placeholders,
         )
 
+    @final
+    @callback
+    def async_delete_issue(
+        self,
+        *,
+        issue_id: str,
+    ) -> None:
+        """Remove an issue."""
+        ir.async_delete_issue(
+            self.hass,
+            domain=DOMAIN,
+            issue_id=f"{self.repair}_{issue_id}",
+        )
+
+    @abstractmethod
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
-
-    async def async_deactivate(self) -> None:
-        """Unregister the repair."""
-
-
-class AbstractSpookSingleShotRepairs(AbstractSpookRepair, ABC):
-    """Abstract class to hold repairs that are single a shot."""
+        raise NotImplementedError
 
     @abstractmethod
     async def async_inspect(self) -> None:
-        """Trigger a single shot repair."""
+        """Trigger a repair check."""
         raise NotImplementedError
+
+    @abstractmethod
+    async def async_deactivate(self) -> None:
+        """Unregister the repair."""
+        raise NotImplementedError
+
+
+class AbstractSpookRepair(AbstractSpookRepairBase):
+    """Abstract base class to hold a Spook repairs."""
+
+    inspect_events: set[str] | None = None
+    _event_subs = set[Callable[[], None]]
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self._subs = set()
+
+    async def async_activate(self) -> None:
+        """Handle the activating a repair."""
+        await self.async_inspect()
+
+        if self.inspect_events is None:
+            return
+
+        for event in self.inspect_events:
+            self._event_subs.add(self.hass.bus.async_listen(event, self.async_inspect))
+
+    async def async_deactivate(self) -> None:
+        """Unregister the repair."""
+        for sub in self._event_subs:
+            sub()
+
+
+class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):
+    """Abstract class to hold repairs that are single a shot."""
 
     @final
     async def async_activate(self) -> None:
         """Actives the repairs."""
-        await super().async_activate()
         await self.async_inspect()
 
     @final
@@ -107,9 +163,7 @@ class SpookRepairManager:
             if module_file.name == "__init__.py":
                 continue
             module = importlib.import_module(f".{module_file.name[:-3]}", __package__)
-            await self.async_activate(
-                module.SpookRepair(self.hass, self.issue_registry)
-            )
+            await self.async_activate(module.SpookRepair(self.hass))
 
     async def async_activate(self, repair: AbstractSpookRepair) -> None:
         """Register a Spook repair."""
@@ -137,4 +191,4 @@ class SpookRepairManager:
                 if domain == DOMAIN and issue_id.startswith(
                     f"{repair.domain}_{repair.repair}"
                 ):
-                    self.issue_registry.async_remove_issue(domain, issue_id)
+                    self.issue_registry.async_delete(domain, issue_id)

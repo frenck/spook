@@ -79,7 +79,7 @@ class SpookRepair(AbstractSpookSingleShotRepairs):
 
         for domain in self.KNOWN_REMOVED_DOMAINS:
             if domain in config:
-                self._async_create_issue(
+                self.async_create_issue(
                     issue_id=domain,
                     translation_placeholders={
                         "domain": domain,
