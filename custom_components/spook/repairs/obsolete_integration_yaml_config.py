@@ -71,6 +71,8 @@ class SpookRepair(AbstractSpookSingleShotRepairs):
 
     async def async_inspect(self) -> None:
         """Trigger a single shot repair."""
+        LOGGER.debug(f"Spook is inspecting: {self.repair}")
+
         try:
             config = await async_hass_config_yaml(self.hass)
         except HomeAssistantError:
@@ -84,4 +86,8 @@ class SpookRepair(AbstractSpookSingleShotRepairs):
                     translation_placeholders={
                         "domain": domain,
                     },
+                )
+                LOGGER.debug(
+                    "Spook found a known invalid integration domain in the "
+                    f"YAML configuration and created an issue; domain: {domain}"
                 )

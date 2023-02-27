@@ -16,6 +16,7 @@ from homeassistant.helpers import (
     entity_registry as er,
     issue_registry as ir,
 )
+from homeassistant.helpers.debounce import Debouncer
 
 from ..const import DOMAIN, LOGGER
 
@@ -75,7 +76,6 @@ class AbstractSpookRepairBase(ABC):
     @callback
     def async_delete_issue(
         self,
-        *,
         issue_id: str,
     ) -> None:
         """Remove an issue."""
@@ -105,6 +105,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     """Abstract base class to hold a Spook repairs."""
 
     inspect_events: set[str] | None = None
+    inspect_debouncer: Debouncer
     _event_subs = set[Callable[[], None]]
 
     def __init__(self, hass: HomeAssistant) -> None:
@@ -114,13 +115,27 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
-        await self.async_inspect()
+
+        # Debouncer to prevent multiple inspections / inspections fired quickly
+        # after each other.
+        self.inspect_debouncer = Debouncer(
+            self.hass,
+            LOGGER,
+            cooldown=10,
+            immediate=False,
+            function=self.async_inspect,
+        )
+
+        # Spook says: Bounce!
+        await self.inspect_debouncer.async_call()
 
         if self.inspect_events is None:
             return
 
         for event in self.inspect_events:
-            self._event_subs.add(self.hass.bus.async_listen(event, self.async_inspect))
+            self._event_subs.add(
+                self.hass.bus.async_listen(event, self.inspect_debouncer.async_call)
+            )
 
     async def async_deactivate(self) -> None:
         """Unregister the repair."""

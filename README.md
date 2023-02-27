@@ -360,11 +360,21 @@ about these things using an Home Assistant repair issue. _#whoyougonnacall_
 
 Currently Spook will detect the following issues:
 
+## Automations: Find use of non-existing areas, devices and entities
+
+> Finds automations that use non-existing areas, devices or entities in, for
+> example, their service calls. _#springcleaning_
+
 ## Obsolete integration YAML configuration
 
 > Finds YAML configuration for an integrations that no longer support it.
 > Unless you like having unneeded shizzle in your YAML, it can be removed
 > safely. _#ghostbusters_
+
+## Scripts: Find use of non-existing areas, devices and entities
+
+> Finds scripts that use non-existing areas, devices or entities in, for
+> example, their service calls. _#void_
 
 # Changelog & Releases
 

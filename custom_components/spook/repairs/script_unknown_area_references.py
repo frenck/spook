@@ -1,7 +1,7 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-from homeassistant.components import automation
+from homeassistant.components import script
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
@@ -10,18 +10,17 @@ from ..const import LOGGER
 
 
 class SpookRepair(AbstractSpookRepair):
-    """Spook repair tries to find unknown referenced areas in automations."""
+    """Spook repair tries to find unknown referenced areas in scripts."""
 
-    domain = automation.DOMAIN
-    repair = "automation_unknown_area_references"
-    events = {automation.EVENT_AUTOMATION_RELOADED, ar.EVENT_AREA_REGISTRY_UPDATED}
+    domain = script.DOMAIN
+    repair = "script_unknown_area_references"
+    events = {ar.EVENT_AREA_REGISTRY_UPDATED}
 
-    _entity_component: EntityComponent[automation.AutomationEntity]
+    _entity_component: EntityComponent[script.ScriptEntity]
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
         self._entity_component = self.hass.data[DATA_INSTANCES][self.domain]
-
         await super().async_activate()
 
     async def async_inspect(self) -> None:
@@ -29,13 +28,13 @@ class SpookRepair(AbstractSpookRepair):
         LOGGER.debug(f"Spook is inspecting: {self.repair}")
         areas = set(self.area_registry.areas)
         for entity in self._entity_component.entities:
-            if unknown_areas := entity.referenced_areas - areas:
+            if unknown_areas := entity.script.referenced_areas - areas:
                 self.async_create_issue(
                     issue_id=entity.entity_id,
                     translation_placeholders={
                         "areas": "\n".join(f"- `{area}`" for area in unknown_areas),
-                        "automation": entity.name,
-                        "edit": f"/config/automation/edit/{entity.unique_id}",
+                        "script": entity.name,
+                        "edit": f"/config/script/edit/{entity.unique_id}",
                         "entity_id": entity.entity_id,
                     },
                 )
