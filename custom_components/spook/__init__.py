@@ -14,7 +14,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Set up services
     services = SpookServiceManager(hass)
-    await services.async_setup(entry)
+    await services.async_setup()
     entry.async_on_unload(services.async_on_unload)
 
     # Who you gonna call? SpookRepairManager!
@@ -22,7 +22,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     async def _ghost_busters(_: Event) -> None:
         """Send them in, time for some ghost chasing."""
-        await repairs.async_setup(entry)
+        await repairs.async_setup()
         entry.async_on_unload(repairs.async_on_unload)
 
     # Wait until Home Assistant is started, before doing repairs
