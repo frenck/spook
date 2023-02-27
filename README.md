@@ -391,7 +391,7 @@ kept popping up. So, here are some answers to those questions.
 
 ## Is this a serious thing?
 
-Yes! It is not a normal integration, like one that connects to a device or
+Yes! It is not a normal integration, just not one that connects to a device or
 service, or one that provides a helper of some sort. But is is a serious
 integration, that is meant to be used in a serious way.
 
