@@ -392,7 +392,7 @@ kept popping up. So, here are some answers to those questions.
 ## Is this a serious thing?
 
 Yes! It is just not a normal integration, like one that connects to a device or
-service, or one that provides a helper of some sort. But is is a serious
+service, or one that provides a helper of some sort. But it is a serious
 integration, that is meant to be used in a serious way.
 
 ## Why is Spook called Spook?
