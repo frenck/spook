@@ -400,12 +400,12 @@ integration, that is meant to be used in a serious way.
 I (Frenck) am Dutch. I grew up with "Casper het vriendelijke spookje", also
 known as "Casper the friendly ghost". "Spook" is the Dutch for "ghost".
 
-Casper was scary at first, but you could really love him in the end. Which
-seems fitting for a custom integration, as custom integrations are more like
+Casper is scary at first sight, but you could really love him in the end. Which
+seems fitting for a custom integration, as custom integrations are more likely
 to break, thus being a little scared of them is not a bad thing.
 
 "Not your homie" is a refence to my the livestreams I used to do. I called my
-viewer "My Home Assistant Homies", or just "Homies". It is thus referring
+viewers "My Home Assistant Homies", or just "Homies". It is thus referring
 to you, the Home Assistant user, as my friend, my homie. However, "Spook" is
 not your homie, it is a ghost, a spooky thing, he is suposed to make you think
 a little about what you are doing before you use it.
@@ -426,7 +426,7 @@ there is a chance it might break your instance. This applies to any custom
 integration, not just Spook.
 
 I'm just sharing what I have, without any warranty. I've decided to be blunt
-about it, and make is at least fun to read. I could have written a small
+about it, and make it at least fun to read. I could have written a small
 warning, that would have been boring.
 
 ## Does Spook do random things to my home?
