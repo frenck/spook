@@ -8,7 +8,6 @@ import importlib
 from pathlib import Path
 from typing import final
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import (
     area_registry as ar,
@@ -169,7 +168,7 @@ class SpookRepairManager:
         self.issue_registry = ir.async_get(self.hass)
         LOGGER.debug("Spook repair manager initialized")
 
-    async def async_setup(self, entry: ConfigEntry) -> None:
+    async def async_setup(self) -> None:
         """Set up the Spook repairs."""
         LOGGER.debug("Setting up Spook repairs")
 

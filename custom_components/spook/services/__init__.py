@@ -9,7 +9,6 @@ from typing import Any, final, overload
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, Service, ServiceCall, callback
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
@@ -214,11 +213,10 @@ class SpookServiceManager:
         """Post initialization."""
         LOGGER.debug("Spook service manager initialized")
 
-    async def async_setup(self, entry: ConfigEntry) -> None:
+    async def async_setup(self) -> None:
         """Set up the Spook services."""
         LOGGER.debug("Setting up Spook services")
 
-        entry.async_on_unload(self.async_on_unload)
         integration = await async_get_integration(self.hass, DOMAIN)
         self._service_schemas = await self.hass.async_add_executor_job(  # type: ignore
             _load_services_file, self.hass, integration
