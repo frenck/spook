@@ -240,9 +240,9 @@ Call it using: [`homeassistant.ignore_all_discovered`](https://my.home-assistant
 
 Call it using: [`homeassistant.remove_all_orphaned_entities`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_all_orphaned_entities)
 
-> Removes all orphaned entities that no longer have an integration thatclaim/provide
+> Removes all orphaned entities that no longer have an integration that claim/provide
 > them. Please note, if the integration was just removed, it might need a restart
-> for Home Assistant to realize they are orphaned. _annie_
+> for Home Assistant to realize they are orphaned. _#annie_
 
 > **WARNING** Entities might have been marked orphaned because an
 > integration is offline or not working since Home Assistant started. Calling
