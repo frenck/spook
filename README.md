@@ -61,6 +61,7 @@ or well, for starters, to be a good idea.
   - [Service: Hide an entity](#service-hide-an-entity)
   - [Service: Unhide an entity](#service-unhide-an-entity)
   - [Service: Ignore all discovered devices \& services](#service-ignore-all-discovered-devices--services)
+  - [Service: Remove all orphaned entities](#service-remove-all-orphaned-entities)
   - [Service: Import statistics](#service-import-statistics)
   - [Service: Create repair issue](#service-create-repair-issue)
   - [Service: Remove repair issue](#service-remove-repair-issue)
