@@ -135,6 +135,17 @@ homeassistant_ignore_all_discovered:
       selector:
         text:
 
+homeassistant_remove_all_orphaned_entities:
+  name: Remove all orphaned entities 👻
+  description: >-
+    Removes all orphaned entities that no longer have an integration that
+    claim/provide them. Please note, if the integration was just removed,
+    it might need a restart for Home Assistant to realize they are orphaned.
+
+    **WARNING** Entities might have been marked orphaned because an
+    integration is offline or not working since Home Assistant started. Calling
+    this service will remove those entities as well.
+
 recorder_import_statistics:
   name: Import statistics 👻
   description: >-
