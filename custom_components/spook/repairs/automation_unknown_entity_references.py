@@ -3,7 +3,11 @@ from __future__ import annotations
 
 from homeassistant.components import automation
 from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
-from homeassistant.const import EVENT_COMPONENT_LOADED
+from homeassistant.const import (
+    ENTITY_MATCH_ALL,
+    ENTITY_MATCH_NONE,
+    EVENT_COMPONENT_LOADED,
+)
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -75,7 +79,28 @@ class SpookRepair(AbstractSpookRepair):
         }.union(self.hass.states.async_entity_ids())
 
         for entity in self._entity_component.entities:
-            if unknown_entities := entity.referenced_entities - entity_ids:
+            # Get all referenced entities, remove the ones that are known
+            # and remove match `all` and `none` as they are not real entities.
+            referenced_entities = (
+                entity.referenced_entities
+                - entity_ids
+                - {ENTITY_MATCH_NONE, ENTITY_MATCH_ALL}
+            )
+
+            # Filter out scenes, groups & device_tracker entities.
+            # Those can be created on the fly with services, which we
+            # currently cannot detect yet. Let's prevent some false positives.
+            referenced_entities = {
+                entity_id
+                for entity_id in referenced_entities
+                if (
+                    not entity_id.startswith("device_tracker.")
+                    and not entity_id.startswith("group.")
+                    and not entity_id.startswith("scene.")
+                )
+            }
+
+            if unknown_entities := referenced_entities - entity_ids:
                 self.async_create_issue(
                     issue_id=entity.entity_id,
                     translation_placeholders={
