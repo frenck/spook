@@ -4,7 +4,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from typing import TYPE_CHECKING
 
-from homeassistant.components import automation, person, sun, zone
+from homeassistant.components import automation, person, script, sun, zone
 from homeassistant.components.sensor import (
     SensorEntity,
     SensorEntityDescription,
@@ -298,6 +298,16 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL,
         update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
         value_fn=lambda hass: len(hass.states.async_entity_ids(Platform.SCENE)),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
+        key=script.DOMAIN,
+        entity_id="sensor.scripts",
+        name="Scripts",
+        icon="mdi:script-text",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL,
+        update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
+        value_fn=lambda hass: len(hass.states.async_entity_ids(script.DOMAIN)),
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.SELECT,
