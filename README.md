@@ -32,16 +32,16 @@ I've warned you :D
 So, there a lot of things/features, that will never end up in Home Assistant itself.
 
 This can have various reasons, for example: It is just too random, out of scope,
-not matching the Home Assistant philosophy, violating architectural design
-or just freaking useless.
+not matching the Home Assistant philosophy, violating architectural design,
+still in early development, experimental, explorative, or just freaking useless.
 
 Spook doesn't care. He is nobodies homie.
 
 So, maybe, that one feature you wanted Home Assistant to have, is in Spook.
 
 However, remember, Spook is not your homie. All stuff in here, is not part of
-Home Assistant for a reason. So, don't expect it to work, or to be supported,
-or well, for starters, to be a good idea.
+Home Assistant (or at least not yet) for a reason. So, don't expect it to work,
+or to be supported, or well, for starters, to be a good idea.
 
 ## Some guidance for the brave <!-- omit from toc -->
 
@@ -312,12 +312,16 @@ Call it using: [`input_number.decrement`](https://my.home-assistant.io/redirect/
 > Override of the existing service, which provides the option to specify
 > the amount to decrease the value by. _#evenlower_
 
+_Under consideration for contributing back to Home Assistant Core._
+
 ## Service for `input_number`: Increase value
 
 Call it using: [`input_number.increment`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
 
 > Override of the existing service, which provides the option to specify
 > the amount to increase the value by. _#moreoptions_
+
+_Under consideration for contributing back to Home Assistant Core._
 
 ## Service for `input_number`: Min value
 
@@ -345,12 +349,16 @@ Call it using: [`number.decrement`](https://my.home-assistant.io/redirect/develo
 > Decrease the value of a number entity, either by a single step or by a
 > provided amount. _#downboy_
 
+_Under consideration for contributing back to Home Assistant Core._
+
 ## Service for `number`: Increase value
 
 Call it using: [`number.increment`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
 
 > Increase the value of a number entity, either by a single step or by a
 > provided amount. _#up #greatmovie_
+
+_Under consideration for contributing back to Home Assistant Core._
 
 ## Service for `number`: Min value
 
@@ -386,6 +394,9 @@ Currently Spook will detect the following issues:
 > Finds automations that use non-existing areas, devices or entities in, for
 > example, their service calls. _#springcleaning_
 
+_Intention to contribute back to Home Assistant Core once sure no false
+postives remain, and it has been extended to catch more situations._
+
 ## Obsolete integration YAML configuration
 
 > Finds YAML configuration for an integrations that no longer support it.
@@ -396,6 +407,9 @@ Currently Spook will detect the following issues:
 
 > Finds scripts that use non-existing areas, devices or entities in, for
 > example, their service calls. _#void_
+
+_Intention to contribute back to Home Assistant Core once sure no false
+postives remain, and it has been extended to catch more situations._
 
 # Frequently Asked Questions
 
