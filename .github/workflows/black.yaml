@@ -1,0 +1,33 @@
+---
+name: Black
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+env:
+  DEFAULT_PYTHON: "3.10"
+
+jobs:
+  black:
+    name: Black
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v3
+
+      - name: 🏗 Set up Poetry
+        run: pipx install poetry
+
+      - name: 🏗 Set up Python ${{ env.DEFAULT_PYTHON }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.DEFAULT_PYTHON }}
+          cache: "poetry"
+
+      - name: 🏗 Install Python dependencies
+        run: poetry install --no-interaction
+
+      - name: 🚀 Run black
+        run: poetry run black --diff --fast .

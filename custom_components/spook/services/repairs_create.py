@@ -1,15 +1,19 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-import voluptuous as vol
+from typing import TYPE_CHECKING
 
+import voluptuous as vol
 from homeassistant.components.repairs import DOMAIN as REPAIRS_DOMAIN
-from homeassistant.core import ServiceCall
-from homeassistant.helpers import config_validation as cv, issue_registry as ir
+from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.util.ulid import ulid
 
-from . import AbstractSpookService
 from ..const import DOMAIN
+from . import AbstractSpookService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookService):
@@ -23,7 +27,7 @@ class SpookService(AbstractSpookService):
         vol.Optional("issue_id", default=ulid): cv.string,
         vol.Optional("domain", default=DOMAIN): cv.string,
         vol.Optional("severity", default=ir.IssueSeverity.WARNING): vol.Coerce(
-            ir.IssueSeverity
+            ir.IssueSeverity,
         ),
         vol.Optional("persistent", default=False): cv.boolean,
     }

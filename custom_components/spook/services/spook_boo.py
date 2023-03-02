@@ -1,11 +1,15 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-from homeassistant.core import ServiceCall
+from typing import TYPE_CHECKING
+
 from homeassistant.exceptions import HomeAssistantError
 
-from . import AbstractSpookService
 from ..const import DOMAIN
+from . import AbstractSpookService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookService):
@@ -16,4 +20,5 @@ class SpookService(AbstractSpookService):
 
     async def async_handle_service(self, _: ServiceCall) -> None:
         """Handle the service call."""
-        raise HomeAssistantError("Spooked!")
+        msg = "Spooked!"
+        raise HomeAssistantError(msg)

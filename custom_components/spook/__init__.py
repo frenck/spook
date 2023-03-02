@@ -1,10 +1,17 @@
 """Spook - Not your homie. Custom integration for Home Assistant."""
-from homeassistant.config_entries import ConfigEntry
-from homeassistant.core import EVENT_HOMEASSISTANT_STARTED, Event, HomeAssistant
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+from homeassistant.core import EVENT_HOMEASSISTANT_STARTED
 
 from .const import PLATFORMS
 from .repairs import SpookRepairManager
 from .services import SpookServiceManager
+
+if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import Event, HomeAssistant
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -27,7 +34,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Wait until Home Assistant is started, before doing repairs
     entry.async_on_unload(
-        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _ghost_busters)
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _ghost_busters),
     )
 
     # Yay, we didn't got spooked!

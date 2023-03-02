@@ -1,11 +1,15 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components.repairs import DOMAIN
-from homeassistant.core import ServiceCall
 from homeassistant.helpers import issue_registry as ir
 
 from . import AbstractSpookService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookService):
@@ -18,4 +22,4 @@ class SpookService(AbstractSpookService):
         """Handle the service call."""
         issue_registry = ir.async_get(self.hass)
         for domain, issue_id in issue_registry.issues:
-            issue_registry.async_ignore(domain, issue_id, False)
+            issue_registry.async_ignore(domain, issue_id, ignore=False)

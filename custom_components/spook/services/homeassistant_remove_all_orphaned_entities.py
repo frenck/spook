@@ -1,12 +1,16 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.const import ATTR_RESTORED
-from homeassistant.core import ServiceCall
 from homeassistant.helpers import entity_registry as er
 
 from . import AbstractSpookAdminService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookAdminService):

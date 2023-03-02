@@ -1,0 +1,71 @@
+[tool.poetry]
+name = "spook"
+version = "0.0.0"
+description = "Spook - Not your homie"
+authors = ["Franck Nijhof <opensource@frenck.dev>"]
+maintainers = ["Franck Nijhof <opensource@frenck.dev>"]
+license = "Passive Aggressive License"
+readme = "README.md"
+homepage = "https://github.com/frenck/spook"
+repository = "https://github.com/frenck/spook"
+documentation = "https://github.com/frenck/spook"
+classifiers = [
+  "Development Status :: 3 - Alpha",
+  "Framework :: AsyncIO",
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3",
+]
+packages = []
+
+[tool.poetry.dependencies]
+python = "^3.10"
+homeassistant = "^2023.3"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.1.0"
+hass-nabucasa = "^0.61.0"
+pre-commit = "^3.0.3"
+pre-commit-hooks = "^4.4.0"
+ruff = "^0.0.253"
+pylint = "^2.16.2"
+
+[tool.poetry.urls]
+"Bug Tracker" = "https://github.com/frenck/spook/issues"
+Changelog = "https://github.com/frenck/spook/releases"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+src = ["custom_components/spook"]
+select = ["ALL"]
+ignore = [
+  "ANN101", # Self... explanatory
+  "ANN401", # Opiniated warning on disallowing dynamically typed expressions
+  "D203", # Conflicts with other rules
+  "D213", # Conflicts with other rules
+  "TID252", # Relative imports
+]
+
+[tool.ruff.flake8-import-conventions.extend-aliases]
+voluptuous = "vol"
+"homeassistant.helpers.area_registry" = "ar"
+"homeassistant.helpers.config_validation" = "cv"
+"homeassistant.helpers.device_registry" = "dr"
+"homeassistant.helpers.entity_registry" = "er"
+"homeassistant.helpers.issue_registry" = "ir"
+
+[tool.pylint."MESSAGES CONTROL"]
+# Reasons disabled:
+# format - handled by black
+# duplicate-code - unavoidable
+# used-before-assignment - false positives with TYPE_CHECKING structures
+disable = [
+    "format",
+    "duplicate-code",
+    "used-before-assignment",
+]

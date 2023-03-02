@@ -1,14 +1,15 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
-
 from homeassistant.config_entries import ConfigFlow
-from homeassistant.data_entry_flow import FlowResult
 
 from .const import DOMAIN
+
+if TYPE_CHECKING:
+    from homeassistant.data_entry_flow import FlowResult
 
 
 class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -17,7 +18,8 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
     VERSION = 1
 
     async def async_step_user(
-        self, user_input: dict[str, Any] | None = None
+        self,
+        user_input: dict[str, Any] | None = None,
     ) -> FlowResult:
         """Handle a flow initialized someone that didn't read the warnings."""
         if self._async_current_entries():

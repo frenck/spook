@@ -1,20 +1,22 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Any
-
-from hass_nabucasa import Cloud
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.cloud.const import DOMAIN as CLOUD_DOMAIN
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import HomeAssistantCloudSpookEntity, SpookEntityDescription
+
+if TYPE_CHECKING:
+    from collections.abc import Awaitable, Callable
+
+    from hass_nabucasa import Cloud
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
 @dataclass
@@ -50,7 +52,7 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
         is_on_fn=lambda cloud: cloud.client.prefs.alexa_enabled,
         set_fn=lambda cloud, enabled: cloud.client.prefs.async_update(
-            alexa_enabled=enabled
+            alexa_enabled=enabled,
         ),
     ),
     HomeAssistantCloudSpookSwitchEntityDescription(
@@ -61,7 +63,7 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
         is_on_fn=lambda cloud: cloud.client.prefs.alexa_report_state,
         set_fn=lambda cloud, enabled: cloud.client.prefs.async_update(
-            alexa_report_state=enabled
+            alexa_report_state=enabled,
         ),
     ),
     HomeAssistantCloudSpookSwitchEntityDescription(
@@ -72,7 +74,7 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
         is_on_fn=lambda cloud: cloud.client.prefs.google_enabled,
         set_fn=lambda cloud, enabled: cloud.client.prefs.async_update(
-            google_enabled=enabled
+            google_enabled=enabled,
         ),
     ),
     HomeAssistantCloudSpookSwitchEntityDescription(
@@ -83,7 +85,7 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
         is_on_fn=lambda cloud: cloud.client.prefs.google_report_state,
         set_fn=lambda cloud, enabled: cloud.client.prefs.async_update(
-            google_report_state=enabled
+            google_report_state=enabled,
         ),
     ),
     HomeAssistantCloudSpookSwitchEntityDescription(
@@ -94,7 +96,7 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
         entity_category=EntityCategory.CONFIG,
         is_on_fn=lambda cloud: cloud.client.prefs.remote_enabled,
         set_fn=lambda cloud, enabled: cloud.client.prefs.async_update(
-            remote_enabled=enabled
+            remote_enabled=enabled,
         ),
     ),
 )
@@ -102,7 +104,7 @@ SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
 
 async def async_setup_entry(
     hass: HomeAssistant,
-    entry: ConfigEntry,
+    _entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Spook sensor."""
@@ -128,7 +130,7 @@ class HomeAssistantCloudSpookSwitchEntity(HomeAssistantCloudSpookEntity, SwitchE
             self.async_schedule_update_ha_state()
 
         self.async_on_remove(
-            self._cloud.client.prefs.async_listen_updates(_update_state)
+            self._cloud.client.prefs.async_listen_updates(_update_state),
         )
 
     @property
@@ -143,10 +145,10 @@ class HomeAssistantCloudSpookSwitchEntity(HomeAssistantCloudSpookEntity, SwitchE
         """Return state of the switch."""
         return self.entity_description.is_on_fn(self._cloud)
 
-    async def async_turn_on(self, **kwargs: Any) -> None:
+    async def async_turn_on(self, **_kwargs: Any) -> None:
         """Turn the entity on."""
-        await self.entity_description.set_fn(self._cloud, True)
+        await self.entity_description.set_fn(self._cloud, enabled=True)
 
-    async def async_turn_off(self, **kwargs: Any) -> None:
+    async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn the entity off."""
-        await self.entity_description.set_fn(self._cloud, False)
+        await self.entity_description.set_fn(self._cloud, enabled=False)

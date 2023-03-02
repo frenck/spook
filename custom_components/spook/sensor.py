@@ -1,8 +1,8 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-from collections.abc import Callable
 from dataclasses import dataclass, field
+from typing import TYPE_CHECKING
 
 from homeassistant.components import automation, person, sun, zone
 from homeassistant.components.sensor import (
@@ -10,7 +10,6 @@ from homeassistant.components.sensor import (
     SensorEntityDescription,
     SensorStateClass,
 )
-from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_HOMEASSISTANT_STARTED,
@@ -19,13 +18,22 @@ from homeassistant.const import (
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import (
     area_registry as ar,
+)
+from homeassistant.helpers import (
     device_registry as dr,
+)
+from homeassistant.helpers import (
     entity_registry as er,
 )
 from homeassistant.helpers.entity import EntityCategory
-from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .entity import HomeAssistantSpookEntity, SpookEntityDescription
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
 @dataclass
@@ -66,7 +74,7 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL,
         update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
         value_fn=lambda hass: len(
-            hass.states.async_entity_ids(Platform.ALARM_CONTROL_PANEL)
+            hass.states.async_entity_ids(Platform.ALARM_CONTROL_PANEL),
         ),
     ),
     HomeAssistantSpookSensorEntityDescription(
@@ -168,7 +176,7 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL,
         update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
         value_fn=lambda hass: len(
-            hass.states.async_entity_ids(Platform.DEVICE_TRACKER)
+            hass.states.async_entity_ids(Platform.DEVICE_TRACKER),
         ),
     ),
     HomeAssistantSpookSensorEntityDescription(
@@ -405,8 +413,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
 
 
 async def async_setup_entry(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
+    _hass: HomeAssistant,
+    _entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up Spook sensor."""
@@ -432,7 +440,7 @@ class HomeAssistantSpookSensorEntity(HomeAssistantSpookEntity, SensorEntity):
             self.async_on_remove(self.hass.bus.async_listen(event, _update_state))
 
         self.async_on_remove(
-            self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _update_state)
+            self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _update_state),
         )
 
     @property
