@@ -5,8 +5,8 @@ from homeassistant.components import script
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
-from . import AbstractSpookRepair
 from ..const import LOGGER
+from . import AbstractSpookRepair
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -25,7 +25,7 @@ class SpookRepair(AbstractSpookRepair):
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
-        LOGGER.debug(f"Spook is inspecting: {self.repair}")
+        LOGGER.debug("Spook is inspecting: %s", self.repair)
         devices = {device.id for device in self.device_registry.devices.values()}
         for entity in self._entity_component.entities:
             if unknown_devices := entity.script.referenced_devices - devices:
@@ -41,8 +41,12 @@ class SpookRepair(AbstractSpookRepair):
                     },
                 )
                 LOGGER.debug(
-                    f"Spook found unknown devices in {entity.entity_id} "
-                    f"and created an issue for it; Devices: {unknown_devices}"
+                    (
+                        "Spook found unknown devices in %s "
+                        "and created an issue for it; Devices: %s",
+                    ),
+                    entity.entity_id,
+                    ", ".join(unknown_devices),
                 )
             else:
                 self.async_delete_issue(entity.entity_id)

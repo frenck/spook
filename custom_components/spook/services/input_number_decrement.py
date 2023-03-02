@@ -1,12 +1,15 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-import voluptuous as vol
+from typing import TYPE_CHECKING
 
+import voluptuous as vol
 from homeassistant.components.input_number import DOMAIN, InputNumber
-from homeassistant.core import ServiceCall
 
 from . import AbstractSpookEntityComponentService, ReplaceExistingService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookEntityComponentService, ReplaceExistingService):
@@ -20,14 +23,22 @@ class SpookService(AbstractSpookEntityComponentService, ReplaceExistingService):
     schema = {vol.Optional("amount"): vol.Coerce(float)}
 
     async def async_handle_service(
-        self, entity: InputNumber, call: ServiceCall
+        self,
+        entity: InputNumber,
+        call: ServiceCall,
     ) -> None:
         """Handle the service call."""
         if (amount := call.data.get("amount", entity.step)) % entity.step != 0:
-            raise ValueError(
+            msg = (
                 f"Amount {amount} not valid for {entity.entity_id}, "
-                f"it needs to be a multiple of {entity.step}"
+                f"it needs to be a multiple of {entity.step}",
             )
+            raise ValueError(msg)
 
-        # pylint: disable-next=protected-access
-        await entity.set_value(max(entity._current_value + amount, entity._minimum))
+        # pylint: disable=protected-access
+        await entity.set_value(
+            max(
+                entity._current_value + amount,  # noqa: SLF001
+                entity._minimum,  # noqa: SLF001
+            ),
+        )

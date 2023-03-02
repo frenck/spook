@@ -5,8 +5,8 @@ from homeassistant.components import automation
 from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
-from . import AbstractSpookRepair
 from ..const import LOGGER
+from . import AbstractSpookRepair
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -26,7 +26,7 @@ class SpookRepair(AbstractSpookRepair):
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
-        LOGGER.debug(f"Spook is inspecting: {self.repair}")
+        LOGGER.debug("Spook is inspecting: %s", self.repair)
         areas = set(self.area_registry.areas)
         for entity in self._entity_component.entities:
             if unknown_areas := entity.referenced_areas - areas:
@@ -40,8 +40,12 @@ class SpookRepair(AbstractSpookRepair):
                     },
                 )
                 LOGGER.debug(
-                    f"Spook found unknown areas in {entity.entity_id} "
-                    f"and created an issue for it; Areas: {unknown_areas}"
+                    (
+                        "Spook found unknown areas in %s "
+                        "and created an issue for it; Areas: %s",
+                    ),
+                    entity.entity_id,
+                    ", ".join(unknown_areas),
                 )
             else:
                 self.async_delete_issue(entity.entity_id)

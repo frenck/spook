@@ -1,11 +1,15 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components.number import DOMAIN, NumberEntity
-from homeassistant.core import ServiceCall
 from homeassistant.exceptions import HomeAssistantError
 
 from . import AbstractSpookEntityComponentService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookEntityComponentService):
@@ -17,5 +21,6 @@ class SpookService(AbstractSpookEntityComponentService):
     async def async_handle_service(self, entity: NumberEntity, _: ServiceCall) -> None:
         """Handle the service call."""
         if entity.max_value is None:
-            raise HomeAssistantError("Entity {self.entity_id} has no max value}")
+            msg = f"Entity {entity.entity_id} has no max value"
+            raise HomeAssistantError(msg)
         await entity.async_set_native_value(entity.native_max_value)

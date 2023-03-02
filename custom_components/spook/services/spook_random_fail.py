@@ -2,12 +2,15 @@
 from __future__ import annotations
 
 import random
+from typing import TYPE_CHECKING
 
-from homeassistant.core import ServiceCall
 from homeassistant.exceptions import HomeAssistantError
 
-from . import AbstractSpookService
 from ..const import DOMAIN
+from . import AbstractSpookService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookService):
@@ -19,4 +22,5 @@ class SpookService(AbstractSpookService):
     async def async_handle_service(self, _: ServiceCall) -> None:
         """Handle the service call."""
         if random.choice([True, False]):
-            raise HomeAssistantError("Spooked!")
+            msg = "Spooked!"
+            raise HomeAssistantError(msg)

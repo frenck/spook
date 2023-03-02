@@ -2,16 +2,18 @@
 from __future__ import annotations
 
 import asyncio
+from typing import TYPE_CHECKING
 
 import voluptuous as vol
-
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.config_entries import DISCOVERY_SOURCES, SOURCE_IGNORE
-from homeassistant.core import ServiceCall
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.translation import async_get_translations
 
 from . import AbstractSpookAdminService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookAdminService):
@@ -48,7 +50,7 @@ class SpookService(AbstractSpookAdminService):
         for flow in flows_to_ignore:
             title = "Ignored by Spook"
             if flow_title := translations.get(
-                f"component.{flow['handler']}.config.flow_title"
+                f"component.{flow['handler']}.config.flow_title",
             ):
                 title = flow_title.format(**flow["context"]["title_placeholders"])
             elif (
@@ -65,7 +67,7 @@ class SpookService(AbstractSpookAdminService):
                         "unique_id": flow["context"]["unique_id"],
                         "title": f"{title} 👻",
                     },
-                )
+                ),
             )
 
         if tasks:

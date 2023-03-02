@@ -43,7 +43,7 @@ However, remember, Spook is not your homie. All stuff in here, is not part of
 Home Assistant for a reason. So, don't expect it to work, or to be supported,
 or well, for starters, to be a good idea.
 
-## Some guidance for the brave <!-- omit from toc --> 
+## Some guidance for the brave <!-- omit from toc -->
 
 - [Installation](#installation)
 - [Configuration](#configuration)
@@ -96,7 +96,6 @@ or well, for starters, to be a good idea.
 - [Disclaimer](#disclaimer)
 - [License](#license)
 
-
 # Installation
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=frenck&repository=spook&category=integration)
@@ -119,6 +118,7 @@ You shouldn't.
 This integration will provide you with entities you'd absolutely do not need.
 All of them are enabled by default to ensure you have a bad time, straight
 of the box.
+
 ## Sensors
 
 - **Total number of entities**: To show your friends how big your setup is. _#compensation_
@@ -253,7 +253,7 @@ Call it using: [`homeassistant.remove_all_orphaned_entities`](https://my.home-as
 Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
 
 > Advanced service to directly inject historical statistics data into
-> >the recorder long-term stats database. _#easy_
+> the recorder long-term stats database. _#easy_
 
 ## Service: Create repair issue
 
@@ -323,13 +323,13 @@ Call it using: [`input_number.increment`](https://my.home-assistant.io/redirect/
 
 Call it using: [`input_number.min`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
 
-> Set the value of a input_number entity to its minimum value. _#lowout_
+> Set the value of a `input_number` entity to its minimum value/ _#lowout_
 
 ## Service for `input_number`: Max value
 
 Call it using: [`input_number.max`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
 
-> Set the value of a input_number entity to the maximum value. _#maxout_
+> Set the value of a `input_number` entity to the maximum value. _#maxout_
 
 ## Service for `input_select`: Select random option
 

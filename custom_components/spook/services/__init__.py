@@ -1,16 +1,14 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
+import importlib
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
-import importlib
 from pathlib import Path
-from typing import Any, final, overload
+from typing import TYPE_CHECKING, Any, final
 
 import voluptuous as vol
-
 from homeassistant.core import HomeAssistant, Service, ServiceCall, callback
-from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.helpers.service import (
@@ -22,6 +20,9 @@ from homeassistant.helpers.service import (
 from homeassistant.loader import async_get_integration
 
 from ..const import DOMAIN, LOGGER
+
+if TYPE_CHECKING:
+    from homeassistant.helpers.entity import Entity
 
 
 class AbstractSpookServiceBase(ABC):
@@ -37,7 +38,8 @@ class AbstractSpookServiceBase(ABC):
         self.hass = hass
 
     @abstractmethod
-    async def async_register(self) -> None:
+    @callback
+    def async_register(self) -> None:
         """Handle the service call."""
         raise NotImplementedError
 
@@ -53,18 +55,9 @@ class AbstractSpookServiceBase(ABC):
 
         self.hass.services.async_remove(self.domain, self.service)
 
-    @overload
-    async def async_handle_service(self, entity: Entity, call: ServiceCall) -> None:
-        ...
-
-    @abstractmethod
-    async def async_handle_service(self, call: ServiceCall) -> None:
-        """Handle the service call."""
-        raise NotImplementedError
-
 
 class ReplaceExistingService(AbstractSpookServiceBase):
-    """This service replaces an existing service."""
+    """Service replaces/may replace an existing service."""
 
     overriden_service: Service | None = None
 
@@ -99,13 +92,18 @@ class AbstractSpookService(AbstractSpookServiceBase):
             schema=vol.Schema(self.schema) if self.schema else None,
         )
 
+    @abstractmethod
+    async def async_handle_service(self, call: ServiceCall) -> None:
+        """Handle the service call."""
+        raise NotImplementedError
+
 
 class AbstractSpookAdminService(AbstractSpookServiceBase):
     """Abstract class to hold a Spook admin service."""
 
     @final
     @callback
-    def async_register(self) -> bool:
+    def async_register(self) -> None:
         """Register the service with Home Assistant."""
         if self.domain != DOMAIN and self.domain not in self.hass.config.components:
             LOGGER.debug(
@@ -114,7 +112,7 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
                 self.service,
                 self.domain,
             )
-            return False
+            return None
 
         LOGGER.debug(
             "Registering Spook admin service: %s.%s",
@@ -129,6 +127,11 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
             schema=vol.Schema(self.schema) if self.schema else None,
         )
         return True
+
+    @abstractmethod
+    async def async_handle_service(self, call: ServiceCall) -> None:
+        """Handle the service call."""
+        raise NotImplementedError
 
 
 class AbstractSpookEntityService(AbstractSpookServiceBase):
@@ -155,11 +158,12 @@ class AbstractSpookEntityService(AbstractSpookServiceBase):
                 if platform.domain == self.platform
             )
         ):
-            raise RuntimeError(
+            msg = (
                 f"Could not find platform {self.platform} for domain "
                 f"{self.domain} to register service: "
-                f"{self.domain}.{self.service}"
+                f"{self.domain}.{self.service}",
             )
+            raise RuntimeError(msg)
 
         platform.async_register_entity_service(
             name=self.service,
@@ -167,6 +171,11 @@ class AbstractSpookEntityService(AbstractSpookServiceBase):
             schema=self.schema,
             required_features=self.required_features,
         )
+
+    @abstractmethod
+    async def async_handle_service(self, entity: Entity, call: ServiceCall) -> None:
+        """Handle the service call."""
+        raise NotImplementedError
 
 
 class AbstractSpookEntityComponentService(AbstractSpookServiceBase):
@@ -185,10 +194,11 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase):
         )
 
         if self.domain not in self.hass.data[DATA_INSTANCES]:
-            raise RuntimeError(
+            msg = (
                 f"Could not find entity component {self.domain} to register "
-                f"service: {self.domain}.{self.service}"
+                f"service: {self.domain}.{self.service}",
             )
+            raise RuntimeError(msg)
 
         component: EntityComponent[Entity] = self.hass.data[DATA_INSTANCES][self.domain]
 
@@ -198,6 +208,11 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase):
             schema=self.schema,
             required_features=self.required_features,
         )
+
+    @abstractmethod
+    async def async_handle_service(self, entity: Entity, call: ServiceCall) -> None:
+        """Handle the service call."""
+        raise NotImplementedError
 
 
 @dataclass
@@ -218,8 +233,10 @@ class SpookServiceManager:
         LOGGER.debug("Setting up Spook services")
 
         integration = await async_get_integration(self.hass, DOMAIN)
-        self._service_schemas = await self.hass.async_add_executor_job(  # type: ignore
-            _load_services_file, self.hass, integration
+        self._service_schemas = await self.hass.async_add_executor_job(
+            _load_services_file,
+            self.hass,
+            integration,
         )
 
         # Load all services
@@ -230,7 +247,8 @@ class SpookServiceManager:
             service = module.SpookService(self.hass)
 
             if isinstance(
-                service, ReplaceExistingService
+                service,
+                ReplaceExistingService,
             ) and self.hass.services.has_service(service.domain, service.service):
                 LOGGER.debug(
                     "Unregistering service that will be overriden service: %s.%s",
@@ -238,13 +256,14 @@ class SpookServiceManager:
                     service.service,
                 )
                 # pylint: disable=protected-access
-                service.overriden_service = self.hass.services._services[
-                    service.domain
-                ].pop(service.service)
+                service.overriden_service = (
+                    self.hass.services._services[service.domain]  # noqa: SLF001
+                ).pop(service.service)
 
-            await self.async_register_service(service)
+            self.async_register_service(service)
 
-    async def async_register_service(self, service: AbstractSpookService) -> None:
+    @callback
+    def async_register_service(self, service: AbstractSpookService) -> None:
         """Register a Spook service."""
         service.async_register()
         self._services.add(service)
@@ -253,7 +272,7 @@ class SpookServiceManager:
         # for the Spook integration.
         if service.domain != DOMAIN and (
             service_schema := self._service_schemas.get(
-                f"{service.domain}_{service.service}"
+                f"{service.domain}_{service.service}",
             )
         ):
             LOGGER.debug(
@@ -274,7 +293,9 @@ class SpookServiceManager:
         LOGGER.debug("Tearing down Spook services")
         for service in self._services:
             LOGGER.debug(
-                "Unregistering service: %s.%s", service.domain, service.service
+                "Unregistering service: %s.%s",
+                service.domain,
+                service.service,
             )
             service.async_unregister()
 
@@ -288,10 +309,11 @@ class SpookServiceManager:
                     service.service,
                 )
 
-                # pylint: disable-nect=protected-access
-                self.hass.services._services.setdefault(service.domain, {})[
-                    service.service
-                ] = service.overriden_service
+                # pylint: disable-next=protected-access
+                self.hass.services._services.setdefault(  # noqa: SLF001
+                    service.domain,
+                    {},
+                )[service.service] = service.overriden_service
 
                 # Flush service description schema cache
                 self.hass.data.pop(SERVICE_DESCRIPTION_CACHE, None)

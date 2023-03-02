@@ -1,10 +1,14 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components.input_number import DOMAIN, InputNumber
-from homeassistant.core import ServiceCall
 
 from . import AbstractSpookEntityComponentService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookEntityComponentService):
@@ -16,4 +20,4 @@ class SpookService(AbstractSpookEntityComponentService):
     async def async_handle_service(self, entity: InputNumber, _: ServiceCall) -> None:
         """Handle the service call."""
         # pylint: disable-next=protected-access
-        await entity.set_value(entity._maximum)
+        await entity.set_value(entity._maximum)  # noqa: SLF001

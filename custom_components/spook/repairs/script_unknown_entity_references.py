@@ -1,6 +1,8 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components import script
 from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
 from homeassistant.const import (
@@ -8,13 +10,15 @@ from homeassistant.const import (
     ENTITY_MATCH_NONE,
     EVENT_COMPONENT_LOADED,
 )
-from homeassistant.core import HomeAssistant
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
-from . import AbstractSpookRepair
 from ..const import LOGGER
+from . import AbstractSpookRepair
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -55,20 +59,23 @@ class SpookRepair(AbstractSpookRepair):
         # Listen for config entry changes, this might have an impact
         # on the available entities (those not in the entity registry)
         async def _async_update_listener(
-            _hass: HomeAssistant, _entry: ConfigEntry
+            _hass: HomeAssistant,
+            _entry: ConfigEntry,
         ) -> None:
             """Handle options update."""
             await self.inspect_debouncer.async_call()
 
         async_dispatcher_connect(
-            self.hass, SIGNAL_CONFIG_ENTRY_CHANGED, _async_update_listener
+            self.hass,
+            SIGNAL_CONFIG_ENTRY_CHANGED,
+            _async_update_listener,
         )
 
         # Give all integration some time to startup
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
-        LOGGER.debug(f"Spook is inspecting: {self.repair}")
+        LOGGER.debug("Spook is inspecting: %s", self.repair)
         # Two sources for entities. The entities in the entity registry,
         # and the entities currently in the state machine. They will have lots
         # of overlap, but not all entities are in the entity registry and
@@ -112,8 +119,12 @@ class SpookRepair(AbstractSpookRepair):
                     },
                 )
                 LOGGER.debug(
-                    f"Spook found unknown entities in {entity.entity_id} "
-                    f"and created an issue for it; Entities: {unknown_entities}"
+                    (
+                        "Spook found unknown entities in %s and created an issue "
+                        "for it; Entities: %s",
+                    ),
+                    entity.entity_id,
+                    ", ".join(unknown_entities),
                 )
             else:
                 self.async_delete_issue(entity.entity_id)

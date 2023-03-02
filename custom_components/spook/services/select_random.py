@@ -2,14 +2,16 @@
 from __future__ import annotations
 
 import random
+from typing import TYPE_CHECKING
 
 import voluptuous as vol
-
 from homeassistant.components.select import DOMAIN, SelectEntity
-from homeassistant.core import ServiceCall
 from homeassistant.helpers import config_validation as cv
 
 from . import AbstractSpookEntityComponentService
+
+if TYPE_CHECKING:
+    from homeassistant.core import ServiceCall
 
 
 class SpookService(AbstractSpookEntityComponentService):
@@ -20,10 +22,13 @@ class SpookService(AbstractSpookEntityComponentService):
     schema = {vol.Optional("options"): [cv.string]}
 
     async def async_handle_service(
-        self, entity: SelectEntity, call: ServiceCall
+        self,
+        entity: SelectEntity,
+        call: ServiceCall,
     ) -> None:
         """Handle the service call."""
         option = random.choice(call.data.get("options", entity.options))
         if option not in entity.options:
-            raise ValueError(f"Option {option} not valid for {entity.entity_id}")
+            msg = f"Option {option} not valid for {entity.entity_id}"
+            raise ValueError(msg)
         await entity.async_select_option(option)

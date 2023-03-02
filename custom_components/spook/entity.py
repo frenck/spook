@@ -2,15 +2,17 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
-
-from hass_nabucasa import Cloud
+from typing import TYPE_CHECKING
 
 from homeassistant.components import homeassistant
 from homeassistant.components.cloud.const import DOMAIN as CLOUD_DOMAIN
-from homeassistant.const import __version__ as HA_VERSION
+from homeassistant.const import __version__
 from homeassistant.helpers.entity import DeviceInfo, Entity, EntityDescription
 
 from .const import DOMAIN
+
+if TYPE_CHECKING:
+    from hass_nabucasa import Cloud
 
 
 @dataclass
@@ -44,7 +46,7 @@ class HomeAssistantSpookEntity(SpookEntity):
             identifiers={(DOMAIN, homeassistant.DOMAIN)},
             manufacturer="Home Assistant",
             name="Home Assistant Information",
-            sw_version=HA_VERSION,
+            sw_version=__version__,
         )
         self._attr_unique_id = f"{homeassistant.DOMAIN}_{description.key}"
 
