@@ -76,37 +76,31 @@ class SpookRepair(AbstractSpookRepair):
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
+
         # Two sources for entities. The entities in the entity registry,
         # and the entities currently in the state machine. They will have lots
         # of overlap, but not all entities are in the entity registry and
         # not all have to be in the state machine right now.
-        entity_ids = {
-            entity.entity_id for entity in self.entity_registry.entities.values()
-        }.union(self.hass.states.async_entity_ids())
+        # Furthermore, add `all` and `none` to the list of known entities,
+        # as they are valid targets.
+        entity_ids = (
+            {entity.entity_id for entity in self.entity_registry.entities.values()}
+            .union(self.hass.states.async_entity_ids())
+            .union({ENTITY_MATCH_ALL, ENTITY_MATCH_NONE})
+        )
 
         for entity in self._entity_component.entities:
-            # Get all referenced entities, remove the ones that are known
-            # and remove match `all` and `none` as they are not real entities.
-            referenced_entities = (
-                entity.script.referenced_entities
-                - entity_ids
-                - {ENTITY_MATCH_NONE, ENTITY_MATCH_ALL}
-            )
-
             # Filter out scenes, groups & device_tracker entities.
             # Those can be created on the fly with services, which we
             # currently cannot detect yet. Let's prevent some false positives.
-            referenced_entities = {
+            if unknown_entities := {
                 entity_id
-                for entity_id in referenced_entities
+                for entity_id in entity.script.referenced_entities
                 if (
-                    not entity_id.startswith("device_tracker.")
-                    and not entity_id.startswith("group.")
-                    and not entity_id.startswith("scene.")
+                    not entity_id.startswith(("device_tracker.", "group.", "scene."))
+                    and entity_id not in entity_ids
                 )
-            }
-
-            if unknown_entities := referenced_entities - entity_ids:
+            }:
                 self.async_create_issue(
                     issue_id=entity.entity_id,
                     translation_placeholders={
