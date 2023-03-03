@@ -8,6 +8,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import final
 
+from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
 from homeassistant.core import HomeAssistant, callback
 from homeassistant.helpers import (
     area_registry as ar,
@@ -211,3 +212,12 @@ class SpookRepairManager:
                     f"{repair.domain}_{repair.repair}",
                 ):
                     self.issue_registry.async_delete(domain, issue_id)
+
+
+async def async_create_fix_flow(
+    _hass: HomeAssistant,
+    _issue_id: str,
+    _data: dict[str, str | int | float | None] | None,
+) -> RepairsFlow:
+    """Create flow."""
+    return ConfirmRepairFlow()
