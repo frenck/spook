@@ -233,6 +233,26 @@ input_select_random:
       selector:
         object:
 
+input_select_shuffle:
+  name: Shuffle options 👻
+  description: >-
+    Shuffles the list of selectable options for an `input_select` entity.
+    This is not persistent and will be undone once reloaded or Home Assistant
+    restarts.
+  target:
+    entity:
+      domain: input_select
+
+input_select_sort:
+  name: Sort options 👻
+  description: >-
+    Sorts the list of selectable options for an `input_select` entity.
+    This is not persistent and will be undone once reloaded or Home Assistant
+    restarts.
+  target:
+    entity:
+      domain: input_select
+
 number_decrement:
   name: Decrease value 👻
   description: >-
