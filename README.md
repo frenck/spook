@@ -151,6 +151,7 @@ of the box.
 - **Number of devices**: That are in the device registry. _#bling_
 - **Number of persons**: How many people are you constantly tracking the location of? _#privacy_
 - **Number of scenes**: Maybe you can ask your partner to make a scene... _#fight_
+- **Number of scripts**: More than the average unemployed actor yet? _#hollywood_
 - **Number of suns**: Answers how godlike you are. _#burn_
 - **Number of zones**: How many comfort zones you have on a map. _#zoneing_
 - **Number of integrations in use**: Consider using less integrations. _#lessismore_
@@ -168,7 +169,7 @@ of the box.
 # Services
 
 There are quite a few useless and horrible services available for you to explore
-and self-descruct your setup with. The developer service tools are great
+and self-destruct your setup with. The developer service tools are great
 to get you into such a situation.
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
