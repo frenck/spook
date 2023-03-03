@@ -75,6 +75,8 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service for `input_number`: Min value](#service-for-input_number-min-value)
   - [Service for `input_number`: Max value](#service-for-input_number-max-value)
   - [Service for `input_select`: Select random option](#service-for-input_select-select-random-option)
+  - [Service for `input_select`: Shuffle options](#service-for-input_select-shuffle-options)
+  - [Service for `input_select`: Sort options](#service-for-input_select-sort-options)
   - [Service for `number`: Decrease value](#service-for-number-decrease-value)
   - [Service for `number`: Increase value](#service-for-number-increase-value)
   - [Service for `number`: Min value](#service-for-number-min-value)
@@ -342,6 +344,22 @@ Call it using: [`input_select.random`](https://my.home-assistant.io/redirect/dev
 
 > This service select a random option from the list of options of a select entity.
 > Optionally this can be limited to a set of given options. _#shuffle_
+
+## Service for `input_select`: Shuffle options
+
+Call it using: [`input_select.shuffle`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
+
+> Shuffles the list of selectable options for an `input_select` entity.
+> Note: This is not persistent and will be undone once reloaded or
+> Home Assistant restarts. _#31254_
+
+## Service for `input_select`: Sort options
+
+Call it using: [`input_select.sort`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
+
+> Sorts the list of selectable options for an `input_select` entity.
+> Note: This is not persistent and will be undone once reloaded or
+> Home Assistant restarts. _#12345_
 
 ## Service for `number`: Decrease value
 
