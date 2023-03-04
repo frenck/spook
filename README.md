@@ -84,6 +84,7 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service for `select`: Select random option](#service-for-select-select-random-option)
 - [Repairs](#repairs)
   - [Automations: Find use of non-existing areas, devices and entities](#automations-find-use-of-non-existing-areas-devices-and-entities)
+  - [Groups: Detect unknown group members](#groups-detect-unknown-group-members)
   - [Obsolete integration YAML configuration](#obsolete-integration-yaml-configuration)
   - [Scripts: Find use of non-existing areas, devices and entities](#scripts-find-use-of-non-existing-areas-devices-and-entities)
 - [Frequently Asked Questions](#frequently-asked-questions)
@@ -415,6 +416,12 @@ Currently Spook will detect the following issues:
 
 _Intention to contribute back to Home Assistant Core once sure no false
 postives remain, and it has been extended to catch more situations._
+
+## Groups: Detect unknown group members
+
+> Finds groups that contain references to unknown members (entities). _#aliens_
+
+_Intention to contribute back to Home Assistant Core._
 
 ## Obsolete integration YAML configuration
 
