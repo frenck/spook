@@ -1,0 +1,61 @@
+{
+  "config": {
+    "abort": {
+      "already_spooked": "Yeah... bem... não. K, obrigado e adeus!"
+    },
+    "step": {
+      "user": {
+        "description": "Leu o README? Leu a licença? Tem certeza?""
+      }
+    }
+  },
+  "issues": {
+    "user_issue": {
+      "title": "{title}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "{title}",
+            "description": "{description}"
+          }
+        }
+      }
+    },
+    "automation_unknown_area_references": {
+      "title": "Áreas desconhecidas são usadas em: {automation}",
+      "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referencia a áreas que sao desconhecidas ao Assistant:\n\n{areas}\n\n\n\nPara corrigir este erro, [edit the automation]({edit}) e remova o uso desses inexistentes. areas.\n\nSpook 👻Não sou da tua familia."
+    },
+    "automation_unknown_device_references": {
+      "title": "Dispostivos desconhecidos são usadas em: {automation}",
+      "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte automaçãon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nnEsta automação faz referencia a dipositivos que sao desconhecidas ao Assistant:\n\n{devices}\n\n\n\nPara corrigir este erro, [edit the automation]({edit}) e remova o uso desses inexistentes. devices.\n\nSpook 👻Não sou da tua familia."
+    },
+    "automation_unknown_entity_references": {
+      "title": "entidades Desconhecidas são usadas em: {automation}",
+      "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nnEsta automação faz referencia a entidades que sao desconhecidas ao Assistant:\n\n{entities}\n\n\n\nPara corrigir este erro, [edit the automation]({edit}) e remova o uso desses inexistentes. entities.\n\nSpook 👻Não sou da tua familia."
+    },
+    "group_unknown_members": {
+      "description": "Spook encontrou um fantasma nos teus grupos 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte groupo:\n\n{group} (`{entity_id}`)\n\nEste grupo tem membros que são desconhecidos ao Home Assistant:\n\n{entities}\n\n\n\nPara corrigir este erro, edite o groupo, e remova as entidades em falta e renincie o Home Assistant.\n\nSpook 👻Não sou da tua familia."
+    },
+    "obsolete_integration_yaml_config": {
+      "title": "Membros desconhecidos do grupo são usadas em: {group}",
+      "title": "Obsoleto YAML para: {domain}",
+      "description": "Spook encontrou um fantasma nos teus YAML 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte YAML configuration for the `{domain}` a integração está obsoleta (não pode se configurada via YAML) e deve ser removida/limpa e de seguida renincie o Home Assistant..\n\nSpook 👻Não sou da tua familia."
+    },
+    "obsolete_platform_yaml_config": {
+      "title": "Obsoleto YAML para: {domain} ({platform})",
+      "description": "Spook encontrou um fantasma nos YAML configuração YAML 👻\n\nWhile flutuando, Spook cruzou o caminho com o seguinteYAML platform configuração para `{platform}` utilizando o  `{domain}`, plataforma está obsoleta (não pode se configurada via YAML) deverá ser removida removida. e de seguida renincie o Home Assistant.\n\nSpook 👻Não sou da tua familia."
+    },
+    "script_unknown_area_references": {
+      "title": "Área desconhecidade é usada no: {script}",
+      "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nWhile flutuando, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nPara corrigir este erro, [edit the script]({edit}) e remova o uso desses inexistentes. areas.\n\nSpook 👻Não sou da tua familia."
+    },
+    "script_unknown_device_references": {
+      "title": "Dipositivo desconhecido  é usado no: {script}",
+      "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nWhile flutuando, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nPara corrigir este erro, [edit the script]({edit}) e remova o uso desses inexistentes. devices.\n\nSpook 👻Não sou da tua familia."
+    },
+    "script_unknown_entity_references": {
+      "title": "Entidade desconhecidade é usada no: {script}",
+      "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nWhile flutuando, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nPara corrigir este erro, [edit the script]({edit}) e remova o uso desses inexistentes. entities.\n\nSpook 👻Não sou da tua familia."
+    }
+  }
+}
