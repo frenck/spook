@@ -18,7 +18,7 @@ class SpookService(AbstractSpookAdminService):
     """Home Assistant Core integration service to enable an entity."""
 
     domain = DOMAIN
-    service = "disable_entity"
+    service = "enable_entity"
     schema = {vol.Required("entity_id"): vol.All(cv.ensure_list, [cv.string])}
 
     async def async_handle_service(self, call: ServiceCall) -> None:
