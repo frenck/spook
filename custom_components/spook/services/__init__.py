@@ -112,7 +112,7 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
                 self.service,
                 self.domain,
             )
-            return None
+            return
 
         LOGGER.debug(
             "Registering Spook admin service: %s.%s",
@@ -126,7 +126,6 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
             service_func=self.async_handle_service,
             schema=vol.Schema(self.schema) if self.schema else None,
         )
-        return True
 
     @abstractmethod
     async def async_handle_service(self, call: ServiceCall) -> None:
