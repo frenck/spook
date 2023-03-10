@@ -279,6 +279,12 @@ Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redir
 > Advanced service to directly inject historical statistics data into
 > the recorder long-term stats database. _#easy_
 
+## Service: Create area
+
+Call it using: [`homeassistant.create_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
+
+> Instantly create new rooms in your home. _#BobTheBuilder_
+
 ## Service: Create repair issue
 
 Call it using: [`repairs.create`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
