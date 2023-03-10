@@ -260,17 +260,17 @@ Call it using: [`homeassistant.ignore_all_discovered`](https://my.home-assistant
 > Click ignore on all discovered items on the integration dashboard; optionally
 > only for specific integration (e.g., bluetooth). _#talktothehand_
 
-## Service: Remove all orphaned entities
+## Service: Delete all orphaned entities
 
-Call it using: [`homeassistant.remove_all_orphaned_entities`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_all_orphaned_entities)
+Call it using: [`homeassistant.delete_all_orphaned_entities`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
 
-> Removes all orphaned entities that no longer have an integration that claim/provide
+> Deletes all orphaned entities that no longer have an integration that claim/provide
 > them. Please note, if the integration was just removed, it might need a restart
 > for Home Assistant to realize they are orphaned. _#annie_
 
 > **WARNING** Entities might have been marked orphaned because an
 > integration is offline or not working since Home Assistant started. Calling
-> this service will remove those entities as well.
+> this service will delete those entities as well.
 
 ## Service: Import statistics
 
