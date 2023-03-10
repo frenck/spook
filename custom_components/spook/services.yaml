@@ -39,14 +39,14 @@ homeassistant_create_area:
       selector:
         object:
 
-homeassistant_remove_area:
-  name: Remove an area 👻
+homeassistant_delete_area:
+  name: Delete an area 👻
   description: >-
-    Removes a new area on the fly.
+    Deletes a new area on the fly.
   fields:
     name:
       name: Area ID
-      description: The ID of the area to remove.
+      description: The ID of the area to delete.
       required: true
       selector:
         area:
