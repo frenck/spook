@@ -15,10 +15,10 @@ if TYPE_CHECKING:
 
 
 class SpookService(AbstractSpookAdminService):
-    """Home Assistant area service to remove areas on the fly."""
+    """Home Assistant area service to delete areas on the fly."""
 
     domain = DOMAIN
-    service = "remove_area"
+    service = "delete_area"
     schema = {vol.Required("area_id"): cv.string}
 
     async def async_handle_service(self, call: ServiceCall) -> None:
