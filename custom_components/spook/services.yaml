@@ -75,6 +75,25 @@ homeassistant_remove_alias_from_area:
       selector:
         object:
 
+homeassistant_set_area_aliases:
+  name: Sets aliases for an area 👻
+  description: >-
+    Sets aliases for an area. Overwrite and removed any existing aliases,
+    fully replacing them with the new ones.
+  fields:
+    area_id:
+      name: Area ID
+      description: The ID of the area to set the aliases for.
+      required: true
+      selector:
+        area:
+    aliases:
+      name: Aliases
+      description: The aliases to set for the area.
+      required: true
+      selector:
+        object:
+
 homeassistant_add_device_to_area:
   name: Add a device to an area 👻
   description: >-

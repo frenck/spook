@@ -68,6 +68,7 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service: Create area](#service-create-area)
   - [Service: Add an alias to an area](#service-add-an-alias-to-an-area)
   - [Service: Remove an alias from an area](#service-remove-an-alias-from-an-area)
+  - [Service: Set area aliases](#service-set-area-aliases)
   - [Service: Add device to area](#service-add-device-to-area)
   - [Service: Remove device from area](#service-remove-device-from-area)
   - [Service: Add entity to area](#service-add-entity-to-area)
@@ -302,6 +303,12 @@ Call it using: [`homeassistant.add_alias_to_area`](https://my.home-assistant.io/
 Call it using: [`homeassistant.remove_alias_from_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
 
 > Removes an alias (or multiple aliases) from an area. _#broom_
+
+## Service: Set area aliases
+
+Call it using: [`homeassistant.set_area_aliases`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
+
+> Sets the aliases for an area. _#useless_
 
 ## Service: Add device to area
 
