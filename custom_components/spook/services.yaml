@@ -20,6 +20,25 @@ blueprint_import:
       selector:
         text:
 
+homeassistant_create_area:
+  name: Create an area 👻
+  description: >-
+    Creates a new area on the fly.
+  fields:
+    name:
+      name: Name
+      description: The name of the area to create.
+      required: true
+      selector:
+        text:
+    aliases:
+      name: Aliases
+      description: >-
+        A list of aliases for the area. This is useful if you want to use the
+        area in a different language or different nickname.
+      selector:
+        object:
+
 homeassistant_disable_config_entry:
   name: Disable an integration 👻
   description: >-
