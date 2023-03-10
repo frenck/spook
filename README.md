@@ -297,6 +297,12 @@ Call it using: [`homeassistant.remove_device_from_area`](https://my.home-assista
 
 > Dynamicaly remove a device from an area. _#poef_
 
+## Service: Add entity to area
+
+Call it using: [`homeassistant.add_entity_to_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
+
+> Dynamicaly add/move an entity to an area. _#bam_
+
 ## Service: Delete area
 
 Call it using: [`homeassistant.delete_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
