@@ -53,7 +53,7 @@ homeassistant_add_device_to_area:
         area:
     device_id:
       name: Device ID
-      description: The ID of the device(s) to add the device to.
+      description: The ID of the device(s) to add to the area.
       required: true
       selector:
         device:
@@ -62,7 +62,7 @@ homeassistant_add_device_to_area:
 homeassistant_remove_device_from_area:
   name: Remove a device from an area 👻
   description: >-
-    Removes an device from an area. As a device can only be in one area, this
+    Removes a device from an area. As a device can only be in one area, this
     call doesn't need to specify the area.
   fields:
     device_id:
@@ -71,6 +71,27 @@ homeassistant_remove_device_from_area:
       required: true
       selector:
         device:
+          multiple: true
+
+homeassistant_add_entity_to_area:
+  name: Add an entity to an area 👻
+  description: >-
+    Adds an entity to an area. Please note, if the enity is already in an area,
+    it will be removed from the previous area. This will override the area
+    the device, that provides this entity, is in.
+  fields:
+    area_id:
+      name: Area ID
+      description: The ID of the area to add the entity to.
+      required: true
+      selector:
+        area:
+    entity_id:
+      name: Entity ID
+      description: The ID of the entity (or entities) to add to the area.
+      required: true
+      selector:
+        entity:
           multiple: true
 
 homeassistant_delete_area:
