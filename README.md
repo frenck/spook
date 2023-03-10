@@ -429,6 +429,12 @@ about these things using an Home Assistant repair issue. _#whoyougonnacall_
 
 Currently Spook will detect the following issues:
 
+## Obsolete integration YAML configuration
+
+> Finds YAML configuration for an integrations that no longer support it.
+> Unless you like having unneeded shizzle in your YAML, it can be removed
+> safely. _#ghostbusters_
+
 ## Automations: Find use of non-existing areas, devices and entities
 
 > Finds automations that use non-existing areas, devices or entities in, for
@@ -443,11 +449,11 @@ postives remain, and it has been extended to catch more situations._
 
 _Intention to contribute back to Home Assistant Core._
 
-## Obsolete integration YAML configuration
+## Riemann sum integral: Detect missing source sensor
 
-> Finds YAML configuration for an integrations that no longer support it.
-> Unless you like having unneeded shizzle in your YAML, it can be removed
-> safely. _#ghostbusters_
+> Finds integrals that are missing a source sensor. _#missinglink_
+
+_Intention to contribute back to Home Assistant Core._
 
 ## Scripts: Find use of non-existing areas, devices and entities
 
