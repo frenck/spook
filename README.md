@@ -285,6 +285,12 @@ Call it using: [`homeassistant.create_area`](https://my.home-assistant.io/redire
 
 > Instantly create new rooms in your home. _#BobTheBuilder_
 
+## Service: Remove area
+
+Call it using: [`homeassistant.remove_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area)
+
+> Just like that, you made an area of your home dissapear. _#DemolitionMan_
+
 ## Service: Create repair issue
 
 Call it using: [`repairs.create`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)

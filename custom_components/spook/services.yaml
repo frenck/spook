@@ -39,6 +39,18 @@ homeassistant_create_area:
       selector:
         object:
 
+homeassistant_remove_area:
+  name: Remove an area 👻
+  description: >-
+    Removes a new area on the fly.
+  fields:
+    name:
+      name: Area ID
+      description: The ID of the area to remove.
+      required: true
+      selector:
+        area:
+
 homeassistant_disable_config_entry:
   name: Disable an integration 👻
   description: >-
