@@ -1,8 +1,6 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from homeassistant.components import sensor
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
@@ -10,9 +8,6 @@ from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPl
 
 from ..const import LOGGER
 from . import AbstractSpookRepair
-
-if TYPE_CHECKING:
-    from homeassistant.components.integration.sensor import IntegrationSensor
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -43,7 +38,6 @@ class SpookRepair(AbstractSpookRepair):
             if platform.domain != sensor.DOMAIN:
                 continue
 
-            entity: IntegrationSensor
             for entity in platform.entities.values():
                 # pylint: disable-next=protected-access
                 source = entity._sensor_source_id  # noqa: SLF001
