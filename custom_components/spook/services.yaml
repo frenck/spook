@@ -57,6 +57,24 @@ homeassistant_add_alias_to_area:
       selector:
         object:
 
+homeassistant_remove_alias_from_area:
+  name: Remove an alias from an area 👻
+  description: >-
+    Removes an alias from an area.
+  fields:
+    area_id:
+      name: Area ID
+      description: The ID of the area to remove the alias from.
+      required: true
+      selector:
+        area:
+    alias:
+      name: Alias
+      description: The alias (or list of aliasses) to remove from the area.
+      required: true
+      selector:
+        object:
+
 homeassistant_add_device_to_area:
   name: Add a device to an area 👻
   description: >-
