@@ -29,7 +29,7 @@ class SpookService(AbstractSpookAdminService):
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
         area_registry = ar.async_get(self.hass)
-        if not area_registry.async_get(call.data["area_id"]):
+        if not area_registry.async_get_area(call.data["area_id"]):
             msg = f"Area {call.data['area_id']} not found"
             raise HomeAssistantError(msg)
 
