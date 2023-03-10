@@ -4,7 +4,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.components import sensor
-from homeassistant.components.integration.const import DOMAIN
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPlatform
@@ -19,7 +18,7 @@ if TYPE_CHECKING:
 class SpookRepair(AbstractSpookRepair):
     """Spook repair tries to find unknown source entites for integration."""
 
-    domain = DOMAIN
+    domain = "integration"
     repair = "integration_unknown_source"
     events = {
         EVENT_COMPONENT_LOADED,
