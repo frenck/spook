@@ -303,6 +303,12 @@ Call it using: [`homeassistant.add_entity_to_area`](https://my.home-assistant.io
 
 > Dynamicaly add/move an entity to an area. _#bam_
 
+## Service: Remove entity from area
+
+Call it using: [`homeassistant.remove_entity_from_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
+
+> Dynamicaly remove an entity from an area. _#AaaaandItIsGone_
+
 ## Service: Delete area
 
 Call it using: [`homeassistant.delete_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
