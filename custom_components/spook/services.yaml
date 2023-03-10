@@ -39,6 +39,24 @@ homeassistant_create_area:
       selector:
         object:
 
+homeassistant_add_alias_to_area:
+  name: Add an alias to an area 👻
+  description: >-
+    Adds an alias to an area.
+  fields:
+    area_id:
+      name: Area ID
+      description: The ID of the area to add the alias to.
+      required: true
+      selector:
+        area:
+    alias:
+      name: Alias
+      description: The alias (or list of aliasses) to add to the area.
+      required: true
+      selector:
+        object:
+
 homeassistant_add_device_to_area:
   name: Add a device to an area 👻
   description: >-

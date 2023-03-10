@@ -51,11 +51,8 @@ or to be supported, or well, for starters, to be a good idea.
   - [Sensors](#sensors)
   - [Switches](#switches)
 - [Services](#services)
-
   - [Service: Import Blueprint](#service-import-blueprint)
   - [Service: Disable an integration](#service-disable-an-integration)
-  - [Service: Enable an integration](#service-enable-an-integration)
-  - [Service: Disable polling for updates](#service-disable-an-integration)
   - [Service: Enable an integration](#service-enable-an-integration)
   - [Service: Disable a device](#service-disable-a-device)
   - [Service: Enable a device](#service-enable-a-device)
@@ -63,17 +60,24 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service: Enable an entity](#service-enable-an-entity)
   - [Service: Hide an entity](#service-hide-an-entity)
   - [Service: Unhide an entity](#service-unhide-an-entity)
+  - [Service: Disable polling for updates](#service-disable-polling-for-updates)
+  - [Service: Enable polling for updates](#service-enable-polling-for-updates)
   - [Service: Ignore all discovered devices \& services](#service-ignore-all-discovered-devices--services)
-  - [Service: Remove all orphaned entities](#service-remove-all-orphaned-entities)
+  - [Service: Delete all orphaned entities](#service-delete-all-orphaned-entities)
   - [Service: Import statistics](#service-import-statistics)
+  - [Service: Create area](#service-create-area)
+  - [Service: Add an alias to an area](#service-add-an-alias-to-an-area)
+  - [Service: Add device to area](#service-add-device-to-area)
+  - [Service: Remove device from area](#service-remove-device-from-area)
+  - [Service: Add entity to area](#service-add-entity-to-area)
+  - [Service: Remove entity from area](#service-remove-entity-from-area)
+  - [Service: Delete area](#service-delete-area)
   - [Service: Create repair issue](#service-create-repair-issue)
   - [Service: Remove repair issue](#service-remove-repair-issue)
   - [Service: Ignore all repair issues](#service-ignore-all-repair-issues)
   - [Service: Unignore all repair issues](#service-unignore-all-repair-issues)
-
   - [Service: Boo! 👻](#service-boo-)
   - [Service: Random fail](#service-random-fail)
-
 - [Entity services](#entity-services)
   - [Service for `input_number`: Decrease value](#service-for-input_number-decrease-value)
   - [Service for `input_number`: Increase value](#service-for-input_number-increase-value)
@@ -88,9 +92,10 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service for `number`: Max value](#service-for-number-max-value)
   - [Service for `select`: Select random option](#service-for-select-select-random-option)
 - [Repairs](#repairs)
+  - [Obsolete integration YAML configuration](#obsolete-integration-yaml-configuration)
   - [Automations: Find use of non-existing areas, devices and entities](#automations-find-use-of-non-existing-areas-devices-and-entities)
   - [Groups: Detect unknown group members](#groups-detect-unknown-group-members)
-  - [Obsolete integration YAML configuration](#obsolete-integration-yaml-configuration)
+  - [Riemann sum integral: Detect missing source sensor](#riemann-sum-integral-detect-missing-source-sensor)
   - [Scripts: Find use of non-existing areas, devices and entities](#scripts-find-use-of-non-existing-areas-devices-and-entities)
 - [Frequently Asked Questions](#frequently-asked-questions)
   - [Is this a serious thing?](#is-this-a-serious-thing)
@@ -284,6 +289,12 @@ Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redir
 Call it using: [`homeassistant.create_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
 
 > Instantly create new rooms in your home. _#BobTheBuilder_
+
+## Service: Add an alias to an area
+
+Call it using: [`homeassistant.add_alias_to_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
+
+> Adds an alias (or multiple aliasses) to an area. _#aka_
 
 ## Service: Add device to area
 
