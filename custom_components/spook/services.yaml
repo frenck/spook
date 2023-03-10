@@ -39,12 +39,32 @@ homeassistant_create_area:
       selector:
         object:
 
+homeassistant_add_device_to_area:
+  name: Add a device to an area 👻
+  description: >-
+    Adds an device to an area. Please note, if the device is already in an area,
+    it will be removed from the previous area.
+  fields:
+    area_id:
+      name: Area ID
+      description: The ID of the area to add the device to.
+      required: true
+      selector:
+        area:
+    device_id:
+      name: Device ID
+      description: The ID of the area to add the device to.
+      required: true
+      selector:
+        device:
+          multiple: true
+
 homeassistant_delete_area:
   name: Delete an area 👻
   description: >-
     Deletes a new area on the fly.
   fields:
-    name:
+    area_id:
       name: Area ID
       description: The ID of the area to delete.
       required: true

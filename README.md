@@ -285,6 +285,12 @@ Call it using: [`homeassistant.create_area`](https://my.home-assistant.io/redire
 
 > Instantly create new rooms in your home. _#BobTheBuilder_
 
+## Service: Add device to area
+
+Call it using: [`homeassistant.add_device_to_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
+
+> Dynamicaly add/move a device to an new area. _#moveit_
+
 ## Service: Delete area
 
 Call it using: [`homeassistant.delete_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
