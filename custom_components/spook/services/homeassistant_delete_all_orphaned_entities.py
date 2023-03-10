@@ -14,10 +14,10 @@ if TYPE_CHECKING:
 
 
 class SpookService(AbstractSpookAdminService):
-    """Home Assistant Core integration service to remove all orphaned entities."""
+    """Home Assistant Core integration service to delete all orphaned entities."""
 
     domain = DOMAIN
-    service = "remove_all_orphaned_entities"
+    service = "delete_all_orphaned_entities"
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
