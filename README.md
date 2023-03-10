@@ -51,8 +51,11 @@ or to be supported, or well, for starters, to be a good idea.
   - [Sensors](#sensors)
   - [Switches](#switches)
 - [Services](#services)
+
   - [Service: Import Blueprint](#service-import-blueprint)
   - [Service: Disable an integration](#service-disable-an-integration)
+  - [Service: Enable an integration](#service-enable-an-integration)
+  - [Service: Disable polling for updates](#service-disable-an-integration)
   - [Service: Enable an integration](#service-enable-an-integration)
   - [Service: Disable a device](#service-disable-a-device)
   - [Service: Enable a device](#service-enable-a-device)
@@ -67,8 +70,10 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service: Remove repair issue](#service-remove-repair-issue)
   - [Service: Ignore all repair issues](#service-ignore-all-repair-issues)
   - [Service: Unignore all repair issues](#service-unignore-all-repair-issues)
+
   - [Service: Boo! 👻](#service-boo-)
   - [Service: Random fail](#service-random-fail)
+
 - [Entity services](#entity-services)
   - [Service for `input_number`: Decrease value](#service-for-input_number-decrease-value)
   - [Service for `input_number`: Increase value](#service-for-input_number-increase-value)
@@ -232,6 +237,21 @@ Call it using: [`homeassistant.hide_entity`](https://my.home-assistant.io/redire
 Call it using: [`homeassistant.unhide_entity`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
 
 > Do the math... this service does the reverse of [`homeassistant.hide_entity`](#service-hide-an-entity). _#reveal_
+
+## Service: Disable polling for updates
+
+Call it using: [`homeassistant.disable_polling`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling)
+
+> This service can be used to disable polling for updates on an integration
+> configuration entry (those you see on your integrations dashboard). _#stopit_
+
+## Service: Enable polling for updates
+
+Call it using: [`homeassistant.enable_polling`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling)
+
+> This service can be used to enable polling for updates on an integration
+> configuration entry (those you see on your integrations dashboard).
+> This service does the reverse of [`homeassistant.disable_polling`](#service-disable-polling) > _#poking_
 
 ## Service: Ignore all discovered devices & services
 

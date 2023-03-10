@@ -135,6 +135,30 @@ homeassistant_ignore_all_discovered:
       selector:
         text:
 
+homeassistant_disable_polling:
+  name: Disable polling for updates 👻
+  description: >-
+    Disables polling for updates for an integration configuration entry.
+  fields:
+    config_entry_id:
+      name: Config entry
+      description: The integration configuration entry to disable polling for.
+      required: true
+      selector:
+        config_entry:
+
+homeassistant_enable_polling:
+  name: Enable polling for updates 👻
+  description: >-
+    Enables polling for updates for an integration configuration entry.
+  fields:
+    config_entry_id:
+      name: Config entry
+      description: The integration configuration entry to enable polling for.
+      required: true
+      selector:
+        config_entry:
+
 homeassistant_remove_all_orphaned_entities:
   name: Remove all orphaned entities 👻
   description: >-
