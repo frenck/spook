@@ -94,6 +94,21 @@ homeassistant_add_entity_to_area:
         entity:
           multiple: true
 
+homeassistant_remove_entity_from_area:
+  name: Remove an entity from an area 👻
+  description: >-
+    Removes an entity from an area. As an entity can only be in one area, this
+    call doesn't need to specify the area. Please note, the entity will
+    still be in the area of the device that provides it after this call.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The ID of the entity (or entities) to remove the area from.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
 homeassistant_delete_area:
   name: Delete an area 👻
   description: >-
