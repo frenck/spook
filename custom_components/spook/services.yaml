@@ -53,7 +53,21 @@ homeassistant_add_device_to_area:
         area:
     device_id:
       name: Device ID
-      description: The ID of the area to add the device to.
+      description: The ID of the device(s) to add the device to.
+      required: true
+      selector:
+        device:
+          multiple: true
+
+homeassistant_remove_device_from_area:
+  name: Remove a device from an area 👻
+  description: >-
+    Removes an device from an area. As a device can only be in one area, this
+    call doesn't need to specify the area.
+  fields:
+    device_id:
+      name: Device ID
+      description: The ID of the device to remove the area from.
       required: true
       selector:
         device:
