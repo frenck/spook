@@ -28,14 +28,16 @@ class SpookService(AbstractSpookEntityComponentService, ReplaceExistingService):
         call: ServiceCall,
     ) -> None:
         """Handle the service call."""
-        if (amount := call.data.get("amount", entity.step)) % entity.step != 0:
+        # pylint: disable=protected-access
+        if (
+            amount := call.data.get("amount", entity._step)  # noqa: SLF001
+        ) % entity._step != 0:  # noqa: SLF001
             msg = (
                 f"Amount {amount} not valid for {entity.entity_id}, "
-                f"it needs to be a multiple of {entity.step}",
+                f"it needs to be a multiple of {entity._step}",  # noqa: SLF001
             )
             raise ValueError(msg)
 
-        # pylint: disable=protected-access
         await entity.set_value(
             max(
                 entity._current_value + amount,  # noqa: SLF001
