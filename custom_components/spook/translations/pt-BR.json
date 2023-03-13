@@ -10,17 +10,6 @@
     }
   },
   "issues": {
-    "user_issue": {
-      "title": "{title}",
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "title": "{title}",
-            "description": "{description}"
-          }
-        }
-      }
-    },
     "automation_unknown_area_references": {
       "title": "Áreas desconhecidas usadas em: {automation}",
       "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Não é seu amigo."
