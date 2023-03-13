@@ -1,0 +1,54 @@
+{
+  "config": {
+    "abort": {
+      "already_spooked": "Sim... bem... não. Obrigado, tchau!"
+    },
+    "step": {
+      "user": {
+        "description": "Você leu o leia-me? Você leu a licença? Você tem certeza?"
+      }
+    }
+  },
+  "issues": {
+    "automation_unknown_area_references": {
+      "title": "Áreas desconhecidas usadas em: {automation}",
+      "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Não é seu amigo."
+    },
+    "automation_unknown_device_references": {
+      "title": "Dispositivos desconhecidos usados em: {automation}",
+      "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta a automação faz referência aos seguintes dispositivos, que são desconhecidos para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso desses dispositivos inexistentes.\n\nSpook 👻 Não é seu amigo."
+    },
+    "automation_unknown_entity_references": {
+      "title": "Entidades desconhecidas usadas em: {automation}",
+      "description": "Spook encontrou um fantasma em suas automações 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit})e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Não é seu amigo."
+    },
+    "group_unknown_members": {
+      "title": "Membros do grupo desconhecidos em: {group}",
+      "description": "Spook encontrou um fantasma em seus grupos 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte grupo:\n\n{group} (`{entity_id}`)\n\nEste grupo tem membros desconhecidos do Home Assistant:\n\n{entities}\n\n\n\nPara corrigir esse erro, edite o grupo, remova o uso dessas entidades inexistentes e reinicie o Home Assistant.\n\nSpook 👻 Não é seu amigo."
+    },
+    "integration_unknown_source": {
+      "title": "Fonte desconhecida: {helper}",
+      "description": "Spook encontrou um fantasma em seu ajudante Soma de Riemann 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte ajudante:\n\n{helper} (`{entity_id}`)\n\nEste ajudante tem uma entidade fonte desconhecida para o Home Assistant:\n\n`{source}`\n\n\n\nPara corrigir esse erro, edite o ajudante, altere a entidade fonte (ou remova o ajudante) e reinicie o Home Assistant.\n\nSpook 👻 Não é seu amigo."
+    },
+    "obsolete_integration_yaml_config": {
+      "title": "YAML obsoleto para: {domain}",
+      "description": "Spook encontrou um fantasma em sua configuração YAML 👻\n\nEnquanto flutuava, Spook descobriu a configuração YAML para a integração `{domain}`, que está obsoleta (pois não está mais configurado via YAML) e, portanto, deve ser removida. Esse problema desaparecerá automaticamente assim que sua configuração for ajustada e o Home Assistant for reiniciado.\n\nSpook 👻 Não é seu amigo."
+    },
+    "obsolete_platform_yaml_config": {
+      "title": "YAML obsoleto para: {domain} ({platform})",
+      "description": "Spook encontrou um fantasma em sua configuração YAML 👻\n\nEnquanto flutuava, Spook descobriu a configuração YAML para a plataforma `{platform}` usando o domínio de integração `{domain}`, que está obsoleta (pois não está mais configurado via YAML) e, portanto, deve ser removida. Esse problema desaparecerá automaticamente assim que sua configuração for ajustada e o Home Assistant for reiniciado.\n\nSpook 👻 Não é seu amigo."
+    },
+    "script_unknown_area_references": {
+      "title": "Áreas desconhecidas usadas em: {script}",
+      "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência às seguintes áreas, que são desconhecidas do Home Assistant:\n\n{areas}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Não é seu amigo."
+    },
+    "script_unknown_device_references": {
+      "title": "Dispositivos desconhecidos usados em: {script}",
+      "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência aos seguintes dispositivos, que são desconhecidos para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso desses dispositivos inexistentes.\n\nSpook 👻 Não é seu amigo."
+    },
+    "script_unknown_entity_references": {
+      "title": "Entidades desconhecidas usadas em: {script}",
+      "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\n\n\nPara corrigir esse erro, [edite o script]({edit})e remova o uso dessas entidades inexistentes.\n\nSpook 👻 Não é seu amigo."
+    }
+  }
+}
