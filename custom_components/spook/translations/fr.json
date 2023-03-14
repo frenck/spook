@@ -1,0 +1,54 @@
+{
+  "config": {
+    "abort": {
+      "already_spooked": "Ouais... bon... non. Ok, merci, au revoir !"
+    },
+    "step": {
+      "user": {
+        "description": "Avez-vous lu la documentation ? Avez-vous lu la licence ? Êtes-vous vraiment sûr ?"
+      }
+    }
+  },
+  "issues": {
+    "automation_unknown_area_references": {
+      "title": "Pièces inconnues utilisées dans: {automation}",
+      "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux pièces suivantes, qui sont inconnues de Home Assistant :\n\n{areas}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\nSpook 👻 Pas votre ami."
+    },
+    "automation_unknown_device_references": {
+      "title": "Appareils inconnus utilisés dans : {automation}",
+      "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux appareils suivants, qui sont inconnus de Home Assistant :\n\n{devices}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces appareils inexistants.\n\nSpook 👻 Pas votre ami."
+    },
+    "automation_unknown_entity_references": {
+      "title": "Entités inconnues utilisées dans : {automation}",
+      "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux entitiés suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Pas votre ami."
+    },
+    "group_unknown_members": {
+      "title": "Membres de groupe inconnus dans : {group}",
+      "description": "Spook a trouvé un fantôme dans vos groupes 👻\n\nEn flottant dans les parages, Spook est tombé sur le groupe suivant :\n\n{group} (`{entity_id}`)\n\nCe groupe possède des membres qui ne sont pas connus de Home Assistant :\n\n{entities}\n\n\n\nPour corriger cette erreur, modifiez le groupe, supprimez l'utilisation de ces entités inexistantes et redémarrez Home Assistant.\n\nSpook 👻 Pas votre ami."
+    },
+    "integration_unknown_source": {
+      "title": "Source inconnue : {helper}",
+      "description": "Spook a trouvé un fantôme dans vos entrées intégrale de Riemann 👻\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante :\n\n{helper} (`{entity_id}`)\n\nCette entrée possède une entité source inconnue de Home Assistant :\n\n`{source}`\n\n\n\nPour corriger cette erreur, modifiez l'entrée et ajustez l'entité source (ou supprimez l'entrée) et redémarrez Home Assistant.\n\nSpook 👻 Pas votre ami."
+    },
+    "obsolete_integration_yaml_config": {
+      "title": "YAML obsolète pour : {domain}",
+      "description": "Spook a trouvé un fantôme dans votre configuration YAML 👻\n\nEn flottant dans les parages, Spook est tombé sur la configuration YAML de l'intégration `{domain}`, qui est obsolète (car elle n'est plus configurée via YAML) et doit donc être supprimée/nettoyée. Ce problème disparaîtra automatiquement une fois que votre configuration aura été ajustée et que Home Assistant aura été redémarré.\n\nSpook 👻 Pas votre ami."
+    },
+    "obsolete_platform_yaml_config": {
+      "title": "YAML obsolète pour : {domain} ({platform})",
+      "description": "Spook a trouvé un fantôme dans votre configuration YAML 👻\n\nEn flottant dans les parages, Spook est tombé sur la configuration YAML de la plate-forme {platform} utilisant le domaine d'intégration `{domain}`, qui est obsolète (car elle n'est plus configurée via YAML) et doit donc être supprimée/nettoyée. Ce problème disparaîtra automatiquement une fois que votre configuration aura été ajustée et que Home Assistant aura été redémarré.\n\nSpook 👻 Pas votre ami."
+    },
+    "script_unknown_area_references": {
+      "title": "Pièces inconnues utilisées dans: {script}",
+      "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux pièces suivantes, qui sont inconnues de Home Assistant :\n\n{areas}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\nSpook 👻 Pas votre ami."
+    },
+    "script_unknown_device_references": {
+      "title": "Pièces inconnues utilisées dans: {script}",
+      "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux appareils suivants, qui sont inconnus de Home Assistant :\n\n{devices}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces appareils inexistants.\n\nSpook 👻 Pas votre ami."
+    },
+    "script_unknown_entity_references": {
+      "title": "Entités inconnues utilisées dans : {script}",
+      "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux entitiés suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Pas votre ami."
+    }
+  }
+}
