@@ -96,7 +96,8 @@ class SpookRepair(AbstractSpookRepair):
                 entity_id
                 for entity_id in entity.referenced_entities
                 if (
-                    not entity_id.startswith(
+                    isinstance(entity_id, str)
+                    and not entity_id.startswith(
                         (
                             "device_tracker.",
                             "group.",
