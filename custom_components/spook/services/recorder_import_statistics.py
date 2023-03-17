@@ -31,7 +31,7 @@ class SpookService(AbstractSpookAdminService):
                 vol.Optional("mean"): vol.Any(float, int),
                 vol.Optional("min"): vol.Any(float, int),
                 vol.Optional("max"): vol.Any(float, int),
-                vol.Optional("last_reset", default=None): cv.datetime,
+                vol.Optional("last_reset", default=None): vol.Any(None, cv.datetime),
                 vol.Optional("state"): vol.Any(float, int),
                 vol.Optional("sum"): vol.Any(float, int),
             },
