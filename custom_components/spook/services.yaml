@@ -441,10 +441,10 @@ number_decrement:
     entity:
       domain: number
   fields:
-    step:
+    amount:
       name: Amount
       description: >-
-        The step to decrease the number with. If not provided, the step of the
+        The amount to decrease the number with. If not provided, the step of the
         number entity will be used.
       required: false
       selector:
@@ -458,10 +458,10 @@ number_increment:
     entity:
       domain: number
   fields:
-    step:
+    amount:
       name: Amount
       description: >-
-        The step to increase the number with. If not provided, the step of the
+        The amount to increase the number with. If not provided, the step of the
         number entity will be used.
       required: false
       selector:
@@ -491,10 +491,10 @@ input_number_decrement:
     entity:
       domain: input_number
   fields:
-    step:
+    amount:
       name: Amount
       description: >-
-        The step to decrease the input number with. If not provided, the step
+        The amount to decrease the input number with. If not provided, the step
         of the number entity will be used.
       required: false
       selector:
@@ -508,10 +508,10 @@ input_number_increment:
     entity:
       domain: input_number
   fields:
-    step:
+    amount:
       name: Amount
       description: >-
-        The step to increase the input number with. If not provided, the step
+        The amount to increase the input number with. If not provided, the step
         of the number entity will be used.
       required: false
       selector:
