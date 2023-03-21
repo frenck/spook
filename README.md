@@ -3,6 +3,8 @@
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
 [![License][license-shield]](LICENSE.md)
+![Project Maintenance][maintenance-shield]
+[![Quality Gate Status][sonarcloud-shield]][sonarcloud]
 
 ![Spook - Not your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo3.png)
 
@@ -644,3 +646,6 @@ SOFTWARE.
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
 [semver]: http://semver.org/spec/v2.0.0.html
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2023.svg
+[sonarcloud-shield]: https://sonarcloud.io/api/project_badges/measure?project=frenck_python-elgato&metric=alert_status
+[sonarcloud]: https://sonarcloud.io/summary/new_code?id=frenck_python-elgato
