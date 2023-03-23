@@ -27,7 +27,7 @@ class SpookService(AbstractSpookEntityComponentService):
         call: ServiceCall,
     ) -> None:
         """Handle the service call."""
-        option = random.choice(call.data.get("options", entity.options))
+        option = random.choice(call.data.get("options", entity.options))  # noqa: S311
         if option not in entity.options:
             msg = f"Option {option} not valid for {entity.entity_id}"
             raise ValueError(msg)
