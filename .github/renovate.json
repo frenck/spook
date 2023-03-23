@@ -3,7 +3,7 @@
   "schedule": ["before 2am"],
   "rebaseWhen": "behind-base-branch",
   "dependencyDashboard": true,
-  "labels": ["dependencies"],
+  "labels": ["dependencies", "no-stale"],
   "lockFileMaintenance": {
     "enabled": true,
     "automerge": true
@@ -21,16 +21,23 @@
     },
     {
       "matchManagers": ["poetry"],
-      "matchDepTypes": ["dev"],
+      "matchUpdateTypes": ["minor", "patch"],
+      "automerge": true
+    },
+    {
+      "matchManagers": ["npm", "nvm"],
+      "addLabels": ["javascript"],
+      "rangeStrategy": "pin"
+    },
+    {
+      "matchManagers": ["npm", "nvm"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
     },
     {
       "matchManagers": ["github-actions"],
       "addLabels": ["github_actions"],
-      "stabilityDays": 3,
-      "rangeStrategy": "pin",
-      "pinDigests": true
+      "rangeStrategy": "pin"
     },
     {
       "matchManagers": ["github-actions"],

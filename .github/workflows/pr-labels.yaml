@@ -1,6 +1,7 @@
 ---
 name: PR Labels
 
+# yamllint disable-line rule:truthy
 on:
   pull_request:
     types: [opened, labeled, unlabeled, synchronize]
@@ -11,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: 🏷 Verify PR has a valid label
-        uses: jesusvasquez333/verify-pr-label-action@657d111bbbe13e22bbd55870f1813c699bde1401 # v1.4.0
+        uses: jesusvasquez333/verify-pr-label-action@v1.4.0
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
           valid-labels: >-
