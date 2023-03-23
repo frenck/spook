@@ -21,6 +21,6 @@ class SpookService(AbstractSpookService):
 
     async def async_handle_service(self, _: ServiceCall) -> None:
         """Handle the service call."""
-        if random.choice([True, False]):
+        if random.choice([True, False]):  # noqa: S311
             msg = "Spooked!"
             raise HomeAssistantError(msg)
