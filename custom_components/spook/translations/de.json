@@ -1,0 +1,54 @@
+{
+  "config": {
+    "abort": {
+      "already_spooked": "Ja... nun... nein. Okay, danke, tschüss!"
+    },
+    "step": {
+      "user": {
+        "description": "Hast du die Readme gelesen? Hast du die Lizenz gelesen? Bist du dir wirklich sicher?"
+      }
+    }
+  },
+  "issues": {
+    "automation_unknown_area_references": {
+      "title": "Unbekannte Bereiche verwendet in: {automation}",
+      "description": "Spook hat einen Geist in deinen Automatisierung gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung bezieht sich auf die folgenden Bereiche, die Home Assistant unbekannt sind:\n\n{areas}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite die Automatisierung]({edit}) und entferne die Verwendung dieser nicht existierenden Bereiche.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "automation_unknown_device_references": {
+      "title": "Unbekannte Geräte verwendet in: {automation}",
+      "description": "Spook hat einen Geist in deinen Automatisierung gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung bezieht sich auf die folgenden Geräte, die Home Assistant unbekannt sind:\n\n{devices}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite die Automatisierung]({edit}) und entferne die Verwendung dieser nicht existierenden Geräte.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "automation_unknown_entity_references": {
+      "title": "Unbekannte Entitäten verwendet in: {automation}",
+      "description": "Spook hat einen Geist in deinen Automatisierung gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung bezieht sich auf die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite die Automatisierung]({edit}) und entferne die Verwendung dieser nicht existierenden Entitäten.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "group_unknown_members": {
+      "title": "Unbekannte Gruppenmitglieder in: {group}",
+      "description": "Spook hat einen Geist in deinen Gruppen gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Gruppe:\n\n{group} (`{entity_id}`)\n\nDiese Gruppe hat Mitglieder, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nUm diesen Fehler zu beheben, bearbeite die Gruppe, entferne die Verwendung dieser nicht existierenden Entitäten und starte Home Assistant neu.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "integration_unknown_source": {
+      "title": "Unbekannte Quelle: {helper}",
+      "description": "Spook hat einen Geist in deinem Helfer Riemann Summenintegralsensor gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Helfer:\n\n{helper} (`{entity_id}`)\n\nDieser Helfer hat eine Quell-Entität, die Home Assistant unbekannt ist:\n\n`{source}`\n\n\n\nUm diesen Fehler zu beheben, bearbeite den Helfer und passe die Quell-Entität an (oder entferne den Helfer) und starte Home Assistant neu.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "obsolete_integration_yaml_config": {
+      "title": "Obsoletes YAML für: {domain}",
+      "description": "Spook hat einen Geist in deiner YAML-Konfiguration gefunden 👻\n\nBeim Herumschweben begegnete Spook der YAML-Konfiguration für die `{domain}`-Integration, die obsolet ist (da sie nicht mehr über YAML konfiguriert wird) und daher entfernt/bereinigt werden sollte. Dieses Problem verschwindet automatisch, sobald du deine Konfiguration angepasst und Home Assistant neu gestartet hast.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "obsolete_platform_yaml_config": {
+      "title": "Obsoletes YAML für: {domain} ({platform})",
+      "description": "Spook hat einen Geist in deiner YAML-Konfiguration gefunden 👻\n\nBeim Herumschweben begegnete Spook der YAML-Plattformkonfiguration für die `{platform}` mit der Integrationsdomäne `{domain}`, die obsolet ist (da sie nicht mehr über die YAML-Plattformkonfiguration konfiguriert wird) und daher entfernt/bereinigt werden sollte. Dieses Problem verschwindet automatisch, sobald du deine Konfiguration angepasst und Home Assistant neu gestartet hast.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "script_unknown_area_references": {
+      "title": "Unbekannte Bereiche verwendet in: {script}",
+      "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript bezieht sich auf die folgenden Bereiche, die Home Assistant unbekannt sind:\n\n{areas}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite das Skript]({edit}) und entferne die Verwendung dieser nicht existierenden Bereiche.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "script_unknown_device_references": {
+      "title": "Unbekannte Geräte verwendet in: {script}",
+      "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript bezieht sich auf die folgenden Geräte, die Home Assistant unbekannt sind:\n\n{devices}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite das Skript]({edit}) und entferne die Verwendung dieser nicht existierenden Geräte.\n\nSpook 👻 Nicht dein Kumpel."
+    },
+    "script_unknown_entity_references": {
+      "title": "Unbekannte Entitäten verwendet in: {script}",
+      "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript bezieht sich auf die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite das Skript]({edit}) und entferne die Verwendung dieser nicht existierenden Entitäten.\n\nSpook 👻 Nicht dein Kumpel."
+    }
+  }
+}
