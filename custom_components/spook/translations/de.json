@@ -10,17 +10,6 @@
     }
   },
   "issues": {
-    "user_issue": {
-      "title": "{title}",
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "title": "{title}",
-            "description": "{description}"
-          }
-        }
-      }
-    },
     "automation_unknown_area_references": {
       "title": "Unbekannte Bereiche verwendet in: {automation}",
       "description": "Spook hat einen Geist in deinen Automatisierung gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung bezieht sich auf die folgenden Bereiche, die Home Assistant unbekannt sind:\n\n{areas}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite die Automatisierung]({edit}) und entferne die Verwendung dieser nicht existierenden Bereiche.\n\nSpook 👻 Nicht dein Kumpel."
