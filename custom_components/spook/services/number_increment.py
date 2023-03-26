@@ -37,4 +37,4 @@ class SpookService(AbstractSpookEntityComponentService):
         if entity.max_value is not None:
             value = min(value, entity.max_value)
 
-        await entity.set_native_value(value)
+        await entity.async_set_native_value(value)
