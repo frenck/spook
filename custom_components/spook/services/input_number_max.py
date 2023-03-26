@@ -20,4 +20,4 @@ class SpookService(AbstractSpookEntityComponentService):
     async def async_handle_service(self, entity: InputNumber, _: ServiceCall) -> None:
         """Handle the service call."""
         # pylint: disable-next=protected-access
-        await entity.set_value(entity._maximum)  # noqa: SLF001
+        await entity.async_set_value(entity._maximum)  # noqa: SLF001
