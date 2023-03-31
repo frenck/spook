@@ -16,6 +16,7 @@ class SpookRepair(AbstractSpookSingleShotRepairs):
     repair = "obsolete_platform_yaml_config"
 
     KNOWN_REMOVED_DOMAINS = {
+        "aladdin_connect",
         "cert_expiry",
         "dlink",
         "dsmr_reader",
@@ -27,6 +28,7 @@ class SpookRepair(AbstractSpookSingleShotRepairs):
         "mqtt",
         "pushbullet",
         "radiotherm",
+        "scrape",
         "season",
         "soundtouch",
         "tautulli",
