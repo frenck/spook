@@ -40,7 +40,7 @@ class SpookService(AbstractSpookEntityComponentService, ReplaceExistingService):
 
         await entity.async_set_value(
             max(
-                entity._current_value + amount,  # noqa: SLF001
+                entity._current_value - amount,  # noqa: SLF001
                 entity._minimum,  # noqa: SLF001
             ),
         )
