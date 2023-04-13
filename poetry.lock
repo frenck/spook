@@ -903,14 +903,14 @@ files = [
 
 [[package]]
 name = "homeassistant"
-version = "2023.4.2"
+version = "2023.4.3"
 description = "Open-source home automation platform running on Python 3."
 category = "main"
 optional = false
 python-versions = ">=3.10.0"
 files = [
-    {file = "homeassistant-2023.4.2-py3-none-any.whl", hash = "sha256:77ea8e9be631e4c3c6cae5a0c7f145104b274b6080d22f521aced6e4111f172c"},
-    {file = "homeassistant-2023.4.2.tar.gz", hash = "sha256:165f02c472bc1a0e307fe932a6dca22d9c7c306fde239913afea522c497bdbd2"},
+    {file = "homeassistant-2023.4.3-py3-none-any.whl", hash = "sha256:c946c943b3c2612aa386ccfd4956cf4418e806864985ac3a5df17d2622501345"},
+    {file = "homeassistant-2023.4.3.tar.gz", hash = "sha256:2fdf5fc061e3487684e1b6bdcc0e702f465dee44d9b192de7e32ccaef3a0ca6c"},
 ]
 
 [package.dependencies]
@@ -937,7 +937,7 @@ python-slugify = "4.0.1"
 pyyaml = "6.0"
 requests = "2.28.2"
 typing-extensions = ">=4.5.0,<5.0"
-ulid-transform = "0.6.0"
+ulid-transform = "0.6.3"
 voluptuous = "0.13.1"
 voluptuous-serialize = "2.6.0"
 yarl = "1.8.1"
@@ -2056,28 +2056,28 @@ files = [
 
 [[package]]
 name = "ulid-transform"
-version = "0.6.0"
+version = "0.6.3"
 description = "Create and transform ULIDs"
 category = "main"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ulid_transform-0.6.0-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:2398dd3c695d16790fe692b0cc3584821271b96de4dc572a588473ea62963359"},
-    {file = "ulid_transform-0.6.0-cp310-cp310-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:007a83baafe3320442f89af6c0839a1296a9f66c0c8114b768f2d46e2313b8c0"},
-    {file = "ulid_transform-0.6.0-cp310-cp310-manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux1_x86_64.manylinux2014_x86_64.whl", hash = "sha256:118eea99fb4daab0c8a3fb3754ab84e2c3d99c2a29080e5b1a67156a06249f12"},
-    {file = "ulid_transform-0.6.0-cp310-cp310-manylinux_2_31_x86_64.whl", hash = "sha256:66ecf2ba16d3bc432f3d22b56869581bd48c0ce47768928385abdef5c098779d"},
-    {file = "ulid_transform-0.6.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:95cc5d2b58eba509e8b5d20938a88a9ad42b48de4cf0c9134b6a62f223b51061"},
-    {file = "ulid_transform-0.6.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:94360e041cd64dba238920f8a8a581bff28146f27f147ac9bc4a4a0ba9b63b22"},
-    {file = "ulid_transform-0.6.0-cp310-cp310-win32.whl", hash = "sha256:9e91c4384e72844aa2b127784ad767ff216fffb4561f8bae793713fba5a2f5ae"},
-    {file = "ulid_transform-0.6.0-cp310-cp310-win_amd64.whl", hash = "sha256:1c2f003bcc8080f97bbe08aa45b8eb6a7699e60c1420f9b04580f18b1a372f21"},
-    {file = "ulid_transform-0.6.0-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:87e3cb683463039f775d1032b7ae4ce1224ee89fd87554a0467e22050a9f4651"},
-    {file = "ulid_transform-0.6.0-cp311-cp311-manylinux_2_17_i686.manylinux_2_5_i686.manylinux1_i686.manylinux2014_i686.whl", hash = "sha256:b7720b158db4ad95fd057d9cffd5ef1f36adc99743e77a445cb49b23b1e5ae85"},
-    {file = "ulid_transform-0.6.0-cp311-cp311-manylinux_2_17_x86_64.manylinux_2_5_x86_64.manylinux1_x86_64.manylinux2014_x86_64.whl", hash = "sha256:a7a8a0c4356df92d3a8930992605ddbc08972bd2e678f60ee1bdcba212b8bb4d"},
-    {file = "ulid_transform-0.6.0-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:deea05a64abc5a13fd98d358ad9116421fa4ca50f459f8ad6d39910fa8cd7bba"},
-    {file = "ulid_transform-0.6.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:bca135429ddc3f754d5d2ca6a5dffdd0ac064e2f7edff2c73e8c9824766b3cdc"},
-    {file = "ulid_transform-0.6.0-cp311-cp311-win32.whl", hash = "sha256:f4a5c257af258ff83ec857309ccef3f20850641ab07a347c04443279dac92557"},
-    {file = "ulid_transform-0.6.0-cp311-cp311-win_amd64.whl", hash = "sha256:d58aa971e651ffd9932945dcfdf8725990bd039b65c28a6a51f93bc72ba199aa"},
-    {file = "ulid_transform-0.6.0.tar.gz", hash = "sha256:7e9e92dfe15b00d12cd0a2e081977a469f721beb7757c0364242b598b2c0feea"},
+    {file = "ulid_transform-0.6.3-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:0d4846eb1b00964f4a7def0bc4193a4c4af4b4ed1d36f77cb237c6c9b5874178"},
+    {file = "ulid_transform-0.6.3-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:a7564bac53bfbf4a29b115c27dd2d2a5e03ae717caa53a6e87b3da810607662f"},
+    {file = "ulid_transform-0.6.3-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:04fd06434839f159ae1674e0a95f825cddedc63ea7e77e3741757b32e637f992"},
+    {file = "ulid_transform-0.6.3-cp310-cp310-manylinux_2_31_x86_64.whl", hash = "sha256:9f88e8648e0fae881b0225425cbe685e33b25e8dbae58450729def50ed6d9e8a"},
+    {file = "ulid_transform-0.6.3-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:81c72fd132179aefae00c3506e8d601e3e59746d344a94222a13b0d9a2a29f9f"},
+    {file = "ulid_transform-0.6.3-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:1a9dd34006f825e6ccb82a3dcbcbd2e6f04818c9908a29d6caabb0afaea97c05"},
+    {file = "ulid_transform-0.6.3-cp310-cp310-win32.whl", hash = "sha256:92129120f7bccf0847e98b686db010d3396f4bae70300b776de9f76913167b39"},
+    {file = "ulid_transform-0.6.3-cp310-cp310-win_amd64.whl", hash = "sha256:ebdde772be45b112b79f7cfd9763cd30d3a82052d98a5e603bb2bf16de7b8d38"},
+    {file = "ulid_transform-0.6.3-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:34b8148b1223703fbad1e647a12657e9b13425285e7a31c90f464aefac2b6609"},
+    {file = "ulid_transform-0.6.3-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:6d2770faf9b21e839212b4157b9c8300b91858f646044a484c2873f1e78bc196"},
+    {file = "ulid_transform-0.6.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:e3343fd9d2c1188718bc41b6fcad0daef8b88bc4c2a47bae0bff8aebc1ce040c"},
+    {file = "ulid_transform-0.6.3-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:076b9b53eca599a5bf418f177684bbb0fc5b996b5c5cc5cfac8954f2a5233e2c"},
+    {file = "ulid_transform-0.6.3-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:c01e86ab105d8007d9ab35f5042f3376c894bb944d8670be1c9ae5fa3518a1ba"},
+    {file = "ulid_transform-0.6.3-cp311-cp311-win32.whl", hash = "sha256:5411390aded281ff97d9011e6248b897c7c6742b85fe2ecc8676bc2c9f1c4475"},
+    {file = "ulid_transform-0.6.3-cp311-cp311-win_amd64.whl", hash = "sha256:0550c3d3b086d193e9467754c25234acee0ff2e9baa7f336df90aaea6c46a268"},
+    {file = "ulid_transform-0.6.3.tar.gz", hash = "sha256:8914b5a753b98e6eaef671dbb1625eb7439732ebb5be9846bff1e7be5d025973"},
 ]
 
 [[package]]
