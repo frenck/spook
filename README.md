@@ -101,6 +101,7 @@ or to be supported, or well, for starters, to be a good idea.
   - [Groups: Detect unknown group members](#groups-detect-unknown-group-members)
   - [Riemann sum integral: Detect missing source sensor](#riemann-sum-integral-detect-missing-source-sensor)
   - [Scripts: Find use of non-existing areas, devices and entities](#scripts-find-use-of-non-existing-areas-devices-and-entities)
+  - [Switch as X: Detect missing source switch](#switch-as-x-detect-missing-source-switch)
 - [Frequently Asked Questions](#frequently-asked-questions)
   - [Is this a serious thing?](#is-this-a-serious-thing)
   - [Why is Spook called Spook?](#why-is-spook-called-spook)
@@ -525,6 +526,12 @@ _Intention to contribute back to Home Assistant Core._
 
 _Intention to contribute back to Home Assistant Core once sure no false
 postives remain, and it has been extended to catch more situations._
+
+## Switch as X: Detect missing source switch
+
+> Finds Switch as X helpers that are missing a source switch. _#NotendoSwitch_
+
+_Intention to contribute back to Home Assistant Core._
 
 # Frequently Asked Questions
 
