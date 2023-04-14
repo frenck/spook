@@ -526,6 +526,12 @@ _Intention to contribute back to Home Assistant Core._
 _Intention to contribute back to Home Assistant Core once sure no false
 postives remain, and it has been extended to catch more situations._
 
+## Switch as X: Detect missing source switch
+
+> Finds Switch as X helpers that are missing a source switch. _#NotendoSwitch_
+
+_Intention to contribute back to Home Assistant Core._
+
 # Frequently Asked Questions
 
 In the first few days after putting Spook out, some of the same questions
