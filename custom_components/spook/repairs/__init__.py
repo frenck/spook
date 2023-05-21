@@ -121,6 +121,14 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
+
+        async def _async_inspect() -> None:
+            # Don't inspect if we are stopping
+            if self.hass.is_stopping:
+                return
+
+            await self.async_inspect()
+
         # Debouncer to prevent multiple inspections / inspections fired quickly
         # after each other.
         self.inspect_debouncer = Debouncer(
@@ -128,7 +136,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             LOGGER,
             cooldown=10,
             immediate=False,
-            function=self.async_inspect,
+            function=_async_inspect,
         )
 
         # Spook says: Bounce!
