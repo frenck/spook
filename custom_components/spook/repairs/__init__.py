@@ -49,7 +49,7 @@ class AbstractSpookRepairBase(ABC):
 
     @final
     @callback
-    def async_create_issue(
+    def async_create_issue(  # noqa: PLR0913
         self,
         *,
         breaks_in_ha_version: str | None = None,
