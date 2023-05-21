@@ -39,16 +39,13 @@ class SpookRepair(AbstractSpookRepair):
         "event_utility_meter_reloaded",
     }
 
-    _entity_platforms: list[EntityPlatform]
-
-    async def async_activate(self) -> None:
-        """Handle the activating a repair."""
-        self._entity_platforms = self.hass.data[DATA_ENTITY_PLATFORM][self.domain]
-        await super().async_activate()
-
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
+
+        platforms: list[EntityPlatform] | None
+        if not (platforms := self.hass.data[DATA_ENTITY_PLATFORM].get(self.domain)):
+            return  # Nothing to do.
 
         # Two sources for entities. The entities in the entity registry,
         # and the entities currently in the state machine. They will have lots
@@ -62,7 +59,7 @@ class SpookRepair(AbstractSpookRepair):
             .union({ENTITY_MATCH_ALL, ENTITY_MATCH_NONE})
         )
 
-        for platform in self._entity_platforms:
+        for platform in platforms:
             # We don't want to check the old style group platform
             for entity in platform.entities.values():
                 members = []
