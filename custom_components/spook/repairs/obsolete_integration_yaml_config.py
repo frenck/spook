@@ -66,6 +66,7 @@ class SpookRepair(AbstractSpookSingleShotRepairs):
         "rachio",
         "rainmachine",
         "roku",
+        "samsungtv",
         "sentry",
         "senz",
         "simplisafe",
