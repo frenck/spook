@@ -30,6 +30,17 @@
       "title": "Unbekannte Quelle: {helper}",
       "description": "Spook hat einen Geist in deinem Helfer Riemann Summenintegralsensor gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Helfer:\n\n{helper} (`{entity_id}`)\n\nDieser Helfer hat eine Quell-Entität, die Home Assistant unbekannt ist:\n\n`{source}`\n\n\n\nUm diesen Fehler zu beheben, bearbeite den Helfer und passe die Quell-Entität an (oder entferne den Helfer) und starte Home Assistant neu.\n\nSpook 👻 Nicht dein Kumpel."
     },
+    "lovelace_unknown_entity_references": {
+      "title": "Unbekannte Entitäten verwendet in: {dashboard}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Unbekannte Entitäten verwendet in: {dashboard}",
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard verweist auf die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und entferne die Verwendung dieser nicht existierenden Entitäten.\n\nSpook 👻 Nicht dein Kumpel."
+          }
+        }
+      }
+    },
     "obsolete_integration_yaml_config": {
       "title": "Obsoletes YAML für: {domain}",
       "description": "Spook hat einen Geist in deiner YAML-Konfiguration gefunden 👻\n\nBeim Herumschweben begegnete Spook der YAML-Konfiguration für die `{domain}`-Integration, die obsolet ist (da sie nicht mehr über YAML konfiguriert wird) und daher entfernt/bereinigt werden sollte. Dieses Problem verschwindet automatisch, sobald du deine Konfiguration angepasst und Home Assistant neu gestartet hast.\n\nSpook 👻 Nicht dein Kumpel."
