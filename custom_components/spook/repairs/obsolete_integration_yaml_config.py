@@ -71,6 +71,7 @@ class SpookRepair(AbstractSpookSingleShotRepairs):
         "sentry",
         "senz",
         "simplisafe",
+        "skybell",
         "solaredge",
         "soma",
         "somfy_mylink",
