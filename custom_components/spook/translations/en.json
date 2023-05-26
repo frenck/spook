@@ -41,6 +41,17 @@
       "title": "Unknown source: {helper}",
       "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Not your homie."
     },
+    "lovelace_unknown_entity_references": {
+      "title": "Unknown entities used in: {dashboard}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Unknown entities used in: {dashboard}",
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Not your homie."
+          }
+        }
+      }
+    },
     "obsolete_integration_yaml_config": {
       "title": "Obsolete YAML for: {domain}",
       "description": "Spook has found a ghost in your YAML configuration 👻\n\nWhile floating around, Spook came aroud YAML configuration for the `{domain}` integration, which is obsolete (as it is no longer configured via YAML) and thus should be removed/cleaned up. This issue will automatically disappear once your configuration has been adjusted and Home Assistant has been restarted.\n\nSpook 👻 Not your homie."
