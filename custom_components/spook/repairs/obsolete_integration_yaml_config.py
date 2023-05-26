@@ -64,6 +64,7 @@ class SpookRepair(AbstractSpookSingleShotRepairs):
         "powerwall",
         "pvpc_hourly_pricing",
         "rachio",
+        "rainbird",
         "rainmachine",
         "roku",
         "samsungtv",
