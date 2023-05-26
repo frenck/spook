@@ -11,7 +11,7 @@ from homeassistant.const import (
     ENTITY_MATCH_NONE,
     EVENT_COMPONENT_LOADED,
 )
-from homeassistant.core import callback
+from homeassistant.core import callback, valid_entity_id
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
@@ -117,6 +117,7 @@ class SpookRepair(AbstractSpookRepair):
                         ),
                     )
                     and entity_id not in entity_ids
+                    and valid_entity_id(entity_id)
                 )
             }:
                 title = "Overview"

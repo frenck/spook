@@ -7,6 +7,7 @@ from homeassistant.const import (
     ENTITY_MATCH_NONE,
     EVENT_COMPONENT_LOADED,
 )
+from homeassistant.core import valid_entity_id
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPlatform
 
@@ -83,6 +84,7 @@ class SpookRepair(AbstractSpookRepair):
                             ("device_tracker.", "group.", "scene."),
                         )
                         and entity_id not in entity_ids
+                        and valid_entity_id(entity_id)
                     )
                 }:
                     self.async_create_issue(
