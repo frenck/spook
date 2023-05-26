@@ -163,9 +163,9 @@ class SpookRepair(AbstractSpookRepair):
                     for item in entity:
                         if isinstance(item, str):
                             entities.add(item)
-                        if (
+                        elif (
                             isinstance(item, dict)
-                            and "entity" in entity
+                            and "entity" in item
                             and isinstance(item["entity"], str)
                         ):
                             entities.add(item["entity"])
