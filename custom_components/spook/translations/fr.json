@@ -28,7 +28,18 @@
     },
     "integration_unknown_source": {
       "title": "Source inconnue : {helper}",
-      "description": "Spook a trouvé un fantôme dans vos entrées intégrale de Riemann 👻\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante :\n\n{helper} (`{entity_id}`)\n\nCette entrée possède une entité source inconnue de Home Assistant :\n\n`{source}`\n\n\n\nPour corriger cette erreur, modifiez l'entrée et ajustez l'entité source (ou supprimez l'entrée) et redémarrez Home Assistant.\n\nSpook 👻 Pas votre ami."
+      "description": "Spook a trouvé un fantôme dans vos entrées Intégrale de Riemann 👻\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante :\n\n{helper} (`{entity_id}`)\n\nCette entrée possède une entité source inconnue de Home Assistant :\n\n`{source}`\n\n\n\nPour corriger cette erreur, modifiez l'entrée et ajustez l'entité source (ou supprimez l'entrée) et redémarrez Home Assistant.\n\nSpook 👻 Pas votre ami."
+    },
+    "lovelace_unknown_entity_references": {
+      "title": "Entités inconnues utilisées dans: {dashboard}",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Entités inconnues utilisées dans: {dashboard}",
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord fait référence aux entitiés suivantes, qui sont inconnues de Home Assistant:\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Pas votre ami."
+          }
+        }
+      }
     },
     "obsolete_integration_yaml_config": {
       "title": "YAML obsolète pour : {domain}",
@@ -49,6 +60,10 @@
     "script_unknown_entity_references": {
       "title": "Entités inconnues utilisées dans : {script}",
       "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux entitiés suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Pas votre ami."
+    },
+    "switch_as_x_unknown_source": {
+      "title": "Unknown source: {helper}",
+      "description": "Spook a trouvé un fantôme dans vos entrées Interrupteur comme X 👻\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante :\n\n{helper} (`{entity_id}`)\n\nCette entrée possède une entité source inconnue de Home Assistant :\n\n`{source}`\n\n\n\nPour corriger cette erreur, modifiez l'entrée et ajustez l'entité source (ou supprimez l'entrée) et redémarrez Home Assistant.\n\nSpook 👻 Pas votre ami."
     }
   }
 }
