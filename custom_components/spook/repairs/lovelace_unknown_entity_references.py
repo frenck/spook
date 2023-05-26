@@ -3,7 +3,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.components import lovelace
+from homeassistant.components.lovelace import DOMAIN
+from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
 from homeassistant.const import (
     ENTITY_MATCH_ALL,
@@ -28,7 +29,7 @@ if TYPE_CHECKING:
 class SpookRepair(AbstractSpookRepair):
     """Spook repair tries to find unknown referenced entity in dashboards."""
 
-    domain = lovelace.DOMAIN
+    domain = DOMAIN
     repair = "lovelace_unknown_entity_references"
     events = {
         EVENT_COMPONENT_LOADED,
@@ -94,9 +95,13 @@ class SpookRepair(AbstractSpookRepair):
         # Loop over all dashboards and check if there are unknown entities
         # referenced in the dashboards.
         for dashboard in self._dashboards.values():
-            if not dashboard.config:
+            url_path = dashboard.url_path or "lovelace"
+
+            try:
+                config = await dashboard.async_load(force=False)
+            except ConfigNotFound:
+                LOGGER.debug("Config for dashboard %s not found, skipping", url_path)
                 continue
-            config = await dashboard.async_load(force=False)
 
             if unknown_entities := {
                 entity_id
@@ -114,14 +119,17 @@ class SpookRepair(AbstractSpookRepair):
                     and entity_id not in entity_ids
                 )
             }:
+                title = "Overview"
+                if dashboard.config:
+                    title = dashboard.config.get("title", url_path)
                 self.async_create_issue(
-                    issue_id=dashboard.url_path,
+                    issue_id=url_path,
                     translation_placeholders={
                         "entities": "\n".join(
                             f"- `{entity_id}`" for entity_id in unknown_entities
                         ),
-                        "dashboard": dashboard.config.get("title", dashboard.url_path),
-                        "edit": f"/{dashboard.url_path}/0?edit=1",
+                        "dashboard": title,
+                        "edit": f"/{url_path}/0?edit=1",
                     },
                     is_fixable=True,
                 )
@@ -130,11 +138,11 @@ class SpookRepair(AbstractSpookRepair):
                         "Spook found unknown entities in dashboard %s "
                         "and created an issue for it; Entities: %s"
                     ),
-                    dashboard.config.get("title", dashboard.url_path),
+                    title,
                     ", ".join(unknown_entities),
                 )
             else:
-                self.async_delete_issue(dashboard.url_path)
+                self.async_delete_issue(url_path)
 
     @callback
     def __async_extract_entities(self, config: dict[str, Any]) -> set[str]:
