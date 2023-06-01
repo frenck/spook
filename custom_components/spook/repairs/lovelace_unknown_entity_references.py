@@ -149,11 +149,14 @@ class SpookRepair(AbstractSpookRepair):
     def __async_extract_entities(self, config: dict[str, Any]) -> set[str]:
         """Extract entities from a dashboard config."""
         entities = set()
-        for views in config.get("views", []):
-            for badge in views.get("badges", []):
-                entities.update(self.__async_extract_entities_from_badge(badge))
-            for card in views.get("cards", []):
-                entities.update(self.__async_extract_entities_from_card(card))
+        if views := config.get("views"):
+            for view in views:
+                if badges := view.get("badges"):
+                    for badge in badges:
+                        entities.update(self.__async_extract_entities_from_badge(badge))
+                if cards := view.get("cards"):
+                    for card in cards:
+                        entities.update(self.__async_extract_entities_from_card(card))
         return entities
 
     @callback
@@ -161,7 +164,7 @@ class SpookRepair(AbstractSpookRepair):
         """Extract entities from common dashboard config."""
         entities: set[str] = set()
 
-        if isinstance(config, str):
+        if not isinstance(config, dict):
             return entities
 
         for key in ("camera_image", "entity", "entities", "entity_id"):
@@ -194,41 +197,46 @@ class SpookRepair(AbstractSpookRepair):
         """Extract entities from a dashboard badge config."""
         if isinstance(config, str):
             return {config}
-        if "entity" in config:
+        if (entity_id := config.get("entity")) and isinstance(entity_id, str):
             return {config["entity"]}
-        if "entities" in config:
+        if (entities := config.get("entities")) and isinstance(entities, list):
             return set(config["entities"])
         return set()
 
     @callback
-    def __async_extract_entities_from_card(self, config: dict[str, Any]) -> set[str]:
+    def __async_extract_entities_from_card(  # noqa: C901
+        self,
+        config: dict[str, Any],
+    ) -> set[str]:
         """Extract entities from a dashboard card config."""
         entities = self.__async_extract_common(config)
         entities.update(self.__async_extract_entities_from_actions(config))
 
-        if "condition" in config:
+        if condition := config.get("condition"):
             entities.update(
-                self.__async_extract_entities_from_condition(config["condition"]),
+                self.__async_extract_entities_from_condition(condition),
             )
 
-        if "card" in config:
-            entities.update(self.__async_extract_entities_from_card(config["card"]))
-
-        for card in config.get("cards", []):
+        if card := config.get("card"):
             entities.update(self.__async_extract_entities_from_card(card))
 
+        if cards := config.get("cards"):
+            for card in cards:
+                entities.update(self.__async_extract_entities_from_card(card))
+
         for key in ("header", "footer"):
-            if key in config:
+            if header_footer := config.get(key):
                 entities.update(
-                    self.__async_extract_entities_from_header_footer(config[key]),
+                    self.__async_extract_entities_from_header_footer(header_footer),
                 )
 
-        for element in config.get("elements", []):
-            entities.update(self.__async_extract_entities_from_element(element))
+        if elements := config.get("elements"):
+            for element in elements:
+                entities.update(self.__async_extract_entities_from_element(element))
 
         # Mushroom
-        if "chips" in config:
-            for chip in config["chips"]:
+        if chips := config.get("chips"):
+            for chip in chips:
                 entities.update(self.__async_extract_entities_from_mushroom_chip(chip))
 
         return entities
@@ -243,8 +251,8 @@ class SpookRepair(AbstractSpookRepair):
             "double_tap_action",
             "subtitle_tap_action",
         ):
-            if key in config:
-                entities.update(self.__async_extract_entities_from_action(config[key]))
+            if action := config.get(key):
+                entities.update(self.__async_extract_entities_from_action(action))
         return entities
 
     @callback
@@ -252,10 +260,10 @@ class SpookRepair(AbstractSpookRepair):
         """Extract entities from a dashboard action config."""
         entities = set()
         for key in ("service_data", "target"):
-            if key in config and (entity_id := config[key].get("entity_id")):
+            if (target := config.get(key)) and (entity_id := target.get("entity_id")):
                 if isinstance(entity_id, str):
                     entities.add(entity_id)
-                else:
+                if isinstance(entity_id, list):
                     entities.update(entity_id)
         return entities
 
@@ -276,12 +284,12 @@ class SpookRepair(AbstractSpookRepair):
         entities.update(self.__async_extract_entities_from_actions(config))
         entities.update(self.__async_extract_entities_from_action(config))
 
-        if "conditions" in config:
-            for condition in config["conditions"]:
+        if conditions := config.get("conditions"):
+            for condition in conditions:
                 entities.update(self.__async_extract_entities_from_condition(condition))
 
-        if "elements" in config:
-            for element in config["elements"]:
+        if elements := config.get("elements"):
+            for element in elements:
                 entities.update(self.__async_extract_entities_from_element(element))
 
         return entities
@@ -303,11 +311,11 @@ class SpookRepair(AbstractSpookRepair):
     ) -> set[str]:
         """Extract entities from mushroom chips."""
         entities = self.__async_extract_common(config)
-        if "chip" in config:
+        if chip := config.get("chip"):
             entities.update(
-                self.__async_extract_entities_from_mushroom_chip(config["chip"]),
+                self.__async_extract_entities_from_mushroom_chip(chip),
             )
-        if "conditions" in config:
-            for condition in config["conditions"]:
+        if conditions := config.get("conditions"):
+            for condition in conditions:
                 entities.update(self.__async_extract_entities_from_condition(condition))
         return entities
