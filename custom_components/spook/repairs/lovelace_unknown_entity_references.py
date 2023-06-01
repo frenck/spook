@@ -260,7 +260,11 @@ class SpookRepair(AbstractSpookRepair):
         """Extract entities from a dashboard action config."""
         entities = set()
         for key in ("service_data", "target"):
-            if (target := config.get(key)) and (entity_id := target.get("entity_id")):
+            if (
+                (target := config.get(key))
+                and isinstance(target, dict)
+                and (entity_id := target.get("entity_id"))
+            ):
                 if isinstance(entity_id, str):
                     entities.add(entity_id)
                 if isinstance(entity_id, list):
