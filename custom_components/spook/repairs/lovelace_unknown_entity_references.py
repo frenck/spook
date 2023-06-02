@@ -4,7 +4,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.lovelace import DOMAIN
-from homeassistant.components.lovelace.const import ConfigNotFound
+from homeassistant.components.lovelace.const import (
+    EVENT_LOVELACE_UPDATED,
+    ConfigNotFound,
+)
 from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
 from homeassistant.const import (
     ENTITY_MATCH_ALL,
@@ -33,6 +36,7 @@ class SpookRepair(AbstractSpookRepair):
     repair = "lovelace_unknown_entity_references"
     events = {
         EVENT_COMPONENT_LOADED,
+        EVENT_LOVELACE_UPDATED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
         "event_counter_reloaded",
         "event_derivative_reloaded",
@@ -132,7 +136,6 @@ class SpookRepair(AbstractSpookRepair):
                         "dashboard": title,
                         "edit": f"/{url_path}/0?edit=1",
                     },
-                    is_fixable=True,
                 )
                 LOGGER.debug(
                     (
