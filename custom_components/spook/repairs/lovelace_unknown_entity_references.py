@@ -251,7 +251,7 @@ class SpookRepair(AbstractSpookRepair):
             "double_tap_action",
             "subtitle_tap_action",
         ):
-            if action := config.get(key):
+            if isinstance(config, dict) and (action := config.get(key)):
                 entities.update(self.__async_extract_entities_from_action(action))
         return entities
 
