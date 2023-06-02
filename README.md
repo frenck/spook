@@ -531,7 +531,7 @@ _Intention to contribute back to Home Assistant Core._
 # Previously part of Spook
 
 Some of the amazing things Spook does, may turn out to be actually pretty good
-and have eventually ended up into Home Assistant itself, or, became obsolete
+and have eventually end up into Home Assistant natively, or, became obsolete
 because of similar features they added.
 
 So here is a list of things that have been removed from Spook 👻 _#loser_
