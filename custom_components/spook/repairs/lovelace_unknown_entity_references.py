@@ -261,7 +261,8 @@ class SpookRepair(AbstractSpookRepair):
         entities = set()
         for key in ("service_data", "target"):
             if (
-                (target := config.get(key))
+                isinstance(config, dict)
+                and (target := config.get(key))
                 and isinstance(target, dict)
                 and (entity_id := target.get("entity_id"))
             ):
