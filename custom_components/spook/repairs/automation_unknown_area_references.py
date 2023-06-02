@@ -31,7 +31,7 @@ class SpookRepair(AbstractSpookRepair):
         for entity in self._entity_component.entities:
             if unknown_areas := {
                 area
-                for area in entity.script.referenced_areas - areas
+                for area in entity.referenced_areas - areas
                 if isinstance(area, str)
             }:
                 self.async_create_issue(
