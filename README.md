@@ -96,12 +96,13 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service for `number`: Max value](#service-for-number-max-value)
   - [Service for `select`: Select random option](#service-for-select-select-random-option)
 - [Repairs](#repairs)
-  - [Obsolete integration YAML configuration](#obsolete-integration-yaml-configuration)
   - [Automations: Find use of non-existing areas, devices and entities](#automations-find-use-of-non-existing-areas-devices-and-entities)
   - [Groups: Detect unknown group members](#groups-detect-unknown-group-members)
   - [Riemann sum integral: Detect missing source sensor](#riemann-sum-integral-detect-missing-source-sensor)
   - [Scripts: Find use of non-existing areas, devices and entities](#scripts-find-use-of-non-existing-areas-devices-and-entities)
   - [Switch as X: Detect missing source switch](#switch-as-x-detect-missing-source-switch)
+- [Previously part of Spook](#previously-part-of-spook)
+  - [Obsolete integration \& platform YAML configuration](#obsolete-integration--platform-yaml-configuration)
 - [Frequently Asked Questions](#frequently-asked-questions)
   - [Is this a serious thing?](#is-this-a-serious-thing)
   - [Why is Spook called Spook?](#why-is-spook-called-spook)
@@ -493,12 +494,6 @@ about these things using an Home Assistant repair issue. _#whoyougonnacall_
 
 Currently Spook will detect the following issues:
 
-## Obsolete integration YAML configuration
-
-> Finds YAML configuration for an integrations that no longer support it.
-> Unless you like having unneeded shizzle in your YAML, it can be removed
-> safely. _#ghostbusters_
-
 ## Automations: Find use of non-existing areas, devices and entities
 
 > Finds automations that use non-existing areas, devices or entities in, for
@@ -532,6 +527,22 @@ postives remain, and it has been extended to catch more situations._
 > Finds Switch as X helpers that are missing a source switch. _#NotendoSwitch_
 
 _Intention to contribute back to Home Assistant Core._
+
+# Previously part of Spook
+
+Some of the amazing things Spook does, may turn out to be actually pretty good
+and have eventually ended up into Home Assistant itself, or, became obsolete
+because of similar features they added.
+
+So here is a list of things that have been removed from Spook 👻 _#loser_
+
+## Obsolete integration & platform YAML configuration
+
+> Find YAML configuration for an integrations (and older integration platforms)
+> that no longer support it.
+
+As of Home Assistant 2023.5 (refined in 2023.6), Home Assistant will raise
+repair issues for these cases itself.
 
 # Frequently Asked Questions
 
