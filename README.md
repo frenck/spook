@@ -102,7 +102,7 @@ or to be supported, or well, for starters, to be a good idea.
   - [Scripts: Find use of non-existing areas, devices and entities](#scripts-find-use-of-non-existing-areas-devices-and-entities)
   - [Switch as X: Detect missing source switch](#switch-as-x-detect-missing-source-switch)
 - [Previously part of Spook](#previously-part-of-spook)
-  - [Obsolete integration \& platform YAML configuration](#obsolete-integration--platform-yaml-configuration)
+  - [Obsolete integration \& platform YAML configuration repairs](#obsolete-integration--platform-yaml-configuration-repairs)
 - [Frequently Asked Questions](#frequently-asked-questions)
   - [Is this a serious thing?](#is-this-a-serious-thing)
   - [Why is Spook called Spook?](#why-is-spook-called-spook)
@@ -536,7 +536,7 @@ because of similar features they added.
 
 So here is a list of things that have been removed from Spook 👻 _#loser_
 
-## Obsolete integration & platform YAML configuration
+## Obsolete integration & platform YAML configuration repairs
 
 > Find YAML configuration for an integrations (and older integration platforms)
 > that no longer support it.
