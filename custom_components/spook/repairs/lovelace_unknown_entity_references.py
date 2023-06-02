@@ -149,7 +149,7 @@ class SpookRepair(AbstractSpookRepair):
     def __async_extract_entities(self, config: dict[str, Any]) -> set[str]:
         """Extract entities from a dashboard config."""
         entities = set()
-        if views := config.get("views"):
+        if isinstance(config, dict) and (views := config.get("views")):
             for view in views:
                 if badges := view.get("badges"):
                     for badge in badges:
@@ -197,10 +197,11 @@ class SpookRepair(AbstractSpookRepair):
         """Extract entities from a dashboard badge config."""
         if isinstance(config, str):
             return {config}
-        if (entity_id := config.get("entity")) and isinstance(entity_id, str):
-            return {config["entity"]}
-        if (entities := config.get("entities")) and isinstance(entities, list):
-            return set(config["entities"])
+        if isinstance(config, dict):
+            if (entity_id := config.get("entity")) and isinstance(entity_id, str):
+                return {config["entity"]}
+            if (entities := config.get("entities")) and isinstance(entities, list):
+                return set(config["entities"])
         return set()
 
     @callback
@@ -209,6 +210,9 @@ class SpookRepair(AbstractSpookRepair):
         config: dict[str, Any],
     ) -> set[str]:
         """Extract entities from a dashboard card config."""
+        if not isinstance(config, dict):
+            return set()
+
         entities = self.__async_extract_common(config)
         entities.update(self.__async_extract_entities_from_actions(config))
 
@@ -285,6 +289,9 @@ class SpookRepair(AbstractSpookRepair):
     @callback
     def __async_extract_entities_from_element(self, config: dict[str, Any]) -> set[str]:
         """Extract entities from a dashboard element config."""
+        if not isinstance(config, dict):
+            return set()
+
         entities = self.__async_extract_common(config)
         entities.update(self.__async_extract_entities_from_actions(config))
         entities.update(self.__async_extract_entities_from_action(config))
