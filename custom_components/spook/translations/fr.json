@@ -41,14 +41,6 @@
         }
       }
     },
-    "obsolete_integration_yaml_config": {
-      "title": "YAML obsolète pour : {domain}",
-      "description": "Spook a trouvé un fantôme dans votre configuration YAML 👻\n\nEn flottant dans les parages, Spook est tombé sur la configuration YAML de l'intégration `{domain}`, qui est obsolète (car elle n'est plus configurée via YAML) et doit donc être supprimée/nettoyée. Ce problème disparaîtra automatiquement une fois que votre configuration aura été ajustée et que Home Assistant aura été redémarré.\n\nSpook 👻 Pas votre ami."
-    },
-    "obsolete_platform_yaml_config": {
-      "title": "YAML obsolète pour : {domain} ({platform})",
-      "description": "Spook a trouvé un fantôme dans votre configuration YAML 👻\n\nEn flottant dans les parages, Spook est tombé sur la configuration YAML de la plate-forme {platform} utilisant le domaine d'intégration `{domain}`, qui est obsolète (car elle n'est plus configurée via YAML) et doit donc être supprimée/nettoyée. Ce problème disparaîtra automatiquement une fois que votre configuration aura été ajustée et que Home Assistant aura été redémarré.\n\nSpook 👻 Pas votre ami."
-    },
     "script_unknown_area_references": {
       "title": "Pièces inconnues utilisées dans: {script}",
       "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux pièces suivantes, qui sont inconnues de Home Assistant :\n\n{areas}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\nSpook 👻 Pas votre ami."
