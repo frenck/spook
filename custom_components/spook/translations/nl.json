@@ -8,5 +8,47 @@
         "description": "Heb je de documentatie gelezen? Heb je de licentie gelezen? Weet je het heel erg zeker?"
       }
     }
+  },
+  "issues": {
+    "automation_unknown_area_references": {
+      "title": "Onbekende ruimtes gebruikt in: {automation}",
+      "description": "Spook heeft een geest gevonden in jouw automatiseringen 👻\n\nTerwijl hij rond zweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering verwijst naar de volgende ruimtes, die onbekend zijn voor Home Assistant:\n\n{areas}\n\n\n\nOm deze fout op te lossen, [bewerk de automatisering]({edit}) en verwijder het gebruik van deze niet-bestaande ruimtes.\n\nSpook 👻 Niet je maatje."
+    },
+    "automation_unknown_device_references": {
+      "title": "Onbekende apparaten gebruikt in: {automation}",
+      "description": "Spook heeft een geest gevonden in jouw automatiseringen 👻\n\nTerwijl hij rond zweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering verwijst naar de volgende apparaten, die onbekend zijn voor Home Assistant:\n\n{devices}\n\n\n\nOm deze fout op te lossen, [bewerk de automatisering]({edit}) en verwijder het gebruik van deze niet-bestaande apparaten.\n\nSpook 👻 Niet je maatje."
+    },
+    "automation_unknown_entity_references": {
+      "title": "Onbekende entiteiten gebruikt in: {automation}",
+      "description": "Spook heeft een geest gevonden in jouw automatiseringen 👻\n\nTerwijl hij rond zweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering verwijst naar de volgende entiteiten, die onbekend zijn voor Home Assistant:\n\n{entities}\n\n\n\nOm deze fout op te lossen, [bewerk de automatisering]({edit}) en verwijder het gebruik van deze niet-bestaande entiteiten.\n\nSpook 👻 Niet je maatje."
+    },
+    "group_unknown_members": {
+      "title": "Onbekende groep leden in: {group}",
+      "description": "Spook heeft een geest gevonden in jouw groepen 👻\n\nTerwijl hij rond zweefde, kwam Spook de volgende groep tegen:\n\n{group} (`{entity_id}`)\n\nDeze groep heeft leden, die onbekend zijn voor Home Assistant:\n\n{entities}\n\n\n\nOm deze fout op te lossen, bewerk de groep, verwijder het gebruik van deze niet-bestaande entiteiten en start Home Assistant opnieuw.\n\nSpook 👻 Niet je maatje."
+    },
+    "integration_unknown_source": {
+      "title": "Onbekende bron: {helper}",
+      "description": "Spook heeft een geest gevonden in jouw Riemann som integrale sensoren 👻\n\nTerwijl hij rond zweefde, kwam Spook de volgende sensor tegen:\n\n{helper} (`{entity_id}`)\n\nDeze sensor heeft een bron entiteit die onbekend is voor Home Assistant:\n\n`{source}`\n\n\n\nOm deze fout op te lossen, bewerk de sensor en pas de bron entiteit aan (of verwijder de sensor) en start Home Assistant opnieuw.\n\nSpook 👻 Niet je maatje."
+    },
+    "lovelace_unknown_entity_references": {
+      "title": "Onbekende entiteiten gebruikt in: {dashboard}",
+      "description": "Spook heeft een geest gevonden in jouw dashboards 👻\n\nTerwijl hij rond zweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard verwijst naar de volgende entiteiten, die onbekend zijn voor Home Assistant:\n\n{entities}\n\n\n\nOm deze fout op te lossen, [bewerk het dashboard]({edit}) en verwijder het gebruik van deze niet-bestaande entiteiten.\n\nSpook 👻 Niet je maatje."
+    },
+    "script_unknown_area_references": {
+      "title": "Onbekende ruimtes gebruikt in: {script}",
+      "description": "Spook heeft een geest gevonden in jouw scripts 👻\n\nTerwijl hij rond zweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script verwijst naar de volgende ruimtes, die onbekend zijn voor Home Assistant:\n\n{areas}\n\n\n\nOm deze fout op te lossen, [bewerk het script]({edit}) en verwijder het gebruik van deze niet-bestaande ruimtes.\n\nSpook 👻 Niet je maatje."
+    },
+    "script_unknown_device_references": {
+      "title": "Onbekende apparaten gebruikt in: {script}",
+      "description": "Spook heeft een geest gevonden in jouw scripts 👻\n\nTerwijl hij rond zweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script verwijst naar de volgende apparaten, die onbekend zijn voor Home Assistant:\n\n{devices}\n\n\n\nOm deze fout op te lossen, [bewerk het script]({edit}) en verwijder het gebruik van deze niet-bestaande apparaten.\n\nSpook 👻 Niet je maatje."
+    },
+    "script_unknown_entity_references": {
+      "title": "Onbekende entiteiten gebruikt in: {script}",
+      "description": "Spook heeft een geest gevonden in jouw scripts 👻\n\nTerwijl hij rond zweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script verwijst naar de volgende entiteiten, die onbekend zijn voor Home Assistant:\n\n{entities}\n\n\n\nOm deze fout op te lossen, [bewerk het script]({edit}) en verwijder het gebruik van deze niet-bestaande entiteiten.\n\nSpook 👻 Niet je maatje."
+    },
+    "switch_as_x_unknown_source": {
+      "title": "Onbekende bron: {helper}",
+      "description": "Spook heeft een geest gevonden in jouw Schakelaar als X helpers 👻\n\nTerwijl hij rond zweefde, kwam Spook de volgende helper tegen:\n\n{helper} (`{entity_id}`)\n\nDeze helper heeft een bron schakelaar entiteit die onbekend is voor Home Assistant:\n\n`{source}`\n\n\n\nOm deze fout op te lossen, bewerk de helper en pas de bron schakelaar entiteit aan (of verwijder de helper) en start Home Assistant opnieuw.\n\nSpook 👻 Niet je maatje."
+    }
   }
 }
