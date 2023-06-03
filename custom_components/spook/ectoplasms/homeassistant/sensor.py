@@ -70,8 +70,8 @@ class HomeAssistantSpookSensorEntityDescription(
 SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.AIR_QUALITY,
+        translation_key="homeassistant_air_quality",
         entity_id="sensor.air_quality",
-        name="Air Quality",
         icon="mdi:air-filter",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -80,8 +80,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.ALARM_CONTROL_PANEL,
+        translation_key="homeassistant_alarm_control_panel",
         entity_id="sensor.alarm_control_panels",
-        name="Alarm control panels",
         icon="mdi:alarm-panel",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -92,8 +92,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key="area",
+        translation_key="homeassistant_area",
         entity_id="sensor.areas",
-        name="Areas",
         icon="mdi:texture-box",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -102,8 +102,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=automation.DOMAIN,
+        translation_key="homeassistant_automation",
         entity_id="sensor.automations",
-        name="Automations",
         icon="mdi:robot",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -112,8 +112,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.BINARY_SENSOR,
+        translation_key="homeassistant_binary_sensor",
         entity_id="sensor.binary_sensors",
-        name="Binary sensors",
         icon="mdi:numeric-10",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -122,8 +122,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.BUTTON,
+        translation_key="homeassistant_button",
         entity_id="sensor.buttons",
-        name="Buttons",
         icon="mdi:gesture-tap",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -132,8 +132,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.CALENDAR,
+        translation_key="homeassistant_calendar",
         entity_id="sensor.calendars",
-        name="Calendars",
         icon="mdi:calendar",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -142,8 +142,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.CAMERA,
+        translation_key="homeassistant_camera",
         entity_id="sensor.cameras",
-        name="Cameras",
         icon="mdi:cctv",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -152,8 +152,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.CLIMATE,
+        translation_key="homeassistant_climate",
         entity_id="sensor.climate",
-        name="Climate",
         icon="mdi:thermostat",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -162,8 +162,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.COVER,
+        translation_key="homeassistant_cover",
         entity_id="sensor.covers",
-        name="Covers",
         icon="mdi:blinds",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -172,8 +172,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.DATE,
+        translation_key="homeassistant_date",
         entity_id="sensor.dates",
-        name="Dates",
         icon="mdi:calendar-month-outline",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -182,8 +182,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.DATETIME,
+        translation_key="homeassistant_datetime",
         entity_id="sensor.datetimes",
-        name="Date/Times",
         icon="mdi:calendar-clock",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -192,8 +192,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key="device",
+        translation_key="homeassistant_device",
         entity_id="sensor.devices",
-        name="Devices",
         icon="mdi:cellphone",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -202,8 +202,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.DEVICE_TRACKER,
+        translation_key="homeassistant_device_tracker",
         entity_id="sensor.device_trackers",
-        name="Device trackers",
         icon="mdi:cellphone-marker",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -214,8 +214,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key="entities",
+        translation_key="homeassistant_entities",
         entity_id="sensor.entities",
-        name="Entities",
         icon="mdi:counter",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -224,8 +224,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.FAN,
+        translation_key="homeassistant_fan",
         entity_id="sensor.fans",
-        name="Fans",
         icon="mdi:fan",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -234,8 +234,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.HUMIDIFIER,
+        translation_key="homeassistant_humidifier",
         entity_id="sensor.humidifiers",
-        name="Humidifiers",
         icon="mdi:air-humidifier",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -244,8 +244,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key="integration",
+        translation_key="homeassistant_integration",
         entity_id="sensor.integrations",
-        name="Integrations",
         icon="mdi:package-variant-closed",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -254,8 +254,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key="custom_component",
+        translation_key="homeassistant_custom_component",
         entity_id="sensor.custom_integrations",
-        name="Custom integrations",
         icon="mdi:package-variant-closed",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -264,8 +264,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=input_boolean.DOMAIN,
+        translation_key="homeassistant_input_boolean",
         entity_id="sensor.input_booleans",
-        name="Input booleans",
         icon="mdi:toggle-switch-outline",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -274,8 +274,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=input_button.DOMAIN,
+        translation_key="homeassistant_input_button",
         entity_id="sensor.input_buttons",
-        name="Input buttons",
         icon="mdi:gesture-tap-button",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -284,8 +284,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=input_datetime.DOMAIN,
+        translation_key="homeassistant_input_datetime",
         entity_id="sensor.input_datetimes",
-        name="Input date/times",
         icon="mdi:clock",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -294,8 +294,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=input_number.DOMAIN,
+        translation_key="homeassistant_input_number",
         entity_id="sensor.input_numbers",
-        name="Input numbers",
         icon="mdi:ray-vertex",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -304,8 +304,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=input_select.DOMAIN,
+        translation_key="homeassistant_input_select",
         entity_id="sensor.input_selects",
-        name="Input selects",
         icon="mdi:form-dropdown",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -314,8 +314,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=input_text.DOMAIN,
+        translation_key="homeassistant_input_text",
         entity_id="sensor.input_texts",
-        name="Input texts",
         icon="mdi:form-textbox",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -324,8 +324,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.LIGHT,
+        translation_key="homeassistant_light",
         entity_id="sensor.lights",
-        name="Lights",
         icon="mdi:lightbulb",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -334,8 +334,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.LOCK,
+        translation_key="homeassistant_lock",
         entity_id="sensor.locks",
-        name="Locks",
         icon="mdi:lock",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -344,8 +344,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.MEDIA_PLAYER,
+        translation_key="homeassistant_media_player",
         entity_id="sensor.media_players",
-        name="Media players",
         icon="mdi:record-player",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -354,8 +354,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.NUMBER,
+        translation_key="homeassistant_number",
         entity_id="sensor.numbers",
-        name="Numbers",
         icon="mdi:ray-vertex",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -364,8 +364,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=person.DOMAIN,
+        translation_key="homeassistant_person",
         entity_id="sensor.persons",
-        name="Persons",
         icon="mdi:account-group",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -374,8 +374,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.REMOTE,
+        translation_key="homeassistant_remote",
         entity_id="sensor.remotes",
-        name="Remotes",
         icon="mdi:remote",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -384,8 +384,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.SCENE,
+        translation_key="homeassistant_scene",
         entity_id="sensor.scenes",
-        name="Scenes",
         icon="mdi:palette",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -394,8 +394,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=script.DOMAIN,
+        translation_key="homeassistant_script",
         entity_id="sensor.scripts",
-        name="Scripts",
         icon="mdi:script-text",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -404,8 +404,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.SELECT,
+        translation_key="homeassistant_select",
         entity_id="sensor.selects",
-        name="Selects",
         icon="mdi:format-list-bulleted",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -414,8 +414,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.SENSOR,
+        translation_key="homeassistant_sensor",
         entity_id="sensor.sensors",
-        name="Sensors",
         icon="mdi:eye",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -424,8 +424,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.SIREN,
+        translation_key="homeassistant_siren",
         entity_id="sensor.sirens",
-        name="Sirens",
         icon="mdi:bullhorn",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -434,8 +434,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=sun.DOMAIN,
+        translation_key="homeassistant_sun",
         entity_id="sensor.suns",
-        name="Suns",
         icon="mdi:emoticon-cool",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -444,8 +444,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.STT,
+        translation_key="homeassistant_stt",
         entity_id="sensor.stt",
-        name="Speech-to-text",
         icon="mdi:microphone-message",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -454,8 +454,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.SWITCH,
+        translation_key="homeassistant_switch",
         entity_id="sensor.switches",
-        name="Switches",
         icon="mdi:toggle-switch",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -464,8 +464,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.TEXT,
+        translation_key="homeassistant_text",
         entity_id="sensor.texts",
-        name="Texts",
         icon="mdi:form-textbox",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -474,8 +474,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.TIME,
+        translation_key="homeassistant_time",
         entity_id="sensor.times",
-        name="Times",
         icon="mdi:clock-time-eight-outline",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -484,8 +484,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.TTS,
+        translation_key="homeassistant_tts",
         entity_id="sensor.tts",
-        name="Text-to-speech",
         icon="mdi:speaker-message",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -494,8 +494,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.VACUUM,
+        translation_key="homeassistant_vacuum",
         entity_id="sensor.vacuums",
-        name="Vacuums",
         icon="mdi:vacuum",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -504,8 +504,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.UPDATE,
+        translation_key="homeassistant_update",
         entity_id="sensor.update",
-        name="Update",
         icon="mdi:cellphone-arrow-down",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -514,8 +514,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.WATER_HEATER,
+        translation_key="homeassistant_water_heater",
         entity_id="sensor.water_heaters",
-        name="Water heaters",
         icon="mdi:water-boiler",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -524,8 +524,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.WEATHER,
+        translation_key="homeassistant_weather",
         entity_id="sensor.weather",
-        name="Weather",
         icon="mdi:weather-cloudy",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
@@ -534,8 +534,8 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=zone.DOMAIN,
+        translation_key="homeassistant_zone",
         entity_id="sensor.zones",
-        name="Zones",
         icon="mdi:selection-marker",
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
