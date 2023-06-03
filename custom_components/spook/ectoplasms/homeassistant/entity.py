@@ -18,7 +18,7 @@ class HomeAssistantSpookEntity(SpookEntity):
         self._attr_device_info = DeviceInfo(
             identifiers={(DOMAIN, homeassistant.DOMAIN)},
             manufacturer="Home Assistant",
-            name="Home Assistant Information",
+            name="Home Assistant",
             sw_version=__version__,
         )
         self._attr_unique_id = f"{homeassistant.DOMAIN}_{description.key}"
