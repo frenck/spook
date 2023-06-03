@@ -50,6 +50,7 @@ or to be supported, or well, for starters, to be a good idea.
 - [Installation](#installation)
 - [Configuration](#configuration)
 - [Entities](#entities)
+  - [Buttons](#buttons)
   - [Sensors](#sensors)
   - [Switches](#switches)
 - [Services](#services)
@@ -138,6 +139,11 @@ You shouldn't.
 This integration will provide you with entities you'd absolutely do not need.
 All of them are enabled by default to ensure you have a bad time, straight
 of the box.
+
+## Buttons
+
+- **Reload Home Assistant**: Wut, you are still using YAML? _#GodWhy?_
+- **Restart Home Assistant**: Have you tried turning it off and on again? _#ITCrowd_
 
 ## Sensors
 
