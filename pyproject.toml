@@ -1,14 +1,5 @@
 [tool.poetry]
-name = "spook"
-version = "0.0.0"
-description = "Spook - Not your homie"
 authors = ["Franck Nijhof <opensource@frenck.dev>"]
-maintainers = ["Franck Nijhof <opensource@frenck.dev>"]
-license = "Passive Aggressive License"
-readme = "README.md"
-homepage = "https://github.com/frenck/spook"
-repository = "https://github.com/frenck/spook"
-documentation = "https://github.com/frenck/spook"
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Framework :: AsyncIO",
@@ -18,31 +9,38 @@ classifiers = [
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3",
 ]
+description = "Spook - Not your homie"
+documentation = "https://github.com/frenck/spook"
+homepage = "https://github.com/frenck/spook"
+license = "Passive Aggressive License"
+maintainers = ["Franck Nijhof <opensource@frenck.dev>"]
+name = "spook"
 packages = []
+readme = "README.md"
+repository = "https://github.com/frenck/spook"
+version = "0.0.0"
 
 [tool.poetry.dependencies]
+homeassistant = "^2023.6.0b0"
 python = "^3.10"
-homeassistant = "^2023.3"
 
 [tool.poetry.group.dev.dependencies]
 black = "23.3.0"
 hass-nabucasa = "0.67.1"
 pre-commit = "3.3.2"
 pre-commit-hooks = "4.4.0"
-ruff = "0.0.270"
 pylint = "2.17.4"
+ruff = "0.0.270"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/frenck/spook/issues"
 Changelog = "https://github.com/frenck/spook/releases"
 
 [build-system]
-requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core"]
 
 [tool.ruff]
-src = ["custom_components/spook"]
-select = ["ALL"]
 ignore = [
   "ANN101", # Self... explanatory
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
@@ -50,14 +48,16 @@ ignore = [
   "D213", # Conflicts with other rules
   "TID252", # Relative imports
 ]
+select = ["ALL"]
+src = ["custom_components/spook"]
 
 [tool.ruff.flake8-import-conventions.extend-aliases]
-voluptuous = "vol"
 "homeassistant.helpers.area_registry" = "ar"
 "homeassistant.helpers.config_validation" = "cv"
 "homeassistant.helpers.device_registry" = "dr"
 "homeassistant.helpers.entity_registry" = "er"
 "homeassistant.helpers.issue_registry" = "ir"
+voluptuous = "vol"
 
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:
@@ -65,7 +65,7 @@ voluptuous = "vol"
 # duplicate-code - unavoidable
 # used-before-assignment - false positives with TYPE_CHECKING structures
 disable = [
-    "format",
-    "duplicate-code",
-    "used-before-assignment",
+  "format",
+  "duplicate-code",
+  "used-before-assignment",
 ]

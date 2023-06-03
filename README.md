@@ -149,9 +149,16 @@ of the box.
   - Number of `camera` entities.
   - Number of `climate` entities.
   - Number of `cover` entities.
+  - Number of `date` entities.
+  - Number of `datetime` entities.
   - Number of `device_tracker` entities.
   - Number of `fan` entities.
   - Number of `humidifier` entities.
+  - Number of `input_boolean` entities.
+  - Number of `input_button` entities.
+  - Number of `input_number` entities.
+  - Number of `input_select` entities.
+  - Number of `input_text` entities.
   - Number of `light` entities.
   - Number of `lock` entities.
   - Number of `media_player` entities.
@@ -160,8 +167,12 @@ of the box.
   - Number of `select` entities.
   - Number of `sensor` entities.
   - Number of `siren` entities.
+  - Number of `stt` entities.
   - Number of `switch` entities.
   - Number of `text` entities.
+  - Number of `time` entities.
+  - Number of `tts` entities.
+  - number of `vacuum` entities.
   - Number of `update` entities.
   - Number of `water_heater` entities.
   - Number of `weather` entities.
