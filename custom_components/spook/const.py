@@ -6,4 +6,9 @@ from homeassistant.const import Platform
 
 DOMAIN: Final = "spook"
 LOGGER = logging.getLogger(__package__)
-PLATFORMS: Final = [Platform.SENSOR, Platform.SWITCH]
+
+PLATFORMS: Final = [
+    Platform.BUTTON,
+    Platform.SENSOR,
+    Platform.SWITCH,
+]
