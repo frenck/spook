@@ -12,6 +12,7 @@ from homeassistant.components import (
     input_number,
     input_select,
     input_text,
+    persistent_notification,
     person,
     script,
     sun,
@@ -361,6 +362,23 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         state_class=SensorStateClass.TOTAL,
         update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
         value_fn=lambda hass: len(hass.states.async_entity_ids(Platform.NUMBER)),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
+        key="persistent_notification",
+        translation_key="homeassistant_persistent_notification",
+        entity_id="sensor.persistent_notifications",
+        icon="mdi:bell-ring-outline",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL,
+        update_events={
+            persistent_notification.EVENT_PERSISTENT_NOTIFICATIONS_UPDATED,
+        },
+        value_fn=lambda hass: len(
+            # pylint: disable-next=protected-access
+            persistent_notification._async_get_or_create_notifications(  # noqa: SLF001
+                hass,
+            ),
+        ),
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=person.DOMAIN,
