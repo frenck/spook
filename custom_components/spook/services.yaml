@@ -326,6 +326,20 @@ homeassistant_delete_all_orphaned_entities:
     integration is offline or not working since Home Assistant started. Calling
     this service will delete those entities as well.
 
+homeassistant_restart:
+  name: Restart 👻
+  description: Restart the Home Assistant service.
+  fields:
+    force:
+      name: Force restart
+      description: >-
+        Force the restart. WARNING! This will not gracefully shutdown Home
+        Assistant, it will skip configuration checks and ignore running database
+        migrations. Only use this if you know what you are doing.
+      required: false
+      selector:
+        boolean:
+
 recorder_import_statistics:
   name: Import statistics 👻
   description: >-
