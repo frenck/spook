@@ -8,7 +8,11 @@ DOMAIN: Final = "spook"
 LOGGER = logging.getLogger(__package__)
 
 PLATFORMS: Final = [
+    Platform.BINARY_SENSOR,
     Platform.BUTTON,
+    Platform.NUMBER,
+    Platform.SELECT,
     Platform.SENSOR,
     Platform.SWITCH,
+    Platform.TIME,
 ]

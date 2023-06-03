@@ -18,10 +18,10 @@ async def async_setup_entry(
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
-    """Set up Spook sensors."""
+    """Set up Spook binary sensors."""
     await async_forward_platform_entry_setups_to_ectoplasm(
         hass,
         entry,
         async_add_entities,
-        Platform.SENSOR,
+        Platform.BINARY_SENSOR,
     )
