@@ -180,6 +180,7 @@ of the box.
 - **Number of automations**: Because that is such a useful metric. _#robots_
 - **Number of devices**: That are in the device registry. _#bling_
 - **Number of persons**: How many people are you constantly tracking the location of? _#privacy_
+- **Number of persistent notifications**: Are you just a persistent as this thing is? _#annoyance_
 - **Number of scenes**: Maybe you can ask your partner to make a scene... _#fight_
 - **Number of scripts**: More than the average unemployed actor yet? _#hollywood_
 - **Number of suns**: Answers how godlike you are. _#burn_
