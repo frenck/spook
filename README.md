@@ -80,6 +80,7 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service: Remove repair issue](#service-remove-repair-issue)
   - [Service: Ignore all repair issues](#service-ignore-all-repair-issues)
   - [Service: Unignore all repair issues](#service-unignore-all-repair-issues)
+  - [Service: Restart Home Assistant (with force option)](#service-restart-home-assistant-with-force-option)
   - [Service: Boo! 👻](#service-boo-)
   - [Service: Random fail](#service-random-fail)
 - [Entity services](#entity-services)
@@ -382,6 +383,13 @@ Call it using: [`repairs.ignore_all`](https://my.home-assistant.io/redirect/deve
 Call it using: [`repairs.unignore_all`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
 
 > Will unignore all issues marked ignored, and shows them all again. _#faceit_
+
+## Service: Restart Home Assistant (with force option)
+
+Call it using: [`homeassistant.restart`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
+
+> Extends the existing restart service with an "force" option. Because forcing
+> is always a good idea. _#hammer_
 
 ## Service: Boo! 👻
 
