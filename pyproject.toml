@@ -30,7 +30,7 @@ hass-nabucasa = "0.69.0"
 pre-commit = "3.3.3"
 pre-commit-hooks = "4.4.0"
 pylint = "2.17.4"
-ruff = "0.0.272"
+ruff = "0.0.275"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/frenck/spook/issues"
@@ -47,6 +47,7 @@ ignore = [
   "D203", # Conflicts with other rules
   "D213", # Conflicts with other rules
   "TID252", # Relative imports
+  "RUF012", # Just broken
 ]
 select = ["ALL"]
 src = ["custom_components/spook"]
