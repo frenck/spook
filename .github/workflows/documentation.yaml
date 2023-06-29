@@ -1,0 +1,46 @@
+---
+name: Documentation
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v3.5.3
+
+      - name: 🏗 Set up Node.js
+        uses: actions/setup-node@v2.5.2
+        with:
+          node-version-file: "documentation/.nvmrc"
+
+      - name: 🏗 Install MyST
+        run: npm install -g myst-cli
+
+      - name: 🚀 Build documenation
+        working-directory: ./documentation
+        run: myst build --html
+
+      - name: 🆙 Upload artifact
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: ./documentation/_build/html
+
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        uses: actions/deploy-pages@v2.0.2
