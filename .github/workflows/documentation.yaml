@@ -24,16 +24,10 @@ jobs:
       - name: 🚀 Build documenation
         run: myst build --html
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./_build/html
-
-      - name: Upload artifact
+      - name: 🆙 Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./dist
+          path: ./_build/html
 
   deploy:
     name: Deploy
