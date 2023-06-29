@@ -2,7 +2,7 @@
 
 ## title: Spook 👻 Not your homie.
 
-```{image} ./images/logo
+```{image} ./images/logo.png
 :alt: The Spook logo
 :align: center
 ```
