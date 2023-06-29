@@ -22,12 +22,13 @@ jobs:
         run: npm install -g myst-cli
 
       - name: 🚀 Build documenation
+        working-directory: ./documentation
         run: myst build --html
 
       - name: 🆙 Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
-          path: ./_build/html
+          path: ./documentation/_build/html
 
   deploy:
     name: Deploy
