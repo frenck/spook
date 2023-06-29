@@ -27,7 +27,7 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = script.DOMAIN
     repair = "script_unknown_entity_references"
-    events = {
+    inspect_events = {
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
         "event_counter_reloaded",

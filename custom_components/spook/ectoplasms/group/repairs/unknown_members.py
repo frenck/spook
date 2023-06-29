@@ -20,7 +20,7 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = group.DOMAIN
     repair = "group_unknown_members"
-    events = {
+    inspect_events = {
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
         "event_group_reloaded",

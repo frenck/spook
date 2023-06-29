@@ -34,7 +34,7 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = DOMAIN
     repair = "lovelace_unknown_entity_references"
-    events = {
+    inspect_events = {
         EVENT_COMPONENT_LOADED,
         EVENT_LOVELACE_UPDATED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
