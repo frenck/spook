@@ -14,7 +14,7 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = script.DOMAIN
     repair = "script_unknown_area_references"
-    events = {ar.EVENT_AREA_REGISTRY_UPDATED}
+    inspect_events = {ar.EVENT_AREA_REGISTRY_UPDATED}
 
     _entity_component: EntityComponent[script.ScriptEntity]
 

@@ -14,7 +14,10 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = automation.DOMAIN
     repair = "automation_unknown_area_references"
-    events = {automation.EVENT_AUTOMATION_RELOADED, ar.EVENT_AREA_REGISTRY_UPDATED}
+    inspect_events = {
+        automation.EVENT_AUTOMATION_RELOADED,
+        ar.EVENT_AREA_REGISTRY_UPDATED,
+    }
 
     _entity_component: EntityComponent[automation.AutomationEntity]
 

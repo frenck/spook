@@ -14,7 +14,7 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = "switch_as_x"
     repair = "switch_as_x_unknown_source"
-    events = {
+    inspect_events = {
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
         "event_integration_reloaded",

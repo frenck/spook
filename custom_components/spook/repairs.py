@@ -3,13 +3,12 @@ from __future__ import annotations
 
 import importlib
 from abc import ABC, abstractmethod
-from collections.abc import Callable
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import final
+from typing import TYPE_CHECKING, final
 
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import (
     area_registry as ar,
 )
@@ -25,6 +24,9 @@ from homeassistant.helpers import (
 from homeassistant.helpers.debounce import Debouncer
 
 from .const import DOMAIN, LOGGER
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
 
 
 class AbstractSpookRepairBase(ABC):
@@ -112,12 +114,12 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
 
     inspect_events: set[str] | None = None
     inspect_debouncer: Debouncer
-    _event_subs = set[Callable[[], None]]
+    _event_subs: set[Callable[[], None]]
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
         super().__init__(hass)
-        self._subs = set()
+        self._event_subs = set()
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
@@ -145,9 +147,13 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         if self.inspect_events is None:
             return
 
+        async def _async_call_inspect_debouncer(_: Event) -> None:
+            # Trigger an inspection when an event is received from the event bus.
+            await self.inspect_debouncer.async_call()
+
         for event in self.inspect_events:
             self._event_subs.add(
-                self.hass.bus.async_listen(event, self.inspect_debouncer.async_call),
+                self.hass.bus.async_listen(event, _async_call_inspect_debouncer),
             )
 
     async def async_deactivate(self) -> None:
