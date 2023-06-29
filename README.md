@@ -161,6 +161,7 @@ of the box.
   - Number of `device_tracker` entities.
   - Number of `fan` entities.
   - Number of `humidifier` entities.
+  - Number of `image` entities.
   - Number of `input_boolean` entities.
   - Number of `input_button` entities.
   - Number of `input_number` entities.
