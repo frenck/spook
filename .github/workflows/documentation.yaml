@@ -25,6 +25,9 @@ jobs:
         working-directory: ./documentation
         run: myst build --html
 
+      - name: ©️ Public folder
+        run: cp ./documentation/public/* ./documentation/_build/html/
+
       - name: 🆙 Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
@@ -42,6 +45,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: 🚀 Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2.0.2
