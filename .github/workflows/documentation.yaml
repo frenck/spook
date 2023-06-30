@@ -24,8 +24,6 @@ jobs:
       - name: 🚀 Build documenation
         working-directory: ./documentation
         run: myst build --html
-        env:
-          BASE_URL: /${{ github.event.repository.name }}
 
       - name: 🆙 Upload artifact
         uses: actions/upload-pages-artifact@v1
@@ -42,7 +40,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deploy.outputs.page_url }}
+      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
