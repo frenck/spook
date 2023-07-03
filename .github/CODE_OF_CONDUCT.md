@@ -1,13 +1,5 @@
 # Code of conduct
 
----
-
-subject: About the project
-title: Code of conduct
-subtitle: But remember, Spook is still not your homie.
-
----
-
 ## Our Pledge
 
 We as members, contributors, and leaders pledge to make participation in our
