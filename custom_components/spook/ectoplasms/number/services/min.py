@@ -13,10 +13,10 @@ if TYPE_CHECKING:
 
 
 class SpookService(AbstractSpookEntityComponentService):
-    """Number entity service, set the max value."""
+    """Number entity service, set the min value."""
 
     domain = DOMAIN
-    service = "max"
+    service = "min"
 
     async def async_handle_service(self, entity: NumberEntity, _: ServiceCall) -> None:
         """Handle the service call."""
