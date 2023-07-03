@@ -29,32 +29,12 @@ I've warned you :D
 
 ../Frenck
 
-## Cool, but why? What is it? <!-- omit from toc -->
-
-So, there a lot of things/features, that will never end up in Home Assistant itself.
-
-This can have various reasons, for example: It is just too random, out of scope,
-not matching the Home Assistant philosophy, violating architectural design,
-still in early development, experimental, explorative, or just freaking useless.
-
-Spook doesn't care. He is nobodies homie.
-
-So, maybe, that one feature you wanted Home Assistant to have, is in Spook.
-
-However, remember, Spook is not your homie. All stuff in here, is not part of
-Home Assistant (or at least not yet) for a reason. So, don't expect it to work,
-or to be supported, or well, for starters, to be a good idea.
-
 ## Some guidance for the brave <!-- omit from toc -->
 
-- [Installation](#installation)
-- [Configuration](#configuration)
 - [Entities](#entities)
   - [Buttons](#buttons)
   - [Sensors](#sensors)
-  - [Switches](#switches)
 - [Services](#services)
-  - [Service: Import Blueprint](#service-import-blueprint)
   - [Service: Disable an integration](#service-disable-an-integration)
   - [Service: Enable an integration](#service-enable-an-integration)
   - [Service: Disable a device](#service-disable-a-device)
@@ -67,7 +47,6 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service: Enable polling for updates](#service-enable-polling-for-updates)
   - [Service: Ignore all discovered devices \& services](#service-ignore-all-discovered-devices--services)
   - [Service: Delete all orphaned entities](#service-delete-all-orphaned-entities)
-  - [Service: Import statistics](#service-import-statistics)
   - [Service: Create area](#service-create-area)
   - [Service: Add an alias to an area](#service-add-an-alias-to-an-area)
   - [Service: Remove an alias from an area](#service-remove-an-alias-from-an-area)
@@ -77,34 +56,12 @@ or to be supported, or well, for starters, to be a good idea.
   - [Service: Add entity to area](#service-add-entity-to-area)
   - [Service: Remove entity from area](#service-remove-entity-from-area)
   - [Service: Delete area](#service-delete-area)
-  - [Service: Create repair issue](#service-create-repair-issue)
-  - [Service: Remove repair issue](#service-remove-repair-issue)
-  - [Service: Ignore all repair issues](#service-ignore-all-repair-issues)
-  - [Service: Unignore all repair issues](#service-unignore-all-repair-issues)
   - [Service: Restart Home Assistant (with force option)](#service-restart-home-assistant-with-force-option)
   - [Service: Boo! 👻](#service-boo-)
   - [Service: Random fail](#service-random-fail)
-- [Entity services](#entity-services)
-  - [Service for `input_number`: Decrease value](#service-for-input_number-decrease-value)
-  - [Service for `input_number`: Increase value](#service-for-input_number-increase-value)
-  - [Service for `input_number`: Min value](#service-for-input_number-min-value)
-  - [Service for `input_number`: Max value](#service-for-input_number-max-value)
-  - [Service for `input_select`: Select random option](#service-for-input_select-select-random-option)
-  - [Service for `input_select`: Shuffle options](#service-for-input_select-shuffle-options)
-  - [Service for `input_select`: Sort options](#service-for-input_select-sort-options)
-  - [Service for `number`: Decrease value](#service-for-number-decrease-value)
-  - [Service for `number`: Increase value](#service-for-number-increase-value)
-  - [Service for `number`: Min value](#service-for-number-min-value)
-  - [Service for `number`: Max value](#service-for-number-max-value)
-  - [Service for `select`: Select random option](#service-for-select-select-random-option)
-- [Repairs](#repairs)
-  - [Automations: Find use of non-existing areas, devices and entities](#automations-find-use-of-non-existing-areas-devices-and-entities)
-  - [Groups: Detect unknown group members](#groups-detect-unknown-group-members)
-  - [Riemann sum integral: Detect missing source sensor](#riemann-sum-integral-detect-missing-source-sensor)
-  - [Scripts: Find use of non-existing areas, devices and entities](#scripts-find-use-of-non-existing-areas-devices-and-entities)
-  - [Switch as X: Detect missing source switch](#switch-as-x-detect-missing-source-switch)
 - [Previously part of Spook](#previously-part-of-spook)
   - [Obsolete integration \& platform YAML configuration repairs](#obsolete-integration--platform-yaml-configuration-repairs)
+<<<<<<< HEAD
 - [Frequently Asked Questions](#frequently-asked-questions)
   - [Is this a serious thing?](#is-this-a-serious-thing)
   - [Why is Spook called Spook?](#why-is-spook-called-spook)
@@ -112,26 +69,12 @@ or to be supported, or well, for starters, to be a good idea.
   - [Does Spook do random things to my home?](#does-spook-do-random-things-to-my-home)
   - [Ok, so should I use Spook?](#ok-so-should-i-use-spook)
 - [Translating Spook](#translating-spook)
+=======
+>>>>>>> 5f94401 (Initial stab at adding actual documentation)
 - [Changelog \& Releases](#changelog--releases)
 - [Contributing](#contributing)
 - [Authors \& contributors](#authors--contributors)
-- [Disclaimer](#disclaimer)
 - [License](#license)
-
-# Installation
-
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=frenck&repository=spook&category=integration)
-
-You can find it in the HACS store by searching for "Spook", but you shoudn't.
-You could manually add this repository to HACS, but you shouldn't. You can
-also install it manually by copying the `spook` folder into your
-`custom_components` folder, but you shouldn't.
-
-Just don't.
-
-# Configuration
-
-[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=spook)
 
 You shouldn't.
 
@@ -197,15 +140,6 @@ of the box.
 - **Number of integrations in use**: Consider using less integrations. _#lessismore_
 - **Number of custom integrations in use**: In this case... _#lessisevenmore_ (delete this one! 🙃)
 
-## Switches
-
-- **Home Assistant Cloud**: Switch to control behavior of Nabu Casa's Home Assistant Cloud. _#love_
-  - **Alexa**: Enable/disable Alexa connection. _#amazon_
-  - **Alexa state reporting**: Enable/disable Alexa state reporting. _#ping_
-  - **Google Assistant**: Enable/disable Google Assistant connection. _#bigtech_
-  - **Google Assistant state reporting**: Enable/disable Google Assistant state reporting connection. _#pong_
-  - **Remote**: Enable/disable remote access to the Home Asistant frontend. _#rdp_
-
 # Services
 
 There are quite a few useless and horrible services available for you to explore
@@ -213,13 +147,6 @@ and self-destruct your setup with. The developer service tools are great
 to get you into such a situation.
 
 [![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
-
-## Service: Import Blueprint
-
-Call it using: [`blueprint.import`](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
-
-> Downloads and imports a automation/script Blueprint, directly from the
-> URL you pass into this service. _#noquestionsasked_
 
 ## Service: Disable an integration
 
@@ -304,13 +231,6 @@ Call it using: [`homeassistant.delete_all_orphaned_entities`](https://my.home-as
 > integration is offline or not working since Home Assistant started. Calling
 > this service will delete those entities as well.
 
-## Service: Import statistics
-
-Call it using: [`recorder.import_statistics`](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
-
-> Advanced service to directly inject historical statistics data into
-> the recorder long-term stats database. _#easy_
-
 ## Service: Create area
 
 Call it using: [`homeassistant.create_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
@@ -365,33 +285,6 @@ Call it using: [`homeassistant.delete_area`](https://my.home-assistant.io/redire
 
 > Just like that, you made an area of your home dissapear. _#DemolitionMan_
 
-## Service: Create repair issue
-
-Call it using: [`repairs.create`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
-
-> Battery empty? Raise a issue in Home Assistant Repairs. Although, you
-> should probably just use a notification for this. _#issues_
-
-## Service: Remove repair issue
-
-Call it using: [`repairs.remove`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
-
-> Removes a issue from Home Assistant Repairs. Can only remove repair issues
-> that have been created using the `repairs.create` service. _#trashit_
-
-## Service: Ignore all repair issues
-
-Call it using: [`repairs.ignore_all`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
-
-> Whatever issue is bothering you, just ignore it all and all your
-> problems will magically be gone. _#allgood_
-
-## Service: Unignore all repair issues
-
-Call it using: [`repairs.unignore_all`](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
-
-> Will unignore all issues marked ignored, and shows them all again. _#faceit_
-
 ## Service: Restart Home Assistant (with force option)
 
 Call it using: [`homeassistant.restart`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
@@ -414,148 +307,6 @@ Call it using: [`spook.random_fail`](https://my.home-assistant.io/redirect/devel
 > script). Especially combined with `continue_on_error: true` this can be a great
 > way add a useless service calls to your automation or script. _#random_
 
-# Entity services
-
-Spook also extends the services available for entities. These services may
-extend the functionality if entity components (like `select`) or platform
-specific services provided by integrations.
-
-[![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
-
-## Service for `input_number`: Decrease value
-
-Call it using: [`input_number.decrement`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
-
-> Override of the existing service, which provides the option to specify
-> the amount to decrease the value by. _#evenlower_
-
-_Under consideration for contributing back to Home Assistant Core._
-
-## Service for `input_number`: Increase value
-
-Call it using: [`input_number.increment`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
-
-> Override of the existing service, which provides the option to specify
-> the amount to increase the value by. _#moreoptions_
-
-_Under consideration for contributing back to Home Assistant Core._
-
-## Service for `input_number`: Min value
-
-Call it using: [`input_number.min`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
-
-> Set the value of a `input_number` entity to its minimum value/ _#lowout_
-
-## Service for `input_number`: Max value
-
-Call it using: [`input_number.max`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
-
-> Set the value of a `input_number` entity to the maximum value. _#maxout_
-
-## Service for `input_select`: Select random option
-
-Call it using: [`input_select.random`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
-
-> This service select a random option from the list of options of a select entity.
-> Optionally this can be limited to a set of given options. _#shuffle_
-
-## Service for `input_select`: Shuffle options
-
-Call it using: [`input_select.shuffle`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
-
-> Shuffles the list of selectable options for an `input_select` entity.
-> Note: This is not persistent and will be undone once reloaded or
-> Home Assistant restarts. _#31254_
-
-## Service for `input_select`: Sort options
-
-Call it using: [`input_select.sort`](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
-
-> Sorts the list of selectable options for an `input_select` entity.
-> Note: This is not persistent and will be undone once reloaded or
-> Home Assistant restarts. _#12345_
-
-## Service for `number`: Decrease value
-
-Call it using: [`number.decrement`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
-
-> Decrease the value of a number entity, either by a single step or by a
-> provided amount. _#downboy_
-
-_Under consideration for contributing back to Home Assistant Core._
-
-## Service for `number`: Increase value
-
-Call it using: [`number.increment`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
-
-> Increase the value of a number entity, either by a single step or by a
-> provided amount. _#up #greatmovie_
-
-_Under consideration for contributing back to Home Assistant Core._
-
-## Service for `number`: Min value
-
-Call it using: [`number.min`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
-
-> Set the value of a number entity to its minimum value. _#lowout_
-
-## Service for `number`: Max value
-
-Call it using: [`number.max`](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
-
-> Set the value of a number entity to the maximum value. _#maxout_
-
-## Service for `select`: Select random option
-
-Call it using: [`select.random`](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
-
-> This service select a random option from the list of options of a select entity.
-> Optionally this can be limited to a set of given options. _#random_
-
-# Repairs
-
-Spook will float around your Home Assistant instance, and while it does, it
-might be able to find things that need your attention. Spook will notify you
-about these things using an Home Assistant repair issue. _#whoyougonnacall_
-
-[![Open your Home Assistant instance and show your repairs.](https://my.home-assistant.io/badges/repairs.svg)](https://my.home-assistant.io/redirect/repairs/)
-
-Currently Spook will detect the following issues:
-
-## Automations: Find use of non-existing areas, devices and entities
-
-> Finds automations that use non-existing areas, devices or entities in, for
-> example, their service calls. _#springcleaning_
-
-_Intention to contribute back to Home Assistant Core once sure no false
-postives remain, and it has been extended to catch more situations._
-
-## Groups: Detect unknown group members
-
-> Finds groups that contain references to unknown members (entities). _#aliens_
-
-_Intention to contribute back to Home Assistant Core._
-
-## Riemann sum integral: Detect missing source sensor
-
-> Finds integrals that are missing a source sensor. _#missinglink_
-
-_Intention to contribute back to Home Assistant Core._
-
-## Scripts: Find use of non-existing areas, devices and entities
-
-> Finds scripts that use non-existing areas, devices or entities in, for
-> example, their service calls. _#void_
-
-_Intention to contribute back to Home Assistant Core once sure no false
-postives remain, and it has been extended to catch more situations._
-
-## Switch as X: Detect missing source switch
-
-> Finds Switch as X helpers that are missing a source switch. _#NotendoSwitch_
-
-_Intention to contribute back to Home Assistant Core._
-
 # Previously part of Spook
 
 Some of the amazing things Spook does, may turn out to be actually pretty good
@@ -572,6 +323,7 @@ So here is a list of things that have been removed from Spook 👻 _#loser_
 As of Home Assistant 2023.5 (refined in 2023.6), Home Assistant will raise
 repair issues for these cases itself.
 
+<<<<<<< HEAD
 # Frequently Asked Questions
 
 In the first few days after putting Spook out, some of the same questions
@@ -642,6 +394,8 @@ Translation status per language:
 
 [![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/multi-auto.svg)](https://hosted.weblate.org/engage/spook/)
 
+=======
+>>>>>>> 5f94401 (Initial stab at adding actual documentation)
 # Changelog & Releases
 
 This repository does not keep a change log using [GitHub's releases][releases]
@@ -666,16 +420,6 @@ The original setup of this repository is by [Franck Nijhof][frenck].
 
 For a full list of all authors and contributors,
 check [the contributor's page][contributors].
-
-# Disclaimer
-
-At this point, I guess it goes without saying that this integration is
-not affiliated with, endorsed or recommended by the Home Assistant project.
-
-**It is not supported by the Home Assistant project.**
-
-If you experience issues with this integration, or as a result
-of this integration, please go cry a lot on your own. _#sorrynotsorry_
 
 # License
 

@@ -16,12 +16,18 @@ The Spook documentation is currently in development.
 (but honestly, that will also be the case when it is complete).
 :::
 
-So, there a lot of things/features, that will never end up in Home Assistant itself.
+Hi! 👋
 
-This can have various reasons, for example: It is just too random, out of scope, not matching the Home Assistant philosophy, iolating architectural design, still in early development, experimental, explorative, or just freaking useless.
+Welcome to my (one and only) {term}`custom integration <integration>` for {term}`Home Assistant`: Spook! 👻
 
-Spook doesn't care. He is nobodies homie.
+Spook is my friend and my personal little pet project that I develop in my free spare time to add some features to Home Assistant that I (or others) think are missing; but are not a good fit to ship with Home Assistant itself.
 
-So, maybe, that one feature you wanted Home Assistant to have, is in Spook.
+If you would ever ask me, if you should use Spook? I would say: No. This sounds odd, but I mean it. Using the least amount of custom integrations is always the best way to go.
 
-However, remember, Spook is not your homie. All stuff in here, is not part of Home Assistant (or at least not yet) for a reason. So, don't expect it to work, or to be supported, or well, for starters, to be a good idea.
+That said, Spook is slowly becoming an scary powerfull toolbox for Home Assistant, that many have come to love. So, if you are comfortable with using custom integrations, Spook might be a good fit for you.
+
+Want to start using Spook? I would recommend picking up at the [getting started](about) section of the documentation. If you like to learn more about Spook its origin first, check out the [background and history](background_and_history) page for more information on that. Lastly, maybe the [](faq) page can help you.
+
+Boo! 👻
+
+../Frenck
