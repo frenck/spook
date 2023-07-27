@@ -61,16 +61,6 @@ I've warned you :D
   - [Service: Random fail](#service-random-fail)
 - [Previously part of Spook](#previously-part-of-spook)
   - [Obsolete integration \& platform YAML configuration repairs](#obsolete-integration--platform-yaml-configuration-repairs)
-<<<<<<< HEAD
-- [Frequently Asked Questions](#frequently-asked-questions)
-  - [Is this a serious thing?](#is-this-a-serious-thing)
-  - [Why is Spook called Spook?](#why-is-spook-called-spook)
-  - [Does this integration break my Home Assistant instance?](#does-this-integration-break-my-home-assistant-instance)
-  - [Does Spook do random things to my home?](#does-spook-do-random-things-to-my-home)
-  - [Ok, so should I use Spook?](#ok-so-should-i-use-spook)
-- [Translating Spook](#translating-spook)
-=======
->>>>>>> 5f94401 (Initial stab at adding actual documentation)
 - [Changelog \& Releases](#changelog--releases)
 - [Contributing](#contributing)
 - [Authors \& contributors](#authors--contributors)
@@ -315,15 +305,6 @@ because of similar features they added.
 
 So here is a list of things that have been removed from Spook 👻 _#loser_
 
-## Obsolete integration & platform YAML configuration repairs
-
-> Find YAML configuration for an integrations (and older integration platforms)
-> that no longer support it.
-
-As of Home Assistant 2023.5 (refined in 2023.6), Home Assistant will raise
-repair issues for these cases itself.
-
-<<<<<<< HEAD
 # Frequently Asked Questions
 
 In the first few days after putting Spook out, some of the same questions
@@ -394,8 +375,6 @@ Translation status per language:
 
 [![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/multi-auto.svg)](https://hosted.weblate.org/engage/spook/)
 
-=======
->>>>>>> 5f94401 (Initial stab at adding actual documentation)
 # Changelog & Releases
 
 This repository does not keep a change log using [GitHub's releases][releases]
