@@ -12,6 +12,8 @@ date: 2023-06-30T20:36:04+02:00
 % string
 % integer
 % float
+% yaml
+% jinja2
 
 :::{glossary}
 Action
