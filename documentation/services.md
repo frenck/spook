@@ -10,6 +10,59 @@ date: 2023-06-30T09:31:26+02:00
 
 Spook provides quite a lot of new services to Home Assistant. This reference pages lists them all, and points you to the right documentation for that service.
 
+## Areas: Create an area
+
+Instantly create new rooms in your home. _#BobTheBuilder_
+
+`homeassistant.create_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area), [documentation](areas#create-an-area) 📚
+
+## Areas: Delete an area
+
+Just like that, you made an area of your home dissapear. _#DemolitionMan_
+
+`homeassistant.delete_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area), [documentation](areas#delete-an-area) 📚
+## Areas: Add an alias to an area
+
+Adds an alias (or multiple aliases) to an area. _#aka_
+
+`homeassistant.add_alias_to_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area), [documentation](areas#add-an-alias-to-an-area)
+
+## Areas: Remove an alias from an area
+
+Removes an alias (or multiple aliases) from an area. _#broom_
+
+`homeassistant.remove_alias_from_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area), [documentation](areas#remove-an-alias-from-an-area)
+
+## Areas: Set aliases for an area
+
+Sets the aliases for an area. _#useless_
+
+`homeassistant.set_area_aliases`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases), [documentation](areas#set-aliases-for-an-area)
+
+## Areas: Add a device to an area
+
+Dynamicaly add/move a device to an new area. _#moveit_
+
+`homeassistant.add_device_to_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area), [documentation](areas#add-a-device-to-an-area)
+
+## Areas: Remove a device from an area
+
+Dynamicaly remove a device from an area. _#poef_
+
+`homeassistant.remove_device_from_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area), [documentation](areas#remove-a-device-from-an-area)
+
+## Areas: Add an entity to an area
+
+Dynamicaly add/move an entity to an area. _#bam_
+
+`homeassistant.add_entity_to_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area), [documentation](areas#add-an-entity-to-an-area)
+
+## Areas: Remove an entity from an area
+
+Dynamicaly remove an entity from an area. _#AaaaandItIsGone_
+
+`homeassistant.remove_entity_from_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area), [documentation](areas#remove-an-entity-from-an-area)
+
 ## Blueprint: Import Blueprint
 
 Downloads and imports a automation/script Blueprint, directly from the URL you pass into this service. _#noquestionsasked_

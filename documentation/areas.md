@@ -1,8 +1,749 @@
 ---
 subject: Core extensions
-title: Areas
-subtitle: A little bit of ectoplasm goes a long way. 🧪
+title: Areas management
+subtitle: Is there room for one more?
 date: 2023-06-30T20:36:04+02:00
 ---
 
-Areas
+{term}`Areas <area>` in {term}`Home Assistant` is a logical grouping of {term}`devices <device>` and {term}`entities <entity>` that are meant to match the areas (or rooms) in the physical world: your home.
+
+Spook provides {term}`services <service>` that allows you to manage and {term}`automate <automation>` the areas in Home Assisatant programatically. Great for creating "dynamic" areas, or for creating areas on the fly.
+
+```{figure} ./images/areas/example.png
+:alt: Screenshot of the developer service tools, listing the new services to manage areas.
+:align: center
+```
+
+## Services
+
+Spook adds the following new service to your Home Assistant instance:
+
+### Create an area
+
+Adds a new area to your Home Assistant instance.
+
+```{figure} ./images/areas/create.png
+:alt: Screenshot of the create area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Create an area 👻
+* - {term}`Service name`
+  - `homeassistant.create_area`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `name`
+  - string
+  - Yes
+  - `Living room`
+* - `aliases`
+  - string | list of strings
+  - No
+  - `["Lounge", "Sitting area"]`
+```
+
+The use of `aliases` is helpful if you want to create an area with multiple names. For example, if you want to create an area called "Living room", but also want to be able to refer to it as "Sitting area" or "Lounge", you can add those names as aliases. This is used by Home Assistant Assist and Google Assistant.
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.create_area
+data:
+  name: "Living room"
+  aliases:
+    - "Lounge"
+    - "Sitting area"
+```
+
+:::
+
+### Delete an area
+
+Adds a new area to your Home Assistant instance.
+
+```{figure} ./images/areas/delete.png
+:alt: Screenshot of the delete area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Delete an area 👻
+* - {term}`Service name`
+  - `homeassistant.delete_area`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `area_id`
+  - string
+  - Yes
+  - `living_room`
+```
+
+:::{tip} Tip on getting an area ID from an area name
+:class: dropdown
+
+Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
+
+```yaml
+area_id: "{{ area_id('Living room') }}"
+```
+
+That template will find the area ID of the area with the name "Living room".
+:::
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.delete_area
+data:
+  area_id: "living_room"
+```
+
+Same example, but using the area's name instead of the area ID:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.delete_area
+data:
+  area_id: "{{ area_id('Living room') }}"
+```
+
+:::
+
+### Add an alias to an area
+
+Adds one or more aliases to an existing area. This service does not remove existing aliases, but adds the new ones to the existing ones.
+
+As area aliases are used by voice assistants, you could add (and also remove) aliases to an area using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
+
+```{figure} ./images/areas/add_alias.png
+:alt: Screenshot of the add an alias to an area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Add an alias to an area 👻
+* - {term}`Service name`
+  - `homeassistant.add_alias_to_area`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `area_id`
+  - string
+  - Yes
+  - `living_room`
+* - `aliases`
+  - string | list of strings
+  - Yes
+  - `["Lounge", "Sitting area"]`
+```
+
+:::{tip} Tip on getting an area ID from an area name
+:class: dropdown
+
+Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
+
+```yaml
+area_id: "{{ area_id('Living room') }}"
+```
+
+That template will find the area ID of the area with the name "Living room".
+:::
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.add_alias_to_area
+data:
+  area_id: "living_room"
+  aliases:
+    - "Lounge"
+    - "Sitting area"
+```
+
+Same example, but using the area's name instead of the area ID:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.add_alias_to_area
+data:
+  area_id: "{{ area_id('Living room') }}"
+  aliases:
+    - "Lounge"
+    - "Sitting area"
+```
+
+:::
+
+### Remove an alias from an area
+
+Removes one or more aliases from an existing area. This service will leave the other aliases intact.
+
+As area aliases are used by voice assistants, you could remove (and also add) aliases to an area using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
+
+```{figure} ./images/areas/remove_alias.png
+:alt: Screenshot of the remove an alias to an area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Add an alias to an area 👻
+* - {term}`Service name`
+  - `homeassistant.remove_alias_from_area`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `area_id`
+  - string
+  - Yes
+  - `living_room`
+* - `aliases`
+  - string | list of strings
+  - Yes
+  - `["Lounge", "Sitting area"]`
+```
+
+:::{tip} Tip on getting an area ID from an area name
+:class: dropdown
+
+Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
+
+```yaml
+area_id: "{{ area_id('Living room') }}"
+```
+
+That template will find the area ID of the area with the name "Living room".
+:::
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.remove_alias_from_area
+data:
+  area_id: "living_room"
+  aliases:
+    - "Lounge"
+    - "Sitting area"
+```
+
+Same example, but using the area's name instead of the area ID:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.remove_alias_from_area
+data:
+  area_id: "{{ area_id('Living room') }}"
+  aliases:
+    - "Lounge"
+    - "Sitting area"
+```
+
+:::
+
+### Set aliases for an area
+
+Sets the aliases for an area. This service will overwrite/remove all existing aliases.
+
+As area aliases are used by voice assistants, you could remove (and also add) aliases to an area using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
+
+```{figure} ./images/areas/set_aliases.png
+:alt: Screenshot of the set aliases to for an area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Sets aliases for an area 👻
+* - {term}`Service name`
+  - `homeassistant.set_area_aliases`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `area_id`
+  - string
+  - Yes
+  - `living_room`
+* - `aliases`
+  - string | list of strings
+  - Yes
+  - `["Lounge", "Sitting area"]`
+```
+
+:::{tip} Tip on getting an area ID from an area name
+:class: dropdown
+
+Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
+
+```yaml
+area_id: "{{ area_id('Living room') }}"
+```
+
+That template will find the area ID of the area with the name "Living room".
+:::
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.set_area_aliases
+data:
+  area_id: "living_room"
+  aliases:
+    - "Lounge"
+    - "Sitting area"
+```
+
+Same example, but using the area's name instead of the area ID:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.set_area_aliases
+data:
+  area_id: "{{ area_id('Living room') }}"
+  aliases:
+    - "Lounge"
+    - "Sitting area"
+```
+
+:::
+
+### Add a device to an area
+
+Adds one or more device(s) to an area. This service will leave the other devices in the area untouched.
+
+```{figure} ./images/areas/add_device.png
+:alt: Screenshot of the add a device to an area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Add a device to an area 👻
+* - {term}`Service name`
+  - `homeassistant.add_device_to_area`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `area_id`
+  - string
+  - Yes
+  - `living_room`
+* - `device_id`
+  - string | list of strings
+  - Yes
+  - `dc23e666e6100f184e642a0ac345d3eb`
+```
+
+:::{tip} Tip on getting an area ID from an area name
+:class: dropdown
+
+Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
+
+```yaml
+area_id: "{{ area_id('Living room') }}"
+```
+
+That template will find the area ID of the area with the name "Living room".
+:::
+
+:::{tip} Tip on finding a device ID
+:class: dropdown
+
+Not sure what the `device_id` of an your device is? There are a few ways to find it:
+
+Use this service in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+
+Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
+:::
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.add_device_to_area
+data:
+  area_id: "living_room"
+  device_id: "dc23e666e6100f184e642a0ac345d3eb"
+```
+
+Same example, but using the area's name instead of the area ID:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.set_area_aliases
+data:
+  area_id: "{{ area_id('Living room') }}"
+  device_id: "dc23e666e6100f184e642a0ac345d3eb"
+```
+
+To add multiple device at once, use a list of device IDs:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.add_device_to_area
+data:
+  area_id: "living_room"
+  device_id: 
+    - "dc23e666e6100f184e642a0ac345d3eb"
+    - "df98a97c9341a0f184e642a0ac345d3b"
+```
+
+:::
+
+### Remove a device from an area
+
+Removes one or more device(s) from an area. This service will leave the other devices in the area untouched.
+
+```{figure} ./images/areas/remove_device.png
+:alt: Screenshot of the add a device to an area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Remove a device from an area 👻
+* - {term}`Service name`
+  - `homeassistant.remove_device_from_area`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `device_id`
+  - string | list of strings
+  - Yes
+  - `dc23e666e6100f184e642a0ac345d3eb`
+```
+
+:::{note} This service does not need an area ID
+:class: dropdown
+
+While this service is area related, it does not need to know the area ID. A device can only be in a single area at a time, so it will remove the device from the area it is in. Hence, it only needs to know the device you want to remove from an area.
+:::
+
+:::{tip} Tip on finding a device ID
+:class: dropdown
+
+Not sure what the `device_id` of an your device is? There are a few ways to find it:
+
+Use this service in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+
+Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
+:::
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.remove_device_from_area
+data:
+  device_id: "dc23e666e6100f184e642a0ac345d3eb"
+```
+
+To remove multiple devices at once, use a list of device IDs:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.remove_device_from_area
+data:
+  device_id: 
+    - "dc23e666e6100f184e642a0ac345d3eb"
+    - "df98a97c9341a0f184e642a0ac345d3b"
+```
+
+:::
+
+### Add an entity to an area
+
+Adds one or more entities to an area. This service will leave the other entities in the area untouched.
+
+```{figure} ./images/areas/add_entity.png
+:alt: Screenshot of the add an entity to an area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Add an entity to an area 👻
+* - {term}`Service name`
+  - `homeassistant.add_entity_to_area`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `area_id`
+  - string
+  - Yes
+  - `living_room`
+* - `entity_id`
+  - string | list of strings
+  - Yes
+  - `light.spotlight`
+```
+
+:::{tip} Tip on getting an area ID from an area name
+:class: dropdown
+
+Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
+
+```yaml
+area_id: "{{ area_id('Living room') }}"
+```
+
+That template will find the area ID of the area with the name "Living room".
+:::
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.add_entity_to_area
+data:
+  area_id: "living_room"
+  entity_id: light.spotlight
+```
+
+Same example, but using the area's name instead of the area ID:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.add_entity_to_area
+data:
+  area_id: "{{ area_id('Living room') }}"
+  entity_id: light.spotlight
+```
+
+To add multiple entities at once, use a list of device IDs:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.add_entity_to_area
+data:
+  area_id: "living_room"
+  entity_id: 
+    - light.spotlight
+    - light.ceiling
+```
+
+:::
+
+### Remove an entity from an area
+
+Removes one or more device(s) from an area. This service will leave the other devices in the area untouched.
+
+```{figure} ./images/areas/remove_entity.png
+:alt: Screenshot of the add a device to an area service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - Service
+  - Remove an entity from an area 👻
+* - {term}`Service name`
+  - `homeassistant.remove_entity_from_area`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - Spook's influence
+  - Newly added service
+* - Developer tools
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - string | list of strings
+  - Yes
+  - `light.spotlight`
+```
+
+:::{note} This service does not need an area ID
+:class: dropdown
+
+While this service is area related, it does not need to know the area ID. An entity can only be in a single area at a time, so it will remove the entity from the area it is in. Hence, it only needs to know the entity you want to remove from an area.
+:::
+
+:::{seealso} Example service call in YAML
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.remove_entity_from_area
+data:
+  entity_id: light.spotlight
+```
+
+To remove multiple entities at once, use a list of entity IDs:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.remove_entity_from_area
+data:
+  entity_id:
+    - light.spotlight
+    - light.ceiling
+```
+
+:::
+
+## Blueprints & tutorials
+
+There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one, or stubled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+
+## Features requests, ideas and support
+
+If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+
+Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
