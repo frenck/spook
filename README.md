@@ -221,59 +221,7 @@ Call it using: [`homeassistant.delete_all_orphaned_entities`](https://my.home-as
 > integration is offline or not working since Home Assistant started. Calling
 > this service will delete those entities as well.
 
-## Service: Create area
 
-Call it using: [`homeassistant.create_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
-
-> Instantly create new rooms in your home. _#BobTheBuilder_
-
-## Service: Add an alias to an area
-
-Call it using: [`homeassistant.add_alias_to_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
-
-> Adds an alias (or multiple aliases) to an area. _#aka_
-
-## Service: Remove an alias from an area
-
-Call it using: [`homeassistant.remove_alias_from_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
-
-> Removes an alias (or multiple aliases) from an area. _#broom_
-
-## Service: Set area aliases
-
-Call it using: [`homeassistant.set_area_aliases`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
-
-> Sets the aliases for an area. _#useless_
-
-## Service: Add device to area
-
-Call it using: [`homeassistant.add_device_to_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
-
-> Dynamicaly add/move a device to an new area. _#moveit_
-
-## Service: Remove device from area
-
-Call it using: [`homeassistant.remove_device_from_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
-
-> Dynamicaly remove a device from an area. _#poef_
-
-## Service: Add entity to area
-
-Call it using: [`homeassistant.add_entity_to_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
-
-> Dynamicaly add/move an entity to an area. _#bam_
-
-## Service: Remove entity from area
-
-Call it using: [`homeassistant.remove_entity_from_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
-
-> Dynamicaly remove an entity from an area. _#AaaaandItIsGone_
-
-## Service: Delete area
-
-Call it using: [`homeassistant.delete_area`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
-
-> Just like that, you made an area of your home dissapear. _#DemolitionMan_
 
 ## Service: Restart Home Assistant (with force option)
 
