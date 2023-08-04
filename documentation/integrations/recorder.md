@@ -48,7 +48,7 @@ Spook adds a service that allows to import data into the recorder.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Recorder: Import statistics 👻
 * - {term}`Service name`
   - `recorder.import_statistics`
@@ -58,7 +58,7 @@ Spook adds a service that allows to import data into the recorder.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
 ```
 
@@ -70,23 +70,23 @@ Spook adds a service that allows to import data into the recorder.
   - Required
   - Default / Example
 * - `has_mean`
-  - boolean
+  - {term}`boolean <boolean>`
   - Yes
 * - `has_sum`
-  - boolean
+  - {term}`boolean <boolean>`
   - Yes
 * - `name`
-  - string
+  - {term}`string <string>`
   - No
   - `None`
 * - `source`
-  - string
+  - {term}`string <string>`
   - Yes
 * - `statistic_id`
-  - string
+  - {term}`string <string>`
   - Yes
 * - `unit_of_measurement`
-  - string
+  - {term}`string <string>`
   - No
   - `None`
 * - `stats`

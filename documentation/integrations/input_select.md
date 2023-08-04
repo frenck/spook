@@ -50,7 +50,7 @@ Spook adds a brand new service to select a random option from the list of option
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Input select: Select random option 👻
 * - {term}`Service name`
   - `input_select.random`
@@ -60,7 +60,7 @@ Spook adds a brand new service to select a random option from the list of option
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
 ```
 
@@ -119,7 +119,7 @@ Spook adds a brand new service to select shuffle the options of an input select.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Input select: Shuffle options 👻
 * - {term}`Service name`
   - `input_select.shuffle`
@@ -129,7 +129,7 @@ Spook adds a brand new service to select shuffle the options of an input select.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
 ```
 
@@ -165,7 +165,7 @@ Spook adds a brand new service to select sort the options of an input select.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Input select: Sort options 👻
 * - {term}`Service name`
   - `input_select.sort`
@@ -175,7 +175,7 @@ Spook adds a brand new service to select sort the options of an input select.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
 ```
 

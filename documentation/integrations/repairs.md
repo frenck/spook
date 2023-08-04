@@ -62,7 +62,7 @@ The result of the service call from the previous screenshot.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Repairs: Create issue 👻
 * - {term}`Service name`
   - `repairs.create`
@@ -72,7 +72,7 @@ The result of the service call from the previous screenshot.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
 ```
 
@@ -84,25 +84,25 @@ The result of the service call from the previous screenshot.
   - Required
   - Default / Example
 * - `title`
-  - string
+  - {term}`string <string>`
   - Yes
 * - `description`
-  - string
+  - {term}`string <string>`
   - Yes
 * - `issue_id`
-  - string
+  - {term}`string <string>`
   - No
   - Randomly generated
 * - `domain`
-  - string
+  - {term}`string <string>`
   - No
   - Integration domain, defaults to `spook`.
 * - `severity`
-  - string
+  - {term}`string <string>`
   - No
   - `warning` (default), `error` or `critical`
 * - `persistent`
-  - boolean
+  - {term}`boolean <boolean>`
   - No
   - `false`
 ```
@@ -145,7 +145,7 @@ Spook can help you ignoring all issues at once.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Repairs: Ignore all issues 👻
 * - {term}`Service name`
   - `repairs.ignore_all`
@@ -155,7 +155,7 @@ Spook can help you ignoring all issues at once.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
 ```
 
@@ -190,7 +190,7 @@ A service to allow the removal of created issues.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Repairs: Remove issue 👻
 * - {term}`Service name`
   - `repairs.remove`
@@ -200,7 +200,7 @@ A service to allow the removal of created issues.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
 ```
 
@@ -212,7 +212,7 @@ A service to allow the removal of created issues.
   - Required
   - Default / Example
 * - `issue_id`
-  - string
+  - {term}`string <string>`
   - Yes
 ```
 
@@ -249,7 +249,7 @@ Spook can help you unignoring all issues at once.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Repairs: Unignore all issues 👻
 * - {term}`Service name`
   - `repairs.unignore_all`
@@ -259,7 +259,7 @@ Spook can help you unignoring all issues at once.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
 ```
 

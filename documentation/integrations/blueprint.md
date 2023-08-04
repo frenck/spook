@@ -42,7 +42,7 @@ Downloads and imports a automation/script Blueprint, directly from the URL you p
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Blueprint: Import Blueprint 👻
 * - {term}`Service name`
   - `blueprint.import`
@@ -52,7 +52,7 @@ Downloads and imports a automation/script Blueprint, directly from the URL you p
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
 ```
 
@@ -64,7 +64,7 @@ Downloads and imports a automation/script Blueprint, directly from the URL you p
   - Required
   - Default / Example
 * - `url`
-  - string
+  - {term}`string <string>`
   - Yes
   - Any URL to a Blueprint
 ```

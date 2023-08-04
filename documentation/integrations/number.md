@@ -50,7 +50,7 @@ Spook adds a service to decrease the value of a number entity.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Number: Decrease value 👻
 * - {term}`Service name`
   - `number.decrement`
@@ -60,7 +60,7 @@ Spook adds a service to decrease the value of a number entity.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
 ```
 
@@ -108,7 +108,7 @@ Spook adds a service to increase the value of a number entity.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Mumber: Increase value 👻
 * - {term}`Service name`
   - `number.increment`
@@ -118,7 +118,7 @@ Spook adds a service to increase the value of a number entity.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
 ```
 
@@ -166,7 +166,7 @@ A fresh new service to set the value of an number entity to its maximum value.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Number: Set maximum value 👻
 * - {term}`Service name`
   - `number.max`
@@ -176,7 +176,7 @@ A fresh new service to set the value of an number entity to its maximum value.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
 ```
 
@@ -207,7 +207,7 @@ A fresh new service to set the value of an number entity to its minimum value.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Number: Set minimum value 👻
 * - {term}`Service name`
   - `number.min`
@@ -217,7 +217,7 @@ A fresh new service to set the value of an number entity to its minimum value.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
 ```
 

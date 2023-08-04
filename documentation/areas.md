@@ -30,7 +30,7 @@ Adds a new area to your Home Assistant instance.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Create an area 👻
 * - {term}`Service name`
   - `homeassistant.create_area`
@@ -40,7 +40,7 @@ Adds a new area to your Home Assistant instance.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
 ```
 
@@ -52,11 +52,11 @@ Adds a new area to your Home Assistant instance.
   - Required
   - Default / Example
 * - `name`
-  - string
+  - {term}`string <string>`
   - Yes
   - `Living room`
 * - `aliases`
-  - string | list of strings
+  - {term}`string <string>` | list of strings
   - No
   - `["Lounge", "Sitting area"]`
 ```
@@ -90,7 +90,7 @@ Adds a new area to your Home Assistant instance.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Delete an area 👻
 * - {term}`Service name`
   - `homeassistant.delete_area`
@@ -100,7 +100,7 @@ Adds a new area to your Home Assistant instance.
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
 ```
 
@@ -112,7 +112,7 @@ Adds a new area to your Home Assistant instance.
   - Required
   - Default / Example
 * - `area_id`
-  - string
+  - {term}`string <string>`
   - Yes
   - `living_room`
 ```
@@ -164,7 +164,7 @@ As area aliases are used by voice assistants, you could add (and also remove) al
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Add an alias to an area 👻
 * - {term}`Service name`
   - `homeassistant.add_alias_to_area`
@@ -174,7 +174,7 @@ As area aliases are used by voice assistants, you could add (and also remove) al
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
 ```
 
@@ -186,11 +186,11 @@ As area aliases are used by voice assistants, you could add (and also remove) al
   - Required
   - Default / Example
 * - `area_id`
-  - string
+  - {term}`string <string>`
   - Yes
   - `living_room`
 * - `aliases`
-  - string | list of strings
+  - {term}`string <string>` | list of strings
   - Yes
   - `["Lounge", "Sitting area"]`
 ```
@@ -248,7 +248,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Add an alias to an area 👻
 * - {term}`Service name`
   - `homeassistant.remove_alias_from_area`
@@ -258,7 +258,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
 ```
 
@@ -270,11 +270,11 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - Required
   - Default / Example
 * - `area_id`
-  - string
+  - {term}`string <string>`
   - Yes
   - `living_room`
 * - `aliases`
-  - string | list of strings
+  - {term}`string <string>` | list of strings
   - Yes
   - `["Lounge", "Sitting area"]`
 ```
@@ -332,7 +332,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Sets aliases for an area 👻
 * - {term}`Service name`
   - `homeassistant.set_area_aliases`
@@ -342,7 +342,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
 ```
 
@@ -354,11 +354,11 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - Required
   - Default / Example
 * - `area_id`
-  - string
+  - {term}`string <string>`
   - Yes
   - `living_room`
 * - `aliases`
-  - string | list of strings
+  - {term}`string <string>` | list of strings
   - Yes
   - `["Lounge", "Sitting area"]`
 ```
@@ -414,7 +414,7 @@ Adds one or more device(s) to an area. This service will leave the other devices
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Add a device to an area 👻
 * - {term}`Service name`
   - `homeassistant.add_device_to_area`
@@ -424,7 +424,7 @@ Adds one or more device(s) to an area. This service will leave the other devices
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
 ```
 
@@ -436,11 +436,11 @@ Adds one or more device(s) to an area. This service will leave the other devices
   - Required
   - Default / Example
 * - `area_id`
-  - string
+  - {term}`string <string>`
   - Yes
   - `living_room`
 * - `device_id`
-  - string | list of strings
+  - {term}`string <string>` | list of strings
   - Yes
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
@@ -495,7 +495,7 @@ To add multiple device at once, use a list of device IDs:
 service: homeassistant.add_device_to_area
 data:
   area_id: "living_room"
-  device_id: 
+  device_id:
     - "dc23e666e6100f184e642a0ac345d3eb"
     - "df98a97c9341a0f184e642a0ac345d3b"
 ```
@@ -514,7 +514,7 @@ Removes one or more device(s) from an area. This service will leave the other de
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Remove a device from an area 👻
 * - {term}`Service name`
   - `homeassistant.remove_device_from_area`
@@ -524,7 +524,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
 ```
 
@@ -536,7 +536,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - Required
   - Default / Example
 * - `device_id`
-  - string | list of strings
+  - {term}`string <string>` | list of strings
   - Yes
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
@@ -573,7 +573,7 @@ To remove multiple devices at once, use a list of device IDs:
 :linenos:
 service: homeassistant.remove_device_from_area
 data:
-  device_id: 
+  device_id:
     - "dc23e666e6100f184e642a0ac345d3eb"
     - "df98a97c9341a0f184e642a0ac345d3b"
 ```
@@ -592,7 +592,7 @@ Adds one or more entities to an area. This service will leave the other entities
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Add an entity to an area 👻
 * - {term}`Service name`
   - `homeassistant.add_entity_to_area`
@@ -602,7 +602,7 @@ Adds one or more entities to an area. This service will leave the other entities
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
 ```
 
@@ -614,11 +614,11 @@ Adds one or more entities to an area. This service will leave the other entities
   - Required
   - Default / Example
 * - `area_id`
-  - string
+  - {term}`string <string>`
   - Yes
   - `living_room`
 * - `entity_id`
-  - string | list of strings
+  - {term}`string <string>` | list of strings
   - Yes
   - `light.spotlight`
 ```
@@ -663,7 +663,7 @@ To add multiple entities at once, use a list of device IDs:
 service: homeassistant.add_entity_to_area
 data:
   area_id: "living_room"
-  entity_id: 
+  entity_id:
     - light.spotlight
     - light.ceiling
 ```
@@ -682,7 +682,7 @@ Removes one or more device(s) from an area. This service will leave the other de
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Remove an entity from an area 👻
 * - {term}`Service name`
   - `homeassistant.remove_entity_from_area`
@@ -692,7 +692,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
 ```
 
@@ -704,7 +704,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - Required
   - Default / Example
 * - `entity_id`
-  - string | list of strings
+  - {term}`string <string>` | list of strings
   - Yes
   - `light.spotlight`
 ```

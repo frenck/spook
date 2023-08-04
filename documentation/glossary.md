@@ -7,13 +7,15 @@ description: Glossary of terms used by Spook & Home Assistant, just to add a lit
 date: 2023-06-30T20:36:04+02:00
 ---
 
+% TODO:
 % automation trigger
 % condition
-% string
 % integer
 % float
 % yaml
 % jinja2
+% list of strings
+% state
 
 :::{glossary}
 Action
@@ -40,10 +42,23 @@ Blueprint
 :::
 
 :::{glossary}
+Boolean
+: A boolean is a data type that can only have two values: `true` or `false`. 
+: You mostly come across this term in {term}`Home Assistant` when you are working with YAML. In YAML, boolean values can also be written as `yes` or `no`, however, it is recommended to stick with just `true` or `false`.
+: Because `yes` and `no` are boolean values in YAML, they might cause confusion when you meant to use a {term}`string value <string>`. For example, `yes` is a boolean value, but `"yes"` is a string value.
+:::
+
+:::{glossary}
 Dashboard
 : A dashboard in {term}`Home Assistant` is a user interface that is used to display information and control {term}`entities <entity>` in your home. Dashboards are used to create a user interface that is used to control your home, for example, to turn on the lights, or to see the current temperature. Dashboards are fully customizable and can be created in many different ways. There is a vibrant community that shares their dashboards, so you can get inspiration and ideas for your own dashboard.
 : You might come across the term "Lovelace", which the codename originally used for dashboards.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/getting-started/concepts-terminology/#dashboards)
+:::
+
+:::{glossary}
+Developer tools
+: The developer tools in {term}`Home Assistant` are a set of tools that can be used to inspect, debug and play with your Home Assistant instance. It may sound very technical, but don't let that scare you. The developer tools can be used to, for example, inspect the state of {term}`entities <entity>`, experiment with {term}`calling services <service call>`, or test and debug your {term}`templates <template>`.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/tools/dev-tools/)
 :::
 
 :::{glossary}
@@ -166,6 +181,12 @@ Service targets
 Sequence
 : A sequence in {term}`Home Assistant` is a list of {term}`actions <action>` that are executed in order. Sequences are used in {term}`automations <automation>` and {term}`scripts <script>` to perform multiple actions in a specific order.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts)
+:::
+
+:::{glossary}
+String
+: A string is datatype, which consists of a sequence of characters. Essentially, a string is a more technical term for: text.
+: You mostly come across this term in {term}`Home Assistant` when you are working with YAML. In YAML, the best practice for using string (text)  is by always surrounding them using quotes. For example, `"Hello World"`. This is not required, but it is a good practice to follow as it avoid you running into issues with some special cases in YAML (for example, the text `off` without using quotes, will not be considered a string, but a {term}`boolean value <boolean>`).
 :::
 
 :::{glossary}

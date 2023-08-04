@@ -50,7 +50,7 @@ Spook enhances this service, adding an amount option.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Input number: Decrease value 👻
 * - {term}`Service name`
   - `input_number.decrement`
@@ -60,7 +60,7 @@ Spook enhances this service, adding an amount option.
   - No response
 * - Spook's influence
   - Adds amount to decrement the value with
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
 ```
 
@@ -108,7 +108,7 @@ Spook enhances this service, adding an amount option.
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Input number: Increase value 👻
 * - {term}`Service name`
   - `input_number.increment`
@@ -118,7 +118,7 @@ Spook enhances this service, adding an amount option.
   - No response
 * - Spook's influence
   - Adds amount to increment the value with
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
 ```
 
@@ -166,7 +166,7 @@ A fresh new service to set the value of an input number entity to its maximum va
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Input number: Set maximum value 👻
 * - {term}`Service name`
   - `input_number.max`
@@ -176,7 +176,7 @@ A fresh new service to set the value of an input number entity to its maximum va
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
 ```
 
@@ -207,7 +207,7 @@ A fresh new service to set the value of an input number entity to its minimum va
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Input number: Set minimum value 👻
 * - {term}`Service name`
   - `input_number.min`
@@ -217,7 +217,7 @@ A fresh new service to set the value of an input number entity to its minimum va
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
 ```
 

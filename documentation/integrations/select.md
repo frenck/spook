@@ -50,7 +50,7 @@ Spook adds a brand new service to select a random option from the list of option
 ```{list-table}
 :header-rows: 1
 * - Service properties
-* - Service
+* - {term}`Service`
   - Select: Select random option 👻
 * - {term}`Service name`
   - `select.random`
@@ -60,7 +60,7 @@ Spook adds a brand new service to select a random option from the list of option
   - No response
 * - Spook's influence
   - Newly added service
-* - Developer tools
+* - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
 ```
 
