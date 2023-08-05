@@ -10,7 +10,6 @@ date: 2023-06-30T20:36:04+02:00
 % TODO:
 % automation trigger
 % condition
-% yaml
 % jinja2
 % list of strings
 % state
@@ -42,7 +41,7 @@ Blueprint
 :::{glossary}
 Boolean
 : A boolean is a data type that can only have two values: `true` or `false`. 
-: You mostly come across this term in {term}`Home Assistant` when you are working with YAML. In YAML, boolean values can also be written as `yes` or `no`, however, it is recommended to stick with just `true` or `false`.
+: You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. In YAML, boolean values can also be written as `yes` or `no`, however, it is recommended to stick with just `true` or `false`.
 : Because `yes` and `no` are boolean values in YAML, they might cause confusion when you meant to use a {term}`string value <string>`. For example, `yes` is a boolean value, but `"yes"` is a string value.
 :::
 
@@ -87,7 +86,7 @@ Entity ID
 :::{glossary}
 Float
 : A float is a datatype and is a more technical term for a number which can have a decimal point. For example, `2.5` is a float, but `2` is a valid float value as well.
-: You mostly come across this term in {term}`Home Assistant` when you are working with YAML. Floats (unlike {tarm}`strings <string>`) are not surrounded by quotes in YAML, and just written as is. For example, `2.5` is an float in YAML (thus handled as a numeric value), but `"2.5"` is a string in YAML (thus handled as text).
+: You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. Floats (unlike {term}`strings <string>`) are not surrounded by quotes in YAML, and just written as is. For example, `2.5` is an float in YAML (thus handled as a numeric value), but `"2.5"` is a string in YAML (thus handled as text).
 : Floats are often confused with {term}`integers <integer>`. They look very much alike, the difference is that floats can have a decimal point, while integers cannot. This also means that all integers are floats, but not all floats are integers.
 :::
 
@@ -121,7 +120,7 @@ HACS
 :::{glossary}
 Integer
 : An integer is a datatype and is a more technical term for a number without a decimal point. For example, `2` is an integer, but `2.5` is not.
-: You mostly come across this term in {term}`Home Assistant` when you are working with YAML. Integers (unlike {tarm}`strings <string>`) are not surrounded by quotes in YAML, and just written as is. For example, `2` is an integer in YAML (thus handled as a number), but `"2"` is a string in YAML (thus handled as text).
+: You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. Integers (unlike {term}`strings <string>`) are not surrounded by quotes in YAML, and just written as is. For example, `2` is an integer in YAML (thus handled as a number), but `"2"` is a string in YAML (thus handled as text).
 :::
 
 :::{glossary}
@@ -197,11 +196,19 @@ Sequence
 :::{glossary}
 String
 : A string is a datatype, which consists of a sequence of characters. Essentially, a string is a more technical term for: text.
-: You mostly come across this term in {term}`Home Assistant` when you are working with YAML. In YAML, the best practice for using string (text)  is by always surrounding them using quotes. For example, `"Hello World"`. This is not required, but it is a good practice to follow as it avoid you running into issues with some special cases in YAML (for example, the text `off` without using quotes, will not be considered a string, but a {term}`boolean value <boolean>`).
+: You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. In YAML, the best practice for using string (text)  is by always surrounding them using quotes. For example, `"Hello World"`. This is not required, but it is a good practice to follow as it avoid you running into issues with some special cases in YAML (for example, the text `off` without using quotes, will not be considered a string, but a {term}`boolean value <boolean>`).
 :::
 
 :::{glossary}
 Template
 : Templating is an advanced features of {term}`Home Assistant` that allows you to dynamically generate values using the [Jinja2](https://palletsprojects.com/p/jinja) template engine. The syntax used for templating comes very close to the concept of programming languages, and allows you to perform complex operations on data.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
+:::
+
+:::{glossary}
+YAML
+: The complex definition would be: <wiki:YAML> is a human-readable data-serialization language. But a more simplified explaination would be: It is a structure in which we can write configuration files, that are readble for both humans and machines.
+: It is the format {term}`Home Assistant` uses to store its configuration and data. Opinions are divided on whether YAML is a good or bad format, or hard or easy to use. The fact remains, is that Home Assistant uses it a lot, and it definitly worth while learning it. YAML itself really isn't that complex, but it does have some quirks that you need to be aware of. The most complex part of using YAML with Home Assistant, is not YAML itself, but all the things you can do with it in Home Assistant.
+: Don't let is scare you. You'll get the hang of it quickly.
+: [Read a tutorial on YAML](https://spacelift.io/blog/yaml)
 :::

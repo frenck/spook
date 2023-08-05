@@ -113,7 +113,7 @@ The `domain` can be set to any integration domains, for example, if you set it t
 
 The `persistent` attribute can set to `true` to indicate it should survive a Home Assistant restart. It defaults to `false` when not provided.
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -165,7 +165,7 @@ This might seem like a helpful service at times, however, ignoring an issue, is 
 Every issue raise by Home Assistant (and also Spook), should be solveable, if not, it is a bug and should be reported.
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -222,7 +222,7 @@ The `issue_id` must be an issue ID you have used with the `repairs.create` servi
 This service will not remove issues raised by Home Assistant itself, only issues raised using the the `repairs.create` service.
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -263,7 +263,7 @@ Spook can help you unignoring all issues at once.
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
 ```
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml

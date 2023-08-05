@@ -71,7 +71,7 @@ Downloads and imports a automation/script Blueprint, directly from the URL you p
 
 The `url` attribute is the URL to the Blueprint you want to import. This can be any URL, as long as it is a valid Blueprint.
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml

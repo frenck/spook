@@ -63,7 +63,7 @@ Adds a new area to your Home Assistant instance.
 
 The use of `aliases` is helpful if you want to create an area with multiple names. For example, if you want to create an area called "Living room", but also want to be able to refer to it as "Sitting area" or "Lounge", you can add those names as aliases. This is used by Home Assistant Assist and Google Assistant.
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -129,7 +129,7 @@ area_id: "{{ area_id('Living room') }}"
 That template will find the area ID of the area with the name "Living room".
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -207,7 +207,7 @@ area_id: "{{ area_id('Living room') }}"
 That template will find the area ID of the area with the name "Living room".
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -291,7 +291,7 @@ area_id: "{{ area_id('Living room') }}"
 That template will find the area ID of the area with the name "Living room".
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -375,7 +375,7 @@ area_id: "{{ area_id('Living room') }}"
 That template will find the area ID of the area with the name "Living room".
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -467,7 +467,7 @@ Use this service in the developer tools, in the UI select the device you want to
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -557,7 +557,7 @@ Use this service in the developer tools, in the UI select the device you want to
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -635,7 +635,7 @@ area_id: "{{ area_id('Living room') }}"
 That template will find the area ID of the area with the name "Living room".
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -715,7 +715,7 @@ Removes one or more device(s) from an area. This service will leave the other de
 While this service is area related, it does not need to know the area ID. An entity can only be in a single area at a time, so it will remove the entity from the area it is in. Hence, it only needs to know the entity you want to remove from an area.
 :::
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml

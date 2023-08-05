@@ -133,7 +133,7 @@ Spook adds a brand new service to select shuffle the options of an input select.
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
 ```
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -179,7 +179,7 @@ Spook adds a brand new service to select sort the options of an input select.
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
 ```
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml

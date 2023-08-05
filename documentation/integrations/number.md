@@ -79,7 +79,7 @@ Spook adds a service to decrease the value of a number entity.
 
 If the `amount` attribute is not provided, the service will use the step value of the number entity. The `amount` attribute must be a multiple of the step value.
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -137,7 +137,7 @@ Spook adds a service to increase the value of a number entity.
 
 If the `amount` attribute is not provided, the service will use the step value of the number entity. The `amount` attribute must be a multiple of the step value.
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -180,7 +180,7 @@ A fresh new service to set the value of an number entity to its maximum value.
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
 ```
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -221,7 +221,7 @@ A fresh new service to set the value of an number entity to its minimum value.
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
 ```
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml

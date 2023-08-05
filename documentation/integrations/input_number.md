@@ -79,7 +79,7 @@ Spook enhances this service, adding an amount option.
 
 This service already exists, but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the service will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -137,7 +137,7 @@ Spook enhances this service, adding an amount option.
 
 This service already exists, but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the service will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -180,7 +180,7 @@ A fresh new service to set the value of an input number entity to its maximum va
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
 ```
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
@@ -221,7 +221,7 @@ A fresh new service to set the value of an input number entity to its minimum va
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
 ```
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml

@@ -127,7 +127,7 @@ Spook adds a service that allows to import data into the recorder.
 
 More information about the mapping/meaning of fields in the long-term statistics can be found on the [Home Assistant data portal](https://data.home-assistant.io/docs/statistics).
 
-:::{seealso} Example service call in YAML
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
