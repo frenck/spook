@@ -105,23 +105,23 @@ Spook adds a service that allows to import data into the recorder.
   - datetime string
   - Yes
 * - `mean`
-  - float
+  - {term}`float <float>`
   - No
 * - `min`
-  - float
+  - {term}`float <float>`
   - No
 * - `max`
-  - float
+  - {term}`float <float>`
   - Yes
 * - `last_reset`
   - datetime string
   - No
   - `None`
 * - `state`
-  - float
+  - {term}`float <float>`
   - No
 * - `sum`
-  - float
+  - {term}`float <float>`
   - No
 ```
 

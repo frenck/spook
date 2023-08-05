@@ -10,7 +10,6 @@ date: 2023-06-30T20:36:04+02:00
 % TODO:
 % automation trigger
 % condition
-% float
 % yaml
 % jinja2
 % list of strings
@@ -61,6 +60,12 @@ Developer tools
 :::
 
 :::{glossary}
+Device
+: A device in {term}`Home Assistant` represents a physical device in your home, but a device can also represents a web service, like one that provides weather information. Devices are a logical grouping for {term}`entities <entity>`. For example, device that can mesure temperature, humidity and pressure, will have three entities: a temperature sensor, a humidity sensor and a pressure sensor. All three entities belong to the same device.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/getting-started/concepts-terminology/#devices--entities)
+:::
+
+:::{glossary}
 Ectoplasm
 : [Ectoplasm](<wiki:Ectoplasm_(paranormal)>) is a term used in spiritualism to denote a substance or spiritual energy "exteriorized" by physical mediums. Or the more popculture version: the green goo that ghosts leave behind, like in <wiki:Ghostbuster>.
 : Spook uses ectoplasm to add new scary advanced behavior to the functionality of {term}`Home Assistant`. Internally in the [source code of Spook](https://github.com/frenck/spook), an ectoplasm is a module it can apply onto a Home Assistant {term}`integration <integration>`.
@@ -80,9 +85,10 @@ Entity ID
 :::
 
 :::{glossary}
-Device
-: A device in {term}`Home Assistant` represents a physical device in your home, but a device can also represents a web service, like one that provides weather information. Devices are a logical grouping for {term}`entities <entity>`. For example, device that can mesure temperature, humidity and pressure, will have three entities: a temperature sensor, a humidity sensor and a pressure sensor. All three entities belong to the same device.
-: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/getting-started/concepts-terminology/#devices--entities)
+Float
+: A float is a datatype and is a more technical term for a number which can have a decimal point. For example, `2.5` is a float, but `2` is a valid float value as well.
+: You mostly come across this term in {term}`Home Assistant` when you are working with YAML. Floats (unlike {tarm}`strings <string>`) are not surrounded by quotes in YAML, and just written as is. For example, `2.5` is an float in YAML (thus handled as a numeric value), but `"2.5"` is a string in YAML (thus handled as text).
+: Floats are often confused with {term}`integers <integer>`. They look very much alike, the difference is that floats can have a decimal point, while integers cannot. This also means that all integers are floats, but not all floats are integers.
 :::
 
 :::{glossary}
