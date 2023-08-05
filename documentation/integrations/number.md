@@ -58,7 +58,7 @@ Spook adds a service to decrease the value of a number entity.
   - Yes, `number` entities
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
@@ -116,7 +116,7 @@ Spook adds a service to increase the value of a number entity.
   - Yes, `number` entities
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
@@ -174,7 +174,7 @@ A fresh new service to set the value of an number entity to its maximum value.
   - Yes, `number` entities
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
@@ -215,7 +215,7 @@ A fresh new service to set the value of an number entity to its minimum value.
   - Yes, `number` entities
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)

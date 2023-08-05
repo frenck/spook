@@ -56,7 +56,7 @@ Spook adds a service that allows to import data into the recorder.
   - No targets
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)

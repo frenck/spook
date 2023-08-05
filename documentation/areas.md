@@ -38,7 +38,7 @@ Adds a new area to your Home Assistant instance.
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
@@ -98,7 +98,7 @@ Adds a new area to your Home Assistant instance.
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
@@ -172,7 +172,7 @@ As area aliases are used by voice assistants, you could add (and also remove) al
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
@@ -256,7 +256,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
@@ -340,7 +340,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
@@ -422,7 +422,7 @@ Adds one or more device(s) to an area. This service will leave the other devices
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
@@ -522,7 +522,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
@@ -600,7 +600,7 @@ Adds one or more entities to an area. This service will leave the other entities
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
@@ -690,7 +690,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - No
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)

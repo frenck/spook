@@ -70,7 +70,7 @@ The result of the service call from the previous screenshot.
   - No targets
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
@@ -153,7 +153,7 @@ Spook can help you ignoring all issues at once.
   - No targets
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
@@ -198,7 +198,7 @@ A service to allow the removal of created issues.
   - No targets
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
@@ -257,7 +257,7 @@ Spook can help you unignoring all issues at once.
   - No targets
 * - {term}`Service response`
   - No response
-* - Spook's influence
+* - {term}`Spook's influence`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)

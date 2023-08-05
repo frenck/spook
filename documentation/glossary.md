@@ -200,6 +200,11 @@ String
 :::
 
 :::{glossary}
+Spook's influence
+: A term to indicate/describe the Spook's part in a particular feature of {term}`Home Assistant`. In some cases, Spook adds complete new, previously non-existing features; in other cases it might modify, extend, or improve existing features. Spook documents the influence he has, so you can easily see what features are available because of him.
+:::
+
+:::{glossary}
 Template
 : Templating is an advanced features of {term}`Home Assistant` that allows you to dynamically generate values using the [Jinja2](https://palletsprojects.com/p/jinja) template engine. The syntax used for templating comes very close to the concept of programming languages, and allows you to perform complex operations on data.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
