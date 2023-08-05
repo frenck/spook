@@ -10,7 +10,6 @@ date: 2023-06-30T20:36:04+02:00
 % TODO:
 % automation trigger
 % condition
-% integer
 % float
 % yaml
 % jinja2
@@ -114,6 +113,12 @@ HACS
 :::
 
 :::{glossary}
+Integer
+: An integer is a datatype and is a more technical term for a number without a decimal point. For example, `2` is an integer, but `2.5` is not.
+: You mostly come across this term in {term}`Home Assistant` when you are working with YAML. Integers (unlike {tarm}`strings <string>`) are not surrounded by quotes in YAML, and just written as is. For example, `2` is an integer in YAML (thus handled as a number), but `"2"` is a string in YAML (thus handled as text).
+:::
+
+:::{glossary}
 Integration
 : A integration in {term}`Home Assistant` is a component that allows you to integrate
 a {term}`device <device>` or {term}`service <service>` with your Home Assistant installation. Home Assistant comes with well of a thousand integrations out of the box, but you can also install your own custom integrations.
@@ -185,7 +190,7 @@ Sequence
 
 :::{glossary}
 String
-: A string is datatype, which consists of a sequence of characters. Essentially, a string is a more technical term for: text.
+: A string is a datatype, which consists of a sequence of characters. Essentially, a string is a more technical term for: text.
 : You mostly come across this term in {term}`Home Assistant` when you are working with YAML. In YAML, the best practice for using string (text)  is by always surrounding them using quotes. For example, `"Hello World"`. This is not required, but it is a good practice to follow as it avoid you running into issues with some special cases in YAML (for example, the text `off` without using quotes, will not be considered a string, but a {term}`boolean value <boolean>`).
 :::
 

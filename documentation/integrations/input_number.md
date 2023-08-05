@@ -72,7 +72,7 @@ Spook enhances this service, adding an amount option.
   - Required
   - Default / Example
 * - `amount`
-  - integer
+  - {term}`integer <integer>`
   - No
   - Defaults to configured step value
 ```
@@ -130,7 +130,7 @@ Spook enhances this service, adding an amount option.
   - Required
   - Default / Example
 * - `amount`
-  - integer
+  - {term}`integer <integer>`
   - No
   - Defaults to configured step value
 ```

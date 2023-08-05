@@ -72,7 +72,7 @@ Spook adds a service to decrease the value of a number entity.
   - Required
   - Default / Example
 * - `amount`
-  - integer
+  - {term}`integer <integer>`
   - No
   - Defaults to configured step value
 ```
@@ -130,7 +130,7 @@ Spook adds a service to increase the value of a number entity.
   - Required
   - Default / Example
 * - `amount`
-  - integer
+  - {term}`integer <integer>`
   - No
   - Defaults to configured step value
 ```
