@@ -74,6 +74,7 @@ The result of the service call from the previous screenshot.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
 ```
 
 ```{list-table}
@@ -157,6 +158,7 @@ Spook can help you ignoring all issues at once.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
 ```
 
 :::{tip}
@@ -202,6 +204,7 @@ A service to allow the removal of created issues.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
 ```
 
 ```{list-table}
@@ -261,6 +264,7 @@ Spook can help you unignoring all issues at once.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
 ```
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`

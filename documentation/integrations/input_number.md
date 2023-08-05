@@ -62,6 +62,7 @@ Spook enhances this service, adding an amount option.
   - Adds amount to decrement the value with
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
 ```
 
 ```{list-table}
@@ -120,6 +121,7 @@ Spook enhances this service, adding an amount option.
   - Adds amount to increment the value with
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
 ```
 
 ```{list-table}
@@ -178,6 +180,7 @@ A fresh new service to set the value of an input number entity to its maximum va
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
 ```
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`
@@ -219,6 +222,7 @@ A fresh new service to set the value of an input number entity to its minimum va
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
 ```
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`

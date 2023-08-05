@@ -132,6 +132,20 @@ a {term}`device <device>` or {term}`service <service>` with your Home Assistant 
 :::
 
 :::{glossary}
+List
+: A list is a datatype and is a more technical term for a collection of items. For example, a list of {term}`integers <integer>`: `[1, 2, 3]`.
+: You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. Synonyms for lists are arrays and sequenses. Although, a {term}`seqence <sequence>` in Home Assistant mostly refers to a list of {term}`actions <action>`.
+: Lists can be written in YAML in two ways. One is the square bracket syntax, like `["one", "two", "three"]`. The other methods is the hyphen syntax, like `- "one"` (which is the same as `["one"]`). Having each item (prefix with a hyphen) on a new line. The latter is generally recommended, it is more expressive, but improves readability. For example:
+    ```yaml
+    example:
+      - "one"
+      - "two"
+      - "three"
+    ```
+:::
+
+
+:::{glossary}
 My Home Assistant
 : My Home Assistant is a web service by the {term}`Home Assistant` project that allows the documentation and websites to link you to specific pages in your own Home Assistant instance. Learn more about it in the [My Home Assistant FAQ](https://my.home-assistant.io/faq/).
 :::

@@ -42,6 +42,7 @@ Adds a new area to your Home Assistant instance.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
 ```
 
 ```{list-table}
@@ -56,7 +57,7 @@ Adds a new area to your Home Assistant instance.
   - Yes
   - `Living room`
 * - `aliases`
-  - {term}`string <string>` | list of strings
+  - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - `["Lounge", "Sitting area"]`
 ```
@@ -102,6 +103,7 @@ Adds a new area to your Home Assistant instance.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
 ```
 
 ```{list-table}
@@ -176,6 +178,7 @@ As area aliases are used by voice assistants, you could add (and also remove) al
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
 ```
 
 ```{list-table}
@@ -190,7 +193,7 @@ As area aliases are used by voice assistants, you could add (and also remove) al
   - Yes
   - `living_room`
 * - `aliases`
-  - {term}`string <string>` | list of strings
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `["Lounge", "Sitting area"]`
 ```
@@ -260,6 +263,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
 ```
 
 ```{list-table}
@@ -274,7 +278,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - Yes
   - `living_room`
 * - `aliases`
-  - {term}`string <string>` | list of strings
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `["Lounge", "Sitting area"]`
 ```
@@ -344,6 +348,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
 ```
 
 ```{list-table}
@@ -358,7 +363,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - Yes
   - `living_room`
 * - `aliases`
-  - {term}`string <string>` | list of strings
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `["Lounge", "Sitting area"]`
 ```
@@ -426,6 +431,7 @@ Adds one or more device(s) to an area. This service will leave the other devices
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
 ```
 
 ```{list-table}
@@ -440,7 +446,7 @@ Adds one or more device(s) to an area. This service will leave the other devices
   - Yes
   - `living_room`
 * - `device_id`
-  - {term}`string <string>` | list of strings
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
@@ -526,6 +532,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
 ```
 
 ```{list-table}
@@ -536,7 +543,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - Required
   - Default / Example
 * - `device_id`
-  - {term}`string <string>` | list of strings
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
@@ -604,6 +611,7 @@ Adds one or more entities to an area. This service will leave the other entities
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
 ```
 
 ```{list-table}
@@ -618,7 +626,7 @@ Adds one or more entities to an area. This service will leave the other entities
   - Yes
   - `living_room`
 * - `entity_id`
-  - {term}`string <string>` | list of strings
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `light.spotlight`
 ```
@@ -694,6 +702,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
 ```
 
 ```{list-table}
@@ -704,7 +713,7 @@ Removes one or more device(s) from an area. This service will leave the other de
   - Required
   - Default / Example
 * - `entity_id`
-  - {term}`string <string>` | list of strings
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `light.spotlight`
 ```

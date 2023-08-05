@@ -35,7 +35,7 @@ While Spook is floating around in your Home Assistant instance, it will raise re
 
 Spook inspects all Riemann sum integral created {term}`entities <entity>`, and looks for cases where a source sensor entity is no longer present. If Spook finds such a case, it will raise a {term}`repair issue <repairs>` informing you about the problematic entity.
 
-To resolve the raised issue, you can either remove the helper, or fix the referenced source entity ID. Spook will automatically remove the repair issue once the issue is fixed.
+To resolve the raised issue, you can either remove the helper, or fix the referenced source {term}`entity ID <entity id>`. Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Features requests, ideas and support
 

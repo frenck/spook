@@ -62,6 +62,7 @@ Spook adds a service to decrease the value of a number entity.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
 ```
 
 ```{list-table}
@@ -120,6 +121,7 @@ Spook adds a service to increase the value of a number entity.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
 ```
 
 ```{list-table}
@@ -178,6 +180,7 @@ A fresh new service to set the value of an number entity to its maximum value.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
 ```
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`
@@ -219,6 +222,7 @@ A fresh new service to set the value of an number entity to its minimum value.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
 ```
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`

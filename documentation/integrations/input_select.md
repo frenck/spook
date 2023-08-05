@@ -62,6 +62,7 @@ Spook adds a brand new service to select a random option from the list of option
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
 ```
 
 ```{list-table}
@@ -72,12 +73,12 @@ Spook adds a brand new service to select a random option from the list of option
   - Required
   - Default / Example
 * - `options`
-  - list of strings
+  - {term}`list of strings <list>`
   - No
   - Defaults to all available options
 ```
 
-The `options` attribute is a list of strings, containing the options to select a random one from. If not provided, all available options configured in the input select are used.
+The `options` attribute is a {term}`list of strings <list>`, containing the options to select a random one from. If not provided, all available options configured in the input select are used.
 
 :::{seealso} Example service calls in YAML
 :class: dropdown
@@ -131,6 +132,7 @@ Spook adds a brand new service to select shuffle the options of an input select.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
 ```
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`
@@ -177,6 +179,7 @@ Spook adds a brand new service to select sort the options of an input select.
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
 ```
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`
