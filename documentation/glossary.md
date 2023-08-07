@@ -13,6 +13,8 @@ date: 2023-06-30T20:36:04+02:00
 % jinja2
 % list of strings
 % state
+% mapping
+% datetime string?
 
 :::{glossary}
 Action

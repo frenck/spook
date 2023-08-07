@@ -33,16 +33,13 @@ Spook does not provide any new devices or entities for this integration.
 
 Spook adds the following new service to your Home Assistant instance:
 
-### Import Blueprint
+### Import statistics
 
 Downloads and imports a automation/script Blueprint, directly from the URL you pass into this service.
 
 ```{figure} ../images/integrations/recorder/import.png
-:name: import
 :alt: Screenshot of the recorder import statistics service call in the developer tools.
 :align: center
-
-Spook adds a service that allows to import data into the recorder.
 ```
 
 ```{list-table}

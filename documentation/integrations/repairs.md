@@ -44,19 +44,13 @@ to raise low battery reports for your devices, or to raise an issue when
 a device becomes unreachable.
 
 ```{figure} ../images/integrations/repairs/create.png
-:name: creates
 :alt: Screenshot of the repairs create issue service call in the developer tools.
 :align: center
-
-Spook adds a service to create your own repairs issues.
 ```
 
 ```{figure} ../images/integrations/repairs/create_result.png
-:name: creates_result
 :alt: Screenshot of the repairs issue raised by the previous screenshot.
 :align: center
-
-The result of the service call from the previous screenshot.
 ```
 
 ```{list-table}
@@ -136,11 +130,8 @@ data:
 Adds a single service to ignore all issues currently raised in the repairs dashboard.
 
 ```{figure} ../images/integrations/repairs/ignore_all.png
-:name: ignore_all
 :alt: Screenshot of the repairs ignore all issues service call in the developer tools.
 :align: center
-
-Spook can help you ignoring all issues at once.
 ```
 
 ```{list-table}
@@ -182,11 +173,8 @@ service: repairs.ignore_all
 Remove an issue from the repairs integration.
 
 ```{figure} ../images/integrations/repairs/remove.png
-:name: remove
 :alt: Screenshot of the repairs remove issue service call in the developer tools.
 :align: center
-
-A service to allow the removal of created issues.
 ```
 
 ```{list-table}
@@ -242,11 +230,8 @@ data:
 Adds a single service to unignore all repair issues currently still active (but previously ignored).
 
 ```{figure} ../images/integrations/repairs/unignore_all.png
-:name: ignore_all
 :alt: Screenshot of the repairs unignore all issues service call in the developer tools.
 :align: center
-
-Spook can help you unignoring all issues at once.
 ```
 
 ```{list-table}

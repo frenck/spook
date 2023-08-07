@@ -40,11 +40,8 @@ Spook adds the following new service to your Home Assistant instance:
 Decrease an input number entity value by a certain amount.
 
 ```{figure} ../images/integrations/input_number/decrease.png
-:name: decrease
 :alt: Screenshot of the input number decrease value service call in the developer tools.
 :align: center
-
-Spook enhances this service, adding an amount option.
 ```
 
 ```{list-table}
@@ -99,11 +96,8 @@ data:
 Increase an input number entity value by a certain amount.
 
 ```{figure} ../images/integrations/input_number/increase.png
-:name: increase
 :alt: Screenshot of the input number increase value service call in the developer tools.
 :align: center
-
-Spook enhances this service, adding an amount option.
 ```
 
 ```{list-table}
@@ -158,11 +152,8 @@ data:
 Set an input number entity to its maximum value.
 
 ```{figure} ../images/integrations/input_number/maximum.png
-:name: maximum
 :alt: Screenshot of the input number maximum value service call in the developer tools.
 :align: center
-
-A fresh new service to set the value of an input number entity to its maximum value.
 ```
 
 ```{list-table}
@@ -200,11 +191,8 @@ target:
 Set an input number entity to its minimum value.
 
 ```{figure} ../images/integrations/input_number/minimum.png
-:name: minimum
 :alt: Screenshot of the input number minimum value service call in the developer tools.
 :align: center
-
-A fresh new service to set the value of an input number entity to its minimum value.
 ```
 
 ```{list-table}

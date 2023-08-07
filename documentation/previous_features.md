@@ -17,5 +17,5 @@ Some features have been removed from Spook over time, this page is dedicated to 
 ```{card}
 :header: **Obsolete integration & platform YAML configuration repairs**
 :footer: As of Home Assistant 2023.6, Home Assistant will raise repair issues for these cases itself.
-Spook looked for YAML configuration for an integrations (and older integration platforms) that no longer support being configured via YAML. If it found those, it would raise an repair issue in your repairs dashboard to keep your YAML configuration nice and clean.
+Spook looked for YAML configuration of integrations (and older integration platforms) that no longer support being configured via YAML. If it found those, it would raise an repair issue in your repairs dashboard to keep your YAML configuration nice and clean.
 ```

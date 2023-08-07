@@ -40,11 +40,8 @@ Spook adds the following new service to your Home Assistant instance:
 Decrease an number entity value by a certain amount.
 
 ```{figure} ../images/integrations/number/decrease.png
-:name: decrease
 :alt: Screenshot of the number decrease value service call in the developer tools.
 :align: center
-
-Spook adds a service to decrease the value of a number entity.
 ```
 
 ```{list-table}
@@ -99,11 +96,8 @@ data:
 Increase an number entity value by a certain amount.
 
 ```{figure} ../images/integrations/number/increase.png
-:name: increase
 :alt: Screenshot of the number increase value service call in the developer tools.
 :align: center
-
-Spook adds a service to increase the value of a number entity.
 ```
 
 ```{list-table}
@@ -158,11 +152,8 @@ data:
 Set an number entity to its maximum value.
 
 ```{figure} ../images/integrations/number/maximum.png
-:name: maximum
 :alt: Screenshot of the number maximum value service call in the developer tools.
 :align: center
-
-A fresh new service to set the value of an number entity to its maximum value.
 ```
 
 ```{list-table}
@@ -200,11 +191,8 @@ target:
 Set an number entity to its minimum value.
 
 ```{figure} ../images/integrations/number/minimum.png
-:name: minimum
 :alt: Screenshot of the number minimum value service call in the developer tools.
 :align: center
-
-A fresh new service to set the value of an number entity to its minimum value.
 ```
 
 ```{list-table}

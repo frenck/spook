@@ -40,11 +40,8 @@ Spook adds the following new service to your Home Assistant instance:
 Select a random option from the list of options in the input select.
 
 ```{figure} ../images/integrations/select/example.png
-:name: random
 :alt: Screenshot of the select random service call in the developer tools.
 :align: center
-
-Spook adds a brand new service to select a random option from the list of options.
 ```
 
 ```{list-table}
