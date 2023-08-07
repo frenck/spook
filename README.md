@@ -111,6 +111,7 @@ or to be supported, or well, for starters, to be a good idea.
   - [Does this integration break my Home Assistant instance?](#does-this-integration-break-my-home-assistant-instance)
   - [Does Spook do random things to my home?](#does-spook-do-random-things-to-my-home)
   - [Ok, so should I use Spook?](#ok-so-should-i-use-spook)
+- [Translating Spook](#translating-spook)
 - [Changelog \& Releases](#changelog--releases)
 - [Contributing](#contributing)
 - [Authors \& contributors](#authors--contributors)
@@ -625,6 +626,21 @@ or broken of course.
 ## Ok, so should I use Spook?
 
 No! The license doesn't allow that (see below).
+
+# Translating Spook
+
+Spook isn't very good at speaking different languages, but you can help!
+
+As a matter of fact, Spooks translation files are [CC0 licensed](./custom_components/spook/translations/LICENSE.md)!
+
+Translating can be done from your webbrowser, no programming knowledge
+is needed!
+
+[![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/open-graph.png)](https://hosted.weblate.org/engage/spook/)
+
+Translation status per language:
+
+[![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/multi-auto.svg)](https://hosted.weblate.org/engage/spook/)
 
 # Changelog & Releases
 
