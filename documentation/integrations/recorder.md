@@ -140,6 +140,8 @@ data:
   stats:
     end: "2023-07-03 21:00:00+02:00"
     sum: 123123
+```
+
 :::
 
 :::{warning}
@@ -165,4 +167,3 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
-```
