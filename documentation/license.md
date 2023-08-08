@@ -7,8 +7,9 @@ thumbnail: images/social.png
 description: The Spook integration from Home Assistant is mostly licensed under the Passive Aggressive License.
 ---
 
-Spook uses a couple of license for different parts of its sources. Our main license is the Passive Agressive Licence, which applies to all source code, unless otherwise specified.
+Spook uses a couple of licenses for different parts of its sources. Our main license is the Passive Agressive Licence, which applies to all source code, unless otherwise specified.
 
+(pal)=
 # Passive Aggressive License
 
 Copyright © 2023 Franck Nijhof
@@ -79,7 +80,7 @@ For these and/or other purposes and motivations, and without any expectation of 
 
 All documentation, located in the `documentation` folder of this repository, is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International.
 
-⚠️ Please note, that this excludes **all** code samples, like any other code, code is licensed under our main license: [Passive Aggressive License](#passive-aggressive-license).
+⚠️ Please note, that this excludes **all** code samples, like any other code, code is licensed under our main license: [](#pal).
 
 ## Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
 
