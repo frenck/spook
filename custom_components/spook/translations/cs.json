@@ -1,1 +1,95 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "description": "Četl jsi instrukce \"readme\"? Četl jsi licenci? Jsi si skutečně jistý?"
+            }
+        }
+    },
+    "entity": {
+        "sensor": {
+            "homeassistant_device": {
+                "name": "Zařízení"
+            },
+            "homeassistant_entities": {
+                "name": "Entity"
+            },
+            "homeassistant_humidifier": {
+                "name": "Zvlhčovače"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Vstupní logické hodnoty"
+            },
+            "homeassistant_input_button": {
+                "name": "Tlačítka pro zadávání"
+            },
+            "homeassistant_input_select": {
+                "name": "Vstupní výběry"
+            },
+            "homeassistant_date": {
+                "name": "Data"
+            },
+            "homeassistant_datetime": {
+                "name": "Datum / čas"
+            },
+            "homeassistant_fan": {
+                "name": "Větráky"
+            },
+            "homeassistant_automation": {
+                "name": "Automatizace"
+            },
+            "homeassistant_air_quality": {
+                "name": "Kvalita vzduchu"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Logické senzory"
+            },
+            "homeassistant_camera": {
+                "name": "Kamery"
+            },
+            "homeassistant_image": {
+                "name": "Obrázky"
+            },
+            "homeassistant_custom_component": {
+                "name": "Uživatelské integrace"
+            },
+            "homeassistant_button": {
+                "name": "Tlačítka"
+            },
+            "homeassistant_cover": {
+                "name": "Žaluzie"
+            },
+            "homeassistant_area": {
+                "name": "Oblastí"
+            },
+            "homeassistant_calendar": {
+                "name": "Kalendáře"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Ovládácí panely alarmu"
+            },
+            "homeassistant_climate": {
+                "name": "Klima"
+            }
+        },
+        "switch": {
+            "cloud_google_report_state": {
+                "name": "Reportování stavu Google Assistant"
+            },
+            "cloud_alexa_report_state": {
+                "name": "Hlášení stavu Alexa"
+            }
+        }
+    },
+    "issues": {
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{popis}"
+                    }
+                }
+            }
+        }
+    }
+}
