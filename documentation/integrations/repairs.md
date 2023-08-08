@@ -15,7 +15,7 @@ date: 2023-06-30T20:36:04+02:00
 
 <br><br>
 
-The {term}`repairs <repair>` {term}`integration <integration>` brings in the repairs dashboads into {term}`Home Assistant`, which informs you about issues found in your Home Assistant instance. These raises repairs issues are provided by other integrations (like Spook 👻 itself), so you can keep your system healthy and in a working state.
+The {term}`repairs <repairs>` {term}`integration <integration>` brings in the repairs dashboads into {term}`Home Assistant`, which informs you about issues found in your Home Assistant instance. These raises repairs issues are provided by other integrations (like Spook 👻 itself), so you can keep your system healthy and in a working state.
 
 The issues raised, are always applying to your situation and system, so you can be sure the issues raised are relevant to you.
 
