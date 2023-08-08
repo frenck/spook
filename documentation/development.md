@@ -18,15 +18,21 @@ If you have a feature request, please share your idea on the [Spook discussion f
 
 ## Translating Spook
 
-Spook is available in multiple languages. You can help translating Spook into your language!
+Spook is available in multiple languages, however, our beloved Spook is actually not that good in speaking multiple languages. So, he needs your help translating Spook into your language!
 
-Currently, Spook is using manual translations, you can find them here:
+Translating Spook is actually quite easy, and doesn't require any coding skills. Just translate the sentences, [straight from your browser!](https://hosted.weblate.org/engage/spook/)!
 
-<https://github.com/frenck/spook/tree/main/custom_components/spook/translations>
+Missing translations in a language will automatically fallback to English version. If you see English text, it means it is not translated yet.
 
-The translations files are in a relatively simple JSON format. The English version is the `en.json` file, and is the source of thruth for all other languages. To update a translation, simply edit the file and submit a pull request. To add a new language, copy the `en.json` file to a new file with the language code as the filename (e.g., `nl.json` for Dutch) and start translating.
+[![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/287x66-black.png)](https://hosted.weblate.org/engage/spook/)
 
-Missing translations in a language will automatically fallback to English version.
+🌎 [Start helping translating Spook into your language!](https://hosted.weblate.org/engage/spook/)
+
+Spook supports all languages that Home Assistant supports. If you are missing your language, add it, or please [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+
+The current status of all translations:
+
+[![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/multi-auto.svg)](https://hosted.weblate.org/engage/spook/)
 
 ## Improving the documentation
 
