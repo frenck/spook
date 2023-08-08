@@ -46,17 +46,38 @@ If you have met these requirements, you are ready to install Spook. 🎉
 
 Time to download and install Spook 👻 onto your Home Assistant instance.
 
+:::{note}
+HACS can be configured to run in two different modes: **standard** and **experimental**. Spook is available in both modes, but the installation process is slightly different.
+If you are using the **experimental** mode, be sure to select the **HACS with experimental mode enabled** tab below.
+:::
+
 :::{tip}
 You can use select the {term}`My Home Assistant` button below, which will navigate you to Spook in HACS directly on your Home Assistant instance.
 
 [![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=frenck&repository=spook&category=integration)
 
-You can skip step 1, 2, and 3 if you use the button above.
+You can directly go to step 6 if you use the button above (step 4 in case of using HACS experimental mode).
 :::
 
+::::{tab-set}
+
+:::{tab-item} Standard HACS
+:sync: standard
+
 1. From the Home Assistant sidebar, select **HACS**. This will open the Home Assistant Community Store dashboard.
-2. Select the search bar in the top of the dashboard and search for `Spook`.
-3. Spook should now appear in the search results. Select it.
+2. Select **Integrations**.
+
+   ```{figure} images/installation/hacs_integrations.png
+   :name: Open HACS and go to integrations
+   :alt: Screenshot showing the HACS dashboard.
+   :align: center
+
+   Spook is an integration, so we need to go to the integrations page in HACS.
+   ```
+
+3. Select the **Explore & download repositories** button in the bottom right corner.
+4. Select the search bar in the dialog shown and search for `Spook`.
+5. Spook should now appear in the search results. Select it.
 
    ```{figure} images/installation/hacs_find_spook.png
    :name: Find and install Spook in HACS
@@ -66,7 +87,7 @@ You can skip step 1, 2, and 3 if you use the button above.
    Finding Spook in the Home Assistant Community Store.
    ```
 
-4. On the Spook page in HACS, select the **Download** button in the bottom right corner.
+6. On the Spook page in HACS, select the **Download** button in the bottom right corner.
 
    ```{figure} images/installation/hacs_download_fab.png
    :name: Select the Download button on the Spook page in HACS
@@ -76,9 +97,60 @@ You can skip step 1, 2, and 3 if you use the button above.
    Select the big download button in the bottom right.
    ```
 
-5. In the download dialog shown, select **Download** to download the Spook integration to your Home Assistant instance.
+7. In the download dialog shown, select **Download** to download the Spook integration to your Home Assistant instance.
 
    ```{figure} images/installation/hacs_download.png
+   :name: Download Spook in HACS
+   :alt: Screenshot showing the download dialog in HACS.
+   :align: center
+
+   Download Spook in HACS.
+   ```
+
+8. After the download process has completed you need to restart Home Assistant in order for Home Assistant to see the new Spook integration.
+
+   1. Select **Settings** from the sidebar, and then select **System**.
+   2. Select the power button in the top right corner.
+   3. Select **Restart Home Assistant** in the dialog that appears.
+
+   ```{figure} images/installation/restart_home_assistant.png
+   :name: Restart Home Assistant
+   :alt: Screenshot showing the Home Assistant restart dialog.
+   :align: center
+
+   Restart Home Assistant.
+   ```
+
+:::
+
+:::{tab-item} HACS with experimental mode enabled
+:sync: experimental
+
+1. From the Home Assistant sidebar, select **HACS**. This will open the Home Assistant Community Store dashboard.
+2. Select the search bar in the top of the dashboard and search for `Spook`.
+3. Spook should now appear in the search results. Select it.
+
+   ```{figure} images/installation/hacs_experimental_find_spook.png
+   :name: Find and install Spook in HACS
+   :alt: Screenshot showing the HACS dashboard searching for Spook.
+   :align: center
+
+   Finding Spook in the Home Assistant Community Store.
+   ```
+
+4. On the Spook page in HACS, select the **Download** button in the bottom right corner.
+
+   ```{figure} images/installation/hacs_experimental_download_fab.png
+   :name: Select the Download button on the Spook page in HACS
+   :alt: Screenshot showing the Spook page in the HACS store.
+   :align: center
+
+   Select the big download button in the bottom right.
+   ```
+
+5. In the download dialog shown, select **Download** to download the Spook integration to your Home Assistant instance.
+
+   ```{figure} images/installation/hacs_experimental_download.png
    :name: Download Spook in HACS
    :alt: Screenshot showing the download dialog in HACS.
    :align: center
@@ -92,13 +164,17 @@ You can skip step 1, 2, and 3 if you use the button above.
    2. Select the power button in the top right corner.
    3. Select **Restart Home Assistant** in the dialog that appears.
 
-   ```{figure} images/installation/restart_home_assistant.png
+   ```{figure} images/installation/experimental_restart_home_assistant.png
    :name: Restart Home Assistant
    :alt: Screenshot showing the Home Assistant restart dialog.
    :align: center
 
    Restart Home Assistant.
    ```
+
+:::
+
+::::
 
 After Home Assistant has restarted, you are ready to activate the Spook integration.
 
