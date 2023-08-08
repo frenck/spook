@@ -178,6 +178,12 @@ Will unignore all issues marked ignored, and shows them all again. _#faceit_
 
 `repairs.unignore_all`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all), [documentation](integrations/repairs#unignore-all-issues) 📚
 
+## Restart
+
+Extends the existing restart service with an "force" option. Because forcing is always a good idea. _#hammer_
+
+`homeassistant.restart`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart), [documentation](misc#restart) 📚
+
 ## Select : Select random option
 
 This service select a random option from the list of options of a select entity. Optionally this can be limited to a set of given options. _#random_
