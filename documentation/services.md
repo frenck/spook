@@ -21,6 +21,7 @@ Instantly create new rooms in your home. _#BobTheBuilder_
 Just like that, you made an area of your home dissapear. _#DemolitionMan_
 
 `homeassistant.delete_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area), [documentation](areas#delete-an-area) 📚
+
 ## Areas: Add an alias to an area
 
 Adds an alias (or multiple aliases) to an area. _#aka_

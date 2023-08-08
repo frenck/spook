@@ -42,7 +42,7 @@ Blueprint
 
 :::{glossary}
 Boolean
-: A boolean is a data type that can only have two values: `true` or `false`. 
+: A boolean is a data type that can only have two values: `true` or `false`.
 : You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. In YAML, boolean values can also be written as `yes` or `no`, however, it is recommended to stick with just `true` or `false`.
 : Because `yes` and `no` are boolean values in YAML, they might cause confusion when you meant to use a {term}`string value <string>`. For example, `yes` is a boolean value, but `"yes"` is a string value.
 :::
@@ -138,14 +138,13 @@ List
 : A list is a datatype and is a more technical term for a collection of items. For example, a list of {term}`integers <integer>`: `[1, 2, 3]`.
 : You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. Synonyms for lists are arrays and sequenses. Although, a {term}`seqence <sequence>` in Home Assistant mostly refers to a list of {term}`actions <action>`.
 : Lists can be written in YAML in two ways. One is the square bracket syntax, like `["one", "two", "three"]`. The other methods is the hyphen syntax, like `- "one"` (which is the same as `["one"]`). Having each item (prefix with a hyphen) on a new line. The latter is generally recommended, it is more expressive, but improves readability. For example:
-    ```yaml
+`yaml
     example:
       - "one"
       - "two"
       - "three"
-    ```
+    `
 :::
-
 
 :::{glossary}
 My Home Assistant
@@ -212,7 +211,7 @@ Sequence
 :::{glossary}
 String
 : A string is a datatype, which consists of a sequence of characters. Essentially, a string is a more technical term for: text.
-: You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. In YAML, the best practice for using string (text)  is by always surrounding them using quotes. For example, `"Hello World"`. This is not required, but it is a good practice to follow as it avoid you running into issues with some special cases in YAML (for example, the text `off` without using quotes, will not be considered a string, but a {term}`boolean value <boolean>`).
+: You mostly come across this term in {term}`Home Assistant` when you are working with {term}`YAML`. In YAML, the best practice for using string (text) is by always surrounding them using quotes. For example, `"Hello World"`. This is not required, but it is a good practice to follow as it avoid you running into issues with some special cases in YAML (for example, the text `off` without using quotes, will not be considered a string, but a {term}`boolean value <boolean>`).
 :::
 
 :::{glossary}
