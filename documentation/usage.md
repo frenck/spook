@@ -37,7 +37,7 @@ Maybe Spook has already found something? You can use the {term}`My Home Assistan
 Spook reveals himself on each of the services he added or enriched, so you can easily find and identify them in your Home Assistant instance.
 
 ```{figure} images/usage/services_example.png
-:name: Spook provides lots of new and powerfull services.
+:name: Spook provides lots of new and powerful services.
 :alt: Screenshot showing a list of services provided by Spook.
 :align: center
 

@@ -26,7 +26,7 @@ I've warned you.
 
 So, there are a lot of things/features that will never end up in Home Assistant itself.
 
-This can have various reasons. For example, tt is just too random, out of scope, not matching the Home Assistant philosophy, violates architectural design, is still in early development, experimental, explorative, or just freaking useless.
+This can have various reasons. For example, it is just too random, out of scope, not matching the Home Assistant philosophy, violates architectural design, is still in early development, experimental, explorative, or just freaking useless.
 
 Spook doesn't care. He is nobodies homie.
 

@@ -4,7 +4,7 @@ title: Background and the history of Spook 👻
 short_title: Background & History
 subtitle: Every story has a beginning.
 thumbnail: images/social.png
-description: The background and history of Spook, the custom integration that provides a scary powerfull toolbox for Home Assistant.
+description: The background and history of Spook, the custom integration that provides a scary powerful toolbox for Home Assistant.
 date: 2023-06-30T13:47:47+02:00
 ---
 

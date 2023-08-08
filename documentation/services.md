@@ -8,7 +8,7 @@ description: Spook provides quite a lot of new services to Home Assistant. This 
 date: 2023-06-30T09:31:26+02:00
 ---
 
-Spook provides quite a lot of new services to Home Assistant. This reference pages lists them all, and points you to the right documentation for that service.
+Spook provides quite a lot of new services to Home Assistant. This reference page lists them all, and points you to the right documentation for that service.
 
 ## Areas: Create an area
 
