@@ -47,7 +47,7 @@ The source code of the documentation can be found in the `documentation` folder 
 To run the documentation locally, you'll need clone the Spook repository locally, and from the `documentation` folder, run:
 
 ```bash
-npx myst start
+npx --package mystmd myst start
 ```
 
 This will start a local webserver on `http://localhost:3000` and will automatically update when you make changes to the documentation.
