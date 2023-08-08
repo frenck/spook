@@ -69,6 +69,12 @@ Downloads and imports a automation/script Blueprint, directly from the URL you p
 
 `blueprint.import`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import), [documentation](integrations/blueprint#import-blueprint) 📚
 
+## Boo!
+
+This service call will just always spook the hell out of Home Assistant. Home Assistant will shit its pants and abort the automation or script. _#spooked_
+
+`spook.boo`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo), [documentation](other-features#boo) 📚
+
 ## Input number: Decrease value
 
 Override of the existing service, which provides the option to specify the amount to decrease the value by. _#evenlower_
@@ -134,6 +140,12 @@ Set the value of a number entity to the maximum value. _#maxout_
 Set the value of a number entity to its minimum value. _#lowout_
 
 `number.min`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min), [documentation](integrations/number#set-value-to-minimum) 📚
+
+## Random fail
+
+This service call will randomly fail (and thus randomly stop your automation or script). Especially combined with `continue_on_error: true` this can be a great way add a useless service calls to your automation or script. _#random_
+
+`spook.random_fail`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail), [documentation](other-features#random-fail) 📚
 
 ## Recorder: Import statistics
 
