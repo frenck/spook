@@ -106,4 +106,4 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 
 If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've run into a bug?? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.
