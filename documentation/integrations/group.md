@@ -24,7 +24,7 @@ This can be useful for cases where you want to control, for example, the multipl
 :alt: Screenshot showing an repair raised by Spook for a group that has an unknown member entity.
 :align: center
 
-Spook found an issue with a group that has an non-existing entity as a member.
+Spook found an issue with a group that has a non-existing entity as a member.
 ```
 
 ## Devices & entities
@@ -41,12 +41,12 @@ While Spook is floating around in your Home Assistant instance, it will raise re
 
 ### Unknown source entity
 
-Spook inspects all groups created to find group member enitites that no longer exists. If Spook finds such a case, it will raise a repair issue informing you about the problematic group and the member entity that is missing.
+Spook inspects all groups created to find group member entities that no longer exist. If Spook finds such a case, it will raise a repair issue, informing you about the problematic group and the member entity that is missing.
 
-To resolve the raised issue, you can either remove the missing entity from the group, or fix the referenced source entity. Spook will automatically remove the repair issue once the issue is fixed.
+To resolve the raised issue, you can either remove the missing entity from the group or fix the referenced source entity. Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Features requests, ideas and support
 
-If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug?? Please check the [](../support) page on where to go for help.

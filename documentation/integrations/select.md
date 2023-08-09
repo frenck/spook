@@ -15,7 +15,7 @@ date: 2023-06-30T20:36:04+02:00
 
 <br><br>
 
-The select {term}`integration <integration>` provides a way to select a value from a list of options. It differs from the [input select](input_select) helper, in that it is not directly created by the user, but rather by other integrations.
+The select {term}`integration <integration>` provides a way to select a value from a list of options. It differs from the [input select](input_select) helper in that the user does not directly create it but rather by other integrations.
 
 Spook extends the select integration with an option to select a random option from the options offered by the select {term}`entity <entity>`.
 
@@ -75,7 +75,7 @@ Select a random option from the list of options in the input select.
   - Defaults to all available options
 ```
 
-The `options` attribute is a {term}`list of strings <list>`, containing the options to select a random one from. If not provided, all available options configured in the input select are used.
+The `options` attribute is a {term}`list of strings <list>` containing the options to select a random one from. If not provided, all available options configured in the input select are used.
 
 :::{seealso} Example service calls in YAML
 :class: dropdown
@@ -109,14 +109,14 @@ Spook has no repair detections for this integration.
 
 Some use cases for the enhancements Spook provides for this integration:
 
-- The random select can be useful for example, choosing a random preset or playlist from a list of options. This can add som surprise factor to some automations.
+- The random select can be useful, for example, choosing a random preset or playlist from a list of options. This can add some surprise factor to some automations.
 
 ## Blueprints & tutorials
 
-There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one, or stubled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 ## Features requests, ideas and support
 
-If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug?? Please check the [](../support) page on where to go for help.

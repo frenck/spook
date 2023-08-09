@@ -9,10 +9,6 @@ Some other miscellaneous core features that didn't fit elsewhere in the document
 
 Maybe I'm just bad at structuring the documentation? If you have any suggestions, please let me know!
 
-## Service: Restart Home Assistant (with force option)
-
-Call it using: [`homeassistant.restart`](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
-
 ## Services
 
 The following miscellaneous services are added to your Home Assistant instance:
@@ -43,7 +39,7 @@ integrations. It is recommended to use this service only when necessary.
 * - {term}`Service response`
   - No response
 * - {term}`Spook's influence`
-  - Extends the existing restart service with an "force" option.
+  - Extends the existing restart service with a "force" option.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
     [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
@@ -63,7 +59,7 @@ integrations. It is recommended to use this service only when necessary.
 ```
 
 :::{warning}
-When enabling `force`, by setting it to `true`, Home Assistant will restart immediately, ignoring all safety guards. This means it will ignore **everything**. It will not check your configuration and it will even interrupt database migrations and just kill Home Assistant to restart it as fast as possible. This is not recommended, and should only be used when absolutely necessary.
+When enabling `force`, by setting it to `true`, Home Assistant will restart immediately, ignoring all safety guards. This means it will ignore **everything**. It will not check your configuration, and it will even interrupt database migrations and just kill Home Assistant to restart it as fast as possible. This is not recommended and should only be used when absolutely necessary.
 :::
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`

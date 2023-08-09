@@ -15,14 +15,14 @@ date: 2023-06-30T20:36:04+02:00
 
 <br><br>
 
-The recorder {term}`integration <integration>` in {term}`Home Assistant` is responsible for registering and storing everything that happens in your home. It is the backbone of the history and logbook features in Home Assistant, but also stores information in a long-term format to power things like the energy {term}`dashboard <dashboard>` and other graphs you see in Home Assistant.
+The recorder {term}`integration <integration>` in {term}`Home Assistant` is responsible for registering and storing everything that happens in your home. It is the backbone of the history and logbook features in Home Assistant but it also keeps information in a long-term format to power things like the energy {term}`dashboard <dashboard>` and other graphs you see in Home Assistant.
 
 ```{figure} ../images/integrations/recorder/example.png
 :name: example
 :alt: Screenshot of the recorder import statistics service call in the developer tools.
 :align: center
 
-Spook adds a service that allows to import data into the recorder.
+Spook adds a service that allows importing data into the recorder.
 ```
 
 ## Devices & entities
@@ -35,7 +35,7 @@ Spook adds the following new service to your Home Assistant instance:
 
 ### Import statistics
 
-Downloads and imports a automation/script Blueprint, directly from the URL you pass into this service.
+Manually import long-term statistics into the recorder database of Home Assistant.
 
 ```{figure} ../images/integrations/recorder/import.png
 :alt: Screenshot of the recorder import statistics service call in the developer tools.
@@ -123,7 +123,7 @@ Downloads and imports a automation/script Blueprint, directly from the URL you p
   - No
 ```
 
-More information about the mapping/meaning of fields in the long-term statistics can be found on the [Home Assistant data portal](https://data.home-assistant.io/docs/statistics).
+More information about the mapping/meaning of fields in long-term statistics can be found on the [Home Assistant data portal](https://data.home-assistant.io/docs/statistics).
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
@@ -145,7 +145,7 @@ data:
 :::
 
 :::{warning}
-Messing with the recorder directly is not recommended. It is very easy to break things and up with very skwed data. Use this service with caution.
+Messing with the recorder directly is not recommended. It is very easy to break things end up with very skewed data. Use this service with caution.
 :::
 
 ## Repairs
@@ -156,14 +156,14 @@ Spook has no repair detections for this integration.
 
 Some use cases for the enhancements Spook provides for this integration:
 
-- Manually import data into the recorder, for example, historical data from a previous system, or a energy provider that provides a CSV file with your historical energy usage.
+- Manually import data into the recorder, for example, historical data from a previous system or an energy provider that provides a CSV file with your historical energy usage.
 
 ## Blueprints & tutorials
 
-There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one, or stubled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 ## Features requests, ideas and support
 
-If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug?? Please check the [](../support) page on where to go for help.

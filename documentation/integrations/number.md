@@ -15,7 +15,7 @@ date: 2023-06-30T20:36:04+02:00
 
 <br><br>
 
-The number {term}`integration <integration>` provides numeric inputs to control {term}`devices & services <device>`. It differs from the [input number](input_number) helper, in that it is not directly created by the user, but rather by other integrations.
+The number {term}`integration <integration>` provides numeric inputs to control {term}`devices & services <device>`. It differs from the [input number](input_number) helper in that the user does not directly create it but rather by other integrations.
 
 Spook adds some new services to the number {term}`integration <integration>`, which allows you to set the value to the minimum or maximum value, and adds services to increase and decrease services the number value by a given amount.
 
@@ -37,7 +37,7 @@ Spook adds the following new service to your Home Assistant instance:
 
 ### Decrease value
 
-Decrease an number entity value by a certain amount.
+Decrease a number entity value by a certain amount.
 
 ```{figure} ../images/integrations/number/decrease.png
 :alt: Screenshot of the number decrease value service call in the developer tools.
@@ -93,7 +93,7 @@ data:
 
 ### Increase value
 
-Increase an number entity value by a certain amount.
+Increase a number entity value by a certain amount.
 
 ```{figure} ../images/integrations/number/increase.png
 :alt: Screenshot of the number increase value service call in the developer tools.
@@ -104,7 +104,7 @@ Increase an number entity value by a certain amount.
 :header-rows: 1
 * - Service properties
 * - {term}`Service`
-  - Mumber: Increase value 👻
+  - Number: Increase value 👻
 * - {term}`Service name`
   - `number.increment`
 * - {term}`Service targets`
@@ -233,15 +233,15 @@ Spook has no repair detections for this integration.
 
 Some use cases for the enhancements Spook provides for this integration:
 
-- Quickly, with a single service call, set the value of an number entity to its maximum or minimum value.
-- Add the ability to increase or decrease the value of an number entity with a single service call, instead of having to call the `number.set_value` service using a template that does calculations on the current state.
+- Quickly, with a single service call, set the value of a number entity to its maximum or minimum value.
+- Add the ability to increase or decrease the value of a number entity with a single service call instead of having to call the `number.set_value` service using a template that does calculations on the current state.
 
 ## Blueprints & tutorials
 
-There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one, or stubled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 ## Features requests, ideas and support
 
-If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug?? Please check the [](../support) page on where to go for help.

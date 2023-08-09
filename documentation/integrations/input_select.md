@@ -15,9 +15,9 @@ date: 2023-06-30T20:36:04+02:00
 
 <br><br>
 
-The input select {term}`helper` in {term}`Home Assistant` allows the user to define a list of options that can be controlled via the frontend and can be used within conditions of an {term}`automation <automation>`. The frontend can display a dropdown, or a list of buttons. Changes to the dropdown or list of buttons generate state events. These state events can be utilized as automation triggers as well.
+The input select {term}`helper` in {term}`Home Assistant` allows the user to define a list of options that can be controlled via the frontend and can be used within conditions of an {term}`automation <automation>`. The frontend can display a dropdown or a list of buttons. Changes to the dropdown or list of buttons generate state events. These state events can be utilized as automation triggers as well.
 
-Spook adds some new services to the input select {term}`integration <integration>`, which allows to select a random option and to shuffle or sort the list of options in the input select.
+Spook adds some new services to the input select {term}`integration <integration>`, which allows one to select a random option and to shuffle or sort the list of options in the input select.
 
 ```{figure} ../images/integrations/input_select/example.png
 :name: example
@@ -103,7 +103,7 @@ data:
 
 ### Shuffle options
 
-Shuffles the list of available options in the input select, keept the current
+Shuffles the list of available options in the input select and keeps the current
 select options selected.
 
 ```{figure} ../images/integrations/input_select/shuffle.png
@@ -147,7 +147,7 @@ Shuffling is not persistent and will be undone once reloaded or Home Assistant r
 
 ### Sort options
 
-Sorts the list of available options in the input select, keept the current
+Sorts the list of available options in the input select and keeps the current
 select options selected.
 
 ```{figure} ../images/integrations/input_select/sort.png
@@ -198,14 +198,14 @@ Spook has no repair detections for this integration.
 Some use cases for the enhancements Spook provides for this integration:
 
 - The shuffle and random abilities can have very fun use cases in automations. For example, select a random person to cook dinner or do chores, or shuffle a sequence of scenes to play.
-- The input select entity, doesn't allow you to recorder the options. The sort ability allows you to sort the options alphabetically at least.
+- The input select entity doesn't allow you to re-order the options. The sort ability allows you to sort the options alphabetically, at least.
 
 ## Blueprints & tutorials
 
-There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one, or stubled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 ## Features requests, ideas and support
 
-If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

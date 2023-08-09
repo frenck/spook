@@ -40,7 +40,7 @@ Please share your idea on the [Spook discussion forum on GitHub](https://github.
 
 Well, there is a lot more documentation on Spook to explore. You can find it all in the sidebar on the left.
 
-If you like to learn more about Spook, the [](background_and_history) and the [](faq) pages might be good starting points to find answers to your questions. Otherwise, the resources mentioned on top of this page are good places to get your questions answered.
+If you like to learn more about Spook, the [](background_and_history) and the [](faq) pages might be good starting points to find answers to your questions. Otherwise, the resources mentioned at the top of this page are good places to get your questions answered.
 
 ## The documentation sucks! 😭
 

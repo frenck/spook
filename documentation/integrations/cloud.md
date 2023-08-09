@@ -15,9 +15,9 @@ date: 2023-06-30T20:36:04+02:00
 
 <br><br>
 
-The Home Assistant Cloud allows to effortlessly use your {term}`Home Assistant` with various cloud services like Amazon Alexa and Google Assistant, but also provides remote access to your Home Assistant instance without having to deal with dynamic DNS, SSL certificates and opening ports on your router.
+The Home Assistant Cloud allows you to effortlessly use your {term}`Home Assistant` with various cloud services like Amazon Alexa and Google Assistant, but also provides remote access to your Home Assistant instance without having to deal with dynamic DNS, SSL certificates, and opening ports on your router.
 
-Spook enhances the Home Assistant Cloud integration by creating a device for it and adding a series of {term}`entities <entity>` that can be used in your dashboards, automations and scripts.
+Spook enhances the Home Assistant Cloud integration by creating a device for it and adding a series of {term}`entities <entity>` that can be used in your dashboards, automations, and scripts.
 
 :::{tip}
 The Home Assistant Cloud service is provided by [Nabu Casa](https://www.nabucasa.com). The earnings from the services provided are used to fund Home Assistant development and related projects in the open home community.
@@ -83,14 +83,14 @@ Some use cases for the enhancements Spook provides for this integration:
 
 - Disable remote access to your Home Assistant instance when you are home, using an automation; and automatically enable it again when you leave your home.
 - Disable Alexa integration when you are not at home using an automation.
-- Disable Google Assistant int egration when you are not at home using an automation.
+- Disable Google Assistant integration when you are not at home using an automation.
 
 ## Blueprints & tutorials
 
-There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one, or stubled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 ## Features requests, ideas and support
 
-If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug?? Please check the [](../support) page on where to go for help.

@@ -1,14 +1,14 @@
 ---
 subject: Features
 title: Other features
-subtitle: Home of the useless, but fun. 🤡
+subtitle: Home of the useless but fun. 🤡
 date: 2023-06-30T20:36:04+02:00
 ---
 
-These are some Spook specific features that don't fit in any of the other categories.
-They are not particalarly useful, but they are fun to play with (and maybe you actually have a use case for them).
+These are some Spook-specific features that don't fit in any of the other categories.
+They are not particularly useful, but they are fun to play with (and maybe you actually have a use case for them).
 
-They originally served as the proof of concept for Spook, and left them in for the fun of it.
+They originally served as the proof of concept for Spook and left them in for the fun of it.
 
 ## Services
 
@@ -16,7 +16,7 @@ Spook offers the following services useless services:
 
 ### Boo!
 
-This service will just always scare Home Assistant, causing the this service call to fail. Calling this service in any of your automations will thus cause your automation to stop and error.
+This service will just always scare Home Assistant, causing this service call to fail. Calling this service in any of your automations will thus cause your automation to stop and error.
 
 ```{figure} ./images/spook/boo.png
 :alt: Screenshot of the Spook Boo! service call in the developer tools.

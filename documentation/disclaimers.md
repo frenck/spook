@@ -11,7 +11,7 @@ All product names, logos, brands, trademarks and registered trademarks are prope
 
 ---
 
-I guess it goes without saying that this custom integration is not affiliated with, endorsed or recommended by the Home Assistant project.
+I guess it goes without saying that this custom integration is not affiliated with, endorsed, or recommended by the Home Assistant project.
 
 :::{warning} Just to be clear...
 **Spook is not supported by the Home Assistant project.**

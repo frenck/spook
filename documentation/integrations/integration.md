@@ -15,9 +15,9 @@ date: 2023-06-30T20:36:04+02:00
 
 <br><br>
 
-The Riemann sum integral {term}`helper <helper>` caulcates <wiki:Riemann_sum> of the values provided by a source sensor. The Riemann sum is an approximation of an **[integral](wiki:Integral)** by a [finite sum](wiki:Summation).
+The Riemann sum integral {term}`helper <helper>` calculates the <wiki:Riemann_sum> of the values provided by a source sensor. The Riemann sum is an approximation of an **[integral](wiki:Integral)** by a [finite sum](wiki:Summation).
 
-This is most often used to calculate the total energy usage of a power meter, by using the power meter’s power consumption and the time between the measurements.
+This is most often used to calculate the total energy usage of a power meter by using the power meter’s power consumption and the time between the measurements.
 
 ## Devices & entities
 
@@ -29,16 +29,16 @@ Spook does not provide service enhancements for this integration.
 
 ## Repairs
 
-While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
+While Spook is floating around in your Home Assistant instance, it will raise repair issues if it has found something that is not right.
 
 ### Unknown source entity
 
-Spook inspects all Riemann sum integral created {term}`entities <entity>`, and looks for cases where a source sensor entity is no longer present. If Spook finds such a case, it will raise a {term}`repair issue <repairs>` informing you about the problematic entity.
+Spook inspects all Riemann sum integral created {term}`entities <entity>`, and looks for cases where a source sensor entity is no longer present. If Spook finds such a case, it will raise a {term}`repair issue <repairs>`, informing you about the problematic entity.
 
-To resolve the raised issue, you can either remove the helper, or fix the referenced source {term}`entity ID <entity id>`. Spook will automatically remove the repair issue once the issue is fixed.
+To resolve the raised issue, you can either remove the helper or fix the referenced source {term}`entity ID <entity id>`. Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Features requests, ideas and support
 
-If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug?? Please check the [](../support) page on where to go for help.

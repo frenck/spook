@@ -1,7 +1,7 @@
 ---
 subject: Enhanced integrations
 title: Input number
-subtitle: Give me you digits. 🔢
+subtitle: Give me your digits. 🔢
 thumbnail: ../images/integrations/input_number/example.png
 description: Spook adds some new services to the input number integration, which allows you to set the value to the minimum or maximum value, or increase or decrease value by a given amount.
 date: 2023-06-30T20:36:04+02:00
@@ -15,7 +15,7 @@ date: 2023-06-30T20:36:04+02:00
 
 <br><br>
 
-The input number {term}`helper` in {term}`Home Assistant` allows the user to define values that can be controlled via the frontend and can be used within conditions of an {term}`automation <automation>`. The frontend can display a slider, or a numeric input box. Changes to the slider or numeric input box generate state events. These state events can be utilized as automation triggers as well.
+The input number {term}`helper` in {term}`Home Assistant` allows the user to define values that can be controlled via the frontend and can be used within conditions of an {term}`automation <automation>`. The frontend can display a slider or a numeric input box. Changes to the slider or numeric input box generate state events. These state events can be utilized as automation triggers as well.
 
 Spook adds some new services to the input number {term}`integration <integration>`, which allows you to set the value to the minimum or maximum value, and enhances the existing increase and decrease services by allowing them to increase/decrease the value by a given amount.
 
@@ -24,7 +24,7 @@ Spook adds some new services to the input number {term}`integration <integration
 :alt: Screenshot of the developer service tools, listing the new services for input number.
 :align: center
 
-Spook adds a bunch of new services to the input number helper integrations.
+Spook adds many new services to the input number helper integrations.
 ```
 
 ## Devices & entities
@@ -56,7 +56,7 @@ Decrease an input number entity value by a certain amount.
 * - {term}`Service response`
   - No response
 * - {term}`Spook's influence`
-  - Adds amount to decrement the value with
+  - Adds an amount to decrement the value with
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
     [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
@@ -75,7 +75,7 @@ Decrease an input number entity value by a certain amount.
   - Defaults to configured step value
 ```
 
-This service already exists, but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the service will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
+This service already exists but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the service will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
@@ -112,7 +112,7 @@ Increase an input number entity value by a certain amount.
 * - {term}`Service response`
   - No response
 * - {term}`Spook's influence`
-  - Adds amount to increment the value with
+  - Adds an amount to increment the value with
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
     [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
@@ -131,7 +131,7 @@ Increase an input number entity value by a certain amount.
   - Defaults to configured step value
 ```
 
-This service already exists, but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the service will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
+This service already exists but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the service will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
@@ -238,10 +238,10 @@ Some use cases for the enhancements Spook provides for this integration:
 
 ## Blueprints & tutorials
 
-There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one, or stubled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 ## Features requests, ideas and support
 
-If you have an idea on how to futher enhance this integration, for example by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-Are you stuck using these new features? Or maybe you've ran into an bug? Please check the [](../support) page on where to go for help.
+Are you stuck using these new features? Or maybe you've run into a bug?? Please check the [](../support) page on where to go for help.
