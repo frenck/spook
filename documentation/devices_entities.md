@@ -2,7 +2,7 @@
 subject: Core extensions
 title: Devices & entities
 subtitle: Can I haz more devices and entities? 😁
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Besides all new {term}`services <service>` for {term}`Home Assistant` itself, Spook will also add a bunch of {term}`devices <device>` and {term}`entities <entity>` that are all about Home Assistant. Basically, turning Home Assistant itself into its own integration, providing entities you can monitor and control.

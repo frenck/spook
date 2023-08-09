@@ -5,7 +5,7 @@ subtitle: Spook is oddly familiar.
 short_title: Usage
 thumbnail: images/usage/services_example.png
 description: Spook is oddly familiar, it extends existing Home Assistant functionality, everything you already know about Home Assistant applies. There is just more of it!
-date: 2023-06-30T09:31:26+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Now you have Spook [installed](installation); you can start using it. It is hard to explain what Spook does, but its experience in using it is best described as: _oddly familiar_ 🙂.

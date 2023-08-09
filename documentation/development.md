@@ -5,7 +5,7 @@ short_title: Development
 subtitle: Be the change. Contribute. Be Spook 👻.
 thumbnail: images/social.png
 description: Spook is an open-source project, and contributions are welcome! Here is how you can contribute to Spook.
-date: 2023-06-30T13:47:47+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 There are many ways you can contribute to the development of Spook.

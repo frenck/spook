@@ -4,7 +4,7 @@ title: Switch as X
 subtitle: Help a switch with an identity crisis discover its true self.
 thumbnail: ../images/social.png
 description: The Switch as X helper lets you convert any Home Assistant switch entity into a light, cover, fan, lock, or siren entity. Spook detects issues with them.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/switch_as_x/logo.png

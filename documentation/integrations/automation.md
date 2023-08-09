@@ -5,7 +5,7 @@ short_title: Automations
 subtitle: The breathing (mechanical) heart of Home Assistant.
 thumbnail: ../images/integrations/automation/example.png
 description: Spook enhances the automation integrations of Home Assistant by raising repairs issues, in case it detects something is wrong with an automation, for example, if it is using non-existing entities.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/automation/logo.png

@@ -4,7 +4,7 @@ title: Recorder
 subtitle: Records all the spooky things that happen in your home.
 thumbnail: ../images/integrations/recorder/example.png
 description: Spook enhances the recorder integration, by adding a service that allows to import data into the recorder.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/recorder/logo.png

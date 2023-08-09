@@ -4,7 +4,7 @@ title: Input select
 subtitle: Offers a selection of the finest options.
 thumbnail: ../images/integrations/input_select/example.png
 description: Spook adds some new services to the input select integration, which allows to select a random option and to shuffle or sort the list of options in the input select.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/input_select/logo.png

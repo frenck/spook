@@ -5,7 +5,7 @@ short_title: Blueprints
 subtitle: Don't be a blueprint. Be an original.
 thumbnail: images/social.png
 description: A list of blueprints using Spook's features, that you can use in your Home Assistant instance.
-date: 2023-07-01T10:50:23+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Spook is currently unaware of any blueprints that are using features provided by Spook.

@@ -4,7 +4,7 @@ title: Home Assistant Cloud
 subtitle: Automate and control your Home Assistant Cloud connection.
 thumbnail: ../images/integrations/cloud/example.png
 description: Spook enhances the Home Assistant Cloud integration by creating a device for it and adding a series of entities that, for example, provide control over enabling and disabling cloud connections.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/cloud/logo.png

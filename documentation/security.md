@@ -4,7 +4,7 @@ title: Security
 subtitle: The S in IoT stands for security.
 thumbnail: images/social.png
 description: Spook takes security seriously. Here is you can report and how we handle security vulnerabilities.
-date: 2023-06-30T23:27:52+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 So, you have found a security vulnerability in Spook? Please, be sure to **responsibly** disclose it to us by [reporting a vulnerability using GitHub's Security Advisory](https://github.com/frenck/spook/security/advisories/new).

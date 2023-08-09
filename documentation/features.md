@@ -2,7 +2,7 @@
 subject: Getting started
 title: Features
 subtitle: You want to know what Spook can do for you? 🧪
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Spook ships with a lot of goodness for you to explore. Currently, there are three main areas of functionality that Spook sprinkles on top of {term}`Home Assistant`.

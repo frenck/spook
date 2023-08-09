@@ -2,7 +2,7 @@
 subject: Core extensions
 title: Areas management
 subtitle: Is there room for one more?
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 {term}`Areas <area>` in {term}`Home Assistant` is a logical grouping of {term}`devices <device>` and {term}`entities <entity>` that are meant to match the areas (or rooms) in the physical world: your home.

@@ -2,7 +2,7 @@
 subject: Features
 title: Core extensions
 subtitle: It is like the turbo cartridge for your Commodore 64 🕹️
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Spook adds functionality to the very core of {term}`Home Assistant`. No, no, this should not be confused with {term}`integrations <integration>`, but like empowering the main application program of Home Assistant that runs those integrations (level 🆙!).

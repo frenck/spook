@@ -4,7 +4,7 @@ title: Repairs
 subtitle: Can we fix it? No, we are not Bob the Builder. 👷
 thumbnail: ../images/integrations/repairs/example.png
 description: Spook adds some new services to the repairs integration, which allows you to create your own repairs issues and manage them.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/repairs/logo.png

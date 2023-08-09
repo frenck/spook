@@ -2,7 +2,7 @@
 subject: Documentation
 title: Integrations
 subtitle: A little bit of ectoplasm goes a long way. 🧪
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Spook enhances the following Home Assistant integrations by sprinkling some

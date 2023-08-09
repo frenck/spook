@@ -4,7 +4,7 @@ title: Disclaimers
 subtitle: Some disclaimer stuff you should read.
 thumbnail: images/social.png
 description: Some disclaimer stuff you should read.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 All product names, logos, brands, trademarks and registered trademarks are property of their respective owners. All company, product, and service names used are for identification purposes only. Use of these names, logos, trademarks, and brands does not imply affiliation or endorsement.

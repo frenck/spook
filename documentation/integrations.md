@@ -2,7 +2,7 @@
 subject: Core extensions
 title: Integration management
 subtitle: Integrate all the things! 🎉
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 {term}`Integrations <integration>` in {term}`Home Assistant` are the glue between your Home Assistant instance and the devices, services, and platforms you want to integrate with it. Spook enhances the core of Home Assistant by adding {term}`services <service>` to control those integrations.

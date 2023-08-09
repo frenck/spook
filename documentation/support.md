@@ -4,7 +4,7 @@ title: Support
 subtitle: Getting directions in this rollercoaster theme park. 🎢
 thumbnail: /images/support.png
 description: Spook is not supported by the Home Assistant project, however, there are still quite a few places where you can get help. This place guides you to the right place.
-date: 2023-06-30T09:31:26+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Spook is provided as-is, without any warranty or any real support, and above all: Is absolutely **unsupported** by the {term}`Home Assistant` project. However, if you run into issues, where should you go?

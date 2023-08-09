@@ -2,7 +2,7 @@
 subject: Core extensions
 title: Miscellaneous
 subtitle: Oh, there is some more stuff here. 🦄
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Some other miscellaneous core features that didn't fit elsewhere in the documentation.

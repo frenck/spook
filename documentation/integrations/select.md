@@ -4,7 +4,7 @@ title: Select
 subtitle: Selecting from the selection using a selector.
 thumbnail: ../images/integrations/select/example.png
 description: Spook adds a new service to the select integration, which allows to select a random option from the list of options.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/select/logo.png

@@ -4,7 +4,7 @@ title: Glossary
 subtitle: What does this even mean?
 thumbnail: images/social.png
 description: Glossary of terms used by Spook & Home Assistant, just to add a little context to this all.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 % TODO:

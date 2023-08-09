@@ -5,7 +5,7 @@ short_title: Frequently asked questions
 subtitle: You've got questions? We've got answers!
 thumbnail: images/social.png
 description: Answer to the most frequently asked questions about Spook for Home Assistant.
-date: 2023-06-30T13:47:47+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Some of the same questions keep popping up. So, here are some answers to the most common questions about Spook 👻.

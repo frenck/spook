@@ -4,7 +4,7 @@ title: Dashboards
 subtitle: There is more than meets the eye. 🤩
 thumbnail: ../images/integrations/lovelace/unknown_entity.png
 description: Spook enhances the dashboard integration of Home Assistant by raising repairs issues, in case it detects something is wrong with a dashboard, like for example, used non-existing entities.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/lovelace/logo.png

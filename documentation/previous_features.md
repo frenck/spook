@@ -5,7 +5,7 @@ short_title: Previous features
 subtitle: Adieu, goodbye, auf Wiederseh'n!
 thumbnail: images/social.png
 description: Sometimes features are removed from Spook. Most of the time, this is because the feature is now available in Home Assistant itself. This page is dedicated to those fallen features.
-date: 2023-06-30T13:47:47+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 :::{iframe} https://www.youtube.com/embed/skl6N3zGv-s

@@ -5,7 +5,7 @@ short_title: Background & History
 subtitle: Every story has a beginning.
 thumbnail: images/social.png
 description: The background and history of Spook, the custom integration that provides a scary powerful toolbox for Home Assistant.
-date: 2023-06-30T13:47:47+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Spook is a project created and started by [Franck Nijhof](https://github.com/frenck) (better known as Frenck) on [February the 23rd of 2023](https://github.com/frenck/spook/commit/67803faf19bca7c8543e0865e1dba58755315652).

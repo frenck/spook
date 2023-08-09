@@ -2,7 +2,7 @@
 subject: Core extensions
 title: Device management
 subtitle: Which devices are you rocking? 🎸
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 A {term}`device <device>` in {term}`Home Assistant` represents a physical device in your home but can also represent a web service, like one that provides weather information. Devices are logical grouping for entities. Spook provides you with a few services to manage devices.

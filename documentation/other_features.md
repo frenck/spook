@@ -2,7 +2,7 @@
 subject: Features
 title: Other features
 subtitle: Home of the useless but fun. 🤡
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 These are some Spook-specific features that don't fit in any of the other categories.

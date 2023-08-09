@@ -4,7 +4,7 @@ title: Code of conduct
 subtitle: But remember, Spook is still not your homie.
 thumbnail: images/social.png
 description: The Spook project has a code of conduct, that applies to all of its spaces.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ## Our Pledge

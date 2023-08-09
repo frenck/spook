@@ -7,7 +7,7 @@ thumbnail: images/social.png
 description: Installing the most scary and powerful toolbox for Home Assistant isn't that hard. This step-by-step installation guide will help you through it.
 numbering:
   heading_2: true
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Time to get Spook 👻 settled and installed in your Home Assistant instance.

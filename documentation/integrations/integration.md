@@ -4,7 +4,7 @@ title: Riemann sum integral
 subtitle: The only integration that gives you energy if you provide it power.
 thumbnail: ../images/social.png
 description: Spook enhances the Riemann sum integral integration by inspecting it for missing source entities.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/integration/logo.png

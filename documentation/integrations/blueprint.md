@@ -4,7 +4,7 @@ title: Blueprints
 subtitle: Don't be a blueprint. Be an original.
 thumbnail: ../images/integrations/blueprint/example.png
 description: Spook enhances the Home Assistant Blueprint integration with new features to use in automations or scripts.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/blueprint/logo.png

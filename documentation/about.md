@@ -5,7 +5,7 @@ short_title: About
 subtitle: A scary powerful toolbox for Home Assistant.
 thumbnail: images/social.png
 description: Spook is a scary powerful toolbox for Home Assistant, that extend native functionality and adds new features to the core of Home Assistant.
-date: 2023-06-30T21:10:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Hi! I'm Spook 👻 and I'm a {term}`custom integration <integration>` for use with {term}`Home Assistant`. I will extend your Home Assistant instance with a huge set of scary powerful tools. 🛠️

@@ -4,7 +4,7 @@ title: Groups
 subtitle: Never underestimate the power of stupid people in large groups.
 thumbnail: ../images/integrations/group/example.png
 description: Spook enhances the Home Assistant group integration by report issues in the repairs dashboard if members are missing.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/group/logo.png

@@ -4,7 +4,7 @@ title: Number
 subtitle: Elmo likes numbers too!
 thumbnail: ../images/integrations/number/example.png
 description: Spook adds some new services to the number integration, which allows you to set the value to the minimum or maximum value, and adds services to increase and decrease services the number value by a given amount.
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/number/logo.png

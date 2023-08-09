@@ -5,7 +5,7 @@ short_title: Services
 subtitle: At your service. 🫡
 thumbnail: images/usage/services_example.png
 description: Spook provides quite a lot of new services to Home Assistant. This reference pages lists them all, and points you to the right documentation.
-date: 2023-06-30T09:31:26+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 Spook provides quite a lot of new services to Home Assistant. This reference page lists them all and points you to the right documentation for that service.

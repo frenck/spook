@@ -2,7 +2,7 @@
 subject: Core extensions
 title: Entity management
 subtitle: Everything is an entity, and entities are everything 🪄
-date: 2023-06-30T20:36:04+02:00
+date: 2023-08-09T21:29:00+02:00
 ---
 
 {term}`Entities <entity>` in {term}`Home Assistant` are the building blocks of your home automation. Spook enhances the core of Home Assistant by adding {term}`services <service>` to control those entities programmatically.
