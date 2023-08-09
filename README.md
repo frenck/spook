@@ -32,6 +32,12 @@ We've set up a separate document for our [contribution guidelines](https://spook
 
 The original setup of this repository is by [Franck Nijhof][frenck].
 
+Thanks to everyone who already contributed! ❤️
+
+<a href="https://github.com/frenck/spook/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=frenck/spook" />
+</a>
+
 For a full list of all authors and contributors,
 check [the contributor's page][contributors].
 
