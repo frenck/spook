@@ -1,0 +1,64 @@
+name: Report an issue with Spook
+description: Report a malfunction, unexpected behavior, or other issue with Spook.
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### ✋  **This is a bug tracker is for reporting issues only!**
+
+        If you have a feature, enhancement request, support questions,
+        or anything else, please use the
+        [our discussion forum instead](https://github.com/frenck/spook/discussions).
+
+        ---
+
+        **Thanks for wanting to report an issue you've found in Spook! 👻**
+
+        Could you please make sure your issue wasn't reported already?
+        If it was, please add a 👍 reaction to the existing issue instead of
+        creating a new one. Also, check the closed issues to see if your issue
+        has been fixed already (but maybe not released yet).
+
+        Thanks for taking the time to contribute to Spook! 🙌
+
+        ../Frenck
+
+  - type: input
+    id: version
+    validations:
+      required: true
+    attributes:
+      label: What version of Spook are you using?
+
+  - type: input
+    id: homeassistant
+    validations:
+      required: true
+    attributes:
+      label: What version of Home Assistant are you using?
+      description: >
+        Can be found in: [Settings ⇒ System ⇒ Repairs ⇒ Three Dots in Upper Right ⇒ System information](https://my.home-assistant.io/redirect/system_health/).
+
+        [![Open your Home Assistant instance and show the system information.](https://my.home-assistant.io/badges/system_health.svg)](https://my.home-assistant.io/redirect/system_health/)
+
+  - type: textarea
+    validations:
+      required: true
+    attributes:
+      label: The problem
+      description: >-
+        Describe the issue you are experiencing here. Tell us what you were
+        trying to do step by step, and what happened that you did not expect.
+
+        Provide a clear and concise description of what the problem is and
+        include as many details as possible.
+
+        Tip: You can paste screenshot in this field too! 📸
+
+  - type: textarea
+    attributes:
+      label: Anything in the logs? Paste it here!
+      description: |
+        Be sure to check your Home Assistant logs for anything that might be
+        related and helpful to include. Paste them here!
+      render: plain text
