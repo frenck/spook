@@ -1,6 +1,67 @@
 format: jb-book
 root: index
 parts:
+  - caption: Getting started 🚀
+    chapters:
+      - file: about
+      - file: installation
+      - file: usage
+      - file: features
+      - file: support
+
+  - caption: Features
+    chapters:
+      - file: core_extensions
+      - file: enhanced_integrations
+      - file: other_features
+
+  - caption: Core extensions
+    chapters:
+      - file: integrations
+      - file: devices
+      - file: entities
+      - file: areas
+      - file: devices_entities
+      - file: misc
+
+  - caption: Enhanced integrations
+    chapters:
+      - file: integrations/automation
+      - file: integrations/blueprint
+      - file: integrations/lovelace
+      - file: integrations/group
+      - file: integrations/cloud
+      - file: integrations/input_number
+      - file: integrations/input_select
+      - file: integrations/number
+      - file: integrations/recorder
+      - file: integrations/repairs
+      - file: integrations/integration
+      - file: integrations/script
+      - file: integrations/select
+      - file: integrations/switch_as_x
+
+  # - caption: Tutorials
+  #   chapters:
+  #     - file: ectoplasms
+
   - caption: Reference
     chapters:
+      - file: services
+      - file: blueprints
       - file: glossary
+
+  - caption: About the project
+    chapters:
+      - file: media
+      - file: background_and_history
+      - file: faq
+      - file: previous_features
+      - file: development
+      - file: security
+
+  - caption: Boring stuff
+    chapters:
+      - file: disclaimers
+      - file: code_of_conduct
+      - file: license

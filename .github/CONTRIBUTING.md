@@ -1,22 +1,9 @@
 # Contributing
 
-Are you considering doing that? For real?
-This repository has quite an annoying license...
+Are you considering doing that? For real? This repository has quite an annoying license...
 
-## Issues and feature requests
+Anyways, you can find all information on development and contributing on our website:
 
-If you have found a bug... congratulations!
-Feel free to fix it in your own time.
+https://spook.frenck.dev/development
 
-Got a feature request? Nice! Take a good size piece of paper, write
-it down in just a couple of words. Fold it a couple of times so you
-are left with a nice small folded feature request. Now shred it into
-pieces. Done.
-
-## Pull request process
-
-You can try... maybe... who knows.
-
-## What did I just read?
-
-A question.
+../Frenck

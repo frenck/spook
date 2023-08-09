@@ -19,7 +19,7 @@ jobs:
           node-version-file: "documentation/.nvmrc"
 
       - name: 🏗 Install MyST
-        run: npm install -g myst-cli
+        run: npm install -g mystmd
 
       - name: 🚀 Build documenation
         working-directory: ./documentation

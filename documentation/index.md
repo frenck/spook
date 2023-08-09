@@ -7,21 +7,20 @@ title: Spook 👻 Not your homie.
 :align: center
 ```
 
-_Spook is a scary powerfull toolbox for Home Assistant, but be aware, Spook is not your homie!_
+_Spook is a scary powerful toolbox for Home Assistant, but be aware, Spook is not your homie!_
 
-:::{important}
-The Spook documentation is currently in development.
+Hi! 👋
 
-**It is not complete and may contain errors**  
-(but honestly, that will also be the case when it is complete).
-:::
+Welcome to my (one and only) {term}`custom integration <integration>` for {term}`Home Assistant`: Spook! 👻
 
-So, there a lot of things/features, that will never end up in Home Assistant itself.
+Spook is my friend and my personal little pet project that I develop in my free spare time to add some features to Home Assistant that I (or others) think are missing; but are not a good fit to ship with Home Assistant itself.
 
-This can have various reasons, for example: It is just too random, out of scope, not matching the Home Assistant philosophy, iolating architectural design, still in early development, experimental, explorative, or just freaking useless.
+If you would ever ask me, if you should use Spook? I would say: No. This sounds odd, but I mean it. Using the least amount of custom integrations is always the best way to go.
 
-Spook doesn't care. He is nobodies homie.
+That said, Spook is slowly becoming an scary powerful toolbox for Home Assistant, that many have come to love. So, if you are comfortable with using custom integrations, Spook might be a good fit for you.
 
-So, maybe, that one feature you wanted Home Assistant to have, is in Spook.
+Want to start using Spook? I would recommend picking up at the [getting started](about) section of the documentation. If you like to learn more about Spook its origin first, check out the [background and history](background_and_history) page for more information on that. Lastly, maybe the [](faq) page can help you.
 
-However, remember, Spook is not your homie. All stuff in here, is not part of Home Assistant (or at least not yet) for a reason. So, don't expect it to work, or to be supported, or well, for starters, to be a good idea.
+Boo! 👻
+
+../Frenck
