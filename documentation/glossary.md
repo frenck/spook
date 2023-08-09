@@ -47,6 +47,12 @@ Boolean
 :::
 
 :::{glossary}
+Config entry
+: A config entry in {term}`Home Assistant` is a configuration for an {term}`integration <integration>`. It is a technical term from the developer sources leaking into the user space, which may sometimes sound confusing. In short, it is the configuration you see on the integrations page. Most integrations can be set up multiple times (like adding two Hue bridges or multiple ESPHome devices). Each such "integration instance" is a config entry.
+: This is sometimes referred to as "integration instance" or "integration entry".
+:::
+
+:::{glossary}
 Dashboard
 : A dashboard in {term}`Home Assistant` is a user interface that displays information and control {term}`entities <entity>` in your home. Dashboards are used to create a user interface to control your home, such as turning on the lights or seeing the current temperature. Dashboards are fully customizable and can be created in many different ways. There is a vibrant community that shares their dashboards so that you can get inspiration and ideas for your own dashboard.
 : You might come across the term "Lovelace", which is the codename originally used for dashboards.
@@ -138,13 +144,14 @@ List
 : You mostly come across this term in {term}`Home Assistant` when working with {term}`YAML`. Synonyms for lists are arrays and sequences. Although, a {term}`sequence <sequence>` in Home Assistant mostly refers to a list of {term}`actions <action>`.
 : Lists can be written in YAML in two ways. One is the square bracket syntax, like `["one", "two", "three"]`. The other method is the hyphen syntax, like `- "one"` (which is the same as `["one"]`). Having each item (prefix with a hyphen) on a new line. The latter is generally recommended; it is more expressive but improves readability. For example:
 
-  ```yaml
-      brackets: ["one", "two", "three"]
-      newlines:
-        - "one"
-        - "two"
-        - "three"
-  ```
+    ```yaml
+    brackets: ["one", "two", "three"]
+    newlines:
+      - "one"
+      - "two"
+      - "three"
+    ```
+
 :::
 
 :::{glossary}
