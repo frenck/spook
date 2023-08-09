@@ -9,7 +9,7 @@ date: 2023-06-30T20:36:04+02:00
 
 ## Services
 
-The following miscellaneous services are added to your Home Assistant instance:
+The following integration management services are added to your Home Assistant instance:
 
 ### Disable an integration
 
