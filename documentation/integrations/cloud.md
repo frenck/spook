@@ -30,7 +30,7 @@ Please consider subscribing to the Home Assistant Cloud service to support the d
 :alt: Screenshot showing a new device that provides control over your Home Assistant Cloud connection.
 :align: center
 
-Spook added a device and entities for Home Assistant Could.
+Spook added a device and entities for Home Assistant Cloud.
 ```
 
 ## Devices & entities
