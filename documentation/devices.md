@@ -9,7 +9,7 @@ A {term}`device <device>` in {term}`Home Assistant` represents a physical device
 
 ## Services
 
-The following entity management services are added to your Home Assistant instance:
+The following device management services are added to your Home Assistant instance:
 
 ### Disable a device
 
