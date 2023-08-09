@@ -34,7 +34,7 @@ Along the way, it also became a place for experimental features that might end u
 
 Frenck is [Dutch](wiki:The_Netherlands) and grew up with "Casper het vriendelijke spookje", also known as <wiki:Casper_the_Friendly_Ghost>. "Spook" is the Dutch for "ghost".
 
-Casper is scary at first sight, but you quickly get to like him. This seems fitting for a {term}`custom integration <integration>`, as custom integrations are more likely to break.T thus being a little scared of them is not a bad thing.
+Casper is scary at first sight, but you quickly get to like him. This seems fitting for a {term}`custom integration <integration>`, as custom integrations are more likely to break. Thus being a little scared of them is not a bad thing.
 
 "Not your homie" is a reference to the live streams Frenck used to do. He called his viewers "My Home Assistant Homies", or just "Homies". It is thus referring to you, the Home Assistant user, as its friend, its homie. However, "Spook" is not your homie. He is a ghost, a spooky thing. He is supposed to make you think a little about what you are doing before you use it.
 
