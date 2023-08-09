@@ -9,13 +9,6 @@ title: Spook 👻 Not your homie.
 
 _Spook is a scary powerful toolbox for Home Assistant, but be aware, Spook is not your homie!_
 
-:::{important}
-The Spook documentation is currently in development.
-
-**It is not complete and may contain errors**  
-(but honestly, that will also be the case when it is complete).
-:::
-
 Hi! 👋
 
 Welcome to my (one and only) {term}`custom integration <integration>` for {term}`Home Assistant`: Spook! 👻
