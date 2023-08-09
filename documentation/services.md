@@ -82,6 +82,18 @@ Deletes all orphaned entities that no longer have an integration that claim/prov
 
 `homeassistant.delete_all_orphaned_entities`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities), [documentation](entities#delete-all-orphaned-entities) 📚
 
+## Device: Disable
+
+This service can be used to disable a device on the fly. _#whatever_
+
+`homeassistant.disable_device`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device), [documentation](devices#disable-a-device) 📚
+
+## Device: Enable
+
+Guess what... this service does the reverse of [](#device-disable). _#noway_
+
+`homeassistant.disable_device`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device), [documentation](devices#disable-a-device) 📚
+
 ## Entity: Disable
 
 This service can be used to disable a entity on the fly. _#rocketship_
