@@ -95,7 +95,7 @@ ENV/
 .ruff_cache
 
 # Visual Studio Code
-.vscode
+.vscode/*
 
 # IntelliJ Idea family of suites
 .idea
@@ -124,3 +124,8 @@ node_modules/
 # Mystjs
 .ipynb_checkpoints
 _build
+
+# Devcontainer
+config
+!.vscode/tasks.json
+!.vscode/launch.json

@@ -1,0 +1,73 @@
+{
+  "name": "Spook development environment",
+  "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
+  "features": {
+    "ghcr.io/devcontainers/features/github-cli:1": {
+      "installDirectlyFromGitHubRelease": true,
+      "version": "latest"
+    },
+    "ghcr.io/devcontainers/features/node:1": {
+      "nodeGypDependencies": true,
+      "version": "lts"
+    },
+    "ghcr.io/devcontainers-contrib/features/poetry:2": {
+      "version": "latest"
+    }
+  },
+  "forwardPorts": [8123, 3000],
+  "portsAttributes": {
+    "8123": {
+      "label": "Home Assistant",
+      "onAutoForward": "openBrowserOnce"
+    },
+    "3000": {
+      "label": "Documentation",
+      "onAutoForward": "openBrowserOnce"
+    },
+    "3100": {
+      "label": "Documentation (live updates)",
+      "autoForward": "silent"
+    }
+  },
+  "postCreateCommand": "mkdir -p config && poetry config virtualenvs.in-project true && npm install -g mystmd && poetry install",
+  "updateContentCommand": "poetry config virtualenvs.in-project true && poetry install",
+  "containerEnv": {
+    "DEVCONTAINER": "1"
+  },
+  "remoteUser": "vscode",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.vscode-pylance",
+        "ms-python.python",
+        "redhat.vscode-yaml",
+        "esbenp.prettier-vscode",
+        "GitHub.vscode-pull-request-github",
+        "GitHub.copilot",
+        "GitHub.vscode-github-actions",
+        "yzhang.markdown-all-in-one"
+      ],
+      "settings": {
+        "python.pythonPath": "/usr/local/bin/python",
+        "editor.formatOnPaste": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnType": true,
+        "files.trimTrailingWhitespace": true,
+        "terminal.integrated.profiles.linux": {
+          "zsh": {
+            "path": "/usr/bin/zsh"
+          }
+        },
+        "terminal.integrated.defaultProfile.linux": "zsh",
+        "yaml.customTags": [
+          "!input scalar",
+          "!secret scalar",
+          "!include_dir_named scalar",
+          "!include_dir_list scalar",
+          "!include_dir_merge_list scalar",
+          "!include_dir_merge_named scalar"
+        ]
+      }
+    }
+  }
+}

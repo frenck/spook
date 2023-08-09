@@ -1,0 +1,15 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Home Assistant with Spook",
+      "type": "python",
+      "request": "launch",
+      "python": "${workspaceFolder}/.venv/bin/python",
+      "module": "homeassistant",
+      "cwd": "${workspaceFolder}",
+      "justMyCode": false,
+      "args": ["--debug", "-c", "config"]
+    }
+  ]
+}
