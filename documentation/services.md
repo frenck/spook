@@ -76,6 +76,12 @@ This service call will just always spook the hell out of Home Assistant. Home As
 
 `spook.boo`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo), [documentation](other-features#boo) 📚
 
+## Ignore all discovered devices & services
+
+Click ignore on all discovered items on the integration dashboard; optionally only for specific integration (like, `bluetooth`). _#talktothehand_
+
+`homeassistant.ignore_all_discovered`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered), [documentation](integrations#ignore-all-discovered-devices-services) 📚
+
 ## Input number: Decrease value
 
 Override of the existing service, which provides the option to specify the amount to decrease the value by. _#evenlower_
@@ -117,6 +123,30 @@ Shuffles the list of selectable options for an input select entity. _#31254_
 Sorts the list of selectable options for an input select entity. _#12345_
 
 `input_select.sort`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort), [documentation](integrations/input_select#sort-options) 📚
+
+## Integration: Disable
+
+This service can be used to disable a integration configuration entry (those you see on your integrations dashboard) on the fly. _#bye_
+
+`homeassistant.disable_config_entry`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry), [documentation](integrations#disable-an-integration) 📚
+
+## Integration: Enable
+
+Be amazed... this service does the reverse of [](#integration-disable). _#mindblown_
+
+`homeassistant.enable_config_entry`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry), [documentation](integrations#enable-an-integration) 📚
+
+## Integration: Disable polling for updates
+
+This service can be used to disable polling for updates on an integration configuration entry (those you see on your integrations dashboard). _#stopit_
+
+`homeassistant.disable_polling`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling), [documentation](integrations#disable-polling-for-updates) 📚
+
+## Integration: Enable polling for updates
+
+This service can be used to enable polling for updates on an integration configuration entry (those you see on your integrations dashboard). This service does the reverse of [](#integration-disable-polling-for-updates) _#poking_
+
+`homeassistant.enable_polling`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling), [documentation](integrations#enable-polling-for-updates) 📚
 
 ## Number: Decrease value
 
