@@ -76,6 +76,36 @@ This service call will just always spook the hell out of Home Assistant. Home As
 
 `spook.boo`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo), [documentation](other-features#boo) 📚
 
+## Delete all orphaned entities
+
+Deletes all orphaned entities that no longer have an integration that claim/provide them. Please note, if the integration was just removed, it might need a restart for Home Assistant to realize they are orphaned. _#annie_
+
+`homeassistant.delete_all_orphaned_entities`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities), [documentation](entities#delete-all-orphaned-entities) 📚
+
+## Entity: Disable
+
+This service can be used to disable a entity on the fly. _#rocketship_
+
+`homeassistant.disable_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity), [documentation](entities#disable-an-entity) 📚
+
+## Entity: Enable
+
+Really... this service does the reverse of [](#entity-disable). _#true_
+
+`homeassistant.enable_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity), [documentation](entities#enable-an-entity) 📚
+
+## Entity: Hide
+
+This service can be used to hide a entity on the fly. _#secret_
+
+`homeassistant.hide_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity), [documentation](entities#hide-an-entity) 📚
+
+## Entity: Uhnide
+
+Do the math... this service does the reverse of [](#entity-hide). _#reveal_
+
+`homeassistant.unhide_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity), [documentation](entities#unhide-an-entity) 📚
+
 ## Ignore all discovered devices & services
 
 Click ignore on all discovered items on the integration dashboard; optionally only for specific integration (like, `bluetooth`). _#talktothehand_
