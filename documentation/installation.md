@@ -19,7 +19,7 @@ Getting Spook up and running should not be too hard when you follow this guide. 
 Spook needs a few things to work properly, so let's go over them first.
 
 1. Read, understand, and accept [the license](license) of Spook.
-2. A working {term}`Home Assistant` instance running version **2023.7.0 or newer.**
+2. A working {term}`Home Assistant` instance running version **2023.8.0 or newer.**
 
    :::{note}
    The minimal required version of Home Assistant will change over time. This is not something to worry about. It is only important that you run at least the minimal required version of Home Assistant on the first installation of Spook.
