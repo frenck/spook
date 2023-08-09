@@ -10,6 +10,9 @@ jobs:
   release:
     name: Release the Spook! 👻
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
     steps:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v3.5.3
@@ -30,7 +33,14 @@ jobs:
           cd "${{ github.workspace }}/custom_components/spook"
           zip spook.zip -r ./
 
+      - name: 🔏 Sign release package
+        uses: sigstore/gh-action-sigstore-python@v2.0.0
+        with:
+          inputs: ${{ github.workspace }}/custom_components/spook/spook.zip
+
       - name: ⬆️ Upload zip to release
         uses: softprops/action-gh-release@v0.1.15
         with:
-          files: ${{ github.workspace }}/custom_components/spook/spook.zip
+          files: |
+            ${{ github.workspace }}/custom_components/spook/spook.zip
+            ${{ github.workspace }}/custom_components/spook/spook.zip.sigstore
