@@ -12,7 +12,7 @@ date: 2023-08-09T21:29:00+02:00
 
 Time to get Spook 👻 settled and installed in your Home Assistant instance.
 
-Getting Spook up and running should not be too hard when you follow this guide. If you run into issues during the installation, please check the[support](support) page on where to go for help.
+Getting Spook up and running should not be too hard when you follow this guide. If you run into issues during the installation, please check the [support](support) page on where to go for help.
 
 ## Requirements
 
