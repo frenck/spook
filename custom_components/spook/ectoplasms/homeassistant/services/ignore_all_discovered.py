@@ -5,6 +5,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
+
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.config_entries import DISCOVERY_SOURCES, SOURCE_IGNORE
 from homeassistant.helpers import config_validation as cv

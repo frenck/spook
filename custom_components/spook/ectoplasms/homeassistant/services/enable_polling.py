@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
+
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv

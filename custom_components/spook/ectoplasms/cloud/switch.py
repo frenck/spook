@@ -16,6 +16,7 @@ if TYPE_CHECKING:
     from collections.abc import Awaitable, Callable
 
     from hass_nabucasa import Cloud
+
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
