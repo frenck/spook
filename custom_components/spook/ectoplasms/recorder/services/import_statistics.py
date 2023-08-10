@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import voluptuous as vol
+
 from homeassistant.components.recorder import DOMAIN
 from homeassistant.components.recorder.statistics import (
     async_add_external_statistics,

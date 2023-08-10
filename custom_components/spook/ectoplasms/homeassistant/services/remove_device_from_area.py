@@ -4,9 +4,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
+
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.helpers import config_validation as cv
-from homeassistant.helpers import device_registry as dr
+from homeassistant.helpers import config_validation as cv, device_registry as dr
 
 from ....services import AbstractSpookAdminService
 

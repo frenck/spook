@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
+
 from homeassistant.components.input_number import DOMAIN, InputNumber
 
 from ....services import AbstractSpookEntityComponentService, ReplaceExistingService

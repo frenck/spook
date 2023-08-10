@@ -59,6 +59,14 @@ src = ["custom_components/spook"]
 "homeassistant.helpers.issue_registry" = "ir"
 voluptuous = "vol"
 
+[tool.ruff.isort]
+force-sort-within-sections = true
+known-first-party = [
+    "homeassistant",
+]
+combine-as-imports = true
+split-on-trailing-comma = false
+
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:
 # format - handled by black

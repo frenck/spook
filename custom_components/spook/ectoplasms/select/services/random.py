@@ -5,6 +5,7 @@ import random
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
+
 from homeassistant.components.select import DOMAIN, SelectEntity
 from homeassistant.helpers import config_validation as cv
 

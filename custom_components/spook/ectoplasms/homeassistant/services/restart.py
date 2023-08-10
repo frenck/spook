@@ -5,6 +5,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
+
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.const import RESTART_EXIT_CODE
 from homeassistant.exceptions import HomeAssistantError
