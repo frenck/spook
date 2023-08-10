@@ -51,7 +51,7 @@ Disable a single instance of an integration by its {term}`config entry <config e
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
 
-:::{tip} Tip on finding the config entry ID
+:::{tip} Finding the config entry ID
 :class: dropdown
 
 Not sure what the `config_entry_id` of your integration is?
@@ -111,7 +111,7 @@ Enable a single instance of an integration by its {term}`config entry <config en
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
 
-:::{tip} Tip on finding the config entry ID
+:::{tip} Finding the config entry ID
 :class: dropdown
 
 Not sure what the `config_entry_id` of your integration is?
@@ -173,7 +173,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
 
-:::{tip} Tip on finding the config entry ID
+:::{tip} Finding the config entry ID
 :class: dropdown
 
 Not sure what the `config_entry_id` of your integration is?
@@ -235,7 +235,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
 
-:::{tip} Tip on finding the config entry ID
+:::{tip} Finding the config entry ID
 :class: dropdown
 
 Not sure what the `config_entry_id` of your integration is?
