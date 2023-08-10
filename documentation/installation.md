@@ -30,14 +30,7 @@ Spook needs a few things to work properly, so let's go over them first.
    :::{hint} I don't have HACS installed. How do I do that? 👈
    :class: dropdown
 
-   Installing HACS is easy, just follow the [official installation guide](https://hacs.xyz/docs/installation/manual).
-
-   Or, if you are feeling lucky, run this script in an Home Assistant terminal to install HACS:
-
-   ```shell
-   wget -O - https://get.hacs.xyz | bash -
-   ```
-
+   If you don't have HACS installed yet, please follow the [official installation guide](https://hacs.xyz/docs/installation/manual).
    :::
 
 If you have met these requirements, you are ready to install Spook. 🎉
