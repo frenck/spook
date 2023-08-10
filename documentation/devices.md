@@ -51,7 +51,7 @@ This service allows you to disable a device on the fly.
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
 
-:::{tip} Tip on finding a device ID
+:::{tip} Finding a device ID
 :class: dropdown
 
 Not sure what the `device_id` of an your device is? There are a few ways to find it:
@@ -124,7 +124,7 @@ This service allows you to enable a device on the fly.
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
 
-:::{tip} Tip on finding a device ID
+:::{tip} Finding a device ID
 :class: dropdown
 
 Not sure what the `device_id` of an your device is? There are a few ways to find it:

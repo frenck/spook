@@ -10,7 +10,7 @@ Spook ships with a lot of goodness for you to explore. Currently, there are thre
 :::{card} Core extensions
 :footer: 📚 [Learn more](core_extensions)
 
-The core extensions extends the functionality of Home Assistant's core itself. These are all extensions that are not tied to a specific {term}`integration`.
+The core extensions extends the functionality of Home Assistant's core itself. These are all extensions that are not tied to a specific {term}`integration <integration>`.
 
 It provides new {term}`devices <device>` & {term}`entities <entity>` to provide information on the internals of Home Assistant. It adds a whole bunch of {term}`services <service>` that allow you to control and manage integrations, devices, entities, and {term}`areas <area>`.
 :::

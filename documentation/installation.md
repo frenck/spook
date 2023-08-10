@@ -30,14 +30,7 @@ Spook needs a few things to work properly, so let's go over them first.
    :::{hint} I don't have HACS installed. How do I do that? 👈
    :class: dropdown
 
-   Installing HACS is easy, just follow the [official installation guide](https://hacs.xyz/docs/installation/manual).
-
-   Or, if you are feeling lucky, run this script in an Home Assistant terminal to install HACS:
-
-   ```shell
-   wget -O - https://get.hacs.xyz | bash -
-   ```
-
+   If you don't have HACS installed yet, please follow the [official installation guide](https://hacs.xyz/docs/installation/manual).
    :::
 
 If you have met these requirements, you are ready to install Spook. 🎉
@@ -46,15 +39,7 @@ If you have met these requirements, you are ready to install Spook. 🎉
 
 Time to download and install Spook 👻 onto your Home Assistant instance.
 
-:::{tip}
-You can use select the {term}`My Home Assistant` button below, which will navigate you to Spook in HACS directly on your Home Assistant instance.
-
-[![Open your Home Assistant instance and open a repository inside the Home Assistant Community Store.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=frenck&repository=spook&category=integration)
-
-You can directly go to step 6 if you use the button above (step 4 in case of using HACS experimental mode).
-:::
-
-HACS can be configured to run in two different modes: **standard** and **experimental**. Spook is available in both modes, but the installation process is differs slightly.
+HACS can be configured to run in two different modes: **standard** and **experimental**. Spook is available in both modes, but the installation process differs slightly.
 If you are using the experimental mode, be sure to select the **HACS with experimental mode enabled** tab below.
 
 ::::{tab-set}
@@ -152,14 +137,6 @@ After Home Assistant has restarted, you are ready to activate the Spook integrat
 ## Activating the Spook integration
 
 Now that Spook is installed, it is time to set up the integration in Home Assistant. This works exactly the as setting up any other integration in Home Assistant.
-
-:::{tip}
-You can use select the {term}`My Home Assistant` button below, which will take you directly take you to set up Spook on your Home Assistant instance.
-
-[![Open your Home Assistant instance and start setting up a new integration.](https://my.home-assistant.io/badges/config_flow_start.svg)](https://my.home-assistant.io/redirect/config_flow_start/?domain=spook)
-
-You can skip steps 1, 2, 3, and 4 if you use the button above.
-:::
 
 1. From the Home Assistant sidebar, select **Settings** and next select **Devices & Services**.
 2. On the Devices & Services page, in the bottom right corner, select the **+ Add integration** button.

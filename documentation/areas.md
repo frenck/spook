@@ -119,7 +119,7 @@ Adds a new area to your Home Assistant instance.
   - `living_room`
 ```
 
-:::{tip} Tip on getting an area ID from an area name
+:::{tip} Getting an area ID from an area name
 :class: dropdown
 
 Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
@@ -198,7 +198,7 @@ As area aliases are used by voice assistants, you could add (and also remove) al
   - `["Lounge", "Sitting area"]`
 ```
 
-:::{tip} Tip on getting an area ID from an area name
+:::{tip} Getting an area ID from an area name
 :class: dropdown
 
 Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
@@ -283,7 +283,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - `["Lounge", "Sitting area"]`
 ```
 
-:::{tip} Tip on getting an area ID from an area name
+:::{tip} Getting an area ID from an area name
 :class: dropdown
 
 Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
@@ -368,7 +368,7 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - `["Lounge", "Sitting area"]`
 ```
 
-:::{tip} Tip on getting an area ID from an area name
+:::{tip} Getting an area ID from an area name
 :class: dropdown
 
 Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
@@ -451,7 +451,7 @@ Adds one or more device(s) to an area. This service will leave the other devices
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
 
-:::{tip} Tip on getting an area ID from an area name
+:::{tip} Getting an area ID from an area name
 :class: dropdown
 
 Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:
@@ -463,7 +463,7 @@ area_id: "{{ area_id('Living room') }}"
 That template will find the area ID of the area with the name "Living room".
 :::
 
-:::{tip} Tip on finding a device ID
+:::{tip} Finding a device ID
 :class: dropdown
 
 Not sure what the `device_id` of an your device is? There are a few ways to find it:
@@ -554,7 +554,7 @@ Removes one or more device(s) from an area. This service will leave the other de
 While this service is area related, it does not need to know the area ID. A device can only be in a single area at a time, so it will remove the device from the area it is in. Hence, it only needs to know the device you want to remove from an area.
 :::
 
-:::{tip} Tip on finding a device ID
+:::{tip} Finding a device ID
 :class: dropdown
 
 Not sure what the `device_id` of an your device is? There are a few ways to find it:
@@ -631,7 +631,7 @@ Adds one or more entities to an area. This service will leave the other entities
   - `light.spotlight`
 ```
 
-:::{tip} Tip on getting an area ID from an area name
+:::{tip} Getting an area ID from an area name
 :class: dropdown
 
 Not sure what the `area_id` of an area is? The `area_id` field also accepts templates. You can use this template to use the area's name instead:

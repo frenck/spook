@@ -11,7 +11,7 @@
 # About
 
 Hi! I'm Spook 👻 and I'm a custom integration for use with Home Assistant.
-I will extend your Home Assistant instance with a huge set of scary powerfull
+I will extend your Home Assistant instance with a huge set of scary powerful
 tools. 🛠️
 
 [Learn all about me in the extensive documentation](https://spook.frenck.dev/)
@@ -28,21 +28,6 @@ integration, please go cry a lot on your own.
 
 We've set up a separate document for our [contribution guidelines](https://spook.frenck.dev/development).
 
-# Translating Spook
-
-Spook isn't very good at speaking different languages, but you can help!
-
-As a matter of fact, Spooks translation files are [CC0 licensed](./custom_components/spook/translations/LICENSE.md)!
-
-Translating can be done from your webbrowser, no programming knowledge
-is needed!
-
-[![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/open-graph.png)](https://hosted.weblate.org/engage/spook/)
-
-Translation status per language:
-
-[![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/multi-auto.svg)](https://hosted.weblate.org/engage/spook/)
-
 # Authors & contributors
 
 The original setup of this repository is by [Franck Nijhof][frenck].
@@ -55,6 +40,17 @@ Thanks to everyone who already contributed! ❤️
 
 For a full list of all authors and contributors,
 check [the contributor's page][contributors].
+
+# Translating Spook
+
+Spook isn't very good at speaking different languages, but you can help!
+
+As a matter of fact, Spooks translation files are [CC0 licensed](./custom_components/spook/translations/LICENSE.md)!
+
+Translating can be done from your webbrowser, no programming knowledge
+is needed!
+
+[![Translation status](https://hosted.weblate.org/widgets/spook/-/integration/open-graph.png)](https://hosted.weblate.org/engage/spook/)
 
 # License
 
