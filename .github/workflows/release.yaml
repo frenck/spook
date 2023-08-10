@@ -41,6 +41,8 @@ jobs:
       - name: ⬆️ Upload zip to release
         uses: softprops/action-gh-release@v0.1.15
         with:
-          files: |
-            ${{ github.workspace }}/custom_components/spook/spook.zip
-            ${{ github.workspace }}/custom_components/spook/spook.zip.sigstore
+          files: ${{ github.workspace }}/custom_components/spook/spook.zip
+
+        # Upload this one in the future, currently problematic for HACS
+        # https://github.com/frenck/spook/issues/286
+        # ${{ github.workspace }}/custom_components/spook/spook.zip.sigstore
