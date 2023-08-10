@@ -9,7 +9,14 @@ from typing import TYPE_CHECKING, Any, final
 
 import voluptuous as vol
 
-from homeassistant.core import HomeAssistant, Service, ServiceCall, callback
+from homeassistant.core import (
+    HomeAssistant,
+    Service,
+    ServiceCall,
+    ServiceResponse,
+    SupportsResponse,
+    callback,
+)
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.helpers.service import (
@@ -66,6 +73,8 @@ class ReplaceExistingService(AbstractSpookServiceBase):
 class AbstractSpookService(AbstractSpookServiceBase):
     """Abstract class to hold a Spook service."""
 
+    supports_response: SupportsResponse = SupportsResponse.NONE
+
     @final
     @callback
     def async_register(self) -> None:
@@ -91,10 +100,11 @@ class AbstractSpookService(AbstractSpookServiceBase):
             service=self.service,
             service_func=self.async_handle_service,
             schema=vol.Schema(self.schema) if self.schema else None,
+            supports_response=self.supports_response,
         )
 
     @abstractmethod
-    async def async_handle_service(self, call: ServiceCall) -> None:
+    async def async_handle_service(self, call: ServiceCall) -> ServiceResponse:
         """Handle the service call."""
         raise NotImplementedError
 
@@ -139,6 +149,7 @@ class AbstractSpookEntityService(AbstractSpookServiceBase):
 
     platform: str
     required_features: list[int] | None = None
+    supports_response: SupportsResponse = SupportsResponse.NONE
 
     @final
     @callback
@@ -170,10 +181,15 @@ class AbstractSpookEntityService(AbstractSpookServiceBase):
             func=self.async_handle_service,
             schema=self.schema,
             required_features=self.required_features,
+            supports_response=self.supports_response,
         )
 
     @abstractmethod
-    async def async_handle_service(self, entity: Entity, call: ServiceCall) -> None:
+    async def async_handle_service(
+        self,
+        entity: Entity,
+        call: ServiceCall,
+    ) -> ServiceResponse:
         """Handle the service call."""
         raise NotImplementedError
 
@@ -182,6 +198,7 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase):
     """Abstract class to hold a Spook entity component service."""
 
     required_features: list[int] | None = None
+    supports_response: SupportsResponse = SupportsResponse.NONE
 
     @final
     @callback
@@ -207,10 +224,15 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase):
             func=self.async_handle_service,
             schema=self.schema,
             required_features=self.required_features,
+            supports_response=self.supports_response,
         )
 
     @abstractmethod
-    async def async_handle_service(self, entity: Entity, call: ServiceCall) -> None:
+    async def async_handle_service(
+        self,
+        entity: Entity,
+        call: ServiceCall,
+    ) -> ServiceResponse:
         """Handle the service call."""
         raise NotImplementedError
 
