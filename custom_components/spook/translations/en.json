@@ -18,6 +18,25 @@
         "name": "Restart"
       }
     },
+    "event": {
+      "repairs_event": {
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "create": "Issue created",
+              "remove": "Issue removed",
+              "update": "Issue updated"
+            }
+          },
+          "domain": {
+            "name": "Issue issuer"
+          },
+          "issue_id": {
+            "name": "Issue ID"
+          }
+        }
+      }
+    },
     "sensor": {
       "homeassistant_air_quality": {
         "name": "Air quality"
