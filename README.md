@@ -11,7 +11,7 @@
 # About
 
 Hi! I'm Spook 👻 and I'm a custom integration for use with Home Assistant.
-I will extend your Home Assistant instance with a huge set of scary powerfull
+I will extend your Home Assistant instance with a huge set of scary powerful
 tools. 🛠️
 
 [Learn all about me in the extensive documentation](https://spook.frenck.dev/)
