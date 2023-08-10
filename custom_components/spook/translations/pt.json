@@ -1,1 +1,163 @@
-{}
+{
+    "entity": {
+        "button": {
+            "homeassistant_restart": {
+                "name": "Reninciar"
+            },
+            "homeassistant_reload": {
+                "name": "Recarregar"
+            }
+        },
+        "sensor": {
+            "homeassistant_air_quality": {
+                "name": "Qualidade do ar"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Painel de alarmes"
+            },
+            "homeassistant_climate": {
+                "name": "Clima"
+            },
+            "homeassistant_cover": {
+                "name": "Capas"
+            },
+            "homeassistant_custom_component": {
+                "name": "Integrações Personalizadas"
+            },
+            "homeassistant_date": {
+                "name": "Datas"
+            },
+            "homeassistant_calendar": {
+                "name": "Calendários"
+            },
+            "homeassistant_camera": {
+                "name": "Câmaras"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Equipamentos de rastreamento"
+            },
+            "homeassistant_entities": {
+                "name": "Entidades"
+            },
+            "homeassistant_datetime": {
+                "name": "Data/horas"
+            },
+            "homeassistant_device": {
+                "name": "Equipamentos"
+            },
+            "homeassistant_fan": {
+                "name": "Ventoinhas"
+            },
+            "homeassistant_humidifier": {
+                "name": "Humidificadores"
+            },
+            "homeassistant_image": {
+                "name": "Imagens"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Inserções booleanas"
+            },
+            "homeassistant_input_button": {
+                "name": "Botões de entrada"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Entrada data/horas"
+            },
+            "homeassistant_input_number": {
+                "name": "Entrada de números"
+            },
+            "homeassistant_input_select": {
+                "name": "Entrada de seleções"
+            },
+            "homeassistant_input_text": {
+                "name": "Entrada de textos"
+            },
+            "homeassistant_integration": {
+                "name": "Integrações"
+            },
+            "homeassistant_light": {
+                "name": "Luzes"
+            },
+            "homeassistant_lock": {
+                "name": "Bloqueios"
+            },
+            "homeassistant_media_player": {
+                "name": "Leitores de multimídia"
+            },
+            "homeassistant_number": {
+                "name": "Números"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Notificações presistentes"
+            },
+            "homeassistant_person": {
+                "name": "Pessoas"
+            },
+            "homeassistant_remote": {
+                "name": "Remotos"
+            },
+            "homeassistant_scene": {
+                "name": "Cenas"
+            },
+            "homeassistant_select": {
+                "name": "Selecões"
+            },
+            "homeassistant_sensor": {
+                "name": "Sensores"
+            },
+            "homeassistant_stt": {
+                "name": "Fala para texto"
+            },
+            "homeassistant_automation": {
+                "name": "Automações"
+            },
+            "homeassistant_button": {
+                "name": "Botões"
+            },
+            "homeassistant_area": {
+                "name": "Áreas"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Sensores Binarios"
+            },
+            "homeassistant_script": {
+                "name": "Scripts"
+            },
+            "homeassistant_siren": {
+                "name": "Sirenes"
+            }
+        },
+        "switch": {
+            "cloud_google_report_state": {
+                "name": "Estado do Google Assistente"
+            },
+            "cloud_remote": {
+                "name": "Remoto"
+            },
+            "cloud_alexa_report_state": {
+                "name": "Estados reportados da alexa"
+            }
+        }
+    },
+    "issues": {
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{descrição}"
+                    }
+                }
+            }
+        },
+        "automation_unknown_area_references": {
+            "description": "Spook encontrou um fantasma nas tuas automações👻\n\nEnquanto flutuava por ai,  passei pela seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação refere árias que são desconhecidas para o Home Assistant:\n\n{areas}\n\n\n\nPara Corriguit, [edit the automation]({edit}) e remove as áreas inexistentes.\n\nSpook 👻 Não sou o teu irmão."
+        }
+    },
+    "config": {
+        "step": {
+            "user": {
+                "description": "Leste o readme? Leu a licença? Tens mesmo a certeza?"
+            }
+        }
+    }
+}
