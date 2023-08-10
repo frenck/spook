@@ -112,7 +112,7 @@ This service can be used to hide a entity on the fly. _#secret_
 
 `homeassistant.hide_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity), [documentation](entities#hide-an-entity) 📚
 
-## Entity: Uhnide
+## Entity: Unhide
 
 Do the math... this service does the reverse of [](#entity-hide). _#reveal_
 
