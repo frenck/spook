@@ -54,7 +54,7 @@ You can use select the {term}`My Home Assistant` button below, which will naviga
 You can directly go to step 6 if you use the button above (step 4 in case of using HACS experimental mode).
 :::
 
-HACS can be configured to run in two different modes: **standard** and **experimental**. Spook is available in both modes, but the installation process is differs slightly.
+HACS can be configured to run in two different modes: **standard** and **experimental**. Spook is available in both modes, but the installation process differs slightly.
 If you are using the experimental mode, be sure to select the **HACS with experimental mode enabled** tab below.
 
 ::::{tab-set}
