@@ -85,4 +85,9 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/switch_as_x/icon.png)](integrations/switch_as_x)
 :::
 
+:::{card} Zone
+:footer: 📚 [Learn more](integrations/zone)
+[![](https://brands.home-assistant.io/zone/icon.png)](integrations/zone)
+:::
+
 ::::
