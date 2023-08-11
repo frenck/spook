@@ -54,15 +54,17 @@ by <wiki:Casper_the_Friendly_Ghost>. Check out the [](background_and_history) fo
 ```{card}
 :header: **What is going on with the version numbers of Spook?**
 
-Releases use a [Semantic Versioning](https://semver.org/), compatible version number format of `MAJOR.MINOR.PATCH`, as that is required for {term}`Home Assistant`. But... only the format is used.
+This repository keeps a change log using [GitHub's releases](https://github.com/frenck/spook/releases) functionality.
 
-Spook is a rebel, and will not follow the rules of Semantic Versioning, instead, it uses the following rules:
+Releases are based on [Semantic Versioning](https://semver.org/spec/v2.0.0.html), and use the format of `MAJOR.MINOR.PATCH`. In a nutshell, the version will be incremented based on the following:
 
-- `MAJOR`: If there is almost nothing changed, or a lot has changed.
-- `MINOR`: No idea, possibly breaking, or not.
-- `PATCH`: Didn't care enough to change more numbers.
+- `MAJOR`: Incompatible or major changes.
+- `MINOR`: Backwards-compatible new features and enhancements.
+- `PATCH`: Backwards-compatible bug fixes and package updates.
 
-So, Spook version numbers have no meaning at all. It is just a number. The only guarantee is that a higher version number is newer than a lower one.
+The version change you see on upgrade will thus tell you what type of changes you can expect.
+
+All versions before v1.0.0 have been different and were random version numbers. From v1.0.0 and forwards, the versioning is based on the above.
 ```
 
 ```{card}

@@ -76,12 +76,10 @@ SOFTWARE.
 
 [contributors]: https://github.com/frenck/spook/graphs/contributors
 [frenck]: https://github.com/frenck
-[keepchangelog]: http://keepachangelog.com/en/1.0.0/
 [license-shield]: https://img.shields.io/badge/license-Passive%20Aggressive%20License-lightgrey.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-SPOOKED-red.svg
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
-[semver]: http://semver.org/spec/v2.0.0.html
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2023.svg
 [sonarcloud-shield]: https://sonarcloud.io/api/project_badges/measure?project=frenck_python-elgato&metric=alert_status
 [sonarcloud]: https://sonarcloud.io/summary/new_code?id=frenck_python-elgato
