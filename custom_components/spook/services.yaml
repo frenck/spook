@@ -632,3 +632,132 @@ repairs_unignore_all:
   name: Unignore all issues 👻
   description: >-
     Unignore all issues currently raised in Home Assistant Repairs.
+
+zone_create:
+  name: Create a zone 👻
+  description: >-
+    Create a new zone in Home Assistant on the fly.
+  fields:
+    name:
+      name: Name
+      description: Name of the zone
+      required: true
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: Icon to use for the zone
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:map-marker
+    latitude:
+      name: Latitude
+      description: Latitude of the zone
+      required: true
+      selector:
+        number:
+          min: -90
+          max: 90
+          step: any
+          mode: box
+          unit_of_measurement: °
+    longitude:
+      name: Longitude
+      description: Longitude of the zone
+      required: true
+      selector:
+        number:
+          min: -180
+          max: 180
+          step: any
+          mode: box
+          unit_of_measurement: °
+    radius:
+      name: Radius
+      description: Radius of the zone
+      required: false
+      default: 100
+      selector:
+        number:
+          min: 0
+          max: 999999999999
+          unit_of_measurement: m
+          mode: box
+
+zone_update:
+  name: Update a zone 👻
+  description: >-
+    Update properties of a zone on the fly.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The ID of the entity (or entities) to update.
+      required: true
+      selector:
+        entity:
+          filter:
+            - domain: zone
+    name:
+      name: Name
+      description: Name of the zone
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: Icon to use for the zone
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:map-marker
+    latitude:
+      name: Latitude
+      description: Latitude of the zone
+      required: false
+      selector:
+        number:
+          min: -90
+          max: 90
+          step: any
+          mode: box
+          unit_of_measurement: °
+    longitude:
+      name: Longitude
+      description: Longitude of the zone
+      required: false
+      selector:
+        number:
+          min: -180
+          max: 180
+          step: any
+          mode: box
+          unit_of_measurement: °
+    radius:
+      name: Radius
+      description: Radius of the zone
+      required: false
+      default: 100
+      selector:
+        number:
+          min: 0
+          max: 999999999999
+          step: any
+          unit_of_measurement: m
+          mode: box
+
+zone_delete:
+  name: Delete a zone 👻
+  description: >-
+    Delete a zone. This works only with zones created and managed via the UI.
+    Zones created and managed in YAML cannot be managed by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The ID of the entity (or entities) to remove.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: zone
