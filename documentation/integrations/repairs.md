@@ -33,6 +33,59 @@ Spook adds many new services to the repairs integration so that you can create y
 
 Spook does not provide any new devices or entities for this integration.
 
+```{figure} ../images/integrations/repairs/devices_entities.png
+:alt: Screenshot of the the new Repairs device and its entities in the Home Assistant UI.
+:align: center
+```
+
+### Buttons
+
+#### Ignore all
+
+_Default {term}`entity ID <Entity ID>`: `button.ignore_all_issues`_
+
+Adds a button to ignore all issues currently raised in the repairs dashboard.
+
+:::{tip}
+This might sometimes seem helpful; however, ignoring an issue is not a solution. It is better to fix the issue, remove the integration that is causing it, or report a bug.
+
+Every issue raised by Home Assistant (and also Spook) should be solvable. If not, it is a bug and should be reported.
+:::
+
+#### Unignore all
+
+_Default {term}`entity ID <Entity ID>`: `button.unignore_all_issues`_
+
+Adds a button to unignore all repair issues currently still active (but previously ignored).
+
+### Events
+
+#### Repair
+
+_Default {term}`entity ID <Entity ID>`: `event.repair`_
+
+This event entity triggers when a new repair issue is raised, or an existing one is updated or removed.
+
+### Sensors
+
+#### Active issues
+
+_Default {term}`entity ID <Entity ID>`: `sensor.active_issues`_
+
+This sensor shows the number of active issues currently raised in the repairs dashboard.
+
+#### Ignored issues
+
+_Default {term}`entity ID <Entity ID>`: `sensor.ignored_issues`_
+
+This sensor shows the number of ignored issues currently raised in the repairs dashboard.
+
+#### Total issues
+
+_Default {term}`entity ID <Entity ID>`: `sensor.issues`_
+
+This sensor shows the total number of issues known to the repairs dashboard.
+
 ## Services
 
 Spook adds the following new service to your Home Assistant instance:
