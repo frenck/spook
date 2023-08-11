@@ -6,8 +6,8 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.cloud import DOMAIN as CLOUD_DOMAIN
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
+from homeassistant.const import EntityCategory
 from homeassistant.core import HomeAssistant, callback
-from homeassistant.helpers.entity import EntityCategory
 
 from ...entity import SpookEntityDescription
 from .entity import HomeAssistantCloudSpookEntity

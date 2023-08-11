@@ -5,8 +5,8 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from homeassistant.components.button import ButtonEntity, ButtonEntityDescription
+from homeassistant.const import EntityCategory
 from homeassistant.helpers import issue_registry as ir
-from homeassistant.helpers.entity import EntityCategory
 
 from ...entity import SpookEntityDescription
 from .entity import RepairsSpookEntity

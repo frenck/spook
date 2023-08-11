@@ -26,6 +26,7 @@ from homeassistant.components.sensor import (
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_HOMEASSISTANT_STARTED,
+    EntityCategory,
     Platform,
 )
 from homeassistant.core import Event, HomeAssistant, callback
@@ -34,7 +35,6 @@ from homeassistant.helpers import (
     device_registry as dr,
     entity_registry as er,
 )
-from homeassistant.helpers.entity import EntityCategory
 
 from ...entity import SpookEntityDescription
 from .entity import HomeAssistantSpookEntity

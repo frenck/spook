@@ -14,7 +14,7 @@ from homeassistant.components.homeassistant import (
     SERVICE_HOMEASSISTANT_RESTART,
     SERVICE_RELOAD_ALL,
 )
-from homeassistant.helpers.entity import EntityCategory
+from homeassistant.const import EntityCategory
 
 from ...entity import SpookEntityDescription
 from .entity import HomeAssistantSpookEntity
