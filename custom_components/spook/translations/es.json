@@ -16,6 +16,12 @@
             },
             "homeassistant_restart": {
                 "name": "Reiniciar"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignorar todo"
+            },
+            "repairs_unignore_all": {
+                "name": "Restaurar todos"
             }
         },
         "sensor": {
@@ -165,6 +171,15 @@
             },
             "homeassistant_zone": {
                 "name": "Zonas"
+            },
+            "repairs_total_issues": {
+                "name": "Total"
+            },
+            "repairs_ignored_issues": {
+                "name": "Ignorado"
+            },
+            "repairs_active_issues": {
+                "name": "Activo"
             }
         },
         "switch": {
@@ -176,6 +191,25 @@
             },
             "cloud_remote": {
                 "name": "Remoto"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Problema creado",
+                            "remove": "Problema eliminado",
+                            "update": "Problema actualizado"
+                        }
+                    },
+                    "issue_id": {
+                        "name": "ID de problema"
+                    },
+                    "domain": {
+                        "name": "Emisor del problema"
+                    }
+                }
             }
         }
     },

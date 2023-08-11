@@ -16,6 +16,12 @@
             },
             "homeassistant_restart": {
                 "name": "Neustart"
+            },
+            "repairs_ignore_all": {
+                "name": "Alles ignorieren"
+            },
+            "repairs_unignore_all": {
+                "name": "Alles wieder aktivieren"
             }
         },
         "sensor": {
@@ -165,6 +171,15 @@
             },
             "homeassistant_zone": {
                 "name": "Zonen"
+            },
+            "repairs_ignored_issues": {
+                "name": "Ignoriert"
+            },
+            "repairs_active_issues": {
+                "name": "Aktiv"
+            },
+            "repairs_total_issues": {
+                "name": "Gesamt"
             }
         },
         "switch": {
@@ -176,6 +191,25 @@
             },
             "cloud_remote": {
                 "name": "Fernbedienung"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "issue_id": {
+                        "name": "Problem-ID"
+                    },
+                    "event_type": {
+                        "state": {
+                            "create": "Problem erstellt",
+                            "remove": "Problem entfernt",
+                            "update": "Problem aktualisiert"
+                        }
+                    },
+                    "domain": {
+                        "name": "Problemverursacher"
+                    }
+                }
             }
         }
     },

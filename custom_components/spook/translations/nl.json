@@ -16,6 +16,12 @@
             },
             "homeassistant_restart": {
                 "name": "Herstarten"
+            },
+            "repairs_unignore_all": {
+                "name": "Alles herstellen"
+            },
+            "repairs_ignore_all": {
+                "name": "Negeer alles"
             }
         },
         "sensor": {
@@ -165,6 +171,15 @@
             },
             "homeassistant_zone": {
                 "name": "Zones"
+            },
+            "repairs_ignored_issues": {
+                "name": "Genegeerd"
+            },
+            "repairs_active_issues": {
+                "name": "Actief"
+            },
+            "repairs_total_issues": {
+                "name": "Totaal"
             }
         },
         "switch": {
@@ -176,6 +191,25 @@
             },
             "cloud_remote": {
                 "name": "Afstandsbediening"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Issue aangemaakt",
+                            "remove": "Issue verwijderd",
+                            "update": "Issue bijgewerkt"
+                        }
+                    },
+                    "domain": {
+                        "name": "Issue verstrekker"
+                    },
+                    "issue_id": {
+                        "name": "Issue ID"
+                    }
+                }
             }
         }
     },
