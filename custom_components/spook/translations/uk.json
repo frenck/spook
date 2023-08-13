@@ -147,6 +147,15 @@
             },
             "homeassistant_entities": {
                 "name": "Сутності"
+            },
+            "repairs_total_issues": {
+                "name": "Всього"
+            },
+            "repairs_active_issues": {
+                "name": "Активний"
+            },
+            "repairs_ignored_issues": {
+                "name": "Проігноровано"
             }
         },
         "switch": {
@@ -166,6 +175,31 @@
             },
             "homeassistant_restart": {
                 "name": "Перезапустити"
+            },
+            "repairs_unignore_all": {
+                "name": "Відновити все"
+            },
+            "repairs_ignore_all": {
+                "name": "Ігнорувати все"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "issue_id": {
+                        "name": "ID проблеми"
+                    },
+                    "event_type": {
+                        "state": {
+                            "remove": "Проблему видалено",
+                            "create": "Проблему створено",
+                            "update": "Проблема оновлена"
+                        }
+                    },
+                    "domain": {
+                        "name": "Відправник проблеми"
+                    }
+                }
             }
         }
     },
