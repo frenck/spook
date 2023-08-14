@@ -34,7 +34,7 @@ If you are a [developer](development), you can also submit a pull request with a
 
 Yeah? Got something to make Spook even better? Awesome! 🤩
 
-Please share your idea on the [Spook discussion forum on GitHub](https://github.com/frenck/spook/discssions).
+Please share your idea on the [Spook discussion forum on GitHub](https://github.com/frenck/spook/discussions).
 
 ## I have so many more questions about Spook 😵‍💫
 
@@ -46,6 +46,6 @@ If you like to learn more about Spook, the [](background_and_history) and the []
 
 Documentation always does, but thanks for complimenting my hard work 😂. It is a never-ending story. However, you can help! 🤩
 
-Feel free to suggest an improvement on the [Spook discussion forum on GitHub](https://github.com/frenck/spook/discssions) or, even better, open a pull request with your changes on our [GitHub repository](https://github.com/frenck/spook).
+Feel free to suggest an improvement on the [Spook discussion forum on GitHub](https://github.com/frenck/spook/discussions) or, even better, open a pull request with your changes on our [GitHub repository](https://github.com/frenck/spook).
 
 More information on helping out with the documentation can be found the [development section](development#translating-spook) of the documentation.
