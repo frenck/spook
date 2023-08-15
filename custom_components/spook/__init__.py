@@ -12,7 +12,7 @@ from homeassistant.core import (
     callback,
 )
 
-from .const import LOGGER, PLATFORMS
+from .const import DOMAIN, LOGGER, PLATFORMS
 from .repairs import SpookRepairManager
 from .services import SpookServiceManager
 from .util import link_sub_integrations, unlink_sub_integrations
@@ -38,11 +38,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
                 hass.async_stop(RESTART_EXIT_CODE),
             )
 
+        # User asked to restart Home Assistant in the config flow.
+        if hass.data[DOMAIN] == "Boo!":
+            _restart()
+            return False
+
+        # Should be OK to restart. Better to do it before anything else started.
         if hass.state == CoreState.starting:
             _restart()
             return False
 
+        # If all other fails, but we are not running yet... wait for it.
         if hass.state == CoreState.not_running:
+            # Listen to both... just in case.
             hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _restart)
             hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _restart)
             return False
