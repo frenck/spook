@@ -15,7 +15,7 @@ from homeassistant.core import (
 from .const import LOGGER, PLATFORMS
 from .repairs import SpookRepairManager
 from .services import SpookServiceManager
-from .util import link_sub_integrations
+from .util import link_sub_integrations, unlink_sub_integrations
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -81,4 +81,4 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_remove_entry(hass: HomeAssistant, _: ConfigEntry) -> None:
     """Remove a config entry."""
-    await hass.async_add_executor_job(link_sub_integrations, hass)
+    await hass.async_add_executor_job(unlink_sub_integrations, hass)
