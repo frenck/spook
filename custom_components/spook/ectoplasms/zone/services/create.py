@@ -20,5 +20,15 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
-        collection: ZoneStorageCollection = self.hass.data[DOMAIN]
+        collection: ZoneStorageCollection
+        if DOMAIN in self.hass.data:
+            collection = self.hass.data[DOMAIN]
+        else:
+            # Home zone is set in YAML, as a result Home Assistant doesn't
+            # set the storage collection into hass data.
+            # Major hack to get around this. 👻
+            collection = self.hass.data["websocket_api"]["zone/list"][
+                0
+            ].__self__.storage_collection
+
         await collection.async_create_item(call.data.copy())
