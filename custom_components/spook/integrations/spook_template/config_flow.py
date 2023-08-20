@@ -64,7 +64,10 @@ def generate_schema(domain: str) -> dict[vol.Marker, Any]:
         schema |= {
             vol.Required(CONF_DEVICE_CLASS): selector.SelectSelector(
                 selector.SelectSelectorConfig(
-                    options=["none", *[cls.value for cls in BinarySensorDeviceClass]],
+                    options=[
+                        "none",
+                        *sorted([cls.value for cls in BinarySensorDeviceClass]),
+                    ],
                     mode=selector.SelectSelectorMode.DROPDOWN,
                     translation_key="device_class",
                 ),
@@ -105,6 +108,7 @@ def generate_schema(domain: str) -> dict[vol.Marker, Any]:
                                 )
                                 for cls in unit
                             },
+                            key=str.casefold,
                         ),
                     ],
                     mode=selector.SelectSelectorMode.DROPDOWN,
@@ -114,14 +118,24 @@ def generate_schema(domain: str) -> dict[vol.Marker, Any]:
             ),
             vol.Optional(CONF_DEVICE_CLASS): selector.SelectSelector(
                 selector.SelectSelectorConfig(
-                    options=["none", *[cls.value for cls in SensorDeviceClass]],
+                    options=[
+                        "none",
+                        *sorted(
+                            [
+                                cls.value
+                                for cls in SensorDeviceClass
+                                if cls != SensorDeviceClass.ENUM
+                            ],
+                            key=str.casefold,
+                        ),
+                    ],
                     mode=selector.SelectSelectorMode.DROPDOWN,
                     translation_key="device_class",
                 ),
             ),
             vol.Optional(CONF_STATE_CLASS): selector.SelectSelector(
                 selector.SelectSelectorConfig(
-                    options=["none", *[cls.value for cls in SensorStateClass]],
+                    options=["none", *sorted([cls.value for cls in SensorStateClass])],
                     mode=selector.SelectSelectorMode.DROPDOWN,
                     translation_key="state_class",
                 ),
