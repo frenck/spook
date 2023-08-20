@@ -55,9 +55,7 @@ if TYPE_CHECKING:
 
 def generate_schema(domain: str) -> dict[vol.Marker, Any]:
     """Generate schema."""
-    schema = {
-        vol.Required(CONF_STATE_TEMPLATE): selector.TemplateSelector(),
-    }
+    schema = {}
 
     if domain == Platform.SENSOR:
         schema |= {
@@ -132,7 +130,10 @@ def generate_schema(domain: str) -> dict[vol.Marker, Any]:
 
 async def options_schema(domain: str, _: SchemaCommonFlowHandler) -> vol.Schema:
     """Generate options schema."""
-    return vol.Schema(generate_schema(domain))
+    return vol.Schema(
+        {vol.Required(CONF_STATE_TEMPLATE): selector.TemplateSelector()}
+        | generate_schema(domain),
+    )
 
 
 def config_schema(domain: str) -> vol.Schema:
@@ -140,6 +141,7 @@ def config_schema(domain: str) -> vol.Schema:
     return vol.Schema(
         {
             vol.Required(CONF_NAME): selector.TextSelector(),
+            vol.Required(CONF_STATE_TEMPLATE): selector.TextSelector(),
         }
         | generate_schema(domain),
     )
