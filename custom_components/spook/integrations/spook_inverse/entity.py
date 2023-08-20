@@ -13,7 +13,8 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
 )
 from homeassistant.core import HomeAssistant, State, callback
-from homeassistant.helpers.entity import Entity
+from homeassistant.helpers import device_registry as dr, entity_registry as er
+from homeassistant.helpers.entity import DeviceInfo, Entity
 from homeassistant.helpers.event import (
     EventStateChangedData,
     async_track_state_change_event,
@@ -42,6 +43,30 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
         self._attr_extra_state_attributes = {ATTR_ENTITY_ID: self._entity_id}
         self._attr_unique_id = config_entry.entry_id
         self.config_entry = config_entry
+
+    @property
+    def device_info(self) -> DeviceInfo | None:
+        """Return the device info."""
+        entity_registry = er.async_get(self.hass)
+        device_registry = dr.async_get(self.hass)
+        source_entity = entity_registry.async_get(self._entity_id)
+        if (
+            (source_entity is not None)
+            and (source_entity.device_id is not None)
+            and (
+                (
+                    device := device_registry.async_get(
+                        device_id=source_entity.device_id,
+                    )
+                )
+                is not None
+            )
+        ):
+            return DeviceInfo(
+                identifiers=device.identifiers,
+                connections=device.connections,
+            )
+        return None
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
