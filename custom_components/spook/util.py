@@ -5,7 +5,7 @@ import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-from .const import LOGGER
+from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -32,3 +32,39 @@ async def async_forward_platform_entry_setups_to_ectoplasm(
         module = importlib.import_module(f".{module_path}", __package__)
         LOGGER.debug("Setting up Spook ectoplasm %s: %s", platform, module_path)
         await module.async_setup_entry(hass, entry, async_add_entities)
+
+
+def link_sub_integrations(hass: HomeAssistant) -> bool:
+    """Link Spook sub integrations."""
+    LOGGER.debug("Linking up Spook sub integrations")
+
+    changes = False
+    for manifest in Path(__file__).parent.rglob("integrations/*/manifest.json"):
+        LOGGER.debug("Linking Spook sub integration: %s", manifest.parent.name)
+        dest = (
+            Path(hass.config.config_dir)
+            / "custom_components"
+            / f"{DOMAIN}_{manifest.parent.name}"
+        )
+        if not dest.exists():
+            src = (
+                Path(hass.config.config_dir)
+                / "custom_components"
+                / DOMAIN
+                / "integrations"
+                / manifest.parent.name
+            )
+            dest.symlink_to(src)
+            changes = True
+    return changes
+
+
+def unlink_sub_integrations(hass: HomeAssistant) -> bool:
+    """Unlink Spook sub integrations."""
+    LOGGER.debug("Unlinking Spook sub integrations")
+    for manifest in Path(__file__).parent.rglob("integrations/*/manifest.json"):
+        domain = f"{DOMAIN}_{manifest.parent.name}"
+        LOGGER.debug("Unlinking Spook sub integration: %s", domain)
+        dest = Path(hass.config.config_dir) / "custom_components" / domain
+        if dest.exists():
+            dest.unlink()

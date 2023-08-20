@@ -7,6 +7,7 @@ import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, final
 
+from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import (
@@ -21,6 +22,8 @@ from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+
+    from homeassistant.data_entry_flow import FlowResult
 
 
 class AbstractSpookRepairBase(ABC):
@@ -225,10 +228,39 @@ class SpookRepairManager:
                     self.issue_registry.async_delete(domain, issue_id)
 
 
+class RestartRequiredFixFlow(RepairsFlow):
+    """Handler for a repairs issue flow that restarts Home Assistant."""
+
+    issue_id = "restart_required"
+
+    async def async_step_init(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Handle asking confirmation of restart."""
+        return await self.async_step_confirm_restart()
+
+    async def async_step_confirm_restart(
+        self,
+        user_input: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Handle the confirm of restart."""
+        if user_input is not None:
+            await self.hass.services.async_call(
+                "homeassistant",
+                SERVICE_HOMEASSISTANT_RESTART,
+            )
+            return self.async_create_entry(data={})
+
+        return self.async_show_form(step_id="confirm_restart")
+
+
 async def async_create_fix_flow(
     _hass: HomeAssistant,
-    _issue_id: str,
+    issue_id: str,
     _data: dict[str, str | int | float | None] | None,
 ) -> RepairsFlow:
     """Create flow."""
+    if issue_id == "restart_required":
+        return RestartRequiredFixFlow()
     return ConfirmRepairFlow()

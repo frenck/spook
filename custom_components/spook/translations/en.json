@@ -6,6 +6,13 @@
     "step": {
       "user": {
         "description": "Did you read the readme? Did you read the license? Are you really sure?"
+      },
+      "choice_restart": {
+        "description": "In order for Spook to finish setting up, Home Assistant needs to be restarted.\n\nDo you want to restart Home Assistant now?",
+        "menu_options": {
+          "restart_now": "Restart now",
+          "restart_later": "Restart later"
+        }
       }
     }
   },
@@ -264,6 +271,17 @@
         }
       },
       "title": "{title}"
+    },
+    "restart_required": {
+      "title": "Restart required",
+      "fix_flow": {
+        "step": {
+          "confirm_restart": {
+            "title": "Restart required",
+            "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+          }
+        }
+      }
     }
   }
 }
