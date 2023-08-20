@@ -547,6 +547,56 @@ input_number_min:
     entity:
       domain: input_number
 
+person_add_device_tracker:
+  name: Add a device tracker 👻
+  description: >-
+    Add a device tracker to a person.
+  fields:
+    entity_id:
+      name: Person
+      description: >-
+        The person entity ID to add the device tracker to.
+      required: true
+      selector:
+        entity:
+          filter:
+            - domain: person
+    device_tracker:
+      name: Device tracker
+      description: >-
+        The device tracker entity ID to add to the person.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: device_tracker
+
+person_remove_device_tracker:
+  name: Remove a device tracker 👻
+  description: >-
+    Remove a device tracker from a person.
+  fields:
+    entity_id:
+      name: Person
+      description: >-
+        The person entity ID to remove the device tracker from.
+      required: true
+      selector:
+        entity:
+          filter:
+            - domain: person
+    device_tracker:
+      name: Device tracker
+      description: >-
+        The device tracker entity ID to remove from the person.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: device_tracker
+
 repairs_create:
   name: Create issue 👻
   description: >-
