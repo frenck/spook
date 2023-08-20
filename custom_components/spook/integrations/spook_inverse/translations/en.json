@@ -1,31 +1,42 @@
 {
-  "title": "Inverse",
   "config": {
     "step": {
+      "binary_sensor": {
+        "data": {
+          "entity_id": "Source entity",
+          "hide_source": "Hide source entity",
+          "name": "Name"
+        },
+        "title": "Inverse 👻"
+      },
+      "cover": {
+        "data": {
+          "entity_id": "Source entity",
+          "hide_source": "Hide source entity",
+          "inverse_position": "Inverse position",
+          "inverse_tilt": "Inverse tilt postition",
+          "name": "Name"
+        },
+        "title": "Inverse 👻"
+      },
+      "switch": {
+        "data": {
+          "entity_id": "Source entity",
+          "hide_source": "Hide source entity",
+          "name": "Name"
+        },
+        "title": "Inverse 👻"
+      },
       "user": {
-        "title": "Inverse 👻",
         "description": "This helper allow you to inverse the behavior of an entity. For example, reverse the open/close or on/off of binary sensors, and switches.",
         "menu_options": {
           "binary_sensor": "Inverse a binary sensor",
+          "cover": "Inverse a cover",
           "switch": "Inverse a switch"
-        }
-      },
-      "binary_sensor": {
-        "title": "Inverse 👻",
-        "data": {
-          "entity_id": "Source entity",
-          "hide_source": "Hide source entity",
-          "name": "Name"
-        }
-      },
-      "switch": {
-        "title": "Inverse 👻",
-        "data": {
-          "entity_id": "Source entity",
-          "hide_source": "Hide source entity",
-          "name": "Name"
-        }
+        },
+        "title": "Inverse 👻"
       }
     }
-  }
+  },
+  "title": "Inverse"
 }
