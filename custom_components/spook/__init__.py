@@ -11,6 +11,7 @@ from homeassistant.core import (
     CoreState,
     callback,
 )
+from homeassistant.helpers import issue_registry as ir
 
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .repairs import SpookRepairManager
@@ -55,7 +56,17 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _restart)
             return False
 
-        # TODO: Raise repair issue instead
+        LOGGER.info(
+            "Home Assistant needs to be restarted in for Spook to complete setting up",
+        )
+        ir.async_create_issue(
+            hass=hass,
+            domain=DOMAIN,
+            issue_id="restart_required",
+            is_fixable=True,
+            severity=ir.IssueSeverity.WARNING,
+            translation_key="restart_required",
+        )
 
     # Set up platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
