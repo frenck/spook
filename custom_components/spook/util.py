@@ -41,11 +41,7 @@ def link_sub_integrations(hass: HomeAssistant) -> bool:
     changes = False
     for manifest in Path(__file__).parent.rglob("integrations/*/manifest.json"):
         LOGGER.debug("Linking Spook sub integration: %s", manifest.parent.name)
-        dest = (
-            Path(hass.config.config_dir)
-            / "custom_components"
-            / f"{DOMAIN}_{manifest.parent.name}"
-        )
+        dest = Path(hass.config.config_dir) / "custom_components" / manifest.parent.name
         if not dest.exists():
             src = (
                 Path(hass.config.config_dir)
@@ -63,8 +59,7 @@ def unlink_sub_integrations(hass: HomeAssistant) -> bool:
     """Unlink Spook sub integrations."""
     LOGGER.debug("Unlinking Spook sub integrations")
     for manifest in Path(__file__).parent.rglob("integrations/*/manifest.json"):
-        domain = f"{DOMAIN}_{manifest.parent.name}"
-        LOGGER.debug("Unlinking Spook sub integration: %s", domain)
-        dest = Path(hass.config.config_dir) / "custom_components" / domain
+        LOGGER.debug("Unlinking Spook sub integration: %s", manifest.parent.name)
+        dest = Path(hass.config.config_dir) / "custom_components" / manifest.parent.name
         if dest.exists():
             dest.unlink()

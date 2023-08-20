@@ -26,6 +26,9 @@ jobs:
           yq e -P -o=json \
             -i ".version = \"${version}\"" \
             "${{ github.workspace }}/custom_components/spook/manifest.json"
+          yq e -P -o=json \
+            -i ".version = \"${version}\"" \
+            "${{ github.workspace }}/custom_components/spook/integrations/*/manifest.json"
 
       - name: 📦 Created zipped release package
         shell: bash
