@@ -39,7 +39,7 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             )
 
         # User asked to restart Home Assistant in the config flow.
-        if hass.data[DOMAIN] == "Boo!":
+        if hass.data.get(DOMAIN) == "Boo!":
             _restart()
             return False
 
