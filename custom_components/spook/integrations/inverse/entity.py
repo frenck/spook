@@ -1,0 +1,88 @@
+"""Spook - Not your homie."""
+from __future__ import annotations
+
+from abc import abstractmethod
+from typing import TYPE_CHECKING
+
+from homeassistant.const import ATTR_ENTITY_ID, STATE_UNAVAILABLE
+from homeassistant.core import HomeAssistant, State, callback
+from homeassistant.helpers.entity import Entity
+from homeassistant.helpers.event import (
+    EventStateChangedData,
+    async_track_state_change_event,
+)
+from homeassistant.helpers.start import async_at_start
+
+if TYPE_CHECKING:
+    from homeassistant.helpers.typing import EventType
+
+
+class InverseEntity(Entity):
+    """Inverse entity."""
+
+    _attr_available = False
+    _attr_should_poll = False
+
+    def __init__(
+        self,
+        unique_id: str | None,
+        name: str,
+        entity_id: str,
+    ) -> None:
+        """Initialize an inverse entity."""
+        super().__init__()
+        self._entity_id = entity_id
+        self._attr_name = name
+        self._attr_extra_state_attributes = {ATTR_ENTITY_ID: entity_id}
+        self._attr_unique_id = unique_id
+
+    async def async_added_to_hass(self) -> None:
+        """Register callbacks."""
+        self.async_on_remove(
+            async_track_state_change_event(
+                self.hass,
+                self._entity_id,
+                self.async_update_and_write_state,
+            ),
+        )
+
+        async def async_update_at_start(_: HomeAssistant) -> None:
+            """Update the state at startup."""
+            self.async_update_and_write_state()
+
+        self.async_on_remove(async_at_start(self.hass, async_update_at_start))
+
+        await super().async_added_to_hass()
+
+    @callback
+    def async_update_and_write_state(
+        self,
+        event: EventType[EventStateChangedData] | None = None,
+    ) -> None:
+        """Update the state and write it to the entity."""
+        if not self.hass.is_running:
+            return
+
+        if event is not None:
+            self.async_set_context(event.context)
+
+        if (
+            state := self.hass.states.get(self._entity_id)
+        ) is None or state.state == STATE_UNAVAILABLE:
+            self._attr_available = False
+            return
+
+        self._attr_available = True
+
+        self._attr_extra_state_attributes = {
+            **state.attributes,
+            ATTR_ENTITY_ID: self._entity_id,
+        }
+
+        self.async_update_state(state)
+        self.async_write_ha_state()
+
+    @abstractmethod
+    @callback
+    def async_update_state(self, state: State) -> None:
+        """Query the source and determine the entity state."""
