@@ -559,7 +559,6 @@ person_add_device_tracker:
       required: true
       selector:
         entity:
-          multiple: true
           filter:
             - domain: person
     device_tracker:
@@ -585,7 +584,6 @@ person_remove_device_tracker:
       required: true
       selector:
         entity:
-          multiple: true
           filter:
             - domain: person
     device_tracker:

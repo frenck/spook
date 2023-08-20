@@ -49,7 +49,7 @@ class SpookService(AbstractSpookAdminService):
             entity._config["id"],  # noqa: SLF001
             {
                 "device_trackers": list(
-                    entity.device_trackers - call.data["device_tracker"],
+                    set(entity.device_trackers) - set(call.data["device_tracker"]),
                 ),
             },
         )
