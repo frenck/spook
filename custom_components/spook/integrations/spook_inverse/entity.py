@@ -4,7 +4,14 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from homeassistant.const import ATTR_ENTITY_ID, CONF_ENTITY_ID, STATE_UNAVAILABLE
+from homeassistant.const import (
+    ATTR_DEVICE_CLASS,
+    ATTR_ENTITY_ID,
+    ATTR_ICON,
+    ATTR_SUPPORTED_FEATURES,
+    CONF_ENTITY_ID,
+    STATE_UNAVAILABLE,
+)
 from homeassistant.core import HomeAssistant, State, callback
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import (
@@ -18,7 +25,7 @@ if TYPE_CHECKING:
     from homeassistant.helpers.typing import EventType
 
 
-class InverseEntity(Entity):
+class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
     """Inverse entity."""
 
     _attr_available = False
@@ -73,13 +80,19 @@ class InverseEntity(Entity):
             return
 
         self._attr_available = True
-
-        self._attr_extra_state_attributes = {
-            **state.attributes,
-            ATTR_ENTITY_ID: self._entity_id,
-        }
+        self._attr_supported_features = state.attributes.get(ATTR_SUPPORTED_FEATURES)
+        self._attr_device_class = state.attributes.get(ATTR_DEVICE_CLASS)
+        self._attr_icon = state.attributes.get(ATTR_ICON)
 
         self.async_update_state(state)
+
+        self._attr_extra_state_attributes |= {
+            ATTR_ENTITY_ID: self._entity_id,
+        }
+        self._attr_extra_state_attributes.pop(ATTR_ICON, None)
+        self._attr_extra_state_attributes.pop(ATTR_DEVICE_CLASS, None)
+        self._attr_extra_state_attributes.pop(ATTR_SUPPORTED_FEATURES, None)
+
         self.async_write_ha_state()
 
     @abstractmethod
