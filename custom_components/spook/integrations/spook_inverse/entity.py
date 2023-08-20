@@ -33,7 +33,8 @@ class InverseEntity(Entity):
         self._entity_id = config_entry.options[CONF_ENTITY_ID]
         self._attr_name = config_entry.title
         self._attr_extra_state_attributes = {ATTR_ENTITY_ID: self._entity_id}
-        self._attr_unique_id = config_entry.unique_id
+        self._attr_unique_id = config_entry.entry_id
+        self.config_entry = config_entry
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
