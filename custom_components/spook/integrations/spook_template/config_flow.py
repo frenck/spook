@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING, Any, cast
 
 import voluptuous as vol
 
-from homeassistant.components.binary_sensor import BinarySensorDeviceClass
 from homeassistant.components.sensor import (
     CONF_STATE_CLASS,
     SensorDeviceClass,
@@ -59,20 +58,6 @@ def generate_schema(domain: str) -> dict[vol.Marker, Any]:
     schema = {
         vol.Required(CONF_STATE_TEMPLATE): selector.TemplateSelector(),
     }
-
-    if domain == Platform.BINARY_SENSOR:
-        schema |= {
-            vol.Required(CONF_DEVICE_CLASS): selector.SelectSelector(
-                selector.SelectSelectorConfig(
-                    options=[
-                        "none",
-                        *sorted([cls.value for cls in BinarySensorDeviceClass]),
-                    ],
-                    mode=selector.SelectSelectorMode.DROPDOWN,
-                    translation_key="device_class",
-                ),
-            ),
-        }
 
     if domain == Platform.SENSOR:
         schema |= {
@@ -145,7 +130,7 @@ def generate_schema(domain: str) -> dict[vol.Marker, Any]:
     return schema
 
 
-async def options_schema(domain: str) -> vol.Schema:
+async def options_schema(domain: str, _: SchemaCommonFlowHandler) -> vol.Schema:
     """Generate options schema."""
     return vol.Schema(generate_schema(domain))
 
