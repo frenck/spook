@@ -214,7 +214,7 @@ class SpookRepair(AbstractSpookRepair):
                         and isinstance(entity["entity"], str)
                     ):
                         extracted.append(entity["entity"])
-                return set(config["entities"])
+                return set(extracted)
         return set()
 
     @callback
