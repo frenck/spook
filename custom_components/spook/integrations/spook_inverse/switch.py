@@ -29,13 +29,11 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Initialize inverse config entry."""
-    entity_id = er.async_validate_entity_id(
+    er.async_validate_entity_id(
         er.async_get(hass),
         config_entry.options[CONF_ENTITY_ID],
     )
-    async_add_entities(
-        [InverseSwitch(config_entry.entry_id, config_entry.title, entity_id)],
-    )
+    async_add_entities([InverseSwitch(config_entry)])
 
 
 class InverseSwitch(InverseEntity, SwitchEntity):

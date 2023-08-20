@@ -4,7 +4,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import TYPE_CHECKING
 
-from homeassistant.const import ATTR_ENTITY_ID, STATE_UNAVAILABLE
+from homeassistant.const import ATTR_ENTITY_ID, CONF_ENTITY_ID, STATE_UNAVAILABLE
 from homeassistant.core import HomeAssistant, State, callback
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import (
@@ -14,6 +14,7 @@ from homeassistant.helpers.event import (
 from homeassistant.helpers.start import async_at_start
 
 if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
     from homeassistant.helpers.typing import EventType
 
 
@@ -25,16 +26,14 @@ class InverseEntity(Entity):
 
     def __init__(
         self,
-        unique_id: str | None,
-        name: str,
-        entity_id: str,
+        config_entry: ConfigEntry,
     ) -> None:
         """Initialize an inverse entity."""
         super().__init__()
-        self._entity_id = entity_id
-        self._attr_name = name
-        self._attr_extra_state_attributes = {ATTR_ENTITY_ID: entity_id}
-        self._attr_unique_id = unique_id
+        self._entity_id = config_entry.options[CONF_ENTITY_ID]
+        self._attr_name = config_entry.title
+        self._attr_extra_state_attributes = {ATTR_ENTITY_ID: self._entity_id}
+        self._attr_unique_id = config_entry.unique_id
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
