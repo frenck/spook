@@ -254,12 +254,30 @@
         "switch_as_x_unknown_source": {
             "title": "Origem desconhecida: {helper}",
             "description": "Spook encontrou um fantasma nos teus auxiliares interruptores como X 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte auxiliar:\n\n{helper} (`{entity_id}`)\n\nEste auxiliar contem as seguintes entidades que são desconhecidas para o Home Assistant:\n\n`{source}`\n\n\n\nPara corrigir o erro, edita o auxilar e ajusta a entidade (ou remove o auxiliar) e reinicia o Home Assistant.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "Para que o Spook 👻 consiga terminar a configuração, o Home Assistant tem que ser reiniciado.\n\nEscolhe reiniciar o Home Assistant agora.",
+                        "title": "É necessário reiniciar"
+                    }
+                }
+            },
+            "title": "É necessário reiniciar"
         }
     },
     "config": {
         "step": {
             "user": {
                 "description": "Leste o readme? Leu a licença? Tens mesmo a certeza?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_later": "Reiniciar mais tarde",
+                    "restart_now": "Reiniciar agora"
+                },
+                "description": "Para que o Spook consiga terminar a configuração, o Home Assistant tem que ser reiniciado.\n\nPretendes reiniciar o Home assistant agora?"
             }
         },
         "abort": {
