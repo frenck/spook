@@ -198,13 +198,13 @@ wrapt = {version = ">=1.14,<2", markers = "python_version >= \"3.11\""}
 
 [[package]]
 name = "async-timeout"
-version = "4.0.2"
+version = "4.0.3"
 description = "Timeout context manager for asyncio programs"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "async-timeout-4.0.2.tar.gz", hash = "sha256:2163e1640ddb52b7a8c80d0a67a08587e5d245cc9c553a74a847056bc2976b15"},
-    {file = "async_timeout-4.0.2-py3-none-any.whl", hash = "sha256:8ca1e4fcf50d07413d66d1a5e416e42cfdf5851c981d679a09851a6853383b3c"},
+    {file = "async-timeout-4.0.3.tar.gz", hash = "sha256:4640d96be84d82d02ed59ea2b7105a0f7b33abe8703703cd0ab0bf87c427522f"},
+    {file = "async_timeout-4.0.3-py3-none-any.whl", hash = "sha256:7405140ff1230c310e51dc27b3145b9092d659ce68ff733fb0cefe3ee42be028"},
 ]
 
 [[package]]
@@ -220,21 +220,21 @@ files = [
 
 [[package]]
 name = "attrs"
-version = "22.2.0"
+version = "23.1.0"
 description = "Classes Without Boilerplate"
 optional = false
-python-versions = ">=3.6"
+python-versions = ">=3.7"
 files = [
-    {file = "attrs-22.2.0-py3-none-any.whl", hash = "sha256:29e95c7f6778868dbd49170f98f8818f78f3dc5e0e37c0b1f474e3561b240836"},
-    {file = "attrs-22.2.0.tar.gz", hash = "sha256:c9227bfc2f01993c03f68db37d1d15c9690188323c067c641f1a35ca58185f99"},
+    {file = "attrs-23.1.0-py3-none-any.whl", hash = "sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04"},
+    {file = "attrs-23.1.0.tar.gz", hash = "sha256:6279836d581513a26f1bf235f9acd333bc9115683f14f7e8fae46c98fc50e015"},
 ]
 
 [package.extras]
-cov = ["attrs[tests]", "coverage-enable-subprocess", "coverage[toml] (>=5.3)"]
-dev = ["attrs[docs,tests]"]
-docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope.interface"]
-tests = ["attrs[tests-no-zope]", "zope.interface"]
-tests-no-zope = ["cloudpickle", "cloudpickle", "hypothesis", "hypothesis", "mypy (>=0.971,<0.990)", "mypy (>=0.971,<0.990)", "pympler", "pympler", "pytest (>=4.3.0)", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-mypy-plugins", "pytest-xdist[psutil]", "pytest-xdist[psutil]"]
+cov = ["attrs[tests]", "coverage[toml] (>=5.3)"]
+dev = ["attrs[docs,tests]", "pre-commit"]
+docs = ["furo", "myst-parser", "sphinx", "sphinx-notfound-page", "sphinxcontrib-towncrier", "towncrier", "zope-interface"]
+tests = ["attrs[tests-no-zope]", "zope-interface"]
+tests-no-zope = ["cloudpickle", "hypothesis", "mypy (>=1.1.1)", "pympler", "pytest (>=4.3.0)", "pytest-mypy-plugins", "pytest-xdist[psutil]"]
 
 [[package]]
 name = "awesomeversion"
@@ -844,43 +844,44 @@ snitun = "0.35.0"
 
 [[package]]
 name = "home-assistant-bluetooth"
-version = "1.10.2"
+version = "1.10.3"
 description = "Home Assistant Bluetooth Models and Helpers"
 optional = false
 python-versions = ">=3.9,<4.0"
 files = [
-    {file = "home_assistant_bluetooth-1.10.2-cp310-cp310-manylinux_2_31_x86_64.whl", hash = "sha256:25e5f0a0332a450ed69ddd67262c7e0ba680f5c7f850c5d4b3fccd2337a59344"},
-    {file = "home_assistant_bluetooth-1.10.2.tar.gz", hash = "sha256:1553009313a079abea43b6640893234dc11623243adcb3b8e6861cd4457f360f"},
+    {file = "home_assistant_bluetooth-1.10.3-cp310-cp310-manylinux_2_31_x86_64.whl", hash = "sha256:7ba55ceb56108cc89b9564ef244316f7e254a0f0830fbe33f45ff95234a56b91"},
+    {file = "home_assistant_bluetooth-1.10.3.tar.gz", hash = "sha256:46f4403959911a2eed071bcbf7a076babcf677d140e731dbb01d3f23588fc98d"},
 ]
 
 [[package]]
 name = "homeassistant"
-version = "2023.8.4"
+version = "2023.9.0"
 description = "Open-source home automation platform running on Python 3."
 optional = false
 python-versions = ">=3.11.0"
 files = [
-    {file = "homeassistant-2023.8.4-py3-none-any.whl", hash = "sha256:c7349ae76e2e99c0dbfc60584cedef29c68ac3d5c269a1f2e0183fa9db9eb647"},
-    {file = "homeassistant-2023.8.4.tar.gz", hash = "sha256:32edc3c82b45fdb4eb4ef44a3cb54419265f599ac5ed0432fd9bc18b92081f7b"},
+    {file = "homeassistant-2023.9.0-py3-none-any.whl", hash = "sha256:b534402a6e56e97eafcaf08b54b26a2df8cfc4a288de4dff8b46fa99bd837eed"},
+    {file = "homeassistant-2023.9.0.tar.gz", hash = "sha256:5dd65856feb464290ad1f2a6b769264e147186ffa17c932d1f0801bb789a5bdc"},
 ]
 
 [package.dependencies]
 aiohttp = "3.8.5"
 astral = "2.2"
-async-timeout = "4.0.2"
+async-timeout = "4.0.3"
 atomicwrites-homeassistant = "1.4.1"
-attrs = "22.2.0"
+attrs = "23.1.0"
 awesomeversion = "22.9.0"
 bcrypt = "4.0.1"
 certifi = ">=2021.5.30"
 ciso8601 = "2.3.0"
 cryptography = "41.0.3"
-home-assistant-bluetooth = "1.10.2"
+home-assistant-bluetooth = "1.10.3"
 httpx = "0.24.1"
 ifaddr = "0.2.0"
 Jinja2 = "3.1.2"
 lru-dict = "1.2.0"
 orjson = "3.9.2"
+packaging = ">=23.1"
 pip = ">=21.3.1"
 PyJWT = "2.8.0"
 pyOpenSSL = "23.2.0"
@@ -888,7 +889,7 @@ python-slugify = "4.0.1"
 PyYAML = "6.0.1"
 requests = "2.31.0"
 typing-extensions = ">=4.7.0,<5.0"
-ulid-transform = "0.8.0"
+ulid-transform = "0.8.1"
 voluptuous = "0.13.1"
 voluptuous-serialize = "2.6.0"
 yarl = "1.9.2"
@@ -1975,31 +1976,38 @@ files = [
 
 [[package]]
 name = "ulid-transform"
-version = "0.8.0"
+version = "0.8.1"
 description = "Create and transform ULIDs"
 optional = false
 python-versions = ">=3.10,<4.0"
 files = [
-    {file = "ulid_transform-0.8.0-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:37ed9742b6bf91587c9b502c81946a364db5afccb828a0ff6bde75cf7734d967"},
-    {file = "ulid_transform-0.8.0-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:c740c9c7bbfcd69e9028dd60c6f8e7239eccb2c52b1e5ed0a1014eb5893bca8d"},
-    {file = "ulid_transform-0.8.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:f380d67a859653aea8570dca12c77a104a0a047683d942d29244fa06b929639f"},
-    {file = "ulid_transform-0.8.0-cp310-cp310-manylinux_2_31_x86_64.whl", hash = "sha256:9df78c20cfcb761a88622ae9bda146c171cae0138e2ce0ceb37d1630a40a6ebc"},
-    {file = "ulid_transform-0.8.0-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:486eda395594d0a2308261f3d83c8510981202ffa9521ea80905928f60cac3c9"},
-    {file = "ulid_transform-0.8.0-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:33076232d7f7539f999760786917e4bcd05b59fe5ec50904ef4b2ec84c8937e6"},
-    {file = "ulid_transform-0.8.0-cp310-cp310-win32.whl", hash = "sha256:585fe2b8538ac320e8bc526ad857a393741f6c6cf6173b8c3c22a74c1c500b91"},
-    {file = "ulid_transform-0.8.0-cp310-cp310-win_amd64.whl", hash = "sha256:08057f526eb77dc27e5565fa919e00b82bbf6526fedbf5e14d502ff3a67bba63"},
-    {file = "ulid_transform-0.8.0-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:65f7da80e0c2ad32fb2063cabc1a1f7325226116dbbff4bf8860c8a48cb1bac6"},
-    {file = "ulid_transform-0.8.0-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:fb9922104b5dacf46844d608a087d144371c6778e0467b91a038a5adf2084667"},
-    {file = "ulid_transform-0.8.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:811159064738de075f6c4d46f54697fa4e8654b909ce14afed242fe9fe60d7de"},
-    {file = "ulid_transform-0.8.0-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:1a7285aa1b96a16bd1d70a0bef8ce6e2ae4ecabbaf8295ec37b4802932759550"},
-    {file = "ulid_transform-0.8.0-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:cad40f2229a3ac7e32bc349cadce86f9b5cf0703181488154ebd15941c3a8338"},
-    {file = "ulid_transform-0.8.0-cp311-cp311-win32.whl", hash = "sha256:c8377d115ef0579675219f977f13ba585c8f505bbe556c551e4d5a50c61cdf9e"},
-    {file = "ulid_transform-0.8.0-cp311-cp311-win_amd64.whl", hash = "sha256:08db5974e42ab93f57914ed0f4eccbeaa7f8643a767329a0df369b2f5b9c9b34"},
-    {file = "ulid_transform-0.8.0-pp310-pypy310_pp73-macosx_11_0_x86_64.whl", hash = "sha256:c1d31d0fdc0775c8699c1b5dc40404c41fcc46d75c3b700ca25aef6f3ff2e1b6"},
-    {file = "ulid_transform-0.8.0-pp310-pypy310_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:3bd2a0bfa174ee1a8665241036b1682b758a4368072eeb803f9ce5d6aad65f14"},
-    {file = "ulid_transform-0.8.0-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:53abd04b9d4cacf50795caca977531973d16a4fc1a9385606e01c768dda143de"},
-    {file = "ulid_transform-0.8.0-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:8a4734dc8769d10f728dd65c18a1038be8ccf213cb540f5742dae2f709d588b5"},
-    {file = "ulid_transform-0.8.0.tar.gz", hash = "sha256:dde4daefe0b75d2d7e911ba6865585e40f46daa9bc8c01ef16979ae6953d3105"},
+    {file = "ulid_transform-0.8.1-cp310-cp310-macosx_11_0_x86_64.whl", hash = "sha256:75eb0f51608fecd901f7623e5dda7a22d6917a6119db5f60b124a92a38784f27"},
+    {file = "ulid_transform-0.8.1-cp310-cp310-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:32891d130f31217859ffb05e9b88d4a1a9cf94a81a682d65fc7ce0d6f333cac6"},
+    {file = "ulid_transform-0.8.1-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:1c328125d178f98307e442de19b039811baf990767428526e2a58bee8a91a873"},
+    {file = "ulid_transform-0.8.1-cp310-cp310-manylinux_2_31_x86_64.whl", hash = "sha256:a8876de3eddfcfb20d008fbfb74632b1c440601abd447f1b3ab3353e6dff7b32"},
+    {file = "ulid_transform-0.8.1-cp310-cp310-musllinux_1_1_i686.whl", hash = "sha256:92f620ca6e02fd2299b60c3a87237162afe051e8f880cda6d3989b87be584abd"},
+    {file = "ulid_transform-0.8.1-cp310-cp310-musllinux_1_1_x86_64.whl", hash = "sha256:b05f120c2191efa068e365c16897dac5dddcf87aaef0e685b0fcf2eb083ba7ba"},
+    {file = "ulid_transform-0.8.1-cp310-cp310-win32.whl", hash = "sha256:61b0b3a1cc971e9f73f350cda7833f0fd64c8dcfe39e426de7a9453bedd25a7f"},
+    {file = "ulid_transform-0.8.1-cp310-cp310-win_amd64.whl", hash = "sha256:89c37bfb1c3e5ef064611b43048ffffef4bff4d5c92eba7f306da86480d5b1ad"},
+    {file = "ulid_transform-0.8.1-cp311-cp311-macosx_11_0_x86_64.whl", hash = "sha256:422b17a43df83a6900b09200197c400954304469ad6e2cb02a20b3d7c6f6179e"},
+    {file = "ulid_transform-0.8.1-cp311-cp311-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4ff6d2b85bef7f7bc58d9495ad8c7f5d2864ea1ba39105d06df1cb5a7842dbe7"},
+    {file = "ulid_transform-0.8.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:98d062bb7be43e1d8fabe36939a5125a7db73cd65c8a22e973ae3da799ea77ff"},
+    {file = "ulid_transform-0.8.1-cp311-cp311-musllinux_1_1_i686.whl", hash = "sha256:461a7070cb6481dacd757d6df7bf2e067f7e0bf42bdf767fb5da38e03359a988"},
+    {file = "ulid_transform-0.8.1-cp311-cp311-musllinux_1_1_x86_64.whl", hash = "sha256:91692a44c347e4eccbb392d9bc88159a0137e089badbfdd05cf65df20abf3643"},
+    {file = "ulid_transform-0.8.1-cp311-cp311-win32.whl", hash = "sha256:29d5f8598a7dd9cce3ec46db185f4f651faf6336c5f3bcd31c68ce73488e9fea"},
+    {file = "ulid_transform-0.8.1-cp311-cp311-win_amd64.whl", hash = "sha256:b74884f1003f8f477396fc21b45cc212b369878562ebecd7b4039bc3e918d070"},
+    {file = "ulid_transform-0.8.1-cp312-cp312-macosx_11_0_x86_64.whl", hash = "sha256:a16427b991b6cf7ae86be008ef7de51680ee1544c1679ac6bf1ab79548adaa77"},
+    {file = "ulid_transform-0.8.1-cp312-cp312-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:4a69ec2d53b9b2f1262e2286199acc8762710c2c4dc478843f79ea842a18146b"},
+    {file = "ulid_transform-0.8.1-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:45374a6610e1912e3d7aaad931950b03e02ffb980c40a6de1c3e57843a541bfc"},
+    {file = "ulid_transform-0.8.1-cp312-cp312-musllinux_1_1_i686.whl", hash = "sha256:66ec999a7fe83efe5063aebb760a825db4439fb771c0d9cb2123c6680cb861ee"},
+    {file = "ulid_transform-0.8.1-cp312-cp312-musllinux_1_1_x86_64.whl", hash = "sha256:2a2c39367a8933c99f239837d9544b9ac71eda9f2ab3f40896ba057c992a821f"},
+    {file = "ulid_transform-0.8.1-cp312-cp312-win32.whl", hash = "sha256:1a12d252b99d1191e338c1b646abcb5e17f64e0d69b83aca2d19bbbaf9d49973"},
+    {file = "ulid_transform-0.8.1-cp312-cp312-win_amd64.whl", hash = "sha256:24aed9d9b2a7c88036ac34fab53b3ca942eb924c233753810bd8478692b86686"},
+    {file = "ulid_transform-0.8.1-pp310-pypy310_pp73-macosx_11_0_x86_64.whl", hash = "sha256:2410ea648b8ab2151654b3b7068b5f4c7c27783ec7eea0ad0196a1cc5d6bb8eb"},
+    {file = "ulid_transform-0.8.1-pp310-pypy310_pp73-manylinux_2_17_i686.manylinux2014_i686.whl", hash = "sha256:80c53b9295f90fd5f8493ef949f67c8bb554e88adc2aa30aaa02e11a0f6215ba"},
+    {file = "ulid_transform-0.8.1-pp310-pypy310_pp73-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:74949a0f1a9342892a2339da4abe020aa62f9fecb9d58c40ae8646c99f042e42"},
+    {file = "ulid_transform-0.8.1-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:b4cd7526dae027342c26b0da011ecfed37750778790130634a604e278414213e"},
+    {file = "ulid_transform-0.8.1.tar.gz", hash = "sha256:a7644888bd174791f85f6edd1a85cb8ef6faa3cb8e508445464c49d8d208511f"},
 ]
 
 [[package]]
@@ -2237,4 +2245,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "9d504e3808676913a72d0da8307d718a0481e80bd52726f41bb30ecd245623f4"
+content-hash = "af22d438dcd7f6180837bcf9c5ac23fd1f0ec4404c0c67aeb82bfa05c0e83b68"
