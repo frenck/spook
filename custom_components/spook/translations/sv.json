@@ -6,6 +6,13 @@
         "step": {
             "user": {
                 "description": "Läste du readme? Läste du licensen? Är du verkligen säker?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Restart nu",
+                    "restart_later": "Omstart senare"
+                },
+                "description": "För att Spook ska sluta ställa in måste Home Assistant startas om.\n\nVill du starta om Home Assistant nu?"
             }
         }
     },
@@ -16,6 +23,12 @@
             },
             "homeassistant_restart": {
                 "name": "Omstart"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignorera alla"
+            },
+            "repairs_unignore_all": {
+                "name": "Unignorera alla"
             }
         },
         "sensor": {
@@ -165,6 +178,15 @@
             },
             "homeassistant_water_heater": {
                 "name": "Varmvattenberedare"
+            },
+            "repairs_ignored_issues": {
+                "name": "Okunnig"
+            },
+            "repairs_active_issues": {
+                "name": "Aktiv"
+            },
+            "repairs_total_issues": {
+                "name": "Totalt totalt"
             }
         },
         "switch": {
@@ -176,6 +198,25 @@
             },
             "cloud_remote": {
                 "name": "Fjärkontroll"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "update": "Issue uppdaterad",
+                            "create": "Issue skapad",
+                            "remove": "Issue bort"
+                        }
+                    },
+                    "domain": {
+                        "name": "Fråga emittent"
+                    },
+                    "issue_id": {
+                        "name": "Problem ID"
+                    }
+                }
             }
         }
     },
@@ -230,6 +271,17 @@
         "script_unknown_entity_references": {
             "title": "Okända enheter som används i: {script}",
             "description": "Spook har hittat ett spöke i dina script 👻\nMedan han flöt runt, korsade Spook vägen med följande manus:\n[{script}]({edit}) (`{entity_id}`)\nDetta skript refererar till följande enheter, som är okända för Home Assistant:\n{entities}\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande enheter.\nSpook 👻 Inte din homie."
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "För att Spook ska avslutas måste Home Assistant startas om.\n\nVälj lämna in för att starta om Home Assistant nu.",
+                        "title": "Restart krävs"
+                    }
+                }
+            },
+            "title": "Restart krävs"
         }
     }
 }
