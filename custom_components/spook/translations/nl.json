@@ -6,6 +6,13 @@
         "step": {
             "user": {
                 "description": "Heb je de documentatie gelezen? Heb je de licentie gelezen? Weet je het heel erg zeker?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Begin nu",
+                    "restart_later": "Begin later"
+                },
+                "description": "Om Spook klaar te maken met de instelling, moet de assistent herstart worden.\n\nWil je nu de assistent van Binnenlandse Zaken herstarten?"
             }
         }
     },
@@ -264,6 +271,17 @@
                 }
             },
             "title": "{title}"
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "Om Spook klaar te maken, moet de assistente worden herstart.\n\nZelfvernietiging aan het herstarten van Home Assistant nu.",
+                        "title": "Herstart vereist"
+                    }
+                }
+            },
+            "title": "Herstart vereist"
         }
     }
 }
