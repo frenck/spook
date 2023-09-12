@@ -1,1 +1,287 @@
-{}
+{
+    "entity": {
+        "sensor": {
+            "homeassistant_siren": {
+                "name": "Sirens"
+            },
+            "homeassistant_water_heater": {
+                "name": "水热器"
+            },
+            "homeassistant_device_tracker": {
+                "name": "装置跟踪器"
+            },
+            "homeassistant_light": {
+                "name": "灯"
+            },
+            "homeassistant_input_number": {
+                "name": "投入数量"
+            },
+            "homeassistant_button": {
+                "name": "Buttons"
+            },
+            "homeassistant_cover": {
+                "name": "覆盖面"
+            },
+            "homeassistant_area": {
+                "name": "地区"
+            },
+            "homeassistant_datetime": {
+                "name": "日期/时间"
+            },
+            "homeassistant_number": {
+                "name": "人数"
+            },
+            "homeassistant_switch": {
+                "name": "交换机"
+            },
+            "homeassistant_tts": {
+                "name": "文本到字面"
+            },
+            "homeassistant_text": {
+                "name": "案文"
+            },
+            "homeassistant_script": {
+                "name": "文本"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Input booleans"
+            },
+            "homeassistant_sensor": {
+                "name": "传感器"
+            },
+            "repairs_ignored_issues": {
+                "name": "无"
+            },
+            "homeassistant_humidifier": {
+                "name": "Humidifiers"
+            },
+            "homeassistant_update": {
+                "name": "A. 更新"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "长期通知"
+            },
+            "homeassistant_custom_component": {
+                "name": "习俗融合"
+            },
+            "homeassistant_input_datetime": {
+                "name": "投入日期/时间"
+            },
+            "homeassistant_weather": {
+                "name": "天气"
+            },
+            "homeassistant_input_text": {
+                "name": "投入案文"
+            },
+            "homeassistant_fan": {
+                "name": "Fans"
+            },
+            "homeassistant_sun": {
+                "name": "太阳"
+            },
+            "homeassistant_input_button": {
+                "name": "投入吨"
+            },
+            "homeassistant_climate": {
+                "name": "气候"
+            },
+            "homeassistant_person": {
+                "name": "人员"
+            },
+            "homeassistant_stt": {
+                "name": "演讲到文字"
+            },
+            "homeassistant_image": {
+                "name": "形象"
+            },
+            "homeassistant_date": {
+                "name": "日期"
+            },
+            "homeassistant_entities": {
+                "name": "实体"
+            },
+            "homeassistant_camera": {
+                "name": "摄像机"
+            },
+            "homeassistant_input_select": {
+                "name": "产出选择"
+            },
+            "homeassistant_select": {
+                "name": "选择"
+            },
+            "repairs_active_issues": {
+                "name": "活跃"
+            },
+            "homeassistant_remote": {
+                "name": "边远地区"
+            },
+            "homeassistant_device": {
+                "name": "装置"
+            },
+            "homeassistant_zone": {
+                "name": "地区"
+            },
+            "homeassistant_air_quality": {
+                "name": "空气质量"
+            },
+            "homeassistant_automation": {
+                "name": "自动化"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "1. 原始传感器"
+            },
+            "homeassistant_lock": {
+                "name": "洛克"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "大型控制小组"
+            },
+            "repairs_total_issues": {
+                "name": "共计"
+            },
+            "homeassistant_calendar": {
+                "name": "日历"
+            },
+            "homeassistant_vacuum": {
+                "name": "瓦库姆"
+            },
+            "homeassistant_scene": {
+                "name": "胎盘"
+            },
+            "homeassistant_integration": {
+                "name": "一体化"
+            },
+            "homeassistant_time": {
+                "name": "时间"
+            },
+            "homeassistant_media_player": {
+                "name": "媒体行为者"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa 邦报"
+            },
+            "cloud_google_report_state": {
+                "name": "谷歌助理"
+            },
+            "cloud_remote": {
+                "name": "偏远"
+            }
+        },
+        "button": {
+            "repairs_ignore_all": {
+                "name": "页: 1"
+            },
+            "homeassistant_reload": {
+                "name": "重压"
+            },
+            "homeassistant_restart": {
+                "name": "重启"
+            },
+            "repairs_unignore_all": {
+                "name": "无"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "update": "更新",
+                            "create": "议题",
+                            "remove": "删除"
+                        }
+                    },
+                    "domain": {
+                        "name": "问题发行人"
+                    },
+                    "issue_id": {
+                        "name": "议题"
+                    }
+                }
+            }
+        }
+    },
+    "config": {
+        "abort": {
+            "already_spooked": "页: 1!"
+        },
+        "step": {
+            "user": {
+                "description": "页: 1 您是否读过许可证? 你们是否真的相信?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "重新启动",
+                    "restart_later": "稍后"
+                },
+                "description": "为了让Spook公司完工,需要重新启用家庭助理。\n\n您现在是否希望重新启用家庭助理?"
+            }
+        }
+    },
+    "issues": {
+        "lovelace_unknown_entity_references": {
+            "title": "用于:{仪表板}的不明实体",
+            "description": "Spook在你board的仪表板上发现了一个幽灵。\n\n在环绕航道时,Spook用以下仪表板越过了道路:\n\n[{仪表}]\n\nThe dashster reference to the following entities, which are known to Home Assistant:\n\n(单位:千美元)\n\n\n\n为了纠正这一错误,[编辑仪表板]({编辑})并取消这些现有实体的使用。\n\n页: 1."
+        },
+        "integration_unknown_source": {
+            "description": "Spook在你的Riemann和综合助手中发现了一个幽灵。\n\nSpook在环绕行时,用以下助手越过了道路:\n\n{求助者} (`签字-id}')\n\n该助手拥有一个家庭助理不了解的来源实体:\n\n“来源” ......\n\n\n\n为了纠正这一错误,将求助人ed住并调整来源实体(或删除助手)和重新启用家庭助理。\n\n页: 1.",
+            "title": "不明来源:{求助者}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Sp在您的自动化中发现了一个幽灵。\n\n在环绕航道时,Spook通过下列自动化途径:\n\n[1:原子}] ({edit}) (“ientity_id}')\n\n这一自动化参考了家庭助理不知的以下设备:\n\n{女方}\n\n\n\n为纠正这一错误,[编辑自动化](iedit})并取消使用这些现有装置。\n\n页: 1.",
+            "title": "用于:{au}"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "title": "(标题)",
+                        "description": "{描述}"
+                    }
+                }
+            },
+            "title": "(标题)"
+        },
+        "switch_as_x_unknown_source": {
+            "title": "不明来源:{求助者}",
+            "description": "Spook在您的交换台找到了一家招待所,作为X助手。\n\nSpook在环绕行时,用以下助手越过了道路:\n\n{求助者} (`签字-id}')\n\n该助手有一个没有向家庭助理申报的源转换实体:\n\n“来源” ......\n\n\n\n为了纠正这一错误,将求助人ed住并调整来源实体(或删除助手)和重新启用家庭助理。\n\n页: 1."
+        },
+        "script_unknown_device_references": {
+            "title": "用于:{描述}",
+            "description": "诗歌在你写的书中发现了一个幽灵。\n\n在环绕航道时,斯皮克穿过以下文字:\n\n[{}] ({edit}) (`{entity_id}')\n\n这份文字提到家庭助理不知的以下装置:\n\n{女方}\n\n\n\n为纠正这一错误,[用文字]({edit})并取消使用这些现有装置。\n\n页: 1."
+        },
+        "script_unknown_area_references": {
+            "description": "诗歌在你写的书中发现了一个幽灵。\n\n在环绕航道时,斯皮克穿过以下文字:\n\n[{}] ({edit}) (`{entity_id}')\n\n这份说明提到了家庭助理不知的以下领域:\n\n{areas}\n\n\n\n为纠正这一错误,[编辑]({编辑})并取消对这些未存在的地区的使用。\n\n页: 1.",
+            "title": "用于:{描述}"
+        },
+        "automation_unknown_area_references": {
+            "title": "用于:{au}",
+            "description": "Sp在您的自动化中发现了一个幽灵。\n\n在环绕航道时,Spook通过下列自动化途径:\n\n[1:原子}] ({edit}) (“ientity_id}')\n\n这一自动化参考了以下领域:家庭助理不了解这些领域:\n\n{areas}\n\n\n\n为纠正这一错误,[编辑自动化](iedit})并取消对这些未存在的地区的使用。\n\n页: 1."
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "为了让Spook 👻完成组建工作,需要重新启用家庭助理。\n\n现在选择重新启用家庭助理。.",
+                        "title": "B. 重新启动"
+                    }
+                }
+            },
+            "title": "B. 重新启动"
+        },
+        "script_unknown_entity_references": {
+            "title": "用于:{描述}",
+            "description": "诗歌在你写的书中发现了一个幽灵。\n\n在环绕航道时,斯皮克穿过以下文字:\n\n[{}] ({edit}) (`{entity_id}')\n\nThe following entities, which are known to Home Assistant:\n\n(单位:千美元)\n\n\n\n为纠正这一错误,[编辑]({编辑})并取消使用这些现有实体。\n\n页: 1."
+        },
+        "automation_unknown_entity_references": {
+            "title": "用于:{au}",
+            "description": "Sp在您的自动化中发现了一个幽灵。\n\n在环绕航道时,Spook通过下列自动化途径:\n\n[1:原子}] ({edit}) (“ientity_id}')\n\n这一自动化参考了以下实体,但家庭助理不知道这些实体:\n\n(单位:千美元)\n\n\n\n为纠正这一错误,[编辑自动化]({编辑})并取消使用这些现有实体。\n\n页: 1."
+        },
+        "group_unknown_members": {
+            "title": "未知团体成员:{小组}",
+            "description": "诗歌在你的团体中发现了一个幽灵。\n\n环绕漂浮, 穿透与以下群体的道路:\n\n{组}(“特性_id}')\n\n该团体的成员身份不明:\n\n(单位:千美元)\n\n\n\n为了纠正这一错误,小组将注意力放在一边,取消对这些非现有实体的使用,并重新启用家庭助理。\n\n页: 1."
+        }
+    }
+}
