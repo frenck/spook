@@ -6,6 +6,13 @@
         "step": {
             "user": {
                 "description": "Hai letto il leggimi? Hai letto la licenza? Sei davvero sicuro?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Riavvia ora",
+                    "restart_later": "Riavviare più tardi"
+                },
+                "description": "Affinché Spook finisca la configurazione, Home Assistant deve essere riavviato.\n\nVuoi riavviare Home Assistant adesso?"
             }
         }
     },
@@ -41,6 +48,36 @@
         "script_unknown_entity_references": {
             "title": "Entità sconosciuta in: {script}",
             "description": "Spook ha trovato un fantasma nei tuoi script 👻\n\nMentre fluttuava, Spook ha incrociato nel suo percorso lo script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nLo script fa riferimento alle seguenti entità, che sono sconosciute ad Home Assistant:\n\n{entities}\n\n\n\nPer correggere questo errore, [modifica lo script]({edit}) e rimuovi l'uso di queste entità nello script.\n\nSpook 👻 Not your homie."
+        },
+        "lovelace_unknown_entity_references": {
+            "title": "Entità sconosciute utilizzate in: {dashboard}",
+            "description": "Spook ha trovato un fantasma nelle tue dashboard 👻\n\nDurante il giro, Spook ha attraversato il percorso con il seguente cruscotto:\n\n[Dashboard ]\n\nQuesta dashboard fa riferimento alle seguenti entità, che sono sconosciute a Home Assistant:\n\n- Sì.\n\n\n\nPer risolvere questo errore, [modifica la dashboard]({edit}) e rimuovere l'uso di queste entità non esistenti.\n\nNon il tuo amico."
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "title": "si'",
+                        "description": "traduzione:"
+                    }
+                }
+            },
+            "title": "si'"
+        },
+        "switch_as_x_unknown_source": {
+            "title": "Membro sconosciuto in: {helper}",
+            "description": "Spook ha trovato un fantasma nei tuoi nella tua integrazione Sensore integrale a somma di Riemann 👻\n\nMentre fluttuava, Spook ha incrociato nel suo percorso il seguente gruppo:\n\n{group} (`{entity_id}`)\n\nQuesto gruppo ha membri che sono sconosciuti a Home Assistant:\n\n{entities}\n\n\n\nPer correggere questo errore, modifica il gruppo, rimuovi l'uso di queste entità e riavvia Home Assistant.\n\nSpook 👻 Not your homie."
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "Affinché Spook 👻 finisca la configurazione, Home Assistant deve essere riavviato.\n\nSelezionare l'invio per riavviare Home Assistant ora.",
+                        "title": "Riavvio richiesto"
+                    }
+                }
+            },
+            "title": "Riavvio richiesto"
         }
     },
     "entity": {
@@ -50,6 +87,12 @@
             },
             "homeassistant_restart": {
                 "name": "Riavvia"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignora tutti"
+            },
+            "repairs_unignore_all": {
+                "name": "Non ignorare tutti"
             }
         },
         "sensor": {
@@ -112,6 +155,132 @@
             },
             "homeassistant_input_boolean": {
                 "name": "Input booleano"
+            },
+            "homeassistant_siren": {
+                "name": "Sirene"
+            },
+            "homeassistant_water_heater": {
+                "name": "Scaldaacqua"
+            },
+            "homeassistant_light": {
+                "name": "Luci"
+            },
+            "homeassistant_input_number": {
+                "name": "Numeri di ingresso"
+            },
+            "homeassistant_number": {
+                "name": "Numeri"
+            },
+            "homeassistant_switch": {
+                "name": "Interruttori"
+            },
+            "homeassistant_tts": {
+                "name": "Testo a segno"
+            },
+            "homeassistant_text": {
+                "name": "Testi"
+            },
+            "homeassistant_script": {
+                "name": "Scripts"
+            },
+            "homeassistant_sensor": {
+                "name": "Sensori"
+            },
+            "repairs_ignored_issues": {
+                "name": "Ignorato"
+            },
+            "homeassistant_update": {
+                "name": "Aggiornamento"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Notifiche persistenti"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Data di ingresso/ora"
+            },
+            "homeassistant_weather": {
+                "name": "Tempo"
+            },
+            "homeassistant_input_text": {
+                "name": "Testi di input"
+            },
+            "homeassistant_sun": {
+                "name": "Sole"
+            },
+            "homeassistant_input_button": {
+                "name": "Pulsanti di ingresso"
+            },
+            "homeassistant_person": {
+                "name": "Persone"
+            },
+            "homeassistant_stt": {
+                "name": "Discorso a testo"
+            },
+            "homeassistant_input_select": {
+                "name": "Selezioni di input"
+            },
+            "homeassistant_select": {
+                "name": "Seleziona"
+            },
+            "repairs_active_issues": {
+                "name": "Attivo"
+            },
+            "homeassistant_remote": {
+                "name": "Telecomandi"
+            },
+            "homeassistant_zone": {
+                "name": "Zone"
+            },
+            "homeassistant_lock": {
+                "name": "Serrature"
+            },
+            "repairs_total_issues": {
+                "name": "Totale"
+            },
+            "homeassistant_vacuum": {
+                "name": "Aspiratori"
+            },
+            "homeassistant_scene": {
+                "name": "Scene"
+            },
+            "homeassistant_integration": {
+                "name": "Integrazioni"
+            },
+            "homeassistant_time": {
+                "name": "Times"
+            },
+            "homeassistant_media_player": {
+                "name": "Media player"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa State reporting"
+            },
+            "cloud_google_report_state": {
+                "name": "Google Assistant State reporting"
+            },
+            "cloud_remote": {
+                "name": "Telecomando"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "update": "Fascicolo aggiornato",
+                            "create": "Problema creato",
+                            "remove": "Fascicolo rimosso"
+                        }
+                    },
+                    "domain": {
+                        "name": "Questionario"
+                    },
+                    "issue_id": {
+                        "name": "Numero ID"
+                    }
+                }
             }
         }
     }
