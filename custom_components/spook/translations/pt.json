@@ -6,6 +6,12 @@
             },
             "homeassistant_reload": {
                 "name": "Recarregar"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignorar todos"
+            },
+            "repairs_unignore_all": {
+                "name": "Ignorar todos"
             }
         },
         "sensor": {
@@ -125,6 +131,45 @@
             },
             "homeassistant_siren": {
                 "name": "Sirenes"
+            },
+            "homeassistant_zone": {
+                "name": "Zonas"
+            },
+            "repairs_ignored_issues": {
+                "name": "Ignorar"
+            },
+            "repairs_total_issues": {
+                "name": "Total"
+            },
+            "repairs_active_issues": {
+                "name": "Ativo"
+            },
+            "homeassistant_update": {
+                "name": "Atualizado"
+            },
+            "homeassistant_vacuum": {
+                "name": "Aspiradores"
+            },
+            "homeassistant_weather": {
+                "name": "Tempo"
+            },
+            "homeassistant_water_heater": {
+                "name": "Termoacumulador"
+            },
+            "homeassistant_sun": {
+                "name": "Sóis"
+            },
+            "homeassistant_switch": {
+                "name": "Interruptores"
+            },
+            "homeassistant_text": {
+                "name": "Texto"
+            },
+            "homeassistant_tts": {
+                "name": "Texto-para-fala"
+            },
+            "homeassistant_time": {
+                "name": "Tempos"
             }
         },
         "switch": {
@@ -137,6 +182,25 @@
             "cloud_alexa_report_state": {
                 "name": "Estados reportados da alexa"
             }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Problema criado",
+                            "remove": "Problema removido",
+                            "update": "Problema atualizado"
+                        }
+                    },
+                    "domain": {
+                        "name": "Criador do problema"
+                    },
+                    "issue_id": {
+                        "name": "ID do problema"
+                    }
+                }
+            }
         }
     },
     "issues": {
@@ -144,20 +208,80 @@
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "description": "{descrição}"
+                        "description": "{descrição}",
+                        "title": "{title}"
                     }
                 }
-            }
+            },
+            "title": "{title}"
         },
         "automation_unknown_area_references": {
-            "description": "Spook encontrou um fantasma nas tuas automações👻\n\nEnquanto flutuava por ai,  passei pela seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação refere árias que são desconhecidas para o Home Assistant:\n\n{areas}\n\n\n\nPara Corriguit, [edit the automation]({edit}) e remove as áreas inexistentes.\n\nSpook 👻 Não sou o teu irmão."
+            "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação contem as seguintes áreas que são desconhecidas para o Home Assistant:\n\n{areas}\n\n\n\nPara corrigir o erro, [edit the automation]({edit}) e remove as áreas inexistentes.\n\nSpook 👻 Não sou o teu mano.",
+            "title": "Áreas desconhecidas utilizadas em: {automation}"
+        },
+        "script_unknown_entity_references": {
+            "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script contem as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nPara corrigir o erro, [edit the script]({edit}) e remove as entidades inexistentes.\n\nSpook 👻 Não sou o teu mano.",
+            "title": "Entidades desconhecidas utilizadas em: {script}"
+        },
+        "automation_unknown_device_references": {
+            "title": "Dispositivos desconhecidas utilizados em: {automation}",
+            "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação contem os seguintes dispositivos que são desconhecidas para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir o erro, [edit the automation]({edit}) e remove os dispositivos inexistentes.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "automation_unknown_entity_references": {
+            "title": "Entidades desconhecidas utilizadas em: {automation}",
+            "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação contem os seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nPara corrigir o erro, [edit the automation]({edit}) e remove as entidades inexistentes.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "integration_unknown_source": {
+            "title": "Origem desconhecida: {helper}",
+            "description": "Spook encontrou um fantasma nas tuas somas de Riemann no auxiliares 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte auxiliar:\n\n{helper} (`{entity_id}`)\n\nEste auxiliar contem a seguinte entidade que é desconhecida para o Home Assistant:\n\n`{source}`\n\n\n\nPara corrigir o erro, edita o auxiliar e ajusta a entidade (ou remove o auxiliar) e reinicia o Home Assistant.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "lovelace_unknown_entity_references": {
+            "title": "Entidades desconhecidas utilizadas em: {dashboard}",
+            "description": "Spook encontrou um fantasma nos teus painéis de instrumentos 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte painel de instrumento:\n\n[{dashboard}]({edit})\n\nEste painel de instrumento contem as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nPara corrigir o erro, [edit the dashboard]({edit}) e remove as entidades inexistentes.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "script_unknown_area_references": {
+            "title": "Areas desconhecidas utilizadas em: {script}",
+            "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script contem as seguintes áreas que são desconhecidas para o Home Assistant:\n\n{areas}\n\n\n\nPara corrigir o erro, [edit the script]({edit}) e remove as áreas inexistentes.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "script_unknown_device_references": {
+            "title": "Dispositivos desconhecidas utilizados em: {script}",
+            "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script contem os seguintes dispositivos que são desconhecidas para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir o erro, [edit the script]({edit}) e remove os dispositivos inexistentes.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "group_unknown_members": {
+            "title": "Membros do grupo desconhecido em: {group}",
+            "description": "Spook encontrou um fantasma nos teus grupos 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte grupo:\n\n{group} (`{entity_id}`)\n\nEste grupo contem as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nPara corrigir o erro, edita o grupo, remove as entidades inexistentes e reinicia o Home Assistant.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "switch_as_x_unknown_source": {
+            "title": "Origem desconhecida: {helper}",
+            "description": "Spook encontrou um fantasma nos teus auxiliares interruptores como X 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte auxiliar:\n\n{helper} (`{entity_id}`)\n\nEste auxiliar contem as seguintes entidades que são desconhecidas para o Home Assistant:\n\n`{source}`\n\n\n\nPara corrigir o erro, edita o auxilar e ajusta a entidade (ou remove o auxiliar) e reinicia o Home Assistant.\n\nSpook 👻 Não sou o teu mano."
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "Para que o Spook 👻 consiga terminar a configuração, o Home Assistant tem que ser reiniciado.\n\nEscolhe reiniciar o Home Assistant agora.",
+                        "title": "É necessário reiniciar"
+                    }
+                }
+            },
+            "title": "É necessário reiniciar"
         }
     },
     "config": {
         "step": {
             "user": {
                 "description": "Leste o readme? Leu a licença? Tens mesmo a certeza?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_later": "Reiniciar mais tarde",
+                    "restart_now": "Reiniciar agora"
+                },
+                "description": "Para que o Spook consiga terminar a configuração, o Home Assistant tem que ser reiniciado.\n\nPretendes reiniciar o Home assistant agora?"
             }
+        },
+        "abort": {
+            "already_spooked": "Yeah...bem...no. K, obg, xau!"
         }
     }
 }
