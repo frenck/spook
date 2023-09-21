@@ -18,25 +18,10 @@ from homeassistant.helpers.schema_config_entry_flow import (
     entity_selector_without_own_entities,
 )
 
-from .const import (
-    CONF_HIDE_SOURCE,
-    CONF_INVERSE_POSTITION,
-    CONF_INVERSE_TILT,
-    DOMAIN,
-    PLATFORMS,
-)
+from .const import CONF_HIDE_SOURCE, DOMAIN, PLATFORMS
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Mapping
-
-
-EXTENDED_COVER_SCHEMA = {
-    vol.Required(
-        CONF_INVERSE_POSTITION,
-        default=True,
-    ): selector.BooleanSelector(),
-    vol.Required(CONF_INVERSE_TILT, default=False): selector.BooleanSelector(),
-}
 
 
 async def options_schema(
@@ -44,7 +29,7 @@ async def options_schema(
     handler: SchemaCommonFlowHandler,
 ) -> vol.Schema:
     """Generate options schema."""
-    schema = vol.Schema(
+    return vol.Schema(
         {
             vol.Required(CONF_ENTITY_ID): entity_selector_without_own_entities(
                 cast(SchemaOptionsFlowHandler, handler.parent_handler),
@@ -54,15 +39,10 @@ async def options_schema(
         },
     )
 
-    if domain == Platform.COVER:
-        schema = schema.extend(EXTENDED_COVER_SCHEMA)
-
-    return schema
-
 
 def config_schema(domain: str | list[str]) -> vol.Schema:
     """Generate config schema."""
-    schema = vol.Schema(
+    return vol.Schema(
         {
             vol.Required(CONF_NAME): selector.TextSelector(),
             vol.Required(CONF_ENTITY_ID): selector.EntitySelector(
@@ -71,11 +51,6 @@ def config_schema(domain: str | list[str]) -> vol.Schema:
             vol.Required(CONF_HIDE_SOURCE, default=False): selector.BooleanSelector(),
         },
     )
-
-    if domain == Platform.COVER:
-        schema = schema.extend(EXTENDED_COVER_SCHEMA)
-
-    return schema
 
 
 async def choose_options_step(options: dict[str, Any]) -> str:
@@ -107,10 +82,6 @@ CONFIG_FLOW = {
         config_schema(Platform.BINARY_SENSOR),
         validate_user_input=set_inverse_type(Platform.BINARY_SENSOR),
     ),
-    Platform.COVER: SchemaFlowFormStep(
-        config_schema(Platform.COVER),
-        validate_user_input=set_inverse_type(Platform.COVER),
-    ),
     Platform.SWITCH: SchemaFlowFormStep(
         config_schema(Platform.SWITCH),
         validate_user_input=set_inverse_type(Platform.SWITCH),
@@ -123,7 +94,6 @@ OPTIONS_FLOW = {
     Platform.BINARY_SENSOR: SchemaFlowFormStep(
         partial(options_schema, Platform.BINARY_SENSOR),
     ),
-    Platform.COVER: SchemaFlowFormStep(partial(options_schema, Platform.COVER)),
     Platform.SWITCH: SchemaFlowFormStep(partial(options_schema, Platform.SWITCH)),
 }
 
