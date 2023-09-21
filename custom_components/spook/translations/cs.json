@@ -3,6 +3,13 @@
         "step": {
             "user": {
                 "description": "Četl jsi instrukce \"readme\"? Četl jsi licenci? Jsi si skutečně jistý?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Restartujte nyní",
+                    "restart_later": "Restartovat později"
+                },
+                "description": "Aby se Spook dokončil, je třeba restartovat domácí asistent.\n\nChcete znovu začít domácí asistent?"
             }
         },
         "abort": {
@@ -157,6 +164,15 @@
             },
             "homeassistant_vacuum": {
                 "name": "Vysavače"
+            },
+            "repairs_ignored_issues": {
+                "name": "Čeština"
+            },
+            "repairs_active_issues": {
+                "name": "Čeština"
+            },
+            "repairs_total_issues": {
+                "name": "Celkem"
             }
         },
         "switch": {
@@ -176,6 +192,31 @@
             },
             "homeassistant_restart": {
                 "name": "Obnovit"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignore vše"
+            },
+            "repairs_unignore_all": {
+                "name": "Neignorujte všechny"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "update": "Aktualizováno",
+                            "create": "Vytvořeno",
+                            "remove": "Vyřešeno problém"
+                        }
+                    },
+                    "domain": {
+                        "name": "Dotazník"
+                    },
+                    "issue_id": {
+                        "name": "Číslo účtu"
+                    }
+                }
             }
         }
     },
@@ -230,6 +271,17 @@
         "script_unknown_device_references": {
             "title": "Neznámé zařízení použitá v: {script}",
             "description": "Spook našel ducha ve Tvých scénářích👻\n\nZatímco poletoval kolem, Spook narazil na následující scénář:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento scénář odkazuje na následující zařízení, které jsou pro Home Assistant neznámé:\n\n\n{devices}\n\n\nAbys opravil tuto chybu, [edit the script]({edit})  a odstraň použití  těchto neexistujících zařízení.\n\nSpook  👻 Není Tvůj kamarád."
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "Abyste mohli Spook 👻 dokončit nastavení, je třeba restartovat domácí asistent.\n\nVyberte odeslat restart Home Assistant nyní.",
+                        "title": "Vyžadováno"
+                    }
+                }
+            },
+            "title": "Vyžadováno"
         }
     }
 }

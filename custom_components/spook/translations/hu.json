@@ -1,1 +1,287 @@
-{}
+{
+    "entity": {
+        "sensor": {
+            "homeassistant_siren": {
+                "name": "Sirens"
+            },
+            "homeassistant_water_heater": {
+                "name": "Vízmelegítők"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Eszközkövetők"
+            },
+            "homeassistant_light": {
+                "name": "Fények"
+            },
+            "homeassistant_input_number": {
+                "name": "Input számok"
+            },
+            "homeassistant_button": {
+                "name": "Gombok"
+            },
+            "homeassistant_cover": {
+                "name": "Cover"
+            },
+            "homeassistant_area": {
+                "name": "Területek"
+            },
+            "homeassistant_datetime": {
+                "name": "Dátum / idők"
+            },
+            "homeassistant_number": {
+                "name": "Számok"
+            },
+            "homeassistant_switch": {
+                "name": "Kapcsolók"
+            },
+            "homeassistant_tts": {
+                "name": "Text-to-speech"
+            },
+            "homeassistant_text": {
+                "name": "Szövegek"
+            },
+            "homeassistant_script": {
+                "name": "Szövegek"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Input booleans"
+            },
+            "homeassistant_sensor": {
+                "name": "Érzékelők"
+            },
+            "repairs_ignored_issues": {
+                "name": "Figyelmen kívül hagyva"
+            },
+            "homeassistant_humidifier": {
+                "name": "Párásítók"
+            },
+            "homeassistant_update": {
+                "name": "Frissítés"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Állandó értesítések"
+            },
+            "homeassistant_custom_component": {
+                "name": "Egyedi integrációk"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Bemeneti dátum / idők"
+            },
+            "homeassistant_weather": {
+                "name": "Időjárás"
+            },
+            "homeassistant_input_text": {
+                "name": "Input szövegek"
+            },
+            "homeassistant_fan": {
+                "name": "Fans"
+            },
+            "homeassistant_sun": {
+                "name": "Nap"
+            },
+            "homeassistant_input_button": {
+                "name": "Input gombok"
+            },
+            "homeassistant_climate": {
+                "name": "Klíma"
+            },
+            "homeassistant_person": {
+                "name": "Személyek"
+            },
+            "homeassistant_stt": {
+                "name": "Beszéd-to-text"
+            },
+            "homeassistant_image": {
+                "name": "Képek"
+            },
+            "homeassistant_date": {
+                "name": "Dátumok"
+            },
+            "homeassistant_entities": {
+                "name": "Entitások"
+            },
+            "homeassistant_camera": {
+                "name": "Kamerák"
+            },
+            "homeassistant_input_select": {
+                "name": "Input kiválasztók"
+            },
+            "homeassistant_select": {
+                "name": "Válassz"
+            },
+            "repairs_active_issues": {
+                "name": "Aktív"
+            },
+            "homeassistant_remote": {
+                "name": "Távolságok"
+            },
+            "homeassistant_device": {
+                "name": "Eszközök"
+            },
+            "homeassistant_zone": {
+                "name": "Zónák"
+            },
+            "homeassistant_air_quality": {
+                "name": "Levegőminőség"
+            },
+            "homeassistant_automation": {
+                "name": "Automatizálás"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Bináris érzékelők"
+            },
+            "homeassistant_lock": {
+                "name": "Zsarnokok"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Riasztó kontroll panelek"
+            },
+            "repairs_total_issues": {
+                "name": "Teljes"
+            },
+            "homeassistant_calendar": {
+                "name": "Naptárak"
+            },
+            "homeassistant_vacuum": {
+                "name": "Vákuumok"
+            },
+            "homeassistant_scene": {
+                "name": "Színfalak"
+            },
+            "homeassistant_integration": {
+                "name": "Integrációk"
+            },
+            "homeassistant_time": {
+                "name": "Idők"
+            },
+            "homeassistant_media_player": {
+                "name": "Media játékosok"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa állami jelentés"
+            },
+            "cloud_google_report_state": {
+                "name": "Google Assistant állami jelentés"
+            },
+            "cloud_remote": {
+                "name": "Távol"
+            }
+        },
+        "button": {
+            "repairs_ignore_all": {
+                "name": "Ignore all"
+            },
+            "homeassistant_reload": {
+                "name": "Újratöltés"
+            },
+            "homeassistant_restart": {
+                "name": "Kezdés"
+            },
+            "repairs_unignore_all": {
+                "name": "Mindent figyelmen kívül hagyni"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "update": "Frissített kérdés",
+                            "create": "Létrehozott kérdés",
+                            "remove": "A kérdés eltávolítása"
+                        }
+                    },
+                    "domain": {
+                        "name": "Issue kibocsátó"
+                    },
+                    "issue_id": {
+                        "name": "Kérdés ID"
+                    }
+                }
+            }
+        }
+    },
+    "config": {
+        "abort": {
+            "already_spooked": "Igen... no. K, thx, bye!"
+        },
+        "step": {
+            "user": {
+                "description": "Elolvastad az olvasót? Elolvasta a licencet? Tényleg biztos vagy?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Kezdje újra",
+                    "restart_later": "Kezdje később"
+                },
+                "description": "Annak érdekében, hogy Spook befejezze a beállítást, Home Assistant kell újraindítani.\n\nSzeretné újraindítani az otthoni asszisztenst most?"
+            }
+        }
+    },
+    "issues": {
+        "lovelace_unknown_entity_references": {
+            "title": "Ismeretlen entitások használt: {dashboard}",
+            "description": "Spook talált egy kísértetet a dashboardok hova\n\nMíg lebeg, Spook átlépte az utat a következő dashboard:\n\n[[szerkesztés]]]\n\nEz a dashboard hivatkozik a következő entitásokra, amelyek ismeretlenek a Home Assistant számára:\n\n{entitások}\n\n\n\nHogy ezt a hibát megoldja, [edit the dashboard] ({edit}), és távolítsa el ezeket a nem létező szervezeteket.\n\nSpook: Nem a homiád."
+        },
+        "integration_unknown_source": {
+            "description": "A Spook talált egy kísértetet a Riemann összegű szerves segítőkben\n\nMíg lebeg, Spook átlépte az utat a következő segítővel:\n\n{segítség} ( {segítség})\n\nEz a segítőnek van egy olyan forrás entitása, amely ismeretlen a Home Assistant számára:\n\nsource} `\n\n\n\nHogy megoldja ezt a hibát, szerkesztse a segítőt, és állítsa be a forrás entitást (vagy távolítsa el a segítőt), és indítsa újra a Home Assistant.\n\nSpook: Nem a homiád.",
+            "title": "Ismeretlen forrás: {LS}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spook talált egy kísértetet az automatizálásban\n\nMíg lebeg, Spook átlépte az utat a következő automatizálás:\n\n[[szerkesztés]]]\n\nEz az automatizálás a következő eszközökre hivatkozik, amelyek ismeretlenek a Home Assistant számára:\n\n{Eszközök}\n\n\n\nA hiba kijavítása érdekében [szerkesztse az automatizálást]({edit}), és távolítsa el ezeket a nem létező eszközöket.\n\nSpook: Nem a homiád.",
+            "title": "Ismeretlen eszközök használata: {automatizálás}"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "title": "{title}",
+                        "description": "{leírás}"
+                    }
+                }
+            },
+            "title": "{title}"
+        },
+        "switch_as_x_unknown_source": {
+            "title": "Ismeretlen forrás: {LS}",
+            "description": "Spook talált egy kísértetet a kapcsolóban, mint X segítők\n\nMíg lebeg, Spook átlépte az utat a következő segítővel:\n\n{segítség} ( {segítség})\n\nEz a segítőnek van egy olyan forráskapcsoló entitása, amely ismeretlen a Home Assistant számára:\n\nsource} `\n\n\n\nHogy megoldja ezt a hibát, szerkesztse a segítőt, és állítsa be a forrás entitást (vagy távolítsa el a segítőt), és indítsa újra a Home Assistant.\n\nSpook: Nem a homiád."
+        },
+        "script_unknown_device_references": {
+            "title": "Ismeretlen eszközöket használnak: {script}",
+            "description": "Spook talált egy kísértetet a szövegekben\n\nMíg lebeg, Spook átlépte az utat a következő forgatókönyv:\n\n[[szerkesztés]]]\n\nEz a forgatókönyv hivatkozik a következő eszközökre, amelyek ismeretlenek a Home Assistant számára:\n\n{Eszközök}\n\n\n\nA hiba kijavítása érdekében [szerkesztse a forgatókönyvet]({edit}), és távolítsa el ezeket a nem létező eszközöket.\n\nSpook: Nem a homiád."
+        },
+        "script_unknown_area_references": {
+            "description": "Spook talált egy kísértetet a szövegekben\n\nMíg lebeg, Spook átlépte az utat a következő forgatókönyv:\n\n[[szerkesztés]]]\n\nEz a forgatókönyv a következő területekre hivatkozik, amelyek ismeretlenek a Home Assistant számára:\n\n{areas}\n\n\n\nEnnek a hibának a kijavításához [a forgatókönyv]({edit}) és eltávolítja e nem létező területek használatát.\n\nSpook: Nem a homiád.",
+            "title": "Ismeretlen területeken használt: {script}"
+        },
+        "automation_unknown_area_references": {
+            "title": "Ismeretlen területeken használt: {automatizálás}",
+            "description": "Spook talált egy kísértetet az automatizálásban\n\nMíg lebeg, Spook átlépte az utat a következő automatizálás:\n\n[[szerkesztés]]]\n\nEz az automatizálás a következő területekre hivatkozik, amelyek ismeretlenek a Home Assistant számára:\n\n{areas}\n\n\n\nEnnek a hibának a kijavítása érdekében [szerkesztse az automatizálást]({edit}), és távolítsa el ezeket a nem létező területeket.\n\nSpook: Nem a homiád."
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "Annak érdekében, hogy Spook befejezze a beállítást, Home Assistant kell újraindítani.\n\nVálasszon bejelentkezni, hogy újraindítsa a Home Assistant.",
+                        "title": "Szükséges újraindítás"
+                    }
+                }
+            },
+            "title": "Szükséges újraindítás"
+        },
+        "script_unknown_entity_references": {
+            "title": "Ismeretlen entitások használt: {script}",
+            "description": "Spook talált egy kísértetet a szövegekben\n\nMíg lebeg, Spook átlépte az utat a következő forgatókönyv:\n\n[[szerkesztés]]]\n\nEz a forgatókönyv hivatkozik az alábbi szervezetekre, amelyek ismeretlenek a Home Assistant számára:\n\n{entitások}\n\n\n\nHogy ezt a hibát megoldja, [szerkesztse a szöveget]({edit}), és távolítsa el ezeket a nem létező szervezeteket.\n\nSpook: Nem a homiád."
+        },
+        "automation_unknown_entity_references": {
+            "title": "Ismeretlen entitások használt: {automation}",
+            "description": "Spook talált egy kísértetet az automatizálásban\n\nMíg lebeg, Spook átlépte az utat a következő automatizálás:\n\n[[szerkesztés]]]\n\nEz az automatizálás hivatkozik az alábbi szervezetekre, amelyek ismeretlenek a Home Assistant számára:\n\n{entitások}\n\n\n\nEnnek a hibának a kijavítása érdekében [szerkeszteni az automatizálást]({edit}), és eltávolítani ezeket a nem létező szervezeteket.\n\nSpook: Nem a homiád."
+        },
+        "group_unknown_members": {
+            "title": "Ismeretlen csoporttagok: {csoport}",
+            "description": "Spook talált egy kísértetet a csoportokban\n\nMíg lebeg, Spook átlépte az utat a következő csoporttal:\n\n{group} (entity_id)\n\nEz a csoport tagjai, amelyek ismeretlenek az otthoni asszisztens számára:\n\n{entitások}\n\n\n\nHogy megoldja ezt a hibát, szerkesztse a csoportot, távolítsa el ezeket a nem létező szervezeteket, és indítsa újra a Home Assistant.\n\nSpook: Nem a homiád."
+        }
+    }
+}

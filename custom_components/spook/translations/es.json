@@ -6,6 +6,13 @@
         "step": {
             "user": {
                 "description": "¿Leíste el readme? ¿Leíste la licencia? ¿Estás completamente seguro?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Retoma ahora",
+                    "restart_later": "Retoma más tarde"
+                },
+                "description": "En orden para Spook para acabar poniendo arriba, necesidades de Ayudante de la Casa para ser retomados.\n\n  Quieres retomar Ayudante de Casa ahora?"
             }
         }
     },
@@ -264,6 +271,17 @@
                 }
             },
             "title": "{title}"
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "En orden para Spook 👻 para acabar poniendo arriba, necesidades de Ayudante de la Casa para ser retomados.\n\nSelecciona entrega para retomar Ayudante de Casa ahora.",
+                        "title": "Retoma requerido"
+                    }
+                }
+            },
+            "title": "Retoma requerido"
         }
     }
 }

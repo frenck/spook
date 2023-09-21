@@ -61,19 +61,23 @@
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "description": "[description]"
+                        "description": "[description]",
+                        "title": "{title}"
                     }
                 }
-            }
+            },
+            "title": "{title}"
         },
         "restart_required": {
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "description": "Home Assistant doit être redémarré, afin de finaliser la configuration de Spook 👻.\n\nSélectionner Soumettre pour redémarrer Home Assistant maintenant."
+                        "description": "Home Assistant doit être redémarré, afin de finaliser la configuration de Spook 👻.\n\nSélectionner Soumettre pour redémarrer Home Assistant maintenant.",
+                        "title": "Restart nécessaire"
                     }
                 }
-            }
+            },
+            "title": "Restart nécessaire"
         }
     },
     "entity": {
@@ -158,6 +162,81 @@
             },
             "homeassistant_input_number": {
                 "name": "Entrées numériques"
+            },
+            "homeassistant_siren": {
+                "name": "Sirens"
+            },
+            "homeassistant_water_heater": {
+                "name": "Chaudières à eau"
+            },
+            "homeassistant_light": {
+                "name": "Lumières"
+            },
+            "homeassistant_number": {
+                "name": "Nombres"
+            },
+            "homeassistant_switch": {
+                "name": "Interrupteurs"
+            },
+            "homeassistant_tts": {
+                "name": "Text-to-speech"
+            },
+            "homeassistant_text": {
+                "name": "Textes"
+            },
+            "homeassistant_script": {
+                "name": "Scripts"
+            },
+            "homeassistant_sensor": {
+                "name": "Senseurs"
+            },
+            "homeassistant_update": {
+                "name": "Mise à jour"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Notifications persistantes"
+            },
+            "homeassistant_weather": {
+                "name": "Météo"
+            },
+            "homeassistant_sun": {
+                "name": "Suns"
+            },
+            "homeassistant_person": {
+                "name": "Personnes"
+            },
+            "homeassistant_stt": {
+                "name": "Discours à texte"
+            },
+            "homeassistant_select": {
+                "name": "Sélections"
+            },
+            "homeassistant_remote": {
+                "name": "Télécommandes"
+            },
+            "homeassistant_zone": {
+                "name": "Zones"
+            },
+            "homeassistant_lock": {
+                "name": "Verrouillages"
+            },
+            "repairs_total_issues": {
+                "name": "Total"
+            },
+            "homeassistant_vacuum": {
+                "name": "Aspirateurs"
+            },
+            "homeassistant_scene": {
+                "name": "Scenes"
+            },
+            "homeassistant_integration": {
+                "name": "Intégrations"
+            },
+            "homeassistant_time": {
+                "name": "Times"
+            },
+            "homeassistant_media_player": {
+                "name": "Media players"
             }
         },
         "switch": {
@@ -166,6 +245,9 @@
             },
             "cloud_google_report_state": {
                 "name": "Rapport de status Google Assistant"
+            },
+            "cloud_remote": {
+                "name": "Télécommande"
             }
         },
         "button": {
