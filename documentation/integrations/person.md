@@ -4,7 +4,7 @@ title: Person
 subtitle: Now it gets personal 😱
 thumbnail: ../images/integrations/person/example.png
 description: Spook adds some new services to the person integration, which allows you to change device trackers attached to persons in Home Assistant on the fly.
-date: 2023-08-09T21:29:00+02:00
+date: 2023-09-22T10:47:44+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/person/logo.png
