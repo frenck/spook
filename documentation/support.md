@@ -4,7 +4,7 @@ title: Support
 subtitle: Getting directions in this rollercoaster theme park. 🎢
 thumbnail: /images/support.png
 description: Spook is not supported by the Home Assistant project, however, there are still quite a few places where you can get help. This place guides you to the right place.
-date: 2023-08-09T21:29:00+02:00
+date: 2023-09-22T10:38:47+02:00
 ---
 
 Spook is provided as-is, without any warranty or any real support, and above all: Is absolutely **unsupported** by the {term}`Home Assistant` project. However, if you run into issues, where should you go?
@@ -21,6 +21,11 @@ Spook is provided as-is, without any warranty or any real support, and above all
 - [The Home Assistant Discord chat server](https://www.home-assistant.io/join-chat/)
 - [The Home Assistant Reddit](https://www.reddit.com/r/homeassistant/)
 - [The Home Assistant Facebook group](https://www.facebook.com/groups/homeassistant/)
+
+There are also some language-specific communities:
+
+- [Dutch Domotics Discord chat server](https://discord.gg/Ee5X7T7)
+- [Communauté Francophone Discord chat server](https://discord.hacf.fr/)
 
 ## I'm sure I've found a bug!
 
