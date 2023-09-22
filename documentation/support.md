@@ -22,6 +22,11 @@ Spook is provided as-is, without any warranty or any real support, and above all
 - [The Home Assistant Reddit](https://www.reddit.com/r/homeassistant/)
 - [The Home Assistant Facebook group](https://www.facebook.com/groups/homeassistant/)
 
+There are also some language-specific communities:
+
+- [Dutch Domotics Discord chat server](https://discord.gg/Ee5X7T7)
+- [Communauté Francophone Discord chat server](https://discord.hacf.fr/)
+
 ## I'm sure I've found a bug!
 
 Great! 🎉 Well, not really, but at least it means we can look into fixing it, so others won't experience the same issue.
