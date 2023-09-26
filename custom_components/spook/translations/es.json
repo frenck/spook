@@ -277,11 +277,15 @@
                 "step": {
                     "confirm_restart": {
                         "description": "Para que Spook 👻 acabe de configurarse, Home Assistant necesita ser reiniciado.\n\nConfirma para que Home Asisstant se reinicie ahora.",
-                        "title": "Retoma requerido"
+                        "title": "Reinicio requerido"
                     }
                 }
             },
-            "title": "Retoma requerido"
+            "title": "Reinicio requerido"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook ha encontrado un fantasma en tus escenas 👻\n\nMientras estaba flotando, Spook se cruzó con la siguiente escena:\n\n[{scene}]({edit})\n\nEsta escena referencia las siguientes entidades, las cuales son desconocidas para Home Assistant:\n\n{entities}\n\n\nPara arreglar este error, [edita la  escena]({edit}) y borra el uso de las entidades que no existen.\n\nSpook 👻 Not your homie.",
+            "title": "Entidades desconocidas usadas en: {scene}"
         }
     }
 }
