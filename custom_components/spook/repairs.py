@@ -133,7 +133,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         self.inspect_debouncer = Debouncer(
             self.hass,
             LOGGER,
-            cooldown=10,
+            cooldown=3,
             immediate=False,
             function=_async_inspect,
         )
