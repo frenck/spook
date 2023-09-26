@@ -78,6 +78,10 @@
                 }
             },
             "title": "Restart nécessaire"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook a trouvé un fantôme dans vos scenes👻\n\nEn flottant dans les parages, Spook est tombé sur la scene suivante :\n\n[{scene}]({edit})\n\nCette automatisation fait référence aux entitées suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\nPour résoudre cette erreur, [modifiez la scene]({edit}) et supprimez l'utilisation de ces entitées inexistantes.\n\nSpook 👻 Pas votre ami.",
+            "title": "Entités inconnues utilisées dans :{scene}"
         }
     },
     "entity": {
@@ -104,7 +108,7 @@
                 "name": "Panneaux de contrôle d'alarme"
             },
             "homeassistant_area": {
-                "name": "Zones"
+                "name": "Pièces"
             },
             "homeassistant_automation": {
                 "name": "Automatisations"
