@@ -5,14 +5,14 @@
         },
         "step": {
             "user": {
-                "description": "Hast du die Readme gelesen? Hast du die Lizenz gelesen? Bist du dir wirklich sicher?"
+                "description": "Hast du die Readme-Datei gelesen? Hast du die Lizenz gelesen? Bist du dir wirklich sicher?"
             },
             "choice_restart": {
                 "menu_options": {
-                    "restart_now": "#Neuanfang jetzt",
-                    "restart_later": "#Neuanfang nachher"
+                    "restart_now": "Jetzt neu starten",
+                    "restart_later": "Später neu starten"
                 },
-                "description": "In Befehl für Spuk zu Schluss #aufstellen, Heim Stellvertretend Notwendigkeiten zu sein #neustarten.\n\n#Mögen du #neustarten Daheim Stellvertretend jetzt?"
+                "description": "Damit Spook die Einrichtung abschließen kann, muss Home Assistant neu gestartet werden.\n\nMöchtest du Home Assistant jetzt neu starten?"
             }
         }
     },
@@ -129,7 +129,7 @@
                 "name": "Personen"
             },
             "homeassistant_remote": {
-                "name": "Fernbedienung"
+                "name": "Fernbedienungen"
             },
             "homeassistant_scene": {
                 "name": "Szenen"
@@ -259,7 +259,7 @@
         },
         "switch_as_x_unknown_source": {
             "title": "Unbekannte Quelle: {helper}",
-            "description": "Spook hat einen Geist in deinem Helfer Riemann Summenintegralsensor gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Helfer:\n\n{helper} (`{entity_id}`)\n\nDieser Helfer hat eine Quell-Entität, die Home Assistant unbekannt ist:\n\n`{source}`\n\n\n\nUm diesen Fehler zu beheben, bearbeite den Helfer und passe die Quell-Entität an (oder entferne den Helfer) und starte Home Assistant neu.\n\nSpook 👻 Nicht dein Kumpel."
+            "description": "Spook hat in deiner Schalter als X-Helfer einen Geist gefunden 👻.\n\nBeim Herumschweben kreuzte Spook den Weg mit dem folgenden Helfer:\n\n{helper} (`{entity_id}`)\n\nDieser Helfer hat eine Home Assistant unbekannte Quell-Schalter-Entität:\n\n`{source}`\n\n\n\nUm diesen Fehler zu beheben, bearbeite den Helfer und passe die Quell-Entität an (oder entferne den Helfer) und starte Home Assistant neu.\n\nSpook 👻 Nicht dein Kumpel."
         },
         "user_issue": {
             "fix_flow": {
@@ -276,12 +276,16 @@
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "description": "In Befehl für Spuk 👻 zu Schluss #aufstellen, Heim Stellvertretend Notwendigkeiten zu sein #neustarten.\n\n#Ausgewählt unterziehen zu #neustarten jetzt Heim Stellvertretend.",
-                        "title": "#Neuanfang bedürfte"
+                        "description": "Damit Spook 👻 die Einrichtung beenden kann, muss Home Assistant neu gestartet werden.\n\nWähle Senden, um Home Assistant jetzt neu zu starten.",
+                        "title": "Neustart erforderlich"
                     }
                 }
             },
-            "title": "#Neuanfang bedürfte"
+            "title": "Neustart erforderlich"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook hat einen Geist in deinen Szenen gefunden 👻.\n\nBeim Herumschweben kreuzte Spook den Weg mit der folgenden Szene:\n\n[{scene}]({edit})\n\nDiese Szene verweist auf die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nUm diesen Fehler zu beheben, [editiere die Szene]({edit}) und entferne die Verwendung dieser nicht existierenden Entitäten.\n\nSpook 👻 Nicht dein Kumpel.",
+            "title": "Unbekannte Entitäten verwendet in: {scene}"
         }
     }
 }
