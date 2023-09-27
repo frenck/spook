@@ -23,6 +23,12 @@ Integrations are the "plugins" of Home Assistant; they come in all sorts of type
 Spook enhances the following Home Assistant integrations by sprinkling some {term}`ectoplasmic <ectoplasm>` goodness on top of them. It may add new services, entities, devices, or even replace and extend existing ones to provide more functionality.
 :::
 
+:::{card} Helpers
+:footer: 📚 [Learn more](helpers)
+
+Spook also provides {term}`helpers <helper>`. The helpers allows you to perform calculations or modifications on existing {term}`entities <entity>` and return the result of that as a new entity.
+:::
+
 :::{card} Other features
 :footer: 📚 [Learn more](other_features)
 If it doesn't fit in any of the above, you can find it here. 🙃  
