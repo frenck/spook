@@ -214,6 +214,18 @@ Set the value of a number entity to its minimum value. _#lowout_
 
 `number.min`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min), [documentation](integrations/number#set-value-to-minimum) 📚
 
+## Person: Add a device tracker
+
+Adds a device tracker to a person. _#bigbrother_
+
+`person.add_device_tracker`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=person.add_device_tracker), [documentation](integrations/person#add-a-device-tracker) 📚
+
+## Person: Remove a device tracker
+
+Removes a device tracker from a person. _#privacy_
+
+`person.add_device_tracker`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker), [documentation](integrations/person#remove-a-device-tracker) 📚
+
 ## Random fail
 
 This service call will randomly fail (and thus randomly stop your automation or script). Especially combined with `continue_on_error: true` this can be a great way to add useless service calls to your automation or script. _#random_
