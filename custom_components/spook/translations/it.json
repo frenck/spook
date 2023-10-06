@@ -12,7 +12,7 @@
                     "restart_now": "Riavvia ora",
                     "restart_later": "Riavviare più tardi"
                 },
-                "description": "Affinché Spook finisca la configurazione, Home Assistant deve essere riavviato.\n\nVuoi riavviare Home Assistant adesso?"
+                "description": "Per completare la configurazione di Spook, Home Assistant deve essere riavviato.\n\nVuoi riavviare Home Assistant adesso?"
             }
         }
     },
@@ -35,7 +35,7 @@
         },
         "integration_unknown_source": {
             "title": "Membro sconosciuto in: {helper}",
-            "description": "Spook ha trovato un fantasma nei tuoi nella tua integrazione Sensore integrale a somma di Riemann 👻\n\nMentre fluttuava, Spook ha incrociato nel suo percorso il seguente gruppo:\n\n{group} (`{entity_id}`)\n\nQuesto gruppo ha membri che sono sconosciuti a Home Assistant:\n\n{entities}\n\n\n\nPer correggere questo errore, modifica il gruppo, rimuovi l'uso di queste entità e riavvia Home Assistant.\n\nSpook 👻 Not your homie."
+            "description": "Spook ha trovato un fantasma nel tuo aiutante integrale a somma di Riemann 👻\n\nMentre fluttuava, Spook ha incrociato nel suo percorso il seguente aiutante:\n\n{helper} (`{entity_id}`)\n\nQuesto aiutante  ha un’entità  sorgente sconosciuta a Home Assistant:\n\n{source}\n\n\n\nPer correggere questo errore modifica l'aiutante correggendo l’entità sorgente (oppure rimuovilo) e riavvia Home Assistant.\n\nSpook 👻 Not your homie."
         },
         "script_unknown_area_references": {
             "title": "Area sconosciuta in: {script}",
@@ -57,12 +57,12 @@
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "title": "si'",
+                        "title": "{title}",
                         "description": "traduzione:"
                     }
                 }
             },
-            "title": "si'"
+            "title": "{title}"
         },
         "switch_as_x_unknown_source": {
             "title": "Membro sconosciuto in: {helper}",
@@ -72,12 +72,16 @@
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "description": "Affinché Spook 👻 finisca la configurazione, Home Assistant deve essere riavviato.\n\nSelezionare l'invio per riavviare Home Assistant ora.",
+                        "description": "Per completare la configurazione di Spook 👻, Home Assistant deve essere riavviato.\n\nSelezionare l'invio per riavviare Home Assistant ora.",
                         "title": "Riavvio richiesto"
                     }
                 }
             },
             "title": "Riavvio richiesto"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook ha trovato un fantasma nelle tue scene 👻\n\nMentre fluttuava, Spook si è imbattuto in questa scena:\n\n[{scene}]({edit})\n\nQuesta scena fa riferimento alle seguenti entità, che sono sconosciute ad Home Assistant:\n\n{entities}\n\n\n\nPer correggere l'errore, [modifica la scena]({edit}) e rimuovi le entità inesistenti.\n\nSpook 👻 Not your homie.",
+            "title": "Entità sconosciute utilizzate in: {scene}"
         }
     },
     "entity": {
@@ -103,7 +107,7 @@
                 "name": "Pannello controllo allarme"
             },
             "homeassistant_area": {
-                "name": "Area"
+                "name": "Aree"
             },
             "homeassistant_automation": {
                 "name": "Automazioni"
@@ -166,7 +170,7 @@
                 "name": "Luci"
             },
             "homeassistant_input_number": {
-                "name": "Numeri di ingresso"
+                "name": "Aiutante Numeri"
             },
             "homeassistant_number": {
                 "name": "Numeri"
@@ -196,19 +200,19 @@
                 "name": "Notifiche persistenti"
             },
             "homeassistant_input_datetime": {
-                "name": "Data di ingresso/ora"
+                "name": "Aiutanti data/ora"
             },
             "homeassistant_weather": {
                 "name": "Tempo"
             },
             "homeassistant_input_text": {
-                "name": "Testi di input"
+                "name": "Aiutante testo"
             },
             "homeassistant_sun": {
                 "name": "Sole"
             },
             "homeassistant_input_button": {
-                "name": "Pulsanti di ingresso"
+                "name": "Pulsanti"
             },
             "homeassistant_person": {
                 "name": "Persone"
@@ -217,7 +221,7 @@
                 "name": "Discorso a testo"
             },
             "homeassistant_input_select": {
-                "name": "Selezioni di input"
+                "name": "Aiutante menu a discesa"
             },
             "homeassistant_select": {
                 "name": "Seleziona"
@@ -247,7 +251,7 @@
                 "name": "Integrazioni"
             },
             "homeassistant_time": {
-                "name": "Times"
+                "name": "Data/ora"
             },
             "homeassistant_media_player": {
                 "name": "Media player"
@@ -269,13 +273,13 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "update": "Fascicolo aggiornato",
-                            "create": "Problema creato",
-                            "remove": "Fascicolo rimosso"
+                            "update": "Avviso aggiornato",
+                            "create": "Avviso creato",
+                            "remove": "Avviso rimosso"
                         }
                     },
                     "domain": {
-                        "name": "Questionario"
+                        "name": "Origine dell'avviso"
                     },
                     "issue_id": {
                         "name": "Numero ID"
