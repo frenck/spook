@@ -37,7 +37,6 @@ class SpookRepair(AbstractSpookRepair):
         ].entities.values()
 
         for entity in scenes:
-            LOGGER.error("Scene: %s", entity.entity_id)
             if unknown_entities := {
                 entity_id
                 for entity_id in entity.scene_config.states
