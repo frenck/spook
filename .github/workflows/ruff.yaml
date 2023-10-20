@@ -30,4 +30,4 @@ jobs:
         run: poetry install --no-interaction
 
       - name: 🚀 Run ruff
-        run: poetry run ruff --format=github .
+        run: poetry run ruff --output-format=github .
