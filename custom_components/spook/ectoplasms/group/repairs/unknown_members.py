@@ -54,10 +54,10 @@ class SpookRepair(AbstractSpookRepair):
         # not all have to be in the state machine right now.
         # Furthermore, add `all` and `none` to the list of known entities,
         # as they are valid targets.
-        entity_ids = (
-            {entity.entity_id for entity in self.entity_registry.entities.values()}
-            .union(self.hass.states.async_entity_ids())
-            .union({ENTITY_MATCH_ALL, ENTITY_MATCH_NONE})
+        entity_ids = {
+            entity.entity_id for entity in self.entity_registry.entities.values()
+        }.union(self.hass.states.async_entity_ids()).union(
+            {ENTITY_MATCH_ALL, ENTITY_MATCH_NONE}
         )
 
         for platform in platforms:

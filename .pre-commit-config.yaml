@@ -2,19 +2,20 @@
 repos:
   - repo: local
     hooks:
-      - id: ruff
-        name: 🐶 Ruff
+      - id: ruff-check
+        name: 🐶 Ruff Linter
         language: system
         types: [python]
-        entry: poetry run ruff --fix
+        entry: poetry run ruff check --fix
         require_serial: true
         stages: [commit, push, manual]
-      - id: black
-        name: ☕️ Format using black
+      - id: ruff-format
+        name: 🐶 Ruff Formatter
         language: system
         types: [python]
-        entry: poetry run black
+        entry: poetry run ruff format
         require_serial: true
+        stages: [commit, push, manual]
       - id: check-json
         name: ｛ Check JSON files
         language: system
