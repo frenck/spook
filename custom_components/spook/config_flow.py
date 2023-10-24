@@ -45,13 +45,15 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_restart_later(
-        self, _: dict[str, Any] | None = None,
+        self,
+        _: dict[str, Any] | None = None,
     ) -> FlowResult:
         """Handle restart later case."""
         return self.async_create_entry(title="Not your homie", data={})
 
     async def async_step_restart_now(
-        self, _: dict[str, Any] | None = None,
+        self,
+        _: dict[str, Any] | None = None,
     ) -> FlowResult:
         """Handle restart now case.
 

@@ -24,7 +24,6 @@ homeassistant = "2023.10.5"
 python = "^3.11"
 
 [tool.poetry.group.dev.dependencies]
-black = "23.10.1"
 hass-nabucasa = "0.73.0"
 pre-commit = "3.5.0"
 pre-commit-hooks = "4.5.0"
@@ -47,6 +46,18 @@ ignore = [
   "D213", # Conflicts with other rules
   "TID252", # Relative imports
   "RUF012", # Just broken
+
+  # Formatter conflicts
+  "COM812",
+  "COM819",
+  "D206",
+  "E501",
+  "ISC001",
+  "Q000",
+  "Q001",
+  "Q002",
+  "Q003",
+  "W191",
 ]
 select = ["ALL"]
 src = ["custom_components/spook"]
@@ -65,11 +76,10 @@ known-first-party = [
     "homeassistant",
 ]
 combine-as-imports = true
-split-on-trailing-comma = false
 
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:
-# format - handled by black
+# format - handled by ruff
 # duplicate-code - unavoidable
 # used-before-assignment - false positives with TYPE_CHECKING structures
 disable = [
