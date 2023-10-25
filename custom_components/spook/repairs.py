@@ -48,6 +48,7 @@ class AbstractSpookRepairBase(ABC):
 
     @final
     @callback
+    # pylint: disable-next=too-many-arguments
     def async_create_issue(  # noqa: PLR0913
         self,
         *,
