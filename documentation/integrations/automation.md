@@ -57,7 +57,7 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 :::{attention} Known limitations
 :class: dropdown
 
-{term}`Templates <template>` in automations are not evaluated by Spook. That means that service calls that target areas dynamically using a template, are considered by Spook.
+{term}`Templates <template>` in automations are not evaluated by Spook. That means that service calls that target areas dynamically using a template, are not considered by Spook.
 :::
 
 ### Unknown referenced devices
