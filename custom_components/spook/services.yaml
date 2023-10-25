@@ -330,6 +330,14 @@ homeassistant_restart:
   name: Restart 👻
   description: Restart the Home Assistant service.
   fields:
+    safe_mode:
+      name: Safe mode
+      description: >-
+        If the restart should be done in safe mode. This will disable all
+        custom integrations and frontend modules.
+      required: false
+      selector:
+        boolean:
     force:
       name: Force restart
       description: >-
