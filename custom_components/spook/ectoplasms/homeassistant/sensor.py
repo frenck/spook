@@ -377,7 +377,7 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
         update_events={
-            persistent_notification.EVENT_PERSISTENT_NOTIFICATIONS_UPDATED,
+            "persistent_notifications_updated",
         },
         value_fn=lambda hass: len(
             # pylint: disable-next=protected-access
