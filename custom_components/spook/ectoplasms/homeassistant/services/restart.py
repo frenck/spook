@@ -27,6 +27,7 @@ class SpookService(AbstractSpookAdminService, ReplaceExistingService):
     domain = DOMAIN
     service = "restart"
     schema = {
+        vol.Optional("safe_mode", default=False): cv.boolean,
         vol.Optional("force", default=False): cv.boolean,
     }
 
