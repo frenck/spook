@@ -51,7 +51,7 @@
         },
         "lovelace_unknown_entity_references": {
             "title": "Entità sconosciute utilizzate in: {dashboard}",
-            "description": "Spook ha trovato un fantasma nelle tue dashboard 👻\n\nDurante il giro, Spook ha attraversato il percorso con il seguente cruscotto:\n\n[Dashboard ]\n\nQuesta dashboard fa riferimento alle seguenti entità, che sono sconosciute a Home Assistant:\n\n- Sì.\n\n\n\nPer risolvere questo errore, [modifica la dashboard]({edit}) e rimuovere l'uso di queste entità non esistenti.\n\nNon il tuo amico."
+            "description": "Spook ha trovato un fantasma nelle tue plance👻\n\nDurante il giro, Spook ha incrociato questa plancia:\n\n[{plancia}]({edit})\n\nQuesta plancia fa riferimento alle seguenti entità, che sono sconosciute a Home Assistant:\n\n{entities}\n\n\nPer risolvere questo errore, [modifica la plancia]({edit}) e rimuovere l'uso di queste entità non esistenti.\n\nNon il tuo amico."
         },
         "user_issue": {
             "fix_flow": {
@@ -66,7 +66,7 @@
         },
         "switch_as_x_unknown_source": {
             "title": "Membro sconosciuto in: {helper}",
-            "description": "Spook ha trovato un fantasma nei tuoi nella tua integrazione Sensore integrale a somma di Riemann 👻\n\nMentre fluttuava, Spook ha incrociato nel suo percorso il seguente gruppo:\n\n{group} (`{entity_id}`)\n\nQuesto gruppo ha membri che sono sconosciuti a Home Assistant:\n\n{entities}\n\n\n\nPer correggere questo errore, modifica il gruppo, rimuovi l'uso di queste entità e riavvia Home Assistant.\n\nSpook 👻 Not your homie."
+            "description": "Spook ha trovato un fantasma nei tuoi aiutanti Switch come... 👻\n\nMentre fluttuava, Spook ha incrociato nel suo percorso il seguente aiutante:\n\n{helper} (`{entity_id}`)\n\nQuesto aiutante ha come sorgente un'entità interruttore  sconosciuta ad Home Assistant:\n\n`{source}`\n\n\n\nPer correggere questo errore, modifica l'aiutante e correggi l'entità sorgente (oppure rimuovi l'aiutante) e riavvia Home Assistant.\n\nSpook 👻 Il fantasma non amico."
         },
         "restart_required": {
             "fix_flow": {
@@ -104,7 +104,7 @@
                 "name": "Qualità dell'aria"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Pannello controllo allarme"
+                "name": "Pannello comandi allarme"
             },
             "homeassistant_area": {
                 "name": "Aree"
@@ -113,7 +113,7 @@
                 "name": "Automazioni"
             },
             "homeassistant_binary_sensor": {
-                "name": "Sensore binario"
+                "name": "Sensori binari"
             },
             "homeassistant_calendar": {
                 "name": "Calendari"
@@ -179,7 +179,7 @@
                 "name": "Interruttori"
             },
             "homeassistant_tts": {
-                "name": "Testo a segno"
+                "name": "da Testo a voce"
             },
             "homeassistant_text": {
                 "name": "Testi"
@@ -259,7 +259,7 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa State reporting"
+                "name": "Stato di Alexa"
             },
             "cloud_google_report_state": {
                 "name": "Google Assistant State reporting"
