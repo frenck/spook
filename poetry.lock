@@ -892,19 +892,19 @@ files = [
 
 [[package]]
 name = "homeassistant"
-version = "2023.11.0"
+version = "2023.11.1"
 description = "Open-source home automation platform running on Python 3."
 optional = false
 python-versions = ">=3.11.0"
 files = [
-    {file = "homeassistant-2023.11.0-py3-none-any.whl", hash = "sha256:5be5a8db44ab4a08738a1ba023e0a3f9d85e6824f9a1f49b1e711aba666780ff"},
-    {file = "homeassistant-2023.11.0.tar.gz", hash = "sha256:a8bb34f7c93f314be63a5ebfb41e120d4e7957b293674f93dd15282c7e004364"},
+    {file = "homeassistant-2023.11.1-py3-none-any.whl", hash = "sha256:9c0bde94d11cfa9f7ff1c752cc6a155091b3e001b2a5f169148bd92f13931e34"},
+    {file = "homeassistant-2023.11.1.tar.gz", hash = "sha256:e0e22f63a6e5ba7fbeec90d8f81d028ebaf8c8d8278d377c1b9e525a4852dc2b"},
 ]
 
 [package.dependencies]
 aiohttp = [
-    {version = "3.9.0b0", markers = "python_version >= \"3.12\""},
     {version = "3.8.5", markers = "python_version < \"3.12\""},
+    {version = "3.9.0b0", markers = "python_version >= \"3.12\""},
 ]
 astral = "2.2"
 atomicwrites-homeassistant = "1.4.1"
@@ -1549,8 +1549,8 @@ files = [
 astroid = ">=3.0.1,<=3.1.0-dev0"
 colorama = {version = ">=0.4.5", markers = "sys_platform == \"win32\""}
 dill = [
-    {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
     {version = ">=0.3.6", markers = "python_version >= \"3.11\" and python_version < \"3.12\""},
+    {version = ">=0.3.7", markers = "python_version >= \"3.12\""},
 ]
 isort = ">=4.2.5,<6"
 mccabe = ">=0.6,<0.8"
@@ -2145,4 +2145,4 @@ multidict = ">=4.0"
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "a13f4b8cd786e105750ff308fc1c9a26203521caac53f0c3b2edf4cff3e28d2f"
+content-hash = "443c5efeb40b6b78be534bb2e869a126e26b10f278d514b0de7b01b8df69e40c"
