@@ -691,6 +691,27 @@ repairs_unignore_all:
   description: >-
     Unignore all issues currently raised in Home Assistant Repairs.
 
+timer_set_duration:
+  name: Set duration 👻
+  description: >-
+    Set duration for an existing timer.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The ID of the entity (or entities) to update.
+      required: true
+      selector:
+        entity:
+          filter:
+            - domain: timer
+    duration:
+      name: Duration
+      description: New duration for the timer, as a timedelta string.
+      required: true
+      example: "00:01:00, 60"
+      selector:
+        text:
+
 zone_create:
   name: Create a zone 👻
   description: >-
