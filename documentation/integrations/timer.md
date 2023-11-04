@@ -1,10 +1,9 @@
 ---
 subject: Enhanced integrations
-title: Input number
-subtitle: Give me your digits. 🔢
-thumbnail: ../images/integrations/input_number/example.png
-description: Spook adds some new services to the input number integration, which allows you to set the value to the minimum or maximum value, or increase or decrease value by a given amount.
-date: 2023-08-09T21:29:00+02:00
+title: Timer
+subtitle: Ready, set, go! ⏲
+description: Spook adds a new service to the timer integration, which allows you to set the duration of an existing timer entity.
+date: 2023-11-04T02:05:00+02:00
 ---
 
 ```{image} https://brands.home-assistant.io/timer/logo.png
@@ -62,8 +61,6 @@ Set the duration for a timer entity.
   - Yes
   - 00:01:00, 60
 ```
-
-This service already exists but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the service will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
 
 :::{seealso} Example {term}`service call <service call>` in {term}`YAML`
 :class: dropdown
