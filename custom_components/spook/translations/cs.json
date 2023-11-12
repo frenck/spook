@@ -2,14 +2,14 @@
     "config": {
         "step": {
             "user": {
-                "description": "Četl jsi instrukce \"readme\"? Četl jsi licenci? Jsi si skutečně jistý?"
+                "description": "Četl jsi README? Četl jsi licenci? Jsi si skutečně jistý?"
             },
             "choice_restart": {
                 "menu_options": {
-                    "restart_now": "Restartujte nyní",
+                    "restart_now": "Restartovat nyní",
                     "restart_later": "Restartovat později"
                 },
-                "description": "Aby se Spook dokončil, je třeba restartovat domácí asistent.\n\nChcete znovu začít domácí asistent?"
+                "description": "Aby Spook mohl dokončit nastavení, je třeba restartovat Home Assistant .\n\nChcete nyní restartovat Home Assistant?"
             }
         },
         "abort": {
@@ -34,7 +34,7 @@
                 "name": "Tlačítka pro zadávání"
             },
             "homeassistant_input_select": {
-                "name": "Vstupní výběry"
+                "name": "Pole pro výběr"
             },
             "homeassistant_date": {
                 "name": "Data"
@@ -52,7 +52,7 @@
                 "name": "Kvalita vzduchu"
             },
             "homeassistant_binary_sensor": {
-                "name": "Logické senzory"
+                "name": "Binární senzory"
             },
             "homeassistant_camera": {
                 "name": "Kamery"
@@ -70,7 +70,7 @@
                 "name": "Žaluzie"
             },
             "homeassistant_area": {
-                "name": "Oblastí"
+                "name": "Oblasti"
             },
             "homeassistant_calendar": {
                 "name": "Kalendáře"
@@ -82,16 +82,16 @@
                 "name": "Klima"
             },
             "homeassistant_device_tracker": {
-                "name": "Sledovač zařízení"
+                "name": "Sledovače zařízení"
             },
             "homeassistant_input_datetime": {
                 "name": "Zadání data/času"
             },
             "homeassistant_input_number": {
-                "name": "Zadání čísel"
+                "name": "Pole pro zadávání čísel"
             },
             "homeassistant_input_text": {
-                "name": "Zadání textu"
+                "name": "Pole pro text"
             },
             "homeassistant_lock": {
                 "name": "Zámky"
@@ -115,10 +115,10 @@
                 "name": "Scény"
             },
             "homeassistant_script": {
-                "name": "Skripy"
+                "name": "Skripty"
             },
             "homeassistant_sensor": {
-                "name": "Snímače"
+                "name": "Senzory"
             },
             "homeassistant_siren": {
                 "name": "Sirény"
@@ -139,7 +139,7 @@
                 "name": "Slunce"
             },
             "homeassistant_time": {
-                "name": "Čas"
+                "name": "Časovače"
             },
             "homeassistant_weather": {
                 "name": "Počasí"
@@ -166,10 +166,10 @@
                 "name": "Vysavače"
             },
             "repairs_ignored_issues": {
-                "name": "Čeština"
+                "name": "Ignorované"
             },
             "repairs_active_issues": {
-                "name": "Čeština"
+                "name": "Aktivní"
             },
             "repairs_total_issues": {
                 "name": "Celkem"
@@ -191,13 +191,13 @@
                 "name": "Znovu načíst"
             },
             "homeassistant_restart": {
-                "name": "Obnovit"
+                "name": "Restartovat"
             },
             "repairs_ignore_all": {
-                "name": "Ignore vše"
+                "name": "Ignorovat vše"
             },
             "repairs_unignore_all": {
-                "name": "Neignorujte všechny"
+                "name": "Zrušit ignorování"
             }
         },
         "event": {
@@ -205,16 +205,16 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "update": "Aktualizováno",
-                            "create": "Vytvořeno",
-                            "remove": "Vyřešeno problém"
+                            "update": "Problém aktualizován",
+                            "create": "Problém vytvořen",
+                            "remove": "Problém odstraněn"
                         }
                     },
                     "domain": {
-                        "name": "Dotazník"
+                        "name": "Původce problému"
                     },
                     "issue_id": {
-                        "name": "Číslo účtu"
+                        "name": "Číslo problému"
                     }
                 }
             }
@@ -234,54 +234,58 @@
         },
         "automation_unknown_area_references": {
             "title": "Neznámé oblasti použité v: {automation}",
-            "description": "Spook našel ducha ve Tvých automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následujicí automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace odkazuje na následující oblasti, které jsou pro Home Assistant neznámé:\n\n\n{areas}\n\n\nAbys opravil tuto chybu, [edit the automation]({edit})  a odstraň tyto neexistující oblasti.\n\nSpook  👻 Není Tvůj kamarád."
+            "description": "Spook našel ducha ve Tvých automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace odkazuje na následující oblasti, které jsou pro Home Assistant neznámé:\n\n\n{areas}\n\n\nAbys opravil tuto chybu, [uprav automatizaci]({edit})  a odstraň tyto neexistující oblasti.\n\nSpook  👻 Not your homie."
         },
         "automation_unknown_device_references": {
-            "title": "Neznámé zařízení použitá v: {automation}",
-            "description": "Spook našel ducha ve Tvých automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následujicí automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace odkazuje na následující zařízení, které jsou pro Home Assistant neznámé:\n\n\n{devices}\n\n\nAbys opravil tuto chybu, [edit the automation]({edit})  a odstraň použití těchto neexistujících zařízení.\n\nSpook  👻 Není Tvůj kamarád."
+            "title": "Neznámá zařízení použitá v: {automation}",
+            "description": "Spook našel ducha ve Tvých automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace odkazuje na následující zařízení, které jsou pro Home Assistant neznámé:\n\n\n{devices}\n\n\nAbys opravil tuto chybu, [uprav automatizaci]({edit})  a odstraň použití těchto neexistujících zařízení.\n\nSpook  👻 Not your homie."
         },
         "automation_unknown_entity_references": {
             "title": "Neznámé entity použité v: {automation}",
-            "description": "Spook našel ducha ve Tvých automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následujicí automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace odkazuje na následující entity, které jsou pro Home Assistant neznámé:\n\n\n{entities}\n\n\nAbys opravil tuto chybu, [edit the automation]({edit})  a odstraň tyto neexistující entity.\n\nSpook  👻 Není Tvůj kamarád."
+            "description": "Spook našel ducha ve Tvých automatizacích 👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTato automatizace odkazuje na následující entity, které jsou pro Home Assistant neznámé:\n\n\n{entities}\n\n\nAbys opravil tuto chybu, [uprav automatizaci]({edit})  a odstraň tyto neexistující entity.\n\nSpook  👻 Not your homie."
         },
         "group_unknown_members": {
-            "description": "Spook našel ducha ve Tvých skupinách👻\n\nZatímco poletoval kolem, Spook narazil na následujicí automatizaci:\n\n{group} (`{entity_id}`)\n\nTato skupina má členy, které jsou pro Home Assistant neznámé:\n\n\n{entities}\n\n\nAbys opravil tuto chybu, uprav skupinu - odstraň tyto neexistující členy a restartuj Home Assistant.\n\nSpook  👻 Není Tvůj kamarád.",
-            "title": "Neznámé členové ve skupině: {group}"
+            "description": "Spook našel ducha ve Tvých skupinách👻\n\nZatímco poletoval kolem, Spook narazil na následující automatizaci:\n\n{group} (`{entity_id}`)\n\nTato skupina má členy, které jsou pro Home Assistant neznámé:\n\n\n{entities}\n\n\nAbys opravil tuto chybu, uprav skupinu - odstraň tyto neexistující členy a restartuj Home Assistant.\n\nSpook  👻 Not your homie.",
+            "title": "Neznámí členové ve skupině: {group}"
         },
         "lovelace_unknown_entity_references": {
             "title": "Neznámé entity použité v: {dashboard}",
-            "description": "Spook našel ducha ve Tvých panelech👻\n\nZatímco poletoval kolem, Spook narazil na následujicí panel:\n\n[{dashboard}]({edit}) \n\nTento panel odkazuje na následující entity, které jsou pro Home Assistant neznámé:\n\n\n{entities}\n\n\nAbys opravil tuto chybu, [edit the dashboard]({edit})  a odstraň tyto neexistující entity.\n\nSpook  👻 Není Tvůj kamarád."
+            "description": "Spook našel ducha ve Tvých ovládacích panelech👻\n\nZatímco poletoval kolem, Spook narazil na následující ovládací panel:\n\n[{dashboard}]({edit}) \n\nTento ovládací panel odkazuje na následující entity, které jsou pro Home Assistant neznámé:\n\n\n{entities}\n\n\nAbys opravil tuto chybu, [uprav ovládací panel]({edit})  a odstraň tyto neexistující entity.\n\nSpook  👻 Not your homie."
         },
         "integration_unknown_source": {
             "title": "Neznámý zdroj: {helper}",
-            "description": "Spook našel ducha ve Tvých  intergrálníchpomocnících Riemannovy sumy.👻\n\nZatímco poletoval kolem, Spook narazil na následujicího pomocníka:\n\n{helper}(`{entity_id}`)\n\nTento pomocník má zdrojovou entity, která je pro Home Assistant neznámá:\n\n\n`{source}`\n\n\nAbys opravil tuto chybu, uprav pomocníka a přizpůsob zdrojovou entitu (nebo pomocníka odstraň) a restartuj Home Assistant.\n\nSpook  👻 Není Tvůj kamarád."
+            "description": "Spook našel ducha ve Tvých  Riemannových součtových integrálních senzorech.👻\n\nZatímco poletoval kolem, Spook narazil na následujícího pomocníka:\n\n{helper}(`{entity_id}`)\n\nTento pomocník má zdrojovou entitu, která je pro Home Assistant neznámá:\n\n\n`{source}`\n\n\nAbys opravil tuto chybu, uprav pomocníka a přizpůsob zdrojovou entitu (nebo pomocníka odstraň) a restartuj Home Assistant.\n\nSpook  👻 Not your homie."
         },
         "script_unknown_area_references": {
             "title": "Neznámé oblasti použité v: {script}",
-            "description": "Spook našel ducha ve Tvých scénářích👻\n\nZatímco poletoval kolem, Spook narazil na následující scénář:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento scénář odkazuje na následující oblasti, které jsou pro Home Assistant neznámé:\n\n\n{areas}\n\n\nAbys opravil tuto chybu, [edit the script]({edit})  a odstraň použití v těchto neexistujících oblastech.\n\nSpook  👻 Není Tvůj kamarád."
+            "description": "Spook našel ducha ve Tvých skriptech👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript odkazuje na následující oblasti, které jsou pro Home Assistant neznámé:\n\n\n{areas}\n\n\nAbys opravil tuto chybu, [uprav skript]({edit})  a odstraň použití v těchto neexistujících oblastech.\n\nSpook  👻 Not your homie."
         },
         "script_unknown_entity_references": {
             "title": "Neznámé entity použité v: {script}",
-            "description": "Spook našel ducha ve Tvých scénářích👻\n\nZatímco poletoval kolem, Spook narazil na následující scénář:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento scénář odkazuje na následující entity, které jsou pro Home Assistant neznámé:\n\n\n{entities}\n\n\nAbys opravil tuto chybu, [edit the script]({edit})  a odstraň použití  těchto neexistujících entit.\n\nSpook  👻 Není Tvůj kamarád."
+            "description": "Spook našel ducha ve Tvých skriptech👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript odkazuje na následující entity, které jsou pro Home Assistant neznámé:\n\n\n{entities}\n\n\nAbys opravil tuto chybu, [uprav skript]({edit})  a odstraň použití  těchto neexistujících entit.\n\nSpook  👻 Not your homie."
         },
         "switch_as_x_unknown_source": {
             "title": "Neznámý zdroj: {helper}",
-            "description": "Spook našel ducha ve Tvém přepínači jako pomocníka X 👻\n\nZatímco poletoval kolem, Spook narazil na následujicího pomocníka:\n\n{helper}(`{entity_id}`)\n\nTento pomocník má zdrojový přepínač který je pro Home Assistant neznámý:\n\n\n`{source}`\n\n\nAbys opravil tuto chybu, uprav pomocníka a přispůsob zdrojovou entitu (nebo pomocníka odstraň) a restartuj Home Assistant.\n\nSpook  👻 Není Tvůj kamarád."
+            "description": "Spook našel ducha ve tvých pomocníkách Změnit typ vypínače 👻\n\nZatímco poletoval kolem, Spook narazil na následujícího pomocníka:\n\n{helper}(`{entity_id}`)\n\nTento pomocník má zdrojový přepínač který je pro Home Assistant neznámý:\n\n\n`{source}`\n\n\nAbys opravil tuto chybu, uprav pomocníka a přispůsob zdrojovou entitu (nebo pomocníka odstraň) a restartuj Home Assistant.\n\nSpook  👻 Not your homie."
         },
         "script_unknown_device_references": {
-            "title": "Neznámé zařízení použitá v: {script}",
-            "description": "Spook našel ducha ve Tvých scénářích👻\n\nZatímco poletoval kolem, Spook narazil na následující scénář:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento scénář odkazuje na následující zařízení, které jsou pro Home Assistant neznámé:\n\n\n{devices}\n\n\nAbys opravil tuto chybu, [edit the script]({edit})  a odstraň použití  těchto neexistujících zařízení.\n\nSpook  👻 Není Tvůj kamarád."
+            "title": "Neznámá zařízení použitá v: {script}",
+            "description": "Spook našel ducha ve Tvých skriptech 👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript odkazuje na následující zařízení, které jsou pro Home Assistant neznámé:\n\n\n{devices}\n\n\nAbys opravil tuto chybu, [uprav skript]({edit})  a odstraň použití  těchto neexistujících zařízení.\n\nSpook  👻 Not your homie."
         },
         "restart_required": {
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "description": "Abyste mohli Spook 👻 dokončit nastavení, je třeba restartovat domácí asistent.\n\nVyberte odeslat restart Home Assistant nyní.",
-                        "title": "Vyžadováno"
+                        "description": "Aby mohl Spook 👻 dokončit nastavení, je třeba restartovat Home Assistant.\n\nVyberte Odeslat pro okamžité restartování Home Assistanta.",
+                        "title": "Vyžadován restart"
                     }
                 }
             },
-            "title": "Vyžadováno"
+            "title": "Vyžadován restart"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook našel ducha ve vašich scénách 👻\n\nZatímco poletoval kolem, Spook narazil na následující scénu:\n\n[{scene}]({edit})\n\nTato scéna odkazuje na následující entity, které jsou Home Assistantovi neznámé:\n\n\n{entities}\n\n\nPro opravení této chyby, [upravte scénu]({edit}) a odstraňte používání těchto neexistujících entit.\n\nSpook 👻 Not your homie.",
+            "title": "Neznámé entity použité ve scéně: {scene}"
         }
     }
 }
