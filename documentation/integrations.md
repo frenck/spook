@@ -46,7 +46,7 @@ Disable a single instance of an integration by its {term}`config entry <config e
   - Required
   - Default / Example
 * - `config_entry_id`
-  - {term}`string <string>`
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
@@ -67,6 +67,17 @@ Use this service in the {term}`developer tools <developer tools>`, in the UI sel
 service: homeassistant.disable_config_entry
 data:
   config_entry_id: "dc23e666e6100f184e642a0ac345d3eb"
+```
+
+Or multiple at once:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.disable_config_entry
+data:
+  config_entry_id:
+    - "dc23e666e6100f184e642a0ac345d3eb"
+    - "df98a97c9341a0f184e642a0ac345d3b"
 ```
 
 :::
@@ -106,7 +117,7 @@ Enable a single instance of an integration by its {term}`config entry <config en
   - Required
   - Default / Example
 * - `config_entry_id`
-  - {term}`string <string>`
+  - {term}`string <string>` | {term}`list of strings <list>`
   - Yes
   - `dc23e666e6100f184e642a0ac345d3eb`
 ```
@@ -127,6 +138,17 @@ Use this service in the {term}`developer tools <developer tools>`, in the UI sel
 service: homeassistant.enable_config_entry
 data:
   config_entry_id: "dc23e666e6100f184e642a0ac345d3eb"
+```
+
+Or multiple at once:
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.enable_config_entry
+data:
+  config_entry_id:
+    - "dc23e666e6100f184e642a0ac345d3eb"
+    - "df98a97c9341a0f184e642a0ac345d3b"
 ```
 
 :::
