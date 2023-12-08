@@ -20,11 +20,12 @@ class SpookService(AbstractSpookAdminService):
 
     domain = DOMAIN
     service = "disable_config_entry"
-    schema = {vol.Required("config_entry_id"): cv.string}
+    schema = {vol.Required("config_entry_id"): vol.All(cv.ensure_list, [cv.string])}
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
-        await self.hass.config_entries.async_set_disabled_by(
-            call.data["config_entry_id"],
-            disabled_by=ConfigEntryDisabler.USER,
-        )
+        for config_entry_id in call.data["config_entry_id"]:
+            await self.hass.config_entries.async_set_disabled_by(
+                config_entry_id,
+                disabled_by=ConfigEntryDisabler.USER,
+            )
