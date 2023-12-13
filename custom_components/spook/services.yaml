@@ -695,15 +695,10 @@ timer_set_duration:
   name: Set duration 👻
   description: >-
     Set duration for an existing timer.
+  target:
+    entity:
+      domain: timer
   fields:
-    entity_id:
-      name: Entity ID
-      description: The ID of the entity (or entities) to update.
-      required: true
-      selector:
-        entity:
-          filter:
-            - domain: timer
     duration:
       name: Duration
       description: New duration for the timer, as a timedelta string.
