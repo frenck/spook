@@ -14,6 +14,25 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
+async def async_forward_setup_entry(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+) -> None:
+    """Set up Spook ectoplasms."""
+    LOGGER.debug("Setting up Spook ectoplasms")
+
+    for module_file in Path(__file__).parent.rglob("ectoplasms/*/__init__.py"):
+        module_path = str(module_file.relative_to(Path(__file__).parent))[:-3].replace(
+            "/",
+            ".",
+        )
+        LOGGER.debug("Loading Spook ectoplasm: %s", module_path)
+        module = importlib.import_module(f".{module_path}", __package__)
+        if hasattr(module, "async_setup_entry"):
+            LOGGER.debug("Setting up Spook ectoplasm: %s", module_path)
+            await module.async_setup_entry(hass, entry)
+
+
 async def async_forward_platform_entry_setups_to_ectoplasm(
     hass: HomeAssistant,
     entry: ConfigEntry,
