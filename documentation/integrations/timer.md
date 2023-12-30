@@ -6,7 +6,7 @@ description: Spook adds a new service to the timer integration, which allows you
 date: 2023-11-04T02:05:00+02:00
 ---
 
-```{image} https://brands.home-assistant.io/timer/logo.png
+```{image} https://brands.home-assistant.io/timer/icon.png
 :alt: The Home Assistant timer icon
 :width: 250px
 :align: center
@@ -29,7 +29,6 @@ Spook adds the following new service to your Home Assistant instance:
 ### Set duration
 
 Set the duration for a timer entity.
-
 
 ```{list-table}
 :header-rows: 1

@@ -268,8 +268,14 @@ Extends the existing restart service with a "force" option. Because forcing is a
 
 `homeassistant.restart`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart), [documentation](misc#restart) 📚
 
-## Select : Select random option
+## Select: Select random option
 
 This service selects a random option from the list of options of a select entity. Optionally this can be limited to a set of given options. _#random_
 
 `select.random`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random), [documentation](integrations/select#select-random-option) 📚
+
+## Timer: Set duration
+
+Set the duration for a timer entity. _#timeflies_
+
+`timer.set_duration`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.set_duration), [documentation](integrations/timer#set-duration) 📚
