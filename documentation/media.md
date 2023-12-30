@@ -12,12 +12,22 @@ Spook has been mentioned in the following media:
 
 ## 2023
 
-### Self-Hosted podcast: Espisode 107
+### 📺 🇩🇪 Cryd: Erkenne deine Fehler jetzt mit Leichtigkeit!
+
+A YouTube video by [Cryd](https://www.youtube.com/watch?v=fgXF2L1Vy0Q) about Spook.
+It shows how to install Spook and what it can do for you.
+
+:::{iframe} https://www.youtube.com/watch?v=fgXF2L1Vy0Q
+:width: 100%
+:::
+
+_Note: The video is in German. 🇩🇪_
+
+### 🎤 🇬🇧 Self-Hosted podcast: Espisode 107
 
 ```{image} https://www.jupiterbroadcasting.com/images/shows/self-hosted.png
 :alt: Logo of the Self-Hosted podcast
 :width: 300px
-:align: center
 ```
 
 Spook was mentioned in the [Self-Hosted podcast](https://selfhosted.show/107?t=1662) episode 107.
