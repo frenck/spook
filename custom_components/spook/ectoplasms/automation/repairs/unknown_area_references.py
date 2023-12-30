@@ -32,11 +32,13 @@ class SpookRepair(AbstractSpookRepair):
         LOGGER.debug("Spook is inspecting: %s", self.repair)
         areas = set(self.area_registry.areas)
         for entity in self._entity_component.entities:
-            if unknown_areas := {
-                area
-                for area in entity.referenced_areas - areas
-                if isinstance(area, str)
-            }:
+            if not isinstance(entity, automation.UnavailableAutomationEntity) and (
+                unknown_areas := {
+                    area
+                    for area in entity.referenced_areas - areas
+                    if isinstance(area, str)
+                }
+            ):
                 self.async_create_issue(
                     issue_id=entity.entity_id,
                     translation_placeholders={

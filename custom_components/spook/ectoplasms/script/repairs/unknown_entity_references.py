@@ -94,23 +94,25 @@ class SpookRepair(AbstractSpookRepair):
             # Filter out scenes, groups & device_tracker entities.
             # Those can be created on the fly with services, which we
             # currently cannot detect yet. Let's prevent some false positives.
-            if unknown_entities := {
-                entity_id
-                for entity_id in entity.script.referenced_entities
-                if (
-                    isinstance(entity_id, str)
-                    and not entity_id.startswith(
-                        (
-                            "device_tracker.",
-                            "group.",
-                            "persistent_notification.",
-                            "scene.",
-                        ),
+            if not isinstance(entity, script.UnavailableScriptEntity) and (
+                unknown_entities := {
+                    entity_id
+                    for entity_id in entity.script.referenced_entities
+                    if (
+                        isinstance(entity_id, str)
+                        and not entity_id.startswith(
+                            (
+                                "device_tracker.",
+                                "group.",
+                                "persistent_notification.",
+                                "scene.",
+                            ),
+                        )
+                        and entity_id not in entity_ids
+                        and valid_entity_id(entity_id)
                     )
-                    and entity_id not in entity_ids
-                    and valid_entity_id(entity_id)
-                )
-            }:
+                }
+            ):
                 self.async_create_issue(
                     issue_id=entity.entity_id,
                     translation_placeholders={

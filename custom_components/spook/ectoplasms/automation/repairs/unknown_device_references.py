@@ -31,11 +31,13 @@ class SpookRepair(AbstractSpookRepair):
         LOGGER.debug("Spook is inspecting: %s", self.repair)
         devices = {device.id for device in self.device_registry.devices.values()}
         for entity in self._entity_component.entities:
-            if unknown_devices := {
-                device
-                for device in entity.referenced_devices - devices
-                if isinstance(device, str)
-            }:
+            if not isinstance(entity, automation.UnavailableAutomationEntity) and (
+                unknown_devices := {
+                    device
+                    for device in entity.referenced_devices - devices
+                    if isinstance(device, str)
+                }
+            ):
                 self.async_create_issue(
                     issue_id=entity.entity_id,
                     translation_placeholders={
