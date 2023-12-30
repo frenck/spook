@@ -32,7 +32,7 @@ class SpookRepair(AbstractSpookRepair):
                 unknown_devices := {
                     device
                     for device in entity.script.referenced_devices - devices
-                    if isinstance(device, str)
+                    if isinstance(device, str) and device
                 }
             ):
                 self.async_create_issue(
