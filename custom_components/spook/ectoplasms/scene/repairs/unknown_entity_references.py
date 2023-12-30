@@ -28,6 +28,10 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger a inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
+        # Check if Home Assistant scenes are loaded
+        if "homeassistant_scene" not in self.hass.data:
+            return
+
         entity_ids = {
             entity.entity_id for entity in self.entity_registry.entities.values()
         }.union(self.hass.states.async_entity_ids())
