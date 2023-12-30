@@ -17,7 +17,7 @@ Spook has been mentioned in the following media:
 A YouTube video by [Cryd](https://www.youtube.com/watch?v=fgXF2L1Vy0Q) about Spook.
 It shows how to install Spook and what it can do for you.
 
-:::{iframe} https://www.youtube.com/watch?v=fgXF2L1Vy0Q
+:::{iframe} https://www.youtube.com/embed/fgXF2L1Vy0Q
 :width: 100%
 :::
 
