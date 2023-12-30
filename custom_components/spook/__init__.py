@@ -16,7 +16,11 @@ from homeassistant.helpers import issue_registry as ir
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .repairs import SpookRepairManager
 from .services import SpookServiceManager
-from .util import link_sub_integrations, unlink_sub_integrations
+from .util import (
+    async_forward_setup_entry,
+    link_sub_integrations,
+    unlink_sub_integrations,
+)
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -68,8 +72,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             translation_key="restart_required",
         )
 
-    # Set up platforms
-    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+    # Forward async_setup_entry to ectoplasms
+    await async_forward_setup_entry(hass, entry)
 
     # Set up services
     services = SpookServiceManager(hass)
@@ -88,6 +92,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     entry.async_on_unload(
         hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _ghost_busters),
     )
+
+    # Set up platforms
+    await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
 
     # Yay, we didn't got spooked!
     return True
