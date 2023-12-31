@@ -144,7 +144,7 @@ class SpookTemplateFunctionManager:
             self.original_init_before_spook(hass, limited, strict, log_fn)
             # Register the Spook template functions
             for function in functions:
-                function.async_register(self)
+                function.async_register(self, is_limited=limited)
 
         # Keep a reference to the original __init__ method, so we can restore on unload
         TemplateEnvironment.original_init_before_spook = TemplateEnvironment.__init__
