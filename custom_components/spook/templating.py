@@ -98,7 +98,7 @@ class SpookTemplateFunctionManager:
 
     hass: HomeAssistant
 
-    _functions: set[AbstractSpookTemplateFunction] = field(default_factory=set)
+    _template_functions: set[AbstractSpookTemplateFunction] = field(default_factory=set)
     _service_schemas: dict[str, Any] = field(default_factory=dict)
 
     def __post_init__(self) -> None:
@@ -117,22 +117,24 @@ class SpookTemplateFunctionManager:
                 :-3
             ].replace("/", ".")
             module = importlib.import_module(f".{module_path}", __package__)
-            function = module.SpookTemplateFunction(self.hass)
+            template_function = module.SpookTemplateFunction(self.hass)
 
             LOGGER.debug(
                 "Registering Spook template function: %s",
-                function.name,
+                template_function.name,
             )
 
-            function.async_register(self.hass.data["template.environment"])
-            function.async_register(self.hass.data["template.environment_strict"])
-            function.async_register(
+            template_function.async_register(self.hass.data["template.environment"])
+            template_function.async_register(
+                self.hass.data["template.environment_strict"]
+            )
+            template_function.async_register(
                 self.hass.data["template.environment_limited"], is_limited=True
             )
-            self._functions.add(function)
+            self._template_functions.add(template_function)
 
         # Patch TemplateEnvironment for new instances
-        functions = self._functions
+        template_functions = self._template_functions
 
         def template_environment_init(
             self: TemplateEnvironment,
@@ -143,8 +145,8 @@ class SpookTemplateFunctionManager:
         ) -> None:
             self.original_init_before_spook(hass, limited, strict, log_fn)
             # Register the Spook template functions
-            for function in functions:
-                function.async_register(self, is_limited=limited)
+            for template_function in template_functions:
+                template_function.async_register(self, is_limited=limited)
 
         # Keep a reference to the original __init__ method, so we can restore on unload
         TemplateEnvironment.original_init_before_spook = TemplateEnvironment.__init__
@@ -154,7 +156,7 @@ class SpookTemplateFunctionManager:
     def async_on_unload(self) -> None:
         """Tear down the Spook template functions."""
         LOGGER.debug("Tearing down Spook template functions")
-        for function in self._functions:
+        for function in self._template_functions:
             LOGGER.debug(
                 "Unregistering Spook template function: %s",
                 function.name,
@@ -162,7 +164,7 @@ class SpookTemplateFunctionManager:
             function.async_unregister(self.hass.data["template.environment"])
             function.async_unregister(self.hass.data["template.environment_strict"])
             function.async_unregister(self.hass.data["template.environment_limited"])
-            self._functions.discard(function)
+            self._template_functions.discard(function)
 
         # Restore the original TemplateEnvironment.__init__ method
         TemplateEnvironment.__init__ = TemplateEnvironment.original_init_before_spook
