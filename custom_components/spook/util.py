@@ -96,19 +96,19 @@ def async_ensure_template_environments_exists(hass: HomeAssistant) -> None:
     exist before we patch them.
     """
     if "template.environment" not in hass.data:
-        template = Template(hass, '{{ "OMG Puppies!" }}')
+        template = Template("OMG Puppies!", hass)
         # pylint: disable-next=protected-access
         assert template._env  # noqa: SLF001, S101
 
     if "template.environment_limited" not in hass.data:
-        template = Template(hass, '{{ "OMG Puppies!" }}')
+        template = Template("OMG Puppies!", hass)
         # pylint: disable-next=protected-access
         template._limited = True  # noqa: SLF001
         # pylint: disable-next=protected-access
         assert template._env  # noqa: SLF001, S101
 
     if "template.environment_strict" not in hass.data:
-        template = Template(hass, '{{ "OMG Puppies!" }}')
+        template = Template("OMG Puppies!", hass)
         # pylint: disable-next=protected-access
         template._strict = True  # noqa: SLF001
         # pylint: disable-next=protected-access
