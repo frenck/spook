@@ -4,7 +4,7 @@ title: Glossary
 subtitle: What does this even mean?
 thumbnail: images/social.png
 description: Glossary of terms used by Spook & Home Assistant, just to add a little context to this all.
-date: 2023-08-09T21:29:00+02:00
+date: 2023-12-31T18:26:58+01:00
 ---
 
 % TODO:
@@ -230,6 +230,12 @@ Spook's influence
 :::{glossary}
 Template
 : Templating is an advanced feature of {term}`Home Assistant` that allows you to dynamically generate values using the [Jinja2](https://palletsprojects.com/p/jinja) template engine. The syntax used for templating comes very close to the concept of programming languages and will enable you to perform complex operations on data.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
+:::
+
+:::{glossary}
+Template function
+: A template function is a function that can be used in a {term}`template <template>`. Template functions are used to perform operations on data. For example, the `now()` function returns the current date and time, and the `is_state()` function checks if an {term}`entity <entity>` is in a specific state.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
 :::
 
