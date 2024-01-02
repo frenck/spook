@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class SpookTemplateFunction(AbstractSpookTemplateFunction):
     """Spook template function to debug types."""
 
-    name = "type_debug"
+    name = "typeof"
 
     requires_hass_object = False
     is_available_in_limited_environment = True
