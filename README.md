@@ -54,7 +54,7 @@ is needed!
 
 # License
 
-Copyright (c) 2023 Franck Nijhof
+Copyright (c) 2023-2024 Franck Nijhof
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -80,6 +80,6 @@ SOFTWARE.
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-SPOOKED-red.svg
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2023.svg
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2024.svg
 [sonarcloud-shield]: https://sonarcloud.io/api/project_badges/measure?project=frenck_python-elgato&metric=alert_status
 [sonarcloud]: https://sonarcloud.io/summary/new_code?id=frenck_python-elgato
