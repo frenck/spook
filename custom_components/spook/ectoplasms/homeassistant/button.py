@@ -27,20 +27,14 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
-@dataclass
-class HomeAssistantSpookButtonEntityDescriptionMixin:
-    """Mixin values for Home Assistant related buttons."""
-
-    press_fn: Callable[[HomeAssistant], Awaitable[Any]]
-
-
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class HomeAssistantSpookButtonEntityDescription(
     SpookEntityDescription,
     ButtonEntityDescription,
-    HomeAssistantSpookButtonEntityDescriptionMixin,
 ):
     """Class describing Spook Home Assistant button entities."""
+
+    press_fn: Callable[[HomeAssistant], Awaitable[Any]]
 
 
 BUTTONS: tuple[HomeAssistantSpookButtonEntityDescription, ...] = (
