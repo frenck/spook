@@ -17,20 +17,14 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
-@dataclass
-class RepairsSpookButtonEntityDescriptionMixin:
-    """Mixin values for Repairs related buttons."""
-
-    ignore: bool
-
-
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class RepairsSpookButtonEntityDescription(
     SpookEntityDescription,
     ButtonEntityDescription,
-    RepairsSpookButtonEntityDescriptionMixin,
 ):
     """Class describing Spook Repairs button entities."""
+
+    ignore: bool
 
 
 BUTTONS: tuple[RepairsSpookButtonEntityDescription, ...] = (

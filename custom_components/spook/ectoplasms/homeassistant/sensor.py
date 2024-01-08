@@ -46,21 +46,14 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
-@dataclass
-class HomeAssistantSpookSensorEntityDescriptionMixin:
-    """Mixin values for Home Assistant related sensors."""
-
-    value_fn: Callable[[HomeAssistant], int | None]
-
-
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class HomeAssistantSpookSensorEntityDescription(
     SpookEntityDescription,
     SensorEntityDescription,
-    HomeAssistantSpookSensorEntityDescriptionMixin,
 ):
     """Class describing Spook Home Assistant sensor entities."""
 
+    value_fn: Callable[[HomeAssistant], int | None]
     update_events: set[str] = field(default_factory=set)
 
 

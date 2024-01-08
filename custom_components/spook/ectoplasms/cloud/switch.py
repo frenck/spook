@@ -21,23 +21,16 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
-@dataclass
-class HomeAssistantCloudSpookSwitchEntityDescriptionMixin:
-    """Mixin values for Home Assistant related sensors."""
-
-    is_on_fn: Callable[[Cloud], bool | None]
-    set_fn: Callable[[Cloud, bool], Awaitable[Any]]
-
-
-@dataclass
+@dataclass(frozen=True, kw_only=True)
 class HomeAssistantCloudSpookSwitchEntityDescription(
     SpookEntityDescription,
     SwitchEntityDescription,
-    HomeAssistantCloudSpookSwitchEntityDescriptionMixin,
 ):
     """Class describing Spook Home Assistant sensor entities."""
 
     icon_off: str | None = None
+    is_on_fn: Callable[[Cloud], bool | None]
+    set_fn: Callable[[Cloud, bool], Awaitable[Any]]
 
     def __post_init__(self) -> None:
         """Sync icon_off with icon."""
