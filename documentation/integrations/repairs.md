@@ -117,7 +117,7 @@ a device becomes unreachable.
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
@@ -198,7 +198,7 @@ Adds a single service to ignore all issues currently raised in the repairs dashb
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
@@ -241,7 +241,7 @@ Remove an issue from the repairs integration.
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
@@ -298,7 +298,7 @@ Adds a single service to unignore all repair issues currently still active (but 
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)

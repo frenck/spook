@@ -223,7 +223,7 @@ String
 :::
 
 :::{glossary}
-Spook's influence
+Influence of Spook
 : A term to indicate/describe the Spook's part in a particular feature of {term}`Home Assistant`. In some cases, Spook adds completely new, previously non-existing features; in other cases, it might modify, extend, or improve existing features. Spook documents his influence, so you can easily see what features are available because of him.
 :::
 

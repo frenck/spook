@@ -31,7 +31,7 @@ Disable a single instance of an integration by its {term}`config entry <config e
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
@@ -102,7 +102,7 @@ Enable a single instance of an integration by its {term}`config entry <config en
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
@@ -175,7 +175,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling)
@@ -237,7 +237,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling)
@@ -299,7 +299,7 @@ It also supports ignoring all discovered devices from a specific {term}`integrat
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered)

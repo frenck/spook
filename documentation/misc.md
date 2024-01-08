@@ -38,7 +38,7 @@ integrations. It is recommended to use this service only when necessary.
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Extends the existing restart service with a "force" option.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
