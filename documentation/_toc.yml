@@ -23,6 +23,9 @@ parts:
       - file: entities
       - file: areas
       - file: devices_entities
+      - file: template_engine
+        sections:
+          - file: template_functions/shuffle
       - file: misc
 
   - caption: Enhanced integrations
@@ -50,14 +53,11 @@ parts:
     chapters:
       - file: helpers/inverse
 
-  # - caption: Tutorials
-  #   chapters:
-  #     - file: ectoplasms
-
   - caption: Reference
     chapters:
       - file: services
       - file: blueprints
+      - file: template_functions
       - file: glossary
 
   - caption: About the project

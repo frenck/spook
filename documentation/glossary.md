@@ -4,7 +4,7 @@ title: Glossary
 subtitle: What does this even mean?
 thumbnail: images/social.png
 description: Glossary of terms used by Spook & Home Assistant, just to add a little context to this all.
-date: 2023-12-31T18:26:58+01:00
+date: 2024-01-09T17:14:53+01:00
 ---
 
 % TODO:
@@ -14,6 +14,11 @@ date: 2023-12-31T18:26:58+01:00
 % state
 % mapping
 % datetime string?
+% binary sensor
+% switch
+% returns
+% return type
+% None
 
 :::{glossary}
 Action
@@ -234,9 +239,42 @@ Template
 :::
 
 :::{glossary}
+Template engine
+: The template engine in {term}`Home Assistant` is a [Jinja2](https://palletsprojects.com/p/jinja) template engine, enrichted with an Home Assistant-specific extension. The engine is used to take a {term}`template <template>`, process it, and return the resulting value from it.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
+:::
+
+:::{glossary}
+Template filter function
+: Filters are a special type of {term}`template function <template function>` that can be used to modify the output of a {term}`template <template>`. For example, the `lower` filter can be used to convert a string to lowercase. For the syntax of filters, inspiration was probably taken from <wiki:UNIX>. The the idea is that you "pipe" a value, by adding a pipe character `|`, through some filters to do something with it. For example, `{{ "SPOOK" | lower }}` will output `spook`. You can also chain filters, for example, `{{ "SPOOK" | lower | capitalize }}` will output `Spook`.
+: Most {term}`template functions <template function>` can be used used as a filter as well.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
+: [Learn more in the Jinja2 documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/#filters)
+:::
+
+:::{glossary}
 Template function
 : A template function is a function that can be used in a {term}`template <template>`. Template functions are used to perform operations on data. For example, the `now()` function returns the current date and time, and the `is_state()` function checks if an {term}`entity <entity>` is in a specific state.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
+:::
+
+:::{glossary}
+Template function return type
+: When a {term}`template function <template function>` is used/called, it returns {term}`a value <template function return >`. The returned value can be of different types. For example, if it returns a numeric value, its return type might be a {term}`float <float>`. If it returns a true or false result, that would be a {term}`boolean value <boolean>`. There are many different types of values that can be returned.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
+:::
+
+:::{glossary}
+Template function return value
+: A template function return value is the value that is returned by a {term}`template function <template function>` when it was called/used. The return value can next be used in a next step, for example, to use as an in put for another template function. For example, the `now()` function returns the current date and time, and the `is_state()` function returns a {term}`boolean value <boolean>` indicating if an {term}`entity <entity>` is in a specific state.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
+:::
+
+:::{glossary}
+Template test function
+: Test functions are a special type of {term}`template function <template function>` that can be used to check if a condition is true or false. Inside a template they use the `is` operator. For example `3 is odd` will return `True` and `3 is even` will return `False`.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
+: [Learn more in the Jinja2 documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/#tests)
 :::
 
 :::{glossary}
