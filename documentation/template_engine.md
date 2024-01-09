@@ -4,7 +4,7 @@ title: Template engine
 subtitle: Because some like to make Home Assistant even harder for themselves 😅
 thumbnail: images/social.png
 description: Spook enhances the following Home Assistant integrations by sprinkling some ectoplasmic goodness on top of them.
-date: 2024-01-09T17:17:42+01:00
+date: 2024-01-09T21:08:49+01:00
 ---
 
 {term}`Home Assistant` has a powerful {term}`template engine <template engine>` that allows you to create complex automations and logic. The template engine is based on the [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/) template engine which is enriched with some Home Assistant-specific extensions.
@@ -25,6 +25,17 @@ Shuffles a list of items.
 ```
 
 [documentation](template_functions/shuffle) 📚
+
+## Typeof
+
+Reveals the type of a given value.
+
+```
+{{ typeof("Spook") }}
+{{ now() | typeof }}
+```
+
+[documentation](template_functions/typeof) 📚
 
 ## Unix filename pattern filtering
 
