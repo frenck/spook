@@ -25,6 +25,7 @@ parts:
       - file: devices_entities
       - file: template_engine
         sections:
+          - file: template_functions/fnmatch_filter
           - file: template_functions/fnmatch
           - file: template_functions/shuffle
       - file: misc

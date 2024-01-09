@@ -26,6 +26,17 @@ Shuffles a list of items.
 
 [documentation](template_functions/shuffle) 📚
 
+## Unix filename pattern filtering
+
+Filter a lists of texts against a pattern.
+
+```
+{{ fnmatch_filter(["Spook", "Ghost], "Sp*k") }}
+{{ fnmatch_filter(["Spook", "Spook2", "Ghost"], "Sp*") }}
+```
+
+[documentation](template_functions/fnmatch_filter) 📚
+
 ## Unix filename pattern matching
 
 Match text or a lists of texts against a pattern.
