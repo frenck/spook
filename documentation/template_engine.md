@@ -26,6 +26,17 @@ Shuffles a list of items.
 
 [documentation](template_functions/shuffle) 📚
 
+## Unix filename pattern matching
+
+Match text or a lists of texts against a pattern.
+
+```
+{{ fnmatch("Spook", "Sp*k") }}
+{{ fnmatch(["Spook", "Spook2"], "Sp*") }}
+```
+
+[documentation](template_functions/fnmatch) 📚
+
 ## Features requests, ideas and support
 
 If you have an idea on how to further enhance the Home Assistant template engine, for example, by adding a new template function; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).

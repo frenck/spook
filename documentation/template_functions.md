@@ -20,3 +20,14 @@ Shuffles a list of items.
 ```
 
 [documentation](template_functions/shuffle) 📚
+
+## Unix filename pattern matching
+
+Match text or a lists of texts against a pattern.
+
+```
+{{ fnmatch("Spook", "Sp*k") }}
+{{ fnmatch(["Spook", "Spook2"], "Sp*") }}
+```
+
+[documentation](template_functions/fnmatch) 📚

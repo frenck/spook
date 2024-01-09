@@ -1,8 +1,8 @@
 ---
 subject: Template function
-title: Shuffle 🔀
+title: Shuffle
 short_title: Shuffle
-subtitle: In case you are not random enough already.
+subtitle: In case you are not random enough already. 🔀
 description: Spook enhances the template engine of Home Assistant by adding a shuffle function.
 date: 2024-01-09T17:18:15+01:00
 ---
@@ -62,7 +62,7 @@ The `items` parameter can be a {term}`list of anything <list>`. The items in the
 
 ## Examples
 
-### Using the shuffle function as a function
+### Using shuffle as a function
 
 ```{code-block} python
 :linenos:
@@ -77,7 +77,7 @@ Returns:
 
 Calling the function above multiple times, will always return the list in a different random order.
 
-### Using the shuffle function as a filter
+### Using shuffle as a filter
 
 ```{code-block} python
 :linenos:
