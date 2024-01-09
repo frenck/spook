@@ -2,13 +2,15 @@
 from __future__ import annotations
 
 from homeassistant.components import group
+from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
 from homeassistant.const import (
     ENTITY_MATCH_ALL,
     ENTITY_MATCH_NONE,
     EVENT_COMPONENT_LOADED,
 )
-from homeassistant.core import valid_entity_id
+from homeassistant.core import HomeAssistant, valid_entity_id
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPlatform
 
 from ....const import LOGGER
@@ -39,6 +41,25 @@ class SpookRepair(AbstractSpookRepair):
         "event_tod_reloaded",
         "event_utility_meter_reloaded",
     }
+
+    async def async_activate(self) -> None:
+        """Handle the activating a repair."""
+        await super().async_activate()
+
+        async def _async_update_listener(
+            _hass: HomeAssistant,
+            entry: ConfigEntry,
+        ) -> None:
+            """Handle options update."""
+            if entry.domain != self.domain:
+                return
+            await self.inspect_debouncer.async_call()
+
+        async_dispatcher_connect(
+            self.hass,
+            SIGNAL_CONFIG_ENTRY_CHANGED,
+            _async_update_listener,
+        )
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
