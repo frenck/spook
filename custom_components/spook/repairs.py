@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, final
 
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
+from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import (
     area_registry as ar,
@@ -17,6 +18,7 @@ from homeassistant.helpers import (
     issue_registry as ir,
 )
 from homeassistant.helpers.debounce import Debouncer
+from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from .const import DOMAIN, LOGGER
 
@@ -112,6 +114,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
 
     inspect_events: set[str] | None = None
     inspect_debouncer: Debouncer
+    inspect_config_entry_changed: bool | str = False
     _event_subs: set[Callable[[], None]]
 
     def __init__(self, hass: HomeAssistant) -> None:
@@ -152,6 +155,26 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         for event in self.inspect_events:
             self._event_subs.add(
                 self.hass.bus.async_listen(event, _async_call_inspect_debouncer),
+            )
+
+        if self.inspect_config_entry_changed:
+
+            async def _async_config_entry_changed(
+                _hass: HomeAssistant,
+                entry: ConfigEntry,
+            ) -> None:
+                """Handle options update."""
+                if (
+                    self.inspect_config_entry_changed is not True
+                    and entry.domain != self.inspect_config_entry_changed
+                ):
+                    return
+                await self.inspect_debouncer.async_call()
+
+            async_dispatcher_connect(
+                self.hass,
+                SIGNAL_CONFIG_ENTRY_CHANGED,
+                _async_config_entry_changed,
             )
 
     async def async_deactivate(self) -> None:
