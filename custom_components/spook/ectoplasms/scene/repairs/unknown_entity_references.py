@@ -25,6 +25,8 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_on_reload = True
 
+    _issues: set[str] = set()
+
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
@@ -41,7 +43,9 @@ class SpookRepair(AbstractSpookRepair):
             "homeassistant_scene"
         ].entities.values()
 
+        possible_issue_ids: set[str] = set()
         for entity in scenes:
+            possible_issue_ids.add(entity.entity_id)
             if unknown_entities := {
                 entity_id
                 for entity_id in entity.scene_config.states
@@ -58,6 +62,7 @@ class SpookRepair(AbstractSpookRepair):
                         "edit": f"/config/scene/edit/{entity.unique_id}",
                     },
                 )
+                self._issues.add(entity.entity_id)
                 LOGGER.debug(
                     "Spook found unknown entities references in %s "
                     "and created an issue for it; Entities: %s",
@@ -66,3 +71,9 @@ class SpookRepair(AbstractSpookRepair):
                 )
             else:
                 self.async_delete_issue(entity.entity_id)
+                self._issues.discard(entity.entity_id)
+
+        # Remove issues that are no longer valid
+        for issue_id in self._issues - possible_issue_ids:
+            self.async_delete_issue(issue_id)
+            self._issues.discard(issue_id)
