@@ -1,13 +1,17 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-from homeassistant.components.homeassistant import scene
+from typing import TYPE_CHECKING
+
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.core import valid_entity_id
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
+
+if TYPE_CHECKING:
+    from homeassistant.components.homeassistant import scene
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -18,11 +22,8 @@ class SpookRepair(AbstractSpookRepair):
     inspect_events = {
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
-        scene.EVENT_SCENE_RELOADED,
-        "event_group_reloaded",
-        "event_integration_reloaded",
-        "event_mqtt_reloaded",
     }
+    inspect_on_reload = True
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""

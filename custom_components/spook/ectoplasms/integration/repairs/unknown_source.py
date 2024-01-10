@@ -18,8 +18,8 @@ class SpookRepair(AbstractSpookRepair):
     inspect_events = {
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
-        "event_integration_reloaded",
     }
+    inspect_on_reload = "integration"
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
