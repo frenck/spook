@@ -115,6 +115,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     inspect_events: set[str] | None = None
     inspect_debouncer: Debouncer
     inspect_config_entry_changed: bool | str = False
+    inspect_on_reload: bool | str = False
     _event_subs: set[Callable[[], None]]
 
     def __init__(self, hass: HomeAssistant) -> None:
@@ -122,7 +123,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         super().__init__(hass)
         self._event_subs = set()
 
-    async def async_activate(self) -> None:
+    async def async_activate(self) -> None:  # noqa: C901
         """Handle the activating a repair."""
 
         async def _async_inspect() -> None:
@@ -155,6 +156,30 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         for event in self.inspect_events:
             self._event_subs.add(
                 self.hass.bus.async_listen(event, _async_call_inspect_debouncer),
+            )
+
+        if self.inspect_on_reload:
+
+            @callback
+            def _filter_event(event: Event) -> bool:
+                """Filter for reload events."""
+                service = event.data.get("service")
+                if service is None:
+                    return False
+                if service == "reload_all":
+                    return True
+                if service != "reload":
+                    return False
+                if self.inspect_on_reload is True:
+                    return True
+                if self.inspect_on_reload == event.data.get("domain"):
+                    return True
+                return False
+
+            self.hass.bus.async_listen(
+                "call_service",
+                _async_call_inspect_debouncer,
+                event_filter=_filter_event,
             )
 
         if self.inspect_config_entry_changed:

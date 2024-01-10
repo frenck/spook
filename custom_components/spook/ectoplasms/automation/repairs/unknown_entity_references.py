@@ -22,28 +22,10 @@ class SpookRepair(AbstractSpookRepair):
     repair = "automation_unknown_entity_references"
     inspect_events = {
         EVENT_COMPONENT_LOADED,
-        automation.EVENT_AUTOMATION_RELOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
-        "event_counter_reloaded",
-        "event_derivative_reloaded",
-        "event_group_reloaded",
-        "event_input_boolean_reloaded",
-        "event_input_button_reloaded",
-        "event_input_datetime_reloaded",
-        "event_input_number_reloaded",
-        "event_input_select_reloaded",
-        "event_input_text_reloaded",
-        "event_integration_reloaded",
-        "event_min_max_reloaded",
-        "event_mqtt_reloaded",
-        "event_scene_reloaded",
-        "event_schedule_reloaded",
-        "event_template_reloaded",
-        "event_threshold_reloaded",
-        "event_tod_reloaded",
-        "event_utility_meter_reloaded",
     }
     inspect_config_entry_changed = True
+    inspect_on_reload = True
 
     _entity_component: EntityComponent[automation.AutomationEntity]
 
