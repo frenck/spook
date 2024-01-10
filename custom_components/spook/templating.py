@@ -22,6 +22,8 @@ class AbstractSpookTemplateFunction(ABC):
 
     hass: HomeAssistant
     name: str
+    filter_name: str | None = None
+    test_name: str | None = None
 
     requires_hass_object: bool = True
     is_available_in_limited_environment: bool = False
@@ -59,19 +61,19 @@ class AbstractSpookTemplateFunction(ABC):
         if self.is_filter:
             # pylint: disable-next=protected-access
             if is_limited and not self.is_available_in_limited_environment:
-                environment.filters[self.name] = unsupported_in_limited_environment(
-                    self.name
-                )
+                environment.filters[
+                    self.filter_name or self.name
+                ] = unsupported_in_limited_environment(self.name)
             else:
-                environment.filters[self.name] = self.function()
+                environment.filters[self.filter_name or self.name] = self.function()
 
         if self.is_test:
             if is_limited and not self.is_available_in_limited_environment:
-                environment.tests[self.name] = unsupported_in_limited_environment(
-                    self.name
-                )
+                environment.tests[
+                    self.test_name or self.name
+                ] = unsupported_in_limited_environment(self.name)
             else:
-                environment.tests[self.name] = self.function()
+                environment.tests[self.test_name or self.name] = self.function()
 
     @final
     @callback
