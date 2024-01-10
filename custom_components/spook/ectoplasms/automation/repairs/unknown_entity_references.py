@@ -1,10 +1,7 @@
 """Spook - Not your homie."""
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
-
 from homeassistant.components import automation
-from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
 from homeassistant.const import (
     ENTITY_MATCH_ALL,
     ENTITY_MATCH_NONE,
@@ -12,14 +9,10 @@ from homeassistant.const import (
 )
 from homeassistant.core import valid_entity_id
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
-
-if TYPE_CHECKING:
-    from homeassistant.core import HomeAssistant
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -50,6 +43,7 @@ class SpookRepair(AbstractSpookRepair):
         "event_tod_reloaded",
         "event_utility_meter_reloaded",
     }
+    inspect_config_entry_changed = True
 
     _entity_component: EntityComponent[automation.AutomationEntity]
 
@@ -57,21 +51,6 @@ class SpookRepair(AbstractSpookRepair):
         """Handle the activating a repair."""
         self._entity_component = self.hass.data[DATA_INSTANCES][self.domain]
         await super().async_activate()
-
-        # Listen for config entry changes, this might have an impact
-        # on the available entities (those not in the entity registry)
-        async def _async_update_listener(
-            _hass: HomeAssistant,
-            _entry: ConfigEntry,
-        ) -> None:
-            """Handle options update."""
-            await self.inspect_debouncer.async_call()
-
-        async_dispatcher_connect(
-            self.hass,
-            SIGNAL_CONFIG_ENTRY_CHANGED,
-            _async_update_listener,
-        )
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""

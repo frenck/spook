@@ -19,6 +19,7 @@ class SpookRepair(AbstractSpookRepair):
         er.EVENT_ENTITY_REGISTRY_UPDATED,
         "event_integration_reloaded",
     }
+    inspect_config_entry_changed = "switch_as_x"
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
