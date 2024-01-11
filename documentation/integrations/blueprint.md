@@ -50,7 +50,7 @@ Downloads and imports an automation/script blueprint, directly from the URL you 
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)

@@ -82,6 +82,8 @@ Deletes all orphaned entities that no longer have an integration that claim/prov
 
 `homeassistant.delete_all_orphaned_entities`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities), [documentation](entities#delete-all-orphaned-entities) 📚
 
+(device-disable)=
+
 ## Device: Disable
 
 This service can be used to disable a device on the fly. _#whatever_
@@ -94,6 +96,8 @@ Guess what... this service does the reverse of [](#device-disable). _#noway_
 
 `homeassistant.disable_device`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device), [documentation](devices#disable-a-device) 📚
 
+(entity-disable)=
+
 ## Entity: Disable
 
 This service can be used to disable a entity on the fly. _#rocketship_
@@ -105,6 +109,8 @@ This service can be used to disable a entity on the fly. _#rocketship_
 Really... this service does the reverse of [](#entity-disable). _#true_
 
 `homeassistant.enable_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity), [documentation](entities#enable-an-entity) 📚
+
+(entity-hide)=
 
 ## Entity: Hide
 
@@ -166,6 +172,8 @@ Sorts the list of selectable options for an input select entity. _#12345_
 
 `input_select.sort`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort), [documentation](integrations/input_select#sort-options) 📚
 
+(integration-disable)=
+
 ## Integration: Disable
 
 This service can be used to disable a integration configuration entry (those you see on your integrations dashboard) on the fly. _#bye_
@@ -177,6 +185,8 @@ This service can be used to disable a integration configuration entry (those you
 Be amazed... this service does the reverse of [](#integration-disable). _#mindblown_
 
 `homeassistant.enable_config_entry`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry), [documentation](integrations#enable-an-integration) 📚
+
+(integration-disable-polling-for-updates)=
 
 ## Integration: Disable polling for updates
 

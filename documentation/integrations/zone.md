@@ -55,7 +55,7 @@ Adds a new zone to your Home Assistant instance.
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.create)
@@ -133,7 +133,7 @@ Zones that are created and managed using manual YAML configuration cannot be upd
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.update)
@@ -213,7 +213,7 @@ Zones that are created and managed using manual YAML configuration cannot be del
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.delete)

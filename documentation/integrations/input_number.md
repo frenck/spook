@@ -55,7 +55,7 @@ Decrease an input number entity value by a certain amount.
   - Yes, `input_number` entities
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Adds an amount to decrement the value with
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.decrement)
@@ -111,7 +111,7 @@ Increase an input number entity value by a certain amount.
   - Yes, `input_number` entities
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Adds an amount to increment the value with
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.increment)
@@ -167,7 +167,7 @@ Set an input number entity to its maximum value.
   - Yes, `input_number` entities
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.max)
@@ -206,7 +206,7 @@ Set an input number entity to its minimum value.
   - Yes, `input_number` entities
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min)
