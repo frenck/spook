@@ -4,7 +4,7 @@ title: Template engine
 subtitle: Because some like to make Home Assistant even harder for themselves 😅
 thumbnail: images/social.png
 description: Spook enhances the following Home Assistant integrations by sprinkling some ectoplasmic goodness on top of them.
-date: 2024-01-11T21:26:04+01:00
+date: 2024-01-11T21:30:28+01:00
 ---
 
 {term}`Home Assistant` has a powerful {term}`template engine <template engine>` that allows you to create complex automations and logic. The template engine is based on the [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/) template engine which is enriched with some Home Assistant-specific extensions.
@@ -35,6 +35,16 @@ Calculate the MD5 hash of a given value.
 ```
 
 [documentation](template_functions/md5) 📚
+
+## SHA1
+
+Calculate the SHA1 hash of a given value.
+
+```
+{{ sha1("hash me") }}
+```
+
+[documentation](template_functions/sha1) 📚
 
 ### Shuffle
 

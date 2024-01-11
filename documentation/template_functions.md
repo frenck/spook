@@ -31,6 +31,36 @@ Calculate the MD5 hash of a given value.
 
 [documentation](template_functions/md5) 📚
 
+## SHA1
+
+Calculate the SHA1 hash of a given value.
+
+```
+{{ sha1("hash me") }}
+```
+
+[documentation](template_functions/sha1) 📚
+
+## SHA256
+
+Calculate the SHA256 hash of a given value.
+
+```
+{{ sha256("hash me") }}
+```
+
+[documentation](template_functions/sha256) 📚
+
+## SHA512
+
+Calculate the SHA512 hash of a given value.
+
+```
+{{ sha512("hash me") }}
+```
+
+[documentation](template_functions/sha512) 📚
+
 ## Shuffle
 
 Shuffles a list of items.
