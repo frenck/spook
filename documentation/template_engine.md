@@ -4,7 +4,7 @@ title: Template engine
 subtitle: Because some like to make Home Assistant even harder for themselves 😅
 thumbnail: images/social.png
 description: Spook enhances the following Home Assistant integrations by sprinkling some ectoplasmic goodness on top of them.
-date: 2024-01-09T21:08:49+01:00
+date: 2024-01-11T21:26:04+01:00
 ---
 
 {term}`Home Assistant` has a powerful {term}`template engine <template engine>` that allows you to create complex automations and logic. The template engine is based on the [Jinja2](https://jinja.palletsprojects.com/en/3.0.x/) template engine which is enriched with some Home Assistant-specific extensions.
@@ -14,6 +14,17 @@ date: 2024-01-09T21:08:49+01:00
 Spook extends the template engine of Home Assistant Core with even more functionality, making it even more powerful. Most of these make it easier to perform common tasks, while others provide completely new functionality.
 
 ## New template functions
+
+## Flatten
+
+Flatten a lists of lists.
+
+```
+{{ flatten(["a", ["b", ["c"]]]) }}
+{{ flatten(["a", ["b", ["c"]]], levels=1) }}
+```
+
+[documentation](template_functions/flatten) 📚
 
 ### Shuffle
 
