@@ -25,10 +25,13 @@ class SpookTemplateFunction(AbstractSpookTemplateFunction):
         self,
         entity_id: str | list[str],
     ) -> bool:
-        """Check if the current state of an entity is "on"."""
+        """Check if the current state of an entity is."""
         if isinstance(entity_id, list):
-            return all(is_state(self.hass, entity, "on") for entity in entity_id)
-        return is_state(self.hass, entity_id, "on")
+            return all(
+                entity_id == "on" or is_state(self.hass, entity, "on")
+                for entity in entity_id
+            )
+        return entity_id == "on" or is_state(self.hass, entity_id, "on")
 
     def function(self) -> Callable[..., Any]:
         """Return the python method that runs this template function."""
