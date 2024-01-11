@@ -26,6 +26,16 @@ Flatten a lists of lists.
 
 [documentation](template_functions/flatten) 📚
 
+## MD5
+
+Calculate the MD5 hash of a given value.
+
+```
+{{ md5("hash me") }}
+```
+
+[documentation](template_functions/md5) 📚
+
 ### Shuffle
 
 Shuffles a list of items.
