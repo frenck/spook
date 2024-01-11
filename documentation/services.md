@@ -124,6 +124,12 @@ Do the math... this service does the reverse of [](#entity-hide). _#reveal_
 
 `homeassistant.unhide_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity), [documentation](entities#unhide-an-entity) 📚
 
+## Entity: Update ID
+
+This service can be used to update the ID of an entity on the fly. _#secret_
+
+`homeassistant.hide_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys_id) 📚
+
 ## Ignore all discovered devices & services
 
 Click ignore on all discovered items on the integration dashboard; optionally only for specific integration (like, `bluetooth`). _#talktothehand_

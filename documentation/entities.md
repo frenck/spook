@@ -266,6 +266,63 @@ data:
 
 :::
 
+### Update an entity's ID
+
+This service allows you to update an entity's ID on the fly.
+
+```{figure} ./images/entities/update_entity_id.png
+:alt: Screenshot of the Home Assistant update entity ID service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - {term}`Service`
+  - Update an entity's ID 👻
+* - {term}`Service name`
+  - `homeassistant.update_entity_id`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - {term}`Spook's influence`
+  - Newly added service.
+* - {term}`Developer tools`
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>`
+  - Yes
+  - `"light.living_room"`
+* - `new_entity_id`
+  - {term}`string <string>`
+  - Yes
+  - `"light.dining_room"`
+```
+
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.update_entity_id
+data:
+  entity_id: light.living_room
+  new_entity_id: light.dining_room
+```
+
+:::
+
 ### Delete all orphaned entities
 
 Mass clean up your Home Assistant by deleting all orphaned entities in one go.
