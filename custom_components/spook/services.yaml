@@ -211,6 +211,7 @@ homeassistant_disable_device:
       required: true
       selector:
         device:
+          multiple: true
 
 homeassistant_enable_device:
   name: Enable a device 👻
@@ -223,6 +224,7 @@ homeassistant_enable_device:
       required: true
       selector:
         device:
+          multiple: true
 
 homeassistant_update_entity_id:
   name: Update an entity's ID 👻
