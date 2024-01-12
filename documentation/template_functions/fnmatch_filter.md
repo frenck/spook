@@ -64,11 +64,11 @@ Don't let the name of this function fool you. The `fnmatch_filter` function is a
   - `False`
 ```
 
-By default, this function is not case sensitive. This means that `spook` and `Spook` are considered the same. If you want to make the function case sensitive, set the `case_sensitive` parameter to `True`.
+By default, this function is not case-sensitive. This means that `spook` and `Spook` are considered the same. If you want to make the function case-sensitive, set the `case_sensitive` parameter to `True`.
 
 ## Patterns
 
-The UNIX shell-style pattern is a relatively simple, easy to learn and use
+The UNIX shell-style pattern is a relatively simple, easy to learn
 pattern matching technique, which is _not_ the same as regular expressions.
 
 The following characters are special characters in a pattern:
@@ -82,9 +82,9 @@ The following characters are special characters in a pattern:
 * - `?`
   - Matches any single character
 * - `[seq]`
-  - Matches any character in sequence
+  - Matches any character present in this sequence
 * - `[!seq]`
-  - Matches any character not in sequence
+  - Matches any character not present in this sequence
 ```
 
 The sequence of characters in `[seq]` can be a range, for example: `[a-z]` or `[0-9]`, or a list of characters, for example: `[abc]` or `[123]`.
@@ -133,9 +133,9 @@ Returns:
 ["Spank"]
 ```
 
-### Case sensitive matching
+### Case-sensitive matching
 
-By default, the `fnmatch_filter` function is not case sensitive. This means that `spook` and `Spook` are considered the same. If you want to make the function case sensitive, set the `case_sensitive` parameter to `True`.
+By default, the `fnmatch_filter` function is not case-sensitive. This means that `spook` and `Spook` are considered the same. If you want to make the function case-sensitive, set the `case_sensitive` parameter to `True`.
 
 ```{code-block} python
 :linenos:
@@ -150,7 +150,7 @@ Returns:
 ["Spook", "spook"]
 ```
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance the Home Assistant template engine, for example, by adding a new template function; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

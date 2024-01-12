@@ -79,7 +79,7 @@ Returns:
 
 ```{code-block} python
 :linenos:
-{{ [1, [2, [3]], 4, [5 , 6]] | shuffle }}
+{{ [1, [2, [3]], 4, [5 , 6]] | flatten }}
 ```
 
 Returns:
@@ -97,7 +97,7 @@ Example:
 
 ```{code-block} python
 :linenos:
-{{ shuffle([1, [2, [3]]], levels=1) }}
+{{ flatten([1, [2, [3]]], levels=1) }}
 ```
 
 Returns:
@@ -106,7 +106,7 @@ Returns:
 [1, 2, [3]]
 ```
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance the Home Assistant template engine, for example, by adding a new template function; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

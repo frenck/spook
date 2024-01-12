@@ -80,7 +80,7 @@ Returns:
 3bd28babb1ea84fd20da6ff3abcc0791613d38d2
 ```
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance the Home Assistant template engine, for example, by adding a new template function; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

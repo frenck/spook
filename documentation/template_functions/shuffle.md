@@ -75,7 +75,7 @@ Returns:
 [2, 3, 1]
 ```
 
-Calling the function above multiple times, will always return the list in a different random order.
+Calling the function above multiple times will always return the list in a different random order.
 
 ### Using shuffle as a filter
 
@@ -107,7 +107,7 @@ Returns:
 [2, 3, 1]
 ```
 
-Calling the function above multiple times, will always return the list in the same random order.
+Calling the function above multiple times will always return the list in the same random order.
 
 The seed can, of course, also be used when using shuffle as a filter:
 
@@ -124,7 +124,7 @@ Returns:
 
 ### Shuffle anything
 
-The examples above, use a list of numbers that get shuffled, but shuffle can be used on any list of items.
+The examples above use a list of numbers that get shuffled, but shuffle can be used on any list of items.
 
 ```{code-block} python
 :linenos:
@@ -137,7 +137,7 @@ Returns:
 ["homie", 2, "Not", 3, 1, "your"]
 ```
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance the Home Assistant template engine, for example, by adding a new template function; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
