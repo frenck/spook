@@ -9,7 +9,7 @@ date: 2024-01-09T19:55:04+01:00
 
 The `typeof` function is inspired by the <wiki:JavaScript> `typeof` operator. It reveals the {term}`type <template function return type>` of the given value.
 
-This is mostly useful when you are debugging or playing with templates in the developer tools of Home Assistant. However it might be useful is some other cases as well.
+This is mostly useful when you are debugging or playing with templates in the developer tools of Home Assistant. However, it might be useful in some other cases as well.
 
 ```{list-table}
 :header-rows: 1
@@ -88,7 +88,7 @@ str
 bool
 ```
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance the Home Assistant template engine, for example, by adding a new template function; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
