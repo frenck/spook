@@ -23,6 +23,9 @@
             },
             "homeassistant_restart": {
                 "name": "Restart"
+            },
+            "repairs_unignore_all": {
+                "name": "Nie ignoruj"
             }
         },
         "event": {
@@ -34,7 +37,8 @@
                     "event_type": {
                         "state": {
                             "remove": "Problem usunięty",
-                            "update": "Problem zaktualizowany"
+                            "update": "Problem zaktualizowany",
+                            "create": "Utworzono problem"
                         }
                     }
                 }
@@ -130,14 +134,26 @@
             },
             "repairs_active_issues": {
                 "name": "Aktywne"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Centrale alarmowe"
+            },
+            "homeassistant_date": {
+                "name": "Daty"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Stałe powiadomienia"
+            },
+            "homeassistant_zone": {
+                "name": "Strefy"
             }
         },
         "switch": {
             "cloud_google_report_state": {
-                "name": "Raportowanie stanu Asystenta Google"
+                "name": "Raportowanie Google"
             },
             "cloud_alexa_report_state": {
-                "name": "Raportowanie stanu Alexa"
+                "name": "Raportowanie Alexa"
             }
         }
     },
