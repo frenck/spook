@@ -1,13 +1,13 @@
 ---
 subject: Template function
-title: Unix filename pattern filtering
+title: Unix file name pattern filtering
 short_title: Pattern filter
 subtitle: Only let the stars ✱ shine through.
 description: Spook enhances the template engine of Home Assistant by adding a fnmatch_filter function.
 date: 2024-01-09T19:36:30+01:00
 ---
 
-Don't let the name of this function fool you. The `fnmatch_filter` function is a simple, yet, powerful tool to filter any list of text (not just lists of filenames) against a pattern. It is an very easy and powerful way to filter lists against a pattern, without having to learn <wiki:regular_expressions>.
+Don't let the name of this function fool you. The `fnmatch_filter` function is a simple, yet, powerful tool to filter any list of text (not just lists of file names) against a pattern. It is an very easy and powerful way to filter lists against a pattern, without having to learn <wiki:regular_expressions>.
 
 ```{list-table}
 :header-rows: 1

@@ -1,13 +1,13 @@
 ---
 subject: Template function
-title: Unix filename pattern matching
+title: Unix file name pattern matching
 short_title: Pattern matching
 subtitle: Did you use the wildcard already? ✱
 description: Spook enhances the template engine of Home Assistant by adding a fnmatch function.
 date: 2024-01-09T18:54:35+01:00
 ---
 
-Don't let the name of this function fool you. The `fnmatch` function is a simple, yet, powerful tool to match any text (not just filenames) against a pattern. It is an very easy and powerful way to match text against a pattern, without having to learn <wiki:regular_expressions>.
+Don't let the name of this function fool you. The `fnmatch` function is a simple, yet, powerful tool to match any text (not just file names) against a pattern. It is an very easy and powerful way to match text against a pattern, without having to learn <wiki:regular_expressions>.
 
 ```{list-table}
 :header-rows: 1

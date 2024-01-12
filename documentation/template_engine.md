@@ -88,7 +88,7 @@ Reveals the type of a given value.
 
 [documentation](template_functions/typeof) 📚
 
-## Unix filename pattern filtering
+## Unix file name pattern filtering
 
 Filter a lists of texts against a pattern.
 
@@ -99,7 +99,7 @@ Filter a lists of texts against a pattern.
 
 [documentation](template_functions/fnmatch_filter) 📚
 
-## Unix filename pattern matching
+## Unix file name pattern matching
 
 Match text or a lists of texts against a pattern.
 
