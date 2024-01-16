@@ -223,26 +223,26 @@
     "issues": {
         "lovelace_unknown_entity_references": {
             "title": "Les entitats desconegudes van utilitzar dins: {quadre de comandament}",
-            "description": "Spook ha trobat un fantasma en els vostres quadres de comandament 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el quadre de comandament següent:\n\n[{quadre de comandament}]({edició})\n\nAquest quadre de comandament referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entitats}\n\n\n\nper fixar aquest error, [editar el quadre de comandament]({edició}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie."
+            "description": "Spook ha trobat un fantasma en els vostres quadres de comandament 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el quadre de comandament següent:\n\n[{dashboard}]({edit})\n\nAquest quadre de comandament referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el quadre de comandament]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie."
         },
         "integration_unknown_source": {
             "description": "Spook ha trobat un fantasma dins els vostres Riemann sumen integrals helpers 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el següent helper:\n\n{helper} (`{entitat_id}`)\n\nAixò helper té una entitat de font desconeguda a Assistent de Casa:\n\n`{font}`\n\n\n\nper fixar aquest error, editar el helper i ajustar l'entitat de font (o treure el helper) i reprèn Assistent de Casa.\n\nSpook 👻 No el vostre homie.",
             "title": "Font desconeguda: {helper}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automatització}]({edició}) (`{entitat_id}`)\n\nAquesta automatització referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{dispositius}\n\n\n\nper fixar aquest error, [editar l'automatització]({edició}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie.",
             "title": "Els dispositius desconeguts van utilitzar dins: {automatització}"
         },
         "user_issue": {
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "title": "{títol}",
-                        "description": "{descripció}"
+                        "title": "{title}",
+                        "description": "{description}"
                     }
                 }
             },
-            "title": "{títol}"
+            "title": "{title}"
         },
         "switch_as_x_unknown_source": {
             "title": "Font desconeguda: {helper}",
@@ -250,15 +250,15 @@
         },
         "script_unknown_device_references": {
             "title": "Els dispositius desconeguts van utilitzar dins: {guió}",
-            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{guió}]({edició}) (`{entitat_id}`)\n\nAquest guió referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{dispositius}\n\n\n\nper fixar aquest error, [editar el guió]({edició}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie."
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie."
         },
         "script_unknown_area_references": {
-            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{guió}]({edició}) (`{entitat_id}`)\n\nAquest guió referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{àrees}\n\n\n\nper fixar aquest error, [editar el guió]({edició}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar el guió]({edició}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie.",
             "title": "Les àrees desconegudes van utilitzar dins: {guió}"
         },
         "automation_unknown_area_references": {
             "title": "Les àrees desconegudes van utilitzar dins: {automatització}",
-            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automatització}]({edició}) (`{entitat_id}`)\n\nAquesta automatització referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{àrees}\n\n\n\nper fixar aquest error, [editar l'automatització]({edició}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie."
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar l'automatització]({edició}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie."
         },
         "restart_required": {
             "fix_flow": {
@@ -273,15 +273,15 @@
         },
         "script_unknown_entity_references": {
             "title": "Les entitats desconegudes van utilitzar dins: {guió}",
-            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{guió}]({edició}) (`{entitat_id}`)\n\nAquest guió referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entitats}\n\n\n\nper fixar aquest error, [editar el guió]({edició}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie."
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie."
         },
         "automation_unknown_entity_references": {
             "title": "Les entitats desconegudes van utilitzar dins: {automatització}",
-            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automatització}]({edició}) (`{entitat_id}`)\n\nAquesta automatització referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entitats}\n\n\n\nper fixar aquest error, [editar l'automatització]({edició}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie."
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie."
         },
         "group_unknown_members": {
             "title": "Membres de grup desconegut dins: {grup}",
-            "description": "Spook ha trobat un fantasma en els vostres grups 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el grup següent:\n\n{grup} (`{entitat_id}`)\n\nAquest grup té membres, els quals són desconeguts a Assistent de Casa:\n\n{entitats}\n\n\n\nper fixar aquest error, edita el grup, treu l'ús d'aquests entitatsnoexistents i reprendre Assistent de Casa.\n\nSpook 👻 No el vostre homie."
+            "description": "Spook ha trobat un fantasma en els vostres grups 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el grup següent:\n\n{group} (`{entity_id}`)\n\nAquest grup té membres, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, edita el grup, treu l'ús d'aquests entitatsnoexistents i reprendre Assistent de Casa.\n\nSpook 👻 No el vostre homie."
         }
     }
 }

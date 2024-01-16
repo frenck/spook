@@ -223,26 +223,26 @@
     "issues": {
         "automation_unknown_area_references": {
             "title": "Okända områden som används i: {automation}",
-            "description": "Spook har hittat ett fel i dina automatiseringar 👻\nMedan han sökte, så hittade Spook följande automatisering:\n[{automation}]({edit}) (`{entity_id}`)\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n{områden}\nFör att åtgärda detta fel, [redigera automatiseringen]({redigera}) och ta bort användningen av dessa icke-existerande områden.\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{areas}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
         },
         "automation_unknown_device_references": {
             "title": "Okända enheter som används i: {automation}",
-            "description": "Spook har hittat ett fel i dina automatiseringar 👻\nMedan han sökte, så hittade Spook följande automatisering:\n[{automation}]({edit}) (`{entity_id}`)\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n{områden}\nFör att åtgärda detta fel, [redigera automatiseringen]({redigera}) och ta bort användningen av dessa icke-existerande områden.\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{devices}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
         },
         "automation_unknown_entity_references": {
             "title": "Okända enheter som används i: {automation}",
-            "description": "Spook har hittat ett fel i dina automatiseringar 👻\nMedan han kontrollerade, så hittade Spook  följande fel automatisering:\n[{automation}]({edit}) (`{entity_id}`)\nDenna automatisering refererar till följande enheter, som är okända för Home Assistant:\n{entities}\nFör att åtgärda  felet, [redigera automatiseringen]({redigera}) och ta bort användningen av dessa icke-existerande enheter.\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han kontrollerade, så hittade Spook  följande fel automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda  felet, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
         },
         "group_unknown_members": {
             "title": "Okända gruppmedlemmar i: {group}",
-            "description": "Spook har hittat ett fel i dina grupper 👻\nMedan han sökte, hittade Spook  följande grupp:\n{grupp} (`{entity_id}`)\nDen här gruppen har medlemmar som är okända för Home Assistant:\n{entities}\nFör att åtgärda detta  fel, redigera gruppen, ta bort användningen av dessa icke-existerande enheter och starta om Home Assistant.\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett fel i dina grupper 👻\n\nMedan han sökte, hittade Spook  följande grupp:\n\n{grupp} (`{entity_id}`)\n\nDen här gruppen har medlemmar som är okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta  fel, redigera gruppen, ta bort användningen av dessa icke-existerande enheter och starta om Home Assistant.\n\nSpook 👻 Inte din homie."
         },
         "integration_unknown_source": {
             "description": "Spook har hittat ett fel  i din Riemann summa integral hjälpare 👻\nMedan han sökte, så hittade Spook följande hjälpare:\n{helper} (`{entity_id}`)\nDen här hjälparen har en källenhet som är okänd för Home Assistant:\n`{källa}`\nFör att åtgärda detta fel, redigera hjälparen och justera källenheten (eller ta bort hjälparen) och starta om Home Assistant.\nSpook 👻 Inte din homie.",
             "title": "Okänd källa: {helper}"
         },
         "script_unknown_area_references": {
-            "description": "Spook har hittat ett fel i dina  script 👻\nMedan han sökte, så hittade Spook följande manus:\n[{script}]({edit}) (`{entity_id}`)\nDetta skript refererar till följande områden, som är okända för Home Assistant:\n{områden}\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande områden.\nSpook 👻 Inte din homie.",
+            "description": "Spook har hittat ett fel i dina  script 👻\n\nMedan han sökte, så hittade Spook följande manus:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript refererar till följande områden, som är okända för Home Assistant:\n\n{areas}\n\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie.",
             "title": "Okända områden som används i: {script}"
         },
         "switch_as_x_unknown_source": {
@@ -253,7 +253,7 @@
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "description": "(beskrivning)",
+                        "description": "{description}",
                         "title": "{title}"
                     }
                 }
@@ -262,15 +262,15 @@
         },
         "lovelace_unknown_entity_references": {
             "title": "Okända enheter som används i: {dashboard}",
-            "description": "Spook har hittat ett fel i din instrumentpanel 👻\nMedan han sökte, så hittade Spook följande instrumentpanel:\n[{dashboard}]({edit})\nDen här instrumentpanelen refererar till följande enheter, som är okända för Home Assistant:\n{entities}\nFör att åtgärda felet, [redigera instrumentpanelen]({redigera}) och ta bort användningen av dessa icke-existerande enheter.\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett fel i din instrumentpanel 👻\n\nMedan han sökte, så hittade Spook följande instrumentpanel:\n\n[{dashboard}]({edit})\n\nDen här instrumentpanelen refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda felet, [redigera instrumentpanelen]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
         },
         "script_unknown_device_references": {
             "title": "Okända enheter som används i: {script}",
-            "description": "Spook har hittat ett spöke i dina script 👻\nMedan han flöt runt, korsade Spook vägen med följande manus:\n[{script}]({edit}) (`{entity_id}`)\nDet här skriptet refererar till följande enheter, som är okända för Home Assistant:\n{enheter}\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande enheter.\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett spöke i dina script 👻\n\nMedan han flöt runt, korsade Spook vägen med följande manus:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDet här skriptet refererar till följande enheter, som är okända för Home Assistant:\n\n{devices}\n\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
         },
         "script_unknown_entity_references": {
             "title": "Okända enheter som används i: {script}",
-            "description": "Spook har hittat ett spöke i dina script 👻\nMedan han flöt runt, korsade Spook vägen med följande manus:\n[{script}]({edit}) (`{entity_id}`)\nDetta skript refererar till följande enheter, som är okända för Home Assistant:\n{entities}\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande enheter.\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett spöke i dina script 👻\n\nMedan han flöt runt, korsade Spook vägen med följande manus:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
         },
         "restart_required": {
             "fix_flow": {

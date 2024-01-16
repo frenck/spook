@@ -220,7 +220,7 @@
     "issues": {
         "lovelace_unknown_entity_references": {
             "title": "Bilinmeyen varlıklar kullanılır: {dashboard}",
-            "description": "Spook, panolarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki paniğe yol açtı:\n\n[{ashboard}]\n\nBu pano, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entity}\n\n\n\nBu hatayı düzeltmek için [edit the dashboard] ({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil."
+            "description": "Spook, panolarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki paniğe yol açtı:\n\n[{dashboard}]({edit})\n\nBu pano, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the dashboard]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil."
         },
         "integration_unknown_source": {
             "description": "Spook, Riemann'ınızdaki bir hayalet buldu\n\nÇevrede yüzerken, Spook aşağıdaki yardımcı ile yolu geçti:\n\n{helper} ('{entity_id})\n\nBu yardımcının Home Asistan tarafından bilinmeyen bir kaynağı var:\n\n\" \"\n\n\n\nBu hatayı düzeltmek için, yardımlayıcıyı düzenler ve kaynak varlığını ayarlar (veya yardımcıları kaldırır) ve Home Asistanı yeniden başlatır.\n\nSpook . senin homie değil.",
@@ -274,7 +274,7 @@
         },
         "automation_unknown_entity_references": {
             "title": "Bilinmeyen varlıklar kullanılır: { autoion}",
-            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{0}]({edit})\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entity}\n\n\n\nBu hatayı düzeltmek için [edit the Automation] ({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil."
+            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entity}\n\n\n\nBu hatayı düzeltmek için [edit the Automation]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil."
         },
         "group_unknown_members": {
             "title": "Bilinmeyen grup üyeleri: {grup}",
