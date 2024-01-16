@@ -19,21 +19,21 @@ class SpookRepair(AbstractSpookRepair):
         ar.EVENT_AREA_REGISTRY_UPDATED,
     }
 
-    _entity_component: EntityComponent[automation.AutomationEntity]
     _issues: set[str] = set()
-
-    async def async_activate(self) -> None:
-        """Handle the activating a repair."""
-        self._entity_component = self.hass.data[DATA_INSTANCES][self.domain]
-
-        await super().async_activate()
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
+        if self.domain not in self.hass.data[DATA_INSTANCES]:
+            return
+
+        entity_component: EntityComponent[automation.AutomationEntity] = self.hass.data[
+            DATA_INSTANCES
+        ][self.domain]
+
         LOGGER.debug("Spook is inspecting: %s", self.repair)
         areas = set(self.area_registry.areas)
         possible_issue_ids: set[str] = set()
-        for entity in self._entity_component.entities:
+        for entity in entity_component.entities:
             possible_issue_ids.add(entity.entity_id)
             if not isinstance(entity, automation.UnavailableAutomationEntity) and (
                 unknown_areas := {
