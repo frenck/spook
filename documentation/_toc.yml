@@ -23,6 +23,17 @@ parts:
       - file: entities
       - file: areas
       - file: devices_entities
+      - file: template_engine
+        sections:
+          - file: template_functions/flatten
+          - file: template_functions/md5
+          - file: template_functions/fnmatch
+          - file: template_functions/fnmatch_filter
+          - file: template_functions/sha1
+          - file: template_functions/sha256
+          - file: template_functions/sha512
+          - file: template_functions/shuffle
+          - file: template_functions/typeof
       - file: misc
 
   - caption: Enhanced integrations
@@ -44,20 +55,19 @@ parts:
       - file: integrations/select
       - file: integrations/switch_as_x
       - file: integrations/timer
+      - file: integrations/trend
+      - file: integrations/utility_meter
       - file: integrations/zone
 
   - caption: Helpers
     chapters:
       - file: helpers/inverse
 
-  # - caption: Tutorials
-  #   chapters:
-  #     - file: ectoplasms
-
   - caption: Reference
     chapters:
       - file: services
       - file: blueprints
+      - file: template_functions
       - file: glossary
 
   - caption: About the project

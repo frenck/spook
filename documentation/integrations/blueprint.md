@@ -50,7 +50,7 @@ Downloads and imports an automation/script blueprint, directly from the URL you 
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
@@ -102,7 +102,7 @@ Some use cases for the enhancements Spook provides for this integration:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

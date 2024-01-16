@@ -117,7 +117,7 @@ a device becomes unreachable.
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
@@ -198,7 +198,7 @@ Adds a single service to ignore all issues currently raised in the repairs dashb
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
@@ -241,7 +241,7 @@ Remove an issue from the repairs integration.
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
@@ -298,7 +298,7 @@ Adds a single service to unignore all repair issues currently still active (but 
   - No targets
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
@@ -329,7 +329,7 @@ Some use cases for the enhancements Spook provides for this integration:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

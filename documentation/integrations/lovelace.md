@@ -57,7 +57,7 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 - Spook is not aware of all possible configuration for all possible cards. Especially with third-party cards, configuration can sometimes differ and Spook might not be able to detect the use of an unknown entity ID in such cases.
   :::
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

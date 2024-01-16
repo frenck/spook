@@ -2,7 +2,7 @@
 subject: Features
 title: Core extensions
 subtitle: It is like the turbo cartridge for your Commodore 64 🕹️
-date: 2023-08-09T21:29:00+02:00
+date: 2024-01-09T12:12:37+01:00
 ---
 
 Spook adds functionality to the very core of {term}`Home Assistant`. No, no, this should not be confused with {term}`integrations <integration>`, but like empowering the main application program of Home Assistant that runs those integrations (level 🆙!).
@@ -42,6 +42,14 @@ You can even dynamically create completely new areas on the fly.
 :footer: 📚 [Learn more](devices.md)
 
 Spook adds a bunch of devices and entities to Home Assistant that provide information and controls over the internals of Home Assistant.
+
+:::
+
+:::{card} Template engine
+:footer: 📚 [Learn more](template_engine.md)
+
+Home Assistant's templating engine might be the most powerful feature of Home Assistant, and Spook is adding even more on top of it.
+Bring out your Jinja2 skills!
 
 :::
 

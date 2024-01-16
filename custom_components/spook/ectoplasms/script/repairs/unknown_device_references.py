@@ -16,20 +16,21 @@ class SpookRepair(AbstractSpookRepair):
     repair = "script_unknown_device_references"
     inspect_events = {dr.EVENT_DEVICE_REGISTRY_UPDATED}
 
-    _entity_component: EntityComponent[script.ScriptEntity]
     _issues: set[str] = set()
-
-    async def async_activate(self) -> None:
-        """Handle the activating a repair."""
-        self._entity_component = self.hass.data[DATA_INSTANCES][self.domain]
-        await super().async_activate()
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
+        if self.domain not in self.hass.data[DATA_INSTANCES]:
+            return
+
+        entity_component: EntityComponent[script.ScriptEntity] = self.hass.data[
+            DATA_INSTANCES
+        ][self.domain]
+
         LOGGER.debug("Spook is inspecting: %s", self.repair)
         devices = {device.id for device in self.device_registry.devices.values()}
         possible_issue_ids: set[str] = set()
-        for entity in self._entity_component.entities:
+        for entity in entity_component.entities:
             possible_issue_ids.add(entity.entity_id)
             if not isinstance(entity, script.UnavailableScriptEntity) and (
                 unknown_devices := {
