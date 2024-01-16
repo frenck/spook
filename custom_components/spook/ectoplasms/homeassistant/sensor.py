@@ -46,7 +46,7 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
-@dataclass(frozen=True, kw_only=True)
+@dataclass(kw_only=True)
 class HomeAssistantSpookSensorEntityDescription(
     SpookEntityDescription,
     SensorEntityDescription,

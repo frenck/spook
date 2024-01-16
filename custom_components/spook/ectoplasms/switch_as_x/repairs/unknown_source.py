@@ -17,8 +17,10 @@ class SpookRepair(AbstractSpookRepair):
     inspect_events = {
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
-        "event_integration_reloaded",
     }
+    inspect_config_entry_changed = "switch_as_x"
+
+    _issues: set[str] = set()
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
@@ -32,8 +34,10 @@ class SpookRepair(AbstractSpookRepair):
             entity.entity_id for entity in self.entity_registry.entities.values()
         }.union(self.hass.states.async_entity_ids())
 
+        possible_issue_ids: set[str] = set()
         for platform in platforms:
             for entity in platform.entities.values():
+                possible_issue_ids.add(entity.entity_id)
                 # pylint: disable-next=protected-access
                 source = entity._switch_entity_id  # noqa: SLF001
                 if source not in entity_ids:
@@ -45,6 +49,7 @@ class SpookRepair(AbstractSpookRepair):
                             "source": source,
                         },
                     )
+                    self._issues.add(entity.entity_id)
                     LOGGER.debug(
                         "Spook found unknown source entity %s in %s "
                         "and created an issue for it",
@@ -53,3 +58,9 @@ class SpookRepair(AbstractSpookRepair):
                     )
                 else:
                     self.async_delete_issue(entity.entity_id)
+                    self._issues.discard(entity.entity_id)
+
+        # Remove issues for entities that no longer exist
+        for issue_id in self._issues - possible_issue_ids:
+            self.async_delete_issue(issue_id)
+            self._issues.discard(issue_id)

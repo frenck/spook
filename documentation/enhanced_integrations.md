@@ -4,7 +4,7 @@ title: Enhanced integrations
 subtitle: A little bit of ectoplasm goes a long way. 🧪
 thumbnail: images/social.png
 description: Spook enhances the following Home Assistant integrations by sprinkling some ectoplasmic goodness on top of them.
-date: 2023-09-22T10:47:44+02:00
+date: 2024-01-12T20:44:21+01:00
 ---
 
 Spook enhances the following {term}`Home Assistant` {term}`integrations <integration>` by sprinkling some {term}`ectoplasmic <ectoplasm>` goodness on top of them.
@@ -98,6 +98,16 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 :::{card} Timer
 :footer: 📚 [Learn more](integrations/timer)
 [![](https://brands.home-assistant.io/timer/icon.png)](integrations/timer)
+:::
+
+:::{card} Trend
+:footer: 📚 [Learn more](integrations/trend)
+[![](https://brands.home-assistant.io/trend/icon.png)](integrations/trend)
+:::
+
+:::{card} Utility meter
+:footer: 📚 [Learn more](integrations/utility_meter)
+[![](https://brands.home-assistant.io/utility_meter/icon.png)](integrations/utility_meter)
 :::
 
 :::{card} Zone

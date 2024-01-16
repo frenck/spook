@@ -8,7 +8,6 @@ from homeassistant.components.lovelace.const import (
     EVENT_LOVELACE_UPDATED,
     ConfigNotFound,
 )
-from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
 from homeassistant.const import (
     ENTITY_MATCH_ALL,
     ENTITY_MATCH_NONE,
@@ -16,7 +15,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback, valid_entity_id
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.dispatcher import async_dispatcher_connect
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
@@ -26,7 +24,6 @@ if TYPE_CHECKING:
         LovelaceStorage,
         LovelaceYAML,
     )
-    from homeassistant.core import HomeAssistant
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -38,47 +35,17 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_COMPONENT_LOADED,
         EVENT_LOVELACE_UPDATED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
-        "event_counter_reloaded",
-        "event_derivative_reloaded",
-        "event_group_reloaded",
-        "event_input_boolean_reloaded",
-        "event_input_button_reloaded",
-        "event_input_datetime_reloaded",
-        "event_input_number_reloaded",
-        "event_input_select_reloaded",
-        "event_input_text_reloaded",
-        "event_integration_reloaded",
-        "event_min_max_reloaded",
-        "event_mqtt_reloaded",
-        "event_scene_reloaded",
-        "event_schedule_reloaded",
-        "event_template_reloaded",
-        "event_threshold_reloaded",
-        "event_tod_reloaded",
-        "event_utility_meter_reloaded",
     }
+    inspect_config_entry_changed = True
+    inspect_on_reload = True
 
     _dashboards: dict[str, LovelaceStorage | LovelaceYAML]
+    _issues: set[str] = set()
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
         self._dashboards = self.hass.data["lovelace"]["dashboards"]
         await super().async_activate()
-
-        # Listen for config entry changes, this might have an impact
-        # on the available entities (those not in the entity registry)
-        async def _async_update_listener(
-            _hass: HomeAssistant,
-            _entry: ConfigEntry,
-        ) -> None:
-            """Handle options update."""
-            await self.inspect_debouncer.async_call()
-
-        async_dispatcher_connect(
-            self.hass,
-            SIGNAL_CONFIG_ENTRY_CHANGED,
-            _async_update_listener,
-        )
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
@@ -98,9 +65,10 @@ class SpookRepair(AbstractSpookRepair):
 
         # Loop over all dashboards and check if there are unknown entities
         # referenced in the dashboards.
+        possible_issue_ids: set[str] = set()
         for dashboard in self._dashboards.values():
             url_path = dashboard.url_path or "lovelace"
-
+            possible_issue_ids.add(url_path)
             try:
                 config = await dashboard.async_load(force=False)
             except ConfigNotFound:
@@ -137,6 +105,7 @@ class SpookRepair(AbstractSpookRepair):
                         "edit": f"/{url_path}/0?edit=1",
                     },
                 )
+                self._issues.add(url_path)
                 LOGGER.debug(
                     (
                         "Spook found unknown entities in dashboard %s "
@@ -147,6 +116,12 @@ class SpookRepair(AbstractSpookRepair):
                 )
             else:
                 self.async_delete_issue(url_path)
+                self._issues.discard(url_path)
+
+        # Remove issues for dashboards that no longer exist.
+        for issue_id in self._issues - possible_issue_ids:
+            self.async_delete_issue(issue_id)
+            self._issues.discard(issue_id)
 
     @callback
     def __async_extract_entities(self, config: dict[str, Any]) -> set[str]:

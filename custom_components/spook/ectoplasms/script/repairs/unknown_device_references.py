@@ -16,18 +16,22 @@ class SpookRepair(AbstractSpookRepair):
     repair = "script_unknown_device_references"
     inspect_events = {dr.EVENT_DEVICE_REGISTRY_UPDATED}
 
-    _entity_component: EntityComponent[script.ScriptEntity]
-
-    async def async_activate(self) -> None:
-        """Handle the activating a repair."""
-        self._entity_component = self.hass.data[DATA_INSTANCES][self.domain]
-        await super().async_activate()
+    _issues: set[str] = set()
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
+        if self.domain not in self.hass.data[DATA_INSTANCES]:
+            return
+
+        entity_component: EntityComponent[script.ScriptEntity] = self.hass.data[
+            DATA_INSTANCES
+        ][self.domain]
+
         LOGGER.debug("Spook is inspecting: %s", self.repair)
         devices = {device.id for device in self.device_registry.devices.values()}
-        for entity in self._entity_component.entities:
+        possible_issue_ids: set[str] = set()
+        for entity in entity_component.entities:
+            possible_issue_ids.add(entity.entity_id)
             if not isinstance(entity, script.UnavailableScriptEntity) and (
                 unknown_devices := {
                     device
@@ -46,6 +50,7 @@ class SpookRepair(AbstractSpookRepair):
                         "entity_id": entity.entity_id,
                     },
                 )
+                self._issues.add(entity.entity_id)
                 LOGGER.debug(
                     (
                         "Spook found unknown devices in %s "
@@ -56,3 +61,9 @@ class SpookRepair(AbstractSpookRepair):
                 )
             else:
                 self.async_delete_issue(entity.entity_id)
+                self._issues.discard(entity.entity_id)
+
+        # Remove issues for entities that no longer exist
+        for issue_id in self._issues - possible_issue_ids:
+            self.async_delete_issue(issue_id)
+            self._issues.discard(issue_id)

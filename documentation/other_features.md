@@ -34,7 +34,7 @@ This service will just always scare Home Assistant, causing this service call to
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo)
@@ -73,7 +73,7 @@ This service call will randomly fail (and thus randomly stop your automation or 
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)

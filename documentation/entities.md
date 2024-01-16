@@ -31,7 +31,7 @@ This service allows you to disable an entity on the fly.
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
@@ -94,7 +94,7 @@ This service allows you to enable an entity on the fly.
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
@@ -160,7 +160,7 @@ Hidden entities are also not exposed to external voice assistants, like Google A
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
@@ -223,7 +223,7 @@ This service allows you to unhide an entity on the fly.
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
@@ -266,6 +266,63 @@ data:
 
 :::
 
+### Update an entity's ID
+
+This service allows you to update an entity's ID on the fly.
+
+```{figure} ./images/entities/update_entity_id.png
+:alt: Screenshot of the Home Assistant update entity ID service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - {term}`Service`
+  - Update an entity's ID 👻
+* - {term}`Service name`
+  - `homeassistant.update_entity_id`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - No response
+* - {term}`Spook's influence`
+  - Newly added service.
+* - {term}`Developer tools`
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service call data
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>`
+  - Yes
+  - `"light.living_room"`
+* - `new_entity_id`
+  - {term}`string <string>`
+  - Yes
+  - `"light.dining_room"`
+```
+
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.update_entity_id
+data:
+  entity_id: light.living_room
+  new_entity_id: light.dining_room
+```
+
+:::
+
 ### Delete all orphaned entities
 
 Mass clean up your Home Assistant by deleting all orphaned entities in one go.
@@ -292,7 +349,7 @@ Entities might have been marked orphaned because an integration is offline or no
   - No
 * - {term}`Service response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added service.
 * - {term}`Developer tools`
   - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
@@ -313,7 +370,7 @@ service: homeassistant.delete_all_orphaned_entities
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for these features. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas and support
+## Features requests, ideas, and support
 
 If you have an idea on how to further enhance this, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
