@@ -27,16 +27,17 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = True
     inspect_on_reload = True
 
-    _entity_component: EntityComponent[script.ScriptEntity]
     _issues: set[str] = set()
-
-    async def async_activate(self) -> None:
-        """Handle the activating a repair."""
-        self._entity_component = self.hass.data[DATA_INSTANCES][self.domain]
-        await super().async_activate()
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
+        if self.domain not in self.hass.data[DATA_INSTANCES]:
+            return
+
+        entity_component: EntityComponent[script.ScriptEntity] = self.hass.data[
+            DATA_INSTANCES
+        ][self.domain]
+
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
         # Two sources for entities. The entities in the entity registry,
@@ -52,7 +53,7 @@ class SpookRepair(AbstractSpookRepair):
         )
 
         possible_issue_ids: set[str] = set()
-        for entity in self._entity_component.entities:
+        for entity in entity_component.entities:
             possible_issue_ids.add(entity.entity_id)
             # Filter out scenes, groups & device_tracker entities.
             # Those can be created on the fly with services, which we
