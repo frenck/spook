@@ -223,26 +223,26 @@
     "issues": {
         "lovelace_unknown_entity_references": {
             "title": "Entitas yang tidak diketahui digunakan dalam: {dashboard}",
-            "description": "Spook telah menemukan hantu di dasbor Anda 👻\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini merujuk entitas berikut, yang tidak diketahui Asisten Rumah:\n\nSitemap\n\n\n\nUntuk memperbaiki kesalahan ini, [edit dashboard]({edit}) dan menghapus penggunaan entitas yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda."
+            "description": "Spook telah menemukan hantu di dasbor Anda 👻\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini merujuk entitas berikut, yang tidak diketahui Asisten Rumah:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit dashboard]({edit}) dan menghapus penggunaan entitas yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda."
         },
         "integration_unknown_source": {
             "description": "Spook telah menemukan hantu di pertolongan integral Riemann sum Anda 👻\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan bantuan berikut:\n\n{url} ('{entity_id}`)\n\nPenolong ini memiliki entitas sumber yang tidak diketahui Asisten Rumah:\n\nSitemap Sitemap\n\n\n\nUntuk memperbaiki kesalahan ini, edit helper dan menyesuaikan entitas sumber (atau menghapus helper) dan restart Home Assistant.\n\nSpook 👻 Tidak homie Anda.",
             "title": "Sumber yang tidak diketahui: Login"
         },
         "automation_unknown_device_references": {
-            "description": "Spook telah menemukan hantu dalam otomasi Anda 👻\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan otomatisasi berikut:\n\n[{automation}]({edit})\n\nOtomasi ini merujuk perangkat berikut, yang tidak diketahui Asisten Rumah:\n\nSitemap\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomatisasi]({edit}) dan menghapus penggunaan perangkat yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda.",
+            "description": "Spook telah menemukan hantu dalam otomasi Anda 👻\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan otomatisasi berikut:\n\n[{automation}]({edit})\n\nOtomasi ini merujuk perangkat berikut, yang tidak diketahui Asisten Rumah:\n\n{devices}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomatisasi]({edit}) dan menghapus penggunaan perangkat yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda.",
             "title": "Perangkat yang tidak diketahui digunakan dalam: {automation}"
         },
         "user_issue": {
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "title": "sitemap",
-                        "description": "sitemap"
+                        "title": "{title}",
+                        "description": "{description}"
                     }
                 }
             },
-            "title": "sitemap"
+            "title": "{title}"
         },
         "switch_as_x_unknown_source": {
             "title": "Sumber yang tidak diketahui: Login",
@@ -250,15 +250,15 @@
         },
         "script_unknown_device_references": {
             "title": "Perangkat yang tidak diketahui digunakan dalam: {script}",
-            "description": "Spook telah menemukan hantu di skrip Anda\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan skrip berikut:\n\n[{script}]({edit})\n\nScript ini merujuk pada perangkat berikut, yang tidak diketahui Asisten Rumah:\n\nSitemap\n\n\n\nUntuk memperbaiki kesalahan ini, [edit script]({edit}) dan menghapus penggunaan perangkat yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda."
+            "description": "Spook telah menemukan hantu di skrip Anda\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript ini merujuk pada perangkat berikut, yang tidak diketahui Asisten Rumah:\n\n{devices}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit script]({edit}) dan menghapus penggunaan perangkat yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda."
         },
         "script_unknown_area_references": {
-            "description": "Spook telah menemukan hantu di skrip Anda\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan skrip berikut:\n\n[{script}]({edit})\n\nScript ini merujuk pada area berikut, yang tidak diketahui Asisten Rumah:\n\nSitemap\n\n\n\nUntuk memperbaiki kesalahan ini, [edit script]({edit}) dan menghapus penggunaan daerah yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda.",
+            "description": "Spook telah menemukan hantu di skrip Anda\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan skrip berikut:\n\n[{script}]({edit})\n\nScript ini merujuk pada area berikut, yang tidak diketahui Asisten Rumah:\n\n{areas}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit script]({edit}) dan menghapus penggunaan daerah yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda.",
             "title": "Area yang tidak diketahui digunakan dalam: {script}"
         },
         "automation_unknown_area_references": {
             "title": "Area yang tidak diketahui digunakan dalam: {automation}",
-            "description": "Spook telah menemukan hantu dalam otomasi Anda 👻\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan otomatisasi berikut:\n\n[{automation}]({edit})\n\nOtomatisasi ini merujuk pada area berikut, yang tidak diketahui Asisten Rumah:\n\nSitemap\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomatisasi]({edit}) dan menghapus penggunaan daerah yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda."
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Not your homie."
         },
         "restart_required": {
             "fix_flow": {
@@ -273,15 +273,15 @@
         },
         "script_unknown_entity_references": {
             "title": "Entitas yang tidak diketahui digunakan dalam: {script}",
-            "description": "Spook telah menemukan hantu di skrip Anda\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan skrip berikut:\n\n[{script}]({edit})\n\nScript ini merujuk entitas berikut, yang tidak diketahui Asisten Rumah:\n\nSitemap\n\n\n\nUntuk memperbaiki kesalahan ini, [edit script]({edit}) dan menghapus penggunaan entitas yang tidak ada.\n\nSpook 👻 Tidak homie Anda."
+            "description": "Spook telah menemukan hantu di skrip Anda\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan skrip berikut:\n\n[{script}]({edit})\n\nScript ini merujuk entitas berikut, yang tidak diketahui Asisten Rumah:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit script]({edit}) dan menghapus penggunaan entitas yang tidak ada.\n\nSpook 👻 Tidak homie Anda."
         },
         "automation_unknown_entity_references": {
             "title": "Entitas yang tidak diketahui digunakan dalam: {automation}",
-            "description": "Spook telah menemukan hantu dalam otomasi Anda 👻\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan otomatisasi berikut:\n\n[{automation}]({edit})\n\nOtomasi ini merujuk entitas berikut, yang tidak diketahui Asisten Rumah:\n\nSitemap\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomatisasi]({edit}) dan menghapus penggunaan entitas yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda."
+            "description": "Spook telah menemukan hantu dalam otomasi Anda 👻\n\nSementara mengambang di sekitar, Spook menyeberang jalan dengan otomatisasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini merujuk entitas berikut, yang tidak diketahui Asisten Rumah:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomatisasi]({edit}) dan menghapus penggunaan entitas yang tidak adat ini.\n\nSpook 👻 Tidak homie Anda."
         },
         "group_unknown_members": {
             "title": "Anggota kelompok yang tidak diketahui di: {group}",
-            "description": "Spook telah menemukan hantu di kelompok Anda 👻\n\nSementara mengambang di sekitar, Menjelang jalan yang disengaja dengan kelompok berikut:\n\n{group} (`{entity_id}`)\n\nKelompok ini memiliki anggota, yang tidak diketahui Asisten Rumah:\n\nSitemap\n\n\n\nUntuk memperbaiki kesalahan ini, edit grup, hapus penggunaan entitas yang tidak ada dan restart Home Assistant.\n\nSpook 👻 Tidak homie Anda."
+            "description": "Spook telah menemukan hantu di kelompok Anda 👻\n\nSementara mengambang di sekitar, Menjelang jalan yang disengaja dengan kelompok berikut:\n\n{group} (`{entity_id}`)\n\nKelompok ini memiliki anggota, yang tidak diketahui Asisten Rumah:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, edit grup, hapus penggunaan entitas yang tidak ada dan restart Home Assistant.\n\nSpook 👻 Tidak homie Anda."
         }
     }
 }

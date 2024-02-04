@@ -223,26 +223,26 @@
     "issues": {
         "lovelace_unknown_entity_references": {
             "title": "גופים לא ידועים בשימוש:",
-            "description": "Spook מצא רוח רפאים בלוח המחוונים שלך\n\nבעוד צף סביב, ספוק חצה את הנתיב עם המחוונים הבאים:\n\n(הופנה מהדף)\n\nלוח המחוונים הזה מתייחס לישויות הבאות, שאינן ידועות ל-Home assistant:\n\nהמונחים:\n\n\n\nכדי לתקן את השגיאה הזו, [לערוך את לוח המחוונים] ולהסיר את השימוש בגופים שאינם רשומים אלה.\n\nלא את הרצח שלך."
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Not your homie."
         },
         "integration_unknown_source": {
             "description": "Spook מצא רוח רפאים בסכום העזרה האינטגראלית שלך 👻\n\nבזמן צף סביב, ספוק חצה את הנתיב עם העוזר הבא:\n\n(הופנה מהדף)\n\nעוזר זה יש גורם מקור לא ידוע עוזר בית:\n\n[מקור] \"\n\n\n\nכדי לתקן את השגיאה הזו, לערוך את העוזר ולהתאים את ישות המקור (או להסיר את העוזר) ולחדש את עוזר הבית.\n\nלא את הרצח שלך.",
             "title": "מקור לא ידוע: עזרה"
         },
         "automation_unknown_device_references": {
-            "description": "ספאק מצא רוח רפאים באוטומציה שלך\n\nבזמן צף סביב, ספוק חצה את הנתיב עם האוטומציה הבאה:\n\n[[1924]]]]\n\nאוטומציה זו מתייחסת למכשירים הבאים, שאינם ידועים ל-Home assistant:\n\n[צחוק]\n\n\n\nכדי לתקן את השגיאה הזו, [לעדכן את האוטומציה] ולהסיר את השימוש במכשירים שאינם רשומים אלה.\n\nלא את הרצח שלך.",
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Not your homie.",
             "title": "מכשירים לא ידועים בשימוש:"
         },
         "user_issue": {
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "title": "המונחים:",
-                        "description": "המונחים:"
+                        "title": "{title}",
+                        "description": "{description}"
                     }
                 }
             },
-            "title": "המונחים:"
+            "title": "{title}"
         },
         "switch_as_x_unknown_source": {
             "title": "מקור לא ידוע: עזרה",
@@ -250,15 +250,15 @@
         },
         "script_unknown_device_references": {
             "title": "מכשירים לא ידועים בשימוש:",
-            "description": "ספוק מצא רוח רפאים בתסריטים שלך\n\nבעוד צף סביב, ספוק חצה את הנתיב עם התסריט הבא:\n\n[[1924]]]]\n\nתסריט זה מתייחס למכשירים הבאים, שאינם ידועים ל-Home assistant:\n\n[צחוק]\n\n\n\nכדי לתקן את השגיאה הזו, [לערוך את התסריט] ולהסיר את השימוש במכשירים שאינם רשומים אלה.\n\nלא את הרצח שלך."
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Not your homie."
         },
         "script_unknown_area_references": {
-            "description": "ספוק מצא רוח רפאים בתסריטים שלך\n\nבעוד צף סביב, ספוק חצה את הנתיב עם התסריט הבא:\n\n[[1924]]]]\n\nהתסריט הזה מתייחס לאזורים הבאים, שאינם ידועים ל-Home assistant:\n\nתגית:\n\n\n\nכדי לתקן את השגיאה הזו, [לערוך את התסריט] ולהסיר את השימוש באזורים שאינם רשומים אלה.\n\nלא את הרצח שלך.",
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Not your homie.",
             "title": "אזורים לא ידועים בשימוש:"
         },
         "automation_unknown_area_references": {
             "title": "אזורים לא ידועים בשימוש:",
-            "description": "ספאק מצא רוח רפאים באוטומציה שלך\n\nבזמן צף סביב, ספוק חצה את הנתיב עם האוטומציה הבאה:\n\n[[1924]]]]\n\nאוטומציה זו מתייחסת לאזורים הבאים, שאינם ידועים ל-Home assistant:\n\nתגית:\n\n\n\nכדי לתקן את השגיאה הזו, [לעדכן את האוטומציה] ולהסיר את השימוש באזורים הלא-מסוכנים הללו.\n\nלא את הרצח שלך."
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Not your homie."
         },
         "restart_required": {
             "fix_flow": {
@@ -273,15 +273,15 @@
         },
         "script_unknown_entity_references": {
             "title": "גופים לא ידועים בשימוש:",
-            "description": "ספוק מצא רוח רפאים בתסריטים שלך\n\nבעוד צף סביב, ספוק חצה את הנתיב עם התסריט הבא:\n\n[[1924]]]]\n\nהתסריט הזה מתייחס לישויות הבאות, שאינן ידועות ל-Home assistant:\n\nהמונחים:\n\n\n\nכדי לתקן את השגיאה הזו, [לערוך את התסריט] ולהסיר את השימוש בגופים שאינם רשומים אלה.\n\nלא את הרצח שלך."
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Not your homie."
         },
         "automation_unknown_entity_references": {
             "title": "גופים לא ידועים בשימוש:",
-            "description": "ספאק מצא רוח רפאים באוטומציה שלך\n\nבזמן צף סביב, ספוק חצה את הנתיב עם האוטומציה הבאה:\n\n[[1924]]]]\n\nאוטומציה זו מתייחסת לישויות הבאות, שאינן ידועות ל-Home assistant:\n\nהמונחים:\n\n\n\nכדי לתקן את השגיאה הזו, [לעדכן את האוטומציה] ולהסיר את השימוש בגופים הלא-מסוכנים הללו.\n\nלא את הרצח שלך."
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Not your homie."
         },
         "group_unknown_members": {
             "title": "חברים לא ידועים ב:",
-            "description": "ספוק מצא רוח רפאים בקבוצות שלך\n\nצף סביב, ספוק חצה את הדרך עם הקבוצה הבאה:\n\n(הופנה מהדף)\n\nלקבוצה זו יש חברים, אשר אינם ידועים עוזר בית:\n\nהמונחים:\n\n\n\nכדי לתקן את השגיאה הזו, לערוך את הקבוצה, להסיר את השימוש בגופים שאינם רשומים אלה ולחדש את עוזר הבית.\n\nלא את הרצח שלך."
+            "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Not your homie."
         }
     }
 }

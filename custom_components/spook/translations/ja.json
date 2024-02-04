@@ -223,26 +223,26 @@
     "issues": {
         "lovelace_unknown_entity_references": {
             "title": "未知のエンティティティティ: {dashboard}",
-            "description": "Spookはダッシュボードでゴーストを見つけました ◀\n\n周りを浮遊している間、Spookは、次のダッシュボードで横断パスを渡しました。\n\n[{ダッシュボード}]({edit})\n\nこのダッシュボードは、ホームアシスタントに不明な以下のエンティティティティを参照します。\n\nお問い合わせ\n\n\n\nこのエラーを修正するには、[ダッシュボード]({edit})を編集し、これらの非既存のエンティティティティの使用を削除します。\n\nあなたの趣味ではありません。."
+            "description": "Spookはダッシュボードでゴーストを見つけました ◀\n\n周りを浮遊している間、Spookは、次のダッシュボードで横断パスを渡しました。\n\n[{dashboard}]({edit})\n\n\nこのダッシュボードは、ホームアシスタントに不明な以下のエンティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[ダッシュボード]({edit})を編集し、これらの非既存のエンティティティティの使用を削除します。\n\nあなたの趣味ではありません。."
         },
         "integration_unknown_source": {
             "description": "スプックは、あなたのリエマンの合計積分ヘルパーで幽霊を発見しました。\n\n周りを浮遊している間、スプックは、次のヘルパーでパスを渡しました。\n\nお問い合わせ\n\nこのヘルパーは、ホームアシスタントに不明なソースエンティティティティティを持っています:\n\nツイート ログイン\n\n\n\nこのエラーを修正するには、ヘルパーを編集し、ソースのエンティティティ(またはヘルパーを削除)を調整し、ホームアシスタントを再起動します。\n\nあなたの趣味ではありません。.",
             "title": "不明なソース: お問い合わせ"
         },
         "automation_unknown_device_references": {
-            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに不明な次のデバイスを参照します。\n\nお問い合わせ\n\n\n\nこのエラーを修正するには、[自動化]({edit})を編集し、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
+            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[自動化]({edit})を編集し、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
             "title": "未知のデバイス: {automation}"
         },
         "user_issue": {
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "title": "お問い合わせ",
-                        "description": "お問い合わせ"
+                        "title": "{title}",
+                        "description": "{description}"
                     }
                 }
             },
-            "title": "お問い合わせ"
+            "title": "{title}"
         },
         "switch_as_x_unknown_source": {
             "title": "不明なソース: お問い合わせ",
@@ -250,15 +250,15 @@
         },
         "script_unknown_device_references": {
             "title": "未知のデバイス: {script}",
-            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次のデバイスを参照します。\n\nお問い合わせ\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit}) をし、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。."
+            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit}) をし、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。."
         },
         "script_unknown_area_references": {
-            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次の領域を参照します。\n\nお問い合わせ\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit})をし、これらの非既存の領域の使用を削除します。\n\nあなたの趣味ではありません。.",
+            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次の領域を参照します。\n\n{areas}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit})をし、これらの非既存の領域の使用を削除します。\n\nあなたの趣味ではありません。.",
             "title": "未知の領域で使用される: {script}"
         },
         "automation_unknown_area_references": {
             "title": "未知の領域で使用される: {automation}",
-            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに不明な次の領域を参照します。\n\nお問い合わせ\n\n\n\nこのエラーを修正するには、[自動化]({edit})を編集し、これらの非既存の領域の使用を削除します。\n\nあなたの趣味ではありません。."
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Not your homie."
         },
         "restart_required": {
             "fix_flow": {
@@ -277,11 +277,11 @@
         },
         "automation_unknown_entity_references": {
             "title": "未知のエンティティティティ: {automation}",
-            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに未知の次のエンティティティティティティティを参照します。\n\nお問い合わせ\n\n\n\nこのエラーを修正するには、[オートメーションの編集]({edit})をし、これらの非既存のエンティティティの使用を削除します。\n\nあなたの趣味ではありません。."
+            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに未知の次のエンティティティティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[オートメーションの編集]({edit})をし、これらの非既存のエンティティティの使用を削除します。\n\nあなたの趣味ではありません。."
         },
         "group_unknown_members": {
             "title": "未知のグループメンバー:{group}",
-            "description": "あなたのグループで幽霊を発見したスプック\n\n周りを浮かべながら、 次のグループで横断パスをスプック:\n\n{group} (`{entity_id}`) は、\n\nこのグループは、ホームアシスタントに不明なメンバーを持っています。\n\nお問い合わせ\n\n\n\nこのエラーを修正するには、グループを編集し、これらの非既存のエンティティティの使用を削除し、ホームアシスタントを再起動します。\n\nあなたの趣味ではありません。."
+            "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Not your homie."
         }
     }
 }
