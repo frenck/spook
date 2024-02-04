@@ -20,7 +20,7 @@ repository = "https://github.com/frenck/spook"
 version = "0.0.0"
 
 [tool.poetry.dependencies]
-homeassistant = "2023.12.4"
+homeassistant = "2024.1.6"
 python = ">=3.11,<3.13"
 
 [tool.poetry.group.dev.dependencies]
@@ -83,7 +83,9 @@ combine-as-imports = true
 # duplicate-code - unavoidable
 # used-before-assignment - false positives with TYPE_CHECKING structures
 disable = [
-  "format",
+  "abstract-method",
   "duplicate-code",
+  "format",
+  "unexpected-keyword-arg",
   "used-before-assignment",
 ]
