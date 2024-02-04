@@ -163,7 +163,8 @@
             "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Not your homie."
         },
         "lovelace_unknown_entity_references": {
-            "title": "Nieznane encje użyte w: {dashboard}"
+            "title": "Nieznane encje użyte w: {dashboard}",
+            "description": "Spook znalazł ducha w twoich dashboardach 👻\n\nPłynąc, Spook napotkał następujący dashboard:\n\n[{dashboard}]({edit})\n\nTen dashboarda odwołuje się do następujących encji, które są nieznane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the dashboard]({edit}) i zaprzestań używania tych nieistniejących encji.\n\nSpook 👻 To nie twój ziomek."
         },
         "scene_unknown_entity_references": {
             "title": "Nieznane encje użyte w: {scene}",
@@ -200,7 +201,7 @@
         },
         "automation_unknown_entity_references": {
             "title": "Nieznane encje użyte w: {automation}",
-            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących encji, które nie są znane dla Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących encji, które nie są znane dla Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) i zaprzestać używania tych nieistniejących encji.\n\nSpook 👻 To nie twój ziomek."
         },
         "automation_unknown_area_references": {
             "description": "Spook znalazł ducha w Twoich automatayzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automatyzacja}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta dotyczy następujących obszarów, które są nieznane dla Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 To nie twój ziomek."
@@ -210,6 +211,15 @@
         },
         "script_unknown_entity_references": {
             "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących encji, które nie są znane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 To nie twój ziomek."
+        },
+        "trend_unknown_source": {
+            "description": "Spook has found a ghost in your trend helpers 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika::\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek."
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook znalazł ducha w pomocnikach licznika mediów 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika:\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek."
+        },
+        "integration_unknown_source": {
+            "description": "Spook znalazł ducha w Twoich integralnych pomocnikach Riemanna 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika:\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek."
         }
     }
 }
