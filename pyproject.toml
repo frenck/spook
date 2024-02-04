@@ -83,7 +83,9 @@ combine-as-imports = true
 # duplicate-code - unavoidable
 # used-before-assignment - false positives with TYPE_CHECKING structures
 disable = [
-  "format",
+  "abstract-method",
   "duplicate-code",
+  "format",
+  "unexpected-keyword-arg",
   "used-before-assignment",
 ]
