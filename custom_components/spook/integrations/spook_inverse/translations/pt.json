@@ -1,1 +1,51 @@
-{}
+{
+    "config": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "name": "Nome",
+                    "hide_source": "Ocultar entidade de origem"
+                },
+                "title": "Invertido"
+            },
+            "switch": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "name": "Nome",
+                    "hide_source": "Ocultar entidade de origem"
+                },
+                "title": "Invertido"
+            },
+            "user": {
+                "menu_options": {
+                    "binary_sensor": "Inverter um sensor binário",
+                    "switch": "Inverter um interruptor"
+                },
+                "title": "Inverso",
+                "description": "Esse ajudante permite você inverter o comportamento de uma entidade. Por exemplo, inverter aberto/fechado ou ligado/desligado de sensores binários e interruptores."
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "hide_source": "Ocultar entidade de origem",
+                    "name": "Nome"
+                },
+                "title": "Inverso 👻"
+            },
+            "switch": {
+                "data": {
+                    "hide_source": "Ocultar entidade de origem",
+                    "name": "Nome",
+                    "entity_id": "Entidade de origem"
+                },
+                "title": "Inverso"
+            }
+        }
+    },
+    "title": "Inverso"
+}
