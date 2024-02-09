@@ -223,7 +223,7 @@
     "issues": {
         "lovelace_unknown_entity_references": {
             "title": "Ukendte enheder, der anvendes i: {dashboard}",
-            "description": "Spook har fundet et spøgelse i dine dashboards 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende dashboard:\n\n[{automation}]({edit})\n\nDette dashboard henviser til følgende enheder, som er ukendt for Home Assistant:\n\n{entities}\n\n\n\nHvis du vil rette denne fejl, kan du fjerne brugen af disse ikke-eksisterende enheder.\n\nIkke din homie."
+            "description": "Spook har fundet et spøgelse i dine dashboards 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende dashboard:\n\n[{dashboard}]({edit})\n\nDette dashboard henviser til følgende enheder, som er ukendt for Home Assistant:\n\n{entities}\n\n\n\nFor at rette denne fejl, [rediger dashboardet]({edit}) og fjern brugen af disse ikke-eksisterende enheder.\n\nSpook 👻Ikke din homie."
         },
         "integration_unknown_source": {
             "description": "Spook har fundet et spøgelse i din Riemann sum integrerede hjælpere 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende hjælpere:\n\n{helper} (`{entity_id}`)\n\nDenne hjælper har en kilde enhed, der er ukendt for Home Assistant:\n\n`{source}`\n\n\n\nHvis du vil rette fejlen, skal du redigere hjælperen og justere kildeenheden (eller fjerne hjælperen) og genstarte Home Assistant.\n\nIkke din homie.",
@@ -286,6 +286,13 @@
         "scene_unknown_entity_references": {
             "description": "Spook har fundet et spøgelse i dine scener 👻\n\nMens Spook svæver rundt, krydsede den veje med følgende scene:\n\n[{scene}]({edit})\n\nDenne scene henviser til følgende enheder, som er ukendt for Home Assistant:\n\n{entities}\n\n\n\nHvis du vil rette denne fejl, [redigere scenen]({edit})kan du fjerne brugen af disse ikke-eksisterende enheder.\n\nIkke din homie.",
             "title": "Ukendte enheder brugt i følgende: {scene}"
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook har fundet et spøgelse i dine forbrugsmålerhjælpere 👻\n\nMens han svævede rundt, krydsede Spook veje med følgende hjælper:\n\n{helper} (`{entity_id}`)\n\nDenne hjælper har en kildeenhed, som Home Assistant ikke kender:\n\n`{source}`\n\n\n\nFor at rette denne fejl skal du redigere hjælperen og justere kildeenheden (eller fjerne hjælperen) og genstarte Home Assistant.\n\nSpook 👻 Ikke din homie.",
+            "title": "Ukendt kilde: {helper}"
+        },
+        "trend_unknown_source": {
+            "title": "Ukendt kilde: {helper}"
         }
     }
 }
