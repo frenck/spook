@@ -11,6 +11,7 @@ from homeassistant.const import (
     CONF_ELSE,
     CONF_ENABLED,
     CONF_PARALLEL,
+    CONF_REPEAT,
     CONF_SEQUENCE,
     CONF_SERVICE,
     CONF_THEN,
@@ -278,6 +279,8 @@ def async_find_services_in_sequence(  # noqa: C901
                 )
 
         if action == cv.SCRIPT_ACTION_REPEAT:
-            called_services |= async_find_services_in_sequence(step[CONF_SEQUENCE])
+            called_services |= async_find_services_in_sequence(
+                step[CONF_REPEAT][CONF_SEQUENCE]
+            )
 
     return called_services
