@@ -82,6 +82,14 @@
         "scene_unknown_entity_references": {
             "description": "Spook ha trovato un fantasma nelle tue scene 👻\n\nMentre fluttuava, Spook si è imbattuto in questa scena:\n\n[{scene}]({edit})\n\nQuesta scena fa riferimento alle seguenti entità, che sono sconosciute ad Home Assistant:\n\n{entities}\n\n\n\nPer correggere l'errore, [modifica la scena]({edit}) e rimuovi le entità inesistenti.\n\nSpook 👻 Not your homie.",
             "title": "Entità sconosciute utilizzate in: {scene}"
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook ha trovato una fantasma nei tuoi aiutanti utility meter 👻\n\nMentre gironzolava, Spook ha incrociato l'aiutante di seguito:\n\n{helper} (`{entity_id}`)\n\nQuesto aiutante ha una entità sorgente sconosciuta in Home Assistant:\n\n`{source}`\n\n\n\nPer risolvere il problema, modifica l'aiutante e sistema l'entità sorgente (oppure rimuovi l'aiutante) e riavvia Home Assistant.\n\nSpook 👻 Not your homie.",
+            "title": "Sorgente sconosciuta: {helper}"
+        },
+        "trend_unknown_source": {
+            "description": "Spook ha trovato una fantasma nei tuoi aiutanti trend👻\n\nMentre gironzolava, Spook ha incrociato il seguente aiutante:\n\n{helper} (`{entity_id}`)\n\nQuesto aiutante ha una entità sorgente sconosciuta in Home Assistant:\n\n`{source}`\n\n\n\nPer risolvere il problema, modifica l'aiutante e sistema l'entità sorgente (oppure rimuovi l'aiutante) e riavvia Home Assistant.\n\nSpook 👻 Not your homie.",
+            "title": "Sorgente sconosciuta: {helper}"
         }
     },
     "entity": {
