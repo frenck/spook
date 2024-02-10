@@ -1,10 +1,10 @@
 ---
-
 subject: Enhanced integrations
 title: Proximity
 subtitle: Proximity isn’t everything, but it's close...
 description: Spook enhances the Home Assistant proximity integration by reporting issues with its configuration.
 date: 2024-02-10T14:33:44+01:00
+---
 
 ```{image} https://brands.home-assistant.io/proximity/logo.png
 :alt: The Home Assistant proximity logo
