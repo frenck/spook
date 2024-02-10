@@ -7,7 +7,7 @@ thumbnail: images/social.png
 description: Installing the most scary and powerful toolbox for Home Assistant isn't that hard. This step-by-step installation guide will help you through it.
 numbering:
   heading_2: true
-date: 2023-08-09T21:29:00+02:00
+date: 2024-02-10T14:39:21+01:00
 ---
 
 Time to get Spook 👻 settled and installed in your Home Assistant instance.
@@ -19,7 +19,7 @@ Getting Spook up and running should not be too hard when you follow this guide. 
 Spook needs a few things to work properly, so let's go over them first.
 
 1. Read, understand, and accept [the license](license) of Spook.
-2. A working {term}`Home Assistant` instance running version **2023.12.0 or newer.**
+2. A working {term}`Home Assistant` instance running version **2024.2.0 or newer.**
 
    :::{note}
    The minimal required version of Home Assistant will change over time. This is not something to worry about. It is only important that you run at least the minimal required version of Home Assistant on the first installation of Spook.
