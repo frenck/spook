@@ -27,7 +27,7 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = True
     inspect_on_reload = True
 
-    _issues: set[str] = set()
+    automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
@@ -52,9 +52,8 @@ class SpookRepair(AbstractSpookRepair):
             {ENTITY_MATCH_ALL, ENTITY_MATCH_NONE}
         )
 
-        possible_issue_ids: set[str] = set()
         for entity in entity_component.entities:
-            possible_issue_ids.add(entity.entity_id)
+            self.possible_issue_ids.add(entity.entity_id)
             # Filter out scenes, groups & device_tracker entities.
             # Those can be created on the fly with services, which we
             # currently cannot detect yet. Let's prevent some false positives.
@@ -88,7 +87,6 @@ class SpookRepair(AbstractSpookRepair):
                         "entity_id": entity.entity_id,
                     },
                 )
-                self._issues.add(entity.entity_id)
                 LOGGER.debug(
                     (
                         "Spook found unknown entities in %s and created an issue "
@@ -97,11 +95,3 @@ class SpookRepair(AbstractSpookRepair):
                     entity.entity_id,
                     ", ".join(unknown_entities),
                 )
-            else:
-                self.async_delete_issue(entity.entity_id)
-                self._issues.discard(entity.entity_id)
-
-        # Remove issues that are no longer valid
-        for issue_id in self._issues - possible_issue_ids:
-            self.async_delete_issue(issue_id)
-            self._issues.discard(issue_id)

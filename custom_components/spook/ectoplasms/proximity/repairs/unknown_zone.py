@@ -26,7 +26,7 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_config_entry_changed = "proximity"
 
-    _issues: set[str] = set()
+    automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
@@ -40,10 +40,9 @@ class SpookRepair(AbstractSpookRepair):
             entity.entity_id for entity in self.entity_registry.entities.values()
         }.union(self.hass.states.async_entity_ids())
 
-        possible_issue_ids: set[str] = set()
         for entry_id, coordinator in coordinators.items():
             if coordinator.proximity_zone_id not in entity_ids:
-                possible_issue_ids.add(entry_id)
+                self.possible_issue_ids.add(entry_id)
                 self.async_create_issue(
                     issue_id=entry_id,
                     translation_placeholders={
@@ -51,18 +50,9 @@ class SpookRepair(AbstractSpookRepair):
                         "zone": coordinator.proximity_zone_id,
                     },
                 )
-                self._issues.add(entry_id)
                 LOGGER.debug(
                     "Spook found unknown zone %s in proximity %s "
                     "and created an issue for it",
                     coordinator.proximity_zone_id,
                     coordinator.name,
                 )
-            else:
-                self.async_delete_issue(entry_id)
-                self._issues.discard(entry_id)
-
-        # Remove issues for entities that no longer exist
-        for issue_id in self._issues - possible_issue_ids:
-            self.async_delete_issue(issue_id)
-            self._issues.discard(issue_id)

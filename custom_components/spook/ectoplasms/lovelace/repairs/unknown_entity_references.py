@@ -38,9 +38,9 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_config_entry_changed = True
     inspect_on_reload = True
+    automatically_clean_up_issues = True
 
     _dashboards: dict[str, LovelaceStorage | LovelaceYAML]
-    _issues: set[str] = set()
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
@@ -65,10 +65,9 @@ class SpookRepair(AbstractSpookRepair):
 
         # Loop over all dashboards and check if there are unknown entities
         # referenced in the dashboards.
-        possible_issue_ids: set[str] = set()
         for dashboard in self._dashboards.values():
             url_path = dashboard.url_path or "lovelace"
-            possible_issue_ids.add(url_path)
+            self.possible_issue_ids.add(url_path)
             try:
                 config = await dashboard.async_load(force=False)
             except ConfigNotFound:
@@ -105,7 +104,6 @@ class SpookRepair(AbstractSpookRepair):
                         "edit": f"/{url_path}/0?edit=1",
                     },
                 )
-                self._issues.add(url_path)
                 LOGGER.debug(
                     (
                         "Spook found unknown entities in dashboard %s "
@@ -114,14 +112,6 @@ class SpookRepair(AbstractSpookRepair):
                     title,
                     ", ".join(unknown_entities),
                 )
-            else:
-                self.async_delete_issue(url_path)
-                self._issues.discard(url_path)
-
-        # Remove issues for dashboards that no longer exist.
-        for issue_id in self._issues - possible_issue_ids:
-            self.async_delete_issue(issue_id)
-            self._issues.discard(issue_id)
 
     @callback
     def __async_extract_entities(self, config: dict[str, Any]) -> set[str]:

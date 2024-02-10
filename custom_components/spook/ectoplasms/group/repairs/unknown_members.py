@@ -27,7 +27,7 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = group.DOMAIN
     inspect_on_reload = True
 
-    _issues: set[str] = set()
+    automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
@@ -49,11 +49,10 @@ class SpookRepair(AbstractSpookRepair):
             {ENTITY_MATCH_ALL, ENTITY_MATCH_NONE}
         )
 
-        possible_issue_ids: set[str] = set()
         for platform in platforms:
             # We don't want to check the old style group platform
             for entity in platform.entities.values():
-                possible_issue_ids.add(entity.entity_id)
+                self.possible_issue_ids.add(entity.entity_id)
                 members = []
                 if platform.domain == group.DOMAIN:
                     members = entity.tracking
@@ -88,18 +87,9 @@ class SpookRepair(AbstractSpookRepair):
                             "entity_id": entity.entity_id,
                         },
                     )
-                    self._issues.add(entity.entity_id)
                     LOGGER.debug(
                         "Spook found unknown member entities in %s "
                         "and created an issue for it; Entities: %s",
                         entity.entity_id,
                         ", ".join(unknown_entities),
                     )
-                else:
-                    self.async_delete_issue(entity.entity_id)
-                    self._issues.discard(entity.entity_id)
-
-        # Remove issues for entities that are no longer in the state machine.
-        for issue_id in self._issues - possible_issue_ids:
-            self.async_delete_issue(issue_id)
-            self._issues.discard(issue_id)
