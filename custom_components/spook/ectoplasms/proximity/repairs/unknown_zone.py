@@ -8,6 +8,7 @@ from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
+from ....util import async_get_all_entity_ids
 
 if TYPE_CHECKING:
     from homeassistant.components.proximity.coordinator import (
@@ -36,12 +37,10 @@ class SpookRepair(AbstractSpookRepair):
         if not (coordinators := self.hass.data.get(self.domain)):
             return  # Nothing to do, proximity is not loaded
 
-        entity_ids = {
-            entity.entity_id for entity in self.entity_registry.entities.values()
-        }.union(self.hass.states.async_entity_ids())
+        known_entity_ids = async_get_all_entity_ids(self.hass)
 
         for entry_id, coordinator in coordinators.items():
-            if coordinator.proximity_zone_id not in entity_ids:
+            if coordinator.proximity_zone_id not in known_entity_ids:
                 self.possible_issue_ids.add(entry_id)
                 self.async_create_issue(
                     issue_id=entry_id,
