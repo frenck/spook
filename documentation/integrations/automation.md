@@ -5,7 +5,7 @@ short_title: Automations
 subtitle: The breathing (mechanical) heart of Home Assistant.
 thumbnail: ../images/integrations/automation/example.png
 description: Spook enhances the automation integrations of Home Assistant by raising repairs issues, in case it detects something is wrong with an automation, for example, if it is using non-existing entities.
-date: 2023-08-09T21:29:00+02:00
+date: 2024-02-10T15:58:22+01:00
 ---
 
 ```{image} https://brands.home-assistant.io/automation/logo.png
@@ -100,6 +100,18 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 - {term}`Templates <template>` in automations are not evaluated by Spook. That means that entity IDs used in templates, or targets generated using templates, are not considered by Spook.
 - Comma separated lists of entity IDs are not taken into consideration by Spook. It is advisable to convert these to an actual list in your automations.
   :::
+
+### Unknown referenced services
+
+Automations are inspected for the use of service call actions. If an automation is using a service that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the service that is referenced but not found.
+
+To resolve the raised issue, you can either remove the reference to the non-existing services. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+{term}`Templates <template>` in automations are not evaluated by Spook. That means that service call make using templates, are not considered by Spook.
+:::
 
 ## Features requests, ideas, and support
 
