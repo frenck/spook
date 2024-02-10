@@ -265,6 +265,14 @@
                 }
             },
             "title": "É necessário reiniciar"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook encontrou um fantasma em suas cenas 👻\n\nQuando estava flutuando, Spook topou com a seguinte cena em seu caminho:\n\n[{scene}]({edit})\n\nEsta cena faz referência às seguintes entidades desconhecidas ao Home Assistant:\n\n{entities}\n\n\nPara resolver este erro, [edite a  cena]({edit}) e remova as entidades inexistentes.\n\nSpook 👻 Not your homie.",
+            "title": "Entidades desconhecidas usadas em: {scene}"
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook encontrou um fantasma em seus medidores 👻\n\nQuando estava flutuando, Spook topou com este ajudate em seu caminho:\n\n{helper} (`{entity_id}`)\n\nEste ajudante faz referência às seguintes entidades desconhecidas ao Home Assistant:\n\n`{source}`\n\n\nPara resolver este erro, edite o ajudante e ajuste a entidade de origem (ou remova o ajudante) e então reinie o Home Assistant.\n\nSpook 👻 Not your homie.",
+            "title": "Origem desconhecida: {helper}"
         }
     },
     "config": {
