@@ -7,6 +7,7 @@ from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPl
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
+from ....util import async_get_all_entity_ids
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -30,16 +31,14 @@ class SpookRepair(AbstractSpookRepair):
         if not (platforms := self.hass.data[DATA_ENTITY_PLATFORM].get(self.domain)):
             return  # Nothing to do, switch_as_x is not loaded
 
-        entity_ids = {
-            entity.entity_id for entity in self.entity_registry.entities.values()
-        }.union(self.hass.states.async_entity_ids())
+        known_entity_ids = async_get_all_entity_ids(self.hass)
 
         for platform in platforms:
             for entity in platform.entities.values():
                 self.possible_issue_ids.add(entity.entity_id)
                 # pylint: disable-next=protected-access
                 source = entity._switch_entity_id  # noqa: SLF001
-                if source not in entity_ids:
+                if source not in known_entity_ids:
                     self.async_create_issue(
                         issue_id=entity.entity_id,
                         translation_placeholders={
