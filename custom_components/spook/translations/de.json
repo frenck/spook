@@ -294,6 +294,22 @@
         "utility_meter_unknown_source": {
             "description": "Spook hat einen Geist in deinen Verbrauchszähler-Helfern gefunden 👻.\n\nBeim Umherschweifen ist Spook auf den folgenden Helfer gestoßen:\n\n{helper} (`{entity_id}`)\n\nDieser Helfer hat eine Home Assistant unbekannte Quell-Entität:\n\n`{source}`\n\n\n\nUm diesen Fehler zu beheben, bearbeite den Helfer und passe die Quell-Entität an (oder entferne den Helfer) und starte Home Assistant neu.\n\nSpook 👻 Nicht dein Kumpel.",
             "title": "Unbekannte Quelle: {helper}"
+        },
+        "automation_unknown_service_references": {
+            "title": "Unbekannte Dienste, die in {automation} verwendet werden.",
+            "description": "Spook hat ein Gespenst in deinen Automatisierungen gefunden 👻\n\nWährend er herumflatterte, kreuzte Spook den Weg mit der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung verweist auf die folgenden Dienste, die Home Assistant nicht kennt:\n\n{services}\n\nUm diesen Fehler zu beheben, [bearbeite die Automatisierung]({edit}) und entferne die Verwendung dieser nicht vorhandenen Dienste.\n\nSpook 👻 Nicht dein Kumpel."
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook hat ein Gespenst in deiner Nähe-Konfiguration gefunden 👻\n\nWährend er herumflatterte, kreuzte Spook den Weg mit der folgenden Nähe-Konfiguration:\n\n{name}\n\nDiese Konfiguration verfolgt Personen oder Geräte-Tracker, die Home Assistant nicht kennt:\n\n{entities}\n\nUm diesen Fehler zu beheben, bearbeite die Konfiguration und entferne diese/diese Entitäten.\n\nSpook 👻 Nicht dein Kumpel.",
+            "title": "Unbekannte verfolgte Entitäten: {name}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "title": "Unbekannte ignorierte Zonen: {name}",
+            "description": "Spook hat ein Gespenst in deiner Nähe-Konfiguration gefunden 👻\n\nWährend er herumflatterte, kreuzte Spook den Weg mit der folgenden Nähe-Konfiguration:\n\n{name}\n\nDiese Konfiguration ignoriert Zonen, die Home Assistant nicht kennt:\n\n{zones}\n\nUm diesen Fehler zu beheben, bearbeite die Konfiguration und entferne diese/diese Zonen.\n\nSpook 👻 Nicht dein Kumpel."
+        },
+        "proximity_unknown_zone": {
+            "title": "Unbekannte Zone: {zone}",
+            "description": "Spook hat ein Gespenst in deiner Nähe-Konfiguration gefunden 👻\n\nWährend er herumflatterte, kreuzte Spook den Weg mit der folgenden Nähe-Konfiguration:\n\n{name}\n\nDiese Konfiguration basiert auf einer Zone, die Home Assistant nicht kennt:\n\n`{zone}`\n\nUm diesen Fehler zu beheben, da du die Zone einer Nähe-Konfiguration nicht ändern kannst, ist die einzige Option, diese spezifische Nähe-Integration zu entfernen.\n\nSpook 👻 Nicht dein Kumpel."
         }
     }
 }
