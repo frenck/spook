@@ -286,6 +286,30 @@
         "scene_unknown_entity_references": {
             "description": "Spook ha encontrado un fantasma en tus escenas 👻\n\nMientras estaba flotando, Spook se cruzó con la siguiente escena:\n\n[{scene}]({edit})\n\nEsta escena referencia las siguientes entidades, las cuales son desconocidas para Home Assistant:\n\n{entities}\n\n\nPara arreglar este error, [edita la  escena]({edit}) y borra el uso de las entidades que no existen.\n\nSpook 👻 Not your homie.",
             "title": "Entidades desconocidas usadas en: {scene}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "title": "Zonas ignoradas desconocidas: {name}",
+            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba por ahí, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración está ignorando zonas desconocidas para Home Assistant:\n\n{zones}\n\nPara solucionar este error, edita la configuración y elimina esta/estas zonas.\n\nSpook 👻 No es tu amigo."
+        },
+        "automation_unknown_service_references": {
+            "title": "Servicios desconocidos utilizados en: {automation}",
+            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba por ahí, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización hace referencia a los siguientes servicios, que son desconocidos para Home Assistant:\n\n{services}\n\nPara solucionar este error, [edita la automatización]({edit}) y elimina el uso de estos servicios que no existen.\n\nSpook 👻 No es tu amigo."
+        },
+        "proximity_unknown_tracked_entities": {
+            "title": "Entidades rastreadas desconocidas: {name}",
+            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba por ahí, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración está rastreando personas o dispositivos que son desconocidos para Home Assistant:\n\n{entities}\n\nPara solucionar este error, edita la configuración y elimina esta/estas entidades.\n\nSpook 👻 No es tu amigo."
+        },
+        "proximity_unknown_zone": {
+            "title": "Zona desconocida: {zone}",
+            "description": "Spook ha encontrado un fantasma en tu configuración de proximidad 👻\n\nMientras flotaba por ahí, Spook se cruzó con la siguiente configuración de proximidad:\n\n{name}\n\nEsta configuración se basa en una zona desconocida para Home Assistant:\n\n`{zone}`\n\nPara solucionar este error, como no puedes cambiar la zona de una configuración de proximidad, la única opción es eliminar esta instancia específica de integración de proximidad.\n\nSpook 👻 No es tu amigo."
+        },
+        "trend_unknown_source": {
+            "description": "Spook ha encontrado un fantasma en tus ayudantes de tendencia 👻\n\nMientras flotaba por ahí, Spook se cruzó con el siguiente ayudante:\n\n{helper} (`{entity_id}`)\n\nEste ayudante tiene una entidad fuente desconocida para Home Assistant:\n\n`{source}`\n\nPara solucionar este error, edita el ayudante y ajusta la entidad fuente (o elimina el ayudante) y reinicia Home Assistant.\n\nSpook 👻 No es tu amigo.",
+            "title": "Fuente desconocida: {helper}"
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook ha encontrado un fantasma en tus ayudantes de medidor de utilidad 👻\n\nMientras flotaba por ahí, Spook se cruzó con el siguiente ayudante:\n\n{helper} (`{entity_id}`)\n\nEste ayudante tiene una entidad fuente desconocida para Home Assistant:\n\n`{source}`\n\nPara solucionar este error, edita el ayudante y ajusta la entidad fuente (o elimina el ayudante) y reinicia Home Assistant.\n\nSpook 👻 No es tu amigo.",
+            "title": "Fuente desconocida: {helper}"
         }
     }
 }
