@@ -78,6 +78,26 @@
                 }
             },
             "title": "Reinicie necessário"
+        },
+        "scene_unknown_entity_references": {
+            "title": "Entidades desconhecidas usadas em: {scene}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "title": "Zonas ignoradas desconhecidas: {name}"
+        },
+        "proximity_unknown_zone": {
+            "title": "Zona desconhecida: {zone}",
+            "description": "Spook achou um fantasma na sua configuração de proximidade 👻\n\nEnquanto flutuava por ai, Spook se deparou com a seguinte configuração de proximidade:\n\n{name}\n\nEssa configuração é baseada na zona que que é desconhecida no Home Assistant:\n\n`{zone}`\n\n\n\nPara corrigir este erro, como você não pode mudar a zona de uma configuração de proximidade, a única opção é remover esta integração específica de proximidade.\n\nSpook 👻Não é o seu mano."
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook achou um fantasma nas suas automações\n\nEnquanto voava por ai, Spook se deparou com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEssa automação referencia os seguintes serviços, que estão desconhecidos pelo Home Assistant:\n\n{services}\n\n\n\nPara corrigir esse erro, [edite a automação]({edit}) e remova o uso desses serviços não existentes.\n\nSpook 👻Não é o seu mano.",
+            "title": "Serviços desconhecidos usados em: {automation}"
+        },
+        "utility_meter_unknown_source": {
+            "title": "Fonte desconhecida: {helper}"
+        },
+        "trend_unknown_source": {
+            "title": "Fonte desconhecida: {helper}"
         }
     },
     "entity": {
@@ -134,7 +154,7 @@
                 "name": "Ignorado"
             },
             "homeassistant_humidifier": {
-                "name": "Humidificadores"
+                "name": "Umidificadores"
             },
             "homeassistant_update": {
                 "name": "Atualização"
