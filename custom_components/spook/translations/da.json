@@ -292,7 +292,24 @@
             "title": "Ukendt kilde: {helper}"
         },
         "trend_unknown_source": {
-            "title": "Ukendt kilde: {helper}"
+            "title": "Ukendt kilde: {helper}",
+            "description": "Spook har fundet et spøgelse i dine trendhjælpere 👻\n\nMens han svævede rundt, krydsede Spook veje med følgende hjælper:\n\n{helper} (`{entity_id}`)\n\nDenne hjælper har en kildeentitet, som Home Assistant ikke kender:\n\n`{source}`\n\n\n\nFor at rette denne fejl skal du redigere hjælperen og justere kildeentiteten (eller fjerne hjælperen) og genstarte Home Assistant.\n\nSpook 👻 Ikke din homie."
+        },
+        "automation_unknown_service_references": {
+            "title": "Ukendte tjenester, der bruges i: {automation}",
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens han svævede rundt, krydsede Spook vejen med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering refererer til følgende tjenester, som er ukendte for Home Assistant:\n\n{services}\n\n\n\n[Rediger automatiseringen]({edit}) for at rette denne fejl og fjerne brugen af disse ikke-eksisterende tjenester.\n\nSpook 👻 Ikke din homie."
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "Spook har fundet et spøgelse i din nærhedskonfiguration 👻\n\nMens han svævede rundt, krydsede Spook stien med følgende nærhedskonfiguration:\n\n{name}\n\nDenne konfiguration ignorerer zoner, der er ukendte for Home Assistant:\n\n{zones}\n\n\n\nFor at rette denne fejl skal du redigere konfigurationen og fjerne denne/disse zoner.\n\nSpook 👻 Ikke din homie.",
+            "title": "Ukendte ignorerede zoner: {name}"
+        },
+        "proximity_unknown_tracked_entities": {
+            "title": "Ukendte sporerede enheder: {name}",
+            "description": "Spook har fundet et spøgelse i din nærhedskonfiguration 👻\n\nMens han svævede rundt, krydsede Spook stien med følgende nærhedskonfiguration:\n\n{name}\n\nDenne konfiguration sporer personer eller enhedssporere, som Home Assistant ikke kender:\n\n{entities}\n\n\n\nFor at rette denne fejl skal du redigere konfigurationen og fjerne denne/disse enheder.\n\nSpook 👻 Ikke din homie."
+        },
+        "proximity_unknown_zone": {
+            "title": "Ukendt zone: {zone}",
+            "description": "Spook har fundet et spøgelse i din nærhedskonfiguration 👻\n\nMens han svævede rundt, krydsede Spook stien med følgende nærhedskonfiguration:\n\n{name}\n\nDenne konfiguration er baseret på en zone, der er ukendt for Home Assistant:\n\n`{zone}`\n\n\n\nFor at rette denne fejl, da du ikke kan ændre zonen for en nærhedskonfiguration, er den eneste mulighed at fjerne denne specifikke nærhedsintegrationsinstans.\n\nSpook 👻 Ikke din homie."
         }
     }
 }
