@@ -286,6 +286,30 @@
         "group_unknown_members": {
             "title": "Membros de grupo descoñecidos en:  {group}",
             "description": "Spook atopou unha pantasma nas teus grupos👻\n\nMentras andaba flotando, Spook atopouse co seguinte grupo:\n\n{group} (`{entity_id}`)\n\nEste grupo ten membros que non coñece Home Assistant:\n\n{entities}\n\n\n\nPara arranxar este erro, edita o grupo e quita o uso das entidades que non existan.\n\nSpook 👻 Not your homie."
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "Spook atopou unha pantasma na túa configuración de proximidade 👻\n\nMentras flotaba por ahí, Spook cruzouse coa seguinte configuración de proximidade:\n\n{name}\n\nEsta configuración está ignorando zonas descoñecidas para Home Assistant:\n\n{zones}\n\nPara solucionar este erro, edita a configuración e elimina esta(s) zonas.\n\nSpook 👻 Non é teu amigo.",
+            "title": "Zonas ignoradas descoñecidas: {name}"
+        },
+        "trend_unknown_source": {
+            "description": "Spook atopou unha pantasma nos teus axudantes de tendencia 👻\n\nMentras flotaba por ahí, Spook cruzouse co seguinte axudante:\n\n{helper} (`{entity_id}`)\n\nEste axudante ten unha entidade fonte descoñecida para Home Assistant:\n\n`{source}`\n\nPara solucionar este erro, edita o axudante e axusta a entidade fonte (ou elimina o axudante) e reinicia Home Assistant.\n\nSpook 👻 Non é teu amigo.",
+            "title": "Fonte descoñecida: {helper}"
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook atopou unha pantasma nos teus axudantes de medidor de utilidade 👻\n\nMentras flotaba por ahí, Spook cruzouse co seguinte axudante:\n\n{helper} (`{entity_id}`)\n\nEste axudante ten unha entidade fonte descoñecida paraHome Assistant:\n\n`{source}`\n\nPara solucionar este erro, edita o axudante e axusta a entidade fonte (ou elimina o axudante) e reinicia Home Assistant.\n\nSpook 👻 Non é teu amigo.",
+            "title": "Fuente descoñecida: {helper}"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook atopou unha pantasma nas túas automatizacións 👻\n\nMentras flotaba por ahí, Spook cruzouse coa seguinte automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización fai referencia aos seguentes servizos, que son descoñecidos para Home Assistant:\n\n{services}\n\nPara solucionar este erro, [edita a automatización]({edit}) e elimina o uso destos servizos que non existen.\n\nSpook 👻 Non é teu amigo.",
+            "title": "Servizos descoñecidos utilizados en: {automation}"
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook atopouse cunha pantasma na túa configuración de proximidade 👻\n\nMentras flotaba por ahí, Spook cruzouse coa seguinte configuración de proximidade:\n\n{name}\n\nEsta configuración está rastrexando persoas ou dispositivos que son descoñecidos para Home Assistant:\n\n{entities}\n\nPara solucionar este erro, edita a configuración e elimina esta(s) entidades.\n\nSpook 👻 Non é teu amigo.",
+            "title": "Entidades rastrexadas descoñecidas: {name}"
+        },
+        "proximity_unknown_zone": {
+            "description": "Spook atopou unha pantasma na túa configuración de proximidade 👻\n\nMentras flotaba por ahí, Spook cruzouse coa seguinte configuración de proximidade:\n\n{name}\n\nEsta configuración esta basada nunha zona descoñecida para Home Assistant:\n\n`{zone}`\n\nPara solucionar este erro, como non podes cambiar a zona dunha configuración de proximidade, a única opción é eliminar esta instancia específica de integración de proximidade.\n\nSpook 👻 Non é teu amigo.",
+            "title": "Zona descoñecida: {zone}"
         }
     }
 }
