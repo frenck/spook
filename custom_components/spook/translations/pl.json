@@ -146,6 +146,9 @@
             },
             "homeassistant_zone": {
                 "name": "Strefy"
+            },
+            "homeassistant_water_heater": {
+                "name": "Podgrzewacze wody"
             }
         },
         "switch": {
@@ -222,7 +225,8 @@
             "description": "Spook znalazł ducha w Twoich integralnych pomocnikach Riemanna 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika:\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek."
         },
         "automation_unknown_service_references": {
-            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane usługi użyte w: {automation}"
         },
         "proximity_unknown_zone": {
             "title": "Nieznana strefa: {zone}"
