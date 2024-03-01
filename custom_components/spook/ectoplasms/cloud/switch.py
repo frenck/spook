@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.cloud import DOMAIN as CLOUD_DOMAIN
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant, callback
+from homeassistant.core import HomeAssistant
 
 from ...entity import SpookEntityDescription
 from .entity import HomeAssistantCloudSpookEntity
@@ -119,8 +119,7 @@ class HomeAssistantCloudSpookSwitchEntity(HomeAssistantCloudSpookEntity, SwitchE
     async def async_added_to_hass(self) -> None:
         """Register for switch updates."""
 
-        @callback
-        def _update_state(_: Any) -> None:
+        async def _update_state(_: Any) -> None:
             """Update state."""
             self.async_schedule_update_ha_state()
 
