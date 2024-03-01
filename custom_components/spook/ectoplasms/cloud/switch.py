@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.cloud import DOMAIN as CLOUD_DOMAIN
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.const import EntityCategory
-from homeassistant.core import HomeAssistant
 
 from ...entity import SpookEntityDescription
 from .entity import HomeAssistantCloudSpookEntity
@@ -18,6 +17,7 @@ if TYPE_CHECKING:
     from hass_nabucasa import Cloud
 
     from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
