@@ -235,10 +235,10 @@
         },
         "group_unknown_members": {
             "title": "Okända gruppmedlemmar i: {group}",
-            "description": "Spook har hittat ett fel i dina grupper 👻\n\nMedan han sökte, hittade Spook  följande grupp:\n\n{grupp} (`{entity_id}`)\n\nDen här gruppen har medlemmar som är okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta  fel, redigera gruppen, ta bort användningen av dessa icke-existerande enheter och starta om Home Assistant.\n\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett fel i dina grupper 👻\n\nMedan han sökte, hittade Spook  följande grupp:\n\n{group} (`{entity_id}`)\n\nDen här gruppen har medlemmar som är okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta  fel, redigera gruppen, ta bort användningen av dessa icke-existerande enheter och starta om Home Assistant.\n\nSpook 👻 Inte din homie."
         },
         "integration_unknown_source": {
-            "description": "Spook har hittat ett fel  i din Riemann summa integral hjälpare 👻\nMedan han sökte, så hittade Spook följande hjälpare:\n{helper} (`{entity_id}`)\nDen här hjälparen har en källenhet som är okänd för Home Assistant:\n`{källa}`\nFör att åtgärda detta fel, redigera hjälparen och justera källenheten (eller ta bort hjälparen) och starta om Home Assistant.\nSpook 👻 Inte din homie.",
+            "description": "Spook har hittat ett fel  i din Riemann summa integral hjälpare 👻\nMedan han sökte, så hittade Spook följande hjälpare:\n{helper} (`{entity_id}`)\nDen här hjälparen har en källenhet som är okänd för Home Assistant:\n`{source}`\nFör att åtgärda detta fel, redigera hjälparen och justera källenheten (eller ta bort hjälparen) och starta om Home Assistant.\nSpook 👻 Inte din homie.",
             "title": "Okänd källa: {helper}"
         },
         "script_unknown_area_references": {
@@ -247,7 +247,7 @@
         },
         "switch_as_x_unknown_source": {
             "title": "Okänd källa: {helper}",
-            "description": "Spook har hittat ett fel i din Switch som X-hjälpare 👻\nMedan han sökte, så hittade Spook följande hjälpare:\n{helper} (`{entity_id}`)\nDen här hjälparen har en källväxlingsenhet okänd för Home Assistant:\n`{källa}`\nFör att åtgärda detta fel, redigera hjälparen och justera källenheten (eller ta bort hjälparen) och starta om Home Assistant.\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett fel i din Switch som X-hjälpare 👻\nMedan han sökte, så hittade Spook följande hjälpare:\n{helper} (`{entity_id}`)\nDen här hjälparen har en källväxlingsenhet okänd för Home Assistant:\n`{source}`\nFör att åtgärda detta fel, redigera hjälparen och justera källenheten (eller ta bort hjälparen) och starta om Home Assistant.\nSpook 👻 Inte din homie."
         },
         "user_issue": {
             "fix_flow": {
@@ -282,6 +282,18 @@
                 }
             },
             "title": "Restart krävs"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{services}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
+        },
+        "proximity_unknown_zone": {
+            "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan han sökte, hittade Spook  följande konfiguration för närhet:\n\n{group} (`{entity_id}`)\n\nDen här konfigurationen är baserad på en zon som är okänd för Home Assistant:\n\n`{zone}`\n\n\n\nFör att åtgärda detta  fel, eftersom du inte kan byta zon för en konfiguration för närhet, det enda valet är att ta bort denna konfiguration.\n\nSpook 👻 Inte din homie."
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan han sökte, hittade Spook  följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen spårar personer som okänad för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta fel, e ändra konfigurationen och ta bort denna entitet/dessa entiteter.\n\nSpook 👻 Inte din homie."
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan han sökte, hittade Spook  följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen ignorerar zoner som är okända för Home Assistant:\n\n{zones}\n\n\n\nFör att åtgärda detta fel, ändra konfigurationen och ta bort denna zon/dessa zoner.\n\nSpook 👻 Inte din homie."
         }
     }
 }
