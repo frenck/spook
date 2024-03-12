@@ -1,4 +1,5 @@
 """Spook - Not your homie. Custom integration for Home Assistant."""
+
 from __future__ import annotations
 
 import asyncio
