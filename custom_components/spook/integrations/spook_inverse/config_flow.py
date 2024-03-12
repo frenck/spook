@@ -1,4 +1,5 @@
 """Spook - Not your homie."""
+
 from __future__ import annotations
 
 from functools import partial

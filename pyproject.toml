@@ -39,6 +39,9 @@ build-backend = "poetry.core.masonry.api"
 requires = ["poetry-core"]
 
 [tool.ruff]
+src = ["custom_components/spook"]
+
+[tool.ruff.lint]
 ignore = [
   "ANN101", # Self... explanatory
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
@@ -60,9 +63,8 @@ ignore = [
   "W191",
 ]
 select = ["ALL"]
-src = ["custom_components/spook"]
 
-[tool.ruff.flake8-import-conventions.extend-aliases]
+[tool.ruff.lint.flake8-import-conventions.extend-aliases]
 "homeassistant.helpers.area_registry" = "ar"
 "homeassistant.helpers.config_validation" = "cv"
 "homeassistant.helpers.device_registry" = "dr"
@@ -70,7 +72,7 @@ src = ["custom_components/spook"]
 "homeassistant.helpers.issue_registry" = "ir"
 voluptuous = "vol"
 
-[tool.ruff.isort]
+[tool.ruff.lint.isort]
 force-sort-within-sections = true
 known-first-party = [
     "homeassistant",
