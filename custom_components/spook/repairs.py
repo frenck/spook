@@ -3,10 +3,11 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
-from typing import TYPE_CHECKING, final
+from typing import TYPE_CHECKING, final, Any
 
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
@@ -182,9 +183,11 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         if self.inspect_on_reload:
 
             @callback
-            def _filter_event(event: Event) -> bool:
+            def _filter_event(event_data: Mapping[str, Any] | Event) -> bool:
                 """Filter for reload events."""
-                service = event.data.get("service")
+                if type(event_data) is Event: # pylint: disable=unidiomatic-typecheck
+                    event_data = event_data.data
+                service = event_data.get("service")
                 if service is None:
                     return False
                 if service == "reload_all":
@@ -193,7 +196,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     return False
                 if self.inspect_on_reload is True:
                     return True
-                if self.inspect_on_reload == event.data.get("domain"):
+                if self.inspect_on_reload == event_data.get("domain"):
                     return True
                 return False
 
