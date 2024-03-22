@@ -11,6 +11,9 @@
             "user": {
                 "description": "Czytałeś readme? Czytałeś licencję? Czy jesteś pewny?"
             }
+        },
+        "abort": {
+            "already_spooked": "Tak... cóż... nie. K, dziękuję, żegnam!"
         }
     },
     "entity": {
@@ -40,6 +43,9 @@
                             "update": "Problem zaktualizowany",
                             "create": "Utworzono problem"
                         }
+                    },
+                    "domain": {
+                        "name": "Źródło alertu"
                     }
                 }
             }
@@ -146,6 +152,24 @@
             },
             "homeassistant_zone": {
                 "name": "Strefy"
+            },
+            "homeassistant_water_heater": {
+                "name": "Podgrzewacze wody"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Urządzenia Lokalizacyjne"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Pomocnicy daty/godziny"
+            },
+            "homeassistant_input_text": {
+                "name": "Pomocnika tekst"
+            },
+            "homeassistant_input_select": {
+                "name": "Pomocnik menu rozwijanego"
+            },
+            "homeassistant_remote": {
+                "name": "Zdalne sterowanie"
             }
         },
         "switch": {
@@ -193,7 +217,8 @@
             }
         },
         "script_unknown_area_references": {
-            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących obszarów, które są nieznane Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących obszarów, które są nieznane Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane obszary użyte w: {script}"
         },
         "script_unknown_device_references": {
             "title": "Nieznane urządzenia używane w: {script}",
@@ -204,28 +229,41 @@
             "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących encji, które nie są znane dla Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) i zaprzestać używania tych nieistniejących encji.\n\nSpook 👻 To nie twój ziomek."
         },
         "automation_unknown_area_references": {
-            "description": "Spook znalazł ducha w Twoich automatayzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automatyzacja}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta dotyczy następujących obszarów, które są nieznane dla Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w Twoich automatayzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automatyzacja}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta dotyczy następujących obszarów, które są nieznane dla Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane obszary użyte w: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja dotyczy następujących urządzeń, które nie są znane Home Assistant:\n\n{devices}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań używania tych nieistniejących urządzeń.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja dotyczy następujących urządzeń, które nie są znane Home Assistant:\n\n{devices}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań używania tych nieistniejących urządzeń.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane urządzenia użyte w: {automation}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących encji, które nie są znane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących encji, które nie są znane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane encje użyte w: {script}"
         },
         "trend_unknown_source": {
-            "description": "Spook has found a ghost in your trend helpers 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika::\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook has found a ghost in your trend helpers 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika::\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane źródło: {helper}"
         },
         "utility_meter_unknown_source": {
-            "description": "Spook znalazł ducha w pomocnikach licznika mediów 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika:\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w pomocnikach licznika mediów 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika:\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane źródło: {helper}"
         },
         "integration_unknown_source": {
-            "description": "Spook znalazł ducha w Twoich integralnych pomocnikach Riemanna 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika:\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w Twoich integralnych pomocnikach Riemanna 👻\n\nLecąc dookoła, Spook napotkał następującego pomocnika:\n\n{helper} (`{entity_id}`)\n\nTen pomocnik ma encję źródłową nieznaną dla Home Assistant:\n\n`{source}`\n\n\n\nAby naprawić ten błąd, edytuj pomocnika i dostosuj element źródłowy (lub usuń pomocnika) i uruchom ponownie Home Assistant.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane źródło: {helper}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 To nie twój ziomek."
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 To nie twój ziomek.",
+            "title": "Nieznane usługi użyte w: {automation}"
         },
         "proximity_unknown_zone": {
             "title": "Nieznana strefa: {zone}"
+        },
+        "switch_as_x_unknown_source": {
+            "title": "Nieznane źródło: {helper}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "title": "Nieznane ignorowane strefy: {name}"
         }
     }
 }
