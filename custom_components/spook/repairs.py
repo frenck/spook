@@ -150,8 +150,11 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             await self.async_inspect()
 
             if self.automatically_clean_up_issues:
-                # Remove issues that are no longer valid
+                # Remove issues that are not longer created after inspection.
                 for issue_id in self.possible_issue_ids - self.issue_ids:
+                    self.async_delete_issue(issue_id)
+                # Remove issues that are no longer valid.
+                for issue_id in self.issue_ids - self.possible_issue_ids:
                     self.async_delete_issue(issue_id)
 
         # Debouncer to prevent multiple inspections / inspections fired quickly
