@@ -20,6 +20,7 @@ class SpookRepair(AbstractSpookRepair):
         automation.EVENT_AUTOMATION_RELOADED,
         ar.EVENT_AREA_REGISTRY_UPDATED,
     }
+    inspect_on_reload = True
 
     automatically_clean_up_issues = True
 

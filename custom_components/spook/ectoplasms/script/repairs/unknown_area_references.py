@@ -17,6 +17,7 @@ class SpookRepair(AbstractSpookRepair):
     domain = script.DOMAIN
     repair = "script_unknown_area_references"
     inspect_events = {ar.EVENT_AREA_REGISTRY_UPDATED}
+    inspect_on_reload = True
 
     automatically_clean_up_issues = True
 
