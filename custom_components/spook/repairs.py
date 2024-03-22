@@ -3,11 +3,10 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from collections.abc import Mapping
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
-from typing import TYPE_CHECKING, final, Any
+from typing import TYPE_CHECKING, Any, final
 
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
@@ -25,7 +24,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Mapping
 
     from homeassistant.data_entry_flow import FlowResult
 
@@ -185,7 +184,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             @callback
             def _filter_event(event_data: Mapping[str, Any] | Event) -> bool:
                 """Filter for reload events."""
-                if type(event_data) is Event: # pylint: disable=unidiomatic-typecheck
+                if type(event_data) is Event:  # pylint: disable=unidiomatic-typecheck
                     event_data = event_data.data
                 service = event_data.get("service")
                 if service is None:
