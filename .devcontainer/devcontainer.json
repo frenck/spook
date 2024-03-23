@@ -1,6 +1,6 @@
 {
   "name": "Spook development environment",
-  "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
+  "image": "mcr.microsoft.com/devcontainers/base:debian",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {
       "installDirectlyFromGitHubRelease": true,
@@ -10,8 +10,8 @@
       "nodeGypDependencies": true,
       "version": "lts"
     },
-    "ghcr.io/devcontainers-contrib/features/poetry:2": {
-      "version": "latest"
+    "ghcr.io/schlich/devcontainer-features/rye:1": {
+      "uv": true
     }
   },
   "forwardPorts": [8123, 3000],
@@ -29,8 +29,8 @@
       "autoForward": "silent"
     }
   },
-  "postCreateCommand": "mkdir -p config && poetry config virtualenvs.in-project true && npm install -g mystmd && poetry install",
-  "updateContentCommand": "poetry config virtualenvs.in-project true && poetry install",
+  "postCreateCommand": "mkdir -p config && npm install -g mystmd && rye sumc",
+  "updateContentCommand": "rye sync",
   "containerEnv": {
     "DEVCONTAINER": "1"
   },
@@ -48,7 +48,6 @@
         "yzhang.markdown-all-in-one"
       ],
       "settings": {
-        "python.pythonPath": "/usr/local/bin/python",
         "editor.formatOnPaste": false,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
