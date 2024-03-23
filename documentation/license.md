@@ -4,23 +4,23 @@ title: Spook licenses
 short_title: License
 subtitle: The license used by Spook
 thumbnail: images/social.png
-description: The Spook integration from Home Assistant is mostly licensed under the Passive Aggressive License.
+description: The Spook integration from Home Assistant is mostly licensed under the MIT License.
 ---
 
-Spook uses a couple of licenses for different parts of its sources. Our main license is the Passive Agressive Licence, which applies to all source code, unless otherwise specified.
+Spook uses a couple of licenses for different parts of its sources. Our main license is the MIT Licence, which applies to all source code, unless otherwise specified.
 
-(pal)=
+(mit)=
 
-# Passive Aggressive License
+# MIT License
 
 Copyright © 2023-2024 Franck Nijhof
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
-to copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, but NOT including the right to run, execute or use the
-Software or any executable binaries built from the source code.
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
@@ -81,7 +81,7 @@ For these and/or other purposes and motivations, and without any expectation of 
 
 All documentation, located in the `documentation` folder of this repository, is licensed under Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International.
 
-⚠️ Please note, that this excludes **all** code samples, like any other code, code is licensed under our main license: [](#pal).
+⚠️ Please note, that this excludes **all** code samples, like any other code, code is licensed under our main license: [](#mit).
 
 ## Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
 

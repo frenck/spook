@@ -13,7 +13,7 @@ Hi! I'm Spook 👻 and I'm a {term}`custom integration <integration>` for use wi
 :::{warning} Just to be clear from the very start...
 **Spook is not supported by the Home Assistant project.**
 
-This custom integration is provided as-is, without any warranty or support, and above all, has a very [restrictive license](license).
+This custom integration is provided as-is, without any warranty or support.
 
 If you experience issues with this integration or as a result of this integration, please go cry a lot on your own. After ignoring this warning, you will not be provided with a tissue to dry up your tears when you are crying in a fetal position under your desk.
 
