@@ -17,17 +17,13 @@ jobs:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v4.1.1
 
-      - name: 🏗 Set up Poetry
-        run: pipx install poetry
-
-      - name: 🏗 Set up Python ${{ env.DEFAULT_PYTHON }}
-        uses: actions/setup-python@v5.0.0
+      - name: 🏗 Set up rye
+        uses: eifinger/setup-rye@v2.5.0
         with:
-          python-version: ${{ env.DEFAULT_PYTHON }}
-          cache: "poetry"
+          enable-cache: true
 
-      - name: 🏗 Install Python dependencies
-        run: poetry install --no-interaction
+      - name: 🏗 Sync dependencies
+        run: rye sync
 
       - name: 🚀 Run Pylint
-        run: poetry run pylint custom_components/spook
+        run: rye run pylint custom_components/spook
