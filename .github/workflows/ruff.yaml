@@ -29,7 +29,7 @@ jobs:
         run: rye sync
 
       - name: 🚀 Run ruff linter
-        run: rye run ruff lint check .
+        run: rye run ruff check .
 
       - name: 🚀 Run ruff formatter
         run: rye run ruff format --check .
