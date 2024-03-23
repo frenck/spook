@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-import asyncio
 from typing import TYPE_CHECKING
 
 import aiohttp
@@ -37,7 +36,7 @@ class SpookService(AbstractSpookAdminService):
                     self.hass,
                     call.data["url"],
                 )
-        except (asyncio.TimeoutError, aiohttp.ClientError) as err:
+        except (TimeoutError, aiohttp.ClientError) as err:
             msg = "Error fetching blueprint from URL"
             raise HomeAssistantError(msg) from err
 

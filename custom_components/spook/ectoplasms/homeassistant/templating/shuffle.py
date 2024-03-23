@@ -3,12 +3,12 @@
 from __future__ import annotations
 
 from random import Random, shuffle
-from typing import TYPE_CHECKING, Any, Iterable
+from typing import TYPE_CHECKING, Any
 
 from ....templating import AbstractSpookTemplateFunction
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterable
 
 
 class SpookTemplateFunction(AbstractSpookTemplateFunction):
