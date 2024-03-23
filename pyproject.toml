@@ -56,14 +56,6 @@ allow-direct-references = true
 [tool.hatch.build.targets.wheel]
 packages = ["custom_components/spook"]
 
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = "3.6.2"
-pre-commit-hooks = "4.5.0"
-pylint = "3.1.0"
-ruff = "0.3.4"
-
-
 [tool.ruff]
 src = ["custom_components/spook"]
 
