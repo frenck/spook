@@ -24,6 +24,8 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_SERVICE_REGISTERED,
         EVENT_SERVICE_REMOVED,
     }
+    inspect_config_entry_changed = True
+    inspect_on_reload = True
 
     automatically_clean_up_issues = True
 

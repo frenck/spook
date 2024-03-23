@@ -17,6 +17,8 @@ class SpookRepair(AbstractSpookRepair):
     domain = script.DOMAIN
     repair = "script_unknown_device_references"
     inspect_events = {dr.EVENT_DEVICE_REGISTRY_UPDATED}
+    inspect_config_entry_changed = True
+    inspect_on_reload = True
 
     automatically_clean_up_issues = True
 

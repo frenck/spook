@@ -20,6 +20,9 @@ class SpookRepair(AbstractSpookRepair):
         automation.EVENT_AUTOMATION_RELOADED,
         dr.EVENT_DEVICE_REGISTRY_UPDATED,
     }
+    inspect_config_entry_changed = True
+    inspect_on_reload = True
+
     automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:
