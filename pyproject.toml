@@ -1,41 +1,60 @@
-[tool.poetry]
-authors = ["Franck Nijhof <opensource@frenck.dev>"]
+[project]
+name = "spook"
+version = "0.0.0"
+license = { text = "MIT License" }
+description = "Spook - Your homie"
+authors = [{ name = "Franck Nijhof", email = "opensource@frenck.dev"}]
+maintainers = [{ name = "Franck Nijhof", email = "opensource@frenck.dev"}]
+readme = "README.md"
 classifiers = [
   "Development Status :: 3 - Alpha",
   "Framework :: AsyncIO",
   "Intended Audience :: Developers",
   "Natural Language :: English",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
   "Programming Language :: Python :: 3",
 ]
-description = "Spook - Your homie"
-documentation = "https://github.com/frenck/spook"
-homepage = "https://github.com/frenck/spook"
-license = "MIT"
-maintainers = ["Franck Nijhof <opensource@frenck.dev>"]
-name = "spook"
-packages = []
-readme = "README.md"
-repository = "https://github.com/frenck/spook"
-version = "0.0.0"
+keywords = [
+  "automation",
+  "automations",
+  "component",
+  "custom component",
+  "custom integration",
+  "ghost",
+  "hacs-component",
+  "hacs-integration",
+  "hacs-repository",
+  "hacs",
+  "hass.io",
+  "hass",
+  "hassio",
+  "home assistant",
+  "home-assistant",
+  "homeassistant",
+  "integration",
+  "powertools",
+  "spook",
+  "utils",
+]
+requires-python = ">=3.11,<3.13"
+dependencies = [
+  "homeassistant==2024.3.3",
+]
 
-[tool.poetry.dependencies]
-homeassistant = "2024.3.3"
-python = ">=3.11,<3.13"
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = "3.7.0"
-pre-commit-hooks = "4.5.0"
-pylint = "3.1.0"
-ruff = "0.3.4"
-
-[tool.poetry.urls]
-"Bug Tracker" = "https://github.com/frenck/spook/issues"
+[project.urls]
+Homepage = "https://spook.boo"
+Documentation = "https://spook.boo/about"
 Changelog = "https://github.com/frenck/spook/releases"
+Support = "https://spook.boo/support"
+Issues = "https://github.com/frenck/spook/issues"
+Repository = "https://github.com/frenck/spook"
 
-[build-system]
-build-backend = "poetry.core.masonry.api"
-requires = ["poetry-core"]
+[tool.hatch.metadata]
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["custom_components/spook"]
 
 [tool.ruff]
 src = ["custom_components/spook"]
@@ -90,3 +109,16 @@ disable = [
   "unexpected-keyword-arg",
   "used-before-assignment",
 ]
+
+[tool.rye]
+managed = true
+dev-dependencies = [
+  "pre-commit>=3.6.0",
+  "pre-commit-hooks>=4.5.0",
+  "pylint>=3.1.0",
+  "ruff>=0.3.2",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -6,66 +6,60 @@ repos:
         name: 🐶 Ruff Linter
         language: system
         types: [python]
-        entry: poetry run ruff check --fix
+        entry: rye run ruff check --fix
         require_serial: true
         stages: [commit, push, manual]
       - id: ruff-format
         name: 🐶 Ruff Formatter
         language: system
         types: [python]
-        entry: poetry run ruff format
+        entry: rye run ruff format
         require_serial: true
         stages: [commit, push, manual]
       - id: check-json
         name: ｛ Check JSON files
         language: system
         types: [json]
-        entry: poetry run check-json
+        entry: rye run check-json
       - id: check-toml
         name: ✅ Check TOML files
         language: system
         types: [toml]
-        entry: poetry run check-toml
+        entry: rye run check-toml
       - id: check-yaml
         name: ✅ Check YAML files
         language: system
         types: [yaml]
-        entry: poetry run check-yaml
+        entry: rye run check-yaml
       - id: check-merge-conflict
         name: 💥 Check for merge conflicts
         language: system
         types: [text]
-        entry: poetry run check-merge-conflict
+        entry: rye run check-merge-conflict
       - id: check-symlinks
         name: 🔗 Check for broken symlinks
         language: system
         types: [symlink]
-        entry: poetry run check-symlinks
+        entry: rye run check-symlinks
       - id: end-of-file-fixer
         name: ⮐  Fix End of Files
         language: system
         types: [text]
-        entry: poetry run end-of-file-fixer
+        entry: rye run end-of-file-fixer
         stages: [commit, push, manual]
       - id: no-commit-to-branch
         name: 🛑 Don't commit to main branch
         language: system
-        entry: poetry run no-commit-to-branch
+        entry: rye run no-commit-to-branch
         pass_filenames: false
         always_run: true
         args:
           - --branch=main
-      - id: poetry
-        name: 📜 Check pyproject with Poetry
-        language: system
-        entry: poetry check
-        pass_filenames: false
-        always_run: true
       - id: pylint
         name: 🌟 Starring code with pylint
         language: system
         types: [python]
-        entry: poetry run pylint
+        entry: rye run pylint
   - repo: https://github.com/pre-commit/mirrors-prettier
     rev: v2.7.1
     hooks:
