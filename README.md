@@ -59,9 +59,9 @@ Copyright (c) 2023-2024 Franck Nijhof
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
-to copy, modify, merge, publish, distribute, sublicense, and/or sell copies
-of the Software, but NOT including the right to run, execute or use the
-Software or any executable binaries built from the source code.
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
@@ -76,7 +76,7 @@ SOFTWARE.
 
 [contributors]: https://github.com/frenck/spook/graphs/contributors
 [frenck]: https://github.com/frenck
-[license-shield]: https://img.shields.io/badge/license-Passive%20Aggressive%20License-lightgrey.svg
+[license-shield]: https://img.shields.io/github/license/frenck/spook.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-SPOOKED-red.svg
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
