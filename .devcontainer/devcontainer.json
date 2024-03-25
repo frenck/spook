@@ -29,7 +29,7 @@
       "autoForward": "silent"
     }
   },
-  "postCreateCommand": "mkdir -p config && npm install -g mystmd && rye sumc",
+  "postCreateCommand": "mkdir -p config && npm install -g mystmd && rye sync",
   "updateContentCommand": "rye sync",
   "containerEnv": {
     "DEVCONTAINER": "1"
