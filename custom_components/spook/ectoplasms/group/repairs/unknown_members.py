@@ -11,7 +11,7 @@ from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPl
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_entity_ids
+from ....util import async_filter_known_entity_ids, async_get_all_entity_ids
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -32,6 +32,8 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger a inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
+        known_entity_ids = async_get_all_entity_ids(self.hass)
+
         platforms: list[EntityPlatform] | None
         if not (platforms := self.hass.data[DATA_ENTITY_PLATFORM].get(self.domain)):
             return  # Nothing to do.
@@ -51,7 +53,7 @@ class SpookRepair(AbstractSpookRepair):
                     members = entity._entities  # noqa: SLF001
 
                 if unknown_entities := async_filter_known_entity_ids(
-                    self.hass, entity_ids=members
+                    self.hass, entity_ids=members, known_entity_ids=known_entity_ids
                 ):
                     self.async_create_issue(
                         issue_id=entity.entity_id,

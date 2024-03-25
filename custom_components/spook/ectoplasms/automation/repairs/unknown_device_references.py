@@ -8,7 +8,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityCompone
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_device_ids
+from ....util import async_filter_known_device_ids, async_get_all_device_ids
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -35,11 +35,16 @@ class SpookRepair(AbstractSpookRepair):
         ][self.domain]
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
+
+        known_device_ids = async_get_all_device_ids(self.hass)
+
         for entity in entity_component.entities:
             self.possible_issue_ids.add(entity.entity_id)
             if not isinstance(entity, automation.UnavailableAutomationEntity) and (
                 unknown_devices := async_filter_known_device_ids(
-                    self.hass, device_ids=entity.referenced_devices
+                    self.hass,
+                    device_ids=entity.referenced_devices,
+                    known_device_ids=known_device_ids,
                 )
             ):
                 self.async_create_issue(

@@ -11,7 +11,11 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityCompone
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_services, async_find_services_in_sequence
+from ....util import (
+    async_filter_known_services,
+    async_find_services_in_sequence,
+    async_get_all_services,
+)
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -39,6 +43,9 @@ class SpookRepair(AbstractSpookRepair):
         ][self.domain]
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
+
+        known_services = async_get_all_services(self.hass)
+
         for entity in entity_component.entities:
             self.possible_issue_ids.add(entity.entity_id)
 
@@ -48,6 +55,7 @@ class SpookRepair(AbstractSpookRepair):
             if unknown_services := async_filter_known_services(
                 self.hass,
                 services=async_find_services_in_sequence(entity.action_script.sequence),
+                known_services=known_services,
             ):
                 self.async_create_issue(
                     issue_id=entity.entity_id,
