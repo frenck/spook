@@ -33,12 +33,6 @@ No. It does not do random things. It is not a [chaos testing](wiki:Chaos_enginee
 ```
 
 ```{card}
-:header: **Ok, so should I use Spook?**
-
-No! [The license](license) doesn't allow that.
-```
-
-```{card}
 :header: **I want to suggest a new feature for Spook**
 
 Oh! Lovely, please [share your idea on our discussion forums](https://github.com/frenck/spook/discussions)! Maybe it is something that can be added to Spook 👻 in the future.
