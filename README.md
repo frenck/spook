@@ -6,7 +6,7 @@
 ![Project Maintenance][maintenance-shield]
 [![Quality Gate Status][sonarcloud-shield]][sonarcloud]
 
-![Spook - Not your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo3.png)
+![Spook - Not your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo_wordmark_catchphrase_2048x512.png)
 
 # About
 
