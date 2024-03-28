@@ -5,17 +5,44 @@ short_title: Spook in the media
 subtitle: Spook's road to his star ⭐️ on the Hollywood Walk of Fame.
 thumbnail: images/social.png
 description: Spook wants a spot on the Hollywood Walk of Fame. Here is a list of media mentioning Spook for Home Assistant.
-date: 2023-08-09T21:29:00+02:00
+date: 2024-03-28T16:24:34+01:00
 ---
 
 Spook has been mentioned in the following media:
 
+## 2024
+
+### 📺 🇬🇧 Add New Features to Home Assistant! | Spook Toolbox
+
+A YouTube video by [Let's Automate](https://www.youtube.com/watch?v=Glo81jC6bxE).
+
+:::{iframe} https://www.youtube.com/embed/Glo81jC6bxE
+:width: 100%
+:::
+
+### 📺 🇺🇸 Meet Spook. A new toolbox for Home Assistant. It's SCARY!
+
+A YouTube video by [mostlychris](https://www.youtube.com/watch?v=Fsh4TTBji-U).
+
+:::{iframe} https://www.youtube.com/embed/Fsh4TTBji-U
+:width: 100%
+:::
+
 ## 2023
+
+### 📺 🇩🇪 Problemlösung leicht gemacht: Fehlerbehebung in Home Assistant mit Spook
+
+A YouTube video by [smart-live.net](https://www.youtube.com/watch?v=KDnmW3My0ho).
+
+:::{iframe} https://www.youtube.com/embed/KDnmW3My0ho
+:width: 100%
+:::
+
+_Note: The video is in German. 🇩🇪_
 
 ### 📺 🇩🇪 Cryd: Erkenne deine Fehler jetzt mit Leichtigkeit!
 
-A YouTube video by [Cryd](https://www.youtube.com/watch?v=fgXF2L1Vy0Q) about Spook.
-It shows how to install Spook and what it can do for you.
+A YouTube video by [Cryd](https://www.youtube.com/watch?v=fgXF2L1Vy0Q).
 
 :::{iframe} https://www.youtube.com/embed/fgXF2L1Vy0Q
 :width: 100%
