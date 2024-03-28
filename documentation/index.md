@@ -10,7 +10,7 @@ description: Spook is a scary powerful toolbox for Home Assistant 👻 It can be
 :align: center
 ```
 
-_Spook is a scary powerful toolbox for Home Assistant, but be aware, Spook is your homie!_
+_Spook is a scary powerful toolbox for Home Assistant, but don't be scared, Spook is your homie!_
 
 Hi! 👋
 
