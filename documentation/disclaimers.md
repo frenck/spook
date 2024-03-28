@@ -17,6 +17,6 @@ I guess it goes without saying that this custom integration is not affiliated wi
 **Spook is not supported by the Home Assistant project.**
 :::
 
-This custom integration is provided as-is, without any warranty or support. If you experience issues with this integration, or as a result of this integration, please go cry a lot on your own.
+This custom integration is provided as-is, without any warranty.
 
 _#SorryNotSorry_

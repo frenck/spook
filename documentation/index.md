@@ -1,5 +1,5 @@
 ---
-title: Spook 👻 Not your homie.
+title: Spook 👻 Your homie.
 subtitle: A scary powerful toolbox for Home Assistant
 thumbnail: images/social.png
 description: Spook is a scary powerful toolbox for Home Assistant 👻 It can be installed as an custom integration in your Home Assistant via the Home Assistant Community Store.
@@ -10,7 +10,7 @@ description: Spook is a scary powerful toolbox for Home Assistant 👻 It can be
 :align: center
 ```
 
-_Spook is a scary powerful toolbox for Home Assistant, but be aware, Spook is not your homie!_
+_Spook is a scary powerful toolbox for Home Assistant, but be aware, Spook is your homie!_
 
 Hi! 👋
 

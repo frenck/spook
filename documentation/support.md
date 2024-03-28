@@ -7,7 +7,7 @@ description: Spook is not supported by the Home Assistant project, however, ther
 date: 2023-09-22T10:38:47+02:00
 ---
 
-Spook is provided as-is, without any warranty or any real support, and above all: Is absolutely **unsupported** by the {term}`Home Assistant` project. However, if you run into issues, where should you go?
+Spook is provided as-is, without any warranty, and above all: Is absolutely **unsupported** by the {term}`Home Assistant` project. However, if you run into issues, where should you go?
 
 ```{image} images/support.png
 :alt: Hello IT, have you tried turning it off and on again? Meme from the IT Crowd.

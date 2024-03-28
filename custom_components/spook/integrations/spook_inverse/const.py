@@ -1,4 +1,4 @@
-"""Spook - Not your homie."""
+"""Spook - Your homie."""
 
 from homeassistant.const import Platform
 

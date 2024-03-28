@@ -1,4 +1,4 @@
-"""Spook - Not your homie."""
+"""Spook - Your homie."""
 
 from __future__ import annotations
 
@@ -50,7 +50,7 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
         _: dict[str, Any] | None = None,
     ) -> FlowResult:
         """Handle restart later case."""
-        return self.async_create_entry(title="Not your homie", data={})
+        return self.async_create_entry(title="Your homie", data={})
 
     async def async_step_restart_now(
         self,
