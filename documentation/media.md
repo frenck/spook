@@ -20,6 +20,8 @@ A YouTube video by [Let's Automate](https://www.youtube.com/watch?v=Glo81jC6bxE)
 :width: 100%
 :::
 
+---
+
 ### 📺 🇺🇸 Meet Spook. A new toolbox for Home Assistant. It's SCARY!
 
 A YouTube video by [mostlychris](https://www.youtube.com/watch?v=Fsh4TTBji-U).
@@ -28,7 +30,11 @@ A YouTube video by [mostlychris](https://www.youtube.com/watch?v=Fsh4TTBji-U).
 :width: 100%
 :::
 
+---
+
 ## 2023
+
+---
 
 ### 📺 🇩🇪 Problemlösung leicht gemacht: Fehlerbehebung in Home Assistant mit Spook
 
@@ -40,6 +46,8 @@ A YouTube video by [smart-live.net](https://www.youtube.com/watch?v=KDnmW3My0ho)
 
 _Note: The video is in German. 🇩🇪_
 
+---
+
 ### 📺 🇩🇪 Cryd: Erkenne deine Fehler jetzt mit Leichtigkeit!
 
 A YouTube video by [Cryd](https://www.youtube.com/watch?v=fgXF2L1Vy0Q).
@@ -49,6 +57,8 @@ A YouTube video by [Cryd](https://www.youtube.com/watch?v=fgXF2L1Vy0Q).
 :::
 
 _Note: The video is in German. 🇩🇪_
+
+---
 
 ### 🎤 🇬🇧 Self-Hosted podcast: Espisode 107
 
