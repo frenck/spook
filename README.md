@@ -1,4 +1,4 @@
-# Spook 👻 Not your homie.
+# Spook 👻 Your homie.
 
 [![GitHub Release][releases-shield]][releases]
 ![Project Stage][project-stage-shield]
@@ -6,7 +6,7 @@
 ![Project Maintenance][maintenance-shield]
 [![Quality Gate Status][sonarcloud-shield]][sonarcloud]
 
-![Spook - Not your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo_wordmark_catchphrase_2048x512.png)
+![Spook - Your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo_wordmark_catchphrase_2048x512.png)
 
 # About
 
@@ -20,9 +20,7 @@ tools. 🛠️
 
 **Spook is not affiliated with, endorsed, recommended, or supported by the Home Assistant project.**
 
-This custom integration is provided as-is, without any warranty or support.
-If you experience issues with this integration, or as a result of this
-integration, please go cry a lot on your own.
+This custom integration is provided as-is, without any warranty.
 
 # Contributing
 

@@ -13,13 +13,7 @@ Hi! I'm Spook 👻 and I'm a {term}`custom integration <integration>` for use wi
 :::{warning} Just to be clear from the very start...
 **Spook is not supported by the Home Assistant project.**
 
-This custom integration is provided as-is, without any warranty or support.
-
-If you experience issues with this integration or as a result of this integration, please go cry a lot on your own. After ignoring this warning, you will not be provided with a tissue to dry up your tears when you are crying in a fetal position under your desk.
-
-I've warned you.
-
-../Frenck
+This custom integration is provided as-is, without any warranty.
 :::
 
 # Cool, but what does it do?
@@ -28,11 +22,12 @@ So, there are a lot of things/features that will never end up in Home Assistant 
 
 This can have various reasons. For example, it is just too random, out of scope, not matching the Home Assistant philosophy, violates architectural design, is still in early development, experimental, explorative, or just freaking useless.
 
-Spook doesn't care. He is nobodies homie.
+Spook doesn't care. He is your homie!
 
-So, maybe, that one feature you wanted Home Assistant to have, is in the toolbox provided by Spook. All stuff in here, is not part of Home Assistant (or at least not yet) for a reason. So, don't expect it to work, or to be supported, or, well, for starters, to be a good idea.
+So, maybe, that one feature you wanted Home Assistant to have, is in the toolbox provided by Spook.
 
-All that said, Spook is a scary powerful toolbox for Home Assistant, but be aware, Spook is not your homie!
+All that said, Spook is a scary powerful toolbox for Home Assistant, but
+don't be scared, he is a friendly ghost, he is your homie 👻
 
 # What do I get from Spook?
 
@@ -47,12 +42,6 @@ For our most advanced users, Spook adds new {term}`template functions <template 
 Finally, Spook will constantly float around in your Home Assistant, and if it finds potential issues along the way, it will report them to you. For example, if you are using a non-existing entity in your automations, Spook will let you know by raising an issue on your {term}`repairs dashboard <repairs>`.
 
 Spook 👻 will extend your Home Assistant instance with a huge set of scary powerful tools. 🛠️
-
-# Sounds scary. I'm out!
-
-Understood. Using the least amount of custom integrations is always the best way to go. So, if you are uncomfortable with this, don't use Spook.
-
-Don't worry, it won't bite, and it will not deliberately break your Home Assistant system. It is just not supported, and it is not part of Home Assistant. So, if you want to use it, you are on your own.
 
 # I like to learn more first
 

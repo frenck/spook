@@ -21,9 +21,19 @@ It is just not a normal {term}`integration`, like one that connects to a {term}`
 ```{card}
 :header: **Does this integration break my Home Assistant instance??**
 
-Well, that is not the goal of course. But it is a {term}`custom integration <integration>`, so there is a chance it might break your instance. This applies to any custom integration, not just Spook.
+Well, that is not the goal of course. But it is a {term}`custom integration <integration>`, so there is a chance it might break your instance as it is not maintained by the Home Assistant project. This applies to any custom integration, not just Spook.
 
 I'm just sharing what I have [without any warranty](license).
+```
+
+```{card}
+:header: **People say I'm not allowed to use Spook or should not use Spook, what is going on?**
+
+The early versions (before version v3.0.0), was published under a Passive Agressive License. This license made the source code available but prohibited the use of the software. This was to discourage the use of Spook, as it was meant as highly exprimental. It's slogan was "Spook 👻 Not your homie" even.
+
+Spook got popular and loved by many, so I decided to change the license to the [MIT License](license), which is an permissive open-source, OSI-approved, license as of version v3.0.0; taking this more seriously. There is even extensive documentation now! Additionally, I changed the slogan to "Spook 👻 Your homie" to reflect the change in license and the love it got from the community.
+
+Spook is and remains a custom integration, that is not supported, maintained, or endoredes by the Home Assistant project. Just like any other custom integration out there. It is up to you to decide if you are comformtable using a custom integration or not.
 ```
 
 ```{card}

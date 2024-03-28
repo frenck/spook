@@ -1,4 +1,4 @@
-"""Spook - Not your homie."""
+"""Spook - Your homie."""
 
 import logging
 from typing import Final

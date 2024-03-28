@@ -1,1 +1,1 @@
-"""Spook - Not your homie."""
+"""Spook - Your homie."""

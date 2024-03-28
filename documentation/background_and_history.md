@@ -36,7 +36,7 @@ Frenck is [Dutch](wiki:The_Netherlands) and grew up with "Casper het vriendelijk
 
 Casper is scary at first sight, but you quickly get to like him. This seems fitting for a {term}`custom integration <integration>`, as custom integrations are more likely to break. Thus being a little scared of them is not a bad thing.
 
-"Not your homie" is a reference to the live streams Frenck used to do. He called his viewers "My Home Assistant Homies", or just "Homies". It is thus referring to you, the Home Assistant user, as its friend, its homie. However, "Spook" is not your homie. He is a ghost, a spooky thing. He is supposed to make you think a little about what you are doing before you use it.
+"Your homie" is a reference to the live streams Frenck used to do. He called his viewers "My Home Assistant Homies", or just "Homies". It is thus referring to you, the Home Assistant user, as its friend, its homie.
 
 Nice little fact, it used to be "homey" at first (to maybe annoy the [Homey](https://homey.app) users a bit in SEO), but I decided not to be that _\*\*bad word\*\*_ and to change it back to just "homie".
 
@@ -58,4 +58,4 @@ It aims to:
 
 Spook will use almost any trick in the book to get the job done. It will use undocumented features, it will use private APIs, it will use monkey-patching, it will use workarounds, it will use whatever it takes to get the job done.
 
-While some features are not in Home Assistant (for a reason), you might be opinionated differently. Spook doesn't care, and isn't here to judge or be the homie of anyone. And who knows, maybe some features turn out to be great afterall, and end up in Home Assistant one day.
+While some features are not in Home Assistant (for a reason), you might be opinionated differently. Spook doesn't care, and isn't here to judge, he is here to be your homie! And who knows, maybe some features turn out to be great afterall, and end up in Home Assistant one day.
