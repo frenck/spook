@@ -17,20 +17,19 @@ jobs:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v4.1.1
 
-      - name: 🏗 Set up Poetry
-        run: pipx install poetry
-
-      - name: 🏗 Set up Python ${{ env.DEFAULT_PYTHON }}
-        uses: actions/setup-python@v5.1.0
+      - name: 🏗 Set up rye
+        uses: eifinger/setup-rye@v2.5.0
         with:
-          python-version: ${{ env.DEFAULT_PYTHON }}
-          cache: "poetry"
+          enable-cache: true
 
-      - name: 🏗 Install Python dependencies
-        run: poetry install --no-interaction
+      - name: 🏎️ Enable uv in rye
+        run: rye config --set-bool behavior.use-uv=true
+
+      - name: 🏗 Sync dependencies
+        run: rye sync
 
       - name: 🚀 Run ruff linter
-        run: poetry run ruff check --output-format=github .
+        run: rye run ruff check .
 
       - name: 🚀 Run ruff formatter
-        run: poetry run ruff format --check .
+        run: rye run ruff format --check .

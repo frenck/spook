@@ -1,17 +1,17 @@
 {
   "name": "Spook development environment",
-  "image": "mcr.microsoft.com/devcontainers/python:1-3.11-bullseye",
+  "dockerFile": "./Dockerfile",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {
       "installDirectlyFromGitHubRelease": true,
       "version": "latest"
     },
     "ghcr.io/devcontainers/features/node:1": {
-      "nodeGypDependencies": true,
+      "nodeGypDependencies": false,
       "version": "lts"
     },
-    "ghcr.io/devcontainers-contrib/features/poetry:2": {
-      "version": "latest"
+    "ghcr.io/schlich/devcontainer-features/rye:1": {
+      "uv": true
     }
   },
   "forwardPorts": [8123, 3000],
@@ -29,26 +29,30 @@
       "autoForward": "silent"
     }
   },
-  "postCreateCommand": "mkdir -p config && poetry config virtualenvs.in-project true && npm install -g mystmd && poetry install",
-  "updateContentCommand": "poetry config virtualenvs.in-project true && poetry install",
+  "runArgs": ["-e", "GIT_EDITOR=code --wait"],
+  "onCreateCommand": "rye config --set-bool behavior.use-uv=true && npm install -g mystmd",
+  "updateContentCommand": "rye sync",
   "containerEnv": {
-    "DEVCONTAINER": "1"
+    "DEVCONTAINER": "1",
+    "RYE_HOME": "/home/vscode/.rye"
   },
   "remoteUser": "vscode",
   "customizations": {
     "vscode": {
       "extensions": [
-        "ms-python.vscode-pylance",
-        "ms-python.python",
-        "redhat.vscode-yaml",
+        "charliermarsh.ruff",
         "esbenp.prettier-vscode",
-        "GitHub.vscode-pull-request-github",
         "GitHub.copilot",
         "GitHub.vscode-github-actions",
+        "GitHub.vscode-pull-request-github",
+        "ms-python.pylint",
+        "ms-python.python",
+        "ms-python.vscode-pylance",
+        "redhat.vscode-yaml",
+        "tamasfe.even-better-toml",
         "yzhang.markdown-all-in-one"
       ],
       "settings": {
-        "python.pythonPath": "/usr/local/bin/python",
         "editor.formatOnPaste": false,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
@@ -66,7 +70,10 @@
           "!include_dir_list scalar",
           "!include_dir_merge_list scalar",
           "!include_dir_merge_named scalar"
-        ]
+        ],
+        "[python]": {
+          "editor.defaultFormatter": "charliermarsh.ruff"
+        }
       }
     }
   }
