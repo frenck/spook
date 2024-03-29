@@ -8,7 +8,7 @@
 #   with-sources: false
 
 -e file:.
-acme==2.8.0
+acme==2.9.0
     # via hass-nabucasa
 aiohttp==3.9.3
     # via aiohttp-cors
@@ -85,29 +85,33 @@ cryptography==42.0.5
     # via hass-nabucasa
     # via homeassistant
     # via josepy
+    # via pyjwt
     # via pyopenssl
-    # via python-jose
     # via snitun
 dbus-fast==2.21.1
     # via bleak
     # via bleak-retry-connector
     # via bluetooth-adapters
-ecdsa==0.18.0
-    # via python-jose
 envs==1.4
     # via pycognito
+fnv-hash-fast==0.5.0
+    # via homeassistant
+fnvhash==0.1.0
+    # via fnv-hash-fast
 frozenlist==1.4.1
     # via aiohttp
     # via aiosignal
+greenlet==3.0.3
+    # via sqlalchemy
 h11==0.14.0
     # via httpcore
 habluetooth==2.4.2
     # via home-assistant-bluetooth
-hass-nabucasa==0.78.0
+hass-nabucasa==0.79.0
     # via homeassistant
 home-assistant-bluetooth==1.12.0
     # via homeassistant
-homeassistant==2024.3.3
+homeassistant==2024.4.0b1
     # via spook
 httpcore==1.0.4
     # via httpx
@@ -138,18 +142,23 @@ orjson==3.9.15
     # via homeassistant
 packaging==24.0
     # via homeassistant
+pillow==10.2.0
+    # via homeassistant
 pip==24.0
     # via homeassistant
-pyasn1==0.5.1
-    # via python-jose
-    # via rsa
-pycognito==2023.5.0
+psutil==5.9.8
+    # via psutil-home-assistant
+psutil-home-assistant==0.0.1
+    # via homeassistant
+pycognito==2024.2.0
     # via hass-nabucasa
 pycparser==2.21
     # via cffi
 pyjwt==2.8.0
+    # via hass-nabucasa
     # via homeassistant
-pyopenssl==24.0.0
+    # via pycognito
+pyopenssl==24.1.0
     # via acme
     # via homeassistant
     # via josepy
@@ -159,8 +168,6 @@ pyric==0.1.6.3
     # via bluetooth-auto-recovery
 python-dateutil==2.9.0.post0
     # via botocore
-python-jose==3.3.0
-    # via pycognito
 python-slugify==8.0.4
     # via homeassistant
 pytz==2024.1
@@ -173,24 +180,24 @@ requests==2.31.0
     # via acme
     # via homeassistant
     # via pycognito
-rsa==4.9
-    # via python-jose
 s3transfer==0.10.1
     # via boto3
 setuptools==69.2.0
     # via acme
 six==1.16.0
-    # via ecdsa
     # via python-dateutil
 sniffio==1.3.1
     # via anyio
     # via httpx
 snitun==0.36.2
     # via hass-nabucasa
+sqlalchemy==2.0.29
+    # via homeassistant
 text-unidecode==1.3
     # via python-slugify
 typing-extensions==4.10.0
     # via homeassistant
+    # via sqlalchemy
 ulid-transform==0.9.0
     # via homeassistant
 urllib3==1.26.18
