@@ -25,6 +25,7 @@ from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
     entity_registry as er,
+    label_registry as lr,
 )
 from homeassistant.helpers.template import Template
 
@@ -221,6 +222,30 @@ def async_filter_known_entity_ids(
             and entity_id not in known_entity_ids
             and valid_entity_id(entity_id)
         )
+    }
+
+
+@callback
+def async_get_all_label_ids(hass: HomeAssistant) -> set[str]:
+    """Return all label IDs, known to Home Assistant."""
+    label_registry = lr.async_get(hass)
+    return {label.label_id for label in label_registry.labels.values()}
+
+
+@callback
+def async_filter_known_label_ids(
+    hass: HomeAssistant,
+    *,
+    label_ids: set[str],
+    known_label_ids: set[str] | None = None,
+) -> set[str]:
+    """Filter out known label IDs."""
+    if known_label_ids is None:
+        known_label_ids = async_get_all_label_ids(hass)
+    return {
+        label_id
+        for label_id in label_ids - known_label_ids
+        if label_id and isinstance(label_id, str)
     }
 
 
