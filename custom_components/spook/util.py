@@ -25,6 +25,7 @@ from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
     entity_registry as er,
+    floor_registry as fr,
     label_registry as lr,
 )
 from homeassistant.helpers.template import Template
@@ -222,6 +223,30 @@ def async_filter_known_entity_ids(
             and entity_id not in known_entity_ids
             and valid_entity_id(entity_id)
         )
+    }
+
+
+@callback
+def async_get_all_floor_ids(hass: HomeAssistant) -> set[str]:
+    """Return all floor IDs, known to Home Assistant."""
+    floor_registry = fr.async_get(hass)
+    return {floor.label_id for floor in floor_registry.floors.values()}
+
+
+@callback
+def async_filter_known_floor_ids(
+    hass: HomeAssistant,
+    *,
+    floor_ids: set[str],
+    known_floor_ids: set[str] | None = None,
+) -> set[str]:
+    """Filter out known floor IDs."""
+    if known_floor_ids is None:
+        known_floor_ids = async_get_all_label_ids(hass)
+    return {
+        floor_id
+        for floor_id in floor_ids - known_floor_ids
+        if floor_id and isinstance(floor_id, str)
     }
 
 
