@@ -10,20 +10,6 @@
   "commitMessagePrefix": "⬆️",
   "packageRules": [
     {
-      "matchManagers": ["poetry"],
-      "addLabels": ["python"]
-    },
-    {
-      "matchManagers": ["poetry"],
-      "matchDepTypes": ["dev"],
-      "rangeStrategy": "pin"
-    },
-    {
-      "matchManagers": ["poetry"],
-      "matchUpdateTypes": ["minor", "patch"],
-      "automerge": true
-    },
-    {
       "matchManagers": ["npm", "nvm"],
       "addLabels": ["javascript"],
       "rangeStrategy": "pin"
