@@ -372,6 +372,24 @@ homeassistant_remove_alias_from_floor:
         object:
 
 homeassistant_set_floor_aliases:
+  name: Sets aliases for a floor 👻
+  description: >-
+    Sets aliases for a floor. Overwrite and removed any existing aliases,
+    fully replacing them with the new ones.
+  fields:
+    floor_id:
+      name: Floor ID
+      description: The ID of the floor to set the aliases for.
+      required: true
+      selector:
+        text:
+    aliases:
+      name: Aliases
+      description: The aliases to set for the floor.
+      required: true
+      selector:
+        object:
+
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
   description: >-
