@@ -353,6 +353,25 @@ homeassistant_add_alias_to_floor:
       selector:
         object:
 
+homeassistant_remove_alias_from_floor:
+  name: Remove an alias from a floor 👻
+  description: >-
+    Removes an alias from a floor.
+  fields:
+    floor_id:
+      name: Floor ID
+      description: The ID of the floor to remove the alias from.
+      required: true
+      selector:
+        text:
+    alias:
+      name: Alias
+      description: The alias (or list of aliasses) to remove from the floor.
+      required: true
+      selector:
+        object:
+
+homeassistant_set_floor_aliases:
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
   description: >-
