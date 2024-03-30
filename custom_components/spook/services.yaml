@@ -335,6 +335,24 @@ homeassistant_create_floor:
       selector:
         object:
 
+homeassistant_add_alias_to_floor:
+  name: Add an alias to a floor 👻
+  description: >-
+    Adds an alias to a floor.
+  fields:
+    floor_id:
+      name: Floor ID
+      description: The ID of the floor to add the alias to.
+      required: true
+      selector:
+        text:
+    alias:
+      name: Alias
+      description: The alias (or list of aliasses) to add to the floor.
+      required: true
+      selector:
+        object:
+
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
   description: >-
