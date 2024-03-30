@@ -303,6 +303,38 @@ homeassistant_unhide_entity:
         entity:
           multiple: true
 
+homeassistant_create_floor:
+  name: Create a floor 👻
+  description: >-
+    Creates a new floor on the fly.
+  fields:
+    name:
+      name: Name
+      description: The name of the floor to create.
+      required: true
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: Icon to use for the floor.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:texture-box
+    level:
+      name: Level
+      description: The level the floor is on in your home.
+      required: false
+      selector:
+        number:
+    aliases:
+      name: Aliases
+      description: >-
+        A list of aliases for the floor. This is useful if you want to use the
+        floor in a different language or different nickname.
+      selector:
+        object:
+
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
   description: >-
