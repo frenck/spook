@@ -390,6 +390,26 @@ homeassistant_set_floor_aliases:
       selector:
         object:
 
+homeassistant_add_area_to_floor:
+  name: Add an area to a floor 👻
+  description: >-
+    Adds an area to a floor. Please note, if the area is already on a floor,
+    it will be removed from the previous floor.
+  fields:
+    floor_id:
+      name: Floor ID
+      description: The ID of the floor to add the area on.
+      required: true
+      selector:
+        text:
+    area_id:
+      name: Area ID
+      description: The ID of the area(s) to add to the floor.
+      required: true
+      selector:
+        area:
+          multiple: true
+
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
   description: >-
