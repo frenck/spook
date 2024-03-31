@@ -424,6 +424,18 @@ homeassistant_remove_area_from_floor:
         area:
           multiple: true
 
+homeassistant_delete_floor:
+  name: Delete a floor 👻
+  description: >-
+    Deletes a floor on the fly.
+  fields:
+    floor_id:
+      name: Floor ID
+      description: The ID of the floor to delete.
+      required: true
+      selector:
+        text:
+
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
   description: >-
