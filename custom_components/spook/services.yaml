@@ -410,6 +410,20 @@ homeassistant_add_area_to_floor:
         area:
           multiple: true
 
+homeassistant_remove_area_from_floor:
+  name: Remove an area from a floor 👻
+  description: >-
+    Removes an area from a floor. As an area can only be on one floor, this
+    call doesn't need to specify the floor.
+  fields:
+    area_id:
+      name: Area ID
+      description: The ID of the area to remove the floor from.
+      required: true
+      selector:
+        area:
+          multiple: true
+
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
   description: >-
