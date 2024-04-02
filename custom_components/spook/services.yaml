@@ -345,7 +345,7 @@ homeassistant_add_alias_to_floor:
       description: The ID of the floor to add the alias to.
       required: true
       selector:
-        text:
+        floor:
     alias:
       name: Alias
       description: The alias (or list of aliasses) to add to the floor.
@@ -363,7 +363,7 @@ homeassistant_remove_alias_from_floor:
       description: The ID of the floor to remove the alias from.
       required: true
       selector:
-        text:
+        floor:
     alias:
       name: Alias
       description: The alias (or list of aliasses) to remove from the floor.
@@ -382,7 +382,7 @@ homeassistant_set_floor_aliases:
       description: The ID of the floor to set the aliases for.
       required: true
       selector:
-        text:
+        floor:
     aliases:
       name: Aliases
       description: The aliases to set for the floor.
@@ -401,7 +401,7 @@ homeassistant_add_area_to_floor:
       description: The ID of the floor to add the area on.
       required: true
       selector:
-        text:
+        floor:
     area_id:
       name: Area ID
       description: The ID of the area(s) to add to the floor.
@@ -434,7 +434,8 @@ homeassistant_delete_floor:
       description: The ID of the floor to delete.
       required: true
       selector:
-        text:
+        floor:
+          multiple: true
 
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
