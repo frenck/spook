@@ -230,7 +230,7 @@ def async_filter_known_entity_ids(
 def async_get_all_floor_ids(hass: HomeAssistant) -> set[str]:
     """Return all floor IDs, known to Home Assistant."""
     floor_registry = fr.async_get(hass)
-    return {floor.label_id for floor in floor_registry.floors.values()}
+    return {floor.floor_id for floor in floor_registry.floors.values()}
 
 
 @callback
