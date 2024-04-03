@@ -6,7 +6,6 @@ from typing import TYPE_CHECKING
 
 import voluptuous as vol
 
-from homeassistant.components.config.label_registry import SUPPORTED_LABEL_THEME_COLORS
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.helpers import config_validation as cv, label_registry as lr
 
@@ -14,6 +13,35 @@ from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
+
+SUPPORTED_LABEL_THEME_COLORS = {
+    "primary",
+    "accent",
+    "disabled",
+    "amber",
+    "black",
+    "blue-grey",
+    "blue",
+    "brown",
+    "cyan",
+    "dark-grey",
+    "deep-orange",
+    "deep-purple",
+    "green",
+    "grey",
+    "indigo",
+    "light-blue",
+    "light-green",
+    "light-grey",
+    "lime",
+    "orange",
+    "pink",
+    "purple",
+    "red",
+    "teal",
+    "white",
+    "yellow",
+}
 
 
 class SpookService(AbstractSpookAdminService):
