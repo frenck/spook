@@ -435,7 +435,18 @@ homeassistant_delete_floor:
       required: true
       selector:
         floor:
-          multiple: true
+
+homeassistant_delete_label:
+  name: Delete a label 👻
+  description: >-
+    Deletes a label on the fly.
+  fields:
+    label_id:
+      name: Label ID
+      description: The ID of the label to delete.
+      required: true
+      selector:
+        label:
 
 homeassistant_ignore_all_discovered:
   name: Ignore all currently discovered devices 👻
