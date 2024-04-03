@@ -436,6 +436,85 @@ homeassistant_delete_floor:
       selector:
         floor:
 
+homeassistant_create_label:
+  name: Create a label 👻
+  description: >-
+    Creates a new label on the fly.
+  fields:
+    name:
+      name: Name
+      description: The name of the label to create.
+      required: true
+      selector:
+        text:
+    description:
+      name: Description
+      description: Description for the label.
+      required: true
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: Icon to use for the label.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:tag
+    color:
+      name: Color
+      description: >-
+        Color to use for the label. Can be a color name from the list, or a
+        hex color code (like #FF0000).
+      selector:
+        select:
+          options:
+            - label: Primary theme color
+              value: primary
+            - label: Accent theme color
+              value: accent
+            - label: Disabled theme color
+              value: disabled
+            - label: Red
+              value: red
+            - label: Pink
+              value: pink
+            - label: Purple
+              value: purple
+            - label: Deep purple
+              value: deep_purple
+            - label: Indigo
+              value: indigo
+            - label: Blue
+              value: blue
+            - label: Light blue
+              value: light_blue
+            - label: Cyan
+              value: cyan
+            - label: Teal
+              value: teal
+            - label: Green
+              value: green
+            - label: Light green
+              value: light_green
+            - label: Lime
+              value: lime
+            - label: Yellow
+              value: yellow
+            - label: Orange
+              value: orange
+            - label: Deep orange
+              value: deep_orange
+            - label: Brown
+              value: brown
+            - label: Grey
+              value: grey
+            - label: Blue grey
+              value: blue_grey
+            - label: Black
+              value: black
+            - label: White
+              value: white
+
 homeassistant_delete_label:
   name: Delete a label 👻
   description: >-
