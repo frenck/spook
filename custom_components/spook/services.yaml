@@ -557,6 +557,27 @@ homeassistant_add_label_to_device:
         device:
           multiple: true
 
+homeassistant_add_label_to_entity:
+  name: Add a label to an entity 👻
+  description: >-
+    Adds a label to an entity. If multiple labels or multiple entities are
+    provided, all combinations will be added.
+  fields:
+    label_id:
+      name: Label ID
+      description: The ID(s) of the label(s) to add the entity/entities.
+      required: true
+      selector:
+        label:
+          multiple: true
+    entity_id:
+      name: Entity ID
+      description: The ID(s) of the entity/entities to add the label(s) to.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
 homeassistant_delete_label:
   name: Delete a label 👻
   description: >-
