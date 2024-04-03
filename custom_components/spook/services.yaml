@@ -515,6 +515,27 @@ homeassistant_create_label:
             - label: White
               value: white
 
+homeassistant_add_label_to_area:
+  name: Add a label to an area 👻
+  description: >-
+    Adds an label(s) to an area(s). If multiple labels or multiple areas are
+    provided, all combinations will be added.
+  fields:
+    label_id:
+      name: Label ID
+      description: The ID(s) of the label(s) to add the area(s).
+      required: true
+      selector:
+        label:
+          multiple: true
+    area_id:
+      name: Area ID
+      description: The ID(s) of the area(s) to add the label(s) to.
+      required: true
+      selector:
+        area:
+          multiple: true
+
 homeassistant_delete_label:
   name: Delete a label 👻
   description: >-
