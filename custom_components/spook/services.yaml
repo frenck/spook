@@ -518,7 +518,7 @@ homeassistant_create_label:
 homeassistant_add_label_to_area:
   name: Add a label to an area 👻
   description: >-
-    Adds an label(s) to an area(s). If multiple labels or multiple areas are
+    Adds a label to an area. If multiple labels or multiple areas are
     provided, all combinations will be added.
   fields:
     label_id:
@@ -534,6 +534,27 @@ homeassistant_add_label_to_area:
       required: true
       selector:
         area:
+          multiple: true
+
+homeassistant_add_label_to_device:
+  name: Add a label to a device 👻
+  description: >-
+    Adds a label to a device. If multiple labels or multiple devices are
+    provided, all combinations will be added.
+  fields:
+    label_id:
+      name: Label ID
+      description: The ID(s) of the label(s) to add the device(s).
+      required: true
+      selector:
+        label:
+          multiple: true
+    device_id:
+      name: Device ID
+      description: The ID(s) of the device(s) to add the label(s) to.
+      required: true
+      selector:
+        device:
           multiple: true
 
 homeassistant_delete_label:
