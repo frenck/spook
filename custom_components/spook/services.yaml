@@ -578,6 +578,27 @@ homeassistant_add_label_to_entity:
         entity:
           multiple: true
 
+homeassistant_remove_label_from_area:
+  name: Remove a label from an area 👻
+  description: >-
+    Removes a label to an area. If multiple labels or multiple areas are
+    provided, all combinations will be removed.
+  fields:
+    label_id:
+      name: Label ID
+      description: The ID(s) of the label(s) to remove from the area(s).
+      required: true
+      selector:
+        label:
+          multiple: true
+    area_id:
+      name: Area ID
+      description: The ID(s) of the area(s) to remove the label(s) from.
+      required: true
+      selector:
+        area:
+          multiple: true
+
 homeassistant_delete_label:
   name: Delete a label 👻
   description: >-
