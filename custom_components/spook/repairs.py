@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import asyncio
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
@@ -20,11 +21,13 @@ from homeassistant.helpers import (
 )
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
+from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Mapping
+    from types import ModuleType
 
     from homeassistant.data_entry_flow import FlowResult
 
@@ -266,15 +269,25 @@ class SpookRepairManager:
         """Set up the Spook repairs."""
         LOGGER.debug("Setting up Spook repairs")
 
-        # Load all services
-        for module_file in Path(__file__).parent.rglob("ectoplasms/*/repairs/*.py"):
-            if module_file.name == "__init__.py":
-                continue
-            module_path = str(module_file.relative_to(Path(__file__).parent))[
-                :-3
-            ].replace("/", ".")
-            module = importlib.import_module(f".{module_path}", __package__)
-            await self.async_activate(module.SpookRepair(self.hass))
+        modules: list[ModuleType] = []
+
+        def _load_all_repair_modules() -> None:
+            """Load all repair modules."""
+            for module_file in Path(__file__).parent.rglob("ectoplasms/*/repairs/*.py"):
+                if module_file.name == "__init__.py":
+                    continue
+                module_path = str(module_file.relative_to(Path(__file__).parent))[
+                    :-3
+                ].replace("/", ".")
+                modules.append(importlib.import_module(f".{module_path}", __package__))
+
+        await self.hass.async_add_import_executor_job(_load_all_repair_modules)
+        await asyncio.gather(
+            *(
+                create_eager_task(self.async_activate(module.SpookRepair(self.hass)))
+                for module in modules
+            )
+        )
 
     async def async_activate(self, repair: AbstractSpookRepair) -> None:
         """Register a Spook repair."""

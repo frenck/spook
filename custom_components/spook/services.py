@@ -31,6 +31,8 @@ from homeassistant.loader import async_get_integration
 from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
+    from types import ModuleType
+
     from homeassistant.helpers.entity import Entity
 
 
@@ -255,6 +257,7 @@ class SpookServiceManager:
         """Set up the Spook services."""
         LOGGER.debug("Setting up Spook services")
 
+        # Load service schemas
         integration = await async_get_integration(self.hass, DOMAIN)
         self._service_schemas = await self.hass.async_add_executor_job(
             _load_services_file,
@@ -262,16 +265,24 @@ class SpookServiceManager:
             integration,
         )
 
-        # Load all services
-        for module_file in Path(__file__).parent.rglob("ectoplasms/*/services/*.py"):
-            if module_file.name == "__init__.py":
-                continue
-            module_path = str(module_file.relative_to(Path(__file__).parent))[
-                :-3
-            ].replace("/", ".")
-            module = importlib.import_module(f".{module_path}", __package__)
-            service = module.SpookService(self.hass)
+        modules: list[ModuleType] = []
 
+        def _load_all_service_modules() -> None:
+            """Load all service modules."""
+            for module_file in Path(__file__).parent.rglob(
+                "ectoplasms/*/services/*.py"
+            ):
+                if module_file.name == "__init__.py":
+                    continue
+                module_path = str(module_file.relative_to(Path(__file__).parent))[
+                    :-3
+                ].replace("/", ".")
+                modules.append(importlib.import_module(f".{module_path}", __package__))
+
+        await self.hass.async_add_import_executor_job(_load_all_service_modules)
+
+        for module in modules:
+            service = module.SpookService(self.hass)
             if isinstance(
                 service,
                 ReplaceExistingService,
