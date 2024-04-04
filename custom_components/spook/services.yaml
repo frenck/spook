@@ -602,7 +602,7 @@ homeassistant_remove_label_from_area:
 homeassistant_remove_label_from_device:
   name: Remove a label from a device 👻
   description: >-
-    Removes a label to a device. If multiple labels or multiple devices are
+    Removes a label from a device. If multiple labels or multiple devices are
     provided, all combinations will be removed.
   fields:
     label_id:
@@ -618,6 +618,27 @@ homeassistant_remove_label_from_device:
       required: true
       selector:
         device:
+          multiple: true
+
+homeassistant_remove_label_from_entity:
+  name: Remove a label from an entity 👻
+  description: >-
+    Removes a label from an entity. If multiple labels or multiple entities are
+    provided, all combinations will be removed.
+  fields:
+    label_id:
+      name: Label ID
+      description: The ID(s) of the label(s) to remove from the entity/entities.
+      required: true
+      selector:
+        label:
+          multiple: true
+    entity_id:
+      name: Entity ID
+      description: The ID(s) of the entity/entities to remove the label(s) from.
+      required: true
+      selector:
+        entity:
           multiple: true
 
 homeassistant_delete_label:
