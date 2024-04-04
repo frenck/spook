@@ -16,6 +16,7 @@ from .const import LOGGER
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from types import ModuleType
 
 
 class AbstractSpookTemplateFunction(ABC):
@@ -112,14 +113,23 @@ class SpookTemplateFunctionManager:
         """Set up the Spook services."""
         LOGGER.debug("Setting up Spook template functions")
 
-        # Load template functions
-        for module_file in Path(__file__).parent.rglob("ectoplasms/*/templating/*.py"):
-            if module_file.name == "__init__.py":
-                continue
-            module_path = str(module_file.relative_to(Path(__file__).parent))[
-                :-3
-            ].replace("/", ".")
-            module = importlib.import_module(f".{module_path}", __package__)
+        modules: list[ModuleType] = []
+
+        def _load_all_templating_modules() -> None:
+            """Load all templating modules."""
+            for module_file in Path(__file__).parent.rglob(
+                "ectoplasms/*/templating/*.py"
+            ):
+                if module_file.name == "__init__.py":
+                    continue
+                module_path = str(module_file.relative_to(Path(__file__).parent))[
+                    :-3
+                ].replace("/", ".")
+                modules.append(importlib.import_module(f".{module_path}", __package__))
+
+        await self.hass.async_add_import_executor_job(_load_all_templating_modules)
+
+        for module in modules:
             template_function = module.SpookTemplateFunction(self.hass)
 
             LOGGER.debug(
