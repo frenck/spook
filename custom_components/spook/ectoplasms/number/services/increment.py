@@ -14,7 +14,7 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookEntityComponentService):
+class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
     """Number entity service, increase value by a single step."""
 
     domain = DOMAIN

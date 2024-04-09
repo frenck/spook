@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookEntityComponentService):
+class SpookService(AbstractSpookEntityComponentService[InputSelect]):
     """Input select entity service, sorting the positions.
 
     These changes are not permanent, and will be lost when input select entities
@@ -25,7 +25,7 @@ class SpookService(AbstractSpookEntityComponentService):
     async def async_handle_service(
         self,
         entity: InputSelect,
-        _call: ServiceCall,
+        call: ServiceCall,  # noqa: ARG002
     ) -> None:
         """Handle the service call."""
         # pylint: disable-next=protected-access
