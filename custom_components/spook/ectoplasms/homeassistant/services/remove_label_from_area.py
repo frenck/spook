@@ -29,7 +29,7 @@ class SpookService(AbstractSpookAdminService):
         """Handle the service call."""
         area_registry = ar.async_get(self.hass)
         for area_id in call.data["area_id"]:
-            if area_entry := area_registry.async_get(area_id):
+            if area_entry := area_registry.async_get_area(area_id):
                 labels = area_entry.labels.copy()
                 labels.difference_update(call.data["label_id"])
                 area_registry.async_update(area_id, labels=labels)
