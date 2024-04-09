@@ -2,16 +2,13 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from typing import Any
 
 import voluptuous as vol
 
-from homeassistant.config_entries import ConfigFlow
+from homeassistant.config_entries import ConfigFlow, ConfigFlowResult
 
 from .const import DOMAIN
-
-if TYPE_CHECKING:
-    from homeassistant.data_entry_flow import FlowResult
 
 
 class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -22,7 +19,7 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_user(
         self,
         user_input: dict[str, Any] | None = None,
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Handle a flow initialized someone that didn't read the warnings."""
         if self._async_current_entries():
             return self.async_abort(reason="already_spooked")
@@ -35,7 +32,7 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_choice_restart(
         self,
         _: dict[str, Any] | None = None,
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Handle the user's choice.
 
         Allows the user to choose to restart now or later.
@@ -48,14 +45,14 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
     async def async_step_restart_later(
         self,
         _: dict[str, Any] | None = None,
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Handle restart later case."""
         return self.async_create_entry(title="Your homie", data={})
 
     async def async_step_restart_now(
         self,
         _: dict[str, Any] | None = None,
-    ) -> FlowResult:
+    ) -> ConfigFlowResult:
         """Handle restart now case.
 
         Sets a flag, so the integraton setup knows it can go ahead and restart.

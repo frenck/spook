@@ -45,7 +45,7 @@ class AbstractSpookTemplateFunction(ABC):
     @final
     @callback
     def async_register(
-        self, environment: TemplateEnvironment, *, is_limited: bool = False
+        self, environment: TemplateEnvironment, *, is_limited: bool | None = False
     ) -> None:
         """Register the template method."""
         if environment.hass is None and self.requires_hass_object:

@@ -13,9 +13,10 @@ from homeassistant.const import (
     CONF_ENTITY_ID,
     STATE_UNAVAILABLE,
 )
-from homeassistant.core import HomeAssistant, State, callback
+from homeassistant.core import Event, HomeAssistant, State, callback
 from homeassistant.helpers import device_registry as dr, entity_registry as er
-from homeassistant.helpers.entity import DeviceInfo, Entity
+from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import (
     EventStateChangedData,
     async_track_state_change_event,
@@ -24,7 +25,6 @@ from homeassistant.helpers.start import async_at_start
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
-    from homeassistant.helpers.typing import EventType
 
 
 class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
@@ -90,7 +90,7 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
     @callback
     def async_update_and_write_state(
         self,
-        event: EventType[EventStateChangedData] | None = None,
+        event: Event[EventStateChangedData] | None = None,
     ) -> None:
         """Update the state and write it to the entity."""
         if not self.hass.is_running:
@@ -112,12 +112,14 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
 
         self.async_update_state(state)
 
-        self._attr_extra_state_attributes |= {
+        state_attributes = {
+            **self._attr_extra_state_attributes,
             ATTR_ENTITY_ID: self._entity_id,
         }
-        self._attr_extra_state_attributes.pop(ATTR_ICON, None)
-        self._attr_extra_state_attributes.pop(ATTR_DEVICE_CLASS, None)
-        self._attr_extra_state_attributes.pop(ATTR_SUPPORTED_FEATURES, None)
+        state_attributes.pop(ATTR_ICON, None)
+        state_attributes.pop(ATTR_DEVICE_CLASS, None)
+        state_attributes.pop(ATTR_SUPPORTED_FEATURES, None)
+        self._attr_extra_state_attributes = state_attributes
 
         self.async_write_ha_state()
 
