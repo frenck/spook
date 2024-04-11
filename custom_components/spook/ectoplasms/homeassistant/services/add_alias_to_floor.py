@@ -8,7 +8,10 @@ import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import config_validation as cv, label_registry as lr
+from homeassistant.helpers import (
+    config_validation as cv,
+    floor_registry as fr,
+)
 
 from ....services import AbstractSpookAdminService
 
@@ -28,7 +31,7 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
-        floor_registry = lr.async_get(self.hass)
+        floor_registry = fr.async_get(self.hass)
         if not (floor := floor_registry.async_get_floor(call.data["floor_id"])):
             msg = f"Floor {call.data['floor_id']} not found"
             raise HomeAssistantError(msg)
