@@ -6,7 +6,6 @@ from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.cloud import DOMAIN as CLOUD_DOMAIN
-from homeassistant.components.cloud.client import CloudClient
 from homeassistant.components.switch import SwitchEntity, SwitchEntityDescription
 from homeassistant.const import EntityCategory
 
@@ -18,6 +17,7 @@ if TYPE_CHECKING:
 
     from hass_nabucasa import Cloud
 
+    from homeassistant.components.cloud.client import CloudClient
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -137,8 +137,8 @@ class HomeAssistantCloudSpookSwitchEntity(HomeAssistantCloudSpookEntity, SwitchE
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """Turn the entity on."""
-        await self.entity_description.set_fn(self._cloud, True)
+        await self.entity_description.set_fn(self._cloud, True)  # noqa: FBT003
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn the entity off."""
-        await self.entity_description.set_fn(self._cloud, False)
+        await self.entity_description.set_fn(self._cloud, False)  # noqa: FBT003

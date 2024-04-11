@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.components.cloud.client import CloudClient
 from homeassistant.components.cloud.const import DOMAIN as CLOUD_DOMAIN
 from homeassistant.helpers.device_registry import DeviceInfo
 
@@ -13,6 +12,8 @@ from ...entity import SpookEntity, SpookEntityDescription
 
 if TYPE_CHECKING:
     from hass_nabucasa import Cloud
+
+    from homeassistant.components.cloud.client import CloudClient
 
 
 class HomeAssistantCloudSpookEntity(SpookEntity):
