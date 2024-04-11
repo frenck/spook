@@ -135,11 +135,11 @@ data:
   has_mean: false
   has_sum: true
   statistic_id: sensor.some_energy_sensor
-  source: spook
+  source: recorder
   unit_of_measurement: kWh
   stats:
-    end: "2023-07-03 21:00:00+02:00"
-    sum: 123123
+    - start: "2023-07-03 21:00:00+02:00"
+      sum: 123123
 ```
 
 :::
