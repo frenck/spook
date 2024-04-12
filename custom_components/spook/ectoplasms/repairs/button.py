@@ -58,7 +58,7 @@ async def async_setup_entry(
 
 
 class RepairsSpookButtonEntity(RepairsSpookEntity, ButtonEntity):
-    """Spook button providig Repairs actions."""
+    """Spook button providing Repairs actions."""
 
     entity_description: RepairsSpookButtonEntityDescription
 

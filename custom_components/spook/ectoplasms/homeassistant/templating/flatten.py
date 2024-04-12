@@ -23,9 +23,9 @@ class SpookTemplateFunction(AbstractSpookTemplateFunction):
         self,
         value: Iterable[Any],
         levels: int | None = None,
-    ) -> bool:
+    ) -> list[Any]:
         """Flattens a list of lists."""
-        flattend = []
+        flattend: list[Any] = []
         for item in value:
             if isinstance(item, Iterable) and not isinstance(item, str):
                 if levels is None:

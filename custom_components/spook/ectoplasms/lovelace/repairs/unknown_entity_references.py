@@ -5,12 +5,10 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.lovelace import DOMAIN
-from homeassistant.components.lovelace.const import (
-    EVENT_LOVELACE_UPDATED,
-    ConfigNotFound,
-)
+from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
+    EVENT_LOVELACE_UPDATED,
 )
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er

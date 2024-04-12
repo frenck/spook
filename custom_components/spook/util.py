@@ -34,7 +34,7 @@ from homeassistant.helpers.template import Template
 from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
-    from collections.abc import Sequence
+    from collections.abc import Iterable, Sequence
     from types import ModuleType
 
     from homeassistant.config_entries import ConfigEntry
@@ -125,7 +125,7 @@ def link_sub_integrations(hass: HomeAssistant) -> bool:
     return changes
 
 
-def unlink_sub_integrations(hass: HomeAssistant) -> bool:
+def unlink_sub_integrations(hass: HomeAssistant) -> None:
     """Unlink Spook sub integrations."""
     LOGGER.debug("Unlinking Spook sub integrations")
     for manifest in Path(__file__).parent.rglob("integrations/*/manifest.json"):
@@ -225,7 +225,9 @@ def async_get_all_entity_ids(
 
 @callback
 def async_filter_known_entity_ids(
-    hass: HomeAssistant, entity_ids: set[str], known_entity_ids: set[str] | None = None
+    hass: HomeAssistant,
+    entity_ids: Iterable[str],
+    known_entity_ids: set[str] | None = None,
 ) -> set[str]:
     """Filter out known entity IDs."""
     if known_entity_ids is None:

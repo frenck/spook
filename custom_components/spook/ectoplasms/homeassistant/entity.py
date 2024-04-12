@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from homeassistant.components import homeassistant
 from homeassistant.const import __version__
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 
 from ...const import DOMAIN
 from ...entity import SpookEntity, SpookEntityDescription
