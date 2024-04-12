@@ -57,7 +57,7 @@ class RepairsSpookEventEntity(RepairsSpookEntity, EventEntity):
         @callback
         def _fire(event: Event) -> None:
             """Update state."""
-            data = event.data.copy()
+            data = {**event.data}
             event_type = data.pop("action")
             self._trigger_event(event_type, data)
             self.async_schedule_update_ha_state()

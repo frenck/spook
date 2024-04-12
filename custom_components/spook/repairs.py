@@ -11,7 +11,11 @@ from typing import TYPE_CHECKING, Any, final
 
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
-from homeassistant.config_entries import SIGNAL_CONFIG_ENTRY_CHANGED, ConfigEntry
+from homeassistant.config_entries import (
+    SIGNAL_CONFIG_ENTRY_CHANGED,
+    ConfigEntry,
+    ConfigEntryChange,
+)
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import (
     area_registry as ar,
@@ -26,7 +30,7 @@ from homeassistant.util.async_ import create_eager_task
 from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Mapping
+    from collections.abc import Callable, Coroutine, Mapping
     from types import ModuleType
 
     from homeassistant.data_entry_flow import FlowResult
@@ -122,7 +126,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     """Abstract base class to hold a Spook repairs."""
 
     inspect_events: set[str] | None = None
-    inspect_debouncer: Debouncer
+    inspect_debouncer: Debouncer[Coroutine[Any, Any, None]]
     inspect_config_entry_changed: bool | str = False
     inspect_on_reload: bool | str = False
 
@@ -188,10 +192,9 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         if self.inspect_on_reload:
 
             @callback
-            def _filter_event(event_data: Mapping[str, Any] | Event) -> bool:
+            def _filter_event(data: Mapping[str, Any] | Event) -> bool:
                 """Filter for reload events."""
-                if type(event_data) is Event:  # pylint: disable=unidiomatic-typecheck
-                    event_data = event_data.data
+                event_data = data.data if isinstance(data, Event) else data
                 service = event_data.get("service")
                 if service is None:
                     return False
@@ -213,8 +216,8 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
 
         if self.inspect_config_entry_changed:
 
-            async def _async_config_entry_changed(
-                _hass: HomeAssistant,
+            async def _async_config_entry_changed(  # pylint: disable=unused-argument
+                change: ConfigEntryChange,  # noqa: ARG001
                 entry: ConfigEntry,
             ) -> None:
                 """Handle options update."""

@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, final
+from typing import TYPE_CHECKING, Any, cast, final
 
 import voluptuous as vol
 
@@ -259,10 +259,13 @@ class SpookServiceManager:
 
         # Load service schemas
         integration = await async_get_integration(self.hass, DOMAIN)
-        self._service_schemas = await self.hass.async_add_executor_job(
-            _load_services_file,
-            self.hass,
-            integration,
+        self._service_schemas = cast(
+            dict[str, Any],
+            await self.hass.async_add_executor_job(
+                _load_services_file,
+                self.hass,
+                integration,
+            ),
         )
 
         modules: list[ModuleType] = []

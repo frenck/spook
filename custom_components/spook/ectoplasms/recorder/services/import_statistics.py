@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 import voluptuous as vol
 
 from homeassistant.components.recorder import DOMAIN
@@ -13,6 +15,9 @@ from homeassistant.core import ServiceCall, valid_entity_id
 from homeassistant.helpers import config_validation as cv
 
 from ....services import AbstractSpookAdminService
+
+if TYPE_CHECKING:
+    from homeassistant.components.recorder.models import StatisticMetaData
 
 
 class SpookService(AbstractSpookAdminService):
@@ -42,7 +47,7 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
-        metadata = {
+        metadata: StatisticMetaData = {
             "has_mean": call.data["has_mean"],
             "has_sum": call.data["has_sum"],
             "name": call.data["name"],
