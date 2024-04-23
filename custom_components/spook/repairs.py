@@ -34,6 +34,7 @@ if TYPE_CHECKING:
     from types import ModuleType
 
     from homeassistant.data_entry_flow import FlowResult
+    from homeassistant.util.event_type import EventType
 
 
 class AbstractSpookRepairBase(ABC):
@@ -125,7 +126,7 @@ class AbstractSpookRepairBase(ABC):
 class AbstractSpookRepair(AbstractSpookRepairBase):
     """Abstract base class to hold a Spook repairs."""
 
-    inspect_events: set[str] | None = None
+    inspect_events: set[EventType[Any] | str] | None = None
     inspect_debouncer: Debouncer[Coroutine[Any, Any, None]]
     inspect_config_entry_changed: bool | str = False
     inspect_on_reload: bool | str = False
