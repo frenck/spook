@@ -18,7 +18,7 @@ if TYPE_CHECKING:
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
-@dataclass(kw_only=True)
+@dataclass(frozen=True, kw_only=True)
 class RepairsSpookButtonEntityDescription(
     SpookEntityDescription,
     ButtonEntityDescription,

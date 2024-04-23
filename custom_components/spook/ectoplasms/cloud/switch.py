@@ -17,26 +17,21 @@ if TYPE_CHECKING:
 
     from hass_nabucasa import Cloud
 
+    from homeassistant.components.cloud.client import CloudClient
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 
-@dataclass(kw_only=True)
+@dataclass(frozen=True, kw_only=True)
 class HomeAssistantCloudSpookSwitchEntityDescription(
     SpookEntityDescription,
     SwitchEntityDescription,
 ):
     """Class describing Spook Home Assistant sensor entities."""
 
-    icon_off: str | None = None
-    is_on_fn: Callable[[Cloud], bool | None]
-    set_fn: Callable[[Cloud, bool], Awaitable[Any]]
-
-    def __post_init__(self) -> None:
-        """Sync icon_off with icon."""
-        if self.icon_off is None:
-            self.icon_off = self.icon
+    is_on_fn: Callable[[Cloud[CloudClient]], bool | None]
+    set_fn: Callable[[Cloud[CloudClient], bool], Awaitable[Any]]
 
 
 SWITCHES: tuple[HomeAssistantCloudSpookSwitchEntityDescription, ...] = (
@@ -105,7 +100,7 @@ async def async_setup_entry(
 ) -> None:
     """Set up Spook Home Assistant Cloud switches."""
     if CLOUD_DOMAIN in hass.config.components:
-        cloud: Cloud = hass.data[CLOUD_DOMAIN]
+        cloud: Cloud[CloudClient] = hass.data[CLOUD_DOMAIN]
         async_add_entities(
             HomeAssistantCloudSpookSwitchEntity(cloud, description)
             for description in SWITCHES
@@ -131,8 +126,8 @@ class HomeAssistantCloudSpookSwitchEntity(HomeAssistantCloudSpookEntity, SwitchE
     @property
     def icon(self) -> str | None:
         """Return the icon."""
-        if self.entity_description.icon_off and self.is_on is False:
-            return self.entity_description.icon_off
+        if self.entity_description.icon and self.is_on is False:
+            return self.entity_description.icon
         return super().icon
 
     @property
@@ -142,8 +137,8 @@ class HomeAssistantCloudSpookSwitchEntity(HomeAssistantCloudSpookEntity, SwitchE
 
     async def async_turn_on(self, **_kwargs: Any) -> None:
         """Turn the entity on."""
-        await self.entity_description.set_fn(self._cloud, enabled=True)
+        await self.entity_description.set_fn(self._cloud, True)  # noqa: FBT003
 
     async def async_turn_off(self, **_kwargs: Any) -> None:
         """Turn the entity off."""
-        await self.entity_description.set_fn(self._cloud, enabled=False)
+        await self.entity_description.set_fn(self._cloud, False)  # noqa: FBT003

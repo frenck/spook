@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.components.cloud.const import DOMAIN as CLOUD_DOMAIN
-from homeassistant.helpers.entity import DeviceInfo
+from homeassistant.helpers.device_registry import DeviceInfo
 
 from ...const import DOMAIN
 from ...entity import SpookEntity, SpookEntityDescription
@@ -13,13 +13,15 @@ from ...entity import SpookEntity, SpookEntityDescription
 if TYPE_CHECKING:
     from hass_nabucasa import Cloud
 
+    from homeassistant.components.cloud.client import CloudClient
+
 
 class HomeAssistantCloudSpookEntity(SpookEntity):
     """Defines an base Spook entity for Home Assistant Cloud related entities."""
 
-    _cloud: Cloud
-
-    def __init__(self, cloud: Cloud, description: SpookEntityDescription) -> None:
+    def __init__(
+        self, cloud: Cloud[CloudClient], description: SpookEntityDescription
+    ) -> None:
         """Initialize the entity."""
         super().__init__(description=description)
         self._cloud = cloud
