@@ -13,13 +13,17 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookEntityComponentService):
+class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
     """Number entity service, set the max value."""
 
     domain = DOMAIN
     service = "max"
 
-    async def async_handle_service(self, entity: NumberEntity, _: ServiceCall) -> None:
+    async def async_handle_service(
+        self,
+        entity: NumberEntity,
+        call: ServiceCall,  # noqa: ARG002
+    ) -> None:
         """Handle the service call."""
         if entity.max_value is None:
             msg = f"Entity {entity.entity_id} has no max value"

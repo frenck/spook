@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookEntityService):
+class SpookService(AbstractSpookEntityService[Timer]):
     """Home Assistant service to set duration for a timer."""
 
     domain = DOMAIN

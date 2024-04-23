@@ -13,13 +13,17 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookEntityComponentService):
+class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
     """Number entity service, set the min value."""
 
     domain = DOMAIN
     service = "min"
 
-    async def async_handle_service(self, entity: NumberEntity, _: ServiceCall) -> None:
+    async def async_handle_service(
+        self,
+        entity: NumberEntity,
+        call: ServiceCall,  # noqa: ARG002
+    ) -> None:
         """Handle the service call."""
         if entity.min_value is None:
             msg = f"Entity {entity.entity_id} has no min value"

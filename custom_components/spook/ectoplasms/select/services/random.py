@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookEntityComponentService):
+class SpookService(AbstractSpookEntityComponentService[SelectEntity]):
     """Select entity service, select a random option."""
 
     domain = DOMAIN
