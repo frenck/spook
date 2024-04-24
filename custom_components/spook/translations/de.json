@@ -5,7 +5,7 @@
         },
         "step": {
             "user": {
-                "description": "Hast du die Readme-Datei gelesen? Hast du die Lizenz gelesen? Bist du dir wirklich sicher?"
+                "description": "Hast du die Readme gelesen? Hast du die Lizenz gelesen? Bist du dir ganz sicher?"
             },
             "choice_restart": {
                 "menu_options": {
@@ -310,6 +310,20 @@
         "proximity_unknown_zone": {
             "title": "Unbekannte Zone: {zone}",
             "description": "Spook hat ein Gespenst in deiner Nähe-Konfiguration gefunden 👻\n\nWährend er herumflatterte, kreuzte Spook den Weg mit der folgenden Nähe-Konfiguration:\n\n{name}\n\nDiese Konfiguration basiert auf einer Zone, die Home Assistant nicht kennt:\n\n`{zone}`\n\nUm diesen Fehler zu beheben, da du die Zone einer Nähe-Konfiguration nicht ändern kannst, ist die einzige Option, diese spezifische Nähe-Integration zu entfernen.\n\nSpook 👻 Your homie."
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden👻\n\nBeim Herumschweben traf Spock auf folgende Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDie Automatisierung referenziert folgendes Stockwerk, das Home Assistant nicht bekannt ist:\n\n{floors}\n\n\n\nUm den Fehler zu beheben, [editiere die Automatisierung]({edit}) und entferne alle Verwendungen von nicht existierenden Stockwerken.\n\nSpook 👻 Dein homie.",
+            "title": "Unbekannte Stockwerke genutzt in: {automation}"
+        },
+        "automation_unknown_label_references": {
+            "title": "Unbekannte Labels genutzt in: {automation}",
+            "description": "Spook hat einen Geist in deinen Automatisierungen gefunden 👻\n\nBeim Herumschweben traf Spook auf folgende Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThe Automatisierung referenziert folgendes Label, das Home Assistant nicht bekannt ist:\n\n{labels}\n\n\n\nUm den Fehler zu beheben, [editiere die Automatisierung]({edit}) und entferne alle Referenzen auf nicht-existierende Labels.\n\nSpook 👻 Dein homie."
+        },
+        "script_unknown_floor_references": {
+            "title": "Unbekannte Stockwerke genutzt in: {script}"
+        },
+        "script_unknown_label_references": {
+            "title": "Unbekannte Labels genutzt in: {script}"
         }
     }
 }
