@@ -1,1 +1,30 @@
-{}
+{
+    "config": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "entity_id": "Entitas sumber",
+                    "hide_source": "Sembunyikan entitas sumber",
+                    "name": "Nama"
+                },
+                "title": "Kebalikannya 👻"
+            },
+            "switch": {
+                "data": {
+                    "entity_id": "Entitas sumber",
+                    "hide_source": "Sembunyikan entitas sumber",
+                    "name": "Nama"
+                },
+                "title": "Inverse 👻"
+            },
+            "user": {
+                "description": "Pembantu ini memungkinkan Anda untuk membalikkan perilaku suatu entitas. Misalnya, membalikkan buka/tutup atau hidup/mati sensor biner, dan sakelar.",
+                "menu_options": {
+                    "binary_sensor": "Balikkan sensor biner",
+                    "switch": "Balikkan sakelar"
+                },
+                "title": "Balikkan 👻"
+            }
+        }
+    }
+}
