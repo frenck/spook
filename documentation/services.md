@@ -130,6 +130,48 @@ This service can be used to update the ID of an entity on the fly. _#secret_
 
 `homeassistant.hide_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys_id) 📚
 
+## Floors: Create a floor
+
+Instantly create a new floor in your home. _#StackItUp_
+
+`homeassistant.create_floor`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor), [documentation](floors#create-a-floor) 📚
+
+## Floors: Delete a floor
+
+Just like that, a whole floor is gone. _#Illusionist_
+
+`homeassistant.delete_floor`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_floor), [documentation](floors#delete-a-floor) 📚
+
+## Floors: Add an alias to a floor
+
+Adds an alias (or multiple aliases) to a floor. _#aka_
+
+`homeassistant.add_alias_to_floor`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_floor), [documentation](floors#add-an-alias-to-a-floor) 📚
+
+## Floors: Remove an alias from a floor
+
+Removes an alias (or multiple aliases) from a floor. _#broom_
+
+`homeassistant.remove_alias_from_floor`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_floor), [documentation](floors#remove-an-alias-from-a-floor) 📚
+
+## Floors: Set aliases for a floor
+
+Sets the aliases for a floor. _#useless_
+
+`homeassistant.set_floor_aliases`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_floor_aliases), [documentation](floors#set-aliases-for-a-floor) 📚
+
+## Floors: Add an area to a floor
+
+Dynamically add/move an area to a new floor. _#moveit_
+
+`homeassistant.add_area_to_floor`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_area_to_floor), [documentation](floors#add-an-area-to-a-floor) 📚
+
+## Floors: Remove an area from a floor
+
+Dynamically remove an area from a floor. _#poef_
+
+`homeassistant.remove_area_from_floor`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor), [documentation](floors#remove-an-area-from-a-floor) 📚
+
 ## Ignore all discovered devices & services
 
 Click ignore on all discovered items on the integration dashboard; optionally only for specific integration (like, `bluetooth`). _#talktothehand_
@@ -205,6 +247,54 @@ This service can be used to disable polling for updates on an integration config
 This service can be used to enable polling for updates on an integration configuration entry (those you see on your integrations dashboard). This service does the reverse of [](#integration-disable-polling-for-updates) _#poking_
 
 `homeassistant.enable_polling`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling), [documentation](integrations#enable-polling-for-updates) 📚
+
+## Labels: Create a label
+
+Instantly create a new label in your home. _#LabelMaker_
+
+`homeassistant.create_label`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_label), [documentation](labels#create-a-label) 📚
+
+## Labels: Delete a label
+
+Just like that, a whole label is gone. _#RipItOff_
+
+`homeassistant.delete_label`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_label), [documentation](labels#delete-a-label) 📚
+
+## Labels: Add a label to an area
+
+Adds a label (or multiple labels) to an area. _#TagIt_
+
+`homeassistant.add_label_to_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_area), [documentation](labels#add-a-label-to-an-area) 📚
+
+## Labels: Remove a label from an area
+
+Removes a label (or multiple labels) from an area. _#UntagIt_
+
+`homeassistant.remove_label_from_area`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_area), [documentation](labels#remove-a-label-from-an-area) 📚
+
+## Labels: Add a label to a device
+
+Adds a label (or multiple labels) to a device. _#TagIt_
+
+`homeassistant.add_label_to_device`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_device), [documentation](labels#add-a-label-to-a-device) 📚
+
+## Labels: Remove a label from a device
+
+Removes a label (or multiple labels) from a device. _#UntagIt_
+
+`homeassistant.remove_label_from_device`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_device), [documentation](labels#remove-a-label-from-a-device) 📚
+
+## Labels: Add a label to an entity
+
+Adds a label (or multiple labels) to an entity. _#TagIt_
+
+`homeassistant.add_label_to_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_label_to_entity), [documentation](labels#add-a-label-to-an-entity) 📚
+
+## Labels: Remove a label from an entity
+
+Removes a label (or multiple labels) from an entity. _#UntagIt_
+
+`homeassistant.remove_label_from_entity`, [try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_label_from_entity), [documentation](labels#remove-a-label-from-an-entity) 📚
 
 ## Number: Decrease value
 
