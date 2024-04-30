@@ -31,6 +31,7 @@ Action
 :::{glossary}
 Area
 : An area in {term}`Home Assistant` is a logical grouping of {term}`devices <device>` and {term}`entities <entity>` that are meant to match areas (or rooms) in the physical world: your home. Areas are used to group devices and entities together in, for example, the living room. Areas give a better overview of your home and can be used to target {term}`service calls <service call>` to a specific area, like turning off all the lights in the living room.
+: [Learn more about areas in the official Home Assistant documentation](https://www.home-assistant.io/docs/organizing/areas/)
 :::
 
 :::{glossary}
@@ -104,6 +105,12 @@ Float
 :::
 
 :::{glossary}
+Floor
+: A floor in {term}`Home Assistant` is a logical grouping of {term}`areas <area>` that are meant to match floors (or levels) in the physical world: your home. Floors are used to group areas together that are on the same floor in your home. Floors give a better overview of your home and can be used to target {term}`service calls <service call>` to a specific floor, like turning off all the lights on the first floor.
+: [Learn more about floors in the official Home Assistant documentation](https://www.home-assistant.io/docs/organizing/floors/)
+:::
+
+:::{glossary}
 Helper
 : A helper in {term}`Home Assistant` is an {term}`integration` that provides a user input (for example, an input number, input boolean, input select, etc.) or consumes an existing {term}`entity` (or entities) as a data source to perform calculations with and return the result of that calculation as a new entity.
 :::
@@ -142,6 +149,12 @@ Integration
 a {term}`device <device>` or {term}`service <service>` with your Home Assistant installation. Home Assistant comes with well over a thousand integrations out of the box, but you can also install your own custom integrations.
 : Custom integrations, however, are not supported by the Home Assistant project. They are not reviewed or tested by the Home Assistant development team and thus may negatively impact the stability of your Home Assistant instance.
 : Spook 👻 is a custom integration for Home Assistant that is available via {term}`HACS`.
+:::
+
+:::{glossary}
+Label
+: A label in {term}`Home Assistant` can be freely created / be made up by you and used to create your own organizational structure by tagging {term}`devices <device>`, {term}`entities <entity>`, or {term}`areas <area>` with one or more labels. Labels can be used to filter items shows in tables in the user interface, or to target {term}`service calls <service call>` in for example {term}`automations <automation>`, or {term}`scripts <script>`.
+: [Learn more about labels in the official Home Assistant documentation](https://www.home-assistant.io/docs/organizing/labels/)
 :::
 
 :::{glossary}

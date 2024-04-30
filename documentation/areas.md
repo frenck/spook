@@ -7,7 +7,7 @@ date: 2023-08-09T21:29:00+02:00
 
 {term}`Areas <area>` in {term}`Home Assistant` is a logical grouping of {term}`devices <device>` and {term}`entities <entity>` that are meant to match the areas (or rooms) in the physical world: your home.
 
-Spook provides {term}`services <service>` that allows you to manage and {term}`automate <automation>` the areas in Home Assisatant programatically. Great for creating "dynamic" areas, or for creating areas on the fly.
+Spook provides {term}`services <service>` that allows you to manage and {term}`automate <automation>` the areas in Home Assistant programatically. Great for creating "dynamic" areas, or for creating areas on the fly.
 
 ```{figure} ./images/areas/example.png
 :alt: Screenshot of the developer service tools, listing the new services to manage areas.
@@ -56,6 +56,10 @@ Adds a new area to your Home Assistant instance.
   - {term}`string <string>`
   - Yes
   - `Living room`
+* - `icon`
+  - {term}`string <string>`
+  - No
+  - `mdi:sofa`
 * - `aliases`
   - {term}`string <string>` | {term}`list of strings <list>`
   - No
@@ -72,6 +76,7 @@ The use of `aliases` is helpful if you want to create an area with multiple name
 service: homeassistant.create_area
 data:
   name: "Living room"
+  icon: "mdi:sofa"
   aliases:
     - "Lounge"
     - "Sitting area"
