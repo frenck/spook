@@ -366,6 +366,77 @@ service: homeassistant.delete_all_orphaned_entities
 
 :::
 
+### List all orphaned database entities
+
+Mass clean up your database with the help of Spook by listing all orphaned database entities in one service.
+
+Orphaned databse entities are entities that are no longer claimed by an integration but still excist in the database. This can happen when an integration is removed or when an entity is disabled.
+
+```{figure} ./images/entities/list_orphaned_database_entities.png
+:alt: Screenshot of the Home Assistant list orphaned database entities service call in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Service properties
+* - {term}`Service`
+  - List orphaned database entities 👻
+* - {term}`Service name`
+  - `homeassistant.list_orphaned_database_entities`
+* - {term}`Service targets`
+  - No
+* - {term}`Service response`
+  - Service response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added service.
+* - {term}`Developer tools`
+  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
+    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
+```
+
+```{list-table}
+:header-rows: 2
+* - Service response data
+* - Attribute
+  - Type
+* - `count`
+  - {term}`integer <integer>`
+* - `entities`
+  - {term}`list <list>`
+```
+
+:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+service: homeassistant.list_orphaned_database_entities
+```
+
+:::
+
+:::{tip} Script to remove entities from database
+:class: dropdown
+
+```yaml
+alias: Delete orphaned database entities
+sequence:
+  - service: homeassistant.list_orphaned_database_entities
+    data: {}
+    response_variable: orphaned
+  - service: recorder.purge_entities
+    target:
+      entity_id: |
+        {{ orphaned.entities }}
+    data:
+      keep_days: 0
+mode: single
+```
+
+That template will find the area ID of the area with the name "Living room".
+:::
+
 ## Blueprints & tutorials
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for these features. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
