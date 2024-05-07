@@ -26,7 +26,7 @@ Programmatically enable/disable any device in Home Assistant using service calls
 :::{card} Entity management
 :footer: 📚 [Learn more](entities.md)
 
-Automate controlling your entities using services. Hide/unhide, enable/disable, and even delete all orphaned entities all at one go.
+Automate controlling your entities using services. Hide/unhide, enable/disable, list orphaned database entities, and even delete all orphaned entities all at one go.
 
 :::
 

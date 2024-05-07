@@ -43,6 +43,6 @@ class SpookService(AbstractSpookService):
         if call.return_response:
             return {
                 "count": len(compared_list),
-                "items": list(compared_list),
+                "entities": list(compared_list),
             }
         return None
