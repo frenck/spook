@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+import math
 
 import voluptuous as vol
 
@@ -27,7 +28,8 @@ class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
         call: ServiceCall,
     ) -> None:
         """Handle the service call."""
-        if (amount := call.data.get("amount", entity.step or 1)) % entity.step != 0:
+        amount = call.data.get("amount", entity.step or 1)
+        if not math.isclose(amount % entity.step, 0, abs_tol=1e-9):
             msg = (
                 f"Amount {amount} not valid for {entity.entity_id}, "
                 f"it needs to be a multiple of {entity.step}",
