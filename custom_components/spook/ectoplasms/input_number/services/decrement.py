@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 from typing import TYPE_CHECKING
 
 import voluptuous as vol
@@ -33,9 +34,8 @@ class SpookService(
     ) -> None:
         """Handle the service call."""
         # pylint: disable=protected-access
-        if (
-            amount := call.data.get("amount", entity._step)  # noqa: SLF001
-        ) % entity._step != 0:  # noqa: SLF001
+        amount = call.data.get("amount", entity._step)  # noqa: SLF001
+        if not math.isclose(amount % entity._step, 0, abs_tol=1e-9):  # noqa: SLF001
             msg = (
                 f"Amount {amount} not valid for {entity.entity_id}, "
                 f"it needs to be a multiple of {entity._step}",  # noqa: SLF001
