@@ -34,7 +34,6 @@ class SpookService(AbstractSpookService):
         )
         db_url = get_instance(self.hass).db_url
         engine = create_engine(db_url)
-        engine.connect()
         with engine.connect() as conn:
             response = conn.execute(query)
             db_list = [e[0] for e in response]
