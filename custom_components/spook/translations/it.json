@@ -51,7 +51,7 @@
         },
         "lovelace_unknown_entity_references": {
             "title": "Entità sconosciute utilizzate in: {dashboard}",
-            "description": "Spook ha trovato un fantasma nelle tue plance👻\n\nDurante il giro, Spook ha incrociato questa plancia:\n\n[{dashboard}]({edit})\n\nQuesta plancia fa riferimento alle seguenti entità, che sono sconosciute a Home Assistant:\n\n{entities}\n\n\nPer risolvere questo errore, [modifica la plancia]({edit}) e rimuovere l'uso di queste entità non esistenti.\n\nNon il tuo amico."
+            "description": "Spook ha trovato un fantasma nelle tue plance👻\n\nDurante il giro, Spook ha incrociato questa plancia:\n\n[{dashboard}]({edit})\n\nQuesta plancia fa riferimento alle seguenti entità, che sono sconosciute a Home Assistant:\n\n{entities}\n\n\nPer risolvere questo errore, [modifica la plancia]({edit}) e rimuovi l'uso di queste entità non esistenti.\n\nSpook 👻Il tuo amico."
         },
         "user_issue": {
             "fix_flow": {
@@ -92,20 +92,35 @@
             "title": "Sorgente sconosciuta: {helper}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook ha trovato un fantasma nelle tue automazioni 👻\n\nMentre fluttuava intorno, Spook si è incrociato con la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento ai seguenti servizi, che sono sconosciuti a Home Assistant:\n\n{services}\n\nPer risolvere questo errore, [modifica l'automazione]({edit}) e rimuovi l'uso di questi servizi inesistenti.\n\nSpook 👻 Non è il tuo amico.",
+            "description": "Spook ha trovato un fantasma nelle tue automazioni 👻\n\nMentre fluttuava intorno, Spook si è incrociato con la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento ai seguenti servizi, che sono sconosciuti a Home Assistant:\n\n{services}\n\nPer risolvere questo errore, [modifica l'automazione]({edit}) e rimuovi l'uso di questi servizi inesistenti.\n\nSpook 👻 Il tuo amico.",
             "title": "Servizi sconosciuti utilizzati in: {automation}"
         },
         "proximity_unknown_ignored_zones": {
             "title": "Zone ignorate sconosciute: {name}",
-            "description": "Spook ha trovato un fantasma nella tua configurazione di prossimità 👻\n\nMentre fluttuava intorno, Spook si è incrociato con la seguente configurazione di prossimità:\n\n{name}\n\nQuesta configurazione sta ignorando zone sconosciute a Home Assistant:\n\n{zones}\n\nPer risolvere questo errore, modifica la configurazione e rimuovi questa/queste zone.\n\nSpook 👻 Non è il tuo amico."
+            "description": "Spook ha trovato un fantasma nella tua configurazione di prossimità 👻\n\nMentre fluttuava intorno, Spook si è incrociato con la seguente configurazione di prossimità:\n\n{name}\n\nQuesta configurazione sta ignorando zone sconosciute a Home Assistant:\n\n{zones}\n\n\n\nPer risolvere questo errore, modifica la configurazione e rimuovi questa/queste zone.\n\nSpook 👻 Il tuo amico."
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook ha trovato un fantasma nella tua configurazione di prossimità 👻\n\nMentre fluttuava intorno, Spook si è incrociato con la seguente configurazione di prossimità:\n\n{name}\n\nQuesta configurazione sta tracciando persone o dispositivi che sono sconosciuti a Home Assistant:\n\n{entities}\n\nPer risolvere questo errore, modifica la configurazione e rimuovi questa/queste entità.\n\nSpook 👻 Non è il tuo amico.",
+            "description": "Spook ha trovato un fantasma nella tua configurazione di prossimità 👻\n\nMentre fluttuava intorno, Spook si è incrociato con la seguente configurazione di prossimità:\n\n{name}\n\nQuesta configurazione sta tracciando persone o dispositivi che sono sconosciuti a Home Assistant:\n\n{entities}\n\n\n\nPer risolvere questo errore, modifica la configurazione e rimuovi questa/queste entità.\n\nSpook 👻Il tuo amico.",
             "title": "Entità tracciate sconosciute: {name}"
         },
         "proximity_unknown_zone": {
             "title": "Zona sconosciuta: {zone}",
-            "description": "Spook ha trovato un fantasma nella tua configurazione di prossimità 👻\n\nMentre fluttuava intorno, Spook si è incrociato con la seguente configurazione di prossimità:\n\n{name}\n\nQuesta configurazione si basa su una zona sconosciuta a Home Assistant:\n\n`{zone}`\n\nPer risolvere questo errore, poiché non è possibile cambiare la zona di una configurazione di prossimità, l'unica opzione è rimuovere questa specifica istanza di integrazione di prossimità.\n\nSpook 👻 Non è il tuo amico."
+            "description": "Spook ha trovato un fantasma nella tua configurazione di prossimità 👻\n\nMentre fluttuava intorno, Spook si è incrociato con la seguente configurazione di prossimità:\n\n{name}\n\nQuesta configurazione si basa su una zona sconosciuta a Home Assistant:\n\n`{zone}`\n\nPer risolvere questo errore, poiché non è possibile cambiare la zona di una configurazione di prossimità, l'unica opzione è rimuovere questa specifica istanza di integrazione di prossimità.\n\nSpook 👻 Il tuo amico."
+        },
+        "script_unknown_floor_references": {
+            "description": "Spook ha trovato un fantasma nei tuoi script 👻\n\nMentre fluttuava intorno, Spook si è incrociato con il seguente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nQuesto script fa uso dei seguenti piani, che sono sconosciuti in Home Assistant:\n\n{floors}\n\n\n\nPer risolvere questo errore, [modifica lo script]({edit}) e rimuovi l'uso dei piani non esistenti.\n\nSpook 👻 Il tuo amico.",
+            "title": "Piani sconosciti usati in: {script}"
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook ha trovato un fantasma nelle tue automazioni👻\n\nMentre vagava in giro, Spook ha incontrato le seguenti automazioni:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione referenzia i seguenti piani, che sono sconosciuti in Home Assistant:\n\n{floors}\n\n\n\nPer sistemare questo errore, [modifica l'automazione]({edit}) e rimuovi l'utilizzo dei piani non esistenti.\n\nSpook 👻 Il tuo amico.",
+            "title": "Piani sconosciuti usati in: {automation}"
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook ha trovato un fantasma nelle tue automazioni👻\n\nMentre vagava in giro, Spook ha incontrate le seguenti automazioni:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione referenzia le seguenti etichette, che sono sconosciute in Home Assistant:\n\n{labels}\n\n\n\nPer sistemare questo errore, [modifica l'automazione]({edit}) e rimuovi l'utilizzo delle etichette non esistenti\n\nSpook 👻 Il tuo amico.",
+            "title": "Etichette sconosciute usate in {automation}"
+        },
+        "script_unknown_label_references": {
+            "title": "Etichette sconosciute usate in: {script}"
         }
     },
     "entity": {
