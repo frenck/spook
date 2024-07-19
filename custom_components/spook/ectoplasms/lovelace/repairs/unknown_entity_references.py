@@ -90,7 +90,7 @@ class SpookRepair(AbstractSpookRepair):
                 )
 
     @callback
-    def __async_extract_entities(self, config: dict[str, Any]) -> set[str]:
+    def __async_extract_entities(self, config: dict[str, Any]) -> set[str]:  # noqa: C901
         """Extract entities from a dashboard config."""
         entities = set()
         if isinstance(config, dict) and (views := config.get("views")):
@@ -101,6 +101,13 @@ class SpookRepair(AbstractSpookRepair):
                 if cards := view.get("cards"):
                     for card in cards:
                         entities.update(self.__async_extract_entities_from_card(card))
+                if sections := view.get("sections"):
+                    for section in sections:
+                        if cards := section.get("cards"):
+                            for card in cards:
+                                entities.update(
+                                    self.__async_extract_entities_from_card(card)
+                                )
         return entities
 
     @callback
