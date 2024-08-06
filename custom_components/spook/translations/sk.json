@@ -312,10 +312,20 @@
             "description": "Spook našiel ducha vo svojich trendových pomocníkov 👻\n\nZatiaľ čo plávajúce okolo, Spook prekročil cestu s nasledujúcim pomocníkom:\n\n{helper} (ententita_id}`)\n\nTento pomocník má zdrojový subjekt neznámy pre Home Assistant:\n\nZdroj: `\n\n\n\nAk chcete opraviť túto chybu, upraviť pomocníka a upraviť zdrojovú subjekt (alebo odstrániť pomocníka) a reštartovať Home Assistant.\n\nSpook 👻 Váš homie."
         },
         "script_unknown_floor_references": {
-            "title": "Neznáme poschodia použité v: {script}"
+            "title": "Neznáme poschodia použité v: {script}",
+            "description": "Spook našiel ducha vo vašich skriptoch 👻\n\nZatiaľ čo plával okolo, Spook prekročil cestu s nasledujúcim skriptom:\n\n[{script}]({edit}) (ententity_id}`)\n\nTento skript odkazuje na nasledujúce podlahy, ktoré nie sú známe pre Home Assistant:\n\n{floors}\n\n\n\nAk chcete opraviť túto chybu, [edit skript]({edit}) a odstrániť používanie týchto neexistujúcich podláh.\n\nSpook 👻 Tvoj homie."
         },
         "automation_unknown_floor_references": {
-            "title": "Neznáme poschodia použité v: {automation}"
+            "title": "Neznáme poschodia použité v: {automation}",
+            "description": "Spook našiel ducha vo vašich automatizáciách 👻\n\nZatiaľ čo plával okolo, Spook prekročil cestu s nasledujúcou automatizáciou:\n\n[{automation}]({edit}) (ententity_id}`)\n\nTáto automatizácia odkazuje na nasledujúce podlahy, ktoré nie sú známe pre Home Assistant:\n\n{floors}\n\n\n\nAk chcete opraviť túto chybu, [edit automatizáciu]({edit}) a odstrániť používanie týchto neexistujúcich podláh.\n\nSpook 👻 Tvoj homie."
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook našiel ducha vo vašich automatizáciách 👻\n\nZatiaľ čo plával okolo, Spook prekročil cestu s nasledujúcou automatizáciou:\n\n[{automation}]({edit}) (ententity_id}`)\n\nTáto automatizácia odkazuje na nasledujúce štítky, ktoré nie sú známe pre Home Assistant:\n\n{ Značky}\n\n\n\nAk chcete opraviť túto chybu, [edit automatizáciu]({edit}) a odstrániť používanie týchto neexistujúcich etikiet.\n\nSpook 👻 Tvoj homie.",
+            "title": "Neznáme štítky používané v: {automation}"
+        },
+        "script_unknown_label_references": {
+            "description": "Spook našiel ducha vo vašich skriptoch 👻\n\nZatiaľ čo plával okolo, Spook prekročil cestu s nasledujúcim skriptom:\n\n[{script}]({edit}) (ententity_id}`)\n\nTento skript odkazuje na nasledujúce štítky, ktoré nie sú známe pre Home Assistant:\n\n{ Značky}\n\n\n\nAk chcete opraviť túto chybu, [edit skript]({edit}) a odstrániť používanie týchto neexistujúcich etikiet.\n\nSpook 👻 Tvoj homie.",
+            "title": "Neznáme štítky používané v: {script}"
         }
     }
 }

@@ -108,13 +108,20 @@
             "description": "Spook a trouvé un fantôme dans vos assistants de tendance 👻\n\nEn flottant autour, Spook a croisé le chemin de l'assistant suivant :\n\n{helper} (`{entity_id}`)\n\nCet assistant a une entité source inconnue de Home Assistant :\n\n`{source}`\n\nPour corriger cette erreur, modifiez l'assistant et ajustez l'entité source (ou supprimez l'assistant) et redémarrez Home Assistant.\n\nSpook 👻 Your homie."
         },
         "automation_unknown_floor_references": {
-            "title": "Étage inconnu utilisé dans: {automation}"
+            "title": "Étage inconnu utilisé dans: {automation}",
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn se promenant, Spook a croisé l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux étages suivants, qui sont inconnus de Home Assistant :\n\n{floors}\n\n\n\nPour corriger cette erreur, [éditez l'automatisation]({edit}) et supprimez les références à ces étages inexistants.\n\nSpook 👻 Votre pote."
         },
         "script_unknown_floor_references": {
-            "title": "Étage inconnu utilisé dans : {script}"
+            "title": "Étage inconnu utilisé dans : {script}",
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn se promenant, Spook a croisé le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux étages suivants, qui sont inconnus de Home Assistant :\n\n{floors}\n\n\n\nPour corriger cette erreur, [éditez le script]({edit}) et supprimez les références aux étages inexistants.\n\nSpook 👻 Votre pote."
         },
         "script_unknown_label_references": {
-            "title": "Label inconnu utilisé dans: {script}"
+            "title": "Label inconnu utilisé dans: {script}",
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn se promenant, Spook a croisé le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux étiquettes suivantes, qui sont inconnues de Home Assistant :\n\n{labels}\n\n\n\nPour corriger cette erreur, [éditez le script]({edit}) et supprimez les références aux étiquettes inexistantes.\n\nSpook 👻 Votre pote."
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn se promenant, Spook a croisé l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux étiquettes suivantes, qui sont inconnues de Home Assistant :\n\n{labels}\n\n\n\nPour corriger cette erreur, [éditez l'automatisation]({edit}) et supprimez les références aux étiquettes inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Étiquettes inconnues utilisées dans : {automation}"
         }
     },
     "entity": {
