@@ -342,7 +342,7 @@ This action call will randomly fail (and thus randomly stop your automation or s
 
 Advanced action to directly inject historical statistics data into the recorder's long-term stats database. _#easy_
 
-`recorder.import_statistics`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics), [documentation](integrations/recorder#import-blueprint) 📚
+`recorder.import_statistics`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics), [documentation](integrations/recorder#import-statistics) 📚
 
 ## Repairs: Create issue
 
