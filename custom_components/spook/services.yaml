@@ -703,6 +703,11 @@ homeassistant_delete_all_orphaned_entities:
     integration is offline or not working since Home Assistant started. Calling
     this service will delete those entities as well.
 
+homeassistant_list_orphaned_database_entities:
+  name: List all orphaned database entities 👻
+  description: >-
+    Lists all orphaned database entities unclaimed by any integration.
+
 homeassistant_restart:
   name: Restart 👻
   description: Restart the Home Assistant service.
