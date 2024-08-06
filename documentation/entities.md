@@ -370,7 +370,7 @@ service: homeassistant.delete_all_orphaned_entities
 
 Mass clean up your database with the help of Spook by listing all orphaned database entities in one service call.
 
-Orphaned database entities are entities that are no longer claimed by an integration but still excist in the database. This can happen when an integration is removed or when an entity is disabled.
+Orphaned database entities are entities that are no longer claimed by integration but still exist in the database. This can happen when an integration is removed or when an entity is disabled.
 
 ```{figure} ./images/entities/list_orphaned_database_entities.png
 :alt: Screenshot of the Home Assistant list orphaned database entities service call in the developer tools.
@@ -423,7 +423,6 @@ service: homeassistant.list_orphaned_database_entities
 alias: Delete orphaned database entities
 sequence:
   - service: homeassistant.list_orphaned_database_entities
-    data: {}
     response_variable: orphaned
   - service: recorder.purge_entities
     target:
