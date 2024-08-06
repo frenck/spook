@@ -5,42 +5,42 @@ subtitle: Which devices are you rocking? 🎸
 date: 2023-08-09T21:29:00+02:00
 ---
 
-A {term}`device <device>` in {term}`Home Assistant` represents a physical device in your home but can also represent a web service, like one that provides weather information. Devices are logical grouping for entities. Spook provides you with a few services to manage devices.
+A {term}`device <device>` in {term}`Home Assistant` represents a physical device in your home but can also represent a web service, like one that provides weather information. Devices are logical grouping for entities. Spook provides you with a few actions to manage devices.
 
-## Services
+## Actions
 
-The following device management services are added to your Home Assistant instance:
+The following device management actions are added to your Home Assistant instance:
 
 ### Disable a device
 
-This service allows you to disable a device on the fly.
+This action allows you to disable a device on the fly.
 
 ```{figure} ./images/devices/disable_device.png
-:alt: Screenshot of the Home Assistant disable device service call in the developer tools.
+:alt: Screenshot of the Home Assistant disable device action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Disable a device 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.disable_device`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -56,17 +56,17 @@ This service allows you to disable a device on the fly.
 
 Not sure what the `device_id` of an your device is? There are a few ways to find it:
 
-Use this service in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.disable_device
+action: homeassistant.disable_device
 data:
   device_id: "dc23e666e6100f184e642a0ac345d3eb"
 ```
@@ -75,7 +75,7 @@ Or multiple devices at once:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.disable_device
+action: homeassistant.disable_device
 data:
   device_id:
     - "dc23e666e6100f184e642a0ac345d3eb"
@@ -86,34 +86,34 @@ data:
 
 ### Enable a device
 
-This service allows you to enable a device on the fly.
+This action allows you to enable a device on the fly.
 
 ```{figure} ./images/devices/enable_device.png
-:alt: Screenshot of the Home Assistant enable device service call in the developer tools.
+:alt: Screenshot of the Home Assistant enable device action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Enable a device 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.enable_device`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -129,17 +129,17 @@ This service allows you to enable a device on the fly.
 
 Not sure what the `device_id` of an your device is? There are a few ways to find it:
 
-Use this service in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.enable_device
+action: homeassistant.enable_device
 data:
   device_id: "dc23e666e6100f184e642a0ac345d3eb"
 ```
@@ -148,7 +148,7 @@ Or multiple devices at once:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.enable_device
+action: homeassistant.enable_device
 data:
   device_id:
     - "dc23e666e6100f184e642a0ac345d3eb"

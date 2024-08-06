@@ -1,12 +1,12 @@
 boo:
   name: Boo! 👻
   description: >-
-    Calling this service spooks Home Assistant.
-    The service call will always fail.
+    Calling this action spooks Home Assistant.
+    Performing this action will always fail.
 
 random_fail:
   name: Random fail 👻
-  description: A call to this service will randomly fail.
+  description: Performing this action will randomly fail.
 
 blueprint_import:
   name: Import blueprint 👻
@@ -701,7 +701,7 @@ homeassistant_delete_all_orphaned_entities:
 
     **WARNING** Entities might have been marked orphaned because an
     integration is offline or not working since Home Assistant started. Calling
-    this service will delete those entities as well.
+    this action will delete those entities as well.
 
 homeassistant_list_orphaned_database_entities:
   name: List all orphaned database entities 👻
@@ -710,7 +710,7 @@ homeassistant_list_orphaned_database_entities:
 
 homeassistant_restart:
   name: Restart 👻
-  description: Restart the Home Assistant service.
+  description: Restart the Home Assistant action.
   fields:
     safe_mode:
       name: Safe mode
@@ -1057,8 +1057,8 @@ repairs_ignore_all:
 repairs_remove:
   name: Remove issue 👻
   description: >-
-    Removes a manually created Home Assistant repairs issue. This service
-    can only remove issues created with the `repairs_create` service.
+    Removes a manually created Home Assistant repairs issue. This action
+    can only remove issues created with the `repairs_create` action.
   fields:
     issue_id:
       name: Issue ID

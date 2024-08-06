@@ -5,42 +5,42 @@ subtitle: Everything is an entity, and entities are everything 🪄
 date: 2023-08-09T21:29:00+02:00
 ---
 
-{term}`Entities <entity>` in {term}`Home Assistant` are the building blocks of your home automation. Spook enhances the core of Home Assistant by adding {term}`services <service>` to control those entities programmatically.
+{term}`Entities <entity>` in {term}`Home Assistant` are the building blocks of your home automation. Spook enhances the core of Home Assistant by adding {term}`actions <action>` to control those entities programmatically.
 
-## Services
+## Actions
 
-The following entity management services are added to your Home Assistant instance:
+The following entity management actions are added to your Home Assistant instance:
 
 ### Disable an entity
 
-This service allows you to disable an entity on the fly.
+This action allows you to disable an entity on the fly.
 
 ```{figure} ./images/entities/disable_entity.png
-:alt: Screenshot of the Home Assistant disable entity service call in the developer tools.
+:alt: Screenshot of the Home Assistant disable entity action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Disable an entity 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.disable_entity`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -51,12 +51,12 @@ This service allows you to disable an entity on the fly.
   - `"light.living_room"`
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.disable_entity
+action: homeassistant.disable_entity
 data:
   entity_id: light.living_room
 ```
@@ -65,7 +65,7 @@ Or multiple entities at once:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.disable_entity
+action: homeassistant.disable_entity
 data:
   entity_id:
     - light.living_room
@@ -76,34 +76,34 @@ data:
 
 ### Enable an entity
 
-This service allows you to enable an entity on the fly.
+This action allows you to enable an entity on the fly.
 
 ```{figure} ./images/entities/enable_entity.png
-:alt: Screenshot of the Home Assistant enable entity service call in the developer tools.
+:alt: Screenshot of the Home Assistant enable entity action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Enable an entity 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.enable_entity`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -114,12 +114,12 @@ This service allows you to enable an entity on the fly.
   - `"light.living_room"`
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.enable_entity
+action: homeassistant.enable_entity
 data:
   entity_id: light.living_room
 ```
@@ -128,7 +128,7 @@ Or multiple entities at once:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.enable_entity
+action: homeassistant.enable_entity
 data:
   entity_id:
     - light.living_room
@@ -139,37 +139,37 @@ data:
 
 ### Hide an entity
 
-This service allows you to hide an entity on the fly.
+This action allows you to hide an entity on the fly.
 
 It can be particularly useful when you have a lot of entities, and you want to hide some of them from the generated UI based programmatically.
 Hidden entities are also not exposed to external voice assistants, like Google Assistant or Alexa.
 
 ```{figure} ./images/entities/hide_entity.png
-:alt: Screenshot of the Home Assistant hide entity service call in the developer tools.
+:alt: Screenshot of the Home Assistant hide entity action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Hide an entity 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.hide_entity`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -180,12 +180,12 @@ Hidden entities are also not exposed to external voice assistants, like Google A
   - `"light.living_room"`
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.hide_entity
+action: homeassistant.hide_entity
 data:
   entity_id: light.living_room
 ```
@@ -194,7 +194,7 @@ Or multiple entities at once:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.hide_entity
+action: homeassistant.hide_entity
 data:
   entity_id:
     - light.living_room
@@ -205,34 +205,34 @@ data:
 
 ### Unhide an entity
 
-This service allows you to unhide an entity on the fly.
+This action allows you to unhide an entity on the fly.
 
 ```{figure} ./images/entities/unhide_entity.png
-:alt: Screenshot of the Home Assistant unhide entity service call in the developer tools.
+:alt: Screenshot of the Home Assistant unhide entity action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Unide an entity 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.unhide_entity`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -243,12 +243,12 @@ This service allows you to unhide an entity on the fly.
   - `"light.living_room"`
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.unhide_entity
+action: homeassistant.unhide_entity
 data:
   entity_id: light.living_room
 ```
@@ -257,7 +257,7 @@ Or multiple entities at once:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.unhide_entity
+action: homeassistant.unhide_entity
 data:
   entity_id:
     - light.living_room
@@ -268,34 +268,34 @@ data:
 
 ### Update an entity's ID
 
-This service allows you to update an entity's ID on the fly.
+This action allows you to update an entity's ID on the fly.
 
 ```{figure} ./images/entities/update_entity_id.png
-:alt: Screenshot of the Home Assistant update entity ID service call in the developer tools.
+:alt: Screenshot of the Home Assistant update entity ID action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Update an entity's ID 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.update_entity_id`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -310,12 +310,12 @@ This service allows you to update an entity's ID on the fly.
   - `"light.dining_room"`
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.update_entity_id
+action: homeassistant.update_entity_id
 data:
   entity_id: light.living_room
   new_entity_id: light.dining_room
@@ -330,74 +330,74 @@ Mass clean up your Home Assistant by deleting all orphaned entities in one go.
 Orphaned entities are entities that are no longer claimed by an integration. This can happen when an integration is removed or when an integration is no longer working. Home Assistant considers an entity only orphaned if it has been unclaimed since the last restart of Home Assistant.
 
 :::{warning}
-Entities might have been marked orphaned because an integration is offline or not working since Home Assistant started. Calling this service will delete those entities as well.
+Entities might have been marked orphaned because an integration is offline or not working since Home Assistant started. Calling This action will delete those entities as well.
 :::
 
 ```{figure} ./images/entities/delete_all_orphaned_entities.png
-:alt: Screenshot of the Home Assistant unhide entity service call in the developer tools.
+:alt: Screenshot of the Home Assistant unhide entity action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Delete all orphaned entities 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.delete_all_orphaned_entities`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.delete_all_orphaned_entities
+action: homeassistant.delete_all_orphaned_entities
 ```
 
 :::
 
 ### List all orphaned database entities
 
-Mass clean up your database with the help of Spook by listing all orphaned database entities in one service call.
+Mass clean up your database with the help of Spook by listing all orphaned database entities in one action.
 
 Orphaned database entities are entities that are no longer claimed by integration but still exist in the database. This can happen when an integration is removed or when an entity is disabled.
 
 ```{figure} ./images/entities/list_orphaned_database_entities.png
-:alt: Screenshot of the Home Assistant list orphaned database entities service call in the developer tools.
+:alt: Screenshot of the Home Assistant list orphaned database entities action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - List orphaned database entities 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.list_orphaned_database_entities`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
-  - Service response
+* - {term}`Action response`
+  - Action response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service.
+  - Newly added action.
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service response data
+* - Action response data
 * - Attribute
   - Type
 * - `count`
@@ -406,12 +406,12 @@ Orphaned database entities are entities that are no longer claimed by integratio
   - {term}`list <list>`
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.list_orphaned_database_entities
+action: homeassistant.list_orphaned_database_entities
 ```
 
 :::
@@ -422,9 +422,9 @@ service: homeassistant.list_orphaned_database_entities
 ```yaml
 alias: Delete orphaned database entities
 sequence:
-  - service: homeassistant.list_orphaned_database_entities
+  - action: homeassistant.list_orphaned_database_entities
     response_variable: orphaned
-  - service: recorder.purge_entities
+  - action: recorder.purge_entities
     target:
       entity_id: |
         {{ orphaned.entities }}
@@ -442,6 +442,6 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

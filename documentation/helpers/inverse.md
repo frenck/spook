@@ -9,7 +9,7 @@ The inverse {term}`helper <helper>` allows you to invert the behavior of a {term
 
 This can be helpful if you use a switch or binary sensor in a non-standard way, or when the manufacturer of a device has decided to use the opposite logic for the switch or binary sensor (Yeah... they exist... 🤦‍♂️).
 
-It not just inverts the state of the source {term}`entity <entity>`, but also does all {term}`service calls <service call>` in reverse. So if you have an automation call the turn on service on a switch, it will instead call the turn off service on the inverted switch.
+It not just inverts the state of the source {term}`entity <entity>`, but also does all {term}`actions <performing actions>` in reverse. So if you have an automation performing the turn on action on a switch, it will instead perform the turn off action on the inverted switch.
 
 ## Inverting the behavior of an entity
 

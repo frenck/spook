@@ -23,14 +23,33 @@ date: 2024-01-09T17:14:53+01:00
 
 :::{glossary}
 Action
-: An action in {term}`Home Assistant` is a single task that is performed when an {term}`automation <automation>` or {term}`script <script>` is executed. For example, an action can be to turn on a light or to send a notification to your phone. There are many different types of actions, most notably the action to {term}`call a service <service call>`; they can be combined to create powerful automations and scripts.
+: A action in {term}`Home Assistant` is a method that can be {term}`performed <performing actions>`. Actions are, for example, used to control {term}`devices <device>` and {term}`entities <entity>`. For example, the `light.turn_on` action is used to turn on a light and the `media_player.play_media` action plays a media file on a media player entity.
+: Actions are not limited to controlling devices and entities. They can also be used to perform other things, like sending a notification, to start a script, or to query a service for information responding with data back.
 : A sequential list of actions is also known as a {term}`script sequence <sequence>`.
-: [Learn more about all available actions in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts)
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/service-calls/)
+:::
+
+:::{glossary}
+Action name
+: A action name is the name of a {term}`action <action>` that can be {term}`performed <performing actions>` to do an {term}`action <action>`. For example, the `light.turn_on` action is used to turn on a light and the `media_player.play_media` action plays a media file on a media player entity.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/service-calls/)
+:::
+
+:::{glossary}
+Action response
+: An action response is a response that is returned by an {term}`action <action>` when it is {term}`performed <performing actions>`. The response can contain data that is returned by the action. There are three types of actions: one that will return no response (the most common), one that has an optional response, and one that always has a response.
+This is important to know, as for the ones without response, you are not allowed to set the `response_variable` option, while for the optional, that is allowed, and for the ones that always have a response, it is required.
+:::
+
+:::{glossary}
+Action targets
+: Action targets are the {term}`devices <device>`, {term}`entities <entity>`, or {term}`areas <area>` that are targeted by a {term}`performing an action <performing actions>`. The `target` action parameter is used for that. For example, calling the `light.turn_off` with the living room as a target to turn off all the lights in the living room area. {term}`Home Assistant` will figure out which entities it needs to turn off based on the area that is targeted.
+: Not all action work with targets.
 :::
 
 :::{glossary}
 Area
-: An area in {term}`Home Assistant` is a logical grouping of {term}`devices <device>` and {term}`entities <entity>` that are meant to match areas (or rooms) in the physical world: your home. Areas are used to group devices and entities together in, for example, the living room. Areas give a better overview of your home and can be used to target {term}`service calls <service call>` to a specific area, like turning off all the lights in the living room.
+: An area in {term}`Home Assistant` is a logical grouping of {term}`devices <device>` and {term}`entities <entity>` that are meant to match areas (or rooms) in the physical world: your home. Areas are used to group devices and entities together in, for example, the living room. Areas give a better overview of your home and can be used to target {term}`actions <action>` to a specific area, like turning off all the lights in the living room.
 : [Learn more about areas in the official Home Assistant documentation](https://www.home-assistant.io/docs/organizing/areas/)
 :::
 
@@ -68,7 +87,7 @@ Dashboard
 
 :::{glossary}
 Developer tools
-: The developer tools in {term}`Home Assistant` are a set of tools that can be used to inspect, debug and play with your Home Assistant instance. It may sound very technical, but don't let that scare you. The developer tools can be used to, for example, inspect the state of {term}`entities <entity>`, experiment with {term}`calling services <service call>`, or test and debug your {term}`templates <template>`.
+: The developer tools in {term}`Home Assistant` are a set of tools that can be used to inspect, debug and play with your Home Assistant instance. It may sound very technical, but don't let that scare you. The developer tools can be used to, for example, inspect the state of {term}`entities <entity>`, experiment with {term}`performing action <performing actions>`, or test and debug your {term}`templates <template>`.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/tools/dev-tools/)
 :::
 
@@ -106,7 +125,7 @@ Float
 
 :::{glossary}
 Floor
-: A floor in {term}`Home Assistant` is a logical grouping of {term}`areas <area>` that are meant to match floors (or levels) in the physical world: your home. Floors are used to group areas together that are on the same floor in your home. Floors give a better overview of your home and can be used to target {term}`service calls <service call>` to a specific floor, like turning off all the lights on the first floor.
+: A floor in {term}`Home Assistant` is a logical grouping of {term}`areas <area>` that are meant to match floors (or levels) in the physical world: your home. Floors are used to group areas together that are on the same floor in your home. Floors give a better overview of your home and can be used to target {term}`actions <performing actions>` to a specific floor, like turning off all the lights on the first floor.
 : [Learn more about floors in the official Home Assistant documentation](https://www.home-assistant.io/docs/organizing/floors/)
 :::
 
@@ -146,14 +165,14 @@ Integer
 :::{glossary}
 Integration
 : An integration in {term}`Home Assistant` is a component that allows you to integrate
-a {term}`device <device>` or {term}`service <service>` with your Home Assistant installation. Home Assistant comes with well over a thousand integrations out of the box, but you can also install your own custom integrations.
+a {term}`device <device>` or {term}`action <action>` with your Home Assistant installation. Home Assistant comes with well over a thousand integrations out of the box, but you can also install your own custom integrations.
 : Custom integrations, however, are not supported by the Home Assistant project. They are not reviewed or tested by the Home Assistant development team and thus may negatively impact the stability of your Home Assistant instance.
 : Spook 👻 is a custom integration for Home Assistant that is available via {term}`HACS`.
 :::
 
 :::{glossary}
 Label
-: A label in {term}`Home Assistant` can be freely created / be made up by you and used to create your own organizational structure by tagging {term}`devices <device>`, {term}`entities <entity>`, or {term}`areas <area>` with one or more labels. Labels can be used to filter items shows in tables in the user interface, or to target {term}`service calls <service call>` in for example {term}`automations <automation>`, or {term}`scripts <script>`.
+: A label in {term}`Home Assistant` can be freely created / be made up by you and used to create your own organizational structure by tagging {term}`devices <device>`, {term}`entities <entity>`, or {term}`areas <area>` with one or more labels. Labels can be used to filter items shows in tables in the user interface, or to target {term}`actions <performing actions>` in for example {term}`automations <automation>`, or {term}`scripts <script>`.
 : [Learn more about labels in the official Home Assistant documentation](https://www.home-assistant.io/docs/organizing/labels/)
 :::
 
@@ -179,6 +198,13 @@ My Home Assistant
 :::
 
 :::{glossary}
+Performing actions
+: {term}`Actions <action>` can be performed. Actions can be performed from, for example, as part of an {term}`automation <automation>` or a {term}`script <script>` sequence.
+: Actions are targeted toward specific {term}`devices <device>`, {term}`entities <entity>`, or {term}`areas <area>`. For example, the calling the `light.turn_off` action to turn off all the lights in the living room area.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/service-calls/)
+:::
+
+:::{glossary}
 Repairs
 : The repairs dashboard in {term}`Home Assistant` is a place where detected issues with your Home Assistant instance are listed. It is recommended to check this dashboard regularly to ensure your Home Assistant instance is running smoothly. The provided issues are often accompanied with integrations or a link to the documentation to help you resolve the issue.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/integrations/repairs)
@@ -193,40 +219,18 @@ Scene
 
 :::{glossary}
 Script
-: A script in {term}`Home Assistant` is a sequence of actions that are executed when the script is started or called via start using a {term}`service call <service call>`. Scripts are similar to {term}`automations <automation>` but are not automatically executed when a trigger fires. Scripts are a great way to group a sequence of actions together that can be executed on demand and reused in multiple automations.
+: A script in {term}`Home Assistant` is a sequence of actions that are executed when the script is started or called via start by {term}`performing an action <performing actions>`. Scripts are similar to {term}`automations <automation>` but are not automatically executed when a trigger fires. Scripts are a great way to group a sequence of actions together that can be executed on demand and reused in multiple automations.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/getting-started/concepts-terminology/#scripts)
 :::
 
 :::{glossary}
 Service
-: A service in {term}`Home Assistant` is a method that can be {term}`called <service call>` to perform an action. Services are, for example, used to control {term}`devices <device>` and {term}`entities <entity>`. For example, the `light.turn_on` service is used to turn on a light and the `media_player.play_media` service plays a media file on a media player entity.
-: Services are not limited to controlling devices and entities. They can also be used to perform other actions, like sending a notification, to start a script, or to query a service for information responding with data back.
-: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/service-calls/)
+: A service in {term}`Home Assistant` was an ambigous term in Home Assistant. It has been fully replaced by the {term}`action`.
 :::
 
 :::{glossary}
 Service call
-: A service call is the action to execute a {term}`service <service>`. Service calls can be made from, for example, as an action in {term}`automation <automation>` or as part of a {term}`script <script>` sequence.
-: Service calls are targeted toward specific {term}`devices <device>`, {term}`entities <entity>`, or {term}`areas <area>`. For example, the calling the `light.turn_off` service to turn off all the lights in the living room area.
-: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/service-calls/)
-:::
-
-:::{glossary}
-Service name
-: A service name is the name of a {term}`service <service>` that can be {term}`called <service call>` to perform an {term}`action <action>`. For example, the `light.turn_on` service is used to turn on a light and the `media_player.play_media` service plays a media file on a media player entity.
-: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/service-calls/)
-:::
-
-:::{glossary}
-Service response
-: A service response is a response that is returned by a {term}`service <service>` when it is {term}`called <service call>`. The response can contain data that is returned by the service. There are three types of services: one that will return no response (the most common), one that has an optional response, and one that always has a response.
-This is important to know, as for the ones without response, you are not allowed to set the `response_variable` option, while for the optional, that is allowed, and for the ones that always have a response, it is required.
-:::
-
-:::{glossary}
-Service targets
-: Service targets are the {term}`devices <device>`, {term}`entities <entity>`, or {term}`areas <area>` that are targeted by a {term}`service call <service call>`. The `target` service call parameters are used for that. For example, calling the `light.turn_off` with the living room as a target to turn off all the lights in the living room area. {term}`Home Assistant` will figure out which entities it needs to turn off based on the area that is targeted.
-: Not all services work with targets.
+: A service call in Home Assistant has been renamed ans is now called {term}`performing an action <performing actions>`.
 :::
 
 :::{glossary}
@@ -274,7 +278,7 @@ Template function
 
 :::{glossary}
 Template function return type
-: When a {term}`template function <template function>` is used/called, it returns {term}`a value <template function return >`. The returned value can be of different types. For example, if it returns a numeric value, its return type might be a {term}`float <float>`. If it returns a true or false result, that would be a {term}`boolean value <boolean>`. There are many different types of values that can be returned.
+: When a {term}`template function <template function>` is used/called, it returns {term}`a value <template function return value>`. The returned value can be of different types. For example, if it returns a numeric value, its return type might be a {term}`float <float>`. If it returns a true or false result, that would be a {term}`boolean value <boolean>`. There are many different types of values that can be returned.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
 :::
 

@@ -21,45 +21,45 @@ They are a great way to learn how to automate your home and an inspiration for n
 
 ```{figure} ../images/integrations/blueprint/example.png
 :name: example
-:alt: Screenshot of the Blueprint import service call in the developer tools.
+:alt: Screenshot of the Blueprint import action in the developer tools.
 :align: center
 
-Spook adds a service to import Blueprints directly from an URL.
+Spook adds an action to import Blueprints directly from an URL.
 ```
 
 ## Devices & entities
 
 Spook does not provide any new devices or entities for this integration.
 
-## Services
+## Actions
 
-Spook adds the following new service to your Home Assistant instance:
+Spook adds the following new actions to your Home Assistant instance:
 
 ### Import blueprint
 
-Downloads and imports an automation/script blueprint, directly from the URL you pass into this service.
+Downloads and imports an automation/script blueprint, directly from the URL you pass into this action.
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Blueprint: Import blueprint 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `blueprint.import`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No targets
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -72,12 +72,12 @@ Downloads and imports an automation/script blueprint, directly from the URL you 
 
 The `url` attribute is the URL to the blueprint you want to import. This can be any URL as long as it is a valid blueprint.
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: blueprint.import
+action: blueprint.import
 data:
   url: "https://community.home-assistant.io/t/your-blueprint-url"
 ```
@@ -104,6 +104,6 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

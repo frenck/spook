@@ -37,9 +37,9 @@ _Default entity ID: `switch.cloud_remote`_
 
 This allows you to enable/disable remote access to your Home Assistant instance from the web.
 
-## Services
+## Actions
 
-Spook does not provide service enhancements for this integration.
+Spook does not provide action enhancements for this integration.
 
 ## Repairs
 
@@ -57,6 +57,6 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

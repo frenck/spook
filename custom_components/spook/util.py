@@ -340,6 +340,13 @@ def async_find_services_in_sequence(  # noqa: C901
         ):
             called_services.add(step[CONF_SERVICE])
 
+        if (
+            action == cv.SCRIPT_ACTION_CALL_SERVICE
+            and "action" in step
+            and step.get(CONF_ENABLED, True)
+        ):
+            called_services.add(step["action"])
+
         if action == cv.SCRIPT_ACTION_CHOOSE:
             for choice in step[CONF_CHOOSE]:
                 called_services |= async_find_services_in_sequence(

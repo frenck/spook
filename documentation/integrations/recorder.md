@@ -3,7 +3,7 @@ subject: Enhanced integrations
 title: Recorder
 subtitle: Records all the spooky things that happen in your home.
 thumbnail: ../images/integrations/recorder/example.png
-description: Spook enhances the recorder integration, by adding a service that allows to import data into the recorder.
+description: Spook enhances the recorder integration, by adding an action that allows to import data into the recorder.
 date: 2023-08-09T21:29:00+02:00
 ---
 
@@ -19,50 +19,50 @@ The recorder {term}`integration <integration>` in {term}`Home Assistant` is resp
 
 ```{figure} ../images/integrations/recorder/example.png
 :name: example
-:alt: Screenshot of the recorder import statistics service call in the developer tools.
+:alt: Screenshot of the recorder import statistics action in the developer tools.
 :align: center
 
-Spook adds a service that allows importing data into the recorder.
+Spook adds an action that allows importing data into the recorder.
 ```
 
 ## Devices & entities
 
 Spook does not provide any new devices or entities for this integration.
 
-## Services
+## Actions
 
-Spook adds the following new service to your Home Assistant instance:
+Spook adds the following new actions to your Home Assistant instance:
 
 ### Import statistics
 
 Manually import long-term statistics into the recorder database of Home Assistant.
 
 ```{figure} ../images/integrations/recorder/import.png
-:alt: Screenshot of the recorder import statistics service call in the developer tools.
+:alt: Screenshot of the recorder import statistics action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Recorder: Import statistics 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `recorder.import_statistics`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No targets
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -125,12 +125,12 @@ Manually import long-term statistics into the recorder database of Home Assistan
 
 More information about the mapping/meaning of fields in long-term statistics can be found on the [Home Assistant data portal](https://data.home-assistant.io/docs/statistics).
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: recorder.import_statistics
+action: recorder.import_statistics
 data:
   has_mean: false
   has_sum: true
@@ -145,7 +145,7 @@ data:
 :::
 
 :::{warning}
-Messing with the recorder directly is not recommended. It is very easy to break things end up with very skewed data. Use this service with caution.
+Messing with the recorder directly is not recommended. It is very easy to break things end up with very skewed data. Use this action with caution.
 :::
 
 ## Repairs
@@ -164,6 +164,6 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

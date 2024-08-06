@@ -32,9 +32,9 @@ Spook found an issue with an automation that is using non-existing entities.
 
 Spook does not provide any new devices or entities for this integration.
 
-## Services
+## Actions
 
-Spook does not provide service enhancements for this integration.
+Spook does not provide action enhancements for this integration.
 
 ## Repairs
 
@@ -42,7 +42,7 @@ While Spook is floating around in your Home Assistant instance, it will raise re
 
 ### Unknown referenced areas
 
-Automations are inspected for the use of areas. If an automation is targeting an area in one of its service calls that do not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the area that is referenced but not found.
+Automations are inspected for the use of areas. If an automation is targeting an area in one of its actions that do not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the area that is referenced but not found.
 
 ```{figure} ../images/integrations/automation/unknown_areas.png
 :name: Spook found an issue with an automation that is using a non-existing area.
@@ -57,7 +57,7 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 :::{attention} Known limitations
 :class: dropdown
 
-{term}`Templates <template>` in automations are not evaluated by Spook. That means that service calls that target areas dynamically using a template, are not considered by Spook.
+{term}`Templates <template>` in automations are not evaluated by Spook. That means that actions that target areas dynamically using a template, are not considered by Spook.
 :::
 
 ### Unknown referenced devices
@@ -101,20 +101,20 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 - Comma separated lists of entity IDs are not taken into consideration by Spook. It is advisable to convert these to an actual list in your automations.
   :::
 
-### Unknown referenced services
+### Unknown referenced actions
 
-Automations are inspected for the use of service call actions. If an automation is using a service that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the service that is referenced but not found.
+Automations are inspected for the use of actions. If an automation is using a action that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the action that is referenced but not found.
 
-To resolve the raised issue, you can either remove the reference to the non-existing services. Spook will automatically remove the repair issue once the issue is fixed.
+To resolve the raised issue, you can either remove the reference to the non-existing actions. Spook will automatically remove the repair issue once the issue is fixed.
 
 :::{attention} Known limitations
 :class: dropdown
 
-{term}`Templates <template>` in automations are not evaluated by Spook. That means that service call make using templates, are not considered by Spook.
+{term}`Templates <template>` in automations are not evaluated by Spook. That means that actions make using templates, are not considered by Spook.
 :::
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.
