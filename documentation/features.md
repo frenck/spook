@@ -12,7 +12,7 @@ Spook ships with a lot of goodness for you to explore. Currently, there are thre
 
 The core extensions extends the functionality of Home Assistant's core itself. These are all extensions that are not tied to a specific {term}`integration <integration>`.
 
-It provides new {term}`devices <device>` & {term}`entities <entity>` to provide information on the internals of Home Assistant. It adds a whole bunch of {term}`services <service>` that allow you to control and manage integrations, devices, entities, and {term}`areas <area>`.
+It provides new {term}`devices <device>` & {term}`entities <entity>` to provide information on the internals of Home Assistant. It adds a whole bunch of that allow you to control and manage integrations, devices, entities, and {term}`areas <area>`.
 :::
 
 :::{card} Enhanced integrations
@@ -20,7 +20,7 @@ It provides new {term}`devices <device>` & {term}`entities <entity>` to provide 
 
 Integrations are the "plugins" of Home Assistant; they come in all sorts of types. Most commonly are the ones that connect to a device or service, but there are more, like {term}`helpers <helper>` (input helpers, groups, etc) or ones that provide building blocks for other integrations (light, climate, switch, etc).
 
-Spook enhances the following Home Assistant integrations by sprinkling some {term}`ectoplasmic <ectoplasm>` goodness on top of them. It may add new services, entities, devices, or even replace and extend existing ones to provide more functionality.
+Spook enhances the following Home Assistant integrations by sprinkling some {term}`ectoplasmic <ectoplasm>` goodness on top of them. It may add new actions, entities, devices, or even replace and extend existing ones to provide more functionality.
 :::
 
 :::{card} Helpers

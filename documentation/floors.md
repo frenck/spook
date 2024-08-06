@@ -5,49 +5,49 @@ subtitle: Floors brings Home Assistant to a whole new level 🤪
 date: 2024-04-04T08:44:57+02:00
 ---
 
-{term}`Floors <floor>` in {term}`Home Assistant` is a logical grouping of {term}`areas <area>` that are meant to match floors (or levels) in the physical world: your home. Floors are used to group areas together that are on the same floor in your home. Floors give a better overview of your home and can be used to target {term}`service calls <service call>` to a specific floor, like turning off all the lights on the first floor.
+{term}`Floors <floor>` in {term}`Home Assistant` is a logical grouping of {term}`areas <area>` that are meant to match floors (or levels) in the physical world: your home. Floors are used to group areas together that are on the same floor in your home. Floors give a better overview of your home and can be used to target {term}`actions <performing actions>` to a specific floor, like turning off all the lights on the first floor.
 
-Spook provides {term}`services <service>` that allows you to manage and {term}`automate <automation>` the floors in Home Assistant programatically. Great for creating "dynamic" floors, or for creating floors on the fly.
+Spook provides that allows you to manage and {term}`automate <automation>` the floors in Home Assistant programatically. Great for creating "dynamic" floors, or for creating floors on the fly.
 
 ```{figure} ./images/floors/example.png
-:alt: Screenshot of the developer service tools, listing the new services to manage floors.
+:alt: Screenshot of the developer action tools, listing the new actions to manage floors.
 :align: center
 ```
 
-## Services
+## Actions
 
-Spook adds the following new service to your Home Assistant instance:
+Spook adds the following new actions to your Home Assistant instance:
 
 ### Create a floor
 
 Adds a new floor to your Home Assistant instance.
 
 ```{figure} ./images/floors/create.png
-:alt: Screenshot of the create floor service call in the developer tools.
+:alt: Screenshot of the create floor action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Create a floor 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.create_floor`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -72,12 +72,12 @@ Adds a new floor to your Home Assistant instance.
 
 The use of `aliases` is helpful if you want to create an floor with multiple names. For example, if you want to create an floor called "First floor", but also want to be able to refer to it as "Ground floor" or "Downstairs", you can add those names as aliases. This is used by Home Assistant Assist.
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.create_floor
+action: homeassistant.create_floor
 data:
   name: "First floor"
   icon: "mdi:floor-1"
@@ -94,31 +94,31 @@ data:
 Delete a floor from your Home Assistant instance.
 
 ```{figure} ./images/floors/delete.png
-:alt: Screenshot of the delete flor service call in the developer tools.
+:alt: Screenshot of the delete flor action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Delete a floor 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.delete_floor`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_floor)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_floor)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_floor)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_floor)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -141,12 +141,12 @@ floor_id: "{{ floor_id('First floor') }}"
 That template will find the floor ID of the floor with the name "First floor".
 :::
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.delete_floor
+action: homeassistant.delete_floor
 data:
   floor_id: "first_floor"
 ```
@@ -155,7 +155,7 @@ Same example, but using the floor's name instead of the floor ID:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.delete_floor
+action: homeassistant.delete_floor
 data:
   floor_id: "{{ floor_id('First floor') }}"
 ```
@@ -164,36 +164,36 @@ data:
 
 ### Add an alias to a floor
 
-Adds one or more aliases to an existing floor. This service does not remove existing aliases, but adds the new ones to the existing ones.
+Adds one or more aliases to an existing floor. This action does not remove existing aliases, but adds the new ones to the existing ones.
 
 As floor aliases are used by voice assistants, you could add (and also remove) aliases to a floor using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/floors/add_alias.png
-:alt: Screenshot of the add an alias to a floor service call in the developer tools.
+:alt: Screenshot of the add an alias to a floor action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Add an alias to a floor 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.add_alias_to_floor`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_floor)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_floor)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_floor)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_floor)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -220,12 +220,12 @@ floor_id: "{{ floor_id('First floor') }}"
 That template will find the floor ID of the floor with the name "First floor".
 :::
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.add_alias_to_floor
+action: homeassistant.add_alias_to_floor
 data:
   floor_id: "first_floor"
   aliases:
@@ -237,7 +237,7 @@ Same example, but using the floor's name instead of the floor ID:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.add_alias_to_floor
+action: homeassistant.add_alias_to_floor
 data:
   floor_id: "{{ floor_id('First floor') }}"
   aliases:
@@ -249,36 +249,36 @@ data:
 
 ### Remove an alias from a floor
 
-Removes one or more aliases from an existing floor. This service will leave the other aliases intact.
+Removes one or more aliases from an existing floor. This action will leave the other aliases intact.
 
 As floor aliases are used by voice assistants, you could remove (and also add) aliases to a floor using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/floors/remove_alias.png
-:alt: Screenshot of the remove an alias to a floor service call in the developer tools.
+:alt: Screenshot of the remove an alias to a floor action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Add an alias to a floor 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.remove_alias_from_floor`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_floor)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_floor)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_floor)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_floor)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -305,12 +305,12 @@ floor_id: "{{ floor_id('First floor') }}"
 That template will find the floor ID of the floor with the name "First floor".
 :::
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.remove_alias_from_floor
+action: homeassistant.remove_alias_from_floor
 data:
   floor_id: "first_floor"
   aliases:
@@ -322,7 +322,7 @@ Same example, but using the floor's name instead of the floor ID:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.remove_alias_from_floor
+action: homeassistant.remove_alias_from_floor
 data:
   floor_id: "{{ floor_id('First floor') }}"
   aliases:
@@ -334,36 +334,36 @@ data:
 
 ### Set aliases for a floor
 
-Sets the aliases for a floor. This service will overwrite/remove all existing aliases.
+Sets the aliases for a floor. This action will overwrite/remove all existing aliases.
 
 As floor aliases are used by voice assistants, you could remove (and also add) aliases to a floor using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/floors/set_aliases.png
-:alt: Screenshot of the set aliases to for a floor service call in the developer tools.
+:alt: Screenshot of the set aliases to for a floor action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Sets aliases for a floor 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.set_floor_aliases`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_floor_aliases)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_floor_aliases)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_floor_aliases)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_floor_aliases)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -390,12 +390,12 @@ floor_id: "{{ floor_id('First floor') }}"
 That template will find the floor ID of the floor with the name "First floor".
 :::
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.set_floor_aliases
+action: homeassistant.set_floor_aliases
 data:
   floor_id: "first_floor"
   aliases:
@@ -407,7 +407,7 @@ Same example, but using the floor's name instead of the floor ID:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.set_floor_aliases
+action: homeassistant.set_floor_aliases
 data:
   floor_id: "{{ floor_id('First floor') }}"
   aliases:
@@ -419,34 +419,34 @@ data:
 
 ### Add an area to a floor
 
-Adds one or more area(s) to a floor. This service will leave the other areas on the floor untouched.
+Adds one or more area(s) to a floor. This action will leave the other areas on the floor untouched.
 
 ```{figure} ./images/floors/add_area.png
-:alt: Screenshot of the add an area to a floor service call in the developer tools.
+:alt: Screenshot of the add an area to a floor action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Add an area to a floor 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.add_area_to_floor`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_area_to_floor)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_area_to_floor)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_area_to_floor)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_area_to_floor)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -485,12 +485,12 @@ area_id: "{{ area_id('Living room') }}"
 That template will find the area ID of the area with the name "Living room".
 :::
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.add_area_to_floor
+action: homeassistant.add_area_to_floor
 data:
   floor_id: "first_floor"
   area_id: "living_room"
@@ -500,7 +500,7 @@ Same example, but using the floor's and area's name instead of their IDs:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.add_area_to_floor
+action: homeassistant.add_area_to_floor
 data:
   floor_id: "{{ floor_id('First floor') }}"
   area_id: "{{ area_id('Living room') }}"
@@ -510,7 +510,7 @@ To add multiple areas at once, use a list of area IDs:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.add_area_to_floor
+action: homeassistant.add_area_to_floor
 data:
   floor_id: "first_floor"
   area_id:
@@ -522,34 +522,34 @@ data:
 
 ### Remove an area from a floor
 
-Removes one or more area(s) from a floor. This service will leave the other area on the floor untouched.
+Removes one or more area(s) from a floor. This action will leave the other area on the floor untouched.
 
 ```{figure} ./images/floors/remove_area.png
-:alt: Screenshot of the add a device to an area service call in the developer tools.
+:alt: Screenshot of the add a device to an area action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Remove an area from a floor 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `homeassistant.remove_area_from_floor`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - No
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -560,10 +560,10 @@ Removes one or more area(s) from a floor. This service will leave the other area
   - `living_room`
 ```
 
-:::{note} This service does not need a floor ID
+:::{note} This action does not need a floor ID
 :class: dropdown
 
-While this service is floor related, it does not need to know the floor ID. An are can only be on a single floor at a time, so it will remove the area from the floor it is in. Hence, it only needs to know the are you want to remove from a floor.
+While this action is floor related, it does not need to know the floor ID. An are can only be on a single floor at a time, so it will remove the area from the floor it is in. Hence, it only needs to know the are you want to remove from a floor.
 :::
 
 :::{tip} Getting an area ID from an area name
@@ -578,12 +578,12 @@ area_id: "{{ area_id('Living room') }}"
 That template will find the area ID of the area with the name "Living room".
 :::
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.remove_area_from_floor
+action: homeassistant.remove_area_from_floor
 data:
   area_id: "living_room"
 ```
@@ -592,7 +592,7 @@ To remove multiple areas at once, use a list of area IDs:
 
 ```{code-block} yaml
 :linenos:
-service: homeassistant.remove_area_from_floor
+action: homeassistant.remove_area_from_floor
 data:
   area_id:
     - "living_room"
@@ -607,6 +607,6 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

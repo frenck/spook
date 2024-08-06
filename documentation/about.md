@@ -33,7 +33,7 @@ don't be scared, he is a friendly ghost, he is your homie 👻
 
 Spook will add new features to Home Assistant and extend existing ones.
 
-For example, Spook will add new features to existing {term}`services <service>` that you can use in your {term}`automations <automation>` and scripts. It will also add lots of new ones.
+For example, Spook will add new features to existing {term}`actions <action>` that you can use in your {term}`automations <automation>` and scripts. It will also add lots of new ones.
 
 Spook will also add new {term}`entities <entity>` to existing integration you use in your Home Assistant instance to provide more data points to monitor and control. For example, it will add entities to control and monitor your {term}`Home Assistant Cloud` connection.
 

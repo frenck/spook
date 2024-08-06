@@ -19,21 +19,21 @@ Enable/disable that one integration on the fly. Enable/disable polling for updat
 :::{card} Device management
 :footer: 📚 [Learn more](devices.md)
 
-Programmatically enable/disable any device in Home Assistant using service calls.
+Programmatically enable/disable any device in Home Assistant by performing an action
 
 :::
 
 :::{card} Entity management
 :footer: 📚 [Learn more](entities.md)
 
-Automate entity control with services: hide/unhide, enable/disable, list, and delete orphaned (database) entities.
+Automate entity control with actions: hide/unhide, enable/disable, list, and delete orphaned (database) entities.
 
 :::
 
 :::{card} Areas management
 :footer: 📚 [Learn more](areas.md)
 
-Make your areas fully dynamic by adding/removing devices and entities to them using services.
+Make your areas fully dynamic by adding/removing devices and entities to them using actions.
 You can even dynamically create completely new areas on the fly.
 
 :::

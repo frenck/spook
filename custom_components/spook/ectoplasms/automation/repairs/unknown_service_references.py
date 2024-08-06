@@ -70,8 +70,8 @@ class SpookRepair(AbstractSpookRepair):
                 )
                 LOGGER.debug(
                     (
-                        "Spook found unknown service calls in %s "
-                        "and created an issue for it; Services: %s",
+                        "Spook found unknown action calls in %s "
+                        "and created an issue for it; Actions: %s",
                     ),
                     entity.entity_id,
                     ", ".join(unknown_services),

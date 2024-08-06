@@ -4,7 +4,7 @@ title: Provided Home Assistant template functions, filters, and tests
 short_title: Template functions
 subtitle: How did those functions break up❓ They stopped calling each other 🥁
 thumbnail: images/usage/services_example.png
-description: Spook provides quite a lot of new services to Home Assistant. This reference pages lists them all, and points you to the right documentation.
+description: Spook provides quite a lot of new actions to Home Assistant. This reference pages lists them all, and points you to the right documentation.
 date: 2024-01-11T21:30:28+01:00
 ---
 

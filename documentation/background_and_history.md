@@ -50,8 +50,8 @@ Spook is here to be the rebel, the one that does not care about the rules, the o
 
 It aims to:
 
-- Add new services to existing Home Assistant {term}`integrations <integration>`, providing control of features you can use in your {term}`automations <automation>` and {term}`scripts <script>`.
-- Inject new features into existing native {term}`services <service>` of Home Assistant integrations to add new options/functionality to them.
+- Add new actions to existing Home Assistant {term}`integrations <integration>`, providing control of features you can use in your {term}`automations <automation>` and {term}`scripts <script>`.
+- Inject new features into existing native {term}`actions <action>` of Home Assistant integrations to add new options/functionality to them.
 - Add extra/new entities to existing Home Assistant integrations, giving you more data points to monitor and control.
 - Find and raise issues on your {term}`repairs dashboard <repairs>` found on your Home Assistant instance to help you keep your instance healthy, clean, and tidy.
 - And more... nothing is impossible.

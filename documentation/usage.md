@@ -10,7 +10,7 @@ date: 2023-08-09T21:29:00+02:00
 
 Now you have Spook [installed](installation); you can start using it. It is hard to explain what Spook does, but its experience in using it is best described as: _oddly familiar_ 🙂.
 
-As Spook extends existing {term}`Home Assistant` functionality, everything you already know about Home Assistant applies. You might run into an issue raised in the {term}`repairs dashboard <repairs>` by Spook, have more {term}`devices <device>` and {term}`entities <entity>` to play with, some {term}`services <service>` have more options available, and new services will appear when you create new {term}`automations <automation>`.
+As Spook extends existing {term}`Home Assistant` functionality, everything you already know about Home Assistant applies. You might run into an issue raised in the {term}`repairs dashboard <repairs>` by Spook, have more {term}`devices <device>` and {term}`entities <entity>` to play with, some {term}`actions <action>` have more options available, and new actions will appear when you create new {term}`automations <automation>`.
 
 ## Repairs
 
@@ -30,25 +30,25 @@ Maybe Spook has already found something? You can use the {term}`My Home Assistan
 
 [![Open your Home Assistant instance and show your repairs.](https://my.home-assistant.io/badges/repairs.svg)](https://my.home-assistant.io/redirect/repairs/)
 
-## Services
+## Actions
 
-{term}`Services <service>` are a common way to control Home Assistant. Most of the {term}`actions <action>` you'll use in an automation are {term}`calling services <service call>`. Spook will add new features to existing services that you can use in your {term}`automations <automation>` and {term}`scripts <script>`. It will also add lots of new ones.
+{term}`Actions <actions>` are a common way to control Home Assistant. Most of the {term}`actions <action>` you'll use in an automations. Spook will add new features to existing actions that you can use in your {term}`automations <automation>` and {term}`scripts <script>`. It will also add lots of new ones.
 
-Spook reveals himself on each of the services he added or enriched, so you can easily find and identify them in your Home Assistant instance.
+Spook reveals himself on each of the action he added or enriched, so you can easily find and identify them in your Home Assistant instance.
 
 ```{figure} images/usage/services_example.png
-:name: Spook provides lots of new and powerful services.
-:alt: Screenshot showing a list of services provided by Spook.
+:name: Spook provides lots of new and powerful actions.
+:alt: Screenshot showing a list of actions provided by Spook.
 :align: center
 
-On each service Spook added or enriched, he reveals himself 👻.
+On each action Spook added or enriched, he reveals himself 👻.
 ```
 
-If you like to explore all available services Spook provides and play with them from the comfort of your Home Assistant instance, you can use the {term}`My Home Assistant` button below to open your Home Assistant instance and show your service {term}`developer tools <developer tools>`. Scroll through the list of services available and you will notice Spook being there.
+If you like to explore all available actions Spook provides and play with them from the comfort of your Home Assistant instance, you can use the {term}`My Home Assistant` button below to open your Home Assistant instance and show your actions {term}`developer tools <developer tools>`. Scroll through the list of actions available and you will notice Spook being there.
 
-[![Open your Home Assistant instance and show your service developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
+[![Open your Home Assistant instance and show your actions developer tools.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 
-Alternatively, take a look at our [services reference page](services) to get an instant overview of all services provided by Spook.
+Alternatively, take a look at our [actions reference page](actions) to get an instant overview of all actions provided by Spook.
 
 ## Devices & Entities
 

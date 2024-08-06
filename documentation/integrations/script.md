@@ -15,7 +15,7 @@ date: 2023-08-09T21:29:00+02:00
 
 <br><br>
 
-A script in {term}`Home Assistant` is a sequence of actions that are executed when the script is started or called via start using a {term}`service call <service call>`. Scripts are similar to {term}`automations <automation>`, but are not automatically executed when a trigger fires. Scripts are a great way to group a sequence of actions together that can be executed on demand and reused in multiple automations.
+A script in {term}`Home Assistant` is a sequence of actions that are executed when the script is started or called via start using a {term}`action <performing actions>`. Scripts are similar to {term}`automations <automation>`, but are not automatically executed when a trigger fires. Scripts are a great way to group a sequence of actions together that can be executed on demand and reused in multiple automations.
 
 Non-working scripts, however, are (just like automations) a source of frustration. And sometimes, it can take you a bit to notice there is an issue with a script. Spook enhances the script integration of Home Assistant by raising repair issues in case it detects something is wrong with a script.
 
@@ -31,9 +31,9 @@ Spook found an issue with a script that is using non-existing entities.
 
 Spook does not provide any new devices or entities for this integration.
 
-## Services
+## Actions
 
-Spook does not provide service enhancements for this integration.
+Spook does not provide action enhancements for this integration.
 
 ## Repairs
 
@@ -41,7 +41,7 @@ While Spook is floating around in your Home Assistant instance, it will raise re
 
 ### Unknown referenced areas
 
-Scripts are inspected for the use of areas. If a script is targeting an area in one of its service calls that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the area that is referenced but not found.
+Scripts are inspected for the use of areas. If a script is targeting an area in one of its actions that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the area that is referenced but not found.
 
 ```{figure} ../images/integrations/script/unknown_area.png
 :name: Spook found an issue with a script that is using a non-existing area.
@@ -56,7 +56,7 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 :::{attention} Known limitations
 :class: dropdown
 
-{term}`Templates <template>` in scripts are not evaluated by Spook. That means that service calls that target areas dynamically using a template, are not considered by Spook.
+{term}`Templates <template>` in scripts are not evaluated by Spook. That means that actions that target areas dynamically using a template, are not considered by Spook.
 :::
 
 ### Unknown referenced devices
@@ -102,6 +102,6 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

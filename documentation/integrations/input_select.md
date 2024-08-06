@@ -3,7 +3,7 @@ subject: Enhanced integrations
 title: Input select
 subtitle: Offers a selection of the finest options.
 thumbnail: ../images/integrations/input_select/example.png
-description: Spook adds some new services to the input select integration, which allows to select a random option and to shuffle or sort the list of options in the input select.
+description: Spook adds some new actions to the input select integration, which allows to select a random option and to shuffle or sort the list of options in the input select.
 date: 2023-08-09T21:29:00+02:00
 ---
 
@@ -17,54 +17,54 @@ date: 2023-08-09T21:29:00+02:00
 
 The input select {term}`helper` in {term}`Home Assistant` allows the user to define a list of options that can be controlled via the frontend and can be used within conditions of an {term}`automation <automation>`. The frontend can display a dropdown or a list of buttons. Changes to the dropdown or list of buttons generate state events. These state events can be utilized as automation triggers as well.
 
-Spook adds some new services to the input select {term}`integration <integration>`, which allows one to select a random option and to shuffle or sort the list of options in the input select.
+Spook adds some new actions to the input select {term}`integration <integration>`, which allows one to select a random option and to shuffle or sort the list of options in the input select.
 
 ```{figure} ../images/integrations/input_select/example.png
 :name: example
-:alt: Screenshot of the developer service tools, listing the new services for input select.
+:alt: Screenshot of the developer actions tools, listing the new actions for input select.
 :align: center
 
-Spook adds a bunch of new services to the input select helper integrations.
+Spook adds a bunch of new actions to the input select helper integrations.
 ```
 
 ## Devices & entities
 
 Spook does not provide any new devices or entities for this integration.
 
-## Services
+## Actions
 
-Spook adds the following new service to your Home Assistant instance:
+Spook adds the following new actions to your Home Assistant instance:
 
 ### Select random option
 
 Select a random option from the list of options in the input select.
 
 ```{figure} ../images/integrations/input_select/random.png
-:alt: Screenshot of the input select random service call in the developer tools.
+:alt: Screenshot of the input select random action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Input select: Select random option 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `input_select.random`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - Yes, `input_select` entities
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
 ```
 
 ```{list-table}
 :header-rows: 2
-* - Service call data
+* - Action data parameters
 * - Attribute
   - Type
   - Required
@@ -77,19 +77,19 @@ Select a random option from the list of options in the input select.
 
 The `options` attribute is a {term}`list of strings <list>`, containing the options to select a random one from. If not provided, all available options configured in the input select are used.
 
-:::{seealso} Example service calls in YAML
+:::{seealso} Example actions in YAML
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: input_select.random
+action: input_select.random
 target:
   entity_id: input_select.who_is_cooking_tonight
 ```
 
 ```{code-block} yaml
 :linenos:
-service: input_select.random
+action: input_select.random
 target:
   entity_id: input_select.color
 data:
@@ -107,34 +107,34 @@ Shuffles the list of available options in the input select and keeps the current
 select options selected.
 
 ```{figure} ../images/integrations/input_select/shuffle.png
-:alt: Screenshot of the input select shuffle service call in the developer tools.
+:alt: Screenshot of the input select shuffle action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Input select: Shuffle options 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `input_select.shuffle`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - Yes, `input_select` entities
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: input_select.shuffle
+action: input_select.shuffle
 target:
   entity_id: input_select.who_is_cooking_tonight
 ```
@@ -151,34 +151,34 @@ Sorts the list of available options in the input select and keeps the current
 select options selected.
 
 ```{figure} ../images/integrations/input_select/sort.png
-:alt: Screenshot of the input select sort service call in the developer tools.
+:alt: Screenshot of the input select sort action in the developer tools.
 :align: center
 ```
 
 ```{list-table}
 :header-rows: 1
-* - Service properties
-* - {term}`Service`
+* - Action properties
+* - {term}`Action`
   - Input select: Sort options 👻
-* - {term}`Service name`
+* - {term}`Action name`
   - `input_select.sort`
-* - {term}`Service targets`
+* - {term}`Action targets`
   - Yes, `input_select` entities
-* - {term}`Service response`
+* - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
-  - Newly added service
+  - Newly added action
 * - {term}`Developer tools`
-  - [Try this service](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
-    [![Open your Home Assistant instance and show your service developer tools with a specific service selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
 ```
 
-:::{seealso} Example {term}`service call <service call>` in {term}`YAML`
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
-service: input_select.sort
+action: input_select.sort
 target:
   entity_id: input_select.who_is_cooking_tonight
 ```
@@ -206,6 +206,6 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this integration, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

@@ -5,7 +5,7 @@ subtitle: Can I haz more devices and entities? 😁
 date: 2023-08-09T21:29:00+02:00
 ---
 
-Besides all new {term}`services <service>` for {term}`Home Assistant` itself, Spook will also add a bunch of {term}`devices <device>` and {term}`entities <entity>` that are all about Home Assistant. Basically, turning Home Assistant itself into its own integration, providing entities you can monitor and control.
+Besides all new {term}`actions <action>` for {term}`Home Assistant` itself, Spook will also add a bunch of {term}`devices <device>` and {term}`entities <entity>` that are all about Home Assistant. Basically, turning Home Assistant itself into its own integration, providing entities you can monitor and control.
 
 ```{figure} ./images/devices_entities/example.png
 :alt: Screenshot showing a new device that provides control over your Home Assistant itself.
@@ -109,6 +109,6 @@ There are currently no known {term}`blueprints <blueprint>` or tutorials for the
 
 ## Features requests, ideas, and support
 
-If you have an idea on how to further enhance this, for example, by adding a new service, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
+If you have an idea on how to further enhance this, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
 Are you stuck using these new features? Or maybe you've run into a bug? Please check the [](../support) page on where to go for help.

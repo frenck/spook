@@ -15,7 +15,7 @@ Some of the same questions keep popping up. So, here are some answers to the mos
 
 **Yes!** It absolutely is.
 
-It is just not a normal {term}`integration`, like one that connects to a {term}`device` or {term}`service`, or one that provides a {term}`helper <helper>` of some sort. But it is a serious integration that is meant to be used in a serious way.
+It is just not a normal {term}`integration`, like one that connects to a {term}`device` or service, or one that provides a {term}`helper <helper>` of some sort. But it is a serious integration that is meant to be used in a serious way.
 ```
 
 ```{card}
