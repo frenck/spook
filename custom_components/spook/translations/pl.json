@@ -173,6 +173,21 @@
             },
             "homeassistant_number": {
                 "name": "Liczby"
+            },
+            "homeassistant_cover": {
+                "name": "Osłony okienne"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Wejścia logiczne"
+            },
+            "homeassistant_input_button": {
+                "name": "Przyciski"
+            },
+            "homeassistant_siren": {
+                "name": "Syreny"
+            },
+            "homeassistant_stt": {
+                "name": "Zamiana mowy na tekst"
             }
         },
         "switch": {
@@ -256,7 +271,7 @@
             "title": "Nieznane źródło: {helper}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i nie korzystaj z tych nieistniejących usług.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane usługi użyte w: {automation}"
         },
         "proximity_unknown_zone": {
