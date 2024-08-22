@@ -1,16 +1,16 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Ja... ok... nej. OK, tack, hejdå!"
+            "already_spooked": "Ja... ok... nej. OK, tack, hej då!"
         },
         "step": {
             "user": {
-                "description": "Läste du readme? Läste du licensen? Är du verkligen säker?"
+                "description": "Läste du readme-filen? Läste du licensen? Är du verkligen säker?"
             },
             "choice_restart": {
                 "menu_options": {
-                    "restart_now": "Restart nu",
-                    "restart_later": "Omstart senare"
+                    "restart_now": "Starta om nu",
+                    "restart_later": "Starta om senare"
                 },
                 "description": "För att Spook ska sluta ställa in måste Home Assistant startas om.\n\nVill du starta om Home Assistant nu?"
             }
@@ -22,7 +22,7 @@
                 "name": "Ladda om"
             },
             "homeassistant_restart": {
-                "name": "Omstart"
+                "name": "Starta om"
             },
             "repairs_ignore_all": {
                 "name": "Ignorera alla"
@@ -33,7 +33,7 @@
         },
         "sensor": {
             "homeassistant_area": {
-                "name": "Areor"
+                "name": "Områden"
             },
             "homeassistant_alarm_control_panel": {
                 "name": "Alarm kontrollpanel"
@@ -72,7 +72,7 @@
                 "name": "Inmatning av boolean"
             },
             "homeassistant_remote": {
-                "name": "Rjärrkontroller"
+                "name": "Fjärrkontroller"
             },
             "homeassistant_persistent_notification": {
                 "name": "Beständigt meddelande"
@@ -114,7 +114,7 @@
                 "name": "Väder"
             },
             "homeassistant_device_tracker": {
-                "name": "Enhets spårare"
+                "name": "Enhetsspårare"
             },
             "homeassistant_air_quality": {
                 "name": "Luftkvalitet"
@@ -207,7 +207,7 @@
                         "state": {
                             "update": "Issue uppdaterad",
                             "create": "Issue skapad",
-                            "remove": "Issue bort"
+                            "remove": "Issue borttagen"
                         }
                     },
                     "domain": {
@@ -222,15 +222,15 @@
     },
     "issues": {
         "automation_unknown_area_references": {
-            "title": "Okända områden som används i: {automation}",
+            "title": "Okända områden används i: {automation}",
             "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{areas}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
         },
         "automation_unknown_device_references": {
-            "title": "Okända enheter som används i: {automation}",
+            "title": "Okända enheter används i: {automation}",
             "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{devices}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
         },
         "automation_unknown_entity_references": {
-            "title": "Okända enheter som används i: {automation}",
+            "title": "Okända enheter används i: {automation}",
             "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han kontrollerade, så hittade Spook  följande fel automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda  felet, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
         },
         "group_unknown_members": {
@@ -261,7 +261,7 @@
             "title": "{title}"
         },
         "lovelace_unknown_entity_references": {
-            "title": "Okända enheter som används i: {dashboard}",
+            "title": "Okända enheter används i: {dashboard}",
             "description": "Spook har hittat ett fel i din instrumentpanel 👻\n\nMedan han sökte, så hittade Spook följande instrumentpanel:\n\n[{dashboard}]({edit})\n\nDen här instrumentpanelen refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda felet, [redigera instrumentpanelen]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
         },
         "script_unknown_device_references": {
@@ -277,11 +277,11 @@
                 "step": {
                     "confirm_restart": {
                         "description": "För att Spook ska avslutas måste Home Assistant startas om.\n\nVälj lämna in för att starta om Home Assistant nu.",
-                        "title": "Restart krävs"
+                        "title": "Omstart krävs"
                     }
                 }
             },
-            "title": "Restart krävs"
+            "title": "Omstart krävs"
         },
         "automation_unknown_service_references": {
             "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{services}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
