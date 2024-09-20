@@ -4,9 +4,327 @@
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "description": "{description}"
+                        "description": "{description}",
+                        "title": "{titel}"
                     }
                 }
+            },
+            "title": "{titel}"
+        },
+        "automation_unknown_area_references": {
+            "title": "Onbekende areas gebruik  in: {automation}",
+            "description": "Spook het 'n spook gekry in jou outomatiserings 👻\n\nTerwyk hy rondgehang het, het Sppok die volgende automatisasies teegekom:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nHierdie automatisasie verwys na die volgende areas, wat onbekend is aan Home Assistant\n\n{areas}\n\n\n\nOm hiedie probleem reg te maak,  [edit the automation]({edit})  en haal ongebruikte areas uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "automation_unknown_device_references": {
+            "title": "Onbekende toestelle (devices) gebruik in: {automation}",
+            "description": "Spook het 'n gees gekry in jou outomatiserings 👻\n\nTerwyk hy rondgehang het, het Sppok die volgende automatisasies teegekom:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nHierdie automatisasie verwys na die volgende toestelle, wat onbekend is aan Home Assistant\n\n{devices}\n\n\n\nOm hiedie probleem reg te maak,  [edit the automation]({edit})  en haal ongebruikte toestelle uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "automation_unknown_floor_references": {
+            "title": "Onbekende vloere gebruik in: {automation}",
+            "description": "Spook het 'n gees gekry in jou outomatiserings 👻\n\nTerwyk hy rondgehang het, het Sppok die volgende automatisasies teegekom:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nHierdie automatisasie verwys na die volgende vloere, wat onbekend is aan Home Assistant\n\n{floors}\n\n\n\nOm hiedie probleem reg te maak,  [edit the automation]({edit})  en haal ongebruikte vloere uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "automation_unknown_entity_references": {
+            "title": "Onbekende entiteite gebruik  in: {automation}",
+            "description": "Spook het 'n sgees gekry in jou outomatiserings 👻\n\nTerwyk hy rondgehang het, het Sppok die volgende automatisasies teegekom:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nHierdie automatisasie verwys na die volgende entiteite, wat onbekend is aan Home Assistant\n\n{entities}\n\n\n\nOm hiedie probleem reg te maak,  [edit the automation]({edit})  en haal ongebruikte entiteite uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "automation_unknown_service_references": {
+            "title": "Onbekende aksies (actions) gebruik in : {automation}",
+            "description": "Spook het 'n gees gekry in jou outomatiserings 👻\n\nTerwyk hy rondgehang het, het Sppok die volgende automatisasies teegekom:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nHierdie automatisasie verwys na die volgende aksies, wat onbekend is aan Home Assistant\n\n{services}\n\n\n\nOm hiedie probleem reg te maak,  [edit the automation]({edit})  en haal ongebruikte aksies uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "automation_unknown_label_references": {
+            "title": "Onbekende etikette (labels) gebruik in: {automation}",
+            "description": "Spook het 'n gees gekry in jou outomatiserings 👻\n\nTerwyk hy rondgehang het, het Sppok die volgende automatisasies teegekom:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nHierdie automatisasie verwys na die volgende etikette, wat onbekend is aan Home Assistant\n\n{labels}\n\n\n\nOm hiedie probleem reg te maak,  [edit the automation]({edit})  en haal ongebruikte etikette uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "lovelace_unknown_entity_references": {
+            "title": "Onbekende entiteite gebruik in : {dashboard}",
+            "description": "Spook het 'n gees gevind in jou paneelborde (dashboards) 👻\n\nWTerwyl hy rodgehang het, het Spook die volgende paneelbord teegekom:\n\n[{dashboard}]({edit})\n\nDie paneelbord verwys nsa die volgende entiteite wat onbekend is aan  Home Assistant:\n\n{entities}\n\n\n\nOm heirde probleem op te los [edit the dashboard]({edit}) en haal die onbekende entiteite uit.\n\nSpook 👻 Jou vriend.."
+        },
+        "proximity_unknown_ignored_zones": {
+            "title": "Onbekende geignoreerde sones: {name}",
+            "description": "Spook het 'n gees gevind in jou nabyheid (proximity) konfigurasie👻\n\nTerwyl hy rondgehang het, het Spook die volgende nabyheid konfigurasie teegekom:\n\n{name}\n\nHierdie konfigurase ignoreer sones wat onbekend is aan Home Assistant:\n\n{zones}\n\n\n\nOm hierdie probleem op te los, redigeer die konfigurasie en haal die sones uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "proximity_unknown_tracked_entities": {
+            "title": "Onbekende bespeurde entiteit: {name}",
+            "description": "Spook het 'n gees gevind in jou nabyheid (proximity) konfigurasie 👻\n\nTerwyl hy rondgehang het, het Spook die volgende nabyheids konfigurasie teegekom:\n\n{name}\n\nHierdie konfigurasie bespeur persone of toestelle wat onbekend is aan Home Assistant:\n\n{entities}\n\n\n\nOm hierdie probleem op te los, redigeer die konfigurasie en haal die eniteite uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "proximity_unknown_zone": {
+            "title": "Onbekende sone: {zone}",
+            "description": "Spook het 'n gees gevind in jou nabyheid (proximity) konfigurasie 👻\n\nTerwyl hy rondgehang het, het Spook die volgende nabyheids konfigurasie teegekom:\n\n{name}\n\nHierdie konfigurasie is gebaseer op 'n sone wat onbekend is aan Home Assistant:\n\n`{zone}`\n\n\n\nOmdat jy nie die sone van 'n nabyheids konfigurasei kan verander nie is jou enigste uitweg om hierdie probleem op te los, om die nabyheids konfigurase te verwyder\n\nSpook 👻 Jou maatjie."
+        },
+        "scene_unknown_entity_references": {
+            "title": "Onbekende entiteite  gebruik in: {scene}",
+            "description": "Spook het 'n gees gevind in jou tonele (scenes) 👻\n\nTerwyl hy rondgehang het, het Spook die volgende toneel:\n\n[{scene}]({edit})\n\nHierdie toneel verwys na die volgende entiteite wat onbekend is aan Home Assistant:\n\n{entities}\n\n\n\nOm hierdie probleem op te los, [edit the scene]({edit}) en haal die onbekende entiteite uit.\n\nSpook 👻 Jou maatjie."
+        },
+        "script_unknown_area_references": {
+            "title": "Onbekende areas gebruik in: {script}",
+            "description": "Spook het 'n gees gekry in jou programmetjies (scripts)👻\n\nTerwyl hy rondgehang het, het Spook die volgende programmetjie teegekomt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDie programmetjie verwys na die volgende areas wat onbekend is aan  Home Assistant:\n\n{areas}\n\n\n\nOm die probleem op te los, [edit the script]({edit}) en haal die onbekende areas uit.\n\nSpook 👻 Jou vriend."
+        },
+        "script_unknown_device_references": {
+            "title": "Onbekende toestelle (devices) gebruik in: {script}",
+            "description": "Spook het 'n gees gekry in jou programmetjies (scripts)👻\n\nTerwyl hy rondgehang het, het Spook die volgende programmetjie teegekomt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDie programmetjie verwys na die volgende toestelle wat onbekend is aan  Home Assistant:\n\n{devices}\n\n\n\nOm die probleem op te los, [edit the script]({edit}) en haal die onbekende toestelle uit.\n\nSpook 👻 Jou vriend."
+        },
+        "script_unknown_entity_references": {
+            "title": "Onbekende entiteite (entities) gebruik in: {script}",
+            "description": "Spook het 'n gees gekry in jou programmetjies (scripts)👻\n\nTerwyl hy rondgehang het, het Spook die volgende programmetjie teegekom:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDie programmetjie verwys na die volgende entiteite wat onbekend is aan  Home Assistant:\n\n{entities}\n\n\n\nOm die probleem op te los, [edit the script]({edit}) en haal die onbekende entiteite uit.\n\nSpook 👻 Jou vriend."
+        },
+        "script_unknown_floor_references": {
+            "title": "Onbekende vloere (floors)  gebruik in: {script}",
+            "description": "Spook het 'n gees gekry in jou programmetjies (scripts)👻\n\nTerwyl hy rondgehang het, het Spook die volgende programmetjie teegekom:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDie programmetjie verwys na die volgende vloere, wat onbekend is aan  Home Assistant:\n\n{floors}\n\n\n\nOm die probleem op te los, [edit the script]({edit}) en haal die onbekende vloere uit.\n\nSpook 👻 Jou vriend."
+        },
+        "script_unknown_label_references": {
+            "title": "Onbekende etikette (labels) gebruik in: {script}",
+            "description": "Spook het 'n gees gekry in jou programmetjies (scripts)👻\n\nTerwyl hy rondgehang het, het Spook die volgende programmetjie teegekom:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDie programmetjie verwys na die volgende etikette wat onbekend is aan  Home Assistant:\n\n{labels}\n\n\n\nOm die probleem op te los, [edit the script]({edit}) en haal die onbekende etikette uit.\n\nSpook 👻 Jou vriend."
+        },
+        "switch_as_x_unknown_source": {
+            "title": "Onbekende bron: {helper}",
+            "description": "Spook get 'n gees gevind in jou Switch as X helpers 👻\n\nTerwyl ht rodgehang het, het Spook die volgende helper teegekom:\n\n{helper} (`{entity_id}`)\n\nHierdie helper het 'n bron skakelaar entiteit onbekend aan Home Assistant:\n\n`{source}`\n\n\n\nOm die probleem op te los, redigeer die helper en verander die bron entiteit  (of haal die helper uit) en begin Home Assistant oor.\n\nSpook 👻 Jou maatjie."
+        },
+        "utility_meter_unknown_source": {
+            "title": "Onbekende bron: {helper}",
+            "description": "Spook get 'n gees gevind in jou utility meter helpers 👻\n\nTerwyl hy rodgehang het, het Spook die volgende helper teegekom:\n\n{helper} (`{entity_id}`)\n\nHierdie helper het 'n bron entiteit onbekend aan Home Assistant:\n\n`{source}`\n\n\n\nOm die probleem op te los, redigeer die helper en verander die bron entiteit  (of haal die helper uit) en begin Home Assistant oor.\n\nSpook 👻 Jou maatjie."
+        },
+        "restart_required": {
+            "title": "Dit is nodig om oor te begin",
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "Begin oor",
+                        "description": "Vir Spook 👻 om die opstelling klaar te maak, moet Home Assistant oor begin.\n\nKies submit om Home Assistant nou oor te begin."
+                    }
+                }
+            }
+        },
+        "trend_unknown_source": {
+            "title": "Onbekende bron: {helper}",
+            "description": "Spook get 'n gees gevind in jou tendens (trend) helpers 👻\n\nTerwyl hy rondgehang het, het Spook die volgende helper teegekom:\n\n{helper} (`{entity_id}`)\n\nHierdie helper het 'n bron entiteit onbekend aan Home Assistant:\n\n`{source}`\n\n\n\nOm die probleem op te los, redigeer die helper en verander die bron entiteit  (of haal die helper uit) en begin Home Assistant oor.\n\nSpook 👻 Jou maatjie."
+        },
+        "group_unknown_members": {
+            "description": "Spook het 'n gees gekry in jou groepe 👻\n\nTerwyl hy rondgehang het, het Spook die volgende groep teegekom:\n:\n\n{group} (`{entity_id}`)\n\nHierdie grep het lede, wat onbekend is aan  Home Assistant:\n\n{entities}\n\n\n\nOm hierdie probleem op te los, redigeer die groep, haal die onbekende entiteite uit, en begin Home Assistant oor.\n\nSpook 👻 Jou maatjie.",
+            "title": "Onbekende groeplede in : {group}"
+        },
+        "integration_unknown_source": {
+            "description": "Spook 👻het 'n gees gevind in jou  Riemann sum integral helpers\n\nTerwyl hy rondgehang het, het Spook 👻 die volgende helper teegekom::\n\n{helper} (`{entity_id}`)\n\nHierdie Helper het 'n bron entiteit wat onbekend is aan  Home Assistant:\n\n`{source}`\n\n\n\nOm hierdie probleem reg te maak, redigeer die helper en verander die bron entiteit (of haal die helper uit) en begin Home Assistant oor.\n\nSpook 👻 Jou maatjie.",
+            "title": "Onbekende bron: {helper}"
+        }
+    },
+    "config": {
+        "step": {
+            "choice_restart": {
+                "description": "Vir Spook om die opstelling klaar te maak moet Home Assistant oor begin.\n\nWil jy Home Assistant nou oor begin?",
+                "menu_options": {
+                    "restart_later": "Begin later oor",
+                    "restart_now": "Begin nou oor"
+                }
+            },
+            "user": {
+                "description": "Het jy die readme gelees ? Het jy die lisensie gelees ? Is jy regtig seker ?"
+            }
+        },
+        "abort": {
+            "already_spooked": "Ja ... wel ... nee. Regso, dankie, totsiens!"
+        }
+    },
+    "entity": {
+        "button": {
+            "homeassistant_reload": {
+                "name": "Begin oor"
+            },
+            "homeassistant_restart": {
+                "name": "Begin oor"
+            },
+            "repairs_unignore_all": {
+                "name": "Moet niks ignoreer nie."
+            },
+            "repairs_ignore_all": {
+                "name": "Ignoreer alles"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "remove": "Probleem verwyder",
+                            "create": "Probleem geskep",
+                            "update": "Probleem bygewerk"
+                        }
+                    },
+                    "domain": {
+                        "name": "Probleem uitreiker"
+                    },
+                    "issue_id": {
+                        "name": "Probleem ID"
+                    }
+                }
+            }
+        },
+        "sensor": {
+            "homeassistant_air_quality": {
+                "name": "Luggehalte"
+            },
+            "homeassistant_automation": {
+                "name": "Automatiserings"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Binêre sensors"
+            },
+            "homeassistant_button": {
+                "name": "Knoppies"
+            },
+            "homeassistant_calendar": {
+                "name": "Kalender"
+            },
+            "homeassistant_camera": {
+                "name": "Kameras"
+            },
+            "homeassistant_cover": {
+                "name": "Deksels"
+            },
+            "homeassistant_custom_component": {
+                "name": "Doelgemaakte integrasie."
+            },
+            "homeassistant_datetime": {
+                "name": "Datums/Tye"
+            },
+            "homeassistant_device": {
+                "name": "Toestelle"
+            },
+            "homeassistant_entities": {
+                "name": "Entiteite"
+            },
+            "homeassistant_humidifier": {
+                "name": "Lugbevogtigers"
+            },
+            "homeassistant_image": {
+                "name": "Afbeelding"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Inset booleërs"
+            },
+            "homeassistant_input_select": {
+                "name": "Inset keuses"
+            },
+            "homeassistant_input_text": {
+                "name": "Inset tekste"
+            },
+            "homeassistant_integration": {
+                "name": "Integrasies"
+            },
+            "homeassistant_light": {
+                "name": "Ligte"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Aanhoudende kennisgewings"
+            },
+            "homeassistant_person": {
+                "name": "Persone"
+            },
+            "homeassistant_scene": {
+                "name": "Tonele"
+            },
+            "homeassistant_script": {
+                "name": "Program"
+            },
+            "homeassistant_stt": {
+                "name": "Spraak na teks"
+            },
+            "homeassistant_sun": {
+                "name": "Sonne"
+            },
+            "homeassistant_switch": {
+                "name": "Skakelaars"
+            },
+            "homeassistant_time": {
+                "name": "Tye"
+            },
+            "homeassistant_vacuum": {
+                "name": "Stofsuiers"
+            },
+            "homeassistant_weather": {
+                "name": "Weer"
+            },
+            "homeassistant_zone": {
+                "name": "Sones"
+            },
+            "repairs_total_issues": {
+                "name": "Totaal"
+            },
+            "repairs_active_issues": {
+                "name": "Aktief"
+            },
+            "homeassistant_area": {
+                "name": "Areas"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Alarm beheerpanele"
+            },
+            "homeassistant_climate": {
+                "name": "Klimaat"
+            },
+            "homeassistant_date": {
+                "name": "Datums"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Toetsel naspeurder"
+            },
+            "homeassistant_fan": {
+                "name": "Waaiers"
+            },
+            "homeassistant_input_button": {
+                "name": "Inset knoppies"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Inset datums/tye"
+            },
+            "homeassistant_lock": {
+                "name": "Slotte"
+            },
+            "homeassistant_input_number": {
+                "name": "Inset nommers"
+            },
+            "homeassistant_media_player": {
+                "name": "Media spelers"
+            },
+            "homeassistant_number": {
+                "name": "Nommers"
+            },
+            "homeassistant_remote": {
+                "name": "Afstandbeheerders"
+            },
+            "homeassistant_select": {
+                "name": "Keuses"
+            },
+            "homeassistant_tts": {
+                "name": "Spraak na teks"
+            },
+            "homeassistant_sensor": {
+                "name": "Sensors"
+            },
+            "homeassistant_text": {
+                "name": "Tekse"
+            },
+            "homeassistant_siren": {
+                "name": "Sirenes"
+            },
+            "homeassistant_update": {
+                "name": "Opdateer"
+            },
+            "homeassistant_water_heater": {
+                "name": "Water verwarmer"
+            },
+            "repairs_ignored_issues": {
+                "name": "Ge-ignoreer"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa status verslag"
+            },
+            "cloud_remote": {
+                "name": "Afstandbeheer"
+            },
+            "cloud_google_report_state": {
+                "name": "Google Assistant status verslag"
             }
         }
     }
