@@ -158,16 +158,22 @@
         "name": "Prehrávače médií"
       }
     },
-    "switch": {
-      "cloud_alexa_report_state": {
-        "name": "Správy o stave Alexa"
-      },
-      "cloud_google_report_state": {
-        "name": "Správa stavu Google Assistant"
-      },
-      "cloud_remote": {
-        "name": "Diaľkový"
-      }
+    "config": {
+        "abort": {
+            "already_spooked": "Áno... dobre... no. K, vďaka, ahoj!"
+        },
+        "step": {
+            "user": {
+                "description": "Čítali ste readme? Čítali ste licenciu? Si naozaj istý?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Reštartovať teraz",
+                    "restart_later": "Reštartovať neskôr"
+                },
+                "description": "Aby Spook dokončil nastavenie, musí sa reštartovať Home Assistant.\n\nChcete teraz reštartovať Home Assistant?"
+            }
+        }
     },
     "issues": {
         "lovelace_unknown_entity_references": {
