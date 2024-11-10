@@ -57,7 +57,7 @@
                 "name": "Fläktar"
             },
             "homeassistant_entities": {
-                "name": "Enheter"
+                "name": "Entiteter"
             },
             "homeassistant_input_button": {
                 "name": "Inmatning knappar"
@@ -294,6 +294,24 @@
         },
         "proximity_unknown_ignored_zones": {
             "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan han sökte, hittade Spook  följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen ignorerar zoner som är okända för Home Assistant:\n\n{zones}\n\n\n\nFör att åtgärda detta fel, ändra konfigurationen och ta bort denna zon/dessa zoner.\n\nSpook 👻 Inte din homie."
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook har hittat ett spöke i dina automationer 👻\n\nMedans det svävade runt, korsade Spook väg med följande automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automation hänvisar till följande våningsplan, som är okända för Home Assistant:\n\n{floors}\n\n\nFör att reparera detta felet, [ändra automationen]({edit}) och ta bort användningen av dessa icke-existerande våningsplan.\n\nSpook 👻 Din polare."
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook har hittat ett spöke i dina automationer 👻\n\nMedans det svävade runt, korsade Spook väg med följande automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automation hänvisar till följande etiketter, som är okända för Home Assistant:\n\n{labels}\n\n\nFör att reparera detta felet, [ändra automationen]({edit}) och ta bort användningen av dessa icke-existerande etiketter.\n\nSpook 👻 Din polare."
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook har hittat ett spöke i dina scener 👻\n\nMedans det svävade runt, korsade Spook väg med följande scen:\n\n[{scene}]({edit}) \n\nDenna scen hänvisar till följande entiteter, som är okända för Home Assistant:\n\n{entities}\n\n\nFör att reparera detta felet, [ändra scenen]({edit}) och ta bort användningen av dessa icke-existerande entiteter.\n\nSpook 👻 Din polare."
+        },
+        "trend_unknown_source": {
+            "description": "Spook har hittat ett spöke i dina hjälpare 👻\n\nMedans det svävade runt, korsade Spook väg med följande hjälpare:\n\n{helper} (`{entity_id}`)\n\nDenna hjälpare har en källentitet som är okänd för Home Assistant:\n\n`{source}`\n\n\nFör att reparera detta felet, ändra hjälparen och justera källentiteten (eller ta bort hjälparen) och starta om Home Assistant.\n\nSpook 👻 Din polare."
+        },
+        "script_unknown_floor_references": {
+            "description": "Spook har hittat ett spöke i dina skripts 👻\n\nMedans det svävade runt, korsade Spook väg med följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDenna skript hänvisar till följande våningsplan, som är okända för Home Assistant:\n\n{floors}\n\n\nFör att reparera detta felet, [ändra skriptet]({edit}) och ta bort användningen av dessa icke-existerande våningsplan.\n\nSpook 👻 Din polare."
+        },
+        "script_unknown_label_references": {
+            "description": "Spook har hittat ett spöke i dina skript 👻\n\nMedans det svävade runt, korsade Spook väg med följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDenna skript hänvisar till följande etiketter, som är okända för Home Assistant:\n\n{labels}\n\n\nFör att reparera detta felet, [ändra skriptet]({edit}) och ta bort användningen av dessa icke-existerande etiketter.\n\nSpook 👻 Din polare."
         }
     }
 }
