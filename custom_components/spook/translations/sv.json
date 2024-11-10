@@ -284,7 +284,8 @@
             "title": "Omstart krävs"
         },
         "automation_unknown_service_references": {
-            "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{services}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
+            "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{services}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie.",
+            "title": "Okända tjänster används i: {automation}"
         },
         "proximity_unknown_zone": {
             "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan han sökte, hittade Spook  följande konfiguration för närhet:\n\n{group} (`{entity_id}`)\n\nDen här konfigurationen är baserad på en zon som är okänd för Home Assistant:\n\n`{zone}`\n\n\n\nFör att åtgärda detta  fel, eftersom du inte kan byta zon för en konfiguration för närhet, det enda valet är att ta bort denna konfiguration.\n\nSpook 👻 Inte din homie."
