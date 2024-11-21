@@ -39,7 +39,7 @@ You can even dynamically create completely new areas on the fly.
 :::
 
 :::{card} Devices & entities
-:footer: 📚 [Learn more](devices.md)
+:footer: 📚 [Learn more](devices_entities.md)
 
 Spook adds a bunch of devices and entities to Home Assistant that provide information and controls over the internals of Home Assistant.
 
