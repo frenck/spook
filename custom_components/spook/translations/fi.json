@@ -1,0 +1,330 @@
+{
+    "issues": {
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{description}",
+                        "title": "{nimike}"
+                    }
+                }
+            },
+            "title": "{nimike}"
+        },
+        "automation_unknown_area_references": {
+            "title": "Tuntemattomia alueita käytetty: {automaatio}",
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavan automaation kanssa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio viittaa seuraaviin alueisiin, jotka ovat Home Assistantille tuntemattomia:\n\n{alueet}\n\n\n\nKorjataksesi tämän vian  [edit the automation]({edit}) ja poista nämä tuntemattomat alueet.\n\nSpook 👻 Kamusi."
+        },
+        "automation_unknown_device_references": {
+            "title": "Tuntemattomia laitteita käytetty: {automaatio}",
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavan automaation kanssa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio viittaa seuraaviin laitteisiin, jotka ovat Home Assistantille tuntemattomia:\n\n{laitteet}\n\n\n\nKorjataksesi tämän vian  [edit the automation]({edit}) ja poista nämä tuntemattomat laitteet.\n\nSpook 👻 Kamusi."
+        },
+        "automation_unknown_entity_references": {
+            "title": "Tuntemattomia entiteettejä käytetty: {automaatio}",
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavan automaation kanssa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{entiteetit}\n\n\n\nKorjataksesi tämän vian  [edit the automation]({edit}) ja poista nämä tuntemattomat entiteetit.\n\nSpook 👻 Kamusi."
+        },
+        "automation_unknown_floor_references": {
+            "title": "Tuntemattomia kerroksia käytetty: {automaatio}",
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavan automaation kanssa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio viittaa seuraaviin kerroksiin, jotka ovat Home Assistantille tuntemattomia:\n\n{kerrokset}\n\n\n\nKorjataksesi tämän vian  [edit the automation]({edit}) ja poista nämä tuntemattomat kerrokset.\n\nSpook 👻 Kamusi."
+        },
+        "automation_unknown_label_references": {
+            "title": "Tuntemattomia nimikkeitä käytetty: {automaatio}",
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavan automaation kanssa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio viittaa seuraaviin nimikkeisiin, jotka ovat Home Assistantille tuntemattomia:\n\n{nimikkeet}\n\n\n\nKorjataksesi tämän vian  [edit the automation]({edit}) ja poista nämä tuntemattomat nimikkeet.\n\nSpook 👻 Kamusi."
+        },
+        "automation_unknown_service_references": {
+            "title": "Tuntemattomia toimintoja käytetty: {automaatio}",
+            "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavan automaation kanssa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{palvelut}\n\n\n\nKorjataksesi tämän vian  [edit the automation]({edit}) ja poista nämä tuntemattomat toiminnot.\n\nSpook 👻 Kamusi."
+        },
+        "group_unknown_members": {
+            "title": "Tuntemattomia ryhmänjäseniä: {ryhmä}"
+        },
+        "lovelace_unknown_entity_references": {
+            "title": "Tuntemattomia entiteettejä käytetty: {kojelauta}",
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan kojelautaan:\n\n[{dashboard}]({edit})\n\nTämä automaatio viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{entiteetit}\n\n\n\nKorjataksesi tämän vian  [edit the dashboard]({edit}) ja poista nämä tuntemattomat entiteetit.\n\nSpook 👻 Kamusi."
+        },
+        "proximity_unknown_ignored_zones": {
+            "title": "Tuntemattomia sivuutettuja alueita: {nimi}",
+            "description": "Spook on löytänyt haamun läheisyyskokoonpanostasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan läheisyyskonfiguraation kanssa:\n\n{nimi}\n\nTämä kokoonpano jättää huomioimatta vyöhykkeet, joita Home Assistant ei tunne:\n\n{vyöhykkeet}\n\n\n\nKorjaa tämä virhe muokkaamalla kokoonpanoa ja poistamalla tämä/nämä vyöhykkeet.\n\nSpook 👻 Sinun kamusi."
+        },
+        "script_unknown_area_references": {
+            "title": "Tuntemattomia alueita käytetty: {skripti}",
+            "description": "Spook on löytänyt haamun käsikirjoituksistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan käsikirjoituksen kanssa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä skripti viittaa seuraaviin alueisiin, joita Home Assistant ei tunne:\n\n{alueet}\n\n\n\nKorjaa tämä virhe [muokkaa komentosarjaa]({muokkaa}) ja poista näiden ei-olemassa olevien alueiden käyttö.\n\nSpook 👻 Sinun kamusi."
+        },
+        "restart_required": {
+            "title": "Uudelleenkäynnistys vaaditaan",
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "Uudelleenkäynnistys vaaditaan",
+                        "description": "Jotta Spook👻 pystyy suorittamaan käyttöönoton loppuun, tulee Home Assistant käynnistää uudelleen.\n\nValitse  lähetä, jotta Home Assistant käynnistyy uudelleen nyt."
+                    }
+                }
+            }
+        },
+        "script_unknown_device_references": {
+            "title": "Tuntemattomia laitteita käytetty: {skripti}",
+            "description": "Spook on löytänyt haamun käsikirjoituksistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan käsikirjoituksen kanssa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä komentosarja viittaa seuraaviin laitteisiin, joita Home Assistant ei tunne:\n\n{laitteet}\n\n\n\nKorjaa tämä virhe [muokkaa komentosarjaa]({muokkaa}) ja poista näiden ei-olemassa olevien laitteiden käyttö.\n\nSpook 👻 Sinun kamusi."
+        },
+        "script_unknown_entity_references": {
+            "title": "Tuntemattomia entiteettejä käytetty: {skripti}",
+            "description": "Spook on löytänyt haamun käsikirjoituksistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan käsikirjoituksen kanssa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä komentosarja viittaa seuraaviin entiteeteihin, joita Home Assistant ei tunne:\n\n{entities}\n\n\n\nKorjaa tämä virhe [muokkaa komentosarjaa]({muokkaa}) ja poista näiden ei-olemassa olevien entiteettien käyttö.\n\nSpook 👻 Sinun kamusi."
+        },
+        "scene_unknown_entity_references": {
+            "title": "Tuntemattomia entiteettejä käytetty: {tilanne}",
+            "description": "Spook on löytänyt aaveen kohtauksistasi 👻\n\nKelluessaan ympäriinsä Spook ristesi seuraavan kohtauksen kanssa:\n\n[{kohtaus}]({muokkaa})\n\nTämä kohtaus viittaa seuraaviin entiteeteihin, joita Home Assistant ei tunne:\n\n{entities}\n\n\n\nKorjaa tämä virhe [muokkaa kohtausta]({muokkaa}) ja poista näiden ei-olemassa olevien entiteettien käyttö.\n\nSpook 👻 Sinun kamusi."
+        },
+        "switch_as_x_unknown_source": {
+            "title": "Tuntematon lähde: {apuri}",
+            "description": "Spook on löytänyt haamun Switchistäsi X-auttajina 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan avustajan kanssa:\n\n{auttaja} (`{entity_id}`)\n\nTällä auttajalla on lähdevaihtoyksikkö, jota Home Assistant ei tunne:\n\n`{lähde}`\n\n\n\nKorjaa tämä virhe muokkaamalla apuohjelmaa ja säätämällä lähdekokonaisuutta (tai poistamalla apuohjelma) ja käynnistämällä Home Assistantin uudelleen.\n\nSpook 👻 Sinun kamusi."
+        },
+        "script_unknown_floor_references": {
+            "title": "Tuntemattomia kerroksia käytetty: {skripti}",
+            "description": "Spook on löytänyt haamun käsikirjoituksistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan käsikirjoituksen kanssa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä skripti viittaa seuraaviin kerroksiin, joita Home Assistant ei tunne:\n\n{lattiat}\n\n\n\nKorjaa tämä virhe [muokkaa komentosarjaa]({muokkaa}) ja poista näiden ei-olemassa olevien kerrosten käyttö.\n\nSpook 👻 Sinun kamusi."
+        },
+        "script_unknown_label_references": {
+            "title": "Tuntemattomia nimikkeitä käytetty: {skripti}",
+            "description": "Spook on löytänyt haamun käsikirjoituksistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan käsikirjoituksen kanssa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä komentosarja viittaa seuraaviin nimikkeisiin, joita Home Assistant ei tunne:\n\n{labels}\n\n\n\nKorjaa tämä virhe [muokkaa komentosarjaa]({muokkaa}) ja poista näiden ei-olemassa olevien tunnisteiden käyttö.\n\nSpook 👻 Sinun kamusi."
+        },
+        "integration_unknown_source": {
+            "title": "Tuntematon lähde: {apuri}",
+            "description": "Spook on löytänyt haamuja Riemannin sum integraalisista avustajistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan avustajan kanssa:\n\n{auttaja} (`{entity_id}`)\n\nTällä avustajalla on Home Assistantille tuntematon lähdeentiteetti:\n\n`{lähde}`\n\n\n\nKorjaa tämä virhe muokkaamalla apuohjelmaa ja säätämällä lähdekokonaisuutta (tai poistamalla apuohjelma) ja käynnistämällä Home Assistantin uudelleen.\n\nSpook 👻 Sinun kamusi."
+        },
+        "proximity_unknown_tracked_entities": {
+            "title": "Tuntemattomia seurattuja entiteettejä: {nimi}",
+            "description": "Spook on löytänyt haamun läheisyyskokoonpanostasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan läheisyyskonfiguraation kanssa:\n\n{nimi}\n\nTämä kokoonpano seuraa henkilöitä tai laitteiden seurantalaitteita, joita Home Assistant ei tunne:\n\n{entities}\n\n\n\nKorjaa tämä virhe muokkaamalla määritystä ja poistamalla tämä/nämä entiteetit.\n\nSpook 👻 Sinun kamusi."
+        },
+        "proximity_unknown_zone": {
+            "title": "Tuntematon alue: {alue}",
+            "description": "Spook on löytänyt haamun läheisyyskokoonpanostasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan läheisyyskonfiguraation kanssa:\n\n{nimi}\n\nTämä kokoonpano perustuu vyöhykkeeseen, jota Home Assistant ei tunne:\n\n`{zone}`\n\n\n\nKorjataksesi tämän virheen, koska et voi muuttaa läheisyysmäärityksen vyöhykettä, ainoa vaihtoehto on poistaa tämä läheisyysintegrointiinstanssi.\n\nSpook 👻 Sinun kamusi."
+        },
+        "utility_meter_unknown_source": {
+            "title": "Tuntematon lähde: {apuri}",
+            "description": "Spook on löytänyt aaveen sähkömittarin auttajistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan avustajan kanssa:\n\n{auttaja} (`{entity_id}`)\n\nTällä avustajalla on Home Assistantille tuntematon lähdeentiteetti:\n\n`{lähde}`\n\n\n\nKorjaa tämä virhe muokkaamalla apuohjelmaa ja säätämällä lähdekokonaisuutta (tai poistamalla apuohjelma) ja käynnistämällä Home Assistantin uudelleen.\n\nSpook 👻 Sinun kamusi."
+        },
+        "trend_unknown_source": {
+            "title": "Tuntematon lähde: {apuri}",
+            "description": "Spook on löytänyt aaveen trendiauttajistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan avustajan kanssa:\n\n{auttaja} (`{entity_id}`)\n\nTällä avustajalla on Home Assistantille tuntematon lähdeentiteetti:\n\n`{lähde}`\n\n\n\nKorjaa tämä virhe muokkaamalla apuohjelmaa ja säätämällä lähdekokonaisuutta (tai poistamalla apuohjelma) ja käynnistämällä Home Assistantin uudelleen.\n\nSpook 👻 Sinun kamusi."
+        }
+    },
+    "entity": {
+        "sensor": {
+            "homeassistant_date": {
+                "name": "Päivämäärät"
+            },
+            "homeassistant_datetime": {
+                "name": "Päivämäärä/ajat"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Hälytyksohjauspaneelit"
+            },
+            "homeassistant_button": {
+                "name": "Painikkeet"
+            },
+            "homeassistant_calendar": {
+                "name": "Kalenterit"
+            },
+            "homeassistant_cover": {
+                "name": "Verhot"
+            },
+            "homeassistant_custom_component": {
+                "name": "Mukautetut integraatiot"
+            },
+            "homeassistant_fan": {
+                "name": "Tuulettimet"
+            },
+            "homeassistant_humidifier": {
+                "name": "Ilmankostuttimet"
+            },
+            "homeassistant_image": {
+                "name": "Kuvat"
+            },
+            "repairs_ignored_issues": {
+                "name": "Sivuutetut"
+            },
+            "homeassistant_light": {
+                "name": "Valot"
+            },
+            "homeassistant_remote": {
+                "name": "Kaukosäätimet"
+            },
+            "homeassistant_scene": {
+                "name": "Tilanteet"
+            },
+            "homeassistant_script": {
+                "name": "Skriptit"
+            },
+            "homeassistant_select": {
+                "name": "Valinnat"
+            },
+            "homeassistant_sensor": {
+                "name": "Sensorit"
+            },
+            "homeassistant_siren": {
+                "name": "Sireenit"
+            },
+            "homeassistant_stt": {
+                "name": "Puheesta tekstiksi"
+            },
+            "homeassistant_sun": {
+                "name": "Auringot"
+            },
+            "homeassistant_switch": {
+                "name": "Kytkimet"
+            },
+            "homeassistant_text": {
+                "name": "Tekstit"
+            },
+            "homeassistant_tts": {
+                "name": "Tekstistä puheeksi"
+            },
+            "homeassistant_time": {
+                "name": "Ajat"
+            },
+            "repairs_total_issues": {
+                "name": "Kokonaismäärä"
+            },
+            "homeassistant_update": {
+                "name": "Päivitä"
+            },
+            "homeassistant_vacuum": {
+                "name": "Imurit"
+            },
+            "homeassistant_water_heater": {
+                "name": "Vedenlämmittimet"
+            },
+            "homeassistant_weather": {
+                "name": "Sää"
+            },
+            "homeassistant_zone": {
+                "name": "Alueet"
+            },
+            "repairs_active_issues": {
+                "name": "Aktiivinen"
+            },
+            "homeassistant_air_quality": {
+                "name": "Ilmanlaatu"
+            },
+            "homeassistant_area": {
+                "name": "Alueet"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Binäärisensorit"
+            },
+            "homeassistant_automation": {
+                "name": "Automaatiot"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Laite seuraimet"
+            },
+            "homeassistant_camera": {
+                "name": "Kamerat"
+            },
+            "homeassistant_climate": {
+                "name": "Ilmasto"
+            },
+            "homeassistant_device": {
+                "name": "Laitteet"
+            },
+            "homeassistant_entities": {
+                "name": "Entiteetit"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Syöte booleanit"
+            },
+            "homeassistant_input_button": {
+                "name": "Syötepainikkeet"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Syöte päivämäärä/ajat"
+            },
+            "homeassistant_input_number": {
+                "name": "Syöte numerot"
+            },
+            "homeassistant_input_select": {
+                "name": "Syöte valinnat"
+            },
+            "homeassistant_integration": {
+                "name": "Integraatiot"
+            },
+            "homeassistant_input_text": {
+                "name": "Syötetekstit"
+            },
+            "homeassistant_lock": {
+                "name": "Lukot"
+            },
+            "homeassistant_media_player": {
+                "name": "Mediatoistimet"
+            },
+            "homeassistant_number": {
+                "name": "Numerot"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Pysyvät ilmoitukset"
+            },
+            "homeassistant_person": {
+                "name": "Henkilöt"
+            }
+        },
+        "button": {
+            "repairs_ignore_all": {
+                "name": "Sivuuta kaikki"
+            },
+            "homeassistant_reload": {
+                "name": "Uudelleenlataa"
+            },
+            "homeassistant_restart": {
+                "name": "Uudelleenkäynnistä"
+            },
+            "repairs_unignore_all": {
+                "name": "Ota takaisin näkyviin kaikki"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Ongelma luotu",
+                            "remove": "Ongelma poistettu",
+                            "update": "Ongelma päivitetty"
+                        }
+                    },
+                    "issue_id": {
+                        "name": "Ongelma ID"
+                    },
+                    "domain": {
+                        "name": "Ongelman luoja"
+                    }
+                }
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa tilan raportointi"
+            },
+            "cloud_remote": {
+                "name": "Kaukosäädin"
+            },
+            "cloud_google_report_state": {
+                "name": "Google Assistant tilan raportointi"
+            }
+        }
+    },
+    "config": {
+        "step": {
+            "user": {
+                "description": "Luitko readme:n? Luitko lisenssin? Oletko aivan varma?"
+            },
+            "choice_restart": {
+                "description": "Jotta Spook pystyy viimeistelemään käyttöönoton, Home Assistantin pitää käynnistyä uudelleen.\n\nHaluatko käynnistää Home Assistantin uudelleen nyt?",
+                "menu_options": {
+                    "restart_later": "Käynnistä uudelleen myöhemmin",
+                    "restart_now": "Käynnistä uudelleen nyt"
+                }
+            }
+        },
+        "abort": {
+            "already_spooked": "Joo... no... en. JEP, kiitti moi!"
+        }
+    }
+}
