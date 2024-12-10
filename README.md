@@ -16,6 +16,14 @@ tools. 🛠️
 
 [Learn all about me in the extensive documentation](https://spook.boo/)
 
+**Key Features (just a sample of what I can do)**:
+- **Integration management**: Enable/disable integrations and control polling for updates.
+- **Device management**: Programmatically enable or disable any device.
+- **Entity management**: Automate actions like hide/unhide and manage orphaned entities.
+- **Areas management**: Dynamically add/remove devices and create new areas.
+- **Devices & entities**: System devices and entities that provide information and controls over the internals of Home Assistant.
+- **Template engine**: Enhance templating with powerful extensions.
+
 ## ⚠️ Just to be very clear...
 
 **Spook is not affiliated with, endorsed, recommended, or supported by the Home Assistant project.**
