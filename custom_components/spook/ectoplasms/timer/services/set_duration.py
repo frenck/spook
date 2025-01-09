@@ -17,17 +17,16 @@ from homeassistant.const import CONF_ID
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
-from ....services import AbstractSpookEntityService
+from ....services import AbstractSpookEntityComponentService
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookEntityService[Timer]):
+class SpookService(AbstractSpookEntityComponentService[Timer]):
     """Home Assistant service to set duration for a timer."""
 
     domain = DOMAIN
-    platform = "timer"
     service = "set_duration"
     schema = {
         vol.Required(CONF_DURATION): cv.time_period,
