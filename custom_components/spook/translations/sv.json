@@ -28,7 +28,7 @@
                 "name": "Ignorera alla"
             },
             "repairs_unignore_all": {
-                "name": "Unignorera alla"
+                "name": "Avignorera alla"
             }
         },
         "sensor": {
@@ -168,7 +168,7 @@
                 "name": "Mediaspelare"
             },
             "homeassistant_script": {
-                "name": "Skripts"
+                "name": "Skript"
             },
             "homeassistant_select": {
                 "name": "Val"
@@ -211,7 +211,7 @@
                         }
                     },
                     "domain": {
-                        "name": "Fråga emittent"
+                        "name": "Utfärda utgivare"
                     },
                     "issue_id": {
                         "name": "Problem ID"
@@ -292,7 +292,8 @@
             "title": "Okänd zon: {zone}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan det svävade runt, hittade Spook följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen spårar personer eller enhetsspårare som okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta fel, ändra konfigurationen och ta bort denna entitet/dessa entiteter.\n\nSpook 👻 Din polare."
+            "description": "Spook har hittat ett spöke i din proximitykonfiguration 👻\n\nMedan Spook svävade runt den hittade fäljande  proximitykonfiguration:\n\n{name}\n\nDen här konfigurationen spårar personer eller enheter som okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda felet så behöver du ändra konfigurationen och ta bort enheten eller enheterna som är problematiska.\n\nSpook 👻 Din polare.",
+            "title": "Okända spårade enheter:  {name]"
         },
         "proximity_unknown_ignored_zones": {
             "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedans det svävade runt, hittade Spook  följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen ignorerar zoner som är okända för Home Assistant:\n\n{zones}\n\n\n\nFör att åtgärda detta fel, ändra konfigurationen och ta bort denna zon/dessa zoner.\n\nSpook 👻 Din polare.",
@@ -323,7 +324,8 @@
             "title": "Okända etiketter används i: {script}"
         },
         "utility_meter_unknown_source": {
-            "title": "Okänd källa: {helper}"
+            "title": "Okänd källa: {helper}",
+            "description": "Spook har hittat ett spöke i dina helpers för utility meters👻\n\nMedan  den svävade runt hittade Sppok följande helper:\n\nhelper} (`{entity_id}`)\n\nDenna helper har källor som är okända för Home Assistant:\n\n`{source}`\n\n\nFör att åtgärda detta fel behöver du editera denna helper och plcoka bort kpsterna eller hela helpern  och starta om Home Assistant.\n\nSpook 👻 din polare."
         }
     }
   },
