@@ -216,7 +216,7 @@
             "title": "{title}"
         },
         "automation_unknown_area_references": {
-            "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação contem as seguintes áreas que são desconhecidas para o Home Assistant:\n\n{areas}\n\n\n\nPara corrigir o erro, [edit the automation]({edit}) e remove as áreas inexistentes.\n\nSpook 👻 Não sou o teu mano.",
+            "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação faz referência às seguintes áreas, que são desconhecidas pelo Home Assistant:\n\n{areas}\n\n\n\nPara corrigir este erro, [edite a automação]({edit}) e remova o uso dessas áreas inexistentes.\n\nSpook 👻 Seu parceiro.",
             "title": "Áreas desconhecidas utilizadas em: {automation}"
         },
         "script_unknown_entity_references": {
@@ -225,7 +225,7 @@
         },
         "automation_unknown_device_references": {
             "title": "Dispositivos desconhecidas utilizados em: {automation}",
-            "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação contem os seguintes dispositivos que são desconhecidas para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir o erro, [edit the automation]({edit}) e remove os dispositivos inexistentes.\n\nSpook 👻 Não sou o teu mano."
+            "description": "Spook encontrou um fantasma nas suas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação contem os seguintes dispositivos que são desconhecidos pelo Home Assistant:\n\n{devices}\n\n\n\nPara corrigir o erro, [edite a automação]({edit}) e remova os dispositivos inexistentes.\n\nSpook 👻 Seu parceiro."
         },
         "automation_unknown_entity_references": {
             "title": "Entidades desconhecidas utilizadas em: {automation}",
@@ -273,6 +273,9 @@
         "utility_meter_unknown_source": {
             "description": "Spook encontrou um fantasma em seus medidores 👻\n\nQuando estava flutuando, Spook topou com este ajudate em seu caminho:\n\n{helper} (`{entity_id}`)\n\nEste ajudante faz referência às seguintes entidades desconhecidas ao Home Assistant:\n\n`{source}`\n\n\nPara resolver este erro, edite o ajudante e ajuste a entidade de origem (ou remova o ajudante) e então reinie o Home Assistant.\n\nSpook 👻 Your homie.",
             "title": "Origem desconhecida: {helper}"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook achou um fantasma nas suas automações 👻\n\nEnquanto estava flutuando por ai, Spook se deparou com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEssa automação referencia as seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\n\n\nPara corrigir este erro, [edit the automation]({edit}) e remova o uso dessas ações não existentes.\n\nSpook 👻 Seu mano."
         }
     },
     "config": {
