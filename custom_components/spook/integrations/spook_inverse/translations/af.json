@@ -1,0 +1,51 @@
+{
+    "config": {
+        "step": {
+            "switch": {
+                "data": {
+                    "name": "Naam",
+                    "hide_source": "Maak bron entiteit onsigbaar",
+                    "entity_id": "Bron entiteit"
+                },
+                "title": "Omkeer"
+            },
+            "binary_sensor": {
+                "title": "Omkeer",
+                "data": {
+                    "name": "Naam",
+                    "entity_id": "Bron entiteit",
+                    "hide_source": "Maak bron entiteit onsigbaar"
+                }
+            },
+            "user": {
+                "description": "Hierdie helper laat jou toe om die gedrag van 'n entiteit om te skakel. Byvoorbeeld, verander oop/toe of aan/af van 'n binêre sensor of skakelaar.",
+                "menu_options": {
+                    "binary_sensor": "Keer 'n binere sensor om",
+                    "switch": "Keer skakelaar om"
+                },
+                "title": "Omkeer"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "hide_source": "Maak bron entiteit onsigbaar",
+                    "name": "Naam",
+                    "entity_id": "Bron entiteit"
+                },
+                "title": "Omkeer"
+            },
+            "switch": {
+                "data": {
+                    "entity_id": "Bron entiteit",
+                    "hide_source": "Maak bron eniteit onsigbaar",
+                    "name": "Naam"
+                },
+                "title": "Omkeer"
+            }
+        }
+    },
+    "title": "Omkeer"
+}
