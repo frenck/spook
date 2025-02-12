@@ -286,7 +286,7 @@ This action allows you to update an entity's ID on the fly.
   - No
 * - {term}`Action response`
   - No response
-* - {term}`Spook's influence`
+* - {term}`Spook's influence <influence of spook>`
   - Newly added action.
 * - {term}`Developer tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
@@ -434,6 +434,63 @@ mode: single
 ```
 
 That template will find the area ID of the area with the name "Living room".
+:::
+
+### Rename an entity
+
+This action allows you to update an entity friendly_name on the fly.
+
+```{figure} ./images/entities/rename_entity.png
+:alt: Screenshot of the Home Assistant rename entity action in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Rename an entity 👻
+* - {term}`Action name`
+  - `homeassistant.rename_entity`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.rename_entity)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.rename_entity)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>`
+  - Yes
+  - `"light.living_room"`
+* - `name`
+  - {term}`string <string>`
+  - Yes
+  - `"Living room light"`
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.rename_entity
+data:
+  entity_id: light.living_room
+  name: "Living room light"
+```
+
 :::
 
 ## Blueprints & tutorials
