@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  DEFAULT_PYTHON: "3.11"
+  DEFAULT_PYTHON: "3.13"
 
 jobs:
   ruff:
@@ -17,19 +17,17 @@ jobs:
       - name: ⤵️ Check out code from GitHub
         uses: actions/checkout@v4.2.2
 
-      - name: 🏗 Set up rye
-        uses: eifinger/setup-rye@v4.2.8
+      - name: 🏗 Set up uv
+        uses: astral-sh/setup-uv@v5.2.2
         with:
           enable-cache: true
+          python-version: ${{ env.DEFAULT_PYTHON }}
 
-      - name: 🏎️ Enable uv in rye
-        run: rye config --set-bool behavior.use-uv=true
-
-      - name: 🏗 Sync dependencies
-        run: rye sync
+      - name: 🏗 Install dependencies
+        run: uv sync --extra cli --frozen --dev
 
       - name: 🚀 Run ruff linter
-        run: rye run ruff check .
+        run: uv run ruff check --output-format=github .
 
       - name: 🚀 Run ruff formatter
-        run: rye run ruff format --check .
+        run: uv run ruff format --check .
