@@ -42,7 +42,7 @@ class SpookRepair(AbstractSpookRepair):
 
     async def async_activate(self) -> None:
         """Handle the activating a repair."""
-        self._dashboards = self.hass.data["lovelace"]["dashboards"]
+        self._dashboards = self.hass.data["lovelace"].dashboards
         await super().async_activate()
 
     async def async_inspect(self) -> None:
