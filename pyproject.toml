@@ -37,9 +37,9 @@ keywords = [
   "spook",
   "utils",
 ]
-requires-python = ">=3.11,<3.13"
+requires-python = ">=3.13"
 dependencies = [
-    "homeassistant>=2024.4.0",
+    "homeassistant>=2025.2.0",
 ]
 
 [project.urls]
@@ -61,12 +61,13 @@ src = ["custom_components/spook"]
 
 [tool.ruff.lint]
 ignore = [
+  "A005", # It is just wrong
   "ANN101", # Self... explanatory
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
   "D203", # Conflicts with other rules
   "D213", # Conflicts with other rules
-  "TID252", # Relative imports
   "RUF012", # Just broken
+  "TID252", # Relative imports
 
   # Formatter conflicts
   "COM812",
@@ -110,8 +111,7 @@ disable = [
   "used-before-assignment",
 ]
 
-[tool.rye]
-managed = true
+[tool.uv]
 dev-dependencies = [
   "pre-commit>=3.6.0",
   "pre-commit-hooks>=4.5.0",

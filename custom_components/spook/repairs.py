@@ -205,9 +205,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     return False
                 if self.inspect_on_reload is True:
                     return True
-                if self.inspect_on_reload == event_data.get("domain"):
-                    return True
-                return False
+                return self.inspect_on_reload == event_data.get("domain")
 
             self.hass.bus.async_listen(
                 "call_service",

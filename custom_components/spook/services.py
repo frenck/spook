@@ -6,9 +6,8 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Generic, cast, final
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, final
 
-from typing_extensions import TypeVar
 import voluptuous as vol
 
 from homeassistant.core import (
