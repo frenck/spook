@@ -21,7 +21,7 @@ jobs:
       - name: 🏗 Install MyST
         run: npm install -g mystmd
 
-      - name: 🚀 Build documenation
+      - name: 🚀 Build documentation
         working-directory: ./documentation
         run: myst build --html
 

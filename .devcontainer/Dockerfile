@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/devcontainers/base:debian
+FROM mcr.microsoft.com/devcontainers/python:3.13
 
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 

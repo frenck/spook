@@ -2,17 +2,9 @@
   "name": "Spook development environment",
   "dockerFile": "./Dockerfile",
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {
-      "installDirectlyFromGitHubRelease": true,
-      "version": "latest"
-    },
-    "ghcr.io/devcontainers/features/node:1": {
-      "nodeGypDependencies": false,
-      "version": "lts"
-    },
-    "ghcr.io/schlich/devcontainer-features/rye:1": {
-      "uv": true
-    }
+    "ghcr.io/devcontainers/features/github-cli:1": {},
+    "ghcr.io/devcontainers/features/node:1": {},
+    "ghcr.io/va-h/devcontainers-features/uv:1": {}
   },
   "forwardPorts": [8123, 3000],
   "portsAttributes": {
@@ -30,11 +22,10 @@
     }
   },
   "runArgs": ["-e", "GIT_EDITOR=code --wait"],
-  "onCreateCommand": "rye config --set-bool behavior.use-uv=true && npm install -g mystmd",
-  "updateContentCommand": "rye sync",
+  "onCreateCommand": "npm install -g mystmd",
+  "updateContentCommand": "uv sync --extra cli && uv run pre-commit install",
   "containerEnv": {
-    "DEVCONTAINER": "1",
-    "RYE_HOME": "/home/vscode/.rye"
+    "DEVCONTAINER": "1"
   },
   "remoteUser": "vscode",
   "customizations": {
