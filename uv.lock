@@ -1,4 +1,5 @@
 version = 1
+revision = 1
 requires-python = ">=3.13"
 
 [[package]]
@@ -312,18 +313,18 @@ name = "bleak"
 version = "0.22.3"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
-    { name = "dbus-fast", marker = "platform_system == 'Linux'" },
-    { name = "pyobjc-core", marker = "platform_system == 'Darwin'" },
-    { name = "pyobjc-framework-corebluetooth", marker = "platform_system == 'Darwin'" },
-    { name = "pyobjc-framework-libdispatch", marker = "platform_system == 'Darwin'" },
-    { name = "winrt-runtime", marker = "platform_system == 'Windows'" },
-    { name = "winrt-windows-devices-bluetooth", marker = "platform_system == 'Windows'" },
-    { name = "winrt-windows-devices-bluetooth-advertisement", marker = "platform_system == 'Windows'" },
-    { name = "winrt-windows-devices-bluetooth-genericattributeprofile", marker = "platform_system == 'Windows'" },
-    { name = "winrt-windows-devices-enumeration", marker = "platform_system == 'Windows'" },
-    { name = "winrt-windows-foundation", marker = "platform_system == 'Windows'" },
-    { name = "winrt-windows-foundation-collections", marker = "platform_system == 'Windows'" },
-    { name = "winrt-windows-storage-streams", marker = "platform_system == 'Windows'" },
+    { name = "dbus-fast", marker = "sys_platform == 'linux'" },
+    { name = "pyobjc-core", marker = "sys_platform == 'darwin'" },
+    { name = "pyobjc-framework-corebluetooth", marker = "sys_platform == 'darwin'" },
+    { name = "pyobjc-framework-libdispatch", marker = "sys_platform == 'darwin'" },
+    { name = "winrt-runtime", marker = "sys_platform == 'win32'" },
+    { name = "winrt-windows-devices-bluetooth", marker = "sys_platform == 'win32'" },
+    { name = "winrt-windows-devices-bluetooth-advertisement", marker = "sys_platform == 'win32'" },
+    { name = "winrt-windows-devices-bluetooth-genericattributeprofile", marker = "sys_platform == 'win32'" },
+    { name = "winrt-windows-devices-enumeration", marker = "sys_platform == 'win32'" },
+    { name = "winrt-windows-foundation", marker = "sys_platform == 'win32'" },
+    { name = "winrt-windows-foundation-collections", marker = "sys_platform == 'win32'" },
+    { name = "winrt-windows-storage-streams", marker = "sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/fb/96/15750b50c0018338e2cce30de939130971ebfdf4f9d6d56c960f5657daad/bleak-0.22.3.tar.gz", hash = "sha256:3149c3c19657e457727aa53d9d6aeb89658495822cd240afd8aeca4dd09c045c", size = 122339 }
 wheels = [
@@ -336,8 +337,8 @@ version = "3.9.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "bleak" },
-    { name = "bluetooth-adapters", marker = "platform_system == 'Linux'" },
-    { name = "dbus-fast", marker = "platform_system == 'Linux'" },
+    { name = "bluetooth-adapters", marker = "sys_platform == 'linux'" },
+    { name = "dbus-fast", marker = "sys_platform == 'linux'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/27/af/09820adb3c221ecdcf5973db23f5dc27927023898d5f745255af7983299d/bleak_retry_connector-3.9.0.tar.gz", hash = "sha256:5c772298b86bcd3b46a57b16cdd9aa5fca9434ebcf87d72493af94e4f4ca2a6e", size = 15909 }
 wheels = [
@@ -351,7 +352,7 @@ source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "aiooui" },
     { name = "bleak" },
-    { name = "dbus-fast", marker = "platform_system == 'Linux'" },
+    { name = "dbus-fast", marker = "sys_platform == 'linux'" },
     { name = "uart-devices" },
     { name = "usb-devices" },
 ]
