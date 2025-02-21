@@ -24,7 +24,7 @@ jobs:
           python-version: ${{ env.DEFAULT_PYTHON }}
 
       - name: 🏗 Install dependencies
-        run: uv sync --extra cli --frozen --dev
+        run: uv sync --frozen --dev
 
       - name: 🚀 Run pylint
         run: uv run pre-commit run pylint --all-files
