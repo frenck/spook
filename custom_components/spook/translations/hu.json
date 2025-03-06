@@ -169,36 +169,72 @@
         "name": "Távirányító"
       }
     },
-    "button": {
-      "repairs_ignore_all": {
-        "name": "Összes mellőzése"
-      },
-      "homeassistant_reload": {
-        "name": "Újratöltés"
-      },
-      "homeassistant_restart": {
-        "name": "Újraindítás"
-      },
-      "repairs_unignore_all": {
-        "name": "Összes mellőzés visszavonása"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "event_type": {
-            "state": {
-              "update": "A probléma frissítve",
-              "create": "Létrehozott probléma",
-              "remove": "A probléma eltávolítva"
-            }
-          },
-          "domain": {
-            "name": "Probléma létrehozója"
-          },
-          "issue_id": {
-            "name": "Probléma azonosítója"
-          }
+    "issues": {
+        "lovelace_unknown_entity_references": {
+            "title": "Ismeretlen entitásokra hivatkozik: {dashboard}",
+            "description": "Spook talált egy kísértetet 👻 az egyik vezérlőpulton:\n\n[{dashboard}]({edit})\n\nEz a vezérlőpult hivatkozik a következő entitásokra, amelyek ismeretlenek a Home Assistant számára:\n\n{entities}\n\nHogy ezt a hibát kijavítsd, [edit the dashboard] ({edit}), és távolítsd el a nem létező entitásokat."
+        },
+        "integration_unknown_source": {
+            "description": "Spook talált egy kísértetet 👻 az egyik Riemann-integrál segéd entitásban:\n\n{helper} (`{entity_id}`)\n\nEz a segítőnek van egy olyan forrás entitása, amely ismeretlen a Home Assistant számára:\n\n`{source}`\n\nHogy kijavítsd ezt a hibát, szerkeszd a segéd entitást, és állítsd be a forrás entitást (vagy távolítsa el a segéd entitást), és indítsd újra a Home Assistant-ot.",
+            "title": "Ismeretlen forrás: {helper}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spook talált egy kísértetet 👻 az egyik automatizmusban:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEz az automatizálás a következő eszközökre hivatkozik, amelyek ismeretlenek a Home Assistant számára:\n\n{devices}\n\nA hiba kijavítása érdekében [edit the automation]({edit}), és távolítsd el a nem létező eszközöket.",
+            "title": "Ismeretlen eszközökre hivatkozik: {automation}"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "title": "{title}",
+                        "description": "{description}"
+                    }
+                }
+            },
+            "title": "{title}"
+        },
+        "switch_as_x_unknown_source": {
+            "title": "Ismeretlen forrás: {helper}",
+            "description": "Spook talált egy kísértetet 👻 az egyik \"Kapcsoló mint más eszköz\" segéd entitásban:\n\n{helper} (`{entity_id}`)\n\nEnnek a segédnek van egy olyan forrás entitása, amely ismeretlen a Home Assistant számára:\n\n`{source}`\n\nHogy megold ezt a hibát, szerkeszd a segédet, és állítsd be a forrás entitást (vagy távolítsd el a segédet), és indítsd újra a Home Assistant-ot."
+        },
+        "script_unknown_device_references": {
+            "title": "Ismeretlen eszközökre hivatkozik: {script}",
+            "description": "Spook talált egy kísértetet 👻 az egyik szkriptben\n\n[{script}]({edit}) (`{entity_id}`)\n\nEz a szkript hivatkozik a következő eszközökre, amelyek ismeretlenek a Home Assistant számára:\n\n{devices}\n\nA hiba kijavítása érdekében [edit the script]({edit}), és távolítsd el a nem létező eszközöket."
+        },
+        "script_unknown_area_references": {
+            "description": "Spook talált egy kísértetet 👻 az egyik szkriptben\n\n[{script}]({edit}) (`{entity_id}`)\n\nEz a szkript a következő területekre hivatkozik, amelyek ismeretlenek a Home Assistant számára:\n\n{areas}\n\nEnnek a hibának a kijavításához [edit the script]({edit}) és távolítsd e nem létező területeket.",
+            "title": "Ismeretlen területekre hivatkozik: {script}"
+        },
+        "automation_unknown_area_references": {
+            "title": "Ismeretlen területekre hivatkozik: {automation}",
+            "description": "Spook talált egy kísértetet 👻 az egyik automatizmusban:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEz az automatizmus a következő területekre hivatkozik, amelyek ismeretlenek a Home Assistant számára:\n\n{areas}\n\nEnnek a hibának a kijavítása érdekében [edit the automation]({edit}), és távolítsa el a nem létező területeket."
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "Annak érdekében, hogy Spook befejezze a beállítást, Home Assistant-ot újraindul.",
+                        "title": "Újraindítás szükséges"
+                    }
+                }
+            },
+            "title": "Újraindítás szükséges"
+        },
+        "script_unknown_entity_references": {
+            "title": "Ismeretlen entitásokra hivatkozik: {script}",
+            "description": "Spook talált egy kísértetet 👻 az egyik szkriptben\n\n[{script}]({edit}) (`{entity_id}`)\n\nEz a szkript hivatkozik az alábbi entitásokra, amelyek ismeretlenek a Home Assistant számára:\n\n{entities}\n\nHogy ezt a hibát megold, [edit the script]({edit}), és távolítsd el a nem létező entitásokat."
+        },
+        "automation_unknown_entity_references": {
+            "title": "Ismeretlen entitásokra hivatkozik: {automation}",
+            "description": "Spook talált egy kísértetet 👻 az egyik automatizmusban:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEz az automatizmus hivatkozik az alábbi entitásokra, amelyek ismeretlenek a Home Assistant számára:\n\n{entities}\n\nEnnek a hibának a kijavítása érdekében [edit the automation]({edit}), és távolítsd el a nem létező entitásokat."
+        },
+        "group_unknown_members": {
+            "title": "Ismeretlen csoporttagok: {group}",
+            "description": "Spook talált egy kísértetet 👻 az egyik csoportban!\n\n{group} (`{entity_id}`)\n\nEnnek a csoportnak a következő tagjai ismeretlenek a Home Assistant számára:\n\n{entities}\n\nHogy javítsd ezt a hibát, szerkeszd a csoportot, és távolítsd el a nem létező entitásokat, majd indítsd újra a Home Assistant-ot."
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook talált egy kísértetet 👻 az egyik jelenetben\n\n[{scene}]({edit})\n\nEz a jelenet hivatkozik a következő entitásokra, amelyek ismeretlenek a Home Assistant számára:\n\n{entities}\n\n\nHogy ezt a hibát kijavítsd, [edit the scene]({edit}) és távolítsd el az ismeretlen entitásokat.",
+            "title": "Ismeretlen entitásokra hivatkozik: {scene}"
         }
       }
     }

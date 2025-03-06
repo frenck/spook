@@ -1,1 +1,40 @@
-{}
+{
+    "config": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "entity_id": "Lähteolem",
+                    "hide_source": "Peida lähteolem",
+                    "name": "Nimi"
+                },
+                "title": "Pööra ümber"
+            },
+            "switch": {
+                "data": {
+                    "hide_source": "Peida lähteolem",
+                    "name": "Nimi",
+                    "entity_id": "Lähteolem"
+                },
+                "title": "Pööra ümber"
+            },
+            "user": {
+                "description": "See abimees võimaldab olemi käitumist ümber pöörata. Näiteks pöörake binaarandurite ja lülitite avatud/suletud või sisse/välja.",
+                "title": "Pööra ümber",
+                "menu_options": {
+                    "binary_sensor": "Binaaranduri ümberpööramine",
+                    "switch": "Lüliti ümberpööramine"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "entity_id": "Lähteolem",
+                    "hide_source": "Peida lähteolem"
+                }
+            }
+        }
+    }
+}
