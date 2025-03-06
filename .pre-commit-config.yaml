@@ -8,14 +8,14 @@ repos:
         types: [python]
         entry: uv run ruff check --fix
         require_serial: true
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
       - id: ruff-format
         name: 🐶 Ruff Formatter
         language: system
         types: [python]
         entry: uv run ruff format
         require_serial: true
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
       - id: check-json
         name: Check JSON files
         language: system
@@ -46,7 +46,7 @@ repos:
         language: system
         types: [text]
         entry: uv run end-of-file-fixer
-        stages: [commit, push, manual]
+        stages: [pre-commit, pre-push, manual]
       - id: no-commit-to-branch
         name: 🛑 Don't commit to main branch
         language: system
