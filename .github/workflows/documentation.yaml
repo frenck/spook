@@ -14,14 +14,14 @@ jobs:
         uses: actions/checkout@v4.2.2
 
       - name: 🏗 Set up Node.js
-        uses: actions/setup-node@v4.1.0
+        uses: actions/setup-node@v4.2.0
         with:
           node-version-file: "documentation/.nvmrc"
 
       - name: 🏗 Install MyST
         run: npm install -g mystmd
 
-      - name: 🚀 Build documenation
+      - name: 🚀 Build documentation
         working-directory: ./documentation
         run: myst build --html
 

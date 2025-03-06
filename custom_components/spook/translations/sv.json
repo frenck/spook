@@ -36,7 +36,7 @@
                 "name": "Områden"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Alarm kontrollpanel"
+                "name": "Larmkontrollpaneler"
             },
             "homeassistant_automation": {
                 "name": "Automatiseringar"
@@ -45,7 +45,7 @@
                 "name": "Kameror"
             },
             "homeassistant_cover": {
-                "name": "Gardiner"
+                "name": "Skydd"
             },
             "homeassistant_datetime": {
                 "name": "Datum/tider"
@@ -60,13 +60,13 @@
                 "name": "Entiteter"
             },
             "homeassistant_input_button": {
-                "name": "Inmatning knappar"
+                "name": "Inmatningsknappar"
             },
             "homeassistant_input_datetime": {
-                "name": "inmatning datum/tid"
+                "name": "Inmatning datum/tid"
             },
             "homeassistant_input_number": {
-                "name": "inmatning nummer"
+                "name": "Inmatning nummer"
             },
             "homeassistant_input_boolean": {
                 "name": "Inmatning av boolean"
@@ -75,7 +75,7 @@
                 "name": "Fjärrkontroller"
             },
             "homeassistant_persistent_notification": {
-                "name": "Beständigt meddelande"
+                "name": "Beständiga aviseringar"
             },
             "homeassistant_scene": {
                 "name": "Scener"
@@ -99,7 +99,7 @@
                 "name": "Tider"
             },
             "homeassistant_tts": {
-                "name": "Text-till tal"
+                "name": "Text-till-tal"
             },
             "homeassistant_update": {
                 "name": "Uppdatering"
@@ -120,16 +120,16 @@
                 "name": "Luftkvalitet"
             },
             "homeassistant_binary_sensor": {
-                "name": "Binary sensorer"
+                "name": "Binära sensorer"
             },
             "homeassistant_calendar": {
-                "name": "Kalender"
+                "name": "Kalendrar"
             },
             "homeassistant_climate": {
                 "name": "Klimat"
             },
             "homeassistant_custom_component": {
-                "name": "Anpassade integreringar"
+                "name": "Anpassade integrationer"
             },
             "homeassistant_device": {
                 "name": "Enheter"
@@ -138,10 +138,10 @@
                 "name": "Bilder"
             },
             "homeassistant_input_select": {
-                "name": "inmatning val"
+                "name": "Inmatning val"
             },
             "homeassistant_input_text": {
-                "name": "inmatning text"
+                "name": "Inmatning text"
             },
             "homeassistant_humidifier": {
                 "name": "Luftfuktare"
@@ -183,7 +183,7 @@
                 "name": "Ignorerad"
             },
             "repairs_active_issues": {
-                "name": "Aktiv"
+                "name": "Aktiva"
             },
             "repairs_total_issues": {
                 "name": "Totalt"
@@ -191,10 +191,10 @@
         },
         "switch": {
             "cloud_google_report_state": {
-                "name": "Google Assistant status"
+                "name": "Google Assistant tillståndsrapportering"
             },
             "cloud_alexa_report_state": {
-                "name": "Alexa status"
+                "name": "Alexa tillståndsrapportering"
             },
             "cloud_remote": {
                 "name": "Fjärrstyrning"
@@ -214,7 +214,7 @@
                         "name": "Utfärda utgivare"
                     },
                     "issue_id": {
-                        "name": "Problem ID"
+                        "name": "Problem-ID"
                     }
                 }
             }
@@ -327,5 +327,83 @@
             "title": "Okänd källa: {helper}",
             "description": "Spook har hittat ett spöke i dina helpers för utility meters👻\n\nMedan  den svävade runt hittade Sppok följande helper:\n\nhelper} (`{entity_id}`)\n\nDenna helper har källor som är okända för Home Assistant:\n\n`{source}`\n\n\nFör att åtgärda detta fel behöver du editera denna helper och plcoka bort kpsterna eller hela helpern  och starta om Home Assistant.\n\nSpook 👻 din polare."
         }
+      }
     }
+  },
+  "issues": {
+    "automation_unknown_area_references": {
+      "title": "Okända områden som används i: {automation}",
+      "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{areas}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
+    },
+    "automation_unknown_device_references": {
+      "title": "Okända enheter som används i: {automation}",
+      "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{devices}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
+    },
+    "automation_unknown_entity_references": {
+      "title": "Okända enheter som används i: {automation}",
+      "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han kontrollerade, så hittade Spook  följande fel automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda  felet, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
+    },
+    "group_unknown_members": {
+      "title": "Okända gruppmedlemmar i: {group}",
+      "description": "Spook har hittat ett fel i dina grupper 👻\n\nMedan han sökte, hittade Spook  följande grupp:\n\n{group} (`{entity_id}`)\n\nDen här gruppen har medlemmar som är okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta  fel, redigera gruppen, ta bort användningen av dessa icke-existerande enheter och starta om Home Assistant.\n\nSpook 👻 Inte din homie."
+    },
+    "integration_unknown_source": {
+      "description": "Spook har hittat ett fel  i din Riemann summa integral hjälpare 👻\nMedan han sökte, så hittade Spook följande hjälpare:\n{helper} (`{entity_id}`)\nDen här hjälparen har en källenhet som är okänd för Home Assistant:\n`{source}`\nFör att åtgärda detta fel, redigera hjälparen och justera källenheten (eller ta bort hjälparen) och starta om Home Assistant.\nSpook 👻 Inte din homie.",
+      "title": "Okänd källa: {helper}"
+    },
+    "script_unknown_area_references": {
+      "description": "Spook har hittat ett fel i dina  script 👻\n\nMedan han sökte, så hittade Spook följande manus:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript refererar till följande områden, som är okända för Home Assistant:\n\n{areas}\n\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie.",
+      "title": "Okända områden som används i: {script}"
+    },
+    "switch_as_x_unknown_source": {
+      "title": "Okänd källa: {helper}",
+      "description": "Spook har hittat ett fel i din Switch som X-hjälpare 👻\nMedan han sökte, så hittade Spook följande hjälpare:\n{helper} (`{entity_id}`)\nDen här hjälparen har en källväxlingsenhet okänd för Home Assistant:\n`{source}`\nFör att åtgärda detta fel, redigera hjälparen och justera källenheten (eller ta bort hjälparen) och starta om Home Assistant.\nSpook 👻 Inte din homie."
+    },
+    "user_issue": {
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "description": "{description}",
+            "title": "{title}"
+          }
+        }
+      },
+      "title": "{title}"
+    },
+    "lovelace_unknown_entity_references": {
+      "title": "Okända enheter som används i: {dashboard}",
+      "description": "Spook har hittat ett fel i din instrumentpanel 👻\n\nMedan han sökte, så hittade Spook följande instrumentpanel:\n\n[{dashboard}]({edit})\n\nDen här instrumentpanelen refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda felet, [redigera instrumentpanelen]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
+    },
+    "script_unknown_device_references": {
+      "title": "Okända enheter som används i: {script}",
+      "description": "Spook har hittat ett spöke i dina script 👻\n\nMedan han flöt runt, korsade Spook vägen med följande manus:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDet här skriptet refererar till följande enheter, som är okända för Home Assistant:\n\n{devices}\n\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
+    },
+    "script_unknown_entity_references": {
+      "title": "Okända enheter som används i: {script}",
+      "description": "Spook har hittat ett spöke i dina script 👻\n\nMedan han flöt runt, korsade Spook vägen med följande manus:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta fel, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Inte din homie."
+    },
+    "restart_required": {
+      "fix_flow": {
+        "step": {
+          "confirm_restart": {
+            "description": "För att Spook ska avslutas måste Home Assistant startas om.\n\nVälj lämna in för att starta om Home Assistant nu.",
+            "title": "Restart krävs"
+          }
+        }
+      },
+      "title": "Restart krävs"
+    },
+    "automation_unknown_service_references": {
+      "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedan han sökte, så hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden, som är okända för Home Assistant:\n\n{services}\n\n\n\nFör att åtgärda detta fel, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande områden.\n\nSpook 👻 Inte din homie."
+    },
+    "proximity_unknown_zone": {
+      "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan han sökte, hittade Spook  följande konfiguration för närhet:\n\n{group} (`{entity_id}`)\n\nDen här konfigurationen är baserad på en zon som är okänd för Home Assistant:\n\n`{zone}`\n\n\n\nFör att åtgärda detta  fel, eftersom du inte kan byta zon för en konfiguration för närhet, det enda valet är att ta bort denna konfiguration.\n\nSpook 👻 Inte din homie."
+    },
+    "proximity_unknown_tracked_entities": {
+      "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan han sökte, hittade Spook  följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen spårar personer som okänad för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta fel, e ändra konfigurationen och ta bort denna entitet/dessa entiteter.\n\nSpook 👻 Inte din homie."
+    },
+    "proximity_unknown_ignored_zones": {
+      "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedan han sökte, hittade Spook  följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen ignorerar zoner som är okända för Home Assistant:\n\n{zones}\n\n\n\nFör att åtgärda detta fel, ändra konfigurationen och ta bort denna zon/dessa zoner.\n\nSpook 👻 Inte din homie."
+    }
+  }
 }

@@ -295,21 +295,147 @@
             "title": "Ukjent kilde: {helper}"
         }
     },
-    "config": {
-        "step": {
-            "user": {
-                "description": "Leste du readme filen? Leste du lisensen? Er du helt sikker?"
-            },
-            "choice_restart": {
-                "menu_options": {
-                    "restart_now": "Omstart nå",
-                    "restart_later": "Omstart senere"
-                },
-                "description": "For at Spook skal fullføre oppsett, må Home Assistant startes om.\n\nVil du starte om Home Assistant nå?"
+    "button": {
+      "repairs_ignore_all": {
+        "name": "Ignorer alle"
+      },
+      "homeassistant_reload": {
+        "name": "Last inn på nytt"
+      },
+      "homeassistant_restart": {
+        "name": "Omstart"
+      },
+      "repairs_unignore_all": {
+        "name": "Ikke ignorer alle"
+      }
+    },
+    "event": {
+      "repairs_event": {
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "update": "Hendelse oppdatert",
+              "create": "Hendelse laget",
+              "remove": "Hendelse fjernet"
             }
-        },
-        "abort": {
-            "already_spooked": "Ja... vel... nei. K, takk, ha det!"
+          },
+          "domain": {
+            "name": "Hendelse oppretter"
+          },
+          "issue_id": {
+            "name": "Hendelse ID"
+          }
         }
+      }
     }
+  },
+  "issues": {
+    "automation_unknown_device_references": {
+      "description": "Spook har funnet et spøkelse i automatiseringene dine 👻\n\nMens han fløt rundt, krysset Spook banen med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatiseringen refererer til følgende enheter, som er ukjent for Home Assistant:\n\n{devices}\n\n\n\nFor å fikse denne feilen, [rediger automatiseringen]({edit}) og fjern bruken av disse ikke-eksisterende enhetene.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjent enhet brukt i: {automation}"
+    },
+    "restart_required": {
+      "fix_flow": {
+        "step": {
+          "confirm_restart": {
+            "description": "For at Spook 👻 skal fullføre oppsett, må Home Assistant startes om.\n\nBruk send inn om du starte om Home Assistant nå?",
+            "title": "Omstart påkrevd"
+          }
+        }
+      },
+      "title": "Omstart påkrevd"
+    },
+    "automation_unknown_area_references": {
+      "description": "Spook har funnet et spøkelse i automatiseringene dine 👻\n\nMens han fløt rundt, krysset Spook banen med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatiseringen refererer til følgende områder, som er ukjent for Home Assistant:\n\n{areas}\n\n\n\nFor å fikse denne feilen, [rediger automatiseringen]({edit}) og fjern bruken av disse ikke-eksisterende områdene.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjent område brukt i: {automation}"
+    },
+    "user_issue": {
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "description": "{description}",
+            "title": "{title}"
+          }
+        }
+      },
+      "title": "{title}"
+    },
+    "automation_unknown_entity_references": {
+      "description": "Spook har funnet et spøkelse i automatiseringene dine 👻\n\nMens han fløt rundt, krysset Spook banen med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatiseringen refererer til følgende entiteter, som er ukjent for Home Assistant:\n\n{entities}\n\n\n\nFor å fikse denne feilen, [rediger automatiseringen]({edit}) og fjern bruken av disse ikke-eksisterende entitetene.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjent entitet brukt i: {automation}"
+    },
+    "group_unknown_members": {
+      "title": "Ukjente gruppe medlemmer i: {group}",
+      "description": "Spook har funnet et spøkelse i gruppene dine 👻\n\nMens han fløt rundt, krysset Spook banen med følgende gruppe:\n\n[{group}]({edit})\n\nDenne gruppen har entiteter som er ukjent for Home Assistant:\n\n{entities}\n\n\n\nFor å fikse denne feilen, endre gruppen og fjern bruken av disse ikke-eksisterende entiteter.\n\nSpook 👻 Ikke din homie."
+    },
+    "integration_unknown_source": {
+      "title": "Ukjent kilde brukt i: {helper}",
+      "description": "Spook har funnet et spøkelse i dine Riemann sum integral hjelpere👻\n\nMens han fløt rundt, krysset Spook banen med følgende hjelper:\n\n[{helper}]({edit})\n\nDenne hjelperen har en kilde som er ukjent for Home Assistant:\n\n{source}\n\n\n\nFor å fikse denne feilen, endre hjelperen og fiks eller fjern bruken av denne ikke-eksisterende kilden.\n\nSpook 👻 Ikke din homie."
+    },
+    "lovelace_unknown_entity_references": {
+      "title": "Ukjent entitet brukt i: {dashboard}",
+      "description": "Spook har funnet et spøkelse i automatiseringene dine 👻\n\nMens han fløt rundt, krysset Spook banen med følgende dashbord:\n\n[{dashboard}]({edit})\n\nDenne automatiseringen refererer til følgende entiteter, som er ukjent for Home Assistant:\n\n{entities}\n\n\n\nFor å fikse denne feilen, [endre dashbordet]({edit}) og fjern bruken av disse ikke-eksisterende entitetene.\n\nSpook 👻 Ikke din homie."
+    },
+    "scene_unknown_entity_references": {
+      "title": "Ukjent entitet brukt i: {scene}",
+      "description": "Spook har funnet et spøkelse i dine scener 👻\n\nMens han fløt rundt, krysset Spook banen med følgende scene:\n\n[{scene}]({edit})\n\nDenne scenen har entiteter som er ukjent for Home Assistant:\n\n{entities}\n\n\n\nFor å fikse denne feilen, [endre scenen]({edit}) og fjern bruken av ikke-eksisterende entiteter.\n\nSpook 👻 Ikke din homie."
+    },
+    "script_unknown_area_references": {
+      "title": "Ukjent område brukt i: {script}",
+      "description": "Spook har funnet et spøkelse i dine skript 👻\n\nMens han fløt rundt, krysset Spook banen med følgende scene:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette skriptet har entiteter som er ukjent for Home Assistant:\n\n{areas}\n\n\n\nFor å fikse denne feilen, [endre skriptet]({edit}) og fjern bruken av ikke-eksisterende entiteter.\n\nSpook 👻 Ikke din homie."
+    },
+    "script_unknown_device_references": {
+      "title": "Ukjent enhet brukt i: {script}",
+      "description": "Spook har funnet et spøkelse i dine skript 👻\n\nMens han fløt rundt, krysset Spook banen med følgende scene:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette skriptet har enheter som er ukjent for Home Assistant:\n\n{devices}\n\n\n\nFor å fikse denne feilen, [endre skriptet]({edit}) og fjern bruken av ikke-eksisterende enheter.\n\nSpook 👻 Ikke din homie."
+    },
+    "script_unknown_entity_references": {
+      "title": "Ukjent entitet brukt i: {script}",
+      "description": "Spook har funnet et spøkelse i dine skript 👻\n\nMens han fløt rundt, krysset Spook banen med følgende scene:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette skriptet har entiteter som er ukjent for Home Assistant:\n\n{entities}\n\n\n\nFor å fikse denne feilen, [endre skriptet]({edit}) og fjern bruken av ikke-eksisterende entiteter.\n\nSpook 👻 Ikke din homie."
+    },
+    "switch_as_x_unknown_source": {
+      "title": "Ukjent kilde brukt i: {helper}",
+      "description": "Spook har funnet et spøkelse i dine bryter som X hjelpere 👻\n\nMens han fløt rundt, krysset Spook banen med følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen bruker en bryter som er ukjent for Home Assistant:\n\n`{source}`\n\n\n\nFor å fikse denne feilen, endre helperen til å bruke en annen bryter (eller fjern hjelperen) og start om Home Assistant.\n\nSpook 👻 Ikke din homie."
+    },
+    "automation_unknown_service_references": {
+      "title": "Ukjente tjenester brukt i: {automation}",
+      "description": "Spook har funnet et spøkelse i automatiseringene dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatiseringen refererer til følgende tjenester, som er ukjente for Home Assistant:\n\n{services}\n\nFor å fikse denne feilen, [rediger automatiseringen]({edit}) og fjern bruken av disse ikke-eksisterende tjenestene.\n\nSpook 👻 Ikke din homie."
+    },
+    "proximity_unknown_zone": {
+      "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen er basert på en sone som er ukjent for Home Assistant:\n\n`{zone}`\n\nFor å fikse denne feilen, siden du ikke kan endre sonen til en nærhetskonfigurasjon, er det eneste alternativet å fjerne denne spesifikke nærhetsintegreringsinstansen.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjent sone: {zone}"
+    },
+    "proximity_unknown_ignored_zones": {
+      "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen ignorerer soner som er ukjente for Home Assistant:\n\n{zones}\n\nFor å fikse denne feilen, rediger konfigurasjonen og fjern denne/disse sonene.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjente ignorerte soner: {name}"
+    },
+    "proximity_unknown_tracked_entities": {
+      "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen sporer personer eller enheter som er ukjente for Home Assistant:\n\n{entities}\n\nFor å fikse denne feilen, rediger konfigurasjonen og fjern denne/disse enhetene.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjente sporede enheter: {name}"
+    },
+    "trend_unknown_source": {
+      "description": "Spook har funnet et spøkelse i trendhjelperne dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen har en kildeentitet som er ukjent for Home Assistant:\n\n`{source}`\n\nFor å fikse denne feilen, rediger hjelperen og juster kildeentiteten (eller fjern hjelperen) og start Home Assistant på nytt.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjent kilde: {helper}"
+    },
+    "utility_meter_unknown_source": {
+      "description": "Spook har funnet et spøkelse i hjelperne for nyttemålere dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen har en kildeentitet som er ukjent for Home Assistant:\n\n`{source}`\n\nFor å fikse denne feilen, rediger hjelperen og juster kildeentiteten (eller fjern hjelperen) og start Home Assistant på nytt.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjent kilde: {helper}"
+    }
+  },
+  "config": {
+    "step": {
+      "user": {
+        "description": "Leste du readme filen? Leste du lisensen? Er du helt sikker?"
+      },
+      "choice_restart": {
+        "menu_options": {
+          "restart_now": "Omstart nå",
+          "restart_later": "Omstart senere"
+        },
+        "description": "For at Spook skal fullføre oppsett, må Home Assistant startes om.\n\nVil du starte om Home Assistant nå?"
+      }
+    },
+    "abort": {
+      "already_spooked": "Ja... vel... nei. K, takk, ha det!"
+    }
+  }
 }
