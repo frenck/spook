@@ -13,7 +13,7 @@ Spook uses a couple of licenses for different parts of its sources. Our main lic
 
 # MIT License
 
-Copyright © 2023-2024 Franck Nijhof
+Copyright © 2023-2025 Franck Nijhof
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
