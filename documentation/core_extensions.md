@@ -26,7 +26,7 @@ Programmatically enable/disable any device in Home Assistant by performing an ac
 :::{card} Entity management
 :footer: 📚 [Learn more](entities.md)
 
-Automate entity control with actions: hide/unhide, enable/disable, list, and delete orphaned (database) entities.
+Automate entity control with actions: hide/unhide, enable/disable, rename, list, and delete orphaned (database) entities.
 
 :::
 
