@@ -231,7 +231,7 @@
         },
         "automation_unknown_entity_references": {
             "description": "Spook har hittat ett fel i dina automatiseringar 👻\n\nMedans det svävade runt, så hittade Spook  följande fel automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda  felet, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Din polare.",
-            "title": "Okända enheter används i: {automation}"
+            "title": "Okända entiteter används i: {automation}"
         },
         "automation_unknown_floor_references": {
             "description": "Spook har hittat ett spöke i dina automationer 👻\n\nMedans det svävade runt, korsade Spook väg med följande automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automation hänvisar till följande våningsplan, som är okända för Home Assistant:\n\n{floors}\n\n\nFör att reparera detta felet, [ändra automationen]({edit}) och ta bort användningen av dessa icke-existerande våningsplan.\n\nSpook 👻 Din polare.",
@@ -255,7 +255,7 @@
         },
         "lovelace_unknown_entity_references": {
             "description": "Spook har hittat ett fel i din instrumentpanel 👻\n\nMedans det svävade runt, så hittade Spook följande instrumentpanel:\n\n[{dashboard}]({edit})\n\nDen här instrumentpanelen refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda felet, [redigera instrumentpanelen]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Din polare..",
-            "title": "Okända enheter används i: {dashboard}"
+            "title": "Okända entiteter används i: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
             "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedans det svävade runt, hittade Spook  följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen ignorerar zoner som är okända för Home Assistant:\n\n{zones}\n\n\n\nFör att åtgärda detta fel, ändra konfigurationen och ta bort denna zon/dessa zoner.\n\nSpook 👻 Din polare.",
@@ -263,7 +263,7 @@
         },
         "proximity_unknown_tracked_entities": {
             "description": "Spook har hittat ett spöke i din proximitykonfiguration 👻\n\nMedan Spook svävade runt den hittade fäljande  proximitykonfiguration:\n\n{name}\n\nDen här konfigurationen spårar personer eller enheter som okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda felet så behöver du ändra konfigurationen och ta bort enheten eller enheterna som är problematiska.\n\nSpook 👻 Din polare.",
-            "title": "Okända spårade enheter: {name}"
+            "title": "Okända spårade entiteter: {name}"
         },
         "proximity_unknown_zone": {
             "description": "Spook har hittat ett fel i din konfiguration för närhet 👻\n\nMedans det svävade runt, hittade Spook  följande konfiguration för närhet:\n\n{name}\n\nDen här konfigurationen är baserad på en zon som är okänd för Home Assistant:\n\n`{zone}`\n\n\n\nEftersom du inte kan byta zon för en närhetskonfiguration så är enda möjligheten för att lösa problemet, att ta bort denna konfiguration.\n\nSpook 👻 Din polare.",
@@ -273,7 +273,7 @@
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "description": "För att Spook 👻 ska avsluta installationen så måste Home Assistant startas om.\n\nVälj skicka för att starta om Home Assistant nu.",
+                        "description": "För att Spook 👻 ska färdigställa installationen så måste Home Assistant startas om.\n\nVälj bekräfta för att starta om Home Assistant nu.",
                         "title": "Omstart krävs"
                     }
                 }
@@ -294,7 +294,7 @@
         },
         "script_unknown_entity_references": {
             "description": "Spook har hittat ett spöke i dina skript 👻\n\nMedans det svävade runt, korsade Spook vägen med följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript refererar till följande enheter, som är okända för Home Assistant:\n\n{entities}\n\n\n\nFör att åtgärda detta problemet, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande enheter.\n\nSpook 👻 Din polare.",
-            "title": "Okända enheter som används i: {script}"
+            "title": "Okända entiteter används i: {script}"
         },
         "script_unknown_floor_references": {
             "description": "Spook har hittat ett spöke i dina skripts 👻\n\nMedans det svävade runt, korsade Spook väg med följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDenna skript hänvisar till följande våningsplan, som är okända för Home Assistant:\n\n{floors}\n\n\nFör att reparera detta felet, [ändra skriptet]({edit}) och ta bort användningen av dessa icke-existerande våningsplan.\n\nSpook 👻 Din polare.",
