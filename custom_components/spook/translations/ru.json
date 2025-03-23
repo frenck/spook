@@ -11,7 +11,7 @@
                 "name": "Отслеживание устройств"
             },
             "homeassistant_light": {
-                "name": "Свет"
+                "name": "Освещение"
             },
             "homeassistant_input_number": {
                 "name": "Число входов"
@@ -23,7 +23,7 @@
                 "name": "Покрытия"
             },
             "homeassistant_area": {
-                "name": "Области"
+                "name": "Зоны"
             },
             "homeassistant_datetime": {
                 "name": "Дата/время"
@@ -35,7 +35,7 @@
                 "name": "Выключатели"
             },
             "homeassistant_tts": {
-                "name": "Текст для речи"
+                "name": "Текст в речь"
             },
             "homeassistant_text": {
                 "name": "Тексты"
@@ -86,10 +86,10 @@
                 "name": "Климат"
             },
             "homeassistant_person": {
-                "name": "Лица"
+                "name": "Люди"
             },
             "homeassistant_stt": {
-                "name": "Речь-текст"
+                "name": "Речь в текст"
             },
             "homeassistant_image": {
                 "name": "Изображения"
@@ -113,7 +113,7 @@
                 "name": "Активный"
             },
             "homeassistant_remote": {
-                "name": "Удаленность"
+                "name": "Пульты"
             },
             "homeassistant_device": {
                 "name": "Устройства"
@@ -137,7 +137,7 @@
                 "name": "Панели управления"
             },
             "repairs_total_issues": {
-                "name": "Итого"
+                "name": "Всего"
             },
             "homeassistant_calendar": {
                 "name": "Календари"
@@ -152,7 +152,7 @@
                 "name": "Интеграция"
             },
             "homeassistant_time": {
-                "name": "Times"
+                "name": "Время"
             },
             "homeassistant_media_player": {
                 "name": "Медиаплееры"
@@ -177,10 +177,10 @@
                 "name": "Перезагрузить"
             },
             "homeassistant_restart": {
-                "name": "Restart"
+                "name": "Перезапустить"
             },
             "repairs_unignore_all": {
-                "name": "Игнорировать все"
+                "name": "Не игнорировать все"
             }
         },
         "event": {
@@ -188,16 +188,16 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "update": "Обновленная информация",
-                            "create": "Создание",
-                            "remove": "Исключено"
+                            "update": "Проблема обновлена",
+                            "create": "Проблема создана",
+                            "remove": "Проблема удалена"
                         }
                     },
                     "domain": {
-                        "name": "Эмитент"
+                        "name": "Инициатор проблемы"
                     },
                     "issue_id": {
-                        "name": "ID"
+                        "name": "ID проблемы"
                     }
                 }
             }
@@ -213,7 +213,7 @@
             },
             "choice_restart": {
                 "menu_options": {
-                    "restart_now": "Перезагрузка",
+                    "restart_now": "Перезапустить сейчас",
                     "restart_later": "Перезапустить позже"
                 },
                 "description": "Чтобы Spook закончил настройку, Home Assistant необходимо перезапустить.\n\nВы хотите перезапустить Home Assistant?"
