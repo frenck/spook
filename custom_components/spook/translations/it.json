@@ -6,12 +6,158 @@
         "step": {
             "choice_restart": {
                 "menu_options": {
-                    "restart_later": "Riavviare più tardi",
+                    "restart_later": "Riavvia più tardi",
                     "restart_now": "Riavvia ora"
-                }
+                },
+                "description": "Per permettere a Spook di finire il setup, Home Assistant deve essere riavviato.\n\nVuoi riavviare Home Assistant adesso?"
             },
             "user": {
                 "description": "Hai letto il leggimi? Hai letto la licenza? Sei davvero sicuro?"
+            }
+        }
+    },
+    "entity": {
+        "button": {
+            "homeassistant_reload": {
+                "name": "Ricarica"
+            },
+            "homeassistant_restart": {
+                "name": "Riavvia"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignora tutto"
+            }
+        },
+        "sensor": {
+            "homeassistant_area": {
+                "name": "Aree"
+            },
+            "homeassistant_automation": {
+                "name": "Automazioni"
+            },
+            "homeassistant_climate": {
+                "name": "Climatizzatori"
+            },
+            "homeassistant_remote": {
+                "name": "Telecomandi"
+            },
+            "homeassistant_scene": {
+                "name": "Scenari"
+            },
+            "homeassistant_sensor": {
+                "name": "Sensori"
+            },
+            "homeassistant_calendar": {
+                "name": "Calendari"
+            },
+            "homeassistant_button": {
+                "name": "Pulsanti"
+            },
+            "homeassistant_device": {
+                "name": "Dispositivi"
+            },
+            "homeassistant_entities": {
+                "name": "Entità"
+            },
+            "homeassistant_fan": {
+                "name": "Ventole"
+            },
+            "homeassistant_humidifier": {
+                "name": "Umidificatori"
+            },
+            "homeassistant_image": {
+                "name": "Immagini"
+            },
+            "homeassistant_custom_component": {
+                "name": "Integrazioni personalizzate"
+            },
+            "homeassistant_air_quality": {
+                "name": "Qualità dell'aria"
+            },
+            "homeassistant_date": {
+                "name": "Date"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Tracciamento dispositivi"
+            },
+            "homeassistant_person": {
+                "name": "Persone"
+            },
+            "homeassistant_weather": {
+                "name": "Meteo"
+            },
+            "homeassistant_integration": {
+                "name": "Integrazioni"
+            },
+            "homeassistant_number": {
+                "name": "Numeri"
+            },
+            "homeassistant_light": {
+                "name": "Luci"
+            },
+            "repairs_ignored_issues": {
+                "name": "Ignorato"
+            },
+            "homeassistant_script": {
+                "name": "Scripts"
+            },
+            "homeassistant_camera": {
+                "name": "Videocamere"
+            },
+            "homeassistant_datetime": {
+                "name": "Data/Ora"
+            },
+            "homeassistant_lock": {
+                "name": "Serrature"
+            },
+            "homeassistant_media_player": {
+                "name": "Media players"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Anomalia creata",
+                            "remove": "Anomalia rimossa",
+                            "update": "Anomalia aggiornata"
+                        }
+                    },
+                    "domain": {
+                        "name": "Fonte anomalia"
+                    },
+                    "issue_id": {
+                        "name": "ID Anomalia"
+                    }
+                }
+            }
+        },
+        "switch": {
+            "cloud_remote": {
+                "name": "Telecomando"
+            }
+        }
+    },
+    "issues": {
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{descrizione}"
+                    }
+                }
+            }
+        },
+        "restart_required": {
+            "title": "Riavvio richiesto",
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "Riavvio richiesto",
+                        "description": "Per permettere a Spook 👻 di finire il setup, Home Assistant deve essere riavviato.\n\nSeleziona Submit per riavviare Home Assistant adesso."
+                    }
+                }
             }
         }
     }
