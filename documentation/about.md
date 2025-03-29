@@ -37,8 +37,6 @@ For example, Spook will add new features to existing {term}`actions <action>` th
 
 Spook will also add new {term}`entities <entity>` to existing integration you use in your Home Assistant instance to provide more data points to monitor and control. For example, it will add entities to control and monitor your {term}`Home Assistant Cloud` connection.
 
-For our most advanced users, Spook adds new {term}`template functions <template function>` to the {term}`template engine <template>` of Home Assistant. Making some of the most advanced templating possible, but also has functions that just make your life easier.
-
 Finally, Spook will constantly float around in your Home Assistant, and if it finds potential issues along the way, it will report them to you. For example, if you are using a non-existing entity in your automations, Spook will let you know by raising an issue on your {term}`repairs dashboard <repairs>`.
 
 Spook 👻 will extend your Home Assistant instance with a huge set of scary powerful tools. 🛠️

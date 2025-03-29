@@ -25,17 +25,6 @@ parts:
       - file: devices
       - file: entities
       - file: devices_entities
-      - file: template_engine
-        sections:
-          - file: template_functions/flatten
-          - file: template_functions/md5
-          - file: template_functions/fnmatch
-          - file: template_functions/fnmatch_filter
-          - file: template_functions/sha1
-          - file: template_functions/sha256
-          - file: template_functions/sha512
-          - file: template_functions/shuffle
-          - file: template_functions/typeof
       - file: misc
 
   - caption: Enhanced integrations
@@ -70,7 +59,6 @@ parts:
     chapters:
       - file: actions
       - file: blueprints
-      - file: template_functions
       - file: glossary
 
   - caption: About the project

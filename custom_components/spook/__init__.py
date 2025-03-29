@@ -19,9 +19,7 @@ from homeassistant.helpers import issue_registry as ir
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .repairs import SpookRepairManager
 from .services import SpookServiceManager
-from .templating import SpookTemplateFunctionManager
 from .util import (
-    async_ensure_template_environments_exists,
     async_forward_setup_entry,
     link_sub_integrations,
     unlink_sub_integrations,
@@ -77,16 +75,8 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             translation_key="restart_required",
         )
 
-    # Ensure template environments exists
-    async_ensure_template_environments_exists(hass)
-
     # Forward async_setup_entry to ectoplasms
     await async_forward_setup_entry(hass, entry)
-
-    # Set up templating
-    templating = SpookTemplateFunctionManager(hass)
-    await templating.async_setup()
-    entry.async_on_unload(templating.async_on_unload)
 
     # Set up services
     services = SpookServiceManager(hass)
