@@ -45,14 +45,6 @@ Spook adds a bunch of devices and entities to Home Assistant that provide inform
 
 :::
 
-:::{card} Template engine
-:footer: 📚 [Learn more](template_engine.md)
-
-Home Assistant's templating engine might be the most powerful feature of Home Assistant, and Spook is adding even more on top of it.
-Bring out your Jinja2 skills!
-
-:::
-
 :::{card} Miscellaneous
 :footer: 📚 [Learn more](misc.md)
 
