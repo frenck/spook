@@ -157,6 +157,151 @@
             "repairs_total_issues": {
                 "name": "Celkom"
             }
+        },
+        "button": {
+            "homeassistant_reload": {
+                "name": "Znovu načítať"
+            },
+            "homeassistant_restart": {
+                "name": "Reštart"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignorovať všetko"
+            },
+            "repairs_unignore_all": {
+                "name": "Neignore všetky"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Správy o stave Alexa"
+            },
+            "cloud_google_report_state": {
+                "name": "Správa stavu Google Assistant"
+            },
+            "cloud_remote": {
+                "name": "Diaľkové"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Problém vytvorený",
+                            "remove": "Chyba odstránená",
+                            "update": "Aktualizácia problému"
+                        }
+                    },
+                    "issue_id": {
+                        "name": "ID problému"
+                    }
+                }
+            }
+        }
+    },
+    "config": {
+        "abort": {
+            "already_spooked": "Jo... no. K, thx, bye!"
+        },
+        "step": {
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Reštartovať teraz",
+                    "restart_later": "Reštartujte neskôr"
+                },
+                "description": "Aby Spook dokončil nastavenie, musí sa reštartovať Home Assistant.\n\nChcete teraz reštartovať Home Assistant?"
+            },
+            "user": {
+                "description": "Čítali ste readme? Čítali ste licenciu? Si naozaj istý?"
+            }
+        }
+    },
+    "issues": {
+        "automation_unknown_area_references": {
+            "title": "Neznáme oblasti používané v: {automation}",
+            "description": "Spook našiel ducha vo vašich automatizáciách 👻\n\nZatiaľ čo plával okolo, Spook prekročil cestu s nasledujúcou automatizáciou:\n\n[{automation}]({edit}) (ententity_id}`)\n\nTáto automatizácia odkazuje na nasledujúce oblasti, ktoré nie sú známe Home Assistant:\n\n{areas}\n\n\n\nAk chcete opraviť túto chybu, [edit automatizáciu]({edit}) a odstrániť používanie týchto neexistujúcich oblastí.\n\nSpook 👻 Tvoj homie."
+        },
+        "automation_unknown_entity_references": {
+            "title": "Neznáme entity používané v: {automation}"
+        },
+        "group_unknown_members": {
+            "title": "Neznámi členovia skupiny v: {group}"
+        },
+        "switch_as_x_unknown_source": {
+            "title": "Neznámy zdroj: {helper}"
+        },
+        "integration_unknown_source": {
+            "title": "Neznámy zdroj: {helper}"
+        },
+        "lovelace_unknown_entity_references": {
+            "title": "Neznáme entity používané v: {dashboard}"
+        },
+        "automation_unknown_device_references": {
+            "title": "Neznáme zariadenia používané v: {automation}"
+        },
+        "scene_unknown_entity_references": {
+            "title": "Neznáme entity používané v: {scene}"
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "Reštart požadovaný"
+                    }
+                }
+            },
+            "title": "Reštart požadovaný"
+        },
+        "user_issue": {
+            "title": "{title}",
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{description}",
+                        "title": "{title}"
+                    }
+                }
+            }
+        },
+        "script_unknown_device_references": {
+            "title": "Neznáme zariadenia používané v: {script}"
+        },
+        "script_unknown_floor_references": {
+            "title": "Neznáme podlahy používané v: {script}"
+        },
+        "script_unknown_label_references": {
+            "title": "Neznáme štítky používané v: {script}"
+        },
+        "automation_unknown_floor_references": {
+            "title": "Neznáme podlahy používané v: {automation}"
+        },
+        "automation_unknown_label_references": {
+            "title": "Neznáme štítky používané v: {automation}"
+        },
+        "automation_unknown_service_references": {
+            "title": "Neznáme akcie používané v: {automation}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "title": "Neznáme ignorované zóny: {name}"
+        },
+        "proximity_unknown_zone": {
+            "title": "Neznáma zóna: {zone}"
+        },
+        "proximity_unknown_tracked_entities": {
+            "title": "Neznáme sledované entity: {name}"
+        },
+        "script_unknown_area_references": {
+            "title": "Neznáme oblasti používané v: {script}"
+        },
+        "script_unknown_entity_references": {
+            "title": "Neznáme entity používané v: {script}"
+        },
+        "utility_meter_unknown_source": {
+            "title": "Neznámy zdroj: {helper}"
+        },
+        "trend_unknown_source": {
+            "title": "Neznámy zdroj: {helper}"
         }
     }
 }
