@@ -1,51 +1,51 @@
 {
-  "config": {
-    "step": {
-      "switch": {
-        "data": {
-          "name": "Navn",
-          "hide_source": "Skjul kilde entitet",
-          "entity_id": "Kilde entitet"
-        },
-        "title": "Vend om 👻"
-      },
-      "binary_sensor": {
-        "data": {
-          "hide_source": "Skjul kilde entitet",
-          "name": "Navn",
-          "entity_id": "Kilde entitet"
-        },
-        "title": "Vend om 👻"
-      },
-      "user": {
-        "description": "Denne hjælper tillader at omvende logikken for en entitet. Fx. omvende åben/luk eller til/fra på binære sensorer og afbrydere.",
-        "menu_options": {
-          "binary_sensor": "Vend en binær sensor om",
-          "switch": "Vend en afbryder om"
-        },
-        "title": "Vend om 👻"
-      }
-    }
-  },
-  "options": {
-    "step": {
-      "binary_sensor": {
-        "data": {
-          "entity_id": "Kilde entitet",
-          "name": "Navn",
-          "hide_source": "Skjul kilde entitet"
-        },
-        "title": "Vend om 👻"
-      },
-      "switch": {
-        "data": {
-          "entity_id": "Kilde entitet",
-          "name": "Navn",
-          "hide_source": "Skjul kilde entitet"
-        },
-        "title": "Vend om 👻"
-      }
-    }
-  },
-  "title": "Vend om 👻"
+    "config": {
+        "step": {
+            "switch": {
+                "data": {
+                    "name": "Navn",
+                    "hide_source": "Skjul kildeenhed",
+                    "entity_id": "Kildeenhed"
+                },
+                "title": "Invertér 👻"
+            },
+            "binary_sensor": {
+                "data": {
+                    "hide_source": "Skjul kildeenhed",
+                    "name": "Navn",
+                    "entity_id": "Kildeenhed"
+                },
+                "title": "Invertér 👻"
+            },
+            "user": {
+                "description": "Denne hjælper tillader dig at inverterer logikken for en enhed. Fx. fra åben til lukket eller fra tændt til slukket på binære sensorer og afbrydere.",
+                "menu_options": {
+                    "binary_sensor": "Inverter en binær sensor",
+                    "switch": "Inverter en afbryder"
+                },
+                "title": "Inverter 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "entity_id": "Kildeenhed",
+                    "name": "Navn",
+                    "hide_source": "Skjul kildeenhed"
+                },
+                "title": "Inverter 👻"
+            },
+            "switch": {
+                "data": {
+                    "entity_id": "Kildeenhed",
+                    "name": "Navn",
+                    "hide_source": "Skjul kildeenhed"
+                },
+                "title": "Inverter 👻"
+            }
+        }
+    },
+    "title": "Inverter 👻"
 }
