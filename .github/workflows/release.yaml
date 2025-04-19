@@ -42,7 +42,7 @@ jobs:
           inputs: ${{ github.workspace }}/custom_components/spook/spook.zip
 
       - name: ⬆️ Upload zip to release
-        uses: softprops/action-gh-release@v2.2.1
+        uses: softprops/action-gh-release@v2.2.2
         with:
           files: ${{ github.workspace }}/custom_components/spook/spook.zip
 
