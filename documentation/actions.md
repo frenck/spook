@@ -124,6 +124,12 @@ Do the math... this action does the reverse of [](#entity-hide). _#reveal_
 
 `homeassistant.unhide_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity), [documentation](entities#unhide-an-entity) 📚
 
+## Entity: Rename
+
+This action can be used to rename an entity on the fly. _#LookMaNewName_
+
+`homeassistant.rename_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.rename_entity), [documentation](entities#rename-an-entity) 📚
+
 ## Entity: Update ID
 
 This action can be used to update the ID of an entity on the fly. _#secret_
