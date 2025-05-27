@@ -65,7 +65,10 @@ class SpookRepair(AbstractSpookRepair):
         """Extract entity references from blueprint trigger inputs."""
         entities = set()
 
-        if not hasattr(entity, "referenced_blueprint") or not entity.referenced_blueprint:
+        if (
+            not hasattr(entity, "referenced_blueprint")
+            or not entity.referenced_blueprint
+        ):
             return entities
 
         config = getattr(entity, "_config", None)
@@ -117,12 +120,10 @@ class SpookRepair(AbstractSpookRepair):
             referenced_entities.update(blueprint_entities)
 
             # Check for unknown entities
-            if (
-                unknown_entities := async_filter_known_entity_ids(
-                    self.hass,
-                    entity_ids=referenced_entities,
-                    known_entity_ids=known_entity_ids,
-                )
+            if unknown_entities := async_filter_known_entity_ids(
+                self.hass,
+                entity_ids=referenced_entities,
+                known_entity_ids=known_entity_ids,
             ):
                 self.async_create_issue(
                     issue_id=entity.entity_id,
