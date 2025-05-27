@@ -62,11 +62,11 @@ src = ["custom_components/spook"]
 [tool.ruff.lint]
 ignore = [
   "A005", # It is just wrong
-  "ANN101", # Self... explanatory
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
   "D203", # Conflicts with other rules
   "D213", # Conflicts with other rules
   "RUF012", # Just broken
+  "TC006", # Checks for unquoted type expressions in typing.cast() calls.
   "TID252", # Relative imports
 
   # Formatter conflicts

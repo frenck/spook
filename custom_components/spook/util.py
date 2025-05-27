@@ -29,7 +29,6 @@ from homeassistant.helpers import (
     floor_registry as fr,
     label_registry as lr,
 )
-from homeassistant.helpers.template import Template
 
 from .const import DOMAIN, LOGGER
 
@@ -133,34 +132,6 @@ def unlink_sub_integrations(hass: HomeAssistant) -> None:
         dest = Path(hass.config.config_dir) / "custom_components" / manifest.parent.name
         if dest.exists():
             dest.unlink()
-
-
-@callback
-def async_ensure_template_environments_exists(hass: HomeAssistant) -> None:
-    """Ensure default template environments exist.
-
-    Spook wants to patch the template environment to allow for custom filters.
-    To make this easier, we need to ensure the default template environments
-    exist before we patch them.
-    """
-    if "template.environment" not in hass.data:
-        template = Template("OMG Puppies!", hass)
-        # pylint: disable-next=protected-access
-        assert template._env  # noqa: SLF001, S101
-
-    if "template.environment_limited" not in hass.data:
-        template = Template("OMG Puppies!", hass)
-        # pylint: disable-next=protected-access
-        template._limited = True  # noqa: SLF001
-        # pylint: disable-next=protected-access
-        assert template._env  # noqa: SLF001, S101
-
-    if "template.environment_strict" not in hass.data:
-        template = Template("OMG Puppies!", hass)
-        # pylint: disable-next=protected-access
-        template._strict = True  # noqa: SLF001
-        # pylint: disable-next=protected-access
-        assert template._env  # noqa: SLF001, S101
 
 
 @callback
