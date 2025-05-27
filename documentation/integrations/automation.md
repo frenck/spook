@@ -54,12 +54,6 @@ Spook found an issue with an automation that is using a non-existing area.
 
 To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
 
-:::{attention} Known limitations
-:class: dropdown
-
-{term}`Templates <template>` in automations are not evaluated by Spook. That means that actions that target areas dynamically using a template, are not considered by Spook.
-:::
-
 ### Unknown referenced devices
 
 Automations are inspected for the use of devices. If an automation is using a device that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the device that is referenced but not found.
@@ -73,12 +67,6 @@ Spook found an issue with an automation that is using a non-existing device.
 ```
 
 To resolve the raised issue, you can either remove the reference to the non-existing device or fix the referenced device. Spook will automatically remove the repair issue once the issue is fixed.
-
-:::{attention} Known limitations
-:class: dropdown
-
-{term}`Templates <template>` in automations are not evaluated by Spook. That means that devices used in templates, are not considered by Spook.
-:::
 
 ### Unknown referenced entities
 
@@ -94,24 +82,11 @@ Spook found an issue with an automation that is using non-existing entities.
 
 To resolve the raised issue, you can either remove the reference to the non-existing entity ID or fix the referenced entity ID. Spook will automatically remove the repair issue once the issue is fixed.
 
-:::{attention} Known limitations
-:class: dropdown
-
-- {term}`Templates <template>` in automations are not evaluated by Spook. That means that entity IDs used in templates, or targets generated using templates, are not considered by Spook.
-- Comma separated lists of entity IDs are not taken into consideration by Spook. It is advisable to convert these to an actual list in your automations.
-  :::
-
 ### Unknown referenced actions
 
 Automations are inspected for the use of actions. If an automation is using a action that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the action that is referenced but not found.
 
 To resolve the raised issue, you can either remove the reference to the non-existing actions. Spook will automatically remove the repair issue once the issue is fixed.
-
-:::{attention} Known limitations
-:class: dropdown
-
-{term}`Templates <template>` in automations are not evaluated by Spook. That means that actions make using templates, are not considered by Spook.
-:::
 
 ## Features requests, ideas, and support
 

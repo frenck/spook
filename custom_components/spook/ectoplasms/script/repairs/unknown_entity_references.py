@@ -5,15 +5,17 @@ from __future__ import annotations
 from typing import Any
 
 from homeassistant.components import script
-from homeassistant.const import (
-    EVENT_COMPONENT_LOADED,
-)
+from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
-from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_entity_ids, async_get_all_entity_ids
+from ....util import (
+    async_extract_entities_from_config,  # Added
+    async_filter_known_entity_ids_with_templates,
+    async_get_all_entity_ids,
+    # is_template_string, # No longer needed directly here
+)
 
 
 def extract_entities_from_trigger_config(config: dict[str, Any] | list) -> set[str]:
@@ -45,6 +47,30 @@ def extract_entities_from_trigger_config(config: dict[str, Any] | list) -> set[s
             entities.update(extract_entities_from_trigger_config(value))
 
     return entities
+
+
+async def extract_template_entities_from_script_entity(entity: Any) -> set[str]:
+    """Extract entities from script configuration using Template analysis.
+
+    This function finds template strings in script configuration and creates
+    Template objects to extract entity references using Template.async_render_to_info().
+    This provides more comprehensive entity detection than regex-based parsing alone.
+    """
+    # Get the script configuration
+    config = None
+    if hasattr(entity, "script"):
+        # Try to get configuration safely
+        if hasattr(entity.script, "config"):
+            config = entity.script.config
+        elif hasattr(entity.script, "_config"):
+            # Fallback to _config if needed
+            config = getattr(entity.script, "_config", None)
+
+    if not config:
+        return set()
+
+    # Use the new utility function
+    return await async_extract_entities_from_config(entity.hass, config)
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -81,15 +107,10 @@ class SpookRepair(AbstractSpookRepair):
 
         input_config = blueprint_config["input"]
         # Look for inputs that might contain triggers (like discard_when)
-        for key, value in input_config.items():
+        for value in input_config.values():
             if isinstance(value, (dict, list)) and "trigger" in str(value):
                 trigger_entities = extract_entities_from_trigger_config(value)
                 if trigger_entities:
-                    LOGGER.debug(
-                        "Found entities in blueprint trigger input '%s': %s",
-                        key,
-                        trigger_entities,
-                    )
                     entities.update(trigger_entities)
 
         return entities
@@ -103,8 +124,6 @@ class SpookRepair(AbstractSpookRepair):
             DATA_INSTANCES
         ][self.domain]
 
-        LOGGER.debug("Spook is inspecting: %s", self.repair)
-
         known_entity_ids = async_get_all_entity_ids(self.hass, include_all_none=True)
 
         for entity in entity_component.entities:
@@ -113,16 +132,22 @@ class SpookRepair(AbstractSpookRepair):
                 continue
 
             # Get all referenced entities from the script
-            referenced_entities = set(entity.script.referenced_entities)
+            all_entities = set(entity.script.referenced_entities)
 
             # Check for blueprint trigger inputs
             blueprint_entities = self._get_blueprint_trigger_entities(entity)
-            referenced_entities.update(blueprint_entities)
+            all_entities.update(blueprint_entities)
+
+            # Extract entities from Template objects within the script entity
+            template_entities = await extract_template_entities_from_script_entity(
+                entity
+            )
+            all_entities.update(template_entities)
 
             # Check for unknown entities
-            if unknown_entities := async_filter_known_entity_ids(
+            if unknown_entities := await async_filter_known_entity_ids_with_templates(
                 self.hass,
-                entity_ids=referenced_entities,
+                entity_ids=all_entities,
                 known_entity_ids=known_entity_ids,
             ):
                 self.async_create_issue(
@@ -135,12 +160,4 @@ class SpookRepair(AbstractSpookRepair):
                         "edit": f"/config/script/edit/{entity.unique_id}",
                         "entity_id": entity.entity_id,
                     },
-                )
-                LOGGER.debug(
-                    (
-                        "Spook found unknown entities in %s and created an issue "
-                        "for it; Entities: %s",
-                    ),
-                    entity.entity_id,
-                    ", ".join(unknown_entities),
                 )
