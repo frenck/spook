@@ -98,7 +98,13 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 - {term}`Templates <template>` in script are not evaluated by Spook. That means that entity IDs used in templates, or targets generated using templates, are not considered by Spook.
 - Comma separated lists of entity IDs are not taken into consideration by Spook. It is advisable to convert these to an actual list in your scripts.
-  :::
+:::
+
+:::{tip} Blueprint trigger inputs
+:class: dropdown
+
+Spook also checks entity references in blueprint trigger inputs, such as those used in wait_for_trigger actions. This ensures that entities used in blueprint-based scripts are properly monitored.
+:::
 
 ## Features requests, ideas, and support
 
