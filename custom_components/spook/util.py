@@ -20,9 +20,14 @@ from homeassistant.const import (
     CONF_THEN,
     ENTITY_MATCH_ALL,
     ENTITY_MATCH_NONE,
+    EVENT_COMPONENT_LOADED,
+    EVENT_HOMEASSISTANT_START,
     Platform,
 )
-from homeassistant.core import callback, valid_entity_id
+from homeassistant.core import (
+    callback,
+    valid_entity_id,
+)
 from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import (
     area_registry as ar,
@@ -35,6 +40,15 @@ from homeassistant.helpers import (
 from homeassistant.helpers.template import Template
 
 from .const import DOMAIN, LOGGER
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable, Sequence
+    from types import ModuleType
+
+    from homeassistant.config_entries import ConfigEntry
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
 
 # Entity domains to ignore when filtering unknown entities
 IGNORED_ENTITY_DOMAINS = (
@@ -111,13 +125,103 @@ ENTITY_ID_TEMPLATE_PATTERNS = [
     rf"['\"]({_ENTITY_ID_PATTERN})['\"](?:\s*\|\s*(?:{'|'.join(_ENTITY_FUNCTIONS)}))",
 ]
 
-if TYPE_CHECKING:
-    from collections.abc import Iterable, Sequence
-    from types import ModuleType
+_CACHED_ALL_ENTITY_IDS: set[str] | None = None
+_UNSUB_CACHE_INVALIDATION: Callable[[], None] | None = None
 
-    from homeassistant.config_entries import ConfigEntry
-    from homeassistant.core import HomeAssistant
-    from homeassistant.helpers.entity_platform import AddEntitiesCallback
+
+@callback
+def _clear_all_entity_ids_cache(*_args: Any) -> None:
+    """Clear the cached set of all entity IDs."""
+    # pylint: disable-next=global-statement
+    global _CACHED_ALL_ENTITY_IDS  # noqa: PLW0603
+    LOGGER.debug("Clearing all_entity_ids cache.")
+    _CACHED_ALL_ENTITY_IDS = None
+
+
+def async_setup_all_entity_ids_cache_invalidation(
+    hass: HomeAssistant,
+) -> Callable[[], None]:
+    """Set up event listeners to invalidate the all_entity_ids cache.
+
+    Returns a callable to unsubscribe the listeners.
+    """
+    # pylint: disable-next=global-statement
+    global _UNSUB_CACHE_INVALIDATION  # noqa: PLW0603
+
+    if _UNSUB_CACHE_INVALIDATION is not None:
+        LOGGER.debug(
+            "Spook's entity ID cache invalidation already set up. Skipping.",
+        )
+        return _UNSUB_CACHE_INVALIDATION
+
+    LOGGER.debug("Setting up Spook's all_entity_ids cache invalidation listeners.")
+
+    # Listen for entity registry updates
+    unsub_registry_update = hass.bus.async_listen(
+        er.EVENT_ENTITY_REGISTRY_UPDATED, _clear_all_entity_ids_cache
+    )
+    # Listen for Home Assistant start to ensure cache is clear then
+    unsub_hass_start = hass.bus.async_listen_once(
+        EVENT_HOMEASSISTANT_START, _clear_all_entity_ids_cache
+    )
+    # Listen for components loading
+    unsub_component_loaded = hass.bus.async_listen(
+        EVENT_COMPONENT_LOADED, _clear_all_entity_ids_cache
+    )
+
+    # Perform an initial clear, just in case.
+    _clear_all_entity_ids_cache()
+
+    def _unsubscribe_listeners() -> None:
+        # pylint: disable-next=global-statement
+        global _UNSUB_CACHE_INVALIDATION  # noqa: PLW0603
+        LOGGER.debug(
+            "Unsubscribing from Spook's all_entity_ids cache invalidation listeners.",
+        )
+        unsub_registry_update()
+        unsub_hass_start()
+        unsub_component_loaded()
+        _UNSUB_CACHE_INVALIDATION = None  # Mark as unsubscribed
+
+    _UNSUB_CACHE_INVALIDATION = _unsubscribe_listeners
+    return _unsubscribe_listeners
+
+
+@callback
+def async_get_all_entity_ids(
+    hass: HomeAssistant, *, include_all_none: bool = False
+) -> set[str]:
+    """Return all entity IDs, known to Home Assistant, using a cache."""
+    # pylint: disable-next=global-statement
+    global _CACHED_ALL_ENTITY_IDS  # noqa: PLW0603
+
+    if _CACHED_ALL_ENTITY_IDS is None:
+        LOGGER.debug(
+            "Spook's all_entity_ids cache is empty, populating...",
+        )
+        entity_registry = er.async_get(hass)
+        entity_ids_from_registry = {
+            entity.entity_id for entity in entity_registry.entities.values()
+        }
+        entity_ids_from_states = hass.states.async_entity_ids()
+
+        combined_entity_ids = entity_ids_from_registry.union(entity_ids_from_states)
+
+        # Filter out ignored domains
+        _CACHED_ALL_ENTITY_IDS = {
+            entity_id
+            for entity_id in combined_entity_ids
+            if not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
+        }
+        LOGGER.debug(
+            "Spook's all_entity_ids cache populated with %s entities",
+            len(_CACHED_ALL_ENTITY_IDS),
+        )
+
+    # Return a copy from the cache, optionally adding ALL/NONE
+    if include_all_none:
+        return _CACHED_ALL_ENTITY_IDS.union({ENTITY_MATCH_ALL, ENTITY_MATCH_NONE})
+    return _CACHED_ALL_ENTITY_IDS.copy()
 
 
 async def async_forward_setup_entry(
@@ -253,23 +357,6 @@ def async_filter_known_device_ids(
         for device_id in device_ids - known_device_ids
         if device_id and isinstance(device_id, str)
     }
-
-
-@callback
-def async_get_all_entity_ids(
-    hass: HomeAssistant, *, include_all_none: bool = False
-) -> set[str]:
-    """Return all entity IDs, known to Home Assistant."""
-    entity_registry = er.async_get(hass)
-
-    entity_ids = {
-        entity.entity_id for entity in entity_registry.entities.values()
-    }.union(hass.states.async_entity_ids())
-
-    if include_all_none:
-        return entity_ids.union({ENTITY_MATCH_ALL, ENTITY_MATCH_NONE})
-
-    return entity_ids
 
 
 @callback

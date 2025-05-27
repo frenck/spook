@@ -21,6 +21,7 @@ from .repairs import SpookRepairManager
 from .services import SpookServiceManager
 from .util import (
     async_forward_setup_entry,
+    async_setup_all_entity_ids_cache_invalidation,
     link_sub_integrations,
     unlink_sub_integrations,
 )
@@ -98,6 +99,9 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Set up platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    # Set up the all entity ids cache invalidation
+    entry.async_on_unload(async_setup_all_entity_ids_cache_invalidation(hass))
 
     # Yay, we didn't got spooked!
     return True
