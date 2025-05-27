@@ -295,6 +295,8 @@ class SpookRepair(AbstractSpookRepair):
         config: dict[str, Any],
     ) -> set[str]:
         """Extract entities from mushroom chips."""
+        if not isinstance(config, dict):
+            return set()
         entities = self.__async_extract_common(config)
         if chip := config.get("chip"):
             entities.update(
