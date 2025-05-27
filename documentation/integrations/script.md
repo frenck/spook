@@ -100,12 +100,6 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 - Comma separated lists of entity IDs are not taken into consideration by Spook. It is advisable to convert these to an actual list in your scripts.
 :::
 
-:::{tip} Blueprint trigger inputs
-:class: dropdown
-
-Spook also checks entity references in blueprint trigger inputs, such as those used in wait_for_trigger actions. This ensures that entities used in blueprint-based scripts are properly monitored.
-:::
-
 ## Features requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
