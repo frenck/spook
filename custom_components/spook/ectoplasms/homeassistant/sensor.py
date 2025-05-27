@@ -36,12 +36,14 @@ from homeassistant.helpers import (
     device_registry as dr,
     entity_registry as er,
 )
+from homeassistant.helpers.event import async_call_later
 
 from ...entity import SpookEntityDescription
 from .entity import HomeAssistantSpookEntity
 
 if TYPE_CHECKING:
     from collections.abc import Callable
+    from datetime import datetime  # Moved datetime here
 
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -579,14 +581,25 @@ class HomeAssistantSpookSensorEntity(HomeAssistantSpookEntity, SensorEntity):
     """Spook sensor providig Home Asistant information."""
 
     entity_description: HomeAssistantSpookSensorEntityDescription
+    _unsub_debouncer: Callable[[], None] | None = None
 
     async def async_added_to_hass(self) -> None:
         """Register for sensor updates."""
 
         @callback
+        def _debounced_update(
+            _now: datetime | None = None,
+        ) -> None:
+            """Update state after debounce."""
+            self._unsub_debouncer = None
+            self.async_schedule_update_ha_state()
+
+        @callback
         def _update_state(_: Event) -> None:
             """Update state."""
-            self.async_schedule_update_ha_state()
+            if self._unsub_debouncer:
+                self._unsub_debouncer()
+            self._unsub_debouncer = async_call_later(self.hass, 5, _debounced_update)
 
         for event in self.entity_description.update_events:
             self.async_on_remove(self.hass.bus.async_listen(event, _update_state))
@@ -594,6 +607,13 @@ class HomeAssistantSpookSensorEntity(HomeAssistantSpookEntity, SensorEntity):
         self.async_on_remove(
             self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _update_state),
         )
+
+    async def async_will_remove_from_hass(self) -> None:
+        """Clean up debounce timer."""
+        if self._unsub_debouncer:
+            self._unsub_debouncer()
+            self._unsub_debouncer = None
+        await super().async_will_remove_from_hass()
 
     @property
     def native_value(self) -> int | None:
