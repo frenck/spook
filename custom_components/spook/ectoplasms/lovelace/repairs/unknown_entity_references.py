@@ -217,7 +217,6 @@ class SpookRepair(AbstractSpookRepair):
             for chip in chips:
                 entities.update(self.__async_extract_entities_from_mushroom_chip(chip))
 
-        # Visibility (fix for #866)
         visibility = config.get("visibility")
         if isinstance(visibility, list):
             for condition in visibility:
