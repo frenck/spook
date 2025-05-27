@@ -178,7 +178,8 @@ class SpookRepair(AbstractSpookRepair):
         return set()
 
     @callback
-    def __async_extract_entities_from_card(  # noqa: C901
+    # pylint: disable-next=too-many-branches
+    def __async_extract_entities_from_card(  # noqa: C901, PLR0912
         self,
         config: dict[str, Any],
     ) -> set[str]:
@@ -215,6 +216,14 @@ class SpookRepair(AbstractSpookRepair):
         if chips := config.get("chips"):
             for chip in chips:
                 entities.update(self.__async_extract_entities_from_mushroom_chip(chip))
+
+        visibility = config.get("visibility")
+        if isinstance(visibility, list):
+            for condition in visibility:
+                if isinstance(condition, dict):
+                    entities.update(
+                        self.__async_extract_entities_from_condition(condition)
+                    )
 
         return entities
 
@@ -276,6 +285,14 @@ class SpookRepair(AbstractSpookRepair):
         if elements := config.get("elements"):
             for element in elements:
                 entities.update(self.__async_extract_entities_from_element(element))
+
+        visibility = config.get("visibility")
+        if isinstance(visibility, list):
+            for condition in visibility:
+                if isinstance(condition, dict):
+                    entities.update(
+                        self.__async_extract_entities_from_condition(condition)
+                    )
 
         return entities
 
