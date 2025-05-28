@@ -27,6 +27,8 @@ from .util import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import Event, HomeAssistant
 
@@ -87,15 +89,30 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)
 
+    _ghost_busters_unsub: Callable[[], None] | None = None
+
     async def _ghost_busters(_: Event) -> None:
         """Send them in, time for some ghost chasing."""
         await repairs.async_setup()
         entry.async_on_unload(repairs.async_on_unload)
 
+    @callback
+    def _unsubscribe_ghost_busters() -> None:
+        """Unsubscribe the ghost busters listener."""
+        if _ghost_busters_unsub:
+            try:
+                _ghost_busters_unsub()
+            except ValueError:
+                LOGGER.debug(
+                    "Failed to unsubscribe _ghost_busters listener, "
+                    "it might have already been removed or never registered.",
+                )
+
     # Wait until Home Assistant is started, before doing repairs
-    entry.async_on_unload(
-        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _ghost_busters),
+    _ghost_busters_unsub = hass.bus.async_listen_once(
+        EVENT_HOMEASSISTANT_STARTED, _ghost_busters
     )
+    entry.async_on_unload(_unsubscribe_ghost_busters)
 
     # Set up platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
