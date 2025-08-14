@@ -323,6 +323,117 @@ data:
 
 :::
 
+### Add an alias to an entity
+
+This action can be used to add a alias to an entity.
+
+```{figure} ./images/entities/add_alias_to_entity.png
+:alt: Screenshot of the Home Assistant add alias to entity action in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Add an alias to an entity 👻
+* - {term}`Action name`
+  - `homeassistant.add_alias_to_entity`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_entity)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_entity)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity`
+  - {term}`string <string>`
+  - Yes
+  - `light.living_room_lights`
+* - `aliases`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `["Lounge lights", "Sitting area lights"]`
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.add_alias_to_entity
+data:
+  entity: light.living_room
+  aliases:
+    - "Lounge lights"
+    - "Sitting area lights"
+```
+
+:::
+
+### Gets aliases from an entity
+
+This action can be used to get the aliases of an entity.
+
+```{figure} ./images/entities/get_aliases_from_entity.png
+:alt: Screenshot of the Home Assistant get aliases from entity action in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Gets the alias from an entity 👻
+* - {term}`Action name`
+  - `homeassistant.get_alias_from_entity`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - Action response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.get_alias_from_entity)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.get_alias_from_entity)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity`
+  - {term}`string <string>`
+  - Yes
+  - `light.living_room_lights`
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.add_alias_to_entity
+data:
+  entity: light.living_room
+```
+
+:::
+
 ### Delete all orphaned entities
 
 Mass clean up your Home Assistant by deleting all orphaned entities in one go.

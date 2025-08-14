@@ -136,6 +136,18 @@ This action can be used to update the ID of an entity on the fly. _#secret_
 
 `homeassistant.hide_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys_id) 📚
 
+## Entity: Add Alias to Entity
+
+This action can be used to add a alias to an entity. _#aka_
+
+`homeassistant.add_alias_to_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_entity), [documentation](entities#add-an-alias-to-an-entity) 📚
+
+## Entity: Get Aliases of an Entity
+
+This action can be used to get the aliases of an entity. _#aka_
+
+`homeassistant.get_alias_from_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.get_alias_from_entity), [documentation](entities#get-aliases-from-an-entity) 📚
+
 ## Floors: Create a floor
 
 Instantly create a new floor in your home. _#StackItUp_
