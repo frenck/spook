@@ -329,7 +329,7 @@ The action supports comprehensive filtering by search terms, areas, devices, dom
 * - `label_id`
   - {term}`string <string>` | {term}`list of strings <list>`
   - No
-  - `["label-id-1", "label-id-2"]`
+  - `["security", "automation_controlled"]`
 * - `values`
   - {term}`string <string>` | {term}`list of strings <list>`
   - No
