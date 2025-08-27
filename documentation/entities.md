@@ -326,7 +326,7 @@ The action supports comprehensive filtering by search terms, areas, devices, dom
   - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - `["enabled", "available"]`
-* - `label_id`
+* - `labels`
   - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - `["security", "automation_controlled"]`
@@ -422,7 +422,7 @@ List entities with specific labels:
 :linenos:
 action: homeassistant.list_filtered_entities
 data:
-  label_id:
+  labels:
     - security
     - automation_controlled
   values:
