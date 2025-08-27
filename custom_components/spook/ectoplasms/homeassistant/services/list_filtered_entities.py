@@ -236,8 +236,15 @@ class SpookService(AbstractSpookService):
     def _get_entity_data(self, entity_entry: er.RegistryEntry) -> dict[str, Any]:
         """Get comprehensive entity data."""
         data: dict[str, Any] = {}
+        # Set name with fallback: original_name > friendly_name from state > entity_id
         if hasattr(entity_entry, "original_name") and entity_entry.original_name:
             data["name"] = entity_entry.original_name
+        else:
+            state = self.hass.states.get(entity_entry.entity_id)
+            if state and "friendly_name" in state.attributes:
+                data["name"] = state.attributes["friendly_name"]
+            else:
+                data["name"] = entity_entry.entity_id
         data["device_id"] = entity_entry.device_id
         device_registry = dr.async_get(self.hass)
         if (
