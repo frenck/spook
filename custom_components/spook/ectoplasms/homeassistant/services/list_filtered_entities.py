@@ -24,6 +24,7 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 MAX_ENTITIES_LIMIT = 50000
+DEFAULT_ENTITIES_LIMIT = 500
 
 
 class SpookService(AbstractSpookService):
@@ -168,8 +169,10 @@ class SpookService(AbstractSpookService):
         values = call.data.get("values", [])
         limit = call.data.get("limit")
 
-        # Apply safety cap
-        if limit is None or limit > MAX_ENTITIES_LIMIT:
+        # Default and cap
+        if limit is None:
+            limit = DEFAULT_ENTITIES_LIMIT
+        elif limit > MAX_ENTITIES_LIMIT:
             limit = MAX_ENTITIES_LIMIT
 
         filters = {
