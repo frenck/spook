@@ -16,7 +16,7 @@ from homeassistant.helpers import (
     label_registry as lr,
 )
 from homeassistant.helpers.service import _load_services_file, async_set_service_schema
-from homeassistant.loader import async_get_integration
+from homeassistant.loader import IntegrationNotFound, async_get_integration
 
 from ....services import AbstractSpookService
 
@@ -63,7 +63,7 @@ class SpookService(AbstractSpookService):
             integration = None
             try:
                 integration = await async_get_integration(self.hass, d)
-            except (LookupError, ValueError, RuntimeError):  # pragma: no cover
+            except IntegrationNotFound:  # pragma: no cover
                 integration = None
             if integration is not None and getattr(integration, "name", None):
                 label = integration.name
@@ -123,13 +123,10 @@ class SpookService(AbstractSpookService):
             platform = getattr(entry, "platform", None)
             if isinstance(platform, str) and platform:
                 domains.add(platform)
-        if hasattr(self.hass, "config_entries") and hasattr(
-            self.hass.config_entries, "async_entries"
-        ):
-            for cfg in self.hass.config_entries.async_entries():  # type: ignore[attr-defined]
-                dom = getattr(cfg, "domain", None)
-                if isinstance(dom, str) and dom:
-                    domains.add(dom)
+        for cfg in self.hass.config_entries.async_entries():
+            dom = getattr(cfg, "domain", None)
+            if isinstance(dom, str) and dom:
+                domains.add(dom)
         return domains
 
     def _inject_integration_options(
@@ -333,10 +330,9 @@ class SpookService(AbstractSpookService):
         if not entity_entry.config_entry_id:
             return None
 
-        config_entries = self.hass.config_entries
-        config_entry = None
-        if hasattr(config_entries, "async_get_entry"):
-            config_entry = config_entries.async_get_entry(entity_entry.config_entry_id)
+        config_entry = self.hass.config_entries.async_get_entry(
+            entity_entry.config_entry_id
+        )
 
         return config_entry.title if config_entry else None
 
@@ -538,14 +534,13 @@ class SpookService(AbstractSpookService):
         self, matching_entities: list[str | dict[str, Any]], limit: int
     ) -> ServiceResponse:
         """Format the final service response."""
-        if matching_entities and isinstance(matching_entities[0], dict):
-            dict_entities = [e for e in matching_entities if isinstance(e, dict)]
-            dict_entities.sort(key=lambda entity: str(entity.get("entity_id", "")))
-            matching_entities[:] = dict_entities
-        else:
-            string_entities = [e for e in matching_entities if isinstance(e, str)]
-            string_entities.sort()
-            matching_entities[:] = string_entities
+        if matching_entities:
+            if isinstance(matching_entities[0], dict):
+                matching_entities.sort(
+                    key=lambda entity: str(entity.get("entity_id", ""))
+                )
+            else:
+                matching_entities.sort()
 
         # Apply limit post-sort for deterministic results
         if limit is not None:
