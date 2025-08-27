@@ -152,8 +152,8 @@ class SpookService(AbstractSpookService):
     async def async_handle_service(self, call: ServiceCall) -> ServiceResponse:
         """Handle the service call."""
         filters, values, limit = self._parse_service_call(call)
-        matching_entities = self._find_matching_entities(filters, values, limit)
-        return self._format_response(matching_entities)
+        matching_entities = self._find_matching_entities(filters, values)
+        return self._format_response(matching_entities, limit)
 
     def _parse_service_call(
         self, call: ServiceCall
@@ -191,7 +191,6 @@ class SpookService(AbstractSpookService):
         self,
         filters: dict[str, Any],
         values: list[str],
-        limit: int,
     ) -> list[str | dict[str, Any]]:
         """Find entities matching the filter criteria."""
         entity_registry = er.async_get(self.hass)
@@ -205,8 +204,6 @@ class SpookService(AbstractSpookService):
             item = self._append_if_match(entity_entry, entity_data, filters, values)
             if item is not None:
                 matching_entities.append(item)
-                if len(matching_entities) >= limit:
-                    return matching_entities
 
         for state in self.hass.states.async_all():
             if state.entity_id in registry_entity_ids:
@@ -217,8 +214,6 @@ class SpookService(AbstractSpookService):
             item = self._append_if_match(entry, entity_data, filters, values)
             if item is not None:
                 matching_entities.append(item)
-                if len(matching_entities) >= limit:
-                    return matching_entities
 
         return matching_entities
 
@@ -540,7 +535,7 @@ class SpookService(AbstractSpookService):
         return result
 
     def _format_response(
-        self, matching_entities: list[str | dict[str, Any]]
+        self, matching_entities: list[str | dict[str, Any]], limit: int
     ) -> ServiceResponse:
         """Format the final service response."""
         if matching_entities and isinstance(matching_entities[0], dict):
@@ -551,6 +546,10 @@ class SpookService(AbstractSpookService):
             string_entities = [e for e in matching_entities if isinstance(e, str)]
             string_entities.sort()
             matching_entities[:] = string_entities
+
+        # Apply limit post-sort for deterministic results
+        if limit is not None:
+            matching_entities = matching_entities[:limit]
 
         return {
             "count": len(matching_entities),
