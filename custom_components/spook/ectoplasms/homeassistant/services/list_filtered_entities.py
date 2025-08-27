@@ -205,7 +205,7 @@ class SpookService(AbstractSpookService):
                 if len(matching_entities) >= limit:
                     return matching_entities
 
-        for state in list(self.hass.states.async_all()):
+        for state in self.hass.states.async_all():
             if state.entity_id in registry_entity_ids:
                 continue
 
