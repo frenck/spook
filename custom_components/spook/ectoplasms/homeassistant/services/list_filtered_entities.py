@@ -452,7 +452,8 @@ class SpookService(AbstractSpookService):
         integrations = filters.get("integrations")
         if integrations and entity_entry.platform not in integrations:
             return False
-        if labels_filter := filters.get("labels"):
+        labels_filter = filters.get("labels")
+        if labels_filter:
             entity_label_ids = {
                 label["label_id"] for label in entity_data.get("labels", [])
             }
