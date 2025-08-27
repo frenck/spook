@@ -339,13 +339,9 @@ class SpookService(AbstractSpookService):
             return None
 
         config_entries = self.hass.config_entries
+        config_entry = None
         if hasattr(config_entries, "async_get_entry"):
             config_entry = config_entries.async_get_entry(entity_entry.config_entry_id)
-        else:
-            # Fallback to private access if public method not available
-            config_entry = getattr(config_entries, "_entries", {}).get(
-                entity_entry.config_entry_id
-            )
 
         return config_entry.title if config_entry else None
 
