@@ -446,10 +446,9 @@ class SpookService(AbstractSpookService):
         devices = filters.get("devices")
         if devices and entity_data.get("device_id") not in devices:
             return False
-        if domains := filters.get("domains"):
-            entity_domain = entity_entry.entity_id.split(".", 1)[0]
-            if entity_domain not in domains:
-                return False
+        domains = filters.get("domains")
+        if domains and entity_entry.entity_id.split(".", 1)[0] not in domains:
+            return False
         integrations = filters.get("integrations")
         if integrations and entity_entry.platform not in integrations:
             return False
