@@ -326,10 +326,10 @@ The action supports comprehensive filtering by search terms, areas, devices, dom
   - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - `["enabled", "available"]`
-* - `labels`
+* - `label_id`
   - {term}`string <string>` | {term}`list of strings <list>`
   - No
-  - `["bedroom_lights", "security"]`
+  - `["label-id-1", "label-id-2"]`
 * - `values`
   - {term}`string <string>` | {term}`list of strings <list>`
   - No
@@ -340,23 +340,25 @@ The action supports comprehensive filtering by search terms, areas, devices, dom
   - `500`
 ```
 
-The `search` parameter searches across entity IDs, domains, integration names, display names, device names, area names, and label names. It supports both exact matches and regular expressions when the search term is enclosed in forward slashes (e.g., `/^light\./`).
+The `search` parameter searches across entity IDs, domains, integration names, display names, device names, area names, and label names. Matching is case-insensitive and based on substring containment.
 
 The `status` parameter accepts the following values:
+
 - `available`: Entity is available (not unavailable/unknown)
 - `unavailable`: Entity state is unavailable
 - `enabled`: Entity is enabled in the registry
 - `disabled`: Entity is disabled in the registry
 - `visible`: Entity is visible (not hidden)
 - `hidden`: Entity is hidden from UI
-- `unmanageable`: Entity cannot be managed (no registry entry)
-- `not_provided`: Entity exists but is not provided by any integration
+- `unmanageable`: Entity cannot be managed (state-only or read-only)
+- `not_provided`: Entity state is restored (no live provider)
 
 The `values` parameter controls what information is included in the response:
+
 - `name`: Entity's display name
 - `device`: Device name and ID (if applicable)
-- `area`: Area name and ID (if applicable) 
-- `integration`: Integration name and domain
+- `area`: Area name and ID (if applicable)
+- `integration`: Integration name
 - `status`: Current status (enabled/disabled, visible/hidden, available/unavailable)
 - `icon`: Entity's icon
 - `created`: Entity creation timestamp
@@ -376,7 +378,7 @@ Simple entity ID list:
 :linenos:
 action: homeassistant.list_filtered_entities
 data:
-  domains: 
+  domains:
     - light
     - switch
   areas: living_room
@@ -389,7 +391,7 @@ Detailed information for entities matching search criteria:
 action: homeassistant.list_filtered_entities
 data:
   search: "living room"
-  status: 
+  status:
     - enabled
     - available
   values:
