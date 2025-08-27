@@ -422,7 +422,7 @@ List entities with specific labels:
 :linenos:
 action: homeassistant.list_filtered_entities
 data:
-  labels:
+  label_id:
     - security
     - automation_controlled
   values:
