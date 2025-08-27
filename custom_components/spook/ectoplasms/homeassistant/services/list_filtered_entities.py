@@ -318,6 +318,8 @@ class SpookService(AbstractSpookService):
             status["available"] = True
         if state is not None and state.state == "unknown":
             status["unknown"] = True
+        if state is not None and state.state == "unavailable":
+            status["unavailable"] = True
         if state is not None:
             attrs = getattr(state, "attributes", None)
             if isinstance(attrs, dict) and attrs.get("restored", False):
@@ -362,6 +364,8 @@ class SpookService(AbstractSpookService):
 
         if state is not None and state.state == "unknown":
             status["unknown"] = True
+        if state is not None and state.state == "unavailable":
+            status["unavailable"] = True
         if state is not None:
             attrs = getattr(state, "attributes", None)
             if isinstance(attrs, dict) and attrs.get("restored", False):
@@ -415,7 +419,7 @@ class SpookService(AbstractSpookService):
             terms.append("hidden")
         if status.get("available"):
             terms.append("available")
-        else:
+        if status.get("unavailable"):
             terms.append("unavailable")
         return terms
 
@@ -481,7 +485,7 @@ class SpookService(AbstractSpookService):
         entity_status = entity_data["status"]
         status_checks = {
             "available": lambda s: s.get("available", False),
-            "unavailable": lambda s: not s.get("available", False),
+            "unavailable": lambda s: s.get("unavailable", False),
             "enabled": lambda s: not s.get("disabled_by"),
             "disabled": lambda s: bool(s.get("disabled_by")),
             "visible": lambda s: not s.get("hidden_by"),
