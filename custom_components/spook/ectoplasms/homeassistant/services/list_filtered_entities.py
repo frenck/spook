@@ -4,9 +4,9 @@ from __future__ import annotations
 
 from datetime import datetime
 from types import SimpleNamespace
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
-from homeassistant.components.homeassistant import DOMAIN
+from homeassistant.components.homeassistant.const import DOMAIN
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.core import Event, HomeAssistant, ServiceResponse, SupportsResponse
 from homeassistant.helpers import (
@@ -81,7 +81,8 @@ class SpookService(AbstractSpookService):
         services = await self.hass.async_add_executor_job(
             _load_services_file, self.hass, integration
         )
-        block = services.get("homeassistant_list_filtered_entities")
+        services_dict = cast(dict[str, Any], services)
+        block = services_dict.get("homeassistant_list_filtered_entities")
         return block if isinstance(block, dict) else None
 
     def _collect_live_domains(self) -> set[str]:
@@ -193,10 +194,19 @@ class SpookService(AbstractSpookService):
         entity_registry = er.async_get(self.hass)
         matching_entities: list[str | dict[str, Any]] = []
 
+        # Minimal flags to avoid unnecessary work
+        search_non_empty = bool(filters.get("search"))
+        need_labels = bool(filters.get("labels")) or ("labels" in values) or search_non_empty
+        need_integration = bool(filters.get("integrations")) or ("integration" in values) or search_non_empty
+
         registry_entity_ids: set[str] = set()
         for entity_entry in entity_registry.entities.values():
             registry_entity_ids.add(entity_entry.entity_id)
-            entity_data = self._get_entity_data(entity_entry)
+            entity_data = self._get_entity_data(
+                entity_entry,
+                need_labels=need_labels,
+                need_integration=need_integration,
+            )
 
             item = self._append_if_match(entity_entry, entity_data, filters, values)
             if item is not None:
@@ -233,8 +243,14 @@ class SpookService(AbstractSpookService):
             return self._build_entity_result(entity_entry, entity_data, values)
         return entity_entry.entity_id
 
-    def _get_entity_data(self, entity_entry: er.RegistryEntry) -> dict[str, Any]:
-        """Get comprehensive entity data."""
+    def _get_entity_data(
+        self,
+        entity_entry: er.RegistryEntry,
+        *,
+        need_labels: bool,
+        need_integration: bool,
+    ) -> dict[str, Any]:
+        """Get comprehensive entity data, with optional heavy fields."""
         data: dict[str, Any] = {}
         # Set name with fallback: original_name > friendly_name from state > entity_id
         if hasattr(entity_entry, "original_name") and entity_entry.original_name:
@@ -248,8 +264,10 @@ class SpookService(AbstractSpookService):
         data["device_id"] = entity_entry.device_id
         device_registry = dr.async_get(self.hass)
         if (
-            device := device_registry.async_get(entity_entry.device_id)
-        ) and device.name:
+            entity_entry.device_id
+            and (device := device_registry.async_get(entity_entry.device_id))
+            and device.name
+        ):
             data["device_name"] = device.name
         area_registry = ar.async_get(self.hass)
         area_id = entity_entry.area_id
@@ -261,7 +279,9 @@ class SpookService(AbstractSpookService):
         if area_id and (area := area_registry.async_get_area(area_id)):
             data["area_id"] = area.id
             data["area_name"] = area.name
-        data["integration_name"] = self._get_integration_name(entity_entry)
+        data["integration_name"] = (
+            self._get_integration_name(entity_entry) if need_integration else None
+        )
         data["status"] = self._get_status_info(entity_entry)
         data["icon"] = self._get_entity_icon(entity_entry)
         created_at = getattr(entity_entry, "created_at", None)
@@ -274,10 +294,10 @@ class SpookService(AbstractSpookService):
             modified_at.isoformat()
             if isinstance(modified_at, datetime)
             else modified_at
-        )
-        data["labels"] = self._get_entity_labels(entity_entry)
+    )
+    data["labels"] = self._get_entity_labels(entity_entry) if need_labels else []
 
-        return data
+    return data
 
     def _get_entity_labels(
         self, entity_entry: er.RegistryEntry
@@ -315,8 +335,6 @@ class SpookService(AbstractSpookService):
 
         if state is not None and state.state not in ("unavailable", "unknown"):
             status["available"] = True
-        if state is not None and state.state == "unknown":
-            status["unknown"] = True
         if state is not None and state.state == "unavailable":
             status["unavailable"] = True
         if state is not None:
@@ -344,30 +362,35 @@ class SpookService(AbstractSpookService):
         return config_entry.title if config_entry else None
 
     def _get_status_info(self, entity_entry: er.RegistryEntry) -> dict[str, Any]:
-        """Get status information for entity."""
-        state = self.hass.states.get(entity_entry.entity_id)
-        status = {}
+        """Get status information for entity with JSON-safe values."""
+        status: dict[str, Any] = {}
+
         if entity_entry.disabled_by:
-            status["disabled_by"] = entity_entry.disabled_by
-
+            status["disabled_by"] = self._coerce_status_value(entity_entry.disabled_by)
         if entity_entry.hidden_by:
-            status["hidden_by"] = entity_entry.hidden_by
+            status["hidden_by"] = self._coerce_status_value(entity_entry.hidden_by)
 
-        if state is not None and state.state not in ("unavailable", "unknown"):
+        state = self.hass.states.get(entity_entry.entity_id)
+        state_state = getattr(state, "state", None)
+        if state_state not in (None, "unavailable", "unknown"):
             status["available"] = True
-
-        if state is not None and state.state == "unknown":
-            status["unknown"] = True
-        if state is not None and state.state == "unavailable":
+        if state_state == "unavailable":
             status["unavailable"] = True
-        if state is not None:
-            attrs = getattr(state, "attributes", None)
-            if isinstance(attrs, dict) and attrs.get("restored", False):
-                status["not_provided"] = True
+
+        attrs = getattr(state, "attributes", None) if state is not None else None
+        if isinstance(attrs, dict) and attrs.get("restored", False):
+            status["not_provided"] = True
+
         if getattr(entity_entry, "readonly", False):
             status["unmanageable"] = True
 
         return status
+
+    @staticmethod
+    def _coerce_status_value(value: Any) -> str:
+        """Coerce enum-like values to JSON-safe strings."""
+        base = getattr(value, "value", value)
+        return str(base)
 
     def _get_entity_icon(self, entity_entry: er.RegistryEntry) -> str | None:
         """Get entity icon from registry (user-defined or integration default)."""
@@ -499,21 +522,21 @@ class SpookService(AbstractSpookService):
         values: list[str],
     ) -> dict[str, Any]:
         """Build entity result with requested values."""
-        result = {"entity_id": entity_entry.entity_id}
+        result: dict[str, Any] = {"entity_id": entity_entry.entity_id}
         value_mapping = {
             "name": lambda: entity_data.get("name"),
             "device": lambda: (
                 entity_data.get("device_id")
                 and {
-                    "device_id": entity_data["device_id"],
-                    "device_name": entity_data["device_name"],
+                    "device_id": entity_data.get("device_id"),
+                    "device_name": entity_data.get("device_name"),
                 }
             ),
             "area": lambda: (
                 entity_data.get("area_id")
                 and {
-                    "area_id": entity_data["area_id"],
-                    "area_name": entity_data["area_name"],
+                    "area_id": entity_data.get("area_id"),
+                    "area_name": entity_data.get("area_name"),
                 }
             ),
             "integration": lambda: {
@@ -531,7 +554,10 @@ class SpookService(AbstractSpookService):
                 data = value_mapping[value]()
                 if data is not None:
                     if isinstance(data, dict):
-                        result.update(data)
+                        if value == "status":
+                            result["status"] = data
+                        else:
+                            result.update(data)
                     else:
                         result[value] = data
 
@@ -544,16 +570,21 @@ class SpookService(AbstractSpookService):
         if matching_entities:
             if isinstance(matching_entities[0], dict):
                 matching_entities.sort(
-                    key=lambda entity: str(entity.get("entity_id", ""))
+                    key=lambda entity: str(
+                        cast(dict[str, Any], entity).get("entity_id", "")
+                    )
                 )
             else:
-                matching_entities.sort()
+                matching_entities.sort(key=str)
 
         # Apply limit post-sort for deterministic results
         if limit is not None:
             matching_entities = matching_entities[:limit]
 
-        return {
-            "count": len(matching_entities),
-            "entities": matching_entities,
-        }
+        return cast(
+            ServiceResponse,
+            {
+                "count": len(matching_entities),
+                "entities": matching_entities,
+            },
+        )
