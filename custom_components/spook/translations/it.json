@@ -112,6 +112,33 @@
             },
             "homeassistant_media_player": {
                 "name": "Media players"
+            },
+            "repairs_active_issues": {
+                "name": "Attivo"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Pannello controllo allarme"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Sensore binario"
+            },
+            "homeassistant_input_button": {
+                "name": "Pulsanti di input"
+            },
+            "homeassistant_siren": {
+                "name": "Sirene"
+            },
+            "homeassistant_stt": {
+                "name": "Speech-to-text"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Ingresso  Bouleano"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Ingresso Data/Ora"
+            },
+            "homeassistant_input_number": {
+                "name": "Ingresso numerico"
             }
         },
         "event": {
@@ -136,6 +163,12 @@
         "switch": {
             "cloud_remote": {
                 "name": "Telecomando"
+            },
+            "cloud_alexa_report_state": {
+                "name": "Segnalazione dello stato ad Alexa"
+            },
+            "cloud_google_report_state": {
+                "name": "Segnalazione dello stato all'assistente Google"
             }
         }
     },
@@ -159,6 +192,18 @@
                     }
                 }
             }
+        },
+        "automation_unknown_service_references": {
+            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre vagava qua e là, Spook ha incrociato la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento alle seguenti azioni, che non sono riconosciute da Home Assistant:\n\n{services}\n\nPer risolvere questo errore, modifica l'automazione ed elimina l'utilizzo di queste azioni inesistenti.\n\nSpook 👻 Il tuo compare."
+        },
+        "automation_unknown_area_references": {
+            "description": "Mentre fluttuava in giro, Spook ha incrociato la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento alle seguenti aree, che non sono riconosciute da Home Assistant:\n\n{areas}\n\n\n\nPer risolvere questo errore, [modifica l'automazione]({edit}) ed elimina l'utilizzo di queste aree inesistenti.\n\nSpook 👻 Il tuo compare."
+        },
+        "automation_unknown_device_references": {
+            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente automazione:\n\n{automation} ({entity_id})\n\nQuesta automazione fa riferimento ai seguenti dispositivi, che non sono riconosciuti da Home Assistant:\n\n{devices}\n\nPer risolvere questo errore, modifica l'automazione ({edit}) ed elimina l'utilizzo di questi dispositivi inesistenti.\n\nSpook 👻 Il tuo compare."
+        },
+        "automation_unknown_entity_references": {
+            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente automazione:\n\n{automation} ({entity_id})\n\nQuesta automazione fa riferimento alle seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nPer risolvere questo errore, modifica l'automazione ({edit}) ed elimina l'utilizzo di queste entità inesistenti.\n\nSpook 👻 Il tuo compare"
         }
     }
 }
