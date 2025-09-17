@@ -1236,3 +1236,147 @@ zone_delete:
           multiple: true
           filter:
             - domain: zone
+
+homeassistant_list_filtered_entities:
+  name: List filtered entities 👻
+  description: >-
+    Lists entities with advanced filtering options, replicating the Home Assistant entities UI filtering capabilities.
+    Perfect for inspection workflows, scripts, and automations that need to query entities dynamically.
+  fields:
+    search:
+      name: Search
+      description: >-
+        Search term to filter entities. Searches across entity ID, domain, integration,
+        display names, device names, area names, integration names, and label names.
+      required: false
+      selector:
+        text:
+    areas:
+      name: Areas
+      description: Filter by specific areas (OR logic within this filter).
+      required: false
+      selector:
+        area:
+          multiple: true
+    devices:
+      name: Devices
+      description: Filter by specific devices (OR logic within this filter).
+      required: false
+      selector:
+        device:
+          multiple: true
+    domains:
+      name: Domains
+      description:
+        - Filter by specific entity domains (OR logic within this filter).
+      required: false
+      example: |-
+        - light
+        - switch
+      selector:
+        select:
+          multiple: true
+          custom_value: true
+          mode: dropdown
+          # Options are populated at runtime by the integration based on
+          # available domains. Value is the domain as-is; label is a Title Case
+          # transformation with underscores shown as spaces.
+          # Placeholder keeps schema valid even before runtime injection.
+          options: []
+    integrations:
+      name: Integrations
+      description: Filter by specific integrations (OR logic within this filter).
+      required: false
+      selector:
+        select:
+          multiple: true
+          custom_value: true
+          mode: dropdown
+          # Options are populated at runtime by the integration based on
+          # available integrations. Value is the integration domain; label is
+          # the integration's friendly name from its manifest.
+          # Placeholder keeps schema valid even before runtime injection.
+          options: []
+    status:
+      name: Status
+      description: Filter by entity status (OR logic within this filter).
+      required: false
+      example: |-
+        - hidden
+      selector:
+        select:
+          multiple: true
+          mode: dropdown
+          options:
+            - value: available
+              label: Available
+            - value: unavailable
+              label: Unavailable
+            - value: enabled
+              label: Enabled
+            - value: disabled
+              label: Disabled
+            - value: visible
+              label: Visible
+            - value: hidden
+              label: Hidden
+            - value: not_provided
+              label: Not provided
+            - value: unmanageable
+              label: Unmanageable
+    labels:
+      name: Labels
+      description: Filter by specific labels (OR logic within this filter).
+      required: false
+      selector:
+        label:
+          multiple: true
+    advanced_fields:
+      name: Advanced
+      collapsed: true
+      fields:
+        values:
+          name: Values
+          description: >-
+            Additional entity information to include in the response.
+            If none selected, returns only entity IDs for minimal response.
+          required: false
+          example: |-
+            - name
+            - area
+            - integration
+            - status
+          selector:
+            select:
+              multiple: true
+              mode: dropdown
+              options:
+                - value: name
+                  label: Name
+                - value: device
+                  label: Device
+                - value: area
+                  label: Area
+                - value: integration
+                  label: Integration
+                - value: status
+                  label: Status
+                - value: icon
+                  label: Icon
+                - value: created
+                  label: Created
+                - value: modified
+                  label: Modified
+                - value: labels
+                  label: Labels
+        limit:
+          name: Limit
+          description: >-
+            Maximum number of entities to return. Defaults to 500 if not specified.
+            Maximum allowed is 50,000 for safety.
+          required: false
+          default: 500
+          selector:
+            number:
+              min: 1
+              max: 50000
