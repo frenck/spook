@@ -38,7 +38,7 @@ async def extract_template_entities_from_automation_entity(entity: Any) -> set[s
         return set()
 
     # Use the new utility function
-    return await async_extract_entities_from_config(entity.hass, config)
+    return await async_extract_entities_from_config(config)
 
 
 async def extract_entities_from_automation_config(
@@ -229,7 +229,7 @@ async def extract_entities_from_value(hass: HomeAssistant, value: Any) -> set[st
             # Process as template to extract entity references
             try:
                 template_entities = await async_extract_entities_from_template_string(
-                    hass, value
+                    value
                 )
                 entities.update(template_entities)
             # pylint: disable-next=broad-exception-caught
