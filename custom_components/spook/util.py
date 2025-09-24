@@ -28,7 +28,6 @@ from homeassistant.core import (
     callback,
     valid_entity_id,
 )
-from homeassistant.exceptions import TemplateError
 from homeassistant.helpers import (
     area_registry as ar,
     config_validation as cv,
@@ -470,41 +469,19 @@ def is_template_string(value: str) -> bool:
 
 
 async def async_extract_entities_from_template_string(
-    hass: HomeAssistant, template_str: str
+    template_str: str,
 ) -> set[str]:
-    """Extract entity IDs from a template string using both RenderInfo and regex analysis.
+    """Extract entity IDs from a template string using regex analysis.
 
-    This function combines two approaches:
-    1. Home Assistant's Template.async_render_to_info() for comprehensive analysis
-    2. Regex patterns to catch entity IDs that might be missed by template parsing
-
-    This dual approach ensures maximum coverage of entity dependencies.
+    This function uses regex patterns based on Home Assistant's core validation
+    patterns to find entity IDs referenced in template functions.
     """
     if not is_template_string(template_str):
         return set()
 
     entities = set()
 
-    # Method 1: Use Home Assistant's RenderInfo analysis
-    try:
-        template = Template(template_str, hass)
-        render_info = template.async_render_to_info()
-        if render_info and render_info.entities:
-            entities.update(render_info.entities)
-    except TemplateError:
-        # Logged by Home Assistant core
-        pass
-    # pylint: disable-next=broad-exception-caught
-    except Exception as exc:  # noqa: BLE001 - Keep broad for unexpected template issues
-        # Fallback to regex if template rendering fails for other reasons
-        LOGGER.debug(
-            "Failed to render template '%s...' for entity extraction, "
-            "falling back to regex.",
-            template_str[:50],
-            exc_info=exc,  # Pass the exception for logging
-        )
-
-    # Method 2: Use regex patterns to find additional entities
+    # Use regex patterns to find entities
     try:
         regex_entities = extract_entities_from_template_regex(template_str)
         entities.update(regex_entities)
@@ -557,17 +534,7 @@ async def _process_template_object(
     """Process a Template object and add unknown entities to the set."""
     template_entities = set()
 
-    # Method 1: Use Home Assistant's RenderInfo analysis
-    try:
-        render_info = template.async_render_to_info()
-        template_entities.update(render_info.entities)
-    except TemplateError:
-        LOGGER.debug("Failed to analyze Template object for entities")
-    # pylint: disable-next=broad-exception-caught
-    except Exception:  # noqa: BLE001
-        LOGGER.debug("Unexpected error analyzing Template object for entities")
-
-    # Method 2: Use regex patterns on the template string as fallback
+    # Use regex patterns on the template string
     try:
         if hasattr(template, "template") and template.template:
             regex_entities = extract_entities_from_template_regex(template.template)
@@ -583,15 +550,12 @@ async def _process_template_object(
 
 
 async def _process_template_string(
-    hass: HomeAssistant,
     template_str: str,
     known_entity_ids: set[str],
     unknown_entities: set[str],
 ) -> None:
     """Process a template string and add unknown entities to the set."""
-    template_entities = await async_extract_entities_from_template_string(
-        hass, template_str
-    )
+    template_entities = await async_extract_entities_from_template_string(template_str)
     # Check if any of the template entities are unknown
     for template_entity in template_entities:
         # Handle comma-separated entity lists
@@ -633,7 +597,7 @@ async def async_filter_known_entity_ids_with_templates(
         # Check if this looks like a template string
         if is_template_string(entity_id_raw):
             await _process_template_string(
-                hass, entity_id_raw, known_entity_ids, unknown_entities
+                entity_id_raw, known_entity_ids, unknown_entities
             )
         else:
             # Process as regular entity ID(s), handling comma-separated lists
@@ -691,9 +655,7 @@ def extract_template_strings_from_config(
     return strings
 
 
-async def async_extract_entities_from_config(
-    hass: HomeAssistant, config: Any
-) -> set[str]:
+async def async_extract_entities_from_config(config: Any) -> set[str]:
     """Extract all entity IDs referenced in templates within a configuration structure."""
     entities = set()
     if not config:
@@ -705,7 +667,7 @@ async def async_extract_entities_from_config(
             # async_extract_entities_from_template_string already handles
             # TemplateError and other exceptions internally, logging them.
             referenced_entities = await async_extract_entities_from_template_string(
-                hass, template_str
+                template_str
             )
             entities.update(referenced_entities)
         # pylint: disable-next=broad-exception-caught

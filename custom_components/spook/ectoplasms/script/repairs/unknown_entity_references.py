@@ -70,7 +70,7 @@ async def extract_template_entities_from_script_entity(entity: Any) -> set[str]:
         return set()
 
     # Use the new utility function
-    return await async_extract_entities_from_config(entity.hass, config)
+    return await async_extract_entities_from_config(config)
 
 
 class SpookRepair(AbstractSpookRepair):
