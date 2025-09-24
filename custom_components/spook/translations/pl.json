@@ -11,6 +11,9 @@
             "user": {
                 "description": "Czytałeś readme? Czytałeś licencję? Czy jesteś pewny?"
             }
+        },
+        "abort": {
+            "already_spooked": "Więc... nie. Dzięki, pa!"
         }
     },
     "entity": {
@@ -167,6 +170,39 @@
             },
             "homeassistant_remote": {
                 "name": "Zdalne sterowanie"
+            },
+            "homeassistant_cover": {
+                "name": "Rolety"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Pomocnik binarny"
+            },
+            "homeassistant_input_button": {
+                "name": "Pomocnik przycisk"
+            },
+            "homeassistant_input_number": {
+                "name": "Pomocnik liczbowy"
+            },
+            "homeassistant_number": {
+                "name": "Liczby"
+            },
+            "homeassistant_select": {
+                "name": "Pole wyboru"
+            },
+            "homeassistant_siren": {
+                "name": "Syreny"
+            },
+            "homeassistant_stt": {
+                "name": "Zamiana mowy na tekst"
+            },
+            "homeassistant_text": {
+                "name": "Tekstowe"
+            },
+            "homeassistant_tts": {
+                "name": "Zamiana tekstu na mowę"
+            },
+            "homeassistant_time": {
+                "name": "Czas"
             }
         },
         "switch": {
@@ -251,7 +287,7 @@
         },
         "automation_unknown_service_references": {
             "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 Twój ziomek.",
-            "title": "Nieznane usługi użyte w: {automation}"
+            "title": "Nieznane akcje użyte w: {automation}"
         },
         "proximity_unknown_zone": {
             "title": "Nieznana strefa: {zone}"
@@ -270,6 +306,9 @@
         },
         "automation_unknown_label_references": {
             "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących etykiet, które są nieznane Home Assistant:\n\n{labels}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) i zaprzestań używania tych nieistniejących etykiet.\n\nSpook 👻 Twój ziomek."
+        },
+        "script_unknown_label_references": {
+            "title": "Nieznane etykiety użyte w: {script}"
         }
     }
 }
