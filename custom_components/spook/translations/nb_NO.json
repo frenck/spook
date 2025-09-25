@@ -5,7 +5,7 @@
                 "name": "Last inn på nytt"
             },
             "homeassistant_restart": {
-                "name": "Omstart"
+                "name": "Start på nytt"
             },
             "repairs_ignore_all": {
                 "name": "Ignorer alle"
@@ -22,13 +22,13 @@
                     },
                     "event_type": {
                         "state": {
-                            "create": "Hendelse laget",
+                            "create": "Hendelse opprettet",
                             "remove": "Hendelse fjernet",
                             "update": "Hendelse oppdatert"
                         }
                     },
                     "issue_id": {
-                        "name": "Hendelse ID"
+                        "name": "Hendelses-ID"
                     }
                 }
             }
@@ -92,10 +92,10 @@
                 "name": "Bilder"
             },
             "homeassistant_input_boolean": {
-                "name": "Inndata veksler"
+                "name": "Binær bryter"
             },
             "homeassistant_input_button": {
-                "name": "Inndata knapper"
+                "name": "Inndata-knapper"
             },
             "homeassistant_input_datetime": {
                 "name": "Inndata dato/tider"
@@ -293,6 +293,23 @@
         "utility_meter_unknown_source": {
             "description": "Spook har funnet et spøkelse i hjelperne for nyttemålere dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen har en kildeentitet som er ukjent for Home Assistant:\n\n`{source}`\n\nFor å fikse denne feilen, rediger hjelperen og juster kildeentiteten (eller fjern hjelperen) og start Home Assistant på nytt.\n\nSpook 👻 Ikke din homie.",
             "title": "Ukjent kilde: {helper}"
+        }
+    },
+    "config": {
+        "abort": {
+            "already_spooked": "Jepp... eh... nei. OK, takk, snakkes!"
+        },
+        "step": {
+            "user": {
+                "description": "Har du lest readme? Har du lest lisensen? Er du helt sikker?"
+            },
+            "choice_restart": {
+                "description": "For å få Spook til å fullføre oppsettet, må Home Assistant må startes på nytt.\n\nVil du starte Home Assistant på nytt nå?",
+                "menu_options": {
+                    "restart_now": "Start på nytt nå",
+                    "restart_later": "Start på nytt senere"
+                }
+            }
         }
     }
 }
