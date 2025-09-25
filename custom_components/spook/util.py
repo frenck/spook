@@ -87,7 +87,7 @@ KNOWN_DOMAINS = [platform.value for platform in Platform] + ADDITIONAL_DOMAINS
 _OBJECT_ID = r"(?!_)[\da-z_]+(?<!_)"
 # Modified _DOMAIN pattern to only match known domains
 _DOMAIN = r"(?:" + "|".join(KNOWN_DOMAINS) + r")"
-_ENTITY_ID_PATTERN = _DOMAIN + r"\." + _OBJECT_ID
+ENTITY_ID_PATTERN = _DOMAIN + r"\." + _OBJECT_ID
 
 # Template function names that accept entity IDs as first parameter
 _ENTITY_FUNCTIONS = [
@@ -115,13 +115,13 @@ _ENTITY_FUNCTIONS = [
 # Build regex patterns using Home Assistant's core validation patterns
 ENTITY_ID_TEMPLATE_PATTERNS = [
     # Template functions with entity ID as first parameter
-    rf"(?:{'|'.join(_ENTITY_FUNCTIONS)})\s*\(\s*['\"]({_ENTITY_ID_PATTERN})['\"]",
+    rf"(?:{'|'.join(_ENTITY_FUNCTIONS)})\s*\(\s*['\"]({ENTITY_ID_PATTERN})['\"]",
     # Direct entity state access patterns (states.domain.entity)
     rf"states\.({_DOMAIN})\.({_OBJECT_ID})(?:\.state|\.attributes)",
     # Entity IDs in any quoted context (captures all entity IDs in lists, etc.)
-    rf"['\"]({_ENTITY_ID_PATTERN})['\"]",
+    rf"['\"]({ENTITY_ID_PATTERN})['\"]",
     # Entity IDs followed by filter functions (entity_id | function)
-    rf"['\"]({_ENTITY_ID_PATTERN})['\"](?:\s*\|\s*(?:{'|'.join(_ENTITY_FUNCTIONS)}))",
+    rf"['\"]({ENTITY_ID_PATTERN})['\"](?:\s*\|\s*(?:{'|'.join(_ENTITY_FUNCTIONS)}))",
 ]
 
 _CACHED_ALL_ENTITY_IDS: set[str] | None = None
