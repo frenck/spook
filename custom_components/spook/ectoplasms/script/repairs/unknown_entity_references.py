@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import script
 from homeassistant.const import EVENT_COMPONENT_LOADED
@@ -11,11 +11,13 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityCompone
 
 from ....repairs import AbstractSpookRepair
 from ....util import (
-    async_extract_entities_from_config,  # Added
+    async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
     async_get_all_entity_ids,
-    # is_template_string, # No longer needed directly here
 )
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 
 def extract_entities_from_trigger_config(config: dict[str, Any] | list) -> set[str]:
@@ -49,7 +51,9 @@ def extract_entities_from_trigger_config(config: dict[str, Any] | list) -> set[s
     return entities
 
 
-async def extract_template_entities_from_script_entity(entity: Any) -> set[str]:
+async def extract_template_entities_from_script_entity(
+    hass: HomeAssistant, entity: Any
+) -> set[str]:
     """Extract entities from script configuration using Template analysis.
 
     This function finds template strings in script configuration and creates
@@ -69,8 +73,7 @@ async def extract_template_entities_from_script_entity(entity: Any) -> set[str]:
     if not config:
         return set()
 
-    # Use the new utility function
-    return await async_extract_entities_from_config(config)
+    return await async_extract_entities_from_config(hass, config)
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -140,7 +143,7 @@ class SpookRepair(AbstractSpookRepair):
 
             # Extract entities from Template objects within the script entity
             template_entities = await extract_template_entities_from_script_entity(
-                entity
+                self.hass, entity
             )
             all_entities.update(template_entities)
 
