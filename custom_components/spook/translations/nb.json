@@ -1,17 +1,17 @@
 {
   "config": {
     "abort": {
-      "already_spooked": "Yeah... well... no. K, thx, bye!"
+      "already_spooked": "Jepp... eh... nei. OK, takk, snakkes!"
     },
     "step": {
       "user": {
-        "description": "Did you read the readme? Did you read the license? Are you really sure?"
+        "description": "Har du lest readme? Har du lest lisensen? Er du helt sikker?"
       },
       "choice_restart": {
-        "description": "In order for Spook to finish setting up, Home Assistant needs to be restarted.\n\nDo you want to restart Home Assistant now?",
+        "description": "For å få Spook til å fullføre oppsettet, må Home Assistant må startes på nytt.\n\nVil du starte Home Assistant på nytt nå?",
         "menu_options": {
-          "restart_now": "Restart now",
-          "restart_later": "Restart later"
+          "restart_now": "Start på nytt nå",
+          "restart_later": "Start på nytt senere"
         }
       }
     }
@@ -22,7 +22,7 @@
         "name": "Last inn på nytt"
       },
       "homeassistant_restart": {
-        "name": "Omstart"
+        "name": "Start på nytt"
       },
       "repairs_ignore_all": {
         "name": "Ignorer alle"
@@ -36,7 +36,7 @@
         "state_attributes": {
           "event_type": {
             "state": {
-              "create": "Hendelse laget",
+              "create": "Hendelse opprettet",
               "remove": "Hendelse fjernet",
               "update": "Hendelse oppdatert"
             }
@@ -45,7 +45,7 @@
             "name": "Hendelse oppretter"
           },
           "issue_id": {
-            "name": "Hendelse ID"
+            "name": "Hendelses-ID"
           }
         }
       }
@@ -109,10 +109,10 @@
         "name": "Bilder"
       },
       "homeassistant_input_boolean": {
-        "name": "Inndata veksler"
+        "name": "Binær bryter"
       },
       "homeassistant_input_button": {
-        "name": "Inndata knapper"
+        "name": "Inndata-knapper"
       },
       "homeassistant_input_datetime": {
         "name": "Inndata dato/tider"
@@ -246,11 +246,11 @@
       "title": "Ukjente tjenester brukt i: {automation}"
     },
     "group_unknown_members": {
-      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "description": "Spook har funnet et spøkelse i gruppene dine 👻\n\nMens han fløt rundt, krysset Spook veien med følgende gruppe:\n\n[{group}]({edit})\n\nDenne gruppen har entiteter som er ukjent for Home Assistant:\n\n{entities}\n\n\n\nFor å fikse denne feilen, endre gruppen og fjern bruken av disse ikke-eksisterende entiteter.\n\nSpook 👻 Ikke din homie.",
       "title": "Ukjente gruppe medlemmer i: {group}"
     },
     "integration_unknown_source": {
-      "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "description": "Spook har funnet et spøkelse i dine Riemann sum integral hjelpere👻\n\nMens han fløt rundt, krysset Spook banen med følgende hjelper:\n\n[{helper}]({edit})\n\nDenne hjelperen har en kilde som er ukjent for Home Assistant:\n\n{source}\n\n\n\nFor å fikse denne feilen, endre hjelperen og fiks eller fjern bruken av denne ikke-eksisterende kilden.\n\nSpook 👻 Ikke din homie.",
       "title": "Ukjent kilde brukt i: {helper}"
     },
     "lovelace_unknown_entity_references": {
