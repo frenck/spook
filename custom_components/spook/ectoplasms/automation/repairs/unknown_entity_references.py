@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import automation
@@ -12,6 +13,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityCompone
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
 from ....util import (
+    ENTITY_ID_PATTERN,
     async_extract_entities_from_config,
     async_extract_entities_from_template_string,
     async_filter_known_entity_ids_with_templates,
@@ -240,8 +242,8 @@ async def extract_entities_from_value(hass: HomeAssistant, value: Any) -> set[st
                     value,
                     exc,
                 )
-        elif "." in value and not value.startswith("!"):
-            # Check if it looks like an entity ID
+        elif re.match(rf"^{ENTITY_ID_PATTERN}$", value):
+            # Check if it matches the entity ID pattern with known domains
             entities.add(value)
     elif isinstance(value, list):
         for item in value:
