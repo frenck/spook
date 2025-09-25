@@ -1,331 +1,331 @@
 {
-    "config": {
-        "abort": {
-            "already_spooked": "음... 그래... 아니야. 고마워, 안녕!"
-        },
-        "step": {
-            "choice_restart": {
-                "description": "Spook을 설정 완료하려면 Home Assistant를 재시작해야 합니다 👻\n\n지금 Home Assistant를 재시작하시겠습니까?",
-                "menu_options": {
-                    "restart_later": "나중에 재시작",
-                    "restart_now": "지금 재시작"
-                }
-            },
-            "user": {
-                "description": "README 파일을 읽으셨나요? 라이선스를 읽으셨나요? 정말 확실한가요?"
-            }
-        }
+  "config": {
+    "abort": {
+      "already_spooked": "음... 그래... 아니야. 고마워, 안녕!"
     },
-    "entity": {
-        "button": {
-            "homeassistant_reload": {
-                "name": "다시 로드하기"
-            },
-            "homeassistant_restart": {
-                "name": "재시작"
-            },
-            "repairs_ignore_all": {
-                "name": "모두 무시"
-            },
-            "repairs_unignore_all": {
-                "name": "모두 무시 해제"
-            }
-        },
-        "event": {
-            "repairs_event": {
-                "state_attributes": {
-                    "domain": {
-                        "name": "문제 발행자"
-                    },
-                    "event_type": {
-                        "state": {
-                            "create": "생성된 문제",
-                            "remove": "제거된 문제",
-                            "update": "업데이트된 문제"
-                        }
-                    },
-                    "issue_id": {
-                        "name": "문제 ID"
-                    }
-                }
-            }
-        },
-        "sensor": {
-            "homeassistant_air_quality": {
-                "name": "공기질"
-            },
-            "homeassistant_alarm_control_panel": {
-                "name": "알람 제어 패널"
-            },
-            "homeassistant_area": {
-                "name": "영역"
-            },
-            "homeassistant_automation": {
-                "name": "자동화"
-            },
-            "homeassistant_binary_sensor": {
-                "name": "이진 센서"
-            },
-            "homeassistant_button": {
-                "name": "버튼"
-            },
-            "homeassistant_calendar": {
-                "name": "일정"
-            },
-            "homeassistant_camera": {
-                "name": "카메라"
-            },
-            "homeassistant_climate": {
-                "name": "온도 조절기"
-            },
-            "homeassistant_cover": {
-                "name": "차양"
-            },
-            "homeassistant_custom_component": {
-                "name": "사용자 통합구성요소"
-            },
-            "homeassistant_date": {
-                "name": "날짜"
-            },
-            "homeassistant_datetime": {
-                "name": "날짜/시간"
-            },
-            "homeassistant_device": {
-                "name": "장치"
-            },
-            "homeassistant_device_tracker": {
-                "name": "장치 추적기"
-            },
-            "homeassistant_entities": {
-                "name": "구성요소"
-            },
-            "homeassistant_fan": {
-                "name": "팬"
-            },
-            "homeassistant_humidifier": {
-                "name": "습도 조절기"
-            },
-            "homeassistant_image": {
-                "name": "이미지"
-            },
-            "homeassistant_input_boolean": {
-                "name": "참/거짓 입력"
-            },
-            "homeassistant_input_button": {
-                "name": "버튼 입력"
-            },
-            "homeassistant_input_datetime": {
-                "name": "날짜/시간 입력"
-            },
-            "homeassistant_input_number": {
-                "name": "숫자 입력"
-            },
-            "homeassistant_input_select": {
-                "name": "선택 입력"
-            },
-            "homeassistant_input_text": {
-                "name": "문자 입력"
-            },
-            "homeassistant_integration": {
-                "name": "통합구성요소"
-            },
-            "homeassistant_light": {
-                "name": "조명"
-            },
-            "homeassistant_lock": {
-                "name": "잠금장치"
-            },
-            "homeassistant_media_player": {
-                "name": "미디어 플레이어"
-            },
-            "homeassistant_number": {
-                "name": "숫자"
-            },
-            "homeassistant_persistent_notification": {
-                "name": "지속적인 알림"
-            },
-            "homeassistant_person": {
-                "name": "사람"
-            },
-            "homeassistant_remote": {
-                "name": "리모트"
-            },
-            "homeassistant_scene": {
-                "name": "장면"
-            },
-            "homeassistant_script": {
-                "name": "스크립트"
-            },
-            "homeassistant_select": {
-                "name": "선택"
-            },
-            "homeassistant_sensor": {
-                "name": "센서"
-            },
-            "homeassistant_siren": {
-                "name": "사이렌"
-            },
-            "homeassistant_stt": {
-                "name": "음성-텍스트 변환"
-            },
-            "homeassistant_sun": {
-                "name": "태양"
-            },
-            "homeassistant_switch": {
-                "name": "스위치"
-            },
-            "homeassistant_text": {
-                "name": "텍스트"
-            },
-            "homeassistant_time": {
-                "name": "시간"
-            },
-            "homeassistant_tts": {
-                "name": "텍스트-음성 변환"
-            },
-            "homeassistant_update": {
-                "name": "업데이트"
-            },
-            "homeassistant_vacuum": {
-                "name": "진공 청소기"
-            },
-            "homeassistant_water_heater": {
-                "name": "온수기"
-            },
-            "homeassistant_weather": {
-                "name": "날씨"
-            },
-            "homeassistant_zone": {
-                "name": "지역"
-            },
-            "repairs_active_issues": {
-                "name": "진행 중인 문제"
-            },
-            "repairs_ignored_issues": {
-                "name": "무시된 문제"
-            },
-            "repairs_total_issues": {
-                "name": "총 문제"
-            }
-        },
-        "switch": {
-            "cloud_alexa_report_state": {
-                "name": "Alexa 상태 보고"
-            },
-            "cloud_google_report_state": {
-                "name": "Google Assistant 상태 보고"
-            },
-            "cloud_remote": {
-                "name": "리모트"
-            }
+    "step": {
+      "user": {
+        "description": "README 파일을 읽으셨나요? 라이선스를 읽으셨나요? 정말 확실한가요?"
+      },
+      "choice_restart": {
+        "description": "Spook을 설정 완료하려면 Home Assistant를 재시작해야 합니다 👻\n\n지금 Home Assistant를 재시작하시겠습니까?",
+        "menu_options": {
+          "restart_now": "지금 재시작",
+          "restart_later": "나중에 재시작"
         }
-    },
-    "issues": {
-        "automation_unknown_area_references": {
-            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 영역을 참조합니다:\n\n{areas}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 영역을 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 영역 참조: {automation}"
-        },
-        "automation_unknown_device_references": {
-            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 장치를 참조합니다:\n\n{devices}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 장치를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 장치 참조: {automation}"
-        },
-        "automation_unknown_entity_references": {
-            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 구성요소를 참조합니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소 참조: {automation}"
-        },
-        "automation_unknown_floor_references": {
-            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 층을 참조합니다:\n\n{floors}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 층을 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 층 참조: {automation}"
-        },
-        "automation_unknown_label_references": {
-            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 레이블을 참조합니다:\n\n{labels}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 레이블을 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 라벨 참조: {automation}"
-        },
-        "automation_unknown_service_references": {
-            "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 서비스를 참조합니다:\n\n{services}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 서비스를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 서비스 참조: {automation}"
-        },
-        "group_unknown_members": {
-            "description": "Spook이 그룹에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 그룹을 발견했습니다:\n\n{group} (`{entity_id}`)\n\n이 그룹에는 Home Assistant에서 알 수 없는 구성원이 있습니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 그룹을 편집하여 존재하지 않는 구성원을 제거하고 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 그룹 구성원: {group}"
-        },
-        "integration_unknown_source": {
-            "description": "Spook이 리만 적분 합 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 도우미를 발견했습니다:\n\n{helper} (`{entity_id}`)\n\n이 도우미에는 Home Assistant에서 알 수 없는 구성요소를 출처로 하고 있습니다:\n\n`{source}`\n\n\n\n이 오류를 수정하려면 도우미를 편집하여 구성요소를 조정하거나 도우미를 제거한 후 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소 출처: {helper}"
-        },
-        "lovelace_unknown_entity_references": {
-            "description": "Spook이 대시보드에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 대시보드를 발견했습니다:\n\n[{dashboard}]({edit})\n\n이 대시보드는 Home Assistant에서 알 수 없는 구성요소를 참조합니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 [대시보드를 편집]({edit})하여 존재하지 않는 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소 참조: {dashboard}"
-        },
-        "proximity_unknown_ignored_zones": {
-            "description": "Spook이 근접 통합 설정에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 근접 통합 설정을 발견했습니다:\n\n{name}\n\n이 설정은 Home Assistant에서 알 수 없는 지역을 무시하고 있습니다:\n\n{zones}\n\n\n\n이 오류를 수정하려면 설정을 편집하여 무시된 지역을 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 지역을 무시: {name}"
-        },
-        "proximity_unknown_tracked_entities": {
-            "description": "Spook이 근접 통합 설정에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 근접 통합 설정을 발견했습니다:\n\n{name}\n\n이 설정은 Home Assistant에서 알 수 없는 사람이나 장치 추적기를 추적하고 있습니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 설정을 편집하여 추적된 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소를 추적: {name}"
-        },
-        "proximity_unknown_zone": {
-            "description": "Spook이 근접 통합 설정에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 근접 통합 설정을 발견했습니다:\n\n{name}\n\n이 설정은 Home Assistant에서 알 수 없는 지역을 기반으로 하고 있습니다:\n\n`{zone}`\n\n\n\n지역의 변경이 불가능하므로 이 오류를 수정하려면 해당 근접 통합 설정을 제거하는 것이 유일한 옵션입니다.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 지역: {zone}"
-        },
-        "restart_required": {
-            "fix_flow": {
-                "step": {
-                    "confirm_restart": {
-                        "description": "Spook이 설정을 완료하려면 Home Assistant를 재시작해야 합니다 👻\n\n지금 Home Assistant를 재시작하려면 제출을 선택하세요.",
-                        "title": "재시작 필요"
-                    }
-                }
-            },
-            "title": "재시작 필요"
-        },
-        "scene_unknown_entity_references": {
-            "description": "Spook이 장면에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 장면을 발견했습니다:\n\n[{scene}]({edit})\n\n이 장면은 Home Assistant에서 알 수 없는 구성요소를 참조합니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 [장면을 편집]({edit})하여 존재하지 않는 참조 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소 참조: {scene}"
-        },
-        "script_unknown_area_references": {
-            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 영역을 참조합니다:\n\n{areas}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 영역를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 영역 참조: {script}"
-        },
-        "script_unknown_device_references": {
-            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 장치를 참조합니다:\n\n{devices}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 장치를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 장치 참조: {script}"
-        },
-        "script_unknown_entity_references": {
-            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 구성요소를 참조합니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소 참조: {script}"
-        },
-        "script_unknown_floor_references": {
-            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 층을 참조합니다:\n\n{floors}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 층을 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 층을 참조: {script}"
-        },
-        "script_unknown_label_references": {
-            "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 레이블을 참조합니다:\n\n{labels}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 레이블을 제거하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 레이블을 참조: {script}"
-        },
-        "switch_as_x_unknown_source": {
-            "description": "Spook이 스위치의 기기 유형 변경 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 도우미를 발견했습니다:\n\n{helper} (`{entity_id}`)\n\n이 도우미는 Home Assistant에서 알 수 없는 구성요소의 유형을 변경하고 있습니다:\n\n`{source}`\n\n\n\n이 오류를 수정하려면 도우미를 편집하여 해당 구성요소를 조정하거나 도우미를 제거한 후 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소 출처: {helper}"
-        },
-        "trend_unknown_source": {
-            "description": "Spook이 추세 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 도우미를 발견했습니다:\n\n{helper} (`{entity_id}`)\n\n이 도우미는 Home Assistant에서 알 수 없는 구성요소를 출처로 하고 있습니다:\n\n`{source}`\n\n\n\n이 오류를 수정하려면 도우미를 편집하여 해당 구성요소를 조정하거나 도우미를 제거한 후 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소 출처: {helper}"
-        },
-        "user_issue": {
-            "fix_flow": {
-                "step": {
-                    "confirm": {
-                        "description": "{description}",
-                        "title": "{title}"
-                    }
-                }
-            },
-            "title": "{title}"
-        },
-        "utility_meter_unknown_source": {
-            "description": "Spook이 검침기 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 도우미를 발견했습니다:\n\n{helper} (`{entity_id}`)\n\n이 도우미는 Home Assistant에서 알 수 없는 구성요소를 출처로 하고 있습니다:\n\n`{source}`\n\n\n\n이 오류를 수정하려면 도우미를 편집하여 해당 구성요소를 조정하거나 도우미를 제거한 후 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
-            "title": "알 수 없는 구성요소 출처: {helper}"
-        }
+      }
     }
+  },
+  "entity": {
+    "button": {
+      "homeassistant_reload": {
+        "name": "다시 로드하기"
+      },
+      "homeassistant_restart": {
+        "name": "재시작"
+      },
+      "repairs_ignore_all": {
+        "name": "모두 무시"
+      },
+      "repairs_unignore_all": {
+        "name": "모두 무시 해제"
+      }
+    },
+    "event": {
+      "repairs_event": {
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "create": "생성된 문제",
+              "remove": "제거된 문제",
+              "update": "업데이트된 문제"
+            }
+          },
+          "domain": {
+            "name": "문제 발행자"
+          },
+          "issue_id": {
+            "name": "문제 ID"
+          }
+        }
+      }
+    },
+    "sensor": {
+      "homeassistant_air_quality": {
+        "name": "공기질"
+      },
+      "homeassistant_alarm_control_panel": {
+        "name": "알람 제어 패널"
+      },
+      "homeassistant_area": {
+        "name": "영역"
+      },
+      "homeassistant_automation": {
+        "name": "자동화"
+      },
+      "homeassistant_binary_sensor": {
+        "name": "이진 센서"
+      },
+      "homeassistant_button": {
+        "name": "버튼"
+      },
+      "homeassistant_calendar": {
+        "name": "일정"
+      },
+      "homeassistant_camera": {
+        "name": "카메라"
+      },
+      "homeassistant_climate": {
+        "name": "온도 조절기"
+      },
+      "homeassistant_cover": {
+        "name": "차양"
+      },
+      "homeassistant_custom_component": {
+        "name": "사용자 통합구성요소"
+      },
+      "homeassistant_date": {
+        "name": "날짜"
+      },
+      "homeassistant_datetime": {
+        "name": "날짜/시간"
+      },
+      "homeassistant_device": {
+        "name": "장치"
+      },
+      "homeassistant_device_tracker": {
+        "name": "장치 추적기"
+      },
+      "homeassistant_entities": {
+        "name": "구성요소"
+      },
+      "homeassistant_fan": {
+        "name": "팬"
+      },
+      "homeassistant_humidifier": {
+        "name": "습도 조절기"
+      },
+      "homeassistant_image": {
+        "name": "이미지"
+      },
+      "homeassistant_input_boolean": {
+        "name": "참/거짓 입력"
+      },
+      "homeassistant_input_button": {
+        "name": "버튼 입력"
+      },
+      "homeassistant_input_datetime": {
+        "name": "날짜/시간 입력"
+      },
+      "homeassistant_input_number": {
+        "name": "숫자 입력"
+      },
+      "homeassistant_input_select": {
+        "name": "선택 입력"
+      },
+      "homeassistant_input_text": {
+        "name": "문자 입력"
+      },
+      "homeassistant_integration": {
+        "name": "통합구성요소"
+      },
+      "homeassistant_light": {
+        "name": "조명"
+      },
+      "homeassistant_lock": {
+        "name": "잠금장치"
+      },
+      "homeassistant_media_player": {
+        "name": "미디어 플레이어"
+      },
+      "homeassistant_number": {
+        "name": "숫자"
+      },
+      "homeassistant_persistent_notification": {
+        "name": "지속적인 알림"
+      },
+      "homeassistant_person": {
+        "name": "사람"
+      },
+      "homeassistant_remote": {
+        "name": "리모트"
+      },
+      "homeassistant_scene": {
+        "name": "장면"
+      },
+      "homeassistant_script": {
+        "name": "스크립트"
+      },
+      "homeassistant_select": {
+        "name": "선택"
+      },
+      "homeassistant_sensor": {
+        "name": "센서"
+      },
+      "homeassistant_siren": {
+        "name": "사이렌"
+      },
+      "homeassistant_stt": {
+        "name": "음성-텍스트 변환"
+      },
+      "homeassistant_sun": {
+        "name": "태양"
+      },
+      "homeassistant_switch": {
+        "name": "스위치"
+      },
+      "homeassistant_text": {
+        "name": "텍스트"
+      },
+      "homeassistant_time": {
+        "name": "시간"
+      },
+      "homeassistant_tts": {
+        "name": "텍스트-음성 변환"
+      },
+      "homeassistant_update": {
+        "name": "업데이트"
+      },
+      "homeassistant_vacuum": {
+        "name": "진공 청소기"
+      },
+      "homeassistant_water_heater": {
+        "name": "온수기"
+      },
+      "homeassistant_weather": {
+        "name": "날씨"
+      },
+      "homeassistant_zone": {
+        "name": "지역"
+      },
+      "repairs_total_issues": {
+        "name": "총 문제"
+      },
+      "repairs_ignored_issues": {
+        "name": "무시된 문제"
+      },
+      "repairs_active_issues": {
+        "name": "진행 중인 문제"
+      }
+    },
+    "switch": {
+      "cloud_alexa_report_state": {
+        "name": "Alexa 상태 보고"
+      },
+      "cloud_google_report_state": {
+        "name": "Google Assistant 상태 보고"
+      },
+      "cloud_remote": {
+        "name": "리모트"
+      }
+    }
+  },
+  "issues": {
+    "automation_unknown_area_references": {
+      "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 영역을 참조합니다:\n\n{areas}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 영역을 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 영역 참조: {automation}"
+    },
+    "automation_unknown_device_references": {
+      "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 장치를 참조합니다:\n\n{devices}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 장치를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 장치 참조: {automation}"
+    },
+    "automation_unknown_entity_references": {
+      "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 구성요소를 참조합니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소 참조: {automation}"
+    },
+    "automation_unknown_floor_references": {
+      "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 층을 참조합니다:\n\n{floors}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 층을 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 층 참조: {automation}"
+    },
+    "automation_unknown_label_references": {
+      "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 레이블을 참조합니다:\n\n{labels}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 레이블을 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 라벨 참조: {automation}"
+    },
+    "automation_unknown_service_references": {
+      "description": "Spook이 자동화에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 자동화를 발견했습니다:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n이 자동화는 Home Assistant에서 알 수 없는 서비스를 참조합니다:\n\n{services}\n\n\n\n이 오류를 수정하려면 [자동화를 편집]({edit})하여 존재하지 않는 참조 서비스를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 서비스 참조: {automation}"
+    },
+    "group_unknown_members": {
+      "description": "Spook이 그룹에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 그룹을 발견했습니다:\n\n{group} (`{entity_id}`)\n\n이 그룹에는 Home Assistant에서 알 수 없는 구성원이 있습니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 그룹을 편집하여 존재하지 않는 구성원을 제거하고 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 그룹 구성원: {group}"
+    },
+    "integration_unknown_source": {
+      "description": "Spook이 리만 적분 합 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 도우미를 발견했습니다:\n\n{helper} (`{entity_id}`)\n\n이 도우미에는 Home Assistant에서 알 수 없는 구성요소를 출처로 하고 있습니다:\n\n`{source}`\n\n\n\n이 오류를 수정하려면 도우미를 편집하여 구성요소를 조정하거나 도우미를 제거한 후 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소 출처: {helper}"
+    },
+    "lovelace_unknown_entity_references": {
+      "description": "Spook이 대시보드에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 대시보드를 발견했습니다:\n\n[{dashboard}]({edit})\n\n이 대시보드는 Home Assistant에서 알 수 없는 구성요소를 참조합니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 [대시보드를 편집]({edit})하여 존재하지 않는 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소 참조: {dashboard}"
+    },
+    "proximity_unknown_ignored_zones": {
+      "description": "Spook이 근접 통합 설정에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 근접 통합 설정을 발견했습니다:\n\n{name}\n\n이 설정은 Home Assistant에서 알 수 없는 지역을 무시하고 있습니다:\n\n{zones}\n\n\n\n이 오류를 수정하려면 설정을 편집하여 무시된 지역을 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 지역을 무시: {name}"
+    },
+    "proximity_unknown_tracked_entities": {
+      "description": "Spook이 근접 통합 설정에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 근접 통합 설정을 발견했습니다:\n\n{name}\n\n이 설정은 Home Assistant에서 알 수 없는 사람이나 장치 추적기를 추적하고 있습니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 설정을 편집하여 추적된 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소를 추적: {name}"
+    },
+    "proximity_unknown_zone": {
+      "description": "Spook이 근접 통합 설정에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 근접 통합 설정을 발견했습니다:\n\n{name}\n\n이 설정은 Home Assistant에서 알 수 없는 지역을 기반으로 하고 있습니다:\n\n`{zone}`\n\n\n\n지역의 변경이 불가능하므로 이 오류를 수정하려면 해당 근접 통합 설정을 제거하는 것이 유일한 옵션입니다.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 지역: {zone}"
+    },
+    "scene_unknown_entity_references": {
+      "description": "Spook이 장면에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 장면을 발견했습니다:\n\n[{scene}]({edit})\n\n이 장면은 Home Assistant에서 알 수 없는 구성요소를 참조합니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 [장면을 편집]({edit})하여 존재하지 않는 참조 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소 참조: {scene}"
+    },
+    "script_unknown_area_references": {
+      "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 영역을 참조합니다:\n\n{areas}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 영역를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 영역 참조: {script}"
+    },
+    "script_unknown_device_references": {
+      "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 장치를 참조합니다:\n\n{devices}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 장치를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 장치 참조: {script}"
+    },
+    "script_unknown_entity_references": {
+      "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 구성요소를 참조합니다:\n\n{entities}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 구성요소를 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소 참조: {script}"
+    },
+    "script_unknown_floor_references": {
+      "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 층을 참조합니다:\n\n{floors}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 층을 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 층을 참조: {script}"
+    },
+    "script_unknown_label_references": {
+      "description": "Spook이 스크립트에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 스크립트를 발견했습니다:\n\n[{script}]({edit}) (`{entity_id}`)\n\n이 스크립트는 Home Assistant에서 알 수 없는 레이블을 참조합니다:\n\n{labels}\n\n\n\n이 오류를 수정하려면 [스크립트를 편집]({edit})하여 존재하지 않는 참조 레이블을 제거하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 레이블을 참조: {script}"
+    },
+    "switch_as_x_unknown_source": {
+      "description": "Spook이 스위치의 기기 유형 변경 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 도우미를 발견했습니다:\n\n{helper} (`{entity_id}`)\n\n이 도우미는 Home Assistant에서 알 수 없는 구성요소의 유형을 변경하고 있습니다:\n\n`{source}`\n\n\n\n이 오류를 수정하려면 도우미를 편집하여 해당 구성요소를 조정하거나 도우미를 제거한 후 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소 출처: {helper}"
+    },
+    "utility_meter_unknown_source": {
+      "description": "Spook이 검침기 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 도우미를 발견했습니다:\n\n{helper} (`{entity_id}`)\n\n이 도우미는 Home Assistant에서 알 수 없는 구성요소를 출처로 하고 있습니다:\n\n`{source}`\n\n\n\n이 오류를 수정하려면 도우미를 편집하여 해당 구성요소를 조정하거나 도우미를 제거한 후 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소 출처: {helper}"
+    },
+    "trend_unknown_source": {
+      "description": "Spook이 추세 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 도우미를 발견했습니다:\n\n{helper} (`{entity_id}`)\n\n이 도우미는 Home Assistant에서 알 수 없는 구성요소를 출처로 하고 있습니다:\n\n`{source}`\n\n\n\n이 오류를 수정하려면 도우미를 편집하여 해당 구성요소를 조정하거나 도우미를 제거한 후 Home Assistant를 재시작하세요.\n\nSpook 👻 당신의 친구.",
+      "title": "알 수 없는 구성요소 출처: {helper}"
+    },
+    "user_issue": {
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "description": "{description}",
+            "title": "{title}"
+          }
+        }
+      },
+      "title": "{title}"
+    },
+    "restart_required": {
+      "title": "재시작 필요",
+      "fix_flow": {
+        "step": {
+          "confirm_restart": {
+            "title": "재시작 필요",
+            "description": "Spook이 설정을 완료하려면 Home Assistant를 재시작해야 합니다 👻\n\n지금 Home Assistant를 재시작하려면 제출을 선택하세요."
+          }
+        }
+      }
+    }
+  }
 }
