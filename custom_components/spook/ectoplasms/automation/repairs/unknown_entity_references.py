@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import automation
@@ -12,18 +13,21 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityCompone
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
 from ....util import (
-    async_extract_entities_from_config,  # Added
+    ENTITY_ID_PATTERN,
+    async_extract_entities_from_config,
     async_extract_entities_from_template_string,
     async_filter_known_entity_ids_with_templates,
     async_get_all_entity_ids,
-    is_template_string,  # Keep for extract_entities_from_value
+    is_template_string,
 )
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
-async def extract_template_entities_from_automation_entity(entity: Any) -> set[str]:
+async def extract_template_entities_from_automation_entity(
+    hass: HomeAssistant, entity: Any
+) -> set[str]:
     """Extract entities from automation configuration using Template analysis.
 
     This function finds template strings in automation configuration and creates
@@ -37,8 +41,7 @@ async def extract_template_entities_from_automation_entity(entity: Any) -> set[s
     else:
         return set()
 
-    # Use the new utility function
-    return await async_extract_entities_from_config(entity.hass, config)
+    return await async_extract_entities_from_config(hass, config)
 
 
 async def extract_entities_from_automation_config(
@@ -239,8 +242,8 @@ async def extract_entities_from_value(hass: HomeAssistant, value: Any) -> set[st
                     value,
                     exc,
                 )
-        elif "." in value and not value.startswith("!"):
-            # Check if it looks like an entity ID
+        elif re.match(rf"^{ENTITY_ID_PATTERN}$", value):
+            # Check if it matches the entity ID pattern with known domains
             entities.add(value)
     elif isinstance(value, list):
         for item in value:
@@ -302,7 +305,7 @@ class SpookRepair(AbstractSpookRepair):
 
             # Extract entities from Template objects within the automation entity
             template_entities = await extract_template_entities_from_automation_entity(
-                entity
+                self.hass, entity
             )
             all_entities.update(template_entities)
 

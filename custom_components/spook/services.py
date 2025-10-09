@@ -8,8 +8,10 @@ import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, final
 
+from awesomeversion import AwesomeVersion
 import voluptuous as vol
 
+from homeassistant.const import __short_version__ as current_version
 from homeassistant.core import (
     HomeAssistant,
     Service,
@@ -261,14 +263,26 @@ class SpookServiceManager:
 
         # Load service schemas
         integration = await async_get_integration(self.hass, DOMAIN)
-        self._service_schemas = cast(
-            dict[str, Any],
-            await self.hass.async_add_executor_job(
-                _load_services_file,
-                self.hass,
-                integration,
-            ),
-        )
+        # Ensure compatibility with Home Assistant version
+        # As of Home Assistant 2025.10, the _load_services_file function no
+        # longer has the hass parameter.
+        if AwesomeVersion(current_version) >= AwesomeVersion("2025.10"):
+            self._service_schemas = cast(
+                dict[str, Any],
+                await self.hass.async_add_executor_job(
+                    _load_services_file,
+                    integration,
+                ),
+            )
+        else:
+            self._service_schemas = cast(
+                dict[str, Any],
+                await self.hass.async_add_executor_job(
+                    _load_services_file,
+                    self.hass,
+                    integration,
+                ),
+            )
 
         modules: list[ModuleType] = []
 
