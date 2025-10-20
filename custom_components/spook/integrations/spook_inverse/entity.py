@@ -45,29 +45,13 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
         self._attr_unique_id = config_entry.entry_id
         self.config_entry = config_entry
 
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        """Return the device info."""
-        entity_registry = er.async_get(self.hass)
-        device_registry = dr.async_get(self.hass)
+        entity_registry = er.async_get(hass)
+        device_registry = dr.async_get(hass)
         source_entity = entity_registry.async_get(self._entity_id)
-        if (
-            (source_entity is not None)
-            and (source_entity.device_id is not None)
-            and (
-                (
-                    device := device_registry.async_get(
-                        device_id=source_entity.device_id,
-                    )
-                )
-                is not None
-            )
-        ):
-            return DeviceInfo(
-                identifiers=device.identifiers,
-                connections=device.connections,
-            )
-        return None
+        device_id = source_entity.device_id if source_entity else None
+
+        if device_id and (device := device_registry.async_get(device_id)):
+            self.device_entry = device
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
