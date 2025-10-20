@@ -45,8 +45,8 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
         self._attr_unique_id = config_entry.entry_id
         self.config_entry = config_entry
 
-        entity_registry = er.async_get(hass)
-        device_registry = dr.async_get(hass)
+        entity_registry = er.async_get(self.hass)
+        device_registry = dr.async_get(self.hass)
         source_entity = entity_registry.async_get(self._entity_id)
         device_id = source_entity.device_id if source_entity else None
 
