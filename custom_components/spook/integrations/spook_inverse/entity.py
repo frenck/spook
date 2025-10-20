@@ -15,7 +15,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import Event, HomeAssistant, State, callback
 from homeassistant.helpers import device_registry as dr, entity_registry as er
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import (
     EventStateChangedData,
