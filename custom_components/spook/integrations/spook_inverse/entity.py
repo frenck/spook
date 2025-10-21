@@ -34,6 +34,7 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
 
     def __init__(
         self,
+        hass: HomeAssistant,
         config_entry: ConfigEntry,
     ) -> None:
         """Initialize an inverse entity."""
@@ -42,6 +43,7 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
         self._attr_name = config_entry.title
         self._attr_extra_state_attributes = {ATTR_ENTITY_ID: self._entity_id}
         self._attr_unique_id = config_entry.entry_id
+        self.hass = hass
         self.config_entry = config_entry
 
         entity_registry = er.async_get(self.hass)
