@@ -37,12 +37,12 @@ jobs:
           zip spook.zip -r ./
 
       - name: 🔏 Sign release package
-        uses: sigstore/gh-action-sigstore-python@v3.0.1
+        uses: sigstore/gh-action-sigstore-python@v3.1.0
         with:
           inputs: ${{ github.workspace }}/custom_components/spook/spook.zip
 
       - name: ⬆️ Upload zip to release
-        uses: softprops/action-gh-release@v2.3.4
+        uses: softprops/action-gh-release@v2.4.1
         with:
           files: ${{ github.workspace }}/custom_components/spook/spook.zip
 
