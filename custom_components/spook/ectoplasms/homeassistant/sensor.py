@@ -504,6 +504,16 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         value_fn=lambda hass: len(hass.states.async_entity_ids(Platform.TIME)),
     ),
     HomeAssistantSpookSensorEntityDescription(
+        key=Platform.TODO,
+        translation_key="homeassistant_todo",
+        entity_id="sensor.todos",
+        icon="mdi:clipboard-list",
+        entity_category=EntityCategory.DIAGNOSTIC,
+        state_class=SensorStateClass.TOTAL,
+        update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
+        value_fn=lambda hass: len(hass.states.async_entity_ids(Platform.TODO)),
+    ),
+    HomeAssistantSpookSensorEntityDescription(
         key=Platform.TTS,
         translation_key="homeassistant_tts",
         entity_id="sensor.tts",
