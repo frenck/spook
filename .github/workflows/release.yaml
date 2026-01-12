@@ -15,7 +15,7 @@ jobs:
       id-token: write
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6.0.1
 
       - name: 🔢 Adjust version number
         shell: bash
@@ -37,12 +37,12 @@ jobs:
           zip spook.zip -r ./
 
       - name: 🔏 Sign release package
-        uses: sigstore/gh-action-sigstore-python@v3.1.0
+        uses: sigstore/gh-action-sigstore-python@v3.2.0
         with:
           inputs: ${{ github.workspace }}/custom_components/spook/spook.zip
 
       - name: ⬆️ Upload zip to release
-        uses: softprops/action-gh-release@v2.4.1
+        uses: softprops/action-gh-release@v2.5.0
         with:
           files: ${{ github.workspace }}/custom_components/spook/spook.zip
 
