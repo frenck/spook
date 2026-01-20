@@ -62,11 +62,14 @@ class SpookRepair(AbstractSpookRepair):
                 LOGGER.debug("Config for dashboard %s not found, skipping", url_path)
                 continue
 
+            extracted_entities = self.__async_extract_entities(config)
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass,
-                entity_ids=self.__async_extract_entities(config),
+                entity_ids=set(extracted_entities.keys()),
                 known_entity_ids=known_entity_ids,
             ):
+                # Get the view path of the first unknown entity
+                first_view_path = extracted_entities[next(iter(unknown_entities))]
                 title = "Overview"
                 if dashboard.config:
                     title = dashboard.config.get("title", url_path)
@@ -77,7 +80,7 @@ class SpookRepair(AbstractSpookRepair):
                             f"- `{entity_id}`" for entity_id in unknown_entities
                         ),
                         "dashboard": title,
-                        "edit": f"/{url_path}/0?edit=1",
+                        "edit": f"/{url_path}/{first_view_path}?edit=1",
                     },
                 )
                 LOGGER.debug(
@@ -90,12 +93,15 @@ class SpookRepair(AbstractSpookRepair):
                 )
 
     @callback
-    def __async_extract_entities(self, config: dict[str, Any]) -> set[str]:
+    def __async_extract_entities(self, config: dict[str, Any]) -> dict[str, int | str]:
         """Extract entities from a dashboard config."""
-        entities = set()
+        entities: dict[str, int | str] = {}
         if isinstance(config, dict) and (views := config.get("views")):
-            for view in views:
-                entities.update(self.__async_extract_entities_from_view(view))
+            for view_index, view in enumerate(views):
+                view_path: int | str = view.get("path", view_index)
+                for entity_id in self.__async_extract_entities_from_view(view):
+                    if entity_id not in entities:
+                        entities[entity_id] = view_path
         return entities
 
     @callback
