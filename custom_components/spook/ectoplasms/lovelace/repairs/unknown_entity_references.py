@@ -68,8 +68,12 @@ class SpookRepair(AbstractSpookRepair):
                 entity_ids=set(extracted_entities.keys()),
                 known_entity_ids=known_entity_ids,
             ):
-                # Get the view path of the first unknown entity
-                first_view_path = extracted_entities[next(iter(unknown_entities))]
+                # Get the view path of the first unknown entity (by view order)
+                first_view_path = next(
+                    path
+                    for entity_id, path in extracted_entities.items()
+                    if entity_id in unknown_entities
+                )
                 title = "Overview"
                 if dashboard.config:
                     title = dashboard.config.get("title", url_path)
