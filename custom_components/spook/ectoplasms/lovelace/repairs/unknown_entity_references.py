@@ -15,7 +15,11 @@ from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_entity_ids, async_get_all_entity_ids
+from ....util import (
+    async_filter_known_entity_ids,
+    async_get_all_entity_ids,
+    split_comma_separated_entity_ids,
+)
 
 if TYPE_CHECKING:
     from homeassistant.components.lovelace.dashboard import (
@@ -103,9 +107,10 @@ class SpookRepair(AbstractSpookRepair):
         if isinstance(config, dict) and (views := config.get("views")):
             for view_index, view in enumerate(views):
                 view_path: int | str = view.get("path", view_index)
-                for entity_id in self.__async_extract_entities_from_view(view):
-                    if entity_id not in entities:
-                        entities[entity_id] = view_path
+                for entity_id_raw in self.__async_extract_entities_from_view(view):
+                    for entity_id in split_comma_separated_entity_ids(entity_id_raw):
+                        if entity_id not in entities:
+                            entities[entity_id] = view_path
         return entities
 
     @callback
