@@ -30,4 +30,7 @@ class SpookService(AbstractSpookAdminService):
             if user is None:
                 message = f"Could not find user: {user_id}"
                 raise HomeAssistantError(message)
+            if user.system_generated:
+                message = f"Cannot disable a system-generated user: {user_id}"
+                raise HomeAssistantError(message)
             await self.hass.auth.async_update_user(user, is_active=False)

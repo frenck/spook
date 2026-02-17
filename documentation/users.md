@@ -54,8 +54,10 @@ Not sure what the `user_id` of a user is? You can find it in the Home Assistant 
 Alternatively, you can use the **Developer Tools** → **Template** tab and use the following template to list all user IDs:
 
 ```{code-block} yaml
-{% for user in (await hass.auth.async_get_users()) %}
-{{ user.name }}: {{ user.id }}
+{% for state in states.person %}
+Name: {{ state.name }}
+ID: {{ state.attributes.user_id }}
+------------------
 {% endfor %}
 ```
 

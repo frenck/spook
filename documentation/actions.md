@@ -392,6 +392,8 @@ Set the duration for a timer entity. _#timeflies_
 
 `timer.set_duration`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.set_duration), [documentation](integrations/timer#set-duration) 📚
 
+++(user-disable)=
+
 ## User: Disable
 
 This action can be used to disable a user account on the fly, preventing them from logging in. _#lockout_
