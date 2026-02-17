@@ -391,3 +391,15 @@ This action selects a random option from the list of options of a select entity.
 Set the duration for a timer entity. _#timeflies_
 
 `timer.set_duration`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.set_duration), [documentation](integrations/timer#set-duration) 📚
+
+## User: Disable
+
+This action can be used to disable a user account on the fly, preventing them from logging in. _#lockout_
+
+`homeassistant.disable_user`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_user), [documentation](users#disable-a-user) 📚
+
+## User: Enable
+
+Guess what... this action does the reverse of [](#user-disable). _#welcome_
+
+`homeassistant.enable_user`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_user), [documentation](users#enable-a-user) 📚
