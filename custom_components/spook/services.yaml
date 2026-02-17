@@ -183,6 +183,36 @@ homeassistant_delete_area:
       selector:
         area:
 
+homeassistant_add_alias_to_entity:
+  name: Add an alias to an entity 👻
+  description: >-
+    Adds an alias to an entity.
+  fields:
+    entity:
+      name: Entity ID
+      description: The ID of the entity to add the alias to.
+      required: true
+      selector:
+        entity:
+    alias:
+      name: Alias
+      description: The alias (or list of aliasses) to add to the entity.
+      required: true
+      selector:
+        object:
+
+homeassistant_get_alias_from_entity:
+  name: Gets the aliases from an entity 👻
+  description: >-
+    Gets the aliases from an entity.
+  fields:
+    entity:
+      name: Entity ID
+      description: The ID of the entity retrieve aliases from.
+      required: true
+      selector:
+        entity:
+
 homeassistant_disable_config_entry:
   name: Disable an integration 👻
   description: >-
