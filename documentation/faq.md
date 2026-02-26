@@ -33,7 +33,7 @@ The early versions (before version v3.0.0), was published under a Passive Agress
 
 Spook got popular and loved by many, so I decided to change the license to the [MIT License](license), which is an permissive open-source, OSI-approved, license as of version v3.0.0; taking this more seriously. There is even extensive documentation now! Additionally, I changed the slogan to "Spook 👻 Your homie" to reflect the change in license and the love it got from the community.
 
-Spook is and remains a custom integration, that is not supported, maintained, or endoredes by the Home Assistant project. Just like any other custom integration out there. It is up to you to decide if you are comformtable using a custom integration or not.
+Spook is and remains a custom integration, that is not supported, maintained, or endorsed by the Home Assistant project. Just like any other custom integration out there. It is up to you to decide if you are comfortable using a custom integration or not.
 ```
 
 ```{card}
