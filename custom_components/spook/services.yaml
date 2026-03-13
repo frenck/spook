@@ -233,6 +233,30 @@ homeassistant_enable_device:
         device:
           multiple: true
 
+homeassistant_disable_user:
+  name: Disable a user 👻
+  description: >-
+    Disables a user account, preventing them from logging in.
+  fields:
+    user_id:
+      name: User ID
+      description: The ID(s) of the user(s) to disable.
+      required: true
+      selector:
+        text:
+
+homeassistant_enable_user:
+  name: Enable a user 👻
+  description: >-
+    Enables a user account, allowing them to log in.
+  fields:
+    user_id:
+      name: User ID
+      description: The ID(s) of the user(s) to enable.
+      required: true
+      selector:
+        text:
+
 homeassistant_update_entity_id:
   name: Update an entity's ID 👻
   description: >-
