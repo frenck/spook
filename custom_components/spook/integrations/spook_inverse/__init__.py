@@ -77,8 +77,7 @@ async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Migrate old entry."""
     if (
-        config_entry.version == 1
-        and config_entry.minor_version < 2  # noqa: PLR2004
+        config_entry.version == 1 and config_entry.minor_version < 2  # noqa: PLR2004
     ):
         options = {**config_entry.options}
         if source_device_id := async_get_source_entity_device_id(
