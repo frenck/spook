@@ -76,12 +76,13 @@ async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
     """Migrate old entry."""
-    if config_entry.version == 1:
+    if (
+        config_entry.version == 1
+        and config_entry.minor_version < MIGRATION_MINOR_VERSION
+    ):
         options = {**config_entry.options}
-        if config_entry.minor_version < MIGRATION_MINOR_VERSION and (
-            source_device_id := async_get_source_entity_device_id(
-                hass, options[CONF_ENTITY_ID]
-            )
+        if source_device_id := async_get_source_entity_device_id(
+            hass, options[CONF_ENTITY_ID]
         ):
             # Remove the spook_inverse config entry from the source device
             async_remove_helper_config_entry_from_source_device(
