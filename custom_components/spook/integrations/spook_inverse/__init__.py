@@ -20,6 +20,7 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
+
 @callback
 def async_get_source_entity_device_id(
     hass: HomeAssistant, entity_id: str
