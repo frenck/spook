@@ -11,7 +11,10 @@ from homeassistant.helpers.helper_integration import (
     async_remove_helper_config_entry_from_source_device,
 )
 
+from .config_flow import SpookInverseConfigFlowHandler
 from .const import CONF_HIDE_SOURCE
+
+MIGRATION_MINOR_VERSION = SpookInverseConfigFlowHandler.MINOR_VERSION
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -88,7 +91,7 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
                 source_device_id=source_device_id,
             )
         hass.config_entries.async_update_entry(
-            config_entry, options=options, minor_version=2
+            config_entry, options=options, minor_version=MIGRATION_MINOR_VERSION
         )
 
     return True
