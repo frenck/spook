@@ -102,6 +102,9 @@ OPTIONS_FLOW = {
 class SpookInverseConfigFlowHandler(SchemaConfigFlowHandler, domain=DOMAIN):
     """Handle config flow for Spook inverse helper."""
 
+    VERSION = 1
+    MINOR_VERSION = 2
+
     config_flow = CONFIG_FLOW
     options_flow = OPTIONS_FLOW
 
