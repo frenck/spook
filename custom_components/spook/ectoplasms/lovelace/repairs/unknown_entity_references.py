@@ -217,6 +217,13 @@ class SpookRepair(AbstractSpookRepair):
             for chip in chips:
                 entities.update(self.__async_extract_entities_from_mushroom_chip(chip))
 
+        # Heading card
+        if badges := config.get("badges"):
+            for badge in badges:
+                if isinstance(badge, dict):
+                    entities.update(self.__async_extract_common(badge))
+                    entities.update(self.__async_extract_entities_from_actions(badge))
+
         visibility = config.get("visibility")
         if isinstance(visibility, list):
             for condition in visibility:
