@@ -5,13 +5,33 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.const import CONF_ENTITY_ID
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.helper_integration import (
+    async_remove_helper_config_entry_from_source_device,
+)
 
+from .config_flow import SpookInverseConfigFlowHandler
 from .const import CONF_HIDE_SOURCE
+
+MIGRATION_MINOR_VERSION = SpookInverseConfigFlowHandler.MINOR_VERSION
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
+
+
+@callback
+def async_get_source_entity_device_id(
+    hass: HomeAssistant, entity_id: str
+) -> str | None:
+    """Get the entity device id."""
+    registry = er.async_get(hass)
+
+    if not (source_entity := registry.async_get(entity_id)):
+        return None
+
+    return source_entity.device_id
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
@@ -52,3 +72,25 @@ async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
         return
 
     registry.async_update_entity(entity_id, hidden_by=None)
+
+
+async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:
+    """Migrate old entry."""
+    if (
+        config_entry.version == 1 and config_entry.minor_version < 2  # noqa: PLR2004
+    ):
+        options = {**config_entry.options}
+        if source_device_id := async_get_source_entity_device_id(
+            hass, options[CONF_ENTITY_ID]
+        ):
+            # Remove the spook_inverse config entry from the source device
+            async_remove_helper_config_entry_from_source_device(
+                hass,
+                helper_config_entry_id=config_entry.entry_id,
+                source_device_id=source_device_id,
+            )
+        hass.config_entries.async_update_entry(
+            config_entry, options=options, minor_version=MIGRATION_MINOR_VERSION
+        )
+
+    return True
