@@ -74,7 +74,7 @@ class SpookRepair(AbstractSpookRepair):
                     issue_id=url_path,
                     translation_placeholders={
                         "entities": "\n".join(
-                            f"- `{entity_id}`" for entity_id in unknown_entities
+                            f"- `{entity_id}`" for entity_id in sorted(unknown_entities)
                         ),
                         "dashboard": title,
                         "edit": f"/{url_path}/0?edit=1",
