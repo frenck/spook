@@ -2,16 +2,19 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components import automation
 from homeassistant.helpers import floor_registry as fr
-from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
-from ....const import LOGGER
-from ....repairs import AbstractSpookRepair
+from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....util import async_filter_known_floor_ids, async_get_all_floor_ids
 
+if TYPE_CHECKING:
+    from typing import Any
 
-class SpookRepair(AbstractSpookRepair):
+
+class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     """Spook repair tries to find unknown referenced floors in automations."""
 
     domain = automation.DOMAIN
@@ -21,44 +24,21 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_on_reload = True
 
-    automatically_clean_up_issues = True
+    unavailable_entity_class = automation.UnavailableAutomationEntity
+    entity_label = "automation"
+    reference_label = "floors"
+    edit_url_pattern = "/config/automation/edit/{unique_id}"
 
-    async def async_inspect(self) -> None:
-        """Trigger a inspection."""
-        if self.domain not in self.hass.data[DATA_INSTANCES]:
-            return
+    _known_floor_ids: set[str]
 
-        entity_component: EntityComponent[automation.AutomationEntity] = self.hass.data[
-            DATA_INSTANCES
-        ][self.domain]
+    async def _async_setup_inspection(self) -> None:
+        """Cache known floor IDs for this inspection cycle."""
+        self._known_floor_ids = async_get_all_floor_ids(self.hass)
 
-        LOGGER.debug("Spook is inspecting: %s", self.repair)
-
-        known_floor_ids = async_get_all_floor_ids(self.hass)
-
-        for entity in entity_component.entities:
-            self.possible_issue_ids.add(entity.entity_id)
-            if not isinstance(entity, automation.UnavailableAutomationEntity) and (
-                unknown_floors := async_filter_known_floor_ids(
-                    self.hass,
-                    floor_ids=entity.referenced_floors,
-                    known_floor_ids=known_floor_ids,
-                )
-            ):
-                self.async_create_issue(
-                    issue_id=entity.entity_id,
-                    translation_placeholders={
-                        "floors": "\n".join(f"- `{floor}`" for floor in unknown_floors),
-                        "automation": entity.name,
-                        "edit": f"/config/automation/edit/{entity.unique_id}",
-                        "entity_id": entity.entity_id,
-                    },
-                )
-                LOGGER.debug(
-                    (
-                        "Spook found unknown floors in %s "
-                        "and created an issue for it; Floors: %s",
-                    ),
-                    entity.entity_id,
-                    ", ".join(unknown_floors),
-                )
+    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+        """Return unknown floor IDs referenced by ``entity``."""
+        return async_filter_known_floor_ids(
+            self.hass,
+            floor_ids=entity.referenced_floors,
+            known_floor_ids=self._known_floor_ids,
+        )

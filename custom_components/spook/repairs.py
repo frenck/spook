@@ -25,15 +25,19 @@ from homeassistant.helpers import (
 )
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
+from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
+from .util import async_get_all_entity_ids
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Mapping
     from types import ModuleType
 
     from homeassistant.data_entry_flow import FlowResult
+    from homeassistant.helpers.entity_platform import EntityPlatform
     from homeassistant.util.event_type import EventType
 
 
@@ -238,6 +242,156 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         for sub in self._event_subs:
             sub()
         await super().async_deactivate()
+
+
+class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, ABC):
+    """Base class for repairs that find unknown references in component entities.
+
+    Handles the shared boilerplate for inspecting entities loaded via
+    `EntityComponent` (e.g. automations, scripts): iterating the component's
+    entities, skipping unavailable ones, computing per-entity unknown references
+    via a subclass hook, and creating an issue with the standard translation
+    placeholders (``<reference_label>``, ``<entity_label>``, ``edit``,
+    ``entity_id``).
+    """
+
+    automatically_clean_up_issues = True
+
+    #: Entity class representing an unavailable/broken instance. Entities of
+    #: this type are still tracked in ``possible_issue_ids`` but skipped during
+    #: issue creation.
+    unavailable_entity_class: type
+
+    #: Translation placeholder key holding the entity's display name (e.g.
+    #: ``"automation"`` or ``"script"``).
+    entity_label: str
+
+    #: Translation placeholder key holding the bulleted list of unknown
+    #: references (e.g. ``"areas"``, ``"floors"``, ``"entities"``).
+    reference_label: str
+
+    #: Format string used to build the ``edit`` placeholder. Must contain a
+    #: ``{unique_id}`` field (e.g. ``"/config/automation/edit/{unique_id}"``).
+    edit_url_pattern: str
+
+    async def _async_setup_inspection(self) -> None:
+        """Prepare per-inspection state (called once per inspection cycle).
+
+        Override to cache lookups (e.g. known IDs from a registry) on ``self``
+        for use during per-entity inspection.
+        """
+
+    # pylint: disable-next=unused-argument
+    def _should_inspect_entity(self, entity: Any) -> bool:  # noqa: ARG002
+        """Decide whether the given entity should be inspected.
+
+        Defaults to inspecting every entity. Override (e.g. to skip disabled
+        entities) when needed.
+        """
+        return True
+
+    @abstractmethod
+    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+        """Return the set of unknown referenced IDs for a single entity."""
+
+    async def async_inspect(self) -> None:
+        """Trigger an inspection."""
+        if self.domain not in self.hass.data[DATA_INSTANCES]:
+            return
+
+        entity_component = self.hass.data[DATA_INSTANCES][self.domain]
+
+        LOGGER.debug("Spook is inspecting: %s", self.repair)
+
+        await self._async_setup_inspection()
+
+        for entity in entity_component.entities:
+            self.possible_issue_ids.add(entity.entity_id)
+
+            if isinstance(entity, self.unavailable_entity_class):
+                continue
+
+            if not self._should_inspect_entity(entity):
+                continue
+
+            unknown = await self._async_compute_unknown_references(entity)
+            if not unknown:
+                continue
+
+            self.async_create_issue(
+                issue_id=entity.entity_id,
+                translation_placeholders={
+                    self.reference_label: "\n".join(f"- `{item}`" for item in unknown),
+                    self.entity_label: entity.name,
+                    "edit": self.edit_url_pattern.format(unique_id=entity.unique_id),
+                    "entity_id": entity.entity_id,
+                },
+            )
+            LOGGER.debug(
+                "Spook found unknown %s in %s and created an issue for it; %s: %s",
+                self.reference_label,
+                entity.entity_id,
+                self.reference_label.capitalize(),
+                ", ".join(unknown),
+            )
+
+
+class AbstractSpookEntityPlatformUnknownSourceRepair(AbstractSpookRepair, ABC):
+    """Base class for repairs that find unknown source entities on helpers.
+
+    Handles the shared boilerplate for inspecting entities loaded via
+    `EntityPlatform` (e.g. ``switch_as_x``, ``integration``, ``utility_meter``,
+    ``trend``): walking the platforms, optionally filtering by platform domain,
+    pulling each entity's source attribute via a subclass hook, and raising an
+    issue when the source is no longer known to Home Assistant.
+    """
+
+    automatically_clean_up_issues = True
+
+    #: When set, only entities living on platforms whose ``domain`` equals this
+    #: value are inspected. ``None`` (the default) inspects every platform of
+    #: the integration domain.
+    source_platform_domain: str | None = None
+
+    @abstractmethod
+    def _get_source_entity_id(self, entity: Any) -> str:
+        """Return the source entity ID for the given helper entity."""
+
+    async def async_inspect(self) -> None:
+        """Trigger an inspection."""
+        LOGGER.debug("Spook is inspecting: %s", self.repair)
+
+        platforms: list[EntityPlatform] | None
+        if not (platforms := self.hass.data[DATA_ENTITY_PLATFORM].get(self.domain)):
+            return  # Nothing to do, integration is not loaded.
+
+        known_entity_ids = async_get_all_entity_ids(self.hass)
+
+        for platform in platforms:
+            if (
+                self.source_platform_domain is not None
+                and platform.domain != self.source_platform_domain
+            ):
+                continue
+
+            for entity in platform.entities.values():
+                self.possible_issue_ids.add(entity.entity_id)
+                source = self._get_source_entity_id(entity)
+                if source not in known_entity_ids:
+                    self.async_create_issue(
+                        issue_id=entity.entity_id,
+                        translation_placeholders={
+                            "entity_id": entity.entity_id,
+                            "helper": entity.name,
+                            "source": source,
+                        },
+                    )
+                    LOGGER.debug(
+                        "Spook found unknown source entity %s in %s "
+                        "and created an issue for it",
+                        source,
+                        entity.entity_id,
+                    )
 
 
 class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):

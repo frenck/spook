@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code  # Mirrors unknown_tracked_entities by design.
 """Spook - Your homie."""
 
 from __future__ import annotations

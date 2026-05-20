@@ -106,11 +106,9 @@ combine-as-imports = true
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:
 # format - handled by ruff
-# duplicate-code - unavoidable
 # used-before-assignment - false positives with TYPE_CHECKING structures
 disable = [
   "abstract-method",
-  "duplicate-code",
   "format",
   "unexpected-keyword-arg",
   "used-before-assignment",
@@ -126,6 +124,13 @@ source = ["custom_components/spook"]
 
 [tool.coverage.report]
 show_missing = true
+
+[tool.pylint.similarities]
+# Trivial header overlap (imports, class skeletons, `inspect_events = {...}`) is
+# inherent to Home Assistant ectoplasms and not worth deduplicating.
+ignore-imports = true
+ignore-signatures = true
+min-similarity-lines = 12
 
 [tool.uv]
 environments = [
