@@ -8,8 +8,8 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPlatform
 
 from ....const import LOGGER
+from ....entity_filtering import async_get_all_entity_ids
 from ....repairs import AbstractSpookRepair
-from ....util import async_get_all_entity_ids
 
 
 class SpookRepair(AbstractSpookRepair):

@@ -11,8 +11,7 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
 from ....const import LOGGER
-from ....repairs import AbstractSpookRepair
-from ....util import (
+from ....entity_filtering import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_config,
     async_extract_entities_from_template_string,
@@ -20,6 +19,7 @@ from ....util import (
     async_get_all_entity_ids,
     is_template_string,
 )
+from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant

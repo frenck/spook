@@ -10,12 +10,12 @@ from homeassistant.const import (
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
 from ....const import LOGGER
-from ....repairs import AbstractSpookRepair
-from ....util import (
+from ....entity_filtering import (
     async_filter_known_services,
     async_find_services_in_sequence,
     async_get_all_services,
 )
+from ....repairs import AbstractSpookRepair
 
 
 class SpookRepair(AbstractSpookRepair):

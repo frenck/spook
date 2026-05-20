@@ -7,8 +7,8 @@ from homeassistant.helpers import area_registry as ar
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
 from ....const import LOGGER
+from ....entity_filtering import async_filter_known_area_ids, async_get_all_area_ids
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_area_ids, async_get_all_area_ids
 
 
 class SpookRepair(AbstractSpookRepair):

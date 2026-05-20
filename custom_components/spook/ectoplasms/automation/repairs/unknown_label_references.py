@@ -7,8 +7,8 @@ from homeassistant.helpers import label_registry as lr
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
 from ....const import LOGGER
+from ....entity_filtering import async_filter_known_label_ids, async_get_all_label_ids
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_label_ids, async_get_all_label_ids
 
 
 class SpookRepair(AbstractSpookRepair):
