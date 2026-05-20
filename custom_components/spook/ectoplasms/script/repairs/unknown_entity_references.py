@@ -9,12 +9,12 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
-from ....repairs import AbstractSpookRepair
-from ....util import (
+from ....entity_filtering import (
     async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
     async_get_all_entity_ids,
 )
+from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant

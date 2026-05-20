@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 from homeassistant.components import automation
 from homeassistant.helpers import label_registry as lr
 
+from ....entity_filtering import async_filter_known_label_ids, async_get_all_label_ids
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
-from ....util import async_filter_known_label_ids, async_get_all_label_ids
 
 if TYPE_CHECKING:
     from typing import Any

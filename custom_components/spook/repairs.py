@@ -30,7 +30,7 @@ from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
-from .util import async_get_all_entity_ids
+from .entity_filtering import async_get_all_entity_ids
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Mapping

@@ -6,7 +6,7 @@ from typing import Any
 
 import pytest
 
-from custom_components.spook.util import (
+from custom_components.spook.entity_filtering import (
     extract_template_strings_from_config,
     is_template_string,
     split_comma_separated_entity_ids,

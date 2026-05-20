@@ -10,12 +10,12 @@ from homeassistant.const import (
     EVENT_SERVICE_REMOVED,
 )
 
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
-from ....util import (
+from ....entity_filtering import (
     async_filter_known_services,
     async_find_services_in_sequence,
     async_get_all_services,
 )
+from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 
 if TYPE_CHECKING:
     from typing import Any
