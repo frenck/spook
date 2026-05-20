@@ -2,23 +2,26 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components import automation
 from homeassistant.const import (
     EVENT_SERVICE_REGISTERED,
     EVENT_SERVICE_REMOVED,
 )
-from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
-from ....const import LOGGER
-from ....repairs import AbstractSpookRepair
+from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....util import (
     async_filter_known_services,
     async_find_services_in_sequence,
     async_get_all_services,
 )
 
+if TYPE_CHECKING:
+    from typing import Any
 
-class SpookRepair(AbstractSpookRepair):
+
+class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     """Spook repair tries to find unknown referenced services in automations."""
 
     domain = automation.DOMAIN
@@ -31,48 +34,21 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = True
     inspect_on_reload = True
 
-    automatically_clean_up_issues = True
+    unavailable_entity_class = automation.UnavailableAutomationEntity
+    entity_label = "automation"
+    reference_label = "services"
+    edit_url_pattern = "/config/automation/edit/{unique_id}"
 
-    async def async_inspect(self) -> None:
-        """Trigger a inspection."""
-        if self.domain not in self.hass.data[DATA_INSTANCES]:
-            return
+    _known_services: set[str]
 
-        entity_component: EntityComponent[automation.AutomationEntity] = self.hass.data[
-            DATA_INSTANCES
-        ][self.domain]
+    async def _async_setup_inspection(self) -> None:
+        """Cache known services for this inspection cycle."""
+        self._known_services = async_get_all_services(self.hass)
 
-        LOGGER.debug("Spook is inspecting: %s", self.repair)
-
-        known_services = async_get_all_services(self.hass)
-
-        for entity in entity_component.entities:
-            self.possible_issue_ids.add(entity.entity_id)
-
-            if isinstance(entity, automation.UnavailableAutomationEntity):
-                continue
-
-            if unknown_services := async_filter_known_services(
-                self.hass,
-                services=async_find_services_in_sequence(entity.action_script.sequence),
-                known_services=known_services,
-            ):
-                self.async_create_issue(
-                    issue_id=entity.entity_id,
-                    translation_placeholders={
-                        "services": "\n".join(
-                            f"- `{service}`" for service in unknown_services
-                        ),
-                        "automation": entity.name,
-                        "edit": f"/config/automation/edit/{entity.unique_id}",
-                        "entity_id": entity.entity_id,
-                    },
-                )
-                LOGGER.debug(
-                    (
-                        "Spook found unknown action calls in %s "
-                        "and created an issue for it; Actions: %s",
-                    ),
-                    entity.entity_id,
-                    ", ".join(unknown_services),
-                )
+    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+        """Return unknown services called by ``entity``."""
+        return async_filter_known_services(
+            self.hass,
+            services=async_find_services_in_sequence(entity.action_script.sequence),
+            known_services=self._known_services,
+        )
