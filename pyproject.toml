@@ -37,7 +37,7 @@ keywords = [
   "spook",
   "utils",
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.13.2"
 dependencies = [
     "homeassistant>=2025.2.0",
 ]
@@ -83,6 +83,14 @@ ignore = [
 ]
 select = ["ALL"]
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = [
+  "ERA001",  # Commented-out code in section dividers
+  "FBT003",  # Boolean positional value in extractor inputs
+  "S101",    # asserts are how pytest tests assert
+  "SLF001",  # tests intentionally reach private members
+]
+
 [tool.ruff.lint.flake8-import-conventions.extend-aliases]
 "homeassistant.helpers.area_registry" = "ar"
 "homeassistant.helpers.config_validation" = "cv"
@@ -111,11 +119,17 @@ disable = [
   "used-before-assignment",
 ]
 
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+norecursedirs = [".git", "testing_config"]
+
 [tool.uv]
 dev-dependencies = [
   "pre-commit>=3.6.0",
   "pre-commit-hooks>=4.5.0",
   "pylint>=3.1.0",
+  "pytest-homeassistant-custom-component>=0.13.300",
   "ruff>=0.3.2",
 ]
 

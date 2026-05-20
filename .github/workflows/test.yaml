@@ -1,0 +1,30 @@
+---
+name: Tests
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+env:
+  DEFAULT_PYTHON: "3.13"
+
+jobs:
+  pytest:
+    name: Pytest
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@v6.0.2
+
+      - name: 🏗 Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
+        with:
+          enable-cache: true
+          python-version: ${{ env.DEFAULT_PYTHON }}
+
+      - name: 🏗 Install dependencies
+        run: uv sync --frozen --dev
+
+      - name: 🚀 Run pytest
+        run: uv run pytest tests -v
