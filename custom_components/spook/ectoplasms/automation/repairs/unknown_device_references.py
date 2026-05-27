@@ -7,8 +7,8 @@ from typing import TYPE_CHECKING
 from homeassistant.components import automation
 from homeassistant.helpers import device_registry as dr
 
+from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
-from ....util import async_filter_known_device_ids, async_get_all_device_ids
 
 if TYPE_CHECKING:
     from typing import Any

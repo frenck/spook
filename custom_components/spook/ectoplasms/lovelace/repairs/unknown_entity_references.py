@@ -14,8 +14,8 @@ from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
+from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_entity_ids, async_get_all_entity_ids
 
 if TYPE_CHECKING:
     from homeassistant.components.lovelace.dashboard import (
