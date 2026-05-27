@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class SpookRepair(AbstractSpookEntityPlatformUnknownSourceRepair):
-    """Spook repair tries to find unknown source entites for switch_as_x."""
+    """Spook repair tries to find unknown source entities for switch_as_x."""
 
     domain = "switch_as_x"
     repair = "switch_as_x_unknown_source"

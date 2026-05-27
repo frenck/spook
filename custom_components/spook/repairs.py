@@ -318,10 +318,14 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
             if not unknown:
                 continue
 
+            sorted_unknown = sorted(unknown)
+
             self.async_create_issue(
                 issue_id=entity.entity_id,
                 translation_placeholders={
-                    self.reference_label: "\n".join(f"- `{item}`" for item in unknown),
+                    self.reference_label: "\n".join(
+                        f"- `{item}`" for item in sorted_unknown
+                    ),
                     self.entity_label: entity.name,
                     "edit": self.edit_url_pattern.format(unique_id=entity.unique_id),
                     "entity_id": entity.entity_id,
@@ -332,7 +336,7 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
                 self.reference_label,
                 entity.entity_id,
                 self.reference_label.capitalize(),
-                ", ".join(unknown),
+                ", ".join(sorted_unknown),
             )
 
 
