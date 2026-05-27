@@ -296,10 +296,12 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
-        if self.domain not in self.hass.data[DATA_INSTANCES]:
+        self.possible_issue_ids.clear()
+
+        if self.domain not in (instances := self.hass.data.get(DATA_INSTANCES, {})):
             return
 
-        entity_component = self.hass.data[DATA_INSTANCES][self.domain]
+        entity_component = instances[self.domain]
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
@@ -363,10 +365,14 @@ class AbstractSpookEntityPlatformUnknownSourceRepair(AbstractSpookRepair, ABC):
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
+        self.possible_issue_ids.clear()
+
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
         platforms: list[EntityPlatform] | None
-        if not (platforms := self.hass.data[DATA_ENTITY_PLATFORM].get(self.domain)):
+        if not (
+            platforms := self.hass.data.get(DATA_ENTITY_PLATFORM, {}).get(self.domain)
+        ):
             return  # Nothing to do, integration is not loaded.
 
         known_entity_ids = async_get_all_entity_ids(self.hass)
