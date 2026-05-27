@@ -98,6 +98,12 @@ known-first-party = [
 ]
 combine-as-imports = true
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+  "I001", # Ruff/isort conflicts with Pylint's Home Assistant import ordering in tests
+  "S101", # Asserts are expected in tests
+]
+
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:
 # format - handled by ruff
@@ -111,11 +117,21 @@ disable = [
   "used-before-assignment",
 ]
 
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+
 [tool.uv]
-dev-dependencies = [
+environments = [
+  "python_full_version >= '3.13.2'",
+]
+
+[dependency-groups]
+dev = [
+  "aiosqlite>=0.22.1",
   "pre-commit>=3.6.0",
   "pre-commit-hooks>=4.5.0",
   "pylint>=3.1.0",
+  "pytest-homeassistant-custom-component==0.13.316",
   "ruff>=0.3.2",
 ]
 
