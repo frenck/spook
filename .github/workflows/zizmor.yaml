@@ -1,6 +1,7 @@
 ---
-name: Ruff
+name: Zizmor
 
+# yamllint disable-line rule:truthy
 on:
   pull_request:
   push:
@@ -13,8 +14,8 @@ env:
   DEFAULT_PYTHON: "3.14"
 
 jobs:
-  ruff:
-    name: Ruff
+  zizmor:
+    name: Zizmor
     runs-on: ubuntu-latest
     steps:
       - name: ⤵️ Check out code from GitHub
@@ -31,8 +32,7 @@ jobs:
       - name: 🏗 Install dependencies
         run: uv sync --frozen --dev
 
-      - name: 🚀 Run ruff linter
-        run: uv run ruff check --output-format=github .
-
-      - name: 🚀 Run ruff formatter
-        run: uv run ruff format --check .
+      - name: 🚀 Run zizmor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uv run zizmor .github/workflows/
