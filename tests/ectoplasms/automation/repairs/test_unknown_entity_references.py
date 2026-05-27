@@ -189,8 +189,10 @@ async def test_action_if_then_else_nested(hass: HomeAssistant) -> None:
         "then": [{"service": "light.turn_on", "target": {"entity_id": "light.hall"}}],
         "else": [{"service": "light.turn_off", "target": {"entity_id": "light.hall"}}],
     }
-    result = await extract_entities_from_action_config(hass, config)
-    assert {"binary_sensor.door", "light.hall"} <= result
+    assert await extract_entities_from_action_config(hass, config) == {
+        "binary_sensor.door",
+        "light.hall",
+    }
 
 
 async def test_action_list_of_actions(hass: HomeAssistant) -> None:
