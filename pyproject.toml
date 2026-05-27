@@ -11,8 +11,7 @@ classifiers = [
   "Framework :: AsyncIO",
   "Intended Audience :: Developers",
   "Natural Language :: English",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3",
 ]
 keywords = [
@@ -37,9 +36,9 @@ keywords = [
   "spook",
   "utils",
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.14.2"
 dependencies = [
-    "homeassistant>=2025.2.0",
+    "homeassistant>=2026.3.0",
 ]
 
 [project.urls]
@@ -118,11 +117,19 @@ disable = [
 ]
 
 [tool.pytest.ini_options]
+addopts = "--cov=custom_components/spook --cov-report=term-missing --cov-report=xml"
 asyncio_mode = "auto"
+
+[tool.coverage.run]
+branch = true
+source = ["custom_components/spook"]
+
+[tool.coverage.report]
+show_missing = true
 
 [tool.uv]
 environments = [
-  "python_full_version >= '3.13.2'",
+  "python_full_version >= '3.14.2'",
 ]
 
 [dependency-groups]
@@ -131,7 +138,8 @@ dev = [
   "pre-commit>=3.6.0",
   "pre-commit-hooks>=4.5.0",
   "pylint>=3.1.0",
-  "pytest-homeassistant-custom-component==0.13.316",
+  "pytest-homeassistant-custom-component==0.13.333",
+  "pytest-cov>=7.0.0",
   "ruff>=0.3.2",
 ]
 

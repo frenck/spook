@@ -1,12 +1,18 @@
 """Tests for the Spook config flow."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 
 from homeassistant import config_entries
-from homeassistant.core import HomeAssistant
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.spook.const import DOMAIN
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 
 pytestmark = pytest.mark.usefixtures("skip_dependency_setup")

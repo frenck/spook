@@ -1,12 +1,19 @@
 """Test fixtures for Spook."""
 
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
 import pytest
 from pytest_homeassistant_custom_component.syrupy import HomeAssistantSnapshotExtension
-from syrupy.assertion import SnapshotAssertion
 
 from homeassistant import config_entries, loader, setup
-from homeassistant.core import HomeAssistant
-from homeassistant.loader import Integration
+
+if TYPE_CHECKING:
+    from syrupy.assertion import SnapshotAssertion
+
+    from homeassistant.core import HomeAssistant
+    from homeassistant.loader import Integration
 
 
 @pytest.fixture(autouse=True)
