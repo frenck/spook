@@ -9,9 +9,10 @@ on:
 
 permissions:
   contents: read
+  id-token: write
 
 env:
-  DEFAULT_PYTHON: "3.13"
+  DEFAULT_PYTHON: "3.14"
 
 jobs:
   test:
@@ -34,3 +35,9 @@ jobs:
 
       - name: 🚀 Run tests
         run: uv run pytest
+
+      - name: ⬆️ Upload coverage to Codecov
+        uses: codecov/codecov-action@af09b5e394c93991b95a5e7646aeb90c1917f78f # v5.5.1
+        with:
+          files: ./coverage.xml
+          use_oidc: true

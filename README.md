@@ -4,7 +4,7 @@
 ![Project Stage][project-stage-shield]
 [![License][license-shield]](LICENSE.md)
 ![Project Maintenance][maintenance-shield]
-[![Quality Gate Status][sonarcloud-shield]][sonarcloud]
+[![Coverage][codecov-shield]][codecov]
 
 ![Spook - Your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo_wordmark_catchphrase_2048x512.png)
 
@@ -52,7 +52,7 @@ is needed!
 
 # License
 
-Copyright (c) 2023-2025 Franck Nijhof
+Copyright (c) 2023-2026 Franck Nijhof
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -73,11 +73,11 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
 [contributors]: https://github.com/frenck/spook/graphs/contributors
+[codecov-shield]: https://codecov.io/gh/frenck/spook/branch/main/graph/badge.svg
+[codecov]: https://codecov.io/gh/frenck/spook
 [frenck]: https://github.com/frenck
 [license-shield]: https://img.shields.io/github/license/frenck/spook.svg
 [project-stage-shield]: https://img.shields.io/badge/project%20stage-SPOOKED-red.svg
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
-[maintenance-shield]: https://img.shields.io/maintenance/yes/2025.svg
-[sonarcloud-shield]: https://sonarcloud.io/api/project_badges/measure?project=frenck_python-elgato&metric=alert_status
-[sonarcloud]: https://sonarcloud.io/summary/new_code?id=frenck_python-elgato
+[maintenance-shield]: https://img.shields.io/maintenance/yes/2026.svg
