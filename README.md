@@ -5,6 +5,7 @@
 [![License][license-shield]](LICENSE.md)
 ![Project Maintenance][maintenance-shield]
 [![Coverage][codecov-shield]][codecov]
+[![OpenSSF Scorecard][scorecard-shield]][scorecard]
 
 ![Spook - Your homie](https://raw.githubusercontent.com/frenck/spook/main/logos/logo_wordmark_catchphrase_2048x512.png)
 
@@ -81,3 +82,5 @@ SOFTWARE.
 [releases-shield]: https://img.shields.io/github/release/frenck/spook.svg
 [releases]: https://github.com/frenck/spook/releases
 [maintenance-shield]: https://img.shields.io/maintenance/yes/2026.svg
+[scorecard-shield]: https://api.scorecard.dev/projects/github.com/frenck/spook/badge
+[scorecard]: https://scorecard.dev/viewer/?uri=github.com/frenck/spook
