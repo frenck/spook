@@ -2,23 +2,47 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Any
+from pathlib import Path
+from typing import TYPE_CHECKING
 
-import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from homeassistant.const import CONF_ENTITY_ID
+from homeassistant.const import CONF_ENTITY_ID, Platform
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 
+import custom_components
+from custom_components.spook.integrations import spook_inverse
 from custom_components.spook.integrations.spook_inverse import (
     MIGRATION_MINOR_VERSION,
     async_get_source_entity_device_id,
-    async_migrate_entry,
 )
-from custom_components.spook.integrations.spook_inverse.const import DOMAIN
+from custom_components.spook.integrations.spook_inverse.const import (
+    CONF_HIDE_SOURCE,
+    DOMAIN,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+
+
+def _link_spook_inverse_sub_integration(hass: HomeAssistant) -> None:
+    """Link the Spook inverse sub-integration into the test config dir."""
+    custom_components_dir = Path(hass.config.config_dir) / "custom_components"
+    custom_components_dir.mkdir(exist_ok=True)
+    if str(custom_components_dir) not in custom_components.__path__:
+        custom_components.__path__.append(str(custom_components_dir))
+    link = custom_components_dir / DOMAIN
+    target = Path(spook_inverse.__file__).parent
+    if link.is_symlink():
+        if link.readlink() == target:
+            return
+        link.unlink()
+    elif link.exists():
+        return
+    link.symlink_to(
+        target,
+        target_is_directory=True,
+    )
 
 
 async def test_async_get_source_entity_device_id_resolves_entity_id(
@@ -45,13 +69,13 @@ async def test_async_get_source_entity_device_id_resolves_entity_id(
 
 async def test_async_migrate_entry_removes_helper_from_source_device(
     hass: HomeAssistant,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test migration removes the helper from the old source device."""
     source_entry = MockConfigEntry(domain="switch", title="Source")
     source_entry.add_to_hass(hass)
 
-    device = dr.async_get(hass).async_get_or_create(
+    device_registry = dr.async_get(hass)
+    device = device_registry.async_get_or_create(
         config_entry_id=source_entry.entry_id,
         identifiers={("switch", "source-device")},
     )
@@ -66,67 +90,54 @@ async def test_async_migrate_entry_removes_helper_from_source_device(
     migrated_entry = MockConfigEntry(
         domain=DOMAIN,
         title="Inverse",
-        options={CONF_ENTITY_ID: "switch.source"},
+        options={
+            CONF_ENTITY_ID: "switch.source",
+            CONF_HIDE_SOURCE: False,
+            "inverse_type": Platform.SWITCH,
+        },
         version=1,
         minor_version=1,
     )
     migrated_entry.add_to_hass(hass)
 
-    calls: list[dict[str, Any]] = []
-
-    def remove_helper_from_source_device(
-        hass: HomeAssistant,
-        *,
-        helper_config_entry_id: str,
-        source_device_id: str,
-    ) -> None:
-        """Capture source device cleanup calls."""
-        calls.append(
-            {
-                "hass": hass,
-                "helper_config_entry_id": helper_config_entry_id,
-                "source_device_id": source_device_id,
-            }
-        )
-
-    monkeypatch.setattr(
-        "custom_components.spook.integrations.spook_inverse."
-        "async_remove_helper_config_entry_from_source_device",
-        remove_helper_from_source_device,
+    device_registry.async_get_or_create(
+        config_entry_id=migrated_entry.entry_id,
+        identifiers={("switch", "source-device")},
+    )
+    assert (
+        migrated_entry.entry_id in device_registry.async_get(device.id).config_entries
     )
 
-    assert await async_migrate_entry(hass, migrated_entry)
+    _link_spook_inverse_sub_integration(hass)
+    assert await hass.config_entries.async_setup(migrated_entry.entry_id)
+    await hass.async_block_till_done()
 
     assert migrated_entry.minor_version == MIGRATION_MINOR_VERSION
-    assert calls == [
-        {
-            "hass": hass,
-            "helper_config_entry_id": migrated_entry.entry_id,
-            "source_device_id": device.id,
-        }
-    ]
+    assert (
+        migrated_entry.entry_id
+        not in device_registry.async_get(device.id).config_entries
+    )
 
 
-async def test_async_migrate_entry_handles_missing_source_entity_id(
+async def test_async_migrate_entry_handles_unresolved_source_entity_id(
     hass: HomeAssistant,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test migration skips device cleanup when old options lack an entity ID."""
+    """Test migration skips device cleanup when the source entity is unresolved."""
     migrated_entry = MockConfigEntry(
         domain=DOMAIN,
         title="Inverse",
-        options={},
+        options={
+            CONF_ENTITY_ID: "switch.missing",
+            CONF_HIDE_SOURCE: False,
+            "inverse_type": Platform.SWITCH,
+        },
         version=1,
         minor_version=1,
     )
     migrated_entry.add_to_hass(hass)
 
-    monkeypatch.setattr(
-        "custom_components.spook.integrations.spook_inverse."
-        "async_remove_helper_config_entry_from_source_device",
-        pytest.fail,
-    )
-
-    assert await async_migrate_entry(hass, migrated_entry)
+    _link_spook_inverse_sub_integration(hass)
+    assert await hass.config_entries.async_setup(migrated_entry.entry_id)
+    await hass.async_block_till_done()
 
     assert migrated_entry.minor_version == MIGRATION_MINOR_VERSION
