@@ -93,4 +93,6 @@ def test_service_modules_have_service_descriptions() -> None:
         if schema_key not in service_descriptions:
             missing_descriptions.append(f"{_module_name(module_file)} -> {schema_key}")
 
-    assert not missing_descriptions, f"Missing services.yaml entries: {missing_descriptions}"
+    assert not missing_descriptions, (
+        f"Missing services.yaml entries: {missing_descriptions}"
+    )
