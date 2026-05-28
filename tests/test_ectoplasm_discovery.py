@@ -67,6 +67,7 @@ def test_service_modules_expose_spook_service(module_file: Path) -> None:
     module = _import_module(module_file)
 
     assert hasattr(module, "SpookService")
+    assert isinstance(module.SpookService, type)
     assert issubclass(module.SpookService, AbstractSpookServiceBase)
 
 
@@ -76,12 +77,14 @@ def test_repair_modules_expose_spook_repair(module_file: Path) -> None:
     module = _import_module(module_file)
 
     assert hasattr(module, "SpookRepair")
+    assert isinstance(module.SpookRepair, type)
     assert issubclass(module.SpookRepair, AbstractSpookRepairBase)
 
 
 def test_service_modules_have_service_descriptions() -> None:
     """Every discovered service has a matching services.yaml entry."""
     service_descriptions = yaml.safe_load((SPOOK_ROOT / "services.yaml").read_text())
+    assert isinstance(service_descriptions, dict)
 
     missing_descriptions = []
     for module_file in SERVICE_MODULES:
@@ -90,4 +93,4 @@ def test_service_modules_have_service_descriptions() -> None:
         if schema_key not in service_descriptions:
             missing_descriptions.append(f"{_module_name(module_file)} -> {schema_key}")
 
-    assert not missing_descriptions
+    assert not missing_descriptions, f"Missing services.yaml entries: {missing_descriptions}"
