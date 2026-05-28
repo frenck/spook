@@ -31,7 +31,7 @@ def repair_fixture(hass: HomeAssistant) -> SpookRepair:
     return SpookRepair(hass)
 
 
-def _extract(repair: SpookRepair, config: dict[str, Any]) -> set[str]:
+def _extract(repair: SpookRepair, config: dict[str, Any]) -> dict[str, int | str]:
     """Call the name-mangled dashboard-level extractor."""
     return repair._SpookRepair__async_extract_entities(config)  # noqa: SLF001  # type: ignore[attr-defined]
 
@@ -53,20 +53,21 @@ def _extract_element(repair: SpookRepair, config: dict[str, Any]) -> set[str]:
 
 def test_dashboard_with_no_views_returns_empty(repair: SpookRepair) -> None:
     """A dashboard with no ``views`` key yields no entities."""
-    assert _extract(repair, {}) == set()
+    assert _extract(repair, {}) == {}
 
 
 def test_dashboard_non_dict_returns_empty(repair: SpookRepair) -> None:
     """A non-dict config yields no entities."""
-    assert _extract(repair, "not a dict") == set()  # type: ignore[arg-type]
+    assert _extract(repair, "not a dict") == {}  # type: ignore[arg-type]
 
 
 def test_dashboard_full_walk(repair: SpookRepair) -> None:
-    """Views, badges, cards, and sections are all walked."""
+    """Views, badges, cards, and sections are all walked with their view path."""
     config = {
         "views": [
             {
                 "title": "Home",
+                "path": "home",
                 "badges": [{"entity": "sensor.outside_temperature"}],
                 "cards": [{"type": "entity", "entity": "light.kitchen"}],
                 "sections": [{"cards": [{"type": "entity", "entity": "switch.lamp"}]}],
@@ -74,9 +75,78 @@ def test_dashboard_full_walk(repair: SpookRepair) -> None:
         ]
     }
     assert _extract(repair, config) == {
-        "sensor.outside_temperature",
-        "light.kitchen",
-        "switch.lamp",
+        "sensor.outside_temperature": "home",
+        "light.kitchen": "home",
+        "switch.lamp": "home",
+    }
+
+
+def test_dashboard_uses_view_index_when_path_is_missing(repair: SpookRepair) -> None:
+    """A view without a path falls back to its index."""
+    config = {
+        "views": [
+            {"title": "Home", "cards": [{"type": "entity", "entity": "light.kitchen"}]},
+            {"title": "Second", "cards": [{"type": "entity", "entity": "switch.lamp"}]},
+        ]
+    }
+    assert _extract(repair, config) == {
+        "light.kitchen": 0,
+        "switch.lamp": 1,
+    }
+
+
+def test_dashboard_uses_view_index_when_path_is_empty(repair: SpookRepair) -> None:
+    """An empty view path falls back to its index."""
+    config = {
+        "views": [
+            {
+                "path": "",
+                "cards": [{"type": "entity", "entity": "light.kitchen"}],
+            },
+            "not a view",
+            {
+                "path": None,
+                "cards": [{"type": "entity", "entity": "switch.lamp"}],
+            },
+        ]
+    }
+    assert _extract(repair, config) == {
+        "light.kitchen": 0,
+        "switch.lamp": 2,
+    }
+
+
+def test_dashboard_keeps_first_view_for_duplicate_entity(repair: SpookRepair) -> None:
+    """A duplicate entity keeps the first view path by dashboard order."""
+    config = {
+        "views": [
+            {"path": "first", "cards": [{"type": "entity", "entity": "light.kitchen"}]},
+            {
+                "path": "second",
+                "cards": [{"type": "entity", "entity": "light.kitchen"}],
+            },
+        ]
+    }
+    assert _extract(repair, config) == {"light.kitchen": "first"}
+
+
+def test_dashboard_splits_comma_separated_entities_per_view(
+    repair: SpookRepair,
+) -> None:
+    """Comma-separated entity IDs keep the source view path."""
+    config = {
+        "views": [
+            {
+                "path": "home",
+                "cards": [
+                    {"type": "entity", "entity": "light.kitchen, switch.lamp"},
+                ],
+            }
+        ]
+    }
+    assert _extract(repair, config) == {
+        "light.kitchen": "home",
+        "switch.lamp": "home",
     }
 
 
