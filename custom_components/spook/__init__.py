@@ -17,14 +17,11 @@ from homeassistant.core import (
 from homeassistant.helpers import issue_registry as ir
 
 from .const import DOMAIN, LOGGER, PLATFORMS
+from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
+from .integration_linking import link_sub_integrations, unlink_sub_integrations
 from .repairs import SpookRepairManager
 from .services import SpookServiceManager
-from .util import (
-    async_forward_setup_entry,
-    async_setup_all_entity_ids_cache_invalidation,
-    link_sub_integrations,
-    unlink_sub_integrations,
-)
+from .setup_helpers import async_forward_setup_entry
 
 if TYPE_CHECKING:
     from collections.abc import Callable
