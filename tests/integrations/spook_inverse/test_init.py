@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import TYPE_CHECKING
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -10,8 +9,6 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from homeassistant.const import CONF_ENTITY_ID, Platform
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 
-import custom_components
-from custom_components.spook.integrations import spook_inverse
 from custom_components.spook.integrations.spook_inverse import (
     MIGRATION_MINOR_VERSION,
     async_get_source_entity_device_id,
@@ -23,26 +20,6 @@ from custom_components.spook.integrations.spook_inverse.const import (
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-
-
-def _link_spook_inverse_sub_integration(hass: HomeAssistant) -> None:
-    """Link the Spook inverse sub-integration into the test config dir."""
-    custom_components_dir = Path(hass.config.config_dir) / "custom_components"
-    custom_components_dir.mkdir(exist_ok=True)
-    if str(custom_components_dir) not in custom_components.__path__:
-        custom_components.__path__.append(str(custom_components_dir))
-    link = custom_components_dir / DOMAIN
-    target = Path(spook_inverse.__file__).parent
-    if link.is_symlink():
-        if link.readlink() == target:
-            return
-        link.unlink()
-    elif link.exists():
-        return
-    link.symlink_to(
-        target,
-        target_is_directory=True,
-    )
 
 
 async def test_async_get_source_entity_device_id_resolves_entity_id(
@@ -108,7 +85,6 @@ async def test_async_migrate_entry_removes_helper_from_source_device(
         migrated_entry.entry_id in device_registry.async_get(device.id).config_entries
     )
 
-    _link_spook_inverse_sub_integration(hass)
     assert await hass.config_entries.async_setup(migrated_entry.entry_id)
     await hass.async_block_till_done()
 
@@ -136,7 +112,6 @@ async def test_async_migrate_entry_handles_unresolved_source_entity_id(
     )
     migrated_entry.add_to_hass(hass)
 
-    _link_spook_inverse_sub_integration(hass)
     assert await hass.config_entries.async_setup(migrated_entry.entry_id)
     await hass.async_block_till_done()
 
