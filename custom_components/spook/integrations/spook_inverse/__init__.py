@@ -28,7 +28,9 @@ def async_get_source_entity_device_id(
     """Get the entity device id."""
     registry = er.async_get(hass)
 
-    if not (source_entity := registry.async_get(entity_id)):
+    if not (resolved_entity_id := er.async_resolve_entity_id(registry, entity_id)):
+        return None
+    if not (source_entity := registry.async_get(resolved_entity_id)):
         return None
 
     return source_entity.device_id
@@ -80,8 +82,10 @@ async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) ->
         config_entry.version == 1 and config_entry.minor_version < 2  # noqa: PLR2004
     ):
         options = {**config_entry.options}
-        if source_device_id := async_get_source_entity_device_id(
-            hass, options[CONF_ENTITY_ID]
+        if (source_entity_id := options.get(CONF_ENTITY_ID)) and (
+            source_device_id := async_get_source_entity_device_id(
+                hass, source_entity_id
+            )
         ):
             # Remove the spook_inverse config entry from the source device
             async_remove_helper_config_entry_from_source_device(
