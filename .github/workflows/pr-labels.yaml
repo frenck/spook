@@ -3,8 +3,7 @@ name: PR Labels
 
 # yamllint disable-line rule:truthy
 on:
-  # yamllint disable-line rule:comments
-  pull_request_target: # zizmor: ignore[dangerous-triggers] - Safe: only reads PR metadata, no code checkout
+  pull_request:
     types:
       - opened
       - labeled
@@ -12,22 +11,16 @@ on:
       - synchronize
   workflow_call:
 
-permissions:
-  contents: read
+permissions: {}
 
 jobs:
   pr_labels:
     name: Verify
     runs-on: ubuntu-latest
-    permissions:
-      pull-requests: read
     steps:
       - name: 🏷 Verify PR has a valid label
-        uses: jesusvasquez333/verify-pr-label-action@657d111bbbe13e22bbd55870f1813c699bde1401 # v1.4.0
+        uses: ludeeus/action-require-labels@7ef0dba93830452589680da7cdea2e2c4c0f8dff # 1.1.0
         with:
-          pull-request-number: "${{ github.event.pull_request.number }}"
-          github-token: "${{ secrets.GITHUB_TOKEN }}"
-          valid-labels: >-
+          labels: >-
             breaking-change, bugfix, documentation, enhancement,
             refactor, performance, new-feature, maintenance, ci, dependencies
-          disable-reviews: true
