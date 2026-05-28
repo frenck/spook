@@ -11,8 +11,7 @@ classifiers = [
   "Framework :: AsyncIO",
   "Intended Audience :: Developers",
   "Natural Language :: English",
-  "Programming Language :: Python :: 3.11",
-  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.14",
   "Programming Language :: Python :: 3",
 ]
 keywords = [
@@ -37,9 +36,9 @@ keywords = [
   "spook",
   "utils",
 ]
-requires-python = ">=3.13"
+requires-python = ">=3.14.2"
 dependencies = [
-    "homeassistant>=2025.2.0",
+    "homeassistant>=2026.3.0",
 ]
 
 [project.urls]
@@ -98,25 +97,56 @@ known-first-party = [
 ]
 combine-as-imports = true
 
+[tool.ruff.lint.per-file-ignores]
+"tests/**/*.py" = [
+  "I001", # Ruff/isort conflicts with Pylint's Home Assistant import ordering in tests
+  "S101", # Asserts are expected in tests
+]
+
 [tool.pylint."MESSAGES CONTROL"]
 # Reasons disabled:
 # format - handled by ruff
-# duplicate-code - unavoidable
 # used-before-assignment - false positives with TYPE_CHECKING structures
 disable = [
   "abstract-method",
-  "duplicate-code",
   "format",
   "unexpected-keyword-arg",
   "used-before-assignment",
 ]
 
+[tool.pytest.ini_options]
+addopts = "--cov=custom_components/spook --cov-report=term-missing --cov-report=xml"
+asyncio_mode = "auto"
+
+[tool.coverage.run]
+branch = true
+source = ["custom_components/spook"]
+
+[tool.coverage.report]
+show_missing = true
+
+[tool.pylint.similarities]
+# Trivial header overlap (imports, class skeletons, `inspect_events = {...}`) is
+# inherent to Home Assistant ectoplasms and not worth deduplicating.
+ignore-imports = true
+ignore-signatures = true
+min-similarity-lines = 12
+
 [tool.uv]
-dev-dependencies = [
-  "pre-commit>=3.6.0",
+environments = [
+  "python_full_version >= '3.14.2'",
+]
+
+[dependency-groups]
+dev = [
+  "aiosqlite>=0.22.1",
   "pre-commit-hooks>=4.5.0",
   "pylint>=3.1.0",
+  "pytest-homeassistant-custom-component==0.13.333",
+  "prek>=0.4.3",
+  "pytest-cov>=7.0.0",
   "ruff>=0.3.2",
+  "zizmor>=1.25.2",
 ]
 
 [build-system]

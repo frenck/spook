@@ -15,12 +15,16 @@ jobs:
       id-token: write
     steps:
       - name: ⤵️ Check out code from GitHub
-        uses: actions/checkout@v6.0.2
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
 
       - name: 🔢 Adjust version number
         shell: bash
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          version="${{ github.event.release.tag_name }}"
+          version="${RELEASE_TAG}"
           version="${version,,}"
           version="${version#v}"
           yq e -P -o=json \
@@ -37,14 +41,18 @@ jobs:
           zip spook.zip -r ./
 
       - name: 🔏 Sign release package
-        uses: sigstore/gh-action-sigstore-python@v3.2.0
+        uses: sigstore/gh-action-sigstore-python@04cffa1d795717b140764e8b640de88853c92acc # v3.3.0
         with:
           inputs: ${{ github.workspace }}/custom_components/spook/spook.zip
 
       - name: ⬆️ Upload zip to release
-        uses: softprops/action-gh-release@v2.5.0
-        with:
-          files: ${{ github.workspace }}/custom_components/spook/spook.zip
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: >-
+          gh release upload "${RELEASE_TAG}"
+          "${{ github.workspace }}/custom_components/spook/spook.zip"
+          --clobber
 
         # Upload this one in the future, currently problematic for HACS
         # https://github.com/frenck/spook/issues/286
