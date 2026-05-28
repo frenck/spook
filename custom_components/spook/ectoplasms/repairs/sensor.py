@@ -15,6 +15,7 @@ from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.helpers import issue_registry as ir
 
 from ...entity import SpookEntityDescription
+from ...listeners import async_listen_once_tracked
 from .entity import RepairsSpookEntity
 
 if TYPE_CHECKING:
@@ -104,7 +105,9 @@ class HomeAssistantSpookSensorEntity(RepairsSpookEntity, SensorEntity):
             self.async_on_remove(self.hass.bus.async_listen(event, _update_state))
 
         self.async_on_remove(
-            self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _update_state),
+            async_listen_once_tracked(
+                self.hass, EVENT_HOMEASSISTANT_STARTED, _update_state
+            ),
         )
 
     @property
