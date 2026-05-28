@@ -2,10 +2,10 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING
 
 import aiohttp
-import async_timeout
 import voluptuous as vol
 
 from homeassistant.components.blueprint import DOMAIN
@@ -31,7 +31,7 @@ class SpookService(AbstractSpookAdminService):
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
         try:
-            async with async_timeout.timeout(10):
+            async with asyncio.timeout(10):
                 imported_blueprint = await fetch_blueprint_from_url(
                     self.hass,
                     call.data["url"],

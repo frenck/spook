@@ -31,6 +31,12 @@ repos:
         language: system
         types: [yaml]
         entry: uv run check-yaml
+      - id: zizmor
+        name: 🌈 Check GitHub Actions workflows with zizmor
+        language: system
+        types: [yaml]
+        files: ^\.github/workflows/
+        entry: uv run zizmor
       - id: check-merge-conflict
         name: 💥 Check for merge conflicts
         language: system

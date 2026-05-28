@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code  # Mirrors unknown_ignored_zones by design.
 """Spook - Your homie."""
 
 from __future__ import annotations
@@ -8,8 +9,8 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
+from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....repairs import AbstractSpookRepair
-from ....util import async_filter_known_entity_ids, async_get_all_entity_ids
 
 if TYPE_CHECKING:
     from homeassistant.components.proximity.coordinator import (

@@ -8,12 +8,16 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+  pull-requests: read
+
 jobs:
   update_release_draft:
     name: ✏️ Draft release
     runs-on: ubuntu-latest
     steps:
       - name: 🚀 Run Release Drafter
-        uses: release-drafter/release-drafter@v6.1.0
+        uses: release-drafter/release-drafter@5de93583980a40bd78603b6dfdcda5b4df377b32 # v7.2.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

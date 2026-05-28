@@ -3,7 +3,7 @@ subject: Enhanced integrations
 title: Input number
 subtitle: Give me your digits. 🔢
 thumbnail: ../images/integrations/input_number/example.png
-description: Spook adds some new actions to the input number integration, which allows you to set the value to the minimum or maximum value, or increase or decrease value by a given amount.
+description: Spook adds some new actions to the input number integration, which allows you to create and delete input number helpers on the fly, set the value to the minimum or maximum value, or increase or decrease value by a given amount.
 date: 2023-08-09T21:29:00+02:00
 ---
 
@@ -17,7 +17,7 @@ date: 2023-08-09T21:29:00+02:00
 
 The input number {term}`helper` in {term}`Home Assistant` allows the user to define values that can be controlled via the frontend and can be used within conditions of an {term}`automation <automation>`. The frontend can display a slider or a numeric input box. Changes to the slider or numeric input box generate state events. These state events can be utilized as automation triggers as well.
 
-Spook adds some new actions to the input number {term}`integration <integration>`, which allows you to set the value to the minimum or maximum value, and enhances the existing increase and decrease actions by allowing them to increase/decrease the value by a given amount.
+Spook adds some new actions to the input number {term}`integration <integration>`, which allows you to create and delete input number helpers on the fly, set the value to the minimum or maximum value, and enhances the existing increase and decrease actions by allowing them to increase/decrease the value by a given amount.
 
 ```{figure} ../images/integrations/input_number/example.png
 :name: example
@@ -34,6 +34,134 @@ Spook does not provide any new devices or entities for this integration.
 ## Actions
 
 Spook adds the following new actions to your Home Assistant instance:
+
+### Create an input number
+
+```{figure} ../images/integrations/input_number/create.png
+:alt: Screenshot of the input number create action in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Input number: Create an input number 👻
+* - {term}`Action name`
+  - `input_number.create`
+* - {term}`Action targets`
+  - No targets
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.create)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.create)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `name`
+  - {term}`string <string>`
+  - Yes
+  - `My input number`
+* - `input_number_id`
+  - {term}`string <string>`
+  - No
+  - `my_input_number`
+* - `min`
+  - {term}`float <float>`
+  - No
+  - `0`
+* - `max`
+  - {term}`float <float>`
+  - No
+  - `100`
+* - `initial`
+  - {term}`float <float>`
+  - No
+  - `50`
+* - `step`
+  - {term}`float <float>`
+  - No
+  - `1`
+* - `mode`
+  - {term}`string <string>`
+  - No
+  - `slider`
+* - `icon`
+  - {term}`string <string>`
+  - No
+  - `mdi:counter`
+* - `unit_of_measurement`
+  - {term}`string <string>`
+  - No
+  - `°C`
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: input_number.create
+data:
+  name: "My counter"
+  input_number_id: my_counter
+  min: 0
+  max: 100
+  step: 1
+  mode: slider
+```
+
+:::
+
+### Delete an input number
+
+:::{note}
+Input number helpers that are created and managed using manual YAML configuration cannot be deleted.
+:::
+
+```{figure} ../images/integrations/input_number/delete.png
+:alt: Screenshot of the input number delete action in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Input number: Delete an input number 👻
+* - {term}`Action name`
+  - `input_number.delete`
+* - {term}`Action targets`
+  - Yes, `input_number` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.delete)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.delete)
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: input_number.delete
+target:
+  entity_id: input_number.my_counter
+```
+
+:::
 
 ### Decrease value
 
@@ -233,6 +361,8 @@ Spook has no repair detections for this integration.
 
 Some use cases for the enhancements Spook provides for this integration:
 
+- Dynamically create input number helpers from a blueprint or script, without requiring the user to set them up manually beforehand.
+- Clean up temporary input number helpers created by an automation or script when they are no longer needed.
 - Quickly, with a single action, set the value of an input helper to its maximum or minimum value.
 - Instead of having to call the `input_number.decrement` or `input_number.increment` action multiple times, you can now set the amount to increase or decrease the value with.
 

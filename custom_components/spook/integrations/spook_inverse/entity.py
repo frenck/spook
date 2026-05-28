@@ -15,7 +15,6 @@ from homeassistant.const import (
 )
 from homeassistant.core import Event, HomeAssistant, State, callback
 from homeassistant.helpers import device_registry as dr, entity_registry as er
-from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import (
     EventStateChangedData,
@@ -35,6 +34,7 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
 
     def __init__(
         self,
+        hass: HomeAssistant,
         config_entry: ConfigEntry,
     ) -> None:
         """Initialize an inverse entity."""
@@ -43,31 +43,16 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
         self._attr_name = config_entry.title
         self._attr_extra_state_attributes = {ATTR_ENTITY_ID: self._entity_id}
         self._attr_unique_id = config_entry.entry_id
+        self.hass = hass
         self.config_entry = config_entry
 
-    @property
-    def device_info(self) -> DeviceInfo | None:
-        """Return the device info."""
         entity_registry = er.async_get(self.hass)
         device_registry = dr.async_get(self.hass)
         source_entity = entity_registry.async_get(self._entity_id)
-        if (
-            (source_entity is not None)
-            and (source_entity.device_id is not None)
-            and (
-                (
-                    device := device_registry.async_get(
-                        device_id=source_entity.device_id,
-                    )
-                )
-                is not None
-            )
-        ):
-            return DeviceInfo(
-                identifiers=device.identifiers,
-                connections=device.connections,
-            )
-        return None
+        device_id = source_entity.device_id if source_entity else None
+
+        if device_id and (device := device_registry.async_get(device_id)):
+            self.device_entry = device
 
     async def async_added_to_hass(self) -> None:
         """Register callbacks."""
