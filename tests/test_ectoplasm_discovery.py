@@ -43,6 +43,12 @@ SERVICE_MODULES = _discovered_modules("ectoplasms/*/services/*.py")
 REPAIR_MODULES = _discovered_modules("ectoplasms/*/repairs/*.py")
 
 
+def test_discovery_finds_ectoplasm_modules() -> None:
+    """Test discovery finds modules to avoid vacuous contract test passes."""
+    assert SERVICE_MODULES, "No service modules discovered"
+    assert REPAIR_MODULES, "No repair modules discovered"
+
+
 def _import_module(module_file: Path) -> ModuleType:
     """Import a module from a discovered module file."""
     return importlib.import_module(_module_name(module_file))
