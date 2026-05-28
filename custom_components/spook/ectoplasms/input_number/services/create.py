@@ -18,7 +18,13 @@ from homeassistant.components.input_number import (
     NumberStorageCollection,
     _cv_input_number,
 )
-from homeassistant.const import CONF_ICON, CONF_ID, CONF_MODE, CONF_NAME, CONF_UNIT_OF_MEASUREMENT
+from homeassistant.const import (
+    CONF_ICON,
+    CONF_ID,
+    CONF_MODE,
+    CONF_NAME,
+    CONF_UNIT_OF_MEASUREMENT,
+)
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv, entity_registry as er
 
@@ -59,9 +65,9 @@ class SpookService(AbstractSpookAdminService):
             collection = self.hass.data[DOMAIN]
         else:
             # Major hack to get around edge cases. 👻
-            collection = self.hass.data["websocket_api"][
-                "input_number/list"
-            ][0].__self__.storage_collection
+            collection = self.hass.data["websocket_api"]["input_number/list"][
+                0
+            ].__self__.storage_collection
 
         if input_number_id:
             async with self.hass.data.setdefault(
@@ -69,7 +75,9 @@ class SpookService(AbstractSpookAdminService):
             ):
                 desired_entity_id = f"{DOMAIN}.{input_number_id}"
                 ent_reg = er.async_get(self.hass)
-                if ent_reg.async_get(desired_entity_id):
+                if ent_reg.async_get(desired_entity_id) or self.hass.states.get(
+                    desired_entity_id
+                ):
                     message = f"An input number with entity ID '{desired_entity_id}' already exists"
                     raise HomeAssistantError(message)
 

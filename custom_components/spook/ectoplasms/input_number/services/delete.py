@@ -27,7 +27,7 @@ class SpookService(AbstractSpookEntityComponentService[InputNumber]):
     async def async_handle_service(
         self,
         entity: InputNumber,
-        call: ServiceCall,
+        call: ServiceCall,  # noqa: ARG002
     ) -> None:
         """Handle the service call."""
         if not entity.editable:
@@ -39,7 +39,7 @@ class SpookService(AbstractSpookEntityComponentService[InputNumber]):
             collection = self.hass.data[DOMAIN]
         else:
             # Major hack to get around edge cases. 👻
-            collection = self.hass.data["websocket_api"][
-                "input_number/list"
-            ][0].__self__.storage_collection
+            collection = self.hass.data["websocket_api"]["input_number/list"][
+                0
+            ].__self__.storage_collection
         await collection.async_delete_item(entity.unique_id)
