@@ -14,6 +14,7 @@ mission says "lock down the riskiest logic before any refactor".
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 from custom_components.spook.ectoplasms.lovelace.repairs.unknown_entity_references import (
@@ -148,6 +149,49 @@ def test_dashboard_splits_comma_separated_entities_per_view(
         "light.kitchen": "home",
         "switch.lamp": "home",
     }
+
+
+async def test_inspect_sorts_unknown_entities_in_issue_placeholder(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The repair message lists unknown entities in a stable order."""
+
+    async def async_load(*, force: bool) -> dict[str, Any]:
+        """Load the dashboard config."""
+        del force
+        return {
+            "views": [
+                {
+                    "path": "home",
+                    "cards": [
+                        {"type": "entity", "entity": "switch.z"},
+                        {"type": "entity", "entity": "light.a"},
+                    ],
+                }
+            ]
+        }
+
+    captured: dict[str, Any] = {}
+
+    def async_create_issue(**kwargs: Any) -> None:
+        """Capture the created issue."""
+        captured.update(kwargs)
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": SimpleNamespace(
+            url_path="lovelace",
+            config={"title": "Overview"},
+            async_load=async_load,
+        )
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert captured["translation_placeholders"]["entities"] == (
+        "- `light.a`\n- `switch.z`"
+    )
 
 
 def test_card_single_entity_field(repair: SpookRepair) -> None:
