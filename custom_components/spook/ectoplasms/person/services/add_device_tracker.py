@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code  # Mirrors remove_device_tracker by design.
 """Spook - Your homie."""
 
 from __future__ import annotations
