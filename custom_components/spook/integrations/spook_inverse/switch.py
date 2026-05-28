@@ -34,7 +34,7 @@ async def async_setup_entry(
         er.async_get(hass),
         config_entry.options[CONF_ENTITY_ID],
     )
-    async_add_entities([InverseSwitch(config_entry)])
+    async_add_entities([InverseSwitch(hass, config_entry)])
 
 
 class InverseSwitch(InverseEntity, SwitchEntity):
