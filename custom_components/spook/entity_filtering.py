@@ -36,6 +36,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.template import Template
 
 from .const import LOGGER
+from .listeners import async_listen_once_tracked
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Sequence
@@ -154,8 +155,8 @@ def async_setup_all_entity_ids_cache_invalidation(
         er.EVENT_ENTITY_REGISTRY_UPDATED, _clear_all_entity_ids_cache
     )
     # Listen for Home Assistant start to ensure cache is clear then
-    unsub_hass_start = hass.bus.async_listen_once(
-        EVENT_HOMEASSISTANT_START, _clear_all_entity_ids_cache
+    unsub_hass_start = async_listen_once_tracked(
+        hass, EVENT_HOMEASSISTANT_START, _clear_all_entity_ids_cache
     )
     # Listen for components loading
     unsub_component_loaded = hass.bus.async_listen(

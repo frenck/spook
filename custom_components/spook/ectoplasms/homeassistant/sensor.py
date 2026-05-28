@@ -39,6 +39,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.event import async_call_later
 
 from ...entity import SpookEntityDescription
+from ...listeners import async_listen_once_tracked
 from .entity import HomeAssistantSpookEntity
 
 if TYPE_CHECKING:
@@ -615,7 +616,9 @@ class HomeAssistantSpookSensorEntity(HomeAssistantSpookEntity, SensorEntity):
             self.async_on_remove(self.hass.bus.async_listen(event, _update_state))
 
         self.async_on_remove(
-            self.hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _update_state),
+            async_listen_once_tracked(
+                self.hass, EVENT_HOMEASSISTANT_STARTED, _update_state
+            ),
         )
 
     async def async_will_remove_from_hass(self) -> None:
