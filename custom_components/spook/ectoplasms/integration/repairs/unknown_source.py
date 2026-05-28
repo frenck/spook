@@ -2,18 +2,20 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components import sensor
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPlatform
 
-from ....const import LOGGER
-from ....repairs import AbstractSpookRepair
-from ....util import async_get_all_entity_ids
+from ....repairs import AbstractSpookEntityPlatformUnknownSourceRepair
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
-class SpookRepair(AbstractSpookRepair):
-    """Spook repair tries to find unknown source entites for integration."""
+class SpookRepair(AbstractSpookEntityPlatformUnknownSourceRepair):
+    """Spook repair tries to find unknown source entities for integration."""
 
     domain = "integration"
     repair = "integration_unknown_source"
@@ -24,39 +26,9 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = True
     inspect_on_reload = "integration"
 
-    automatically_clean_up_issues = True
+    source_platform_domain = sensor.DOMAIN
 
-    async def async_inspect(self) -> None:
-        """Trigger a inspection."""
-        LOGGER.debug("Spook is inspecting: %s", self.repair)
-
-        platforms: list[EntityPlatform] | None
-        if not (platforms := self.hass.data[DATA_ENTITY_PLATFORM].get(self.domain)):
-            return  # Nothing to do.
-
-        known_entity_ids = async_get_all_entity_ids(self.hass)
-
-        for platform in platforms:
-            # We only care about the sensor domain
-            if platform.domain != sensor.DOMAIN:
-                continue
-
-            for entity in platform.entities.values():
-                self.possible_issue_ids.add(entity.entity_id)
-                # pylint: disable-next=protected-access
-                source = entity._sensor_source_id  # noqa: SLF001
-                if source not in known_entity_ids:
-                    self.async_create_issue(
-                        issue_id=entity.entity_id,
-                        translation_placeholders={
-                            "entity_id": entity.entity_id,
-                            "helper": entity.name,
-                            "source": source,
-                        },
-                    )
-                    LOGGER.debug(
-                        "Spook found unknown source entity %s in %s "
-                        "and created an issue for it",
-                        source,
-                        entity.entity_id,
-                    )
+    def _get_source_entity_id(self, entity: Any) -> str:
+        """Return the integrating sensor's source entity ID."""
+        # pylint: disable-next=protected-access
+        return entity._sensor_source_id  # noqa: SLF001
