@@ -956,6 +956,98 @@ input_number_min:
     entity:
       domain: input_number
 
+input_number_create:
+  name: Create an input number 👻
+  description: >-
+    Create a new input number helper on the fly.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input number helper.
+      required: true
+      selector:
+        text:
+    input_number_id:
+      name: Input number entity ID
+      description: >-
+        The entity ID for the new input number helper. The input_number. prefix
+        is added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    min:
+      name: Minimum
+      description: The minimum value of the input number.
+      required: false
+      default: 0
+      selector:
+        number:
+          mode: box
+          step: any
+    max:
+      name: Maximum
+      description: The maximum value of the input number.
+      required: false
+      default: 100
+      selector:
+        number:
+          mode: box
+          step: any
+    initial:
+      name: Initial value
+      description: The initial value of the input number when Home Assistant starts.
+      required: false
+      selector:
+        number:
+          mode: box
+          step: any
+    step:
+      name: Step size
+      description: The step size of the input number.
+      required: false
+      default: 1
+      selector:
+        number:
+          mode: box
+          step: any
+    mode:
+      name: Display mode
+      description: >-
+        The display mode of the input number, which can be either a slider or
+        an input box.
+      required: false
+      default: slider
+      selector:
+        select:
+          options:
+            - label: Slider
+              value: slider
+            - label: Input field
+              value: box
+    icon:
+      name: Icon
+      description: The icon to use for the input number helper.
+      required: false
+      selector:
+        icon:
+    unit_of_measurement:
+      name: Unit of measurement
+      description: The unit of measurement of the input number.
+      required: false
+      selector:
+        text:
+
+input_number_delete:
+  name: Delete an input number 👻
+  description: >-
+    Delete an input number helper. This works only with input numbers created
+    and managed via the UI. Input numbers created and managed in YAML cannot
+    be managed by Spook.
+  target:
+    entity:
+      domain: input_number
+
 person_add_device_tracker:
   name: Add a device tracker 👻
   description: >-
