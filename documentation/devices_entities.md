@@ -70,6 +70,7 @@ For each entity type, a sensor is created that counts the number of entities of 
 - Number of `switch` entities (`sensor.switches`)
 - Number of `text` entities (`sensor.texts`)
 - Number of `time` entities (`sensor.times`)
+- Number of `todo` entities (`sensor.todos`)
 - Number of `tts` entities (`sensor.tts`)
 - number of `vacuum` entities (`sensor.vacuums`)
 - Number of `update` entities (`sensor.update`)
