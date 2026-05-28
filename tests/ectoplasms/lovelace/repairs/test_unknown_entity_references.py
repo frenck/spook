@@ -95,6 +95,27 @@ def test_dashboard_uses_view_index_when_path_is_missing(repair: SpookRepair) -> 
     }
 
 
+def test_dashboard_uses_view_index_when_path_is_empty(repair: SpookRepair) -> None:
+    """An empty view path falls back to its index."""
+    config = {
+        "views": [
+            {
+                "path": "",
+                "cards": [{"type": "entity", "entity": "light.kitchen"}],
+            },
+            "not a view",
+            {
+                "path": None,
+                "cards": [{"type": "entity", "entity": "switch.lamp"}],
+            },
+        ]
+    }
+    assert _extract(repair, config) == {
+        "light.kitchen": 0,
+        "switch.lamp": 2,
+    }
+
+
 def test_dashboard_keeps_first_view_for_duplicate_entity(repair: SpookRepair) -> None:
     """A duplicate entity keeps the first view path by dashboard order."""
     config = {

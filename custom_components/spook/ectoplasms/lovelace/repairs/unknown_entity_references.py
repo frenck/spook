@@ -106,7 +106,9 @@ class SpookRepair(AbstractSpookRepair):
         entities: dict[str, int | str] = {}
         if isinstance(config, dict) and (views := config.get("views")):
             for view_index, view in enumerate(views):
-                view_path: int | str = view.get("path", view_index)
+                if not isinstance(view, dict):
+                    continue
+                view_path: int | str = view.get("path") or view_index
                 for entity_id_raw in self.__async_extract_entities_from_view(view):
                     for entity_id in split_comma_separated_entity_ids(entity_id_raw):
                         if entity_id not in entities:
