@@ -23,7 +23,7 @@
   },
   "runArgs": ["-e", "GIT_EDITOR=code --wait"],
   "onCreateCommand": "npm install -g mystmd",
-  "updateContentCommand": "uv sync --extra cli && uv run pre-commit install",
+  "updateContentCommand": "uv sync --extra cli && uv run prek install",
   "containerEnv": {
     "DEVCONTAINER": "1"
   },
