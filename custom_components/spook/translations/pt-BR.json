@@ -293,6 +293,10 @@
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
       "title": "Unknown labels used in: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook encontrou um fantasma em seus scripts 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEssa automação referencia os seguintes serviços, que estão desconhecidos pelo Home Assistant:\n\n{services}\n\nPara corrigir esse erro, [edite o script]({edit}) e remova o uso desses serviços não existentes.\n\nSpook 👻 Não é seu amigo.",
+      "title": "Serviços desconhecidos usados em: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook encontrou um fantasma no ajudante Switch as X 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte ajudante:\n\n{helper} (`{entity_id}`)\n\nEste ajudante tem um switch desconhecido como entidade fonte para o Home Assistant:\n\n`{source}`\n\n\n\nPara corrigir esse erro, edite o ajudante, altere a entidade fonte (ou remova o ajudante) e reinicie o Home Assistant.\n\nSpook 👻 Não é seu amigo.",
       "title": "Fonte desconhecida: {helper}"

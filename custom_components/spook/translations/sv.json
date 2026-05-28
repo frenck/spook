@@ -293,6 +293,10 @@
       "description": "Spook har hittat ett spöke i dina skript 👻\n\nMedan den svävade runt korsade Spook väg med följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript refererar till följande etiketter som är okända för Home Assistant:\n\n{labels}\n\nFör att åtgärda felet, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande etiketter.\n\nSpook 👻 Din polare.",
       "title": "Okända etiketter används i: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook har hittat ett spöke i dina skript 👻\n\nMedan den svävade runt korsade Spook väg med följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\nFör att åtgärda felet, [redigera skriptet]({edit}) och ta bort användningen av dessa icke-existerande åtgärder.\n\nSpook 👻 Din polare.",
+      "title": "Okända åtgärder används i: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook har hittat ett spöke i dina Switch-as-X-hjälpare 👻\n\nMedan den svävade runt hittade Spook följande hjälpare:\n\n{helper} (`{entity_id}`)\n\nDenna hjälpare har en källentitet som är okänd för Home Assistant:\n\n`{source}`\n\nFör att åtgärda detta fel behöver du redigera denna hjälpare och justera källentiteten (eller ta bort hjälparen) och starta om Home Assistant.\n\nSpook 👻 Din polare.",
       "title": "Okänd källa: {helper}"

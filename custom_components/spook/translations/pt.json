@@ -293,6 +293,10 @@
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
       "title": "Unknown labels used in: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Não sou o teu mano.",
+      "title": "Unknown actions used in: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook encontrou um fantasma nos teus auxiliares interruptores como X 👻\n\nEnquanto vagueava por ai, Spook cruzou-se com o seguinte auxiliar:\n\n{helper} (`{entity_id}`)\n\nEste auxiliar contem as seguintes entidades que são desconhecidas para o Home Assistant:\n\n`{source}`\n\n\n\nPara corrigir o erro, edita o auxilar e ajusta a entidade (ou remove o auxiliar) e reinicia o Home Assistant.\n\nSpook 👻 Não sou o teu mano.",
       "title": "Origem desconhecida: {helper}"

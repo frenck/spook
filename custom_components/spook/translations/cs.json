@@ -293,6 +293,10 @@
       "description": "Spook našel ducha ve tvých skriptech👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTento skript odkazuje na následující štítky, které Home Assistant nezná:\n\n\n{labels}\n\n\nAbys opravil tuto chybu, [uprav skript]({edit})  a odstraň tyto neexistující štítky.\n\nSpook  👻 Your homie.",
       "title": "Neznámé štítky použité v: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook našel ducha ve tvých skriptech👻\n\nZatímco poletoval kolem, Spook narazil na následující skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTato automatizace odkazuje na následující služby, které Home Assistant nezná:\n\n{services}\n\n\nAbys opravil tuto chybu, [uprav skript]({edit}) a zamez použití těchto neexistujících služeb.\n\nSpook  👻 Your homie.",
+      "title": "Neznámá služba použitá v: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook našel ducha ve tvých pomocníkách Změnit typ vypínače 👻\n\nZatímco poletoval kolem, Spook narazil na následujícího pomocníka:\n\n{helper}(`{entity_id}`)\n\nTento pomocník má zdrojový vypínač, který Home Assistant nezná:\n\n\n`{source}`\n\n\nAbys opravil tuto chybu, uprav pomocníka a změň zdrojovou entitu (nebo pomocníka odstraň) a restartuj Home Assistant.\n\nSpook  👻 Your homie.",
       "title": "Neznámý zdroj: {helper}"
