@@ -108,6 +108,7 @@ _ENTITY_FUNCTIONS = [
 ]
 
 # Build regex patterns using Home Assistant's core validation patterns
+_STATES_DOMAIN_ENTITY_GROUPS = 2
 ENTITY_ID_TEMPLATE_PATTERNS = [
     # Template functions with entity ID as first parameter
     rf"(?:{'|'.join(_ENTITY_FUNCTIONS)})\s*\(\s*['\"]({ENTITY_ID_PATTERN})['\"]",
@@ -399,6 +400,24 @@ async def async_extract_entities_from_template_string(
     return entities
 
 
+def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> bool:
+    """Return if a template regex match is part of a concatenated string."""
+    before = template_str[: match.start()].rstrip()
+    after = template_str[match.end() :].lstrip()
+    return before.endswith("~") or after.startswith("~")
+
+
+def _entity_id_from_template_match(match: re.Match[str]) -> str:
+    """Return the entity ID captured by a template regex match."""
+    groups = match.groups()
+
+    # Handle the states.domain.entity pattern that captures (domain, object_id)
+    if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return f"{groups[0]}.{groups[1]}"
+
+    return groups[0]
+
+
 def extract_entities_from_template_regex(
     hass: HomeAssistant, template_str: str
 ) -> set[str]:
@@ -413,17 +432,13 @@ def extract_entities_from_template_regex(
         return set()
 
     entities = set()
-    # Number of capture groups in states.domain.entity pattern
-    domain_entity_groups = 2
 
     for pattern in ENTITY_ID_TEMPLATE_PATTERNS:
-        matches = re.findall(pattern, template_str, re.IGNORECASE)
-        for match in matches:
-            # Handle the states.domain.entity pattern that captures (domain, object_id)
-            if isinstance(match, tuple) and len(match) == domain_entity_groups:
-                entity_id = f"{match[0]}.{match[1]}"
-            else:
-                entity_id = match
+        for match in re.finditer(pattern, template_str, re.IGNORECASE):
+            if _is_concatenated_template_match(template_str, match):
+                continue
+
+            entity_id = _entity_id_from_template_match(match)
 
             # For each entity ID (which might be comma-separated), add all valid ones
             for individual_id in split_comma_separated_entity_ids(entity_id):
