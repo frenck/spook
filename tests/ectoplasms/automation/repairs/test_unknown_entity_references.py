@@ -165,8 +165,46 @@ async def test_action_target_block(hass: HomeAssistant) -> None:
 async def test_action_data_dict(hass: HomeAssistant) -> None:
     """Entities buried inside ``data`` values are captured."""
     config = {
-        "service": "notify.notify",
+        "service": "light.turn_on",
         "data": {"message": "hello", "target": "person.alice"},
+    }
+    assert await extract_entities_from_action_config(hass, config) == {"person.alice"}
+
+
+async def test_notify_action_data_target_is_not_an_entity_reference(
+    hass: HomeAssistant,
+) -> None:
+    """Notify ``data.target`` values are service targets, not entity references."""
+    config = {
+        "action": "notify.mobile_app_phone",
+        "data": {
+            "target": "notify.old_tablet",
+            "message": "{{ states('sensor.temperature') }}",
+        },
+    }
+    assert await extract_entities_from_action_config(hass, config) == {
+        "sensor.temperature"
+    }
+
+
+async def test_notify_service_data_target_is_not_an_entity_reference(
+    hass: HomeAssistant,
+) -> None:
+    """Legacy service syntax follows the same notify target rule."""
+    config = {
+        "service": "notify.mobile_app_phone",
+        "data": {"target": ["notify.old_tablet", "notify.old_phone"]},
+    }
+    assert await extract_entities_from_action_config(hass, config) == set()
+
+
+async def test_non_notify_action_data_target_remains_entity_reference(
+    hass: HomeAssistant,
+) -> None:
+    """Non-notify service data is still scanned for entity IDs."""
+    config = {
+        "action": "calendar.create_event",
+        "data": {"target": "person.alice"},
     }
     assert await extract_entities_from_action_config(hass, config) == {"person.alice"}
 
