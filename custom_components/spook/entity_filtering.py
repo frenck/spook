@@ -401,10 +401,21 @@ async def async_extract_entities_from_template_string(
 
 
 def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> bool:
-    """Return if a template regex match is part of a concatenated string."""
-    before = template_str[: match.start()].rstrip()
-    after = template_str[match.end() :].lstrip()
-    return before.endswith("~") or after.startswith("~")
+    """Return if a quoted entity ID literal is part of a concatenated string."""
+    groups = match.groups()
+    if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return False
+
+    entity_start, entity_end = match.span(1)
+    before_entity = template_str[:entity_start].rstrip()
+    after_entity = template_str[entity_end:].lstrip()
+
+    if not (before_entity.endswith(("'", '"')) and after_entity.startswith(("'", '"'))):
+        return False
+
+    before_literal = before_entity[:-1].rstrip()
+    after_literal = after_entity[1:].lstrip()
+    return before_literal.endswith("~") or after_literal.startswith("~")
 
 
 def _entity_id_from_template_match(match: re.Match[str]) -> str:

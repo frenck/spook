@@ -74,6 +74,22 @@ async def test_value_template_ignores_concatenated_helper_entity_id(
     assert await extract_entities_from_value(hass, template) == set()
 
 
+async def test_value_template_keeps_concatenated_state_value(
+    hass: HomeAssistant,
+) -> None:
+    """Concatenated values still expose static entity references."""
+    template = "{{ states.light.kitchen.state ~ '_suffix' }}"
+    assert await extract_entities_from_value(hass, template) == {"light.kitchen"}
+
+
+async def test_value_template_keeps_concatenated_filtered_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Filtered entity references are kept when their value is concatenated."""
+    template = "{{ 'prefix' ~ ('light.kitchen' | states) }}"
+    assert await extract_entities_from_value(hass, template) == {"light.kitchen"}
+
+
 async def test_value_non_string_non_collection_returns_empty(
     hass: HomeAssistant,
 ) -> None:
