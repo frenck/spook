@@ -1,17 +1,18 @@
 {
+  "title": "一只幽灵",
   "config": {
     "abort": {
-      "already_spooked": "Yeah... well... no. K, thx, bye!"
+      "already_spooked": "额…… 那个…… 不行。好的，谢谢，拜拜！"
     },
     "step": {
       "user": {
-        "description": "Did you read the readme? Did you read the license? Are you really sure?"
+        "description": "你阅读了 README（自述文件）了吗？你阅读了许可证吗？你真的确定吗？"
       },
       "choice_restart": {
-        "description": "In order for Spook to finish setting up, Home Assistant needs to be restarted.\n\nDo you want to restart Home Assistant now?",
+        "description": "为了让 Spook 完成设置，需要重新启动 Home Assistant。\n\n你现在要重新启动 Home Assistant 吗？",
         "menu_options": {
-          "restart_now": "Restart now",
-          "restart_later": "Restart later"
+          "restart_now": "现在重新启动",
+          "restart_later": "稍后重新启动"
         }
       }
     }
@@ -19,291 +20,292 @@
   "entity": {
     "button": {
       "homeassistant_reload": {
-        "name": "Reload"
+        "name": "重新加载"
       },
       "homeassistant_restart": {
-        "name": "Restart"
+        "name": "重新启动"
       },
       "repairs_ignore_all": {
-        "name": "Ignore all"
+        "name": "忽略全部"
       },
       "repairs_unignore_all": {
-        "name": "Unignore all"
+        "name": "取消忽略全部"
       }
     },
     "event": {
       "repairs_event": {
+        "name": "问题事件", 
         "state_attributes": {
           "event_type": {
             "state": {
-              "create": "Issue created",
-              "remove": "Issue removed",
-              "update": "Issue updated"
+              "create": "问题已创建",
+              "remove": "问题已移除",
+              "update": "问题已更新"
             }
           },
           "domain": {
-            "name": "Issue issuer"
+            "name": "问题发布者"
           },
           "issue_id": {
-            "name": "Issue ID"
+            "name": "问题 ID"
           }
         }
       }
     },
     "sensor": {
       "homeassistant_air_quality": {
-        "name": "Air quality"
+        "name": "空气质量"
       },
       "homeassistant_alarm_control_panel": {
-        "name": "Alarm control panels"
+        "name": "报警控制面板"
       },
       "homeassistant_area": {
-        "name": "Areas"
+        "name": "区域"
       },
       "homeassistant_automation": {
-        "name": "Automations"
+        "name": "自动化"
       },
       "homeassistant_binary_sensor": {
-        "name": "Binary sensors"
+        "name": "二进制传感器"
       },
       "homeassistant_button": {
-        "name": "Buttons"
+        "name": "按钮"
       },
       "homeassistant_calendar": {
-        "name": "Calendars"
+        "name": "日历"
       },
       "homeassistant_camera": {
-        "name": "Cameras"
+        "name": "摄像机"
       },
       "homeassistant_climate": {
-        "name": "Climate"
+        "name": "气候"
       },
       "homeassistant_cover": {
-        "name": "Covers"
+        "name": "遮阳"
       },
       "homeassistant_custom_component": {
-        "name": "Custom integrations"
+        "name": "自定义集成"
       },
       "homeassistant_date": {
-        "name": "Dates"
+        "name": "日期"
       },
       "homeassistant_datetime": {
-        "name": "Date/times"
+        "name": "日期/时间"
       },
       "homeassistant_device": {
-        "name": "Devices"
+        "name": "设备"
       },
       "homeassistant_device_tracker": {
-        "name": "Device trackers"
+        "name": "设备追踪器"
       },
       "homeassistant_entities": {
-        "name": "Entities"
+        "name": "实体"
       },
       "homeassistant_fan": {
-        "name": "Fans"
+        "name": "风扇"
       },
       "homeassistant_humidifier": {
-        "name": "Humidifiers"
+        "name": "加湿器"
       },
       "homeassistant_image": {
-        "name": "Images"
+        "name": "图像"
       },
       "homeassistant_input_boolean": {
-        "name": "Input booleans"
+        "name": "输入布尔值"
       },
       "homeassistant_input_button": {
-        "name": "Input buttons"
+        "name": "输入按钮"
       },
       "homeassistant_input_datetime": {
-        "name": "Input date/times"
+        "name": "输入日期/时间"
       },
       "homeassistant_input_number": {
-        "name": "Input numbers"
+        "name": "输入数字"
       },
       "homeassistant_input_select": {
-        "name": "Input selects"
+        "name": "输入选择"
       },
       "homeassistant_input_text": {
-        "name": "Input texts"
+        "name": "输入文本"
       },
       "homeassistant_integration": {
-        "name": "Integrations"
+        "name": "集成"
       },
       "homeassistant_light": {
-        "name": "Lights"
+        "name": "灯"
       },
       "homeassistant_lock": {
-        "name": "Locks"
+        "name": "锁"
       },
       "homeassistant_media_player": {
-        "name": "Media players"
+        "name": "媒体播放器"
       },
       "homeassistant_number": {
-        "name": "Numbers"
+        "name": "数字"
       },
       "homeassistant_persistent_notification": {
-        "name": "Persistent notifications"
+        "name": "持久通知"
       },
       "homeassistant_person": {
-        "name": "Persons"
+        "name": "人员"
       },
       "homeassistant_remote": {
-        "name": "Remotes"
+        "name": "遥控器"
       },
       "homeassistant_scene": {
-        "name": "Scenes"
+        "name": "场景"
       },
       "homeassistant_script": {
-        "name": "Scripts"
+        "name": "脚本"
       },
       "homeassistant_select": {
-        "name": "Selects"
+        "name": "选择"
       },
       "homeassistant_sensor": {
-        "name": "Sensors"
+        "name": "传感器"
       },
       "homeassistant_siren": {
-        "name": "Sirens"
+        "name": "警报器"
       },
       "homeassistant_stt": {
-        "name": "Speech-to-text"
+        "name": "语音转文本"
       },
       "homeassistant_sun": {
-        "name": "Suns"
+        "name": "太阳"
       },
       "homeassistant_switch": {
-        "name": "Switches"
+        "name": "开关"
       },
       "homeassistant_text": {
-        "name": "Texts"
+        "name": "文本"
       },
       "homeassistant_time": {
-        "name": "Times"
+        "name": "时间"
       },
       "homeassistant_tts": {
-        "name": "Text-to-speech"
+        "name": "文本转语音"
       },
       "homeassistant_update": {
-        "name": "Update"
+        "name": "更新"
       },
       "homeassistant_vacuum": {
-        "name": "Vacuums"
+        "name": "吸尘器"
       },
       "homeassistant_water_heater": {
-        "name": "Water heaters"
+        "name": "热水器"
       },
       "homeassistant_weather": {
-        "name": "Weather"
+        "name": "天气"
       },
       "homeassistant_zone": {
-        "name": "Zones"
+        "name": "区域"
       },
       "repairs_total_issues": {
-        "name": "Total"
+        "name": "总计"
       },
       "repairs_ignored_issues": {
-        "name": "Ignored"
+        "name": "已忽略"
       },
       "repairs_active_issues": {
-        "name": "Active"
+        "name": "未解决"
       }
     },
     "switch": {
       "cloud_alexa_report_state": {
-        "name": "Alexa state reporting"
+        "name": "Alexa 状态报告"
       },
       "cloud_google_report_state": {
-        "name": "Google Assistant state reporting"
+        "name": "Google Assistant 状态报告"
       },
       "cloud_remote": {
-        "name": "Remote"
+        "name": "远程"
       }
     }
   },
   "issues": {
     "automation_unknown_area_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Unknown areas used in: {automation}"
+      "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的区域：\n\n{areas}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的区域。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下项中使用了未知区域：{automation}"
     },
     "automation_unknown_device_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Unknown devices used in: {automation}"
+      "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的设备：\n\n{devices}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的设备。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下项中使用了未知设备：{automation}"
     },
     "automation_unknown_entity_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {automation}"
+      "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的实体。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下项中使用了未知实体：{automation}"
     },
     "automation_unknown_floor_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {automation}"
+      "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的楼层：\n\n{floors}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的楼层。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下项中使用了未知楼层：{automation}"
     },
     "automation_unknown_label_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {automation}"
+      "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的标签：\n\n{labels}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的标签。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下项中使用了未知标签：{automation}"
     },
     "automation_unknown_service_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {automation}"
+      "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的动作。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下项中使用了未知动作：{automation}"
     },
     "group_unknown_members": {
-      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown group members in: {group}"
+      "description": "Spook 在你的组中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下组：\n\n{group} (`{entity_id}`)\n\n该组包含以下 Home Assistant 无法识别的成员：\n\n{entities}\n\n\n\n要修复此错误，请编辑该组，移除这些不存在的实体，然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
+      "title": "以下组中存在未知成员：{group}"
     },
     "integration_unknown_source": {
-      "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
+      "description": "Spook 在你的黎曼和积分辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序具有一个 Home Assistant 无法识别的源实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
+      "title": "未知源：{helper}"
     },
     "lovelace_unknown_entity_references": {
-      "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {dashboard}"
+      "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下仪表盘：\n\n[{dashboard}]({edit})\n\n该仪表盘引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n要修复此错误，请[编辑该仪表盘]({edit})并移除这些不存在的实体。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下仪表盘中使用了未知实体：{dashboard}"
     },
     "proximity_unknown_ignored_zones": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-      "title": "Unknown ignored zones: {name}"
+      "description": "Spook 在你的邻近感应配置中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下邻近感应配置：\n\n{name}\n\n该配置忽略了以下 Home Assistant 无法识别的区域：\n\n{zones}\n\n\n\n要修复此错误，请编辑该配置并移除这些区域。\n\nSpook 👻 你的好哥们。",
+      "title": "未知的忽略区域：{name}"
     },
     "proximity_unknown_tracked_entities": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown tracked entities: {name}"
+      "description": "Spook 在你的邻近感应配置中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下邻近感应配置：\n\n{name}\n\n该配置正在追踪以下 Home Assistant 无法识别的人员或设备追踪器：\n\n{entities}\n\n\n\n要修复此错误，请编辑该配置并移除这些实体。\n\nSpook 👻 你的好哥们。",
+      "title": "未知的追踪实体：{name}"
     },
     "proximity_unknown_zone": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-      "title": "Unknown zone: {zone}"
+      "description": "Spook 在你的邻近感应配置中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下邻近感应配置：\n\n{name}\n\n该配置基于一个 Home Assistant 无法识别的区域：\n\n`{zone}`\n\n\n\n要修复此错误，由于你无法更改邻近感应配置的区域，唯一的选择是移除该特定的邻近感应集成实例。\n\nSpook 👻 你的好哥们。",
+      "title": "未知区域：{zone}"
     },
     "scene_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {scene}"
+      "description": "Spook 在你的场景中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下场景：\n\n[{scene}]({edit})\n\n该场景引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n要修复此错误，请[编辑该场景]({edit})并移除这些不存在的实体。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下场景中使用了未知实体：{scene}"
     },
     "script_unknown_area_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Unknown areas used in: {script}"
+      "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本引用了以下 Home Assistant 无法识别的区域：\n\n{areas}\n\n\n\n要修复此错误，请[编辑该脚本]({edit})并移除这些不存在的区域。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下脚本中使用了未知区域：{script}"
     },
     "script_unknown_device_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Unknown devices used in: {script}"
+      "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本引用了以下 Home Assistant 无法识别的设备：\n\n{devices}\n\n\n\n要修复此错误，请[编辑该脚本]({edit})并移除这些不存在的设备。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下脚本中使用了未知设备：{script}"
     },
     "script_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {script}"
+      "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n要修复此错误，请[编辑该脚本]({edit})并移除这些不存在的实体。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下脚本中使用了未知实体：{script}"
     },
     "script_unknown_floor_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {script}"
+      "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本引用了以下 Home Assistant 无法识别的楼层：\n\n{floors}\n\n\n\n要修复此错误，请[编辑该脚本]({edit})并移除这些不存在的楼层。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下脚本中使用了未知楼层：{script}"
     },
     "script_unknown_label_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {script}"
+      "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本引用了以下 Home Assistant 无法识别的标签：\n\n{labels}\n\n\n\n要修复此错误，请[编辑该脚本]({edit})并移除这些不存在的标签。\n\nSpook 👻 你的好哥们。",
+      "title": "在以下脚本中使用了未知标签：{script}"
     },
     "switch_as_x_unknown_source": {
-      "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
+      "description": "Spook 在你的“将开关转换为 X”辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序包含一个 Home Assistant 无法识别的源开关实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
+      "title": "未知源：{helper}"
     },
     "utility_meter_unknown_source": {
-      "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
+      "description": "Spook 在你的公用事业仪表辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序包含一个 Home Assistant 无法识别的源实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
+      "title": "未知源：{helper}"
     },
     "trend_unknown_source": {
-      "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
+      "description": "Spook 在你的趋势辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序包含一个 Home Assistant 无法识别的源实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
+      "title": "未知源：{helper}"
     },
     "user_issue": {
       "fix_flow": {
@@ -317,13 +319,795 @@
       "title": "{title}"
     },
     "restart_required": {
-      "title": "Restart required",
+      "title": "需要重新启动",
       "fix_flow": {
         "step": {
           "confirm_restart": {
-            "title": "Restart required",
-            "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+            "title": "需要重新启动",
+            "description": "为了让 Spook 👻 完成设置，需要重新启动 Home Assistant。\n\n选择提交以立即重新启动 Home Assistant。"
           }
+        }
+      }
+    }
+  },
+  "services": {
+    "boo": {
+      "name": "吓一跳！ 👻",
+      "description": "调用此动作会“惊吓” Home Assistant。执行此动作始终会失败。"
+    },
+    "random_fail": {
+      "name": "随机失败 👻",
+      "description": "执行此动作会随机失败。"
+    },
+    "blueprint_import": {
+      "name": "导入蓝图 👻",
+      "description": "导入一个蓝图。",
+      "fields": {
+        "url": {
+          "name": "URL",
+          "description": "要导入蓝图的 URL 地址。"
+        }
+      }
+    },
+    "homeassistant_create_area": {
+      "name": "创建区域 👻",
+      "description": "动态创建一个新区域。",
+      "fields": {
+        "name": {
+          "name": "名称",
+          "description": "要创建的区域名称。"
+        },
+        "icon": {
+          "name": "图标",
+          "description": "用于该区域的图标。"
+        },
+        "aliases": {
+          "name": "别名",
+          "description": "该区域的别名列表。如果您想在不同语言或使用不同昵称时引用该区域，这很有用。"
+        }
+      }
+    },
+    "homeassistant_add_alias_to_area": {
+      "name": "为区域添加别名 👻",
+      "description": "向现有区域添加别名。",
+      "fields": {
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要添加别名的区域 ID。"
+        },
+        "alias": {
+          "name": "别名",
+          "description": "要添加到该区域的别名（或别名列表）。"
+        }
+      }
+    },
+    "homeassistant_remove_alias_from_area": {
+      "name": "从区域移除别名 👻",
+      "description": "从区域中移除别名。",
+      "fields": {
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要移除别名的区域 ID。"
+        },
+        "alias": {
+          "name": "别名",
+          "description": "从该区域移除的别名（或别名列表）。"
+        }
+      }
+    },
+    "homeassistant_set_area_aliases": {
+      "name": "设置区域别名 👻",
+      "description": "设置区域的别名。这会覆盖并移除任何现有别名，完全替换为新别名。",
+      "fields": {
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要设置别名的区域 ID。"
+        },
+        "aliases": {
+          "name": "别名",
+          "description": "要为该区域设置的别名。"
+        }
+      }
+    },
+    "homeassistant_add_device_to_area": {
+      "name": "将设备添加到区域 👻",
+      "description": "将设备分配到指定区域。请注意，如果设备已在某个区域中，它将从之前的区域中移除。",
+      "fields": {
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要添加设备的区域 ID。"
+        },
+        "device_id": {
+          "name": "设备 ID",
+          "description": "要添加到该区域的设备 ID。"
+        }
+      }
+    },
+    "homeassistant_remove_device_from_area": {
+      "name": "从区域移除设备 👻",
+      "description": "从区域中移除设备。由于一个设备只能属于一个区域，此调用无需指定区域名称。",
+      "fields": {
+        "device_id": {
+          "name": "设备 ID",
+          "description": "要移除区域信息的设备 ID。"
+        }
+      }
+    },
+    "homeassistant_add_entity_to_area": {
+      "name": "将实体添加到区域 👻",
+      "description": "将实体分配到指定区域。请注意，如果实体已在某个区域中，它将从之前的区域中移除。这会覆盖提供该实体的设备所属的区域设置。",
+      "fields": {
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要添加实体的区域 ID。"
+        },
+        "entity_id": {
+          "name": "实体 ID",
+          "description": "要添加到该区域的实体 ID。"
+        }
+      }
+    },
+    "homeassistant_remove_entity_from_area": {
+      "name": "从区域移除实体 👻",
+      "description": "从区域中移除实体。由于一个实体只能属于一个区域，此调用无需指定区域。请注意，调用后该实体仍可能属于提供它的设备所在的区域。",
+      "fields": {
+        "entity_id": {
+          "name": "实体 ID",
+          "description": "要移除区域信息的实体 ID。"
+        }
+      }
+    },
+    "homeassistant_delete_area": {
+      "name": "删除区域 👻",
+      "description": "立即删除一个区域。",
+      "fields": {
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要删除的区域 ID。"
+        }
+      }
+    },
+    "homeassistant_disable_config_entry": {
+      "name": "禁用集成 👻",
+      "description": "禁用一个集成的配置条目。",
+      "fields": {
+        "config_entry_id": {
+          "name": "配置条目",
+          "description": "要禁用的集成配置条目。"
+        }
+      }
+    },
+    "homeassistant_enable_config_entry": {
+      "name": "启用集成 👻",
+      "description": "启用一个集成的配置条目。",
+      "fields": {
+        "config_entry_id": {
+          "name": "配置条目",
+          "description": "要启用的集成配置条目。"
+        }
+      }
+    },
+    "homeassistant_disable_device": {
+      "name": "禁用设备 👻",
+      "description": "立即禁用一个或多个设备。",
+      "fields": {
+        "device_id": {
+          "name": "设备",
+          "description": "要禁用的设备。"
+        }
+      }
+    },
+    "homeassistant_enable_device": {
+      "name": "启用设备 👻",
+      "description": "立即启用一个或多个设备。",
+      "fields": {
+        "device_id": {
+          "name": "设备",
+          "description": "要启用的设备。"
+        }
+      }
+    },
+    "homeassistant_update_entity_id": {
+      "name": "更新实体 ID 👻",
+      "description": "立即更新实体的 ID。",
+      "fields": {
+        "entity_id": {
+          "name": "实体",
+          "description": "要更新的实体。"
+        },
+        "new_entity_id": {
+          "name": "新实体 ID",
+          "description": "实体的新 ID。"
+        }
+      }
+    },
+    "homeassistant_disable_entity": {
+      "name": "禁用实体 👻",
+      "description": "立即禁用一个或多个实体。",
+      "fields": {
+        "entity_id": {
+          "name": "实体",
+          "description": "要禁用的实体。"
+        }
+      }
+    },
+    "homeassistant_enable_entity": {
+      "name": "启用实体 👻",
+      "description": "立即启用一个或多个实体。",
+      "fields": {
+        "entity_id": {
+          "name": "实体",
+          "description": "要启用的实体。"
+        }
+      }
+    },
+    "homeassistant_hide_entity": {
+      "name": "隐藏实体 👻",
+      "description": "立即隐藏一个或多个实体。",
+      "fields": {
+        "entity_id": {
+          "name": "实体",
+          "description": "要隐藏的实体。"
+        }
+      }
+    },
+    "homeassistant_rename_entity": {
+      "name": "重命名实体 👻",
+      "description": "立即重命名一个或多个实体。",
+      "fields": {
+        "entity_id": {
+          "name": "实体",
+          "description": "要重命名的实体。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "实体的新名称。"
+        }
+      }
+    },
+    "homeassistant_unhide_entity": {
+      "name": "取消隐藏实体 👻",
+      "description": "立即取消隐藏一个或多个实体。",
+      "fields": {
+        "entity_id": {
+          "name": "实体",
+          "description": "要取消隐藏的实体。"
+        }
+      }
+    },
+    "homeassistant_create_floor": {
+      "name": "创建楼层 👻",
+      "description": "动态创建一个新楼层。",
+      "fields": {
+        "name": {
+          "name": "名称",
+          "description": "要创建的楼层名称。"
+        },
+        "icon": {
+          "name": "图标",
+          "description": "用于该楼层的图标。"
+        },
+        "level": {
+          "name": "层数",
+          "description": "楼层在您家中所处的层级（高度）。"
+        },
+        "aliases": {
+          "name": "别名",
+          "description": "该楼层的别名列表。"
+        }
+      }
+    },
+    "homeassistant_add_alias_to_floor": {
+      "name": "为楼层添加别名 👻",
+      "description": "向楼层添加别名。",
+      "fields": {
+        "floor_id": {
+          "name": "楼层 ID",
+          "description": "要添加别名的楼层 ID。"
+        },
+        "alias": {
+          "name": "别名",
+          "description": "要添加到楼层的别名。"
+        }
+      }
+    },
+    "homeassistant_remove_alias_from_floor": {
+      "name": "从楼层移除别名 👻",
+      "description": "从楼层移除别名。",
+      "fields": {
+        "floor_id": {
+          "name": "楼层 ID",
+          "description": "要移除别名的楼层 ID。"
+        },
+        "alias": {
+          "name": "别名",
+          "description": "要从楼层移除的别名。"
+        }
+      }
+    },
+    "homeassistant_set_floor_aliases": {
+      "name": "设置楼层别名 👻",
+      "description": "设置楼层的别名，会完全替换现有别名。",
+      "fields": {
+        "floor_id": {
+          "name": "楼层 ID",
+          "description": "要设置别名的楼层 ID。"
+        },
+        "aliases": {
+          "name": "别名",
+          "description": "要设置的新别名列表。"
+        }
+      }
+    },
+    "homeassistant_add_area_to_floor": {
+      "name": "将区域添加到楼层 👻",
+      "description": "将一个区域分配到指定楼层。如果该区域已在其他楼层，它将被移动。",
+      "fields": {
+        "floor_id": {
+          "name": "楼层 ID",
+          "description": "要添加区域的楼层 ID。"
+        },
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要添加到楼层的区域 ID。"
+        }
+      }
+    },
+    "homeassistant_remove_area_from_floor": {
+      "name": "从楼层移除区域 👻",
+      "description": "从楼层中移除区域。",
+      "fields": {
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要从楼层中移除的区域 ID。"
+        }
+      }
+    },
+    "homeassistant_delete_floor": {
+      "name": "删除楼层 👻",
+      "description": "立即删除一个楼层。",
+      "fields": {
+        "floor_id": {
+          "name": "楼层 ID",
+          "description": "要删除的楼层 ID。"
+        }
+      }
+    },
+    "homeassistant_create_label": {
+      "name": "创建标签 👻",
+      "description": "动态创建一个新标签。",
+      "fields": {
+        "name": {
+          "name": "名称",
+          "description": "要创建的标签名称。"
+        },
+        "description": {
+          "name": "描述",
+          "description": "标签的描述。"
+        },
+        "icon": {
+          "name": "图标",
+          "description": "用于该标签的图标。"
+        },
+        "color": {
+          "name": "颜色",
+          "description": "标签的颜色。可以是预设颜色名或十六进制颜色代码（如 #FF0000）。"
+        }
+      }
+    },
+    "homeassistant_add_label_to_area": {
+      "name": "为区域添加标签 👻",
+      "description": "为区域添加标签。如果提供多个标签或区域，将添加所有组合。",
+      "fields": {
+        "label_id": {
+          "name": "标签 ID",
+          "description": "要添加的标签 ID。"
+        },
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要添加标签的区域 ID。"
+        }
+      }
+    },
+    "homeassistant_add_label_to_device": {
+      "name": "为设备添加标签 👻",
+      "description": "为设备添加标签。",
+      "fields": {
+        "label_id": {
+          "name": "标签 ID",
+          "description": "要添加的标签 ID。"
+        },
+        "device_id": {
+          "name": "设备 ID",
+          "description": "要添加标签的设备 ID。"
+        }
+      }
+    },
+    "homeassistant_add_label_to_entity": {
+      "name": "为实体添加标签 👻",
+      "description": "为实体添加标签。",
+      "fields": {
+        "label_id": {
+          "name": "标签 ID",
+          "description": "要添加的标签 ID。"
+        },
+        "entity_id": {
+          "name": "实体 ID",
+          "description": "要添加标签的实体 ID。"
+        }
+      }
+    },
+    "homeassistant_remove_label_from_area": {
+      "name": "从区域移除标签 👻",
+      "description": "从区域中移除标签。",
+      "fields": {
+        "label_id": {
+          "name": "标签 ID",
+          "description": "要移除的标签 ID。"
+        },
+        "area_id": {
+          "name": "区域 ID",
+          "description": "要移除标签的区域 ID。"
+        }
+      }
+    },
+    "homeassistant_remove_label_from_device": {
+      "name": "从设备移除标签 👻",
+      "description": "从设备中移除标签。",
+      "fields": {
+        "label_id": {
+          "name": "标签 ID",
+          "description": "要移除的标签 ID。"
+        },
+        "device_id": {
+          "name": "设备 ID",
+          "description": "要移除标签的设备 ID。"
+        }
+      }
+    },
+    "homeassistant_remove_label_from_entity": {
+      "name": "从实体移除标签 👻",
+      "description": "从实体中移除标签。",
+      "fields": {
+        "label_id": {
+          "name": "标签 ID",
+          "description": "要移除的标签 ID。"
+        },
+        "entity_id": {
+          "name": "实体 ID",
+          "description": "要移除标签的实体 ID。"
+        }
+      }
+    },
+    "homeassistant_delete_label": {
+      "name": "删除标签 👻",
+      "description": "立即删除一个标签。",
+      "fields": {
+        "label_id": {
+          "name": "标签 ID",
+          "description": "要删除的标签 ID。"
+        }
+      }
+    },
+    "homeassistant_ignore_all_discovered": {
+      "name": "忽略所有当前已发现的设备 👻",
+      "description": "忽略集成仪表盘上显示的所有当前已发现设备。这不会忽略此后新发现的设备。",
+      "fields": {
+        "domain": {
+          "name": "集成域",
+          "description": "要忽略发现设备的集成域。如果不提供，所有域的已发现设备都将被忽略。"
+        }
+      }
+    },
+    "homeassistant_disable_polling": {
+      "name": "禁用轮询更新 👻",
+      "description": "禁用集成配置条目的轮询更新。",
+      "fields": {
+        "config_entry_id": {
+          "name": "配置条目",
+          "description": "要禁用轮询的集成配置条目。"
+        }
+      }
+    },
+    "homeassistant_enable_polling": {
+      "name": "启用轮询更新 👻",
+      "description": "启用集成配置条目的轮询更新。",
+      "fields": {
+        "config_entry_id": {
+          "name": "配置条目",
+          "description": "要启用轮询的集成配置条目。"
+        }
+      }
+    },
+    "homeassistant_delete_all_orphaned_entities": {
+      "name": "删除所有孤立实体 👻",
+      "description": "删除所有不再有集成声明或提供的孤立实体。请注意，如果集成刚刚被移除，可能需要重启 Home Assistant 才能识别出它们是孤立的。\n\n**警告**：如果集成由于离线或自启动以来未工作，实体也可能被标记为孤立。调用此动作也会删除这些实体。"
+    },
+    "homeassistant_list_orphaned_database_entities": {
+      "name": "列出所有数据库中的孤立实体 👻",
+      "description": "列出数据库中所有未被任何集成声明的孤立实体。"
+    },
+    "homeassistant_restart": {
+      "name": "重新启动 👻",
+      "description": "重新启动 Home Assistant 的动作。",
+      "fields": {
+        "safe_mode": {
+          "name": "安全模式",
+          "description": "是否以安全模式重启。这将禁用所有自定义集成和前端模块。"
+        },
+        "force": {
+          "name": "强制重启",
+          "description": "强制重启。警告！这不会优雅地关闭 Home Assistant，它会跳过配置检查并忽略正在进行的数据库迁移。仅在您确切知道自己在做什么时使用。"
+        }
+      }
+    },
+    "recorder_import_statistics": {
+      "name": "导入统计数据 👻",
+      "description": "导入长期统计数据。",
+      "fields": {
+        "statistic_id": {
+          "name": "统计 ID",
+          "description": "要为其导入数据的统计 ID（实体 ID）。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "统计数据的名称。"
+        },
+        "source": {
+          "name": "来源",
+          "description": "统计数据的来源。"
+        },
+        "unit_of_measurement": {
+          "name": "测量单位",
+          "description": "统计数据的测量单位。"
+        },
+        "has_mean": {
+          "name": "包含平均值",
+          "description": "统计数据是否包含平均值。"
+        },
+        "has_sum": {
+          "name": "包含总和值",
+          "description": "统计数据是否包含总和值。"
+        },
+        "stats": {
+          "name": "统计列表",
+          "description": "要导入的统计数据映射/字典列表。字典必须包含带日期时间字符串的“start”键，其他可选键包括“mean”、“sum”、“min”、“max”、“last_reset”和“state”。除“last_reset”（日期时间字符串）外，其余均为整数或浮点数。"
+        }
+      }
+    },
+    "select_random": {
+      "name": "选择随机选项 👻",
+      "description": "为 select 实体选择一个随机选项。",
+      "fields": {
+        "options": {
+          "name": "选项限制",
+          "description": "限制可供选择的选项。如果不提供，将考虑所有可用选项。"
+        }
+      }
+    },
+    "input_select_random": {
+      "name": "选择随机选项 👻",
+      "description": "为 input_select 实体选择一个随机选项。",
+      "fields": {
+        "options": {
+          "name": "选项限制",
+          "description": "限制可供选择的选项。如果不提供，将考虑所有可用选项。"
+        }
+      }
+    },
+    "input_select_shuffle": {
+      "name": "打乱选项 👻",
+      "description": "打乱 `input_select` 实体的可选选项列表顺序。这不是持久性的，一旦重新加载或 Home Assistant 重启，顺序将恢复。"
+    },
+    "input_select_sort": {
+      "name": "排序选项 👻",
+      "description": "对 `input_select` 实体的可选选项列表进行排序。这不是持久性的。"
+    },
+    "number_decrement": {
+      "name": "减少数值 👻",
+      "description": "将数字实体的数值减少一定量。",
+      "fields": {
+        "amount": {
+          "name": "金额/数值",
+          "description": "减少的数值。如果不提供，将使用数字实体的步长。"
+        }
+      }
+    },
+    "number_increment": {
+      "name": "增加数值 👻",
+      "description": "将数字实体的数值增加一定量。",
+      "fields": {
+        "amount": {
+          "name": "金额/数值",
+          "description": "增加的数值。"
+        }
+      }
+    },
+    "number_max": {
+      "name": "设为最大值 👻",
+      "description": "将数字实体设置为其最大允许值。"
+    },
+    "number_min": {
+      "name": "设为最小值 👻",
+      "description": "将数字实体设置为其最小允许值。"
+    },
+    "input_number_decrement": {
+      "name": "减少数值 👻",
+      "description": "将输入数字（input_number）实体的数值减少一定量。",
+      "fields": {
+        "amount": {
+          "name": "金额/数值",
+          "description": "减少的数值。"
+        }
+      }
+    },
+    "input_number_increment": {
+      "name": "增加数值 👻",
+      "description": "将输入数字（input_number）实体的数值增加一定量。",
+      "fields": {
+        "amount": {
+          "name": "金额/数值",
+          "description": "增加的数值。"
+        }
+      }
+    },
+    "input_number_max": {
+      "name": "设为最大值 👻",
+      "description": "将输入数字实体设置为其最大值。"
+    },
+    "input_number_min": {
+      "name": "设为最小值 👻",
+      "description": "将输入数字实体设置为其最小值。"
+    },
+    "person_add_device_tracker": {
+      "name": "添加设备追踪器 👻",
+      "description": "为人员添加设备追踪器。",
+      "fields": {
+        "entity_id": {
+          "name": "人员",
+          "description": "要添加设备追踪器的人员实体 ID。"
+        },
+        "device_tracker": {
+          "name": "设备追踪器",
+          "description": "要添加到该人员的设备追踪器实体 ID。"
+        }
+      }
+    },
+    "person_remove_device_tracker": {
+      "name": "移除设备追踪器 👻",
+      "description": "从人员中移除设备追踪器。",
+      "fields": {
+        "entity_id": {
+          "name": "人员",
+          "description": "要移除设备追踪器的人员实体 ID。"
+        },
+        "device_tracker": {
+          "name": "设备追踪器",
+          "description": "要从人员中移除的设备追踪器实体 ID。"
+        }
+      }
+    },
+    "repairs_create": {
+      "name": "创建问题 👻",
+      "description": "手动在 Home Assistant 修复（Repairs）面板中创建并引发一个问题。",
+      "fields": {
+        "title": {
+          "name": "标题",
+          "description": "问题的标题。"
+        },
+        "description": {
+          "name": "描述",
+          "description": "问题的描述，支持 Markdown 格式。"
+        },
+        "issue_id": {
+          "name": "问题 ID",
+          "description": "问题可以有一个标识符，以便日后根据需要使用该 ID 取消它。它还可以防止创建重复的问题。如果不提供，将生成随机 ID。"
+        },
+        "domain": {
+          "name": "域",
+          "description": "此字段用于设置问题的域。默认（如果未设置）将使用“spook”，这会导致图标显示为 Spook。如果设置为“homeassistant”，则使用 HA 图标；或使用“hue”、“mqtt”等显示对应集成的图标。"
+        },
+        "severity": {
+          "name": "严重程度",
+          "description": "问题的严重程度，决定其优先级。默认值为“warning”（警告）。"
+        },
+        "persistent": {
+          "name": "持久性",
+          "description": "问题是否应该是持久的，这意味着它会在重启后依然存在。默认情况下，手动创建的问题是非持久的。"
+        }
+      }
+    },
+    "repairs_ignore_all": {
+      "name": "忽略所有问题 👻",
+      "description": "忽略当前在 Home Assistant 修复面板中引发的所有问题。"
+    },
+    "repairs_remove": {
+      "name": "移除问题 👻",
+      "description": "移除手动创建的修复问题。此动作只能移除通过 `repairs_create` 动作创建的问题。",
+      "fields": {
+        "issue_id": {
+          "name": "问题 ID",
+          "description": "要移除的问题 ID。"
+        }
+      }
+    },
+    "repairs_unignore_all": {
+      "name": "取消忽略所有问题 👻",
+      "description": "取消忽略 Home Assistant 修复面板中目前所有被忽略的问题。"
+    },
+    "timer_set_duration": {
+      "name": "设置时长 👻",
+      "description": "为现有计时器设置新时长。",
+      "fields": {
+        "duration": {
+          "name": "时长",
+          "description": "计时器的新时长，可以是时间跨度字符串。"
+        }
+      }
+    },
+    "zone_create": {
+      "name": "创建区域 👻",
+      "description": "立即在 Home Assistant 中创建一个新地理区域（Zone）。",
+      "fields": {
+        "name": {
+          "name": "名称",
+          "description": "区域的名称。"
+        },
+        "icon": {
+          "name": "图标",
+          "description": "用于该区域的图标。"
+        },
+        "latitude": {
+          "name": "纬度",
+          "description": "区域所在的纬度。"
+        },
+        "longitude": {
+          "name": "经度",
+          "description": "区域所在的经度。"
+        },
+        "radius": {
+          "name": "半径",
+          "description": "区域的半径（单位：米）。"
+        }
+      }
+    },
+    "zone_update": {
+      "name": "更新区域 👻",
+      "description": "动态更新区域的属性。",
+      "fields": {
+        "entity_id": {
+          "name": "实体 ID",
+          "description": "要更新的区域实体 ID。"
+        },
+        "name": {
+          "name": "名称",
+          "description": "区域的新名称。"
+        },
+        "icon": {
+          "name": "图标",
+          "description": "区域的新图标。"
+        },
+        "latitude": {
+          "name": "纬度",
+          "description": "区域的新纬度。"
+        },
+        "longitude": {
+          "name": "经度",
+          "description": "区域的新经度。"
+        },
+        "radius": {
+          "name": "半径",
+          "description": "区域的新半径（单位：米）。"
+        }
+      }
+    },
+    "zone_delete": {
+      "name": "删除区域 👻",
+      "description": "删除一个区域。这仅适用于通过 UI 创建和管理的区域。YAML 创建的区域无法通过 Spook 管理。",
+      "fields": {
+        "entity_id": {
+          "name": "实体 ID",
+          "description": "要移除的区域实体 ID。"
         }
       }
     }
