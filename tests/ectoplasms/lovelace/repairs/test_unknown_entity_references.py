@@ -334,7 +334,7 @@ def test_card_picture_elements_walked(repair: SpookRepair) -> None:
 
 
 def test_card_mushroom_chips(repair: SpookRepair) -> None:
-    """``chips`` on a mushroom chips card are walked and conditions captured."""
+    """Mushroom chips and their conditions contribute entities."""
     config = {
         "type": "custom:mushroom-chips-card",
         "chips": [
@@ -352,6 +352,31 @@ def test_card_mushroom_chips(repair: SpookRepair) -> None:
         "sensor.temperature",
         "switch.lamp",
         "input_boolean.guest",
+    }
+
+
+def test_heading_card_badges(repair: SpookRepair) -> None:
+    """Heading card badges contribute entities and action targets."""
+    config = {
+        "type": "heading",
+        "badges": [
+            {"type": "entity", "entity": "sensor.temperature"},
+            {
+                "type": "entity",
+                "entity": "binary_sensor.door",
+                "tap_action": {
+                    "action": "call-service",
+                    "service": "light.turn_on",
+                    "target": {"entity_id": "light.kitchen"},
+                },
+            },
+        ],
+    }
+
+    assert _extract_card(repair, config) == {
+        "sensor.temperature",
+        "binary_sensor.door",
+        "light.kitchen",
     }
 
 
