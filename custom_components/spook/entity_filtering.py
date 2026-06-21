@@ -108,6 +108,7 @@ _ENTITY_FUNCTIONS = [
 ]
 
 # Build regex patterns using Home Assistant's core validation patterns
+_STATES_DOMAIN_ENTITY_GROUPS = 2
 ENTITY_ID_TEMPLATE_PATTERNS = [
     # Template functions with entity ID as first parameter
     rf"(?:{'|'.join(_ENTITY_FUNCTIONS)})\s*\(\s*['\"]({ENTITY_ID_PATTERN})['\"]",
@@ -399,6 +400,35 @@ async def async_extract_entities_from_template_string(
     return entities
 
 
+def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> bool:
+    """Return if a quoted entity ID literal is part of a concatenated string."""
+    groups = match.groups()
+    if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return False
+
+    entity_start, entity_end = match.span(1)
+    before_entity = template_str[:entity_start].rstrip()
+    after_entity = template_str[entity_end:].lstrip()
+
+    if not (before_entity.endswith(("'", '"')) and after_entity.startswith(("'", '"'))):
+        return False
+
+    before_literal = before_entity[:-1].rstrip()
+    after_literal = after_entity[1:].lstrip()
+    return before_literal.endswith("~") or after_literal.startswith("~")
+
+
+def _entity_id_from_template_match(match: re.Match[str]) -> str:
+    """Return the entity ID captured by a template regex match."""
+    groups = match.groups()
+
+    # Handle the states.domain.entity pattern that captures (domain, object_id)
+    if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return f"{groups[0]}.{groups[1]}"
+
+    return groups[0]
+
+
 def extract_entities_from_template_regex(
     hass: HomeAssistant, template_str: str
 ) -> set[str]:
@@ -413,17 +443,13 @@ def extract_entities_from_template_regex(
         return set()
 
     entities = set()
-    # Number of capture groups in states.domain.entity pattern
-    domain_entity_groups = 2
 
     for pattern in ENTITY_ID_TEMPLATE_PATTERNS:
-        matches = re.findall(pattern, template_str, re.IGNORECASE)
-        for match in matches:
-            # Handle the states.domain.entity pattern that captures (domain, object_id)
-            if isinstance(match, tuple) and len(match) == domain_entity_groups:
-                entity_id = f"{match[0]}.{match[1]}"
-            else:
-                entity_id = match
+        for match in re.finditer(pattern, template_str, re.IGNORECASE):
+            if _is_concatenated_template_match(template_str, match):
+                continue
+
+            entity_id = _entity_id_from_template_match(match)
 
             # For each entity ID (which might be comma-separated), add all valid ones
             for individual_id in split_comma_separated_entity_ids(entity_id):
