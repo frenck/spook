@@ -28,6 +28,8 @@ from custom_components.spook.integration_linking import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
@@ -236,6 +238,10 @@ async def test_setup_entry_restart_required_paths(
     ) -> None:
         """Forward no platform setup during restart tests."""
 
+    def setup_cache_invalidation_noop(_hass: HomeAssistant) -> Callable[[], None]:
+        """Skip entity ID cache invalidation listeners during restart tests."""
+        return lambda: None
+
     monkeypatch.setattr(spook, "PLATFORMS", [])
     monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
     monkeypatch.setattr(
@@ -246,6 +252,11 @@ async def test_setup_entry_restart_required_paths(
     monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
     monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
     monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_changed)
+    monkeypatch.setattr(
+        spook,
+        "async_setup_all_entity_ids_cache_invalidation",
+        setup_cache_invalidation_noop,
+    )
     monkeypatch.setattr(hass, "async_stop", async_stop)
     monkeypatch.setattr(hass, "state", state)
     if restart_now:
