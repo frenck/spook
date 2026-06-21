@@ -293,6 +293,10 @@
       "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn se promenant, Spook a croisé le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux étiquettes suivantes, qui sont inconnues de Home Assistant :\n\n{labels}\n\n\n\nPour corriger cette erreur, [éditez le script]({edit}) et supprimez les références aux étiquettes inexistantes.\n\nSpook 👻 Votre pote.",
       "title": "Label inconnu utilisé dans: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nPour corriger cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces actions inexistantes.\n\nSpook 👻 Your homie.",
+      "title": "Actions inconnues utilisées dans: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook a trouvé un fantôme dans vos entrées Interrupteur comme X 👻\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante :\n\n{helper} (`{entity_id}`)\n\nCette entrée possède une entité source inconnue de Home Assistant :\n\n`{source}`\n\n\n\nPour corriger cette erreur, modifiez l'entrée et ajustez l'entité source (ou supprimez l'entrée) et redémarrez Home Assistant.\n\nSpook 👻 Your homie.",
       "title": "Source inconnue : {helper}"

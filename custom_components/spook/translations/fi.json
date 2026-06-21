@@ -293,6 +293,10 @@
       "description": "Spook on löytänyt haamun käsikirjoituksistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan käsikirjoituksen kanssa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä komentosarja viittaa seuraaviin nimikkeisiin, joita Home Assistant ei tunne:\n\n{labels}\n\n\n\nKorjaa tämä virhe [muokkaa komentosarjaa]({edit}) ja poista näiden ei-olemassa olevien tunnisteiden käyttö.\n\nSpook 👻 Sinun kamusi.",
       "title": "Tuntemattomia nimikkeitä käytetty: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook on löytänyt haamun käsikirjoituksistasi 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan käsikirjoituksen kanssa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTämä automaatio viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\nKorjataksesi tämän vian  [muokkaa komentosarjaa]({edit}) ja poista nämä tuntemattomat toiminnot.\n\nSpook 👻 Sinun kamusi.",
+      "title": "Tuntemattomia toimintoja käytetty: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook on löytänyt haamun Switchistäsi X-auttajina 👻\n\nKelluessaan ympäriinsä Spook ylitti polun seuraavan avustajan kanssa:\n\n{helper} (`{entity_id}`)\n\nTällä auttajalla on lähdevaihtoyksikkö, jota Home Assistant ei tunne:\n\n`{source}`\n\n\n\nKorjaa tämä virhe muokkaamalla apuohjelmaa ja säätämällä lähdekokonaisuutta (tai poistamalla apuohjelma) ja käynnistämällä Home Assistantin uudelleen.\n\nSpook 👻 Sinun kamusi.",
       "title": "Tuntematon lähde: {helper}"

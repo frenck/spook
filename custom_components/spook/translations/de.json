@@ -293,6 +293,10 @@
       "description": "Spook hat einen Geist in deinen Scripts gefunden👻\n\nBeim Herumgeistern hat Spook folgende Scripts gefunden:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Script beinhaltet folgende Label, welche Home Assistant unbekannt sind:\n\n{labels}\n\n\n\nUm diesen Fehler zu beheben, [edit the script]({edit}) und entferne die unbekannten Label.\n\nSpook 👻 Dein homie.",
       "title": "Unbekannte Labels genutzt in: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook hat einen Geist in deinen Skripten gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript verweist auf die folgenden Aktionen, die Home Assistant nicht kennt:\n\n{services}\n\nUm diesen Fehler zu beheben, [bearbeite das Skript]({edit}) und entferne die Verwendung dieser nicht vorhandenen Aktionen.\n\nSpook 👻 Your homie.",
+      "title": "Unbekannte Aktionen, die in {script} verwendet werden."
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook hat in deiner Schalter als X-Helfer einen Geist gefunden 👻.\n\nBeim Herumschweben kreuzte Spook den Weg mit dem folgenden Helfer:\n\n{helper} (`{entity_id}`)\n\nDieser Helfer hat eine Home Assistant unbekannte Quell-Schalter-Entität:\n\n`{source}`\n\n\n\nUm diesen Fehler zu beheben, bearbeite den Helfer und passe die Quell-Entität an (oder entferne den Helfer) und starte Home Assistant neu.\n\nSpook 👻 Your homie.",
       "title": "Unbekannte Quelle: {helper}"

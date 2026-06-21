@@ -293,6 +293,10 @@
       "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script hace referencia a las siguientes etiquetas, que son desconocidas para Home Assistant:\n\n{labels}\n\n\n\nPara solucionar este error, [edita el script]({edit}) y elimina el uso de estas etiquetas que no existen.\n\nSpook 👻 Your homie.",
       "title": "Etiquetas desconocidas usadas en: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script hace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\nPara solucionar este error, [edita el script]({edit}) y elimina el uso de estas acciones que no existen.\n\nSpook 👻 Your homie.",
+      "title": "Acciones desconocidas utilizadas en: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook ha encontrado un fantasma en tus ayudantes de Switch como X 👻\n\nMientras flotaba, Spook se cruzó con el siguiente ayudante:\n\n{helper} (`{entity_id}`)\n\nEste ayudante tiene una entidad de switch de origen desconocida para Home Assistant:\n\n`{source}`\n\n\n\nPara solucionar este error, edita el ayudante y ajusta la entidad de origen (o elimina el ayudante) y reinicia Home Assistant.\n\nSpook 👻 Your homie.",
       "title": "Origen desconocido: {helper}"

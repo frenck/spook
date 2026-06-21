@@ -293,6 +293,10 @@
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
       "title": "Unknown labels used in: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook har funnet et spøkelse i dine skript 👻\n\nMens han fløt rundt, krysset Spook veien med følgende scene:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDenne skriptet refererer til følgende tjenester, som er ukjente for Home Assistant:\n\n{services}\n\nFor å fikse denne feilen, [endre skriptet]({edit}) og fjern bruken av disse ikke-eksisterende tjenestene.\n\nSpook 👻 Ikke din homie.",
+      "title": "Ukjente tjenester brukt i: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook har funnet et spøkelse i dine bryter som X hjelpere 👻\n\nMens han fløt rundt, krysset Spook veien med følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen bruker en bryter som er ukjent for Home Assistant:\n\n`{source}`\n\n\n\nFor å fikse denne feilen, endre helperen til å bruke en annen bryter (eller fjern hjelperen) og start om Home Assistant.\n\nSpook 👻 Ikke din homie.",
       "title": "Ukjent kilde brukt i: {helper}"

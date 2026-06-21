@@ -293,6 +293,10 @@
       "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende labels, som er ukendt for Home Assistant:\n\n{labels}\n\n\n\nHvis du vil rette denne fejl, [rediger scriptet]({edit}) og fjerne brugen af disse manglende labels.\n\nSpook 👻 er din ven.",
       "title": "Ukendte labels benyttet i {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script refererer til følgende tjenester, som er ukendte for Home Assistant:\n\n{services}\n\n[rediger scriptet]({edit}) for at rette denne fejl og fjerne brugen af disse ikke-eksisterende tjenester.\n\nSpook 👻 din homie.",
+      "title": "Ukendte handlinger, der bruges i: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook har fundet et spøgelse i din Switch som X hjælpere 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende hjælpere:\n\n{helper} (`{entity_id}`)\n\nDenne hjælper har en kildekontakt enhed, der er ukendt for Home Assistant:\n\n`{source}`\n\n\n\nHvis du vil rette fejlen, skal du redigere hjælperen og justere kildeenheden (eller fjerne hjælperen) og genstarte Home Assistant.\n\nSpook 👻 er din ven.",
       "title": "Ukendt kilde: {helper}"

@@ -293,6 +293,10 @@
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
       "title": "Unknown labels used in: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook je pronašao duha u vašim skriptama👻\n\nDok je lebdio okolo, Spook se susreo sa sljedećom skriptom:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta upućuje na sljedeće usluge, koje nisu poznate Home Assistant:\n\n{services}\n\nDa biste ispravili ovu pogrešku, [uredite skriptu]({edit}) i uklonite korištenje ovih nepostojećih usluga.\n\nSpook 👻 Tvoj prijatelj.",
+      "title": "Nepoznate usluge koje se koriste u: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook je pronašao duha u vašem \"Switch as X\" pomagaču 👻\n\nDok je lebdio okolo, Spook se susreo sa sljedećim pomagačem:\n\n{helper} (`{entity_id}`)\n\nOvaj pomoćnik ima entitet za promjenu izvora nepoznat Home Assistant:\n\n`{source}`\n\n\n\nDa biste ispravili ovu pogrešku, uredite pomoćnika i prilagodite izvorni entitet (ili uklonite pomoćnika) i ponovno pokrenite Home Assistant.\n\nSpook 👻 Tvoj prijatelj.",
       "title": "Nepoznati izvor: {helper}"
