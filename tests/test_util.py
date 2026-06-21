@@ -2,15 +2,20 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 import pytest
 
 from custom_components.spook.entity_filtering import (
+    async_filter_known_entity_ids_with_templates,
+    extract_entities_from_template_regex,
     extract_template_strings_from_config,
     is_template_string,
     split_comma_separated_entity_ids,
 )
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 
 @pytest.mark.parametrize(
@@ -139,3 +144,82 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
 
     assert result is sink
     assert sink == ["{{ preexisting }}", "{{ added }}"]
+
+
+@pytest.mark.parametrize(
+    ("template", "expected"),
+    [
+        ("{{ states('light.kitchen') }}", {"light.kitchen"}),
+        ("{{ state_attr('sensor.energy', 'unit') }}", {"sensor.energy"}),
+        ("{{ is_state('switch.fan', 'on') }}", {"switch.fan"}),
+        ("{{ is_state_attr('climate.hvac', 'mode', 'heat') }}", {"climate.hvac"}),
+        ("{{ has_value('sensor.power') }}", {"sensor.power"}),
+        ("{{ state_translated('binary_sensor.motion') }}", {"binary_sensor.motion"}),
+        ("{{ device_id('light.kitchen') }}", {"light.kitchen"}),
+        ("{{ device_name('switch.fan') }}", {"switch.fan"}),
+        ("{{ device_attr('sensor.router', 'name') }}", {"sensor.router"}),
+        (
+            "{{ is_device_attr('sensor.router', 'manufacturer', 'x') }}",
+            {"sensor.router"},
+        ),
+        ("{{ config_entry_id('sensor.power') }}", {"sensor.power"}),
+        ("{{ area_id('sensor.hall') }}", {"sensor.hall"}),
+        ("{{ area_name('sensor.hall') }}", {"sensor.hall"}),
+        ("{{ floor_id('sensor.upstairs') }}", {"sensor.upstairs"}),
+        ("{{ floor_name('sensor.upstairs') }}", {"sensor.upstairs"}),
+        ("{{ is_hidden_entity('sensor.hidden') }}", {"sensor.hidden"}),
+        ("{{ expand('group.lights') }}", {"group.lights"}),
+        ("{{ distance('sensor.home') }}", {"sensor.home"}),
+        ("{{ closest('sensor.a') }}", {"sensor.a"}),
+        ("{{ states.binary_sensor.door.state }}", {"binary_sensor.door"}),
+        (
+            "{{ states.sensor.temperature.attributes.unit_of_measurement }}",
+            {"sensor.temperature"},
+        ),
+        ("{{ ['light.a', 'switch.b'] }}", {"light.a", "switch.b"}),
+        (
+            "{{ expand('light.kitchen', 'switch.fan') }}",
+            {"light.kitchen", "switch.fan"},
+        ),
+        (
+            "{{ ['light.kitchen'] | select('is_state', 'on') | list }}",
+            {"light.kitchen"},
+        ),
+        ("{{ 'light.' ~ room }}", set()),
+        ("{{ states('unknown_domain.foo') }}", set()),
+        ("{{ states('light.') }}", set()),
+        ("{{ 'light.turn_on' }}", set()),
+    ],
+)
+def test_extract_entities_from_template_regex(
+    hass: HomeAssistant,
+    template: str,
+    expected: set[str],
+) -> None:
+    """Test entity IDs are extracted from supported template forms."""
+    hass.services.async_register(
+        "light",
+        "turn_on",
+        lambda _: None,
+    )
+
+    assert extract_entities_from_template_regex(hass, template) == expected
+
+
+async def test_filter_template_entities_ignores_ignored_domains(
+    hass: HomeAssistant,
+) -> None:
+    """Test ignored entity domains do not leak as unknown template entities."""
+    unknown = await async_filter_known_entity_ids_with_templates(
+        hass,
+        {
+            "{{ states('scene.goodnight') }}",
+            "{{ states('group.family') }}",
+            "{{ states('device_tracker.phone') }}",
+            "persistent_notification.update",
+            "{{ states('light.missing') }}",
+        },
+        known_entity_ids=set(),
+    )
+
+    assert unknown == {"light.missing"}
