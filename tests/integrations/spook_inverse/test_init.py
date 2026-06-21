@@ -12,6 +12,7 @@ from homeassistant.helpers import device_registry as dr, entity_registry as er
 from custom_components.spook.integrations.spook_inverse import (
     MIGRATION_MINOR_VERSION,
     async_get_source_entity_device_id,
+    async_remove_entry,
 )
 from custom_components.spook.integrations.spook_inverse.const import (
     CONF_HIDE_SOURCE,
@@ -116,3 +117,60 @@ async def test_async_migrate_entry_handles_unresolved_source_entity_id(
     await hass.async_block_till_done()
 
     assert migrated_entry.minor_version == MIGRATION_MINOR_VERSION
+
+
+async def test_async_remove_entry_unhides_integration_hidden_source(
+    hass: HomeAssistant,
+) -> None:
+    """Test remove entry unhides the source entity."""
+    entity_registry = er.async_get(hass)
+    entity_registry.async_get_or_create(
+        "switch",
+        "test",
+        "source",
+        suggested_object_id="source",
+        hidden_by=er.RegistryEntryHider.INTEGRATION,
+    )
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="Inverse",
+        options={
+            CONF_ENTITY_ID: "switch.source",
+            CONF_HIDE_SOURCE: True,
+            "inverse_type": Platform.SWITCH,
+        },
+    )
+
+    await async_remove_entry(hass, entry)
+
+    assert entity_registry.async_get("switch.source").hidden_by is None
+
+
+async def test_async_remove_entry_preserves_user_hidden_source(
+    hass: HomeAssistant,
+) -> None:
+    """Test remove entry leaves non-integration hidden source entities alone."""
+    entity_registry = er.async_get(hass)
+    entity_registry.async_get_or_create(
+        "switch",
+        "test",
+        "source",
+        suggested_object_id="source",
+        hidden_by=er.RegistryEntryHider.USER,
+    )
+    entry = MockConfigEntry(
+        domain=DOMAIN,
+        title="Inverse",
+        options={
+            CONF_ENTITY_ID: "switch.source",
+            CONF_HIDE_SOURCE: True,
+            "inverse_type": Platform.SWITCH,
+        },
+    )
+
+    await async_remove_entry(hass, entry)
+
+    assert (
+        entity_registry.async_get("switch.source").hidden_by
+        is er.RegistryEntryHider.USER
+    )
