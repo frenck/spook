@@ -215,7 +215,14 @@ async def test_setup_entry_restart_required_paths(
 ) -> None:
     """Test setup behavior when sub-integration linking requires a restart."""
     restart_now = restart_choice == "now"
-    async_stop = AsyncMock(wraps=hass.async_stop)
+    original_async_stop = hass.async_stop
+
+    async def async_cleanup_hass() -> None:
+        """Stop Home Assistant after the restart request is asserted."""
+        monkeypatch.setattr(hass, "state", CoreState.running)
+        await original_async_stop()
+
+    async_stop = AsyncMock()
 
     async def async_forward_no_platforms(
         _hass: HomeAssistant,
@@ -240,7 +247,7 @@ async def test_setup_entry_restart_required_paths(
     monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
     monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_changed)
     monkeypatch.setattr(hass, "async_stop", async_stop)
-    hass.state = state
+    monkeypatch.setattr(hass, "state", state)
     if restart_now:
         hass.data[DOMAIN] = "Boo!"
 
@@ -258,6 +265,7 @@ async def test_setup_entry_restart_required_paths(
         await hass.async_block_till_done()
         hass.async_stop.assert_awaited_once_with(RESTART_EXIT_CODE)
         assert ir.async_get(hass).async_get_issue(DOMAIN, "restart_required") is None
+        await async_cleanup_hass()
         return
 
     if state == CoreState.not_running:
@@ -268,6 +276,7 @@ async def test_setup_entry_restart_required_paths(
 
         hass.async_stop.assert_awaited_once_with(RESTART_EXIT_CODE)
         assert ir.async_get(hass).async_get_issue(DOMAIN, "restart_required") is None
+        await async_cleanup_hass()
         return
 
     hass.async_stop.assert_not_called()
@@ -275,3 +284,4 @@ async def test_setup_entry_restart_required_paths(
     assert issue is not None
     assert issue.severity is ir.IssueSeverity.WARNING
     assert issue.translation_key == "restart_required"
+    await original_async_stop()
