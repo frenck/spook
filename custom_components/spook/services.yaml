@@ -1245,26 +1245,16 @@ zone_create:
           placeholder: mdi:map-marker
     latitude:
       name: Latitude
-      description: Latitude of the zone
+      description: Latitude of the zone. This can be a template.
       required: true
       selector:
-        number:
-          min: -90
-          max: 90
-          step: any
-          mode: box
-          unit_of_measurement: °
+        template:
     longitude:
       name: Longitude
-      description: Longitude of the zone
+      description: Longitude of the zone. This can be a template.
       required: true
       selector:
-        number:
-          min: -180
-          max: 180
-          step: any
-          mode: box
-          unit_of_measurement: °
+        template:
     radius:
       name: Radius
       description: Radius of the zone
@@ -1305,26 +1295,16 @@ zone_update:
           placeholder: mdi:map-marker
     latitude:
       name: Latitude
-      description: Latitude of the zone
+      description: Latitude of the zone. This can be a template.
       required: false
       selector:
-        number:
-          min: -90
-          max: 90
-          step: any
-          mode: box
-          unit_of_measurement: °
+        template:
     longitude:
       name: Longitude
-      description: Longitude of the zone
+      description: Longitude of the zone. This can be a template.
       required: false
       selector:
-        number:
-          min: -180
-          max: 180
-          step: any
-          mode: box
-          unit_of_measurement: °
+        template:
     radius:
       name: Radius
       description: Radius of the zone
