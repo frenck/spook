@@ -1,1 +1,266 @@
-{}
+{
+    "entity": {
+        "sensor": {
+            "homeassistant_siren": {
+                "name": "报警器"
+            },
+            "homeassistant_water_heater": {
+                "name": "热水器"
+            },
+            "homeassistant_device_tracker": {
+                "name": "设备跟踪器"
+            },
+            "homeassistant_input_number": {
+                "name": "输入数字"
+            },
+            "homeassistant_button": {
+                "name": "按钮"
+            },
+            "homeassistant_cover": {
+                "name": "窗帘"
+            },
+            "homeassistant_area": {
+                "name": "区域"
+            },
+            "homeassistant_number": {
+                "name": "数字"
+            },
+            "homeassistant_switch": {
+                "name": "开关"
+            },
+            "homeassistant_tts": {
+                "name": "文本转语音"
+            },
+            "homeassistant_text": {
+                "name": "文本"
+            },
+            "homeassistant_script": {
+                "name": "脚本"
+            },
+            "homeassistant_input_boolean": {
+                "name": "输入布尔值"
+            },
+            "repairs_ignored_issues": {
+                "name": "已忽略"
+            },
+            "homeassistant_humidifier": {
+                "name": "加湿器"
+            },
+            "homeassistant_update": {
+                "name": "更新"
+            },
+            "homeassistant_custom_component": {
+                "name": "自定义集成"
+            },
+            "homeassistant_input_datetime": {
+                "name": "输入日期/时间"
+            },
+            "homeassistant_input_text": {
+                "name": "输入文本"
+            },
+            "homeassistant_fan": {
+                "name": "风扇"
+            },
+            "homeassistant_input_button": {
+                "name": "输入按钮"
+            },
+            "homeassistant_climate": {
+                "name": "空调"
+            },
+            "homeassistant_stt": {
+                "name": "语音转文字"
+            },
+            "homeassistant_image": {
+                "name": "图像"
+            },
+            "homeassistant_input_select": {
+                "name": "输入选择"
+            },
+            "homeassistant_remote": {
+                "name": "远程"
+            },
+            "homeassistant_device": {
+                "name": "设备"
+            },
+            "homeassistant_zone": {
+                "name": "区域"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "二进制传感器"
+            },
+            "homeassistant_lock": {
+                "name": "锁"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "报警控制面板"
+            },
+            "homeassistant_vacuum": {
+                "name": "吸尘器"
+            },
+            "homeassistant_scene": {
+                "name": "场景"
+            },
+            "homeassistant_integration": {
+                "name": "集成"
+            },
+            "homeassistant_media_player": {
+                "name": "媒体播放器"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa状态报告"
+            },
+            "cloud_google_report_state": {
+                "name": "谷歌助理状态报告"
+            },
+            "cloud_remote": {
+                "name": "远程"
+            }
+        },
+        "button": {
+            "repairs_ignore_all": {
+                "name": "忽略全部"
+            },
+            "homeassistant_reload": {
+                "name": "重载"
+            },
+            "repairs_unignore_all": {
+                "name": "全部取消忽略"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "update": "已更新Issue",
+                            "create": "已创建的Issue",
+                            "remove": "已删除Issue"
+                        }
+                    },
+                    "domain": {
+                        "name": "Issue 提出者"
+                    },
+                    "issue_id": {
+                        "name": "Issue ID"
+                    }
+                }
+            }
+        }
+    },
+    "issues": {
+        "script_unknown_floor_references": {
+            "title": "未知楼层被用于：{script}",
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处游荡时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本引用了以下 Home Assistant 未知的楼层：\n\n{floors}\n\n要修复此错误，请[编辑脚本]({edit})并删除这些不存在的楼层。\n\nSpook 👻 你的伙伴。"
+        },
+        "automation_unknown_label_references": {
+            "title": "未知标签被用于：{automation}",
+            "description": "Spook 在您的自动化程序中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下自动化程序相遇：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化程序引用了以下标签，但 Home Assistant 未识别这些标签：\n\n{labels}\n\n要修复此错误，请[编辑自动化程序]({edit}) 并删除这些不存在的标签。\n\nSpook 👻 您的伙伴。"
+        },
+        "utility_meter_unknown_source": {
+            "title": "未知source：{helper}",
+            "description": "Spook 在您的能源仪表助手中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下助手相遇：\n\n{helper} (`{entity_id}`)\n\n此助手有一个 Home Assistant 未知的源实体：\n\n`{source}`\n\n要修复此错误，请编辑助手并调整源实体（或删除助手）并重新启动 Home Assistant。\n\nSpook 👻 您的伙伴。"
+        },
+        "lovelace_unknown_entity_references": {
+            "title": "未知实体被用于：{dashboard}",
+            "description": "Spook 在您的仪表板中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下仪表板相遇：\n\n[{dashboard}]({edit})\n\n此仪表板引用了以下实体，但 Home Assistant 未识别这些实体：\n\n{entities}\n\n要修复此错误，请[编辑仪表板]({edit})并删除这些不存在的实体。\n\nSpook 👻 您的伙伴。"
+        },
+        "trend_unknown_source": {
+            "description": "Spook 在你的趋势助手中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下助手相遇：\n\n{helper} (`{entity_id}`)\n\n此助手有一个 Home Assistant 未知的源实体：\n\n`{source}`\n\n要修复此错误，请编辑助手并调整源实体（或删除助手）并重新启动 Home Assistant。\n\nSpook 👻 你的伙伴。",
+            "title": "未知source：{helper}"
+        },
+        "integration_unknown_source": {
+            "description": "Spook 在你的黎曼和积分助手中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下助手相遇：\n\n{helper} (`{entity_id}`)\n\n此助手有一个 Home Assistant 未知的源实体：\n\n`{source}`\n\n要修复此错误，请编辑助手并调整源实体（或删除助手）并重新启动 Home Assistant。\n\nSpook 👻 你的伙伴。",
+            "title": "未知source：{helper}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spook 在您的自动化程序中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下自动化程序相遇：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化程序引用了以下设备，但 Home Assistant 未识别这些设备：\n\n{devices}\n\n要修复此错误，请[编辑自动化程序]({edit}) 并删除这些不存在设备。\n\nSpook 👻 您的伙伴。",
+            "title": "未知设备被用于：{automation}"
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook 在您的自动化程序中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下自动化程序相遇：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化程序引用了以下楼层，但 Home Assistant 未识别这些楼层：\n\n{floors}\n\n要修复此错误，请[编辑自动化程序]({edit}) 并删除这些不存在的楼层。\n\nSpook 👻 您的伙伴。",
+            "title": "未知楼层被用于：{automation}"
+        },
+        "proximity_unknown_zone": {
+            "description": "Spook 在您的接近传感器配置中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下接近传感器配置相遇：\n\n{name}\n\n此配置基于 Home Assistant 未知的区域：\n\n`{zone}`\n\n要修复此错误，由于您无法更改接近传感器的区域，唯一的选择是删除此接近传感器集成实例。\n\nSpook 👻 您的伙伴。",
+            "title": "未知区域： {zone}"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook 在你的场景中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下场景擦肩而过：\n\n[{scene}]({edit})\n\n此场景引用了 以下Home Assistant 未知的实体：\n\n{entities}\n\n要修复此错误，请[编辑场景]({edit})并删除这些不存在的实体。\n\nSpook 👻 你的伙伴。",
+            "title": "未知实体被用于：{scene}"
+        },
+        "switch_as_x_unknown_source": {
+            "title": "未知source：{helper}",
+            "description": "Spook 在您的 Switch as X 助手中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下助手相遇：\n\n{helper} (`{entity_id}`)\n\n此助手有一个 Home Assistant 未知的源开关实体：\n\n`{source}`\n\n要修复此错误，请编辑助手并调整源实体（或删除助手）并重新启动 Home Assistant。\n\nSpook 👻 您的伙伴。"
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook 在您的接近传感器配置中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下接近传感器配置相遇：\n\n{name}\n\n此配置正在跟踪 Home Assistant 未知的人员或设备跟踪器：\n\n{entities}\n\n要修复此错误，请编辑配置并删除这些实体。\n\nSpook 👻 您的伙伴。",
+            "title": "未知被跟踪实体：{name}"
+        },
+        "script_unknown_device_references": {
+            "title": "未知设备被用于：{script}",
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处游荡时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本引用了 Home Assistant 未知的以下设备：\n\n{devices}\n\n要修复此错误，请[编辑脚本]({edit})并删除这些不存在的设备。\n\nSpook 👻 你的伙伴。"
+        },
+        "script_unknown_area_references": {
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处游荡时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本引用了 Home Assistant 未知的以下区域：\n\n{areas}\n\n要修复此错误，请[编辑脚本]({edit})并删除这些不存在的区域。\n\nSpook 👻 你的伙伴。",
+            "title": "未知区域被用于：{script}"
+        },
+        "automation_unknown_area_references": {
+            "title": "未知区域被用于：{automation}",
+            "description": "Spook 在您的自动化程序中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下自动化程序相遇：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化程序引用了以下 Home Assistant 未识别的区域：\n\n{areas}\n\n要修复此错误，请[编辑自动化程序]({edit}) 并删除这些不存在的区域。\n\nSpook 👻 您的伙伴。"
+        },
+        "restart_required": {
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "description": "为了让Spook👻完成设置,Home Assistant需要被重启。\n\n点击提交按钮立即重启Home Assistant",
+                        "title": "需要重启"
+                    }
+                }
+            },
+            "title": "需要重启"
+        },
+        "script_unknown_entity_references": {
+            "title": "未知实体被用于：{script}",
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处游荡时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本引用了 Home Assistant 未知的以下实体：\n\n{entities}\n\n要修复此错误，请[编辑脚本]({edit})并删除这些不存在的实体。\n\nSpook 👻 你的伙伴。"
+        },
+        "automation_unknown_entity_references": {
+            "title": "未知实体被用于：{automation}",
+            "description": "Spook 在您的自动化程序中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下自动化程序相遇：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化程序引用了以下实体，而 Home Assistant 未识别这些实体：\n\n{entities}\n\n要修复此错误，请[编辑自动化程序]({edit}) 并删除这些不存在的实体。\n\nSpook 👻 您的伙伴。"
+        },
+        "proximity_unknown_ignored_zones": {
+            "title": "未知的已忽略区域：{name}",
+            "description": "Spook 在您的接近传感器配置中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下接近传感器配置相遇：\n\n{name}\n\n此配置忽略了 Home Assistant 未识别的区域：\n\n{zones}\n\n要修复此错误，请编辑配置并删除这些区域。\n\nSpook 👻 您的伙伴。"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook 在您的自动化程序中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下自动化程序相遇：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化程序引用了以下 Home Assistant 未识别的动作：\n\n{services}\n\n要修复此错误，请[编辑自动化程序]({edit}) 并删除这些不存在的操作。\n\nSpook 👻 您的伙伴。",
+            "title": "未知动作被用于：{automation}"
+        },
+        "group_unknown_members": {
+            "title": "未知成员被用于群组：{group}",
+            "description": "Spook 在您的群组中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下群组相遇：\n\n{group} (`{entity_id}`)\n\n此群组有 Home Assistant 未识别的成员：\n\n{entities}\n\n要修复此错误，请编辑群组，删除这些不存在的实体，然后重新启动 Home Assistant。\n\nSpook 👻 您的伙伴。"
+        },
+        "script_unknown_label_references": {
+            "title": "未知标签被用于：{script}",
+            "description": "Spook 在您的脚本中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下脚本相遇：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本引用了以下Home Assistant 未识别的标签：\n\n{labels}\n\n要修复此错误，请[编辑脚本]({edit}) 并删除这些不存在的标签。\n\nSpook 👻 您的伙伴。"
+        }
+    },
+    "config": {
+        "abort": {
+            "already_spooked": "是啊……嗯……不。得了，3q，88！"
+        },
+        "step": {
+            "user": {
+                "description": "您是否已阅读说明文档？您是否已阅读许可证？您确认吗？"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "立即重启",
+                    "restart_later": "稍后重启"
+                },
+                "description": "为了让Spook👻完成设置,Home Assistant需要被重启。\n\n您现在是否希望立即重启Home Assistant?"
+            }
+        }
+    }
+}
