@@ -66,6 +66,15 @@ async def test_value_template_ignores_concatenated_entity_id_literal(
     assert await extract_entities_from_value(hass, template) == set()
 
 
+async def test_value_template_ignores_jinja_import_filename(
+    hass: HomeAssistant,
+) -> None:
+    """Jinja import filenames are not entity references."""
+    template = "{% from 'date.jinja' import how_about_now %}{{ how_about_now() }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
 async def test_value_template_ignores_concatenated_helper_entity_id(
     hass: HomeAssistant,
 ) -> None:
