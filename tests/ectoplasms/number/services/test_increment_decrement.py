@@ -56,6 +56,27 @@ async def test_number_services_handle_string_native_values(
     "service_cls",
     [increment.SpookService, decrement.SpookService],
 )
+async def test_number_services_raise_readable_error_for_invalid_amount(
+    hass: Any,
+    service_cls: type[increment.SpookService | decrement.SpookService],
+) -> None:
+    """Test invalid amounts raise a readable error."""
+    entity = MockNumberEntity(1.5)
+    call = SimpleNamespace(data={"amount": 0.2})
+
+    with pytest.raises(
+        ValueError,
+        match=escape(
+            "Amount 0.2 not valid for number.test, it needs to be a multiple of 0.5"
+        ),
+    ):
+        await service_cls(hass).async_handle_service(entity, call)
+
+
+@pytest.mark.parametrize(
+    "service_cls",
+    [increment.SpookService, decrement.SpookService],
+)
 async def test_number_services_raise_context_for_invalid_native_values(
     hass: Any,
     service_cls: type[increment.SpookService | decrement.SpookService],
