@@ -150,6 +150,12 @@
             },
             "homeassistant_air_quality": {
                 "name": "Luftkvalitet"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Binær bryter"
+            },
+            "homeassistant_input_button": {
+                "name": "Inndata-knapper"
             }
         },
         "button": {
@@ -161,6 +167,9 @@
             },
             "repairs_unignore_all": {
                 "name": "Ikke ignorer alle"
+            },
+            "homeassistant_restart": {
+                "name": "Start på nytt"
             }
         },
         "event": {
@@ -169,11 +178,15 @@
                     "event_type": {
                         "state": {
                             "update": "Hendelse oppdatert",
-                            "remove": "Hendelse fjernet"
+                            "remove": "Hendelse fjernet",
+                            "create": "Hendelse opprettet"
                         }
                     },
                     "domain": {
                         "name": "Hendelse oppretter"
+                    },
+                    "issue_id": {
+                        "name": "Hendelses-ID"
                     }
                 }
             }
@@ -296,6 +309,23 @@
         "proximity_unknown_ignored_zones": {
             "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen ignorerer soner som er ukjente for Home Assistant:\n\n{zones}\n\nFor å fikse denne feilen, rediger konfigurasjonen og fjern denne/disse sonene.\n\nSpook 👻 Ikke din homie.",
             "title": "Ukjente ignorerte soner: {name}"
+        }
+    },
+    "config": {
+        "abort": {
+            "already_spooked": "Jepp... eh... nei. OK, takk, snakkes!"
+        },
+        "step": {
+            "user": {
+                "description": "Har du lest readme? Har du lest lisensen? Er du helt sikker?"
+            },
+            "choice_restart": {
+                "menu_options": {
+                    "restart_now": "Start på nytt nå",
+                    "restart_later": "Start på nytt senere"
+                },
+                "description": "For å få Spook til å fullføre oppsettet, må Home Assistant må startes på nytt.\n\nVil du starte Home Assistant på nytt nå?"
+            }
         }
     }
 }
