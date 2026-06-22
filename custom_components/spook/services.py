@@ -11,8 +11,12 @@ from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, final
 from awesomeversion import AwesomeVersion
 import voluptuous as vol
 
-from homeassistant.const import __short_version__ as current_version
+from homeassistant.const import (
+    EVENT_CORE_CONFIG_UPDATE,
+    __short_version__ as current_version,
+)
 from homeassistant.core import (
+    Event,
     HomeAssistant,
     Service,
     ServiceCall,
@@ -29,15 +33,23 @@ from homeassistant.helpers.service import (
     async_register_admin_service,
     async_set_service_schema,
 )
+from homeassistant.helpers.translation import (
+    _async_get_translations_cache,
+    async_get_cached_translations,
+    async_get_translations,
+)
 from homeassistant.loader import async_get_integration
 
 from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
     from types import ModuleType
 
 
 _EntityT = TypeVar("_EntityT", bound=Entity, default=Entity)
+GHOST = "👻"
+SERVICE_TRANSLATION_CATEGORY = "services"
 
 
 class AbstractSpookServiceBase(ABC):
@@ -252,6 +264,10 @@ class SpookServiceManager:
 
     _services: set[AbstractSpookService] = field(default_factory=set)
     _service_schemas: dict[str, Any] = field(default_factory=dict)
+    _service_translation_overrides: dict[tuple[str, str, str], str | None] = field(
+        default_factory=dict
+    )
+    _translation_listener: Callable[[], None] | None = None
 
     def __post_init__(self) -> None:
         """Post initialization."""
@@ -318,6 +334,12 @@ class SpookServiceManager:
 
             self.async_register_service(service)
 
+        await self.async_inject_service_translations()
+        self._translation_listener = self.hass.bus.async_listen(
+            EVENT_CORE_CONFIG_UPDATE,
+            self._async_core_config_updated,
+        )
+
     @callback
     def async_register_service(self, service: AbstractSpookService) -> None:
         """Register a Spook service."""
@@ -344,9 +366,167 @@ class SpookServiceManager:
             )
 
     @callback
+    def _service_schema_key(self, service: AbstractSpookService) -> str:
+        """Return the services.yaml key for a Spook service."""
+        if service.domain == DOMAIN:
+            return service.service
+        return f"{service.domain}_{service.service}"
+
+    @callback
+    def _service_translation_strings(
+        self,
+        service: AbstractSpookService,
+        cached_spook_translations: dict[str, str],
+    ) -> dict[str, str]:
+        """Return service translation strings mapped to the target domain."""
+        schema_key = self._service_schema_key(service)
+        spook_prefix = f"component.{DOMAIN}.services.{schema_key}."
+        target_prefix = f"component.{service.domain}.services.{service.service}."
+
+        return {
+            f"{target_prefix}{key.removeprefix(spook_prefix)}": (
+                f"{value} {GHOST}"
+                if key == f"{spook_prefix}name" and GHOST not in value
+                else value
+            )
+            for key, value in cached_spook_translations.items()
+            if key.startswith(spook_prefix)
+        }
+
+    @callback
+    def _translation_component_cache(
+        self,
+        language: str,
+        domain: str,
+        *,
+        create: bool = False,
+    ) -> dict[str, str] | None:
+        """Return the Home Assistant translation cache for a component."""
+        translations_cache = _async_get_translations_cache(self.hass)
+
+        try:
+            cache = translations_cache.cache_data.cache
+        except AttributeError:
+            LOGGER.warning(
+                "Unable to access Home Assistant's translation cache, "
+                "skipping Spook service translation update"
+            )
+            return None
+
+        if not isinstance(cache, dict):
+            LOGGER.warning(
+                "Home Assistant's translation cache has an unexpected structure, "
+                "skipping Spook service translation update"
+            )
+            return None
+
+        if create:
+            return (
+                cache.setdefault(language, {})
+                .setdefault(
+                    SERVICE_TRANSLATION_CATEGORY,
+                    {},
+                )
+                .setdefault(domain, {})
+            )
+
+        return cache.get(language, {}).get(SERVICE_TRANSLATION_CATEGORY, {}).get(domain)
+
+    @callback
+    def _inject_service_translation_strings(
+        self,
+        service: AbstractSpookService,
+        cached_spook_translations: dict[str, str],
+    ) -> None:
+        """Inject service translation strings into Home Assistant's cache."""
+        language = self.hass.config.language
+        component_cache = self._translation_component_cache(
+            language,
+            service.domain,
+            create=True,
+        )
+        if component_cache is None:
+            return
+
+        cached_translations = async_get_cached_translations(
+            self.hass,
+            language,
+            SERVICE_TRANSLATION_CATEGORY,
+            service.domain,
+        )
+
+        for key, value in self._service_translation_strings(
+            service,
+            cached_spook_translations,
+        ).items():
+            self._service_translation_overrides.setdefault(
+                (language, service.domain, key), cached_translations.get(key)
+            )
+            component_cache[key] = value
+
+    async def async_inject_service_translations(self) -> None:
+        """Inject Spook service strings into Home Assistant translations."""
+        services = [
+            service
+            for service in self._services
+            if self._service_schema_key(service) in self._service_schemas
+        ]
+
+        if not services:
+            return
+
+        await async_get_translations(
+            self.hass,
+            self.hass.config.language,
+            SERVICE_TRANSLATION_CATEGORY,
+            {DOMAIN, *(service.domain for service in services)},
+        )
+        cached_spook_translations = async_get_cached_translations(
+            self.hass,
+            self.hass.config.language,
+            SERVICE_TRANSLATION_CATEGORY,
+            DOMAIN,
+        )
+
+        for service in services:
+            self._inject_service_translation_strings(
+                service,
+                cached_spook_translations,
+            )
+
+    async def _async_core_config_updated(self, event: Event) -> None:
+        """Re-inject service translations when the language changes."""
+        if "language" not in event.data:
+            return
+        await self.async_inject_service_translations()
+
+    @callback
+    def async_clear_service_translation_overrides(self) -> None:
+        """Restore translation strings that were overridden by Spook."""
+        for (
+            language,
+            domain,
+            key,
+        ), original_value in self._service_translation_overrides.items():
+            component_cache = self._translation_component_cache(language, domain)
+            if component_cache is None:
+                continue
+
+            if original_value is None:
+                component_cache.pop(key, None)
+            else:
+                component_cache[key] = original_value
+
+        self._service_translation_overrides.clear()
+
+    @callback
     def async_on_unload(self) -> None:
         """Tear down the Spook services."""
         LOGGER.debug("Tearing down Spook services")
+        if self._translation_listener:
+            self._translation_listener()
+            self._translation_listener = None
+
         for service in self._services:
             LOGGER.debug(
                 "Unregistering service: %s.%s",
@@ -373,3 +553,5 @@ class SpookServiceManager:
 
                 # Flush service description schema cache
                 self.hass.data.pop(SERVICE_DESCRIPTION_CACHE, None)
+
+        self.async_clear_service_translation_overrides()
