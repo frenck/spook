@@ -80,6 +80,24 @@ async def test_value_template_ignores_entity_id_prefix_string_match(
     assert await extract_entities_from_value(hass, template) == set()
 
 
+async def test_value_template_ignores_grouped_entity_id_prefix_string_match(
+    hass: HomeAssistant,
+) -> None:
+    """String prefix checks can use grouping without becoming references."""
+    template = "{{ entity.entity_id.startswith( ('binary_sensor.proxmox')) }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_ignores_entity_id_suffix_string_match(
+    hass: HomeAssistant,
+) -> None:
+    """String suffix checks are not complete entity references."""
+    template = "{{ entity.entity_id.endswith('sensor.power') }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
 async def test_value_template_ignores_concatenated_helper_entity_id(
     hass: HomeAssistant,
 ) -> None:

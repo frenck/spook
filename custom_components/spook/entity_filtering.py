@@ -430,7 +430,7 @@ def _is_string_method_argument_match(template_str: str, match: re.Match[str]) ->
         return False
 
     before_literal = before_entity[:-1].rstrip()
-    return bool(re.search(r"\.(?:starts|ends)with\s*\($", before_literal))
+    return bool(re.search(r"\.(?:starts|ends)with\s*\(\s*\(*\s*$", before_literal))
 
 
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
