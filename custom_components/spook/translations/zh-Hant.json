@@ -1,17 +1,17 @@
 {
   "config": {
     "abort": {
-      "already_spooked": "Yeah... well... no. K, thx, bye!"
+      "already_spooked": "呃... 好吧... 不要。謝啦，掰！"
     },
     "step": {
       "user": {
-        "description": "Did you read the readme? Did you read the license? Are you really sure?"
+        "description": "你讀過 Readme 了嗎？讀過授權合約了嗎？你真的確定嗎？"
       },
       "choice_restart": {
-        "description": "In order for Spook to finish setting up, Home Assistant needs to be restarted.\n\nDo you want to restart Home Assistant now?",
+        "description": "為了讓 Spook 完成設定，Home Assistant 需要重新啟動。\n\n你現在要重新啟動 Home Assistant 嗎？",
         "menu_options": {
-          "restart_now": "Restart now",
-          "restart_later": "Restart later"
+          "restart_now": "立即重新啟動",
+          "restart_later": "稍後重新啟動"
         }
       }
     }
@@ -19,16 +19,16 @@
   "entity": {
     "button": {
       "homeassistant_reload": {
-        "name": "Reload"
+        "name": "重新載入"
       },
       "homeassistant_restart": {
-        "name": "Restart"
+        "name": "重新啟動"
       },
       "repairs_ignore_all": {
-        "name": "Ignore all"
+        "name": "全部忽略"
       },
       "repairs_unignore_all": {
-        "name": "Unignore all"
+        "name": "取消全部忽略"
       }
     },
     "event": {
@@ -36,278 +36,281 @@
         "state_attributes": {
           "event_type": {
             "state": {
-              "create": "Issue created",
-              "remove": "Issue removed",
-              "update": "Issue updated"
+              "create": "已建立問題",
+              "remove": "已移除問題",
+              "update": "已更新問題"
             }
           },
           "domain": {
-            "name": "Issue issuer"
+            "name": "問題發佈者"
           },
           "issue_id": {
-            "name": "Issue ID"
+            "name": "問題 ID"
           }
         }
       }
     },
     "sensor": {
       "homeassistant_air_quality": {
-        "name": "Air quality"
+        "name": "空氣品質"
       },
       "homeassistant_alarm_control_panel": {
-        "name": "Alarm control panels"
+        "name": "警報控制面板"
       },
       "homeassistant_area": {
-        "name": "Areas"
+        "name": "區域"
       },
       "homeassistant_automation": {
-        "name": "Automations"
+        "name": "自動化"
       },
       "homeassistant_binary_sensor": {
-        "name": "Binary sensors"
+        "name": "二元感測器"
       },
       "homeassistant_button": {
-        "name": "Buttons"
+        "name": "按鈕"
       },
       "homeassistant_calendar": {
-        "name": "Calendars"
+        "name": "行事曆"
       },
       "homeassistant_camera": {
-        "name": "Cameras"
+        "name": "攝影機"
       },
       "homeassistant_climate": {
-        "name": "Climate"
+        "name": "空調"
       },
       "homeassistant_cover": {
-        "name": "Covers"
+        "name": "遮蓋物"
       },
       "homeassistant_custom_component": {
-        "name": "Custom integrations"
+        "name": "自定義整合"
       },
       "homeassistant_date": {
-        "name": "Dates"
+        "name": "日期"
       },
       "homeassistant_datetime": {
-        "name": "Date/times"
+        "name": "日期/時間"
       },
       "homeassistant_device": {
-        "name": "Devices"
+        "name": "裝置"
       },
       "homeassistant_device_tracker": {
-        "name": "Device trackers"
+        "name": "裝置追蹤器"
       },
       "homeassistant_entities": {
-        "name": "Entities"
+        "name": "實體"
       },
       "homeassistant_fan": {
-        "name": "Fans"
+        "name": "風扇"
       },
       "homeassistant_humidifier": {
-        "name": "Humidifiers"
+        "name": "加濕器"
       },
       "homeassistant_image": {
-        "name": "Images"
+        "name": "圖片"
       },
       "homeassistant_input_boolean": {
-        "name": "Input booleans"
+        "name": "輸入佈林值"
       },
       "homeassistant_input_button": {
-        "name": "Input buttons"
+        "name": "輸入按鈕"
       },
       "homeassistant_input_datetime": {
-        "name": "Input date/times"
+        "name": "輸入日期/時間"
       },
       "homeassistant_input_number": {
-        "name": "Input numbers"
+        "name": "輸入數值"
       },
       "homeassistant_input_select": {
-        "name": "Input selects"
+        "name": "輸入選單"
       },
       "homeassistant_input_text": {
-        "name": "Input texts"
+        "name": "輸入文本"
       },
       "homeassistant_integration": {
-        "name": "Integrations"
+        "name": "整合"
       },
       "homeassistant_light": {
-        "name": "Lights"
+        "name": "燈光"
       },
       "homeassistant_lock": {
-        "name": "Locks"
+        "name": "鎖"
       },
       "homeassistant_media_player": {
-        "name": "Media players"
+        "name": "媒體播放器"
       },
       "homeassistant_number": {
-        "name": "Numbers"
+        "name": "數值"
       },
       "homeassistant_persistent_notification": {
-        "name": "Persistent notifications"
+        "name": "永久通知"
       },
       "homeassistant_person": {
-        "name": "Persons"
+        "name": "人員"
       },
       "homeassistant_remote": {
-        "name": "Remotes"
+        "name": "遙控器"
       },
       "homeassistant_scene": {
-        "name": "Scenes"
+        "name": "場景"
       },
       "homeassistant_script": {
-        "name": "Scripts"
+        "name": "腳本"
       },
       "homeassistant_select": {
-        "name": "Selects"
+        "name": "選單"
       },
       "homeassistant_sensor": {
-        "name": "Sensors"
+        "name": "感測器"
       },
       "homeassistant_siren": {
-        "name": "Sirens"
+        "name": "警報器"
       },
       "homeassistant_stt": {
-        "name": "Speech-to-text"
+        "name": "語音轉文字"
       },
       "homeassistant_sun": {
-        "name": "Suns"
+        "name": "太陽"
       },
       "homeassistant_switch": {
-        "name": "Switches"
+        "name": "開關"
       },
       "homeassistant_text": {
-        "name": "Texts"
+        "name": "文本"
       },
       "homeassistant_time": {
-        "name": "Times"
+        "name": "時間"
+      },
+      "homeassistant_todo": {
+        "name": "待辦清單"
       },
       "homeassistant_tts": {
-        "name": "Text-to-speech"
+        "name": "文字轉語音"
       },
       "homeassistant_update": {
-        "name": "Update"
+        "name": "更新"
       },
       "homeassistant_vacuum": {
-        "name": "Vacuums"
+        "name": "吸塵器"
       },
       "homeassistant_water_heater": {
-        "name": "Water heaters"
+        "name": "熱水器"
       },
       "homeassistant_weather": {
-        "name": "Weather"
+        "name": "天氣"
       },
       "homeassistant_zone": {
-        "name": "Zones"
+        "name": "空間"
       },
       "repairs_total_issues": {
-        "name": "Total"
+        "name": "總計"
       },
       "repairs_ignored_issues": {
-        "name": "Ignored"
+        "name": "已忽略"
       },
       "repairs_active_issues": {
-        "name": "Active"
+        "name": "作用中"
       }
     },
     "switch": {
       "cloud_alexa_report_state": {
-        "name": "Alexa state reporting"
+        "name": "Alexa 狀態回報"
       },
       "cloud_google_report_state": {
-        "name": "Google Assistant state reporting"
+        "name": "Google Assistant 狀態回報"
       },
       "cloud_remote": {
-        "name": "Remote"
+        "name": "遠端"
       }
     }
   },
   "issues": {
     "automation_unknown_area_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Unknown areas used in: {automation}"
+      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的區域：\n\n{areas}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的區域。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明區域：{automation}"
     },
     "automation_unknown_device_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Unknown devices used in: {automation}"
+      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的裝置：\n\n{devices}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的裝置。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明裝置：{automation}"
     },
     "automation_unknown_entity_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {automation}"
+      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明實體：{automation}"
     },
     "automation_unknown_floor_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {automation}"
+      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的樓層：\n\n{floors}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的樓層。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明樓層：{automation}"
     },
     "automation_unknown_label_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {automation}"
+      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的標籤：\n\n{labels}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的標籤。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明標籤：{automation}"
     },
     "automation_unknown_service_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {automation}"
+      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的動作：\n\n{services}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的動作。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明動作：{automation}"
     },
     "group_unknown_members": {
-      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown group members in: {group}"
+      "description": "Spook 在你的群組中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下群組：\n\n{group} (`{entity_id}`)\n\n此群組包含 Home Assistant 無法辨識的成員實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請編輯群組、移除這些不存在的實體，然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
+      "title": "群組包含不明成員：{group}"
     },
     "integration_unknown_source": {
-      "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
+      "description": "Spook 在你的 Riemann 總和積分輔助項目中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n此輔助項目的來源實體是 Home Assistant 無法辨識的：\n\n`{source}`\n\n\n\n若要修正此錯誤，請編輯該輔助項目並調整來源實體（或刪除此輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
+      "title": "不明來源：{helper}"
     },
     "lovelace_unknown_entity_references": {
-      "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {dashboard}"
+      "description": "Spook 在你的儀表板中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下儀表板：\n\n[{dashboard}]({edit})\n\n此儀表板引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請 [編輯儀表板]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明實體：{dashboard}"
     },
     "proximity_unknown_ignored_zones": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-      "title": "Unknown ignored zones: {name}"
+      "description": "Spook 在你的鄰近感應（Proximity）設定中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下設定：\n\n{name}\n\n此設定正在忽略 Home Assistant 無法辨識的區域：\n\n{zones}\n\n\n\n若要修正此錯誤，請編輯設定並移除這些區域。\n\nSpook 👻 你的好麻吉。",
+      "title": "不明的忽略區域：{name}"
     },
     "proximity_unknown_tracked_entities": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown tracked entities: {name}"
+      "description": "Spook 在你的鄰近感應（Proximity）設定中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下設定：\n\n{name}\n\n此設定正在追蹤 Home Assistant 無法辨識的人員或裝置追蹤器：\n\n{entities}\n\n\n\n若要修正此錯誤，請編輯設定並移除這些實體。\n\nSpook 👻 你的好麻吉。",
+      "title": "不明的追蹤實體：{name}"
     },
     "proximity_unknown_zone": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-      "title": "Unknown zone: {zone}"
+      "description": "Spook 在你的鄰近感應（Proximity）設定中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下設定：\n\n{name}\n\n此設定基於一個 Home Assistant 無法辨識的區域：\n\n`{zone}`\n\n\n\n若要修正此錯誤，由於無法直接變更鄰近感應設定的區域，唯一的辦法是刪除此特定的整合實例。\n\nSpook 👻 你的好麻吉。",
+      "title": "不明區域：{zone}"
     },
     "scene_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {scene}"
+      "description": "Spook 在你的場景中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下場景：\n\n[{scene}]({edit})\n\n此場景引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請 [編輯場景]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明實體：{scene}"
     },
     "script_unknown_area_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Unknown areas used in: {script}"
+      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的區域：\n\n{areas}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的區域。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明區域：{script}"
     },
     "script_unknown_device_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Unknown devices used in: {script}"
+      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的裝置：\n\n{devices}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的裝置。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明裝置：{script}"
     },
     "script_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {script}"
+      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明實體：{script}"
     },
     "script_unknown_floor_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {script}"
+      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的樓層：\n\n{floors}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的樓層。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明樓層：{script}"
     },
     "script_unknown_label_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {script}"
+      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的標籤：\n\n{labels}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的標籤。\n\nSpook 👻 你的好麻吉。",
+      "title": "使用了不明標籤：{script}"
     },
     "script_unknown_service_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {script}"
+      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄盪時，Spook 遇到了以下腳本：\n\n[{script}]({edit})（`{entity_id}`）\n\n此腳本引用了以下 Home Assistant 無法識別的動作：\n\n{services}\n\n要修復此問題，請[編輯腳本]({edit})並移除這些不存在的動作。\n\nSpook 👻 你的好夥伴。",
+      "title": "使用了未知動作：{script}"
     },
     "switch_as_x_unknown_source": {
-      "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
+      "description": "Spook 在你的「將開關設為 X」輔助項目中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n此輔助項目的來源開關實體是 Home Assistant 無法辨識的：\n\n`{source}`\n\n\n\n若要修正此錯誤，請編輯該輔助項目並調整來源實體（或刪除此輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
+      "title": "不明來源：{helper}"
     },
     "utility_meter_unknown_source": {
-      "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
+      "description": "Spook 在你的能源計量輔助項目中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n此輔助項目的來源實體是 Home Assistant 無法辨識的：\n\n`{source}`\n\n\n\n若要修正此錯誤，請編輯該輔助項目並調整來源實體（或刪除此輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
+      "title": "不明來源：{helper}"
     },
     "trend_unknown_source": {
-      "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
+      "description": "Spook 在你的趨勢輔助項目中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n此輔助項目的來源實體是 Home Assistant 無法辨識的：\n\n`{source}`\n\n\n\n若要修正此錯誤，請編輯該輔助項目並調整來源實體（或刪除此輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
+      "title": "不明來源：{helper}"
     },
     "user_issue": {
       "fix_flow": {
@@ -321,12 +324,12 @@
       "title": "{title}"
     },
     "restart_required": {
-      "title": "Restart required",
+      "title": "需要重新啟動",
       "fix_flow": {
         "step": {
           "confirm_restart": {
-            "title": "Restart required",
-            "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+            "title": "需要重新啟動",
+            "description": "為了讓 Spook 👻 完成設定，Home Assistant 需要重新啟動。\n\n請選擇提交以立即重新啟動 Home Assistant。"
           }
         }
       }
