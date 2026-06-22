@@ -7,12 +7,14 @@ so the upcoming consolidation into a single recursive walker cannot regress them
 silently.
 """
 
-# pylint: disable=wrong-import-order
+# ruff: noqa: SLF001
+# pylint: disable=protected-access,too-few-public-methods,wrong-import-order
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
 from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_references import (
+    SpookRepair,
     extract_entities_from_action_config,
     extract_entities_from_automation_config,
     extract_entities_from_condition_config,
@@ -22,7 +24,23 @@ from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_refere
 import pytest
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from homeassistant.core import HomeAssistant
+
+
+class MockAutomationEntity:
+    """Mock automation entity."""
+
+    def __init__(
+        self,
+        *,
+        raw_config: dict[str, object],
+        referenced_entities: Iterable[str],
+    ) -> None:
+        """Initialize the mock automation entity."""
+        self.raw_config = raw_config
+        self.referenced_entities = set(referenced_entities)
 
 
 async def test_value_plain_entity_id(hass: HomeAssistant) -> None:
@@ -178,6 +196,38 @@ async def test_trigger_state_entity_id(hass: HomeAssistant) -> None:
     assert await extract_entities_from_trigger_config(hass, config) == {
         "binary_sensor.door"
     }
+
+
+async def test_trigger_event_type_is_not_an_entity_id(
+    hass: HomeAssistant,
+) -> None:
+    """Event trigger ``event_type`` values are not entity references."""
+    config = {
+        "platform": "event",
+        "event_type": "timer.finished",
+        "event_data": {"entity_id": "timer.hot_tub"},
+    }
+    assert await extract_entities_from_trigger_config(hass, config) == {"timer.hot_tub"}
+
+
+async def test_event_trigger_type_reference_is_not_reported_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Event trigger ``event_type`` references are not unknown entities."""
+    entity = MockAutomationEntity(
+        raw_config={
+            "trigger": {
+                "platform": "event",
+                "event_type": "timer.finished",
+                "event_data": {"entity_id": "timer.hot_tub"},
+            },
+        },
+        referenced_entities={"timer.finished", "timer.hot_tub"},
+    )
+    repair = SpookRepair(hass)
+    repair._known_entity_ids = {"timer.hot_tub"}
+
+    assert await repair._async_compute_unknown_references(entity) == set()
 
 
 async def test_trigger_zone_field(hass: HomeAssistant) -> None:
