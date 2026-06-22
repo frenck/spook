@@ -298,6 +298,17 @@
         "script_unknown_label_references": {
             "title": "未知标签被用于：{script}",
             "description": "Spook 在您的脚本中发现了一个幽灵 👻\n\n在四处游荡时，Spook 与以下脚本相遇：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本引用了以下Home Assistant 未识别的标签：\n\n{labels}\n\n要修复此错误，请[编辑脚本]({edit}) 并删除这些不存在的标签。\n\nSpook 👻 您的伙伴。"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "title": "{title}",
+                        "description": "{description}"
+                    }
+                }
+            },
+            "title": "{title}"
         }
     },
     "config": {
