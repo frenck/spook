@@ -1,27 +1,51 @@
 {
-  "config": {
-    "step": {
-      "switch": {
-        "data": {
-          "name": "الاسم",
-          "hide_source": "إخفاء وحدة المصدر",
-          "entity_id": "وحدة المصدر"
+    "config": {
+        "step": {
+            "switch": {
+                "data": {
+                    "name": "الاسم",
+                    "hide_source": "إخفاء وحدة المصدر",
+                    "entity_id": "وحدة المصدر"
+                },
+                "title": ""
+            },
+            "user": {
+                "description": "يتيح لك هذا المساعد عكس سلوك الوحدة. على سبيل المثال، عكس فتح/إغلاق أو تشغيل/إيقاف أجهزة الاستشعار الثنائية والمفاتيح.",
+                "menu_options": {
+                    "switch": "عكس مفتاح",
+                    "binary_sensor": "عكس مستشعر ثنائي"
+                },
+                "title": ""
+            },
+            "binary_sensor": {
+                "data": {
+                    "hide_source": "إخفاء وحدة المصدر",
+                    "name": "الاسم",
+                    "entity_id": "وحدة المصدر"
+                },
+                "title": ""
+            }
         }
-      },
-      "user": {
-        "description": "يتيح لك هذا المساعد عكس سلوك الوحدة. على سبيل المثال، عكس فتح/إغلاق أو تشغيل/إيقاف أجهزة الاستشعار الثنائية والمفاتيح.",
-        "menu_options": {
-          "switch": "عكس مفتاح",
-          "binary_sensor": "عكس مستشعر ثنائي"
+    },
+    "title": "",
+    "options": {
+        "step": {
+            "switch": {
+                "data": {
+                    "hide_source": "",
+                    "entity_id": "",
+                    "name": ""
+                },
+                "title": ""
+            },
+            "binary_sensor": {
+                "title": "",
+                "data": {
+                    "name": "",
+                    "hide_source": "",
+                    "entity_id": ""
+                }
+            }
         }
-      },
-      "binary_sensor": {
-        "data": {
-          "hide_source": "إخفاء وحدة المصدر",
-          "name": "الاسم",
-          "entity_id": "وحدة المصدر"
-        }
-      }
     }
-  }
 }
