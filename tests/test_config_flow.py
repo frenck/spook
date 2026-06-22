@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from unittest.mock import AsyncMock
 
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -87,3 +88,41 @@ async def test_config_flow_aborts_when_spook_is_already_configured(
 
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "already_spooked"
+
+
+async def test_config_flow_can_enable_existing_disabled_entry(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the config flow can enable an existing disabled Spook entry."""
+    entry = MockConfigEntry(
+        disabled_by=config_entries.ConfigEntryDisabler.USER,
+        domain=DOMAIN,
+        title="Your homie",
+        data={},
+    )
+    entry.add_to_hass(hass)
+    async_set_disabled_by = AsyncMock(return_value=True)
+    monkeypatch.setattr(
+        hass.config_entries,
+        "async_set_disabled_by",
+        async_set_disabled_by,
+    )
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_USER},
+    )
+
+    assert result["type"] is FlowResultType.MENU
+    assert result["step_id"] == "already_configured"
+    assert result["menu_options"] == ["enable_existing"]
+
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={"next_step_id": "enable_existing"},
+    )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "enabled_existing"
+    async_set_disabled_by.assert_awaited_once_with(entry.entry_id, None)
