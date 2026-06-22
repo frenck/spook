@@ -226,12 +226,13 @@ homeassistant_enable_device:
     Enables a device on the fly.
   fields:
     device_id:
-      name: Device
-      description: The device(s) to enable.
+      name: Device ID
+      description: >-
+        The ID(s) of the device(s) to enable. Disabled devices are not shown by
+        Home Assistant's device selector, so this accepts the raw device ID.
       required: true
       selector:
-        device:
-          multiple: true
+        object:
 
 homeassistant_disable_user:
   name: Disable a user 👻
