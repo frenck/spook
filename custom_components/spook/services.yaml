@@ -59,7 +59,7 @@ homeassistant_add_alias_to_area:
         area:
     alias:
       name: Alias
-      description: The alias (or list of aliasses) to add to the area.
+      description: The alias (or list of aliases) to add to the area.
       required: true
       selector:
         object:
@@ -77,7 +77,7 @@ homeassistant_remove_alias_from_area:
         area:
     alias:
       name: Alias
-      description: The alias (or list of aliasses) to remove from the area.
+      description: The alias (or list of aliases) to remove from the area.
       required: true
       selector:
         object:
@@ -85,7 +85,7 @@ homeassistant_remove_alias_from_area:
 homeassistant_set_area_aliases:
   name: Sets aliases for an area 👻
   description: >-
-    Sets aliases for an area. Overwrite and removed any existing aliases,
+    Sets aliases for an area. Overwrites and removes any existing aliases,
     fully replacing them with the new ones.
   fields:
     area_id:
@@ -104,7 +104,7 @@ homeassistant_set_area_aliases:
 homeassistant_add_device_to_area:
   name: Add a device to an area 👻
   description: >-
-    Adds an device to an area. Please note, if the device is already in an area,
+    Adds a device to an area. Please note, if the device is already in an area,
     it will be removed from the previous area.
   fields:
     area_id:
@@ -138,7 +138,7 @@ homeassistant_remove_device_from_area:
 homeassistant_add_entity_to_area:
   name: Add an entity to an area 👻
   description: >-
-    Adds an entity to an area. Please note, if the enity is already in an area,
+    Adds an entity to an area. Please note, if the entity is already in an area,
     it will be removed from the previous area. This will override the area
     the device, that provides this entity, is in.
   fields:
@@ -174,7 +174,7 @@ homeassistant_remove_entity_from_area:
 homeassistant_delete_area:
   name: Delete an area 👻
   description: >-
-    Deletes a new area on the fly.
+    Deletes an area on the fly.
   fields:
     area_id:
       name: Area ID
@@ -271,7 +271,7 @@ homeassistant_update_entity_id:
         entity:
     new_entity_id:
       name: New Entity ID
-      description: The new ID for the entity
+      description: The new ID for the entity.
       required: true
       selector:
         text:
@@ -392,7 +392,7 @@ homeassistant_add_alias_to_floor:
         floor:
     alias:
       name: Alias
-      description: The alias (or list of aliasses) to add to the floor.
+      description: The alias (or list of aliases) to add to the floor.
       required: true
       selector:
         object:
@@ -410,7 +410,7 @@ homeassistant_remove_alias_from_floor:
         floor:
     alias:
       name: Alias
-      description: The alias (or list of aliasses) to remove from the floor.
+      description: The alias (or list of aliases) to remove from the floor.
       required: true
       selector:
         object:
@@ -418,7 +418,7 @@ homeassistant_remove_alias_from_floor:
 homeassistant_set_floor_aliases:
   name: Sets aliases for a floor 👻
   description: >-
-    Sets aliases for a floor. Overwrite and removed any existing aliases,
+    Sets aliases for a floor. Overwrites and removes any existing aliases,
     fully replacing them with the new ones.
   fields:
     floor_id:
@@ -625,7 +625,7 @@ homeassistant_add_label_to_entity:
 homeassistant_remove_label_from_area:
   name: Remove a label from an area 👻
   description: >-
-    Removes a label to an area. If multiple labels or multiple areas are
+    Removes a label from an area. If multiple labels or multiple areas are
     provided, all combinations will be removed.
   fields:
     label_id:
@@ -830,7 +830,7 @@ recorder_import_statistics:
 select_random:
   name: Select random option 👻
   description: >-
-    Select an random option for a select entity.
+    Select a random option for a select entity.
   target:
     entity:
       domain: select
@@ -847,7 +847,7 @@ select_random:
 input_select_random:
   name: Select random option 👻
   description: >-
-    Select an random option for an input_select entity.
+    Select a random option for an input_select entity.
   target:
     entity:
       domain: input_select
@@ -1126,7 +1126,7 @@ person_remove_device_tracker:
 repairs_create:
   name: Create issue 👻
   description: >-
-    Manually create and raise a issue in Home Assistant repairs.
+    Manually create and raise an issue in Home Assistant repairs.
   fields:
     title:
       name: Title
@@ -1145,7 +1145,7 @@ repairs_create:
       name: Issue ID
       description: >-
         The issue can have an identifier, which allows you to cancel it
-        later with that ID if needed. It also prevent duplicate issues
+        later with that ID if needed. It also prevents duplicate issues
         to be created. If not provided, a random ID will be generated.
       required: false
       selector:
@@ -1165,7 +1165,7 @@ repairs_create:
       name: Severity
       description: >-
         The severity of the issue. This will be used to determine the
-        priority of the issue. If not set, "warning" will be used
+        priority of the issue. If not set, "warning" will be used.
       required: false
       selector:
         select:
