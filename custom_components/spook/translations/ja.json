@@ -1,335 +1,335 @@
 {
-  "config": {
-    "abort": {
-      "already_spooked": "えーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー!"
-    },
-    "step": {
-      "user": {
-        "description": "読み方を読んでいましたか? ライセンスを読みましたか? お問い合わせ?"
-      },
-      "choice_restart": {
-        "description": "Spook の設定を完了するには、ホームアシスタントを再起動する必要があります。\n\n今すぐホームアシスタントを再起動しますか?",
-        "menu_options": {
-          "restart_now": "今すぐ再起動",
-          "restart_later": "再起動後"
-        }
-      }
-    }
-  },
-  "entity": {
-    "button": {
-      "homeassistant_reload": {
-        "name": "リロード"
-      },
-      "homeassistant_restart": {
-        "name": "リスタート"
-      },
-      "repairs_ignore_all": {
-        "name": "すべての無視"
-      },
-      "repairs_unignore_all": {
-        "name": "全てを無視する"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "event_type": {
-            "state": {
-              "create": "作成した課題",
-              "remove": "削除された問題",
-              "update": "更新された問題"
+    "config": {
+        "abort": {
+            "already_spooked": "えーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー!"
+        },
+        "step": {
+            "user": {
+                "description": "読み方を読んでいましたか? ライセンスを読みましたか? お問い合わせ?"
+            },
+            "choice_restart": {
+                "description": "Spook の設定を完了するには、ホームアシスタントを再起動する必要があります。\n\n今すぐホームアシスタントを再起動しますか?",
+                "menu_options": {
+                    "restart_now": "今すぐ再起動",
+                    "restart_later": "再起動後"
+                }
             }
-          },
-          "domain": {
-            "name": "発行者"
-          },
-          "issue_id": {
-            "name": "発行ID"
-          }
         }
-      }
     },
-    "sensor": {
-      "homeassistant_air_quality": {
-        "name": "空気の質"
-      },
-      "homeassistant_alarm_control_panel": {
-        "name": "警報制御パネル"
-      },
-      "homeassistant_area": {
-        "name": "エリア"
-      },
-      "homeassistant_automation": {
-        "name": "オートメーション"
-      },
-      "homeassistant_binary_sensor": {
-        "name": "バイナリセンサー"
-      },
-      "homeassistant_button": {
-        "name": "ボタン"
-      },
-      "homeassistant_calendar": {
-        "name": "カレンダー"
-      },
-      "homeassistant_camera": {
-        "name": "カメラ"
-      },
-      "homeassistant_climate": {
-        "name": "トランスフォーメーション"
-      },
-      "homeassistant_cover": {
-        "name": "カバー"
-      },
-      "homeassistant_custom_component": {
-        "name": "カスタム統合"
-      },
-      "homeassistant_date": {
-        "name": "日付"
-      },
-      "homeassistant_datetime": {
-        "name": "日付/時刻"
-      },
-      "homeassistant_device": {
-        "name": "デバイス"
-      },
-      "homeassistant_device_tracker": {
-        "name": "デバイストラッカー"
-      },
-      "homeassistant_entities": {
-        "name": "エントリー"
-      },
-      "homeassistant_fan": {
-        "name": "ファン"
-      },
-      "homeassistant_humidifier": {
-        "name": "加湿器"
-      },
-      "homeassistant_image": {
-        "name": "イメージ"
-      },
-      "homeassistant_input_boolean": {
-        "name": "入力ボオリアン"
-      },
-      "homeassistant_input_button": {
-        "name": "入力ボタン"
-      },
-      "homeassistant_input_datetime": {
-        "name": "入力日時/時刻"
-      },
-      "homeassistant_input_number": {
-        "name": "入力番号"
-      },
-      "homeassistant_input_select": {
-        "name": "入力選択"
-      },
-      "homeassistant_input_text": {
-        "name": "入力テキスト"
-      },
-      "homeassistant_integration": {
-        "name": "インテグレーション"
-      },
-      "homeassistant_light": {
-        "name": "ライトライト"
-      },
-      "homeassistant_lock": {
-        "name": "ロック"
-      },
-      "homeassistant_media_player": {
-        "name": "メディアプレーヤー"
-      },
-      "homeassistant_number": {
-        "name": "ナンバー"
-      },
-      "homeassistant_persistent_notification": {
-        "name": "永続的な通知"
-      },
-      "homeassistant_person": {
-        "name": "スタッフ"
-      },
-      "homeassistant_remote": {
-        "name": "リモート"
-      },
-      "homeassistant_scene": {
-        "name": "シーン"
-      },
-      "homeassistant_script": {
-        "name": "スクリプト"
-      },
-      "homeassistant_select": {
-        "name": "ラインナップ"
-      },
-      "homeassistant_sensor": {
-        "name": "センサー"
-      },
-      "homeassistant_siren": {
-        "name": "サイレンス"
-      },
-      "homeassistant_stt": {
-        "name": "スピーチ・ツー・テキスト"
-      },
-      "homeassistant_sun": {
-        "name": "サンライズ"
-      },
-      "homeassistant_switch": {
-        "name": "スイッチ"
-      },
-      "homeassistant_text": {
-        "name": "テキスト"
-      },
-      "homeassistant_time": {
-        "name": "スケジュール"
-      },
-      "homeassistant_tts": {
-        "name": "テキストツースピーチ"
-      },
-      "homeassistant_update": {
-        "name": "ニュース"
-      },
-      "homeassistant_vacuum": {
-        "name": "バキューム"
-      },
-      "homeassistant_water_heater": {
-        "name": "給湯器"
-      },
-      "homeassistant_weather": {
-        "name": "天気の天気"
-      },
-      "homeassistant_zone": {
-        "name": "ゾーン"
-      },
-      "repairs_total_issues": {
-        "name": "合計:"
-      },
-      "repairs_ignored_issues": {
-        "name": "無視される"
-      },
-      "repairs_active_issues": {
-        "name": "アクティブ"
-      }
+    "entity": {
+        "button": {
+            "homeassistant_reload": {
+                "name": "リロード"
+            },
+            "homeassistant_restart": {
+                "name": "リスタート"
+            },
+            "repairs_ignore_all": {
+                "name": "すべての無視"
+            },
+            "repairs_unignore_all": {
+                "name": "全てを無視する"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "作成した課題",
+                            "remove": "削除された問題",
+                            "update": "更新された問題"
+                        }
+                    },
+                    "domain": {
+                        "name": "発行者"
+                    },
+                    "issue_id": {
+                        "name": "発行ID"
+                    }
+                }
+            }
+        },
+        "sensor": {
+            "homeassistant_air_quality": {
+                "name": "空気の質"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "警報制御パネル"
+            },
+            "homeassistant_area": {
+                "name": "エリア"
+            },
+            "homeassistant_automation": {
+                "name": "オートメーション"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "バイナリセンサー"
+            },
+            "homeassistant_button": {
+                "name": "ボタン"
+            },
+            "homeassistant_calendar": {
+                "name": "カレンダー"
+            },
+            "homeassistant_camera": {
+                "name": "カメラ"
+            },
+            "homeassistant_climate": {
+                "name": "トランスフォーメーション"
+            },
+            "homeassistant_cover": {
+                "name": "カバー"
+            },
+            "homeassistant_custom_component": {
+                "name": "カスタム統合"
+            },
+            "homeassistant_date": {
+                "name": "日付"
+            },
+            "homeassistant_datetime": {
+                "name": "日付/時刻"
+            },
+            "homeassistant_device": {
+                "name": "デバイス"
+            },
+            "homeassistant_device_tracker": {
+                "name": "デバイストラッカー"
+            },
+            "homeassistant_entities": {
+                "name": "エントリー"
+            },
+            "homeassistant_fan": {
+                "name": "ファン"
+            },
+            "homeassistant_humidifier": {
+                "name": "加湿器"
+            },
+            "homeassistant_image": {
+                "name": "イメージ"
+            },
+            "homeassistant_input_boolean": {
+                "name": "入力ボオリアン"
+            },
+            "homeassistant_input_button": {
+                "name": "入力ボタン"
+            },
+            "homeassistant_input_datetime": {
+                "name": "入力日時/時刻"
+            },
+            "homeassistant_input_number": {
+                "name": "入力番号"
+            },
+            "homeassistant_input_select": {
+                "name": "入力選択"
+            },
+            "homeassistant_input_text": {
+                "name": "入力テキスト"
+            },
+            "homeassistant_integration": {
+                "name": "インテグレーション"
+            },
+            "homeassistant_light": {
+                "name": "ライトライト"
+            },
+            "homeassistant_lock": {
+                "name": "ロック"
+            },
+            "homeassistant_media_player": {
+                "name": "メディアプレーヤー"
+            },
+            "homeassistant_number": {
+                "name": "ナンバー"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "永続的な通知"
+            },
+            "homeassistant_person": {
+                "name": "スタッフ"
+            },
+            "homeassistant_remote": {
+                "name": "リモート"
+            },
+            "homeassistant_scene": {
+                "name": "シーン"
+            },
+            "homeassistant_script": {
+                "name": "スクリプト"
+            },
+            "homeassistant_select": {
+                "name": "ラインナップ"
+            },
+            "homeassistant_sensor": {
+                "name": "センサー"
+            },
+            "homeassistant_siren": {
+                "name": "サイレンス"
+            },
+            "homeassistant_stt": {
+                "name": "スピーチ・ツー・テキスト"
+            },
+            "homeassistant_sun": {
+                "name": "サンライズ"
+            },
+            "homeassistant_switch": {
+                "name": "スイッチ"
+            },
+            "homeassistant_text": {
+                "name": "テキスト"
+            },
+            "homeassistant_time": {
+                "name": "スケジュール"
+            },
+            "homeassistant_tts": {
+                "name": "テキストツースピーチ"
+            },
+            "homeassistant_update": {
+                "name": "ニュース"
+            },
+            "homeassistant_vacuum": {
+                "name": "バキューム"
+            },
+            "homeassistant_water_heater": {
+                "name": "給湯器"
+            },
+            "homeassistant_weather": {
+                "name": "天気の天気"
+            },
+            "homeassistant_zone": {
+                "name": "ゾーン"
+            },
+            "repairs_total_issues": {
+                "name": "合計:"
+            },
+            "repairs_ignored_issues": {
+                "name": "無視される"
+            },
+            "repairs_active_issues": {
+                "name": "アクティブ"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "アレクサ州の報告"
+            },
+            "cloud_google_report_state": {
+                "name": "Google Assistantのステータスレポート"
+            },
+            "cloud_remote": {
+                "name": "リモート"
+            }
+        }
     },
-    "switch": {
-      "cloud_alexa_report_state": {
-        "name": "アレクサ州の報告"
-      },
-      "cloud_google_report_state": {
-        "name": "Google Assistantのステータスレポート"
-      },
-      "cloud_remote": {
-        "name": "リモート"
-      }
-    }
-  },
-  "issues": {
-    "automation_unknown_area_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "未知の領域で使用される: {automation}"
-    },
-    "automation_unknown_device_references": {
-      "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[自動化]({edit})を編集し、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
-      "title": "未知のデバイス: {automation}"
-    },
-    "automation_unknown_entity_references": {
-      "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに未知の次のエンティティティティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[オートメーションの編集]({edit})をし、これらの非既存のエンティティティの使用を削除します。\n\nあなたの趣味ではありません。.",
-      "title": "未知のエンティティティティ: {automation}"
-    },
-    "automation_unknown_floor_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {automation}"
-    },
-    "automation_unknown_label_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {automation}"
-    },
-    "automation_unknown_service_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {automation}"
-    },
-    "group_unknown_members": {
-      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "未知のグループメンバー:{group}"
-    },
-    "integration_unknown_source": {
-      "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "lovelace_unknown_entity_references": {
-      "description": "Spookはダッシュボードでゴーストを見つけました ◀\n\n周りを浮遊している間、Spookは、次のダッシュボードで横断パスを渡しました。\n\n[{dashboard}]({edit})\n\n\nこのダッシュボードは、ホームアシスタントに不明な以下のエンティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[ダッシュボード]({edit})を編集し、これらの非既存のエンティティティティの使用を削除します。\n\nあなたの趣味ではありません。.",
-      "title": "未知のエンティティティティ: {dashboard}"
-    },
-    "proximity_unknown_ignored_zones": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-      "title": "Unknown ignored zones: {name}"
-    },
-    "proximity_unknown_tracked_entities": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown tracked entities: {name}"
-    },
-    "proximity_unknown_zone": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-      "title": "Unknown zone: {zone}"
-    },
-    "scene_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {scene}"
-    },
-    "script_unknown_area_references": {
-      "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次の領域を参照します。\n\n{areas}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit})をし、これらの非既存の領域の使用を削除します。\n\nあなたの趣味ではありません。.",
-      "title": "未知の領域で使用される: {script}"
-    },
-    "script_unknown_device_references": {
-      "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit}) をし、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
-      "title": "未知のデバイス: {script}"
-    },
-    "script_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "未知の実体: {script}"
-    },
-    "script_unknown_floor_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {script}"
-    },
-    "script_unknown_label_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {script}"
-    },
-    "script_unknown_service_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {script}"
-    },
-    "switch_as_x_unknown_source": {
-      "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "utility_meter_unknown_source": {
-      "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "trend_unknown_source": {
-      "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "user_issue": {
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "description": "{description}",
+    "issues": {
+        "automation_unknown_area_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
+            "title": "未知の領域で使用される: {automation}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[自動化]({edit})を編集し、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
+            "title": "未知のデバイス: {automation}"
+        },
+        "automation_unknown_entity_references": {
+            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに未知の次のエンティティティティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[オートメーションの編集]({edit})をし、これらの非既存のエンティティティの使用を削除します。\n\nあなたの趣味ではありません。.",
+            "title": "未知のエンティティティティ: {automation}"
+        },
+        "automation_unknown_floor_references": {
+            "description": "",
+            "title": ""
+        },
+        "automation_unknown_label_references": {
+            "description": "",
+            "title": ""
+        },
+        "automation_unknown_service_references": {
+            "description": "",
+            "title": ""
+        },
+        "group_unknown_members": {
+            "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
+            "title": "未知のグループメンバー:{group}"
+        },
+        "integration_unknown_source": {
+            "description": "スプックは、あなたのリエマンの合計積分ヘルパーで幽霊を発見しました。\n\n周りを浮遊している間、スプックは、次のヘルパーでパスを渡しました。\n\nお問い合わせ\n\nこのヘルパーは、ホームアシスタントに不明なソースエンティティティティティを持っています:\n\nツイート ログイン\n\n\n\nこのエラーを修正するには、ヘルパーを編集し、ソースのエンティティティ(またはヘルパーを削除)を調整し、ホームアシスタントを再起動します。\n\nあなたの趣味ではありません。.",
+            "title": "不明なソース: お問い合わせ"
+        },
+        "lovelace_unknown_entity_references": {
+            "description": "Spookはダッシュボードでゴーストを見つけました ◀\n\n周りを浮遊している間、Spookは、次のダッシュボードで横断パスを渡しました。\n\n[{dashboard}]({edit})\n\n\nこのダッシュボードは、ホームアシスタントに不明な以下のエンティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[ダッシュボード]({edit})を編集し、これらの非既存のエンティティティティの使用を削除します。\n\nあなたの趣味ではありません。.",
+            "title": "未知のエンティティティティ: {dashboard}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "",
+            "title": ""
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "",
+            "title": ""
+        },
+        "proximity_unknown_zone": {
+            "description": "",
+            "title": ""
+        },
+        "scene_unknown_entity_references": {
+            "description": "",
+            "title": ""
+        },
+        "script_unknown_area_references": {
+            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次の領域を参照します。\n\n{areas}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit})をし、これらの非既存の領域の使用を削除します。\n\nあなたの趣味ではありません。.",
+            "title": "未知の領域で使用される: {script}"
+        },
+        "script_unknown_device_references": {
+            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit}) をし、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
+            "title": "未知のデバイス: {script}"
+        },
+        "script_unknown_entity_references": {
+            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、次のエンティティティティを参照します。これは、ホームアシスタントに不明です。\n\nお問い合わせ\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit}) をし、これらの非既存のエンティティティティの使用法を削除します。\n\nあなたの趣味ではありません。.",
+            "title": "未知の実体: {script}"
+        },
+        "script_unknown_floor_references": {
+            "description": "",
+            "title": ""
+        },
+        "script_unknown_label_references": {
+            "description": "",
+            "title": ""
+        },
+        "script_unknown_service_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown actions used in: {script}"
+        },
+        "switch_as_x_unknown_source": {
+            "description": "Spookは、Xヘルパーとして、スイッチでゴーストを発見しました。\n\n周りを浮遊している間、スプックは、次のヘルパーでパスを渡しました。\n\nお問い合わせ\n\nこのヘルパーは、ホームアシスタントに不明なソーススイッチエンティティティを持っています:\n\nツイート ログイン\n\n\n\nこのエラーを修正するには、ヘルパーを編集し、ソースのエンティティティ(またはヘルパーを削除)を調整し、ホームアシスタントを再起動します。\n\nあなたの趣味ではありません。.",
+            "title": "不明なソース: お問い合わせ"
+        },
+        "utility_meter_unknown_source": {
+            "description": "",
+            "title": ""
+        },
+        "trend_unknown_source": {
+            "description": "",
+            "title": ""
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{description}",
+                        "title": "{title}"
+                    }
+                }
+            },
             "title": "{title}"
-          }
-        }
-      },
-      "title": "{title}"
-    },
-    "restart_required": {
-      "title": "必要な再起動",
-      "fix_flow": {
-        "step": {
-          "confirm_restart": {
+        },
+        "restart_required": {
             "title": "必要な再起動",
-            "description": "Spook で設定を完了するには、ホームアシスタントを再起動する必要があります。\n\n今すぐホームアシスタントを再起動するために送信を選択します。."
-          }
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "必要な再起動",
+                        "description": "Spook で設定を完了するには、ホームアシスタントを再起動する必要があります。\n\n今すぐホームアシスタントを再起動するために送信を選択します。."
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
