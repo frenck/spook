@@ -230,27 +230,27 @@
             "title": "Bilinmeyen cihazlar kullanılır: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the Automation]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
+            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entity}\n\n\n\nBu hatayı düzeltmek için [edit the Automation]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
             "title": "Bilinmeyen varlıklar kullanılır: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "",
+            "title": ""
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "",
+            "title": ""
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "",
+            "title": ""
         },
         "group_unknown_members": {
-            "description": "Spook gruplarda bir hayalet buldu 👻\n\nEtrafında yüzerken, Spook aşağıdaki grupla yolu geçti:\n\n{group} ('{entity_id})\n\nBu grup, Home Asistan için bilinmeyen üyeleri vardır:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için, grubu düzenlemek, bu varlık olmayan varlıkların kullanımını ortadan kaldırmak ve Home Asistanı yeniden başlatmak.\n\nSpook . senin homie değil.",
+            "description": "Spook gruplarda bir hayalet buldu 👻\n\nEtrafında yüzerken, Spook aşağıdaki grupla yolu geçti:\n\n{group} ('{entity_id})\n\nBu grup, Home Asistan için bilinmeyen üyeleri vardır:\n\n{entity}\n\n\n\nBu hatayı düzeltmek için, grubu düzenlemek, bu varlık olmayan varlıkların kullanımını ortadan kaldırmak ve Home Asistanı yeniden başlatmak.\n\nSpook . senin homie değil.",
             "title": "Bilinmeyen grup üyeleri: {group}"
         },
         "integration_unknown_source": {
-            "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+            "description": "Spook, Riemann'ınızdaki bir hayalet buldu\n\nÇevrede yüzerken, Spook aşağıdaki yardımcı ile yolu geçti:\n\n{helper} ('{entity_id})\n\nBu yardımcının Home Asistan tarafından bilinmeyen bir kaynağı var:\n\n\" \"\n\n\n\nBu hatayı düzeltmek için, yardımlayıcıyı düzenler ve kaynak varlığını ayarlar (veya yardımcıları kaldırır) ve Home Asistanı yeniden başlatır.\n\nSpook . senin homie değil.",
             "title": "Bilinmeyen kaynak: {helper}"
         },
         "lovelace_unknown_entity_references": {
@@ -258,47 +258,47 @@
             "title": "Bilinmeyen varlıklar kullanılır: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "",
+            "title": ""
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "",
+            "title": ""
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "",
+            "title": ""
         },
         "scene_unknown_entity_references": {
             "description": "Spook sahnelerinizde bir hayalet buldu 👻\n\nOrtalıkta dolaşırken Spook'un yolu şu sahneyle kesişti:\n\n[{sahne}]({düzenle})\n\nBu sahne, Ev Asistanı tarafından bilinmeyen aşağıdaki varlıklara gönderme yapmaktadır:\n\n{varlıklar}\n\n\n\nBu hatayı düzeltmek için [sahneyi düzenleyin]({düzenle}) ve mevcut olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Your homie.",
             "title": "Bilinmeyen varlıklar şu sahnede kullanıldı: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nÇevrede yüz yüzeyken Spook aşağıdaki senaryo ile yolu geçti:\n\n[{script}]({edit})\n\nBu senaryo, Home Asistan tarafından bilinmeyen aşağıdaki alanları referanslar:\n\n{areas}\n\n\n\nBu hatayı düzeltmek için [edit the script] ({edit}) ve bu non-existing alanlarının kullanımını ortadan kaldırmak.\n\nSpook . senin homie değil.",
             "title": "Bilinmeyen alanlarda kullanılır: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nÇevrede yüz yüzeyken Spook aşağıdaki senaryo ile yolu geçti:\n\n[{script}]({edit})\n\nBu senaryo, Home Asistan tarafından bilinmeyen aşağıdaki cihazlara atıfta bulunur:\n\n{devices}\n\n\n\nBu hatayı düzeltmek için [edit the script] ({edit}) ve bu non-existing cihazların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
             "title": "Bilinmeyen cihazlar kullanılır: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nÇevrede yüz yüzeyken Spook aşağıdaki senaryo ile yolu geçti:\n\n[{script}]({edit})\n\nBu senaryo, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entity}\n\n\n\nBu hatayı düzeltmek için [edit the script] ({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
             "title": "Bilinmeyen ögeler: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "",
+            "title": ""
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "",
+            "title": ""
         },
         "script_unknown_service_references": {
             "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
             "title": "Unknown actions used in: {script}"
         },
         "switch_as_x_unknown_source": {
-            "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+            "description": "Spook, X yardımcıları olarak Anahtarınızda bir hayalet buldu\n\nÇevrede yüzerken, Spook aşağıdaki yardımcı ile yolu geçti:\n\n{helper} ('{entity_id})\n\nBu yardımcının Ev Asistanı için bilinmeyen bir kaynağı vardır:\n\n\" \"\n\n\n\nBu hatayı düzeltmek için, yardımlayıcıyı düzenler ve kaynak varlığını ayarlar (veya yardımcıları kaldırır) ve Home Asistanı yeniden başlatır.\n\nSpook . senin homie değil.",
             "title": "Bilinmeyen kaynak: {helper}"
         },
         "utility_meter_unknown_source": {
