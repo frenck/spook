@@ -49,7 +49,7 @@ class RepairsSpookEventEntity(RepairsSpookEntity, EventEntity):
     """Spook sensor providing repairs information."""
 
     entity_description: RepairsSpookEventEntityDescription
-    # _attr_name = None
+    _attr_name = None
 
     async def async_added_to_hass(self) -> None:
         """Register for event updates."""
