@@ -444,6 +444,33 @@ def _is_jinja_import_match(template_str: str, match: re.Match[str]) -> bool:
     )
 
 
+def _is_string_method_argument_match(template_str: str, match: re.Match[str]) -> bool:
+    """Return if an entity-like literal is used as a string method argument."""
+    groups = match.groups()
+    if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return False
+
+    entity_start = match.span(1)[0]
+    before_entity = template_str[:entity_start].rstrip()
+    if not before_entity.endswith(("'", '"')):
+        return False
+
+    before_literal = before_entity[:-1].rstrip()
+    for method in (".startswith", ".endswith"):
+        if method not in before_literal:
+            continue
+
+        after_method = before_literal.rsplit(method, maxsplit=1)[1].lstrip()
+        if not after_method.startswith("("):
+            continue
+
+        between_call_and_argument = after_method[1:].strip()
+        if not between_call_and_argument or set(between_call_and_argument) == {"("}:
+            return True
+
+    return False
+
+
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
     """Return the entity ID captured by a template regex match."""
     groups = match.groups()
@@ -472,9 +499,11 @@ def extract_entities_from_template_regex(
 
     for pattern in ENTITY_ID_TEMPLATE_PATTERNS:
         for match in re.finditer(pattern, template_str, re.IGNORECASE):
-            if _is_concatenated_template_match(
-                template_str, match
-            ) or _is_jinja_import_match(template_str, match):
+            if (
+                _is_concatenated_template_match(template_str, match)
+                or _is_jinja_import_match(template_str, match)
+                or _is_string_method_argument_match(template_str, match)
+            ):
                 continue
 
             entity_id = _entity_id_from_template_match(match)
@@ -660,20 +689,15 @@ def async_find_services_in_sequence(  # noqa: C901
     """Find all services called in a sequence."""
     called_services: set[str] = set()
     for step in sequence:
+        if step.get(CONF_ENABLED) is False:
+            continue
+
         action = cv.determine_script_action(step)
 
-        if (
-            action == cv.SCRIPT_ACTION_CALL_SERVICE
-            and CONF_SERVICE in step
-            and step.get(CONF_ENABLED, True)
-        ):
+        if action == cv.SCRIPT_ACTION_CALL_SERVICE and CONF_SERVICE in step:
             called_services.add(step[CONF_SERVICE])
 
-        if (
-            action == cv.SCRIPT_ACTION_CALL_SERVICE
-            and "action" in step
-            and step.get(CONF_ENABLED, True)
-        ):
+        if action == cv.SCRIPT_ACTION_CALL_SERVICE and "action" in step:
             called_services.add(step["action"])
 
         if action == cv.SCRIPT_ACTION_CHOOSE:

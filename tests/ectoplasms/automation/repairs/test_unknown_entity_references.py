@@ -106,6 +106,38 @@ async def test_value_template_keeps_entity_reference_between_jinja_blocks(
     assert await extract_entities_from_value(hass, template) == {"light.kitchen"}
 
 
+async def test_value_template_ignores_entity_id_prefix_string_match(
+    hass: HomeAssistant,
+) -> None:
+    """String prefix checks are not complete entity references."""
+    template = (
+        "{% for entity in states.binary_sensor if "
+        "entity.entity_id.startswith('binary_sensor.proxmox') %}"
+        "{{ entity.state }}"
+        "{% endfor %}"
+    )
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_ignores_grouped_entity_id_prefix_string_match(
+    hass: HomeAssistant,
+) -> None:
+    """String prefix checks can use grouping without becoming references."""
+    template = "{{ entity.entity_id.startswith( ('binary_sensor.proxmox')) }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_ignores_entity_id_suffix_string_match(
+    hass: HomeAssistant,
+) -> None:
+    """String suffix checks are not complete entity references."""
+    template = "{{ entity.entity_id.endswith('sensor.power') }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
 async def test_value_template_ignores_concatenated_helper_entity_id(
     hass: HomeAssistant,
 ) -> None:

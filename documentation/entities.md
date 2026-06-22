@@ -142,7 +142,7 @@ data:
 This action allows you to hide an entity on the fly.
 
 It can be particularly useful when you have a lot of entities, and you want to hide some of them from the generated UI based programmatically.
-Hidden entities are also not exposed to external voice assistants, like Google Assistant or Alexa.
+Hidden entities are not exposed to external voice assistants, like Google Assistant or Alexa, by default. They can still be exposed explicitly in the voice assistant settings.
 
 ```{figure} ./images/entities/hide_entity.png
 :alt: Screenshot of the Home Assistant hide entity action in the developer tools.

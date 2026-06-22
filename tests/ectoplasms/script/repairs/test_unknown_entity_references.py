@@ -8,6 +8,7 @@ import pytest
 
 from custom_components.spook.ectoplasms.script.repairs.unknown_entity_references import (
     extract_entities_from_trigger_config,
+    extract_referenced_entities_from_script,
 )
 
 
@@ -95,3 +96,63 @@ def test_trigger_blueprint_input_shape() -> None:
         "light.a",
         "light.b",
     }
+
+
+class MockScript:  # pylint: disable=too-few-public-methods
+    """Mock script object."""
+
+    def __init__(self, referenced_entities: set[str]) -> None:
+        """Initialize the mock script."""
+        self.referenced_entities = referenced_entities
+
+
+class MockBrokenScript:  # pylint: disable=too-few-public-methods
+    """Mock script object with broken referenced entity extraction."""
+
+    @property
+    def referenced_entities(self) -> set[str]:
+        """Raise the same error Home Assistant can raise for dict entity IDs."""
+        msg = "unhashable type: 'dict'"
+        raise TypeError(msg)
+
+
+class MockUnexpectedBrokenScript:  # pylint: disable=too-few-public-methods
+    """Mock script object with an unrelated TypeError."""
+
+    @property
+    def referenced_entities(self) -> set[str]:
+        """Raise an unexpected TypeError."""
+        msg = "unexpected failure"
+        raise TypeError(msg)
+
+
+class MockScriptEntity:  # pylint: disable=too-few-public-methods
+    """Mock script entity."""
+
+    def __init__(
+        self, script: MockScript | MockBrokenScript | MockUnexpectedBrokenScript
+    ) -> None:
+        """Initialize the mock script entity."""
+        self.script = script
+
+
+def test_extract_referenced_entities_from_script() -> None:
+    """Test script referenced entities are returned as a set."""
+    entity = MockScriptEntity(MockScript({"light.kitchen"}))
+
+    assert extract_referenced_entities_from_script(entity) == {"light.kitchen"}
+
+
+def test_extract_referenced_entities_handles_home_assistant_type_error() -> None:
+    """Test broken Home Assistant referenced entity extraction is ignored."""
+    entity = MockScriptEntity(MockBrokenScript())
+
+    assert extract_referenced_entities_from_script(entity) == set()
+
+
+def test_extract_referenced_entities_reraises_unexpected_type_error() -> None:
+    """Test unrelated TypeErrors are not swallowed."""
+    entity = MockScriptEntity(MockUnexpectedBrokenScript())
+
+    with pytest.raises(TypeError, match="unexpected failure"):
+        extract_referenced_entities_from_script(entity)
