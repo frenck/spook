@@ -119,6 +119,9 @@ ENTITY_ID_TEMPLATE_PATTERNS = [
     # Entity IDs followed by filter functions (entity_id | function)
     rf"['\"]({ENTITY_ID_PATTERN})['\"](?:\s*\|\s*(?:{'|'.join(_ENTITY_FUNCTIONS)}))",
 ]
+COMPILED_ENTITY_ID_TEMPLATE_PATTERNS = tuple(
+    re.compile(pattern, re.IGNORECASE) for pattern in ENTITY_ID_TEMPLATE_PATTERNS
+)
 
 _CACHED_ALL_ENTITY_IDS: set[str] | None = None
 _UNSUB_CACHE_INVALIDATION: Callable[[], None] | None = None
@@ -373,7 +376,9 @@ def is_template_string(value: str) -> bool:
 
 
 async def async_extract_entities_from_template_string(
-    hass: HomeAssistant, template_str: str
+    hass: HomeAssistant,
+    template_str: str,
+    known_services: set[str] | None = None,
 ) -> set[str]:
     """Extract entity IDs from a template string using regex analysis.
 
@@ -387,7 +392,9 @@ async def async_extract_entities_from_template_string(
 
     # Use regex patterns to find entities
     try:
-        regex_entities = extract_entities_from_template_regex(hass, template_str)
+        regex_entities = extract_entities_from_template_regex(
+            hass, template_str, known_services
+        )
         entities.update(regex_entities)
     # pylint: disable-next=broad-exception-caught
     except Exception as exc:  # noqa: BLE001 - Keep broad for unexpected regex issues
@@ -483,7 +490,9 @@ def _entity_id_from_template_match(match: re.Match[str]) -> str:
 
 
 def extract_entities_from_template_regex(
-    hass: HomeAssistant, template_str: str
+    hass: HomeAssistant,
+    template_str: str,
+    known_services: set[str] | None = None,
 ) -> set[str]:
     """Extract entity IDs from template string using regex patterns.
 
@@ -497,8 +506,8 @@ def extract_entities_from_template_regex(
 
     entities = set()
 
-    for pattern in ENTITY_ID_TEMPLATE_PATTERNS:
-        for match in re.finditer(pattern, template_str, re.IGNORECASE):
+    for pattern in COMPILED_ENTITY_ID_TEMPLATE_PATTERNS:
+        for match in pattern.finditer(template_str):
             if (
                 _is_concatenated_template_match(template_str, match)
                 or _is_jinja_import_match(template_str, match)
@@ -514,7 +523,8 @@ def extract_entities_from_template_regex(
                     entities.add(individual_id)
 
     # Filter out known services to avoid false positives
-    known_services = async_get_all_services(hass)
+    if known_services is None:
+        known_services = async_get_all_services(hass)
     return entities - known_services
 
 
@@ -522,6 +532,7 @@ async def _process_template_object(
     hass: HomeAssistant,
     template: Template,
     known_entity_ids: set[str],
+    known_services: set[str],
     unknown_entities: set[str],
 ) -> None:
     """Process a Template object and add unknown entities to the set."""
@@ -531,7 +542,7 @@ async def _process_template_object(
     try:
         if hasattr(template, "template") and template.template:
             regex_entities = extract_entities_from_template_regex(
-                hass, template.template
+                hass, template.template, known_services
             )
             template_entities.update(regex_entities)
     # pylint: disable-next=broad-exception-caught
@@ -548,11 +559,12 @@ async def _process_template_string(
     hass: HomeAssistant,
     template_str: str,
     known_entity_ids: set[str],
+    known_services: set[str],
     unknown_entities: set[str],
 ) -> None:
     """Process a template string and add unknown entities to the set."""
     template_entities = await async_extract_entities_from_template_string(
-        hass, template_str
+        hass, template_str, known_services
     )
     # Check if any of the template entities are unknown
     for template_entity in template_entities:
@@ -578,14 +590,17 @@ async def async_filter_known_entity_ids_with_templates(
     """
     if known_entity_ids is None:
         known_entity_ids = async_get_all_entity_ids(hass)
+    known_services: set[str] | None = None
 
     unknown_entities = set()
 
     for entity_id_raw in entity_ids:
         # Handle Template objects
         if isinstance(entity_id_raw, Template):
+            if known_services is None:
+                known_services = async_get_all_services(hass)
             await _process_template_object(
-                hass, entity_id_raw, known_entity_ids, unknown_entities
+                hass, entity_id_raw, known_entity_ids, known_services, unknown_entities
             )
             continue
 
@@ -594,8 +609,10 @@ async def async_filter_known_entity_ids_with_templates(
 
         # Check if this looks like a template string
         if is_template_string(entity_id_raw):
+            if known_services is None:
+                known_services = async_get_all_services(hass)
             await _process_template_string(
-                hass, entity_id_raw, known_entity_ids, unknown_entities
+                hass, entity_id_raw, known_entity_ids, known_services, unknown_entities
             )
         else:
             # Process as regular entity ID(s), handling comma-separated lists
@@ -662,13 +679,19 @@ async def async_extract_entities_from_config(
         return entities
 
     template_strings = extract_template_strings_from_config(config)
+    known_services = async_get_all_services(hass) if template_strings else set()
+    extracted_templates: dict[str, set[str]] = {}
     for template_str in template_strings:
         try:
             # async_extract_entities_from_template_string already handles
             # TemplateError and other exceptions internally, logging them.
-            referenced_entities = await async_extract_entities_from_template_string(
-                hass, template_str
-            )
+            if template_str not in extracted_templates:
+                extracted_templates[
+                    template_str
+                ] = await async_extract_entities_from_template_string(
+                    hass, template_str, known_services
+                )
+            referenced_entities = extracted_templates[template_str]
             entities.update(referenced_entities)
         # pylint: disable-next=broad-exception-caught
         except Exception as exc:  # noqa: BLE001 - Keep broad for unexpected issues
