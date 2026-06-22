@@ -418,6 +418,32 @@ def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> 
     return before_literal.endswith("~") or after_literal.startswith("~")
 
 
+def _is_jinja_import_match(template_str: str, match: re.Match[str]) -> bool:
+    """Return if a quoted entity-like literal is a Jinja import filename."""
+    groups = match.groups()
+    if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return False
+
+    entity_start, entity_end = match.span(1)
+    block_start = template_str.rfind("{%", 0, entity_start)
+    expression_start = template_str.rfind("{{", 0, entity_start)
+    if block_start == -1 or expression_start > block_start:
+        return False
+
+    block_end = template_str.find("%}", entity_end)
+    expression_end = template_str.find("}}", entity_end)
+    if block_end == -1 or (expression_end != -1 and expression_end < block_end):
+        return False
+
+    block = template_str[block_start : block_end + 2]
+    return bool(
+        re.match(
+            r"\{%-?\s*(?:from\s+['\"][^'\"]+['\"]\s+import|import\s+['\"][^'\"]+['\"]\s+as)",
+            block,
+        )
+    )
+
+
 def _is_string_method_argument_match(template_str: str, match: re.Match[str]) -> bool:
     """Return if an entity-like literal is used as a string method argument."""
     groups = match.groups()
@@ -473,9 +499,11 @@ def extract_entities_from_template_regex(
 
     for pattern in ENTITY_ID_TEMPLATE_PATTERNS:
         for match in re.finditer(pattern, template_str, re.IGNORECASE):
-            if _is_concatenated_template_match(
-                template_str, match
-            ) or _is_string_method_argument_match(template_str, match):
+            if (
+                _is_concatenated_template_match(template_str, match)
+                or _is_jinja_import_match(template_str, match)
+                or _is_string_method_argument_match(template_str, match)
+            ):
                 continue
 
             entity_id = _entity_id_from_template_match(match)

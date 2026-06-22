@@ -66,6 +66,46 @@ async def test_value_template_ignores_concatenated_entity_id_literal(
     assert await extract_entities_from_value(hass, template) == set()
 
 
+async def test_value_template_ignores_jinja_import_filename(
+    hass: HomeAssistant,
+) -> None:
+    """Jinja import filenames are not entity references."""
+    template = "{% from 'date.jinja' import how_about_now %}{{ how_about_now() }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_ignores_jinja_import_as_filename(
+    hass: HomeAssistant,
+) -> None:
+    """Jinja import-as filenames are not entity references."""
+    template = "{% import 'date.jinja' as date_helpers %}{{ date_helpers.now() }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_ignores_whitespace_control_jinja_import_filename(
+    hass: HomeAssistant,
+) -> None:
+    """Jinja import filenames with whitespace control are not entity references."""
+    template = "{%- from 'date.jinja' import how_about_now -%}{{ how_about_now() }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_keeps_entity_reference_between_jinja_blocks(
+    hass: HomeAssistant,
+) -> None:
+    """Entity references in expression blocks are not treated as import filenames."""
+    template = (
+        "{% from 'date.jinja' import how_about_now %}"
+        "{{ states('light.kitchen') }}"
+        "{% set finished = true %}"
+    )
+
+    assert await extract_entities_from_value(hass, template) == {"light.kitchen"}
+
+
 async def test_value_template_ignores_entity_id_prefix_string_match(
     hass: HomeAssistant,
 ) -> None:
