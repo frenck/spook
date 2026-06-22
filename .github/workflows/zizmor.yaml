@@ -1,0 +1,38 @@
+---
+name: Zizmor
+
+# yamllint disable-line rule:truthy
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DEFAULT_PYTHON: "3.14"
+
+jobs:
+  zizmor:
+    name: Zizmor
+    runs-on: ubuntu-latest
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: 🏗 Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          python-version: ${{ env.DEFAULT_PYTHON }}
+
+      - name: 🏗 Install dependencies
+        run: uv sync --frozen --dev
+
+      - name: 🚀 Run zizmor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: uv run zizmor .github/workflows/

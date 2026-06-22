@@ -134,7 +134,7 @@ This action can be used to rename an entity on the fly. _#LookMaNewName_
 
 This action can be used to update the ID of an entity on the fly. _#secret_
 
-`homeassistant.hide_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys_id) 📚
+`homeassistant.update_entity_id`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys_id) 📚
 
 ## Floors: Create a floor
 
@@ -391,3 +391,17 @@ This action selects a random option from the list of options of a select entity.
 Set the duration for a timer entity. _#timeflies_
 
 `timer.set_duration`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.set_duration), [documentation](integrations/timer#set-duration) 📚
+
+++(user-disable)=
+
+## User: Disable
+
+This action can be used to disable a user account on the fly, preventing them from logging in. _#lockout_
+
+`homeassistant.disable_user`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_user), [documentation](users#disable-a-user) 📚
+
+## User: Enable
+
+Guess what... this action does the reverse of [](#user-disable). _#welcome_
+
+`homeassistant.enable_user`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_user), [documentation](users#enable-a-user) 📚

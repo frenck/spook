@@ -1,14 +1,91 @@
 {
+  "config": {
+    "abort": {
+      "already_spooked": "Так... ну... ні. Добре, дякую, бувай!"
+    },
+    "step": {
+      "user": {
+        "description": "Ви читали readme? Ви читали ліцензію? Ви дійсно впевнені?"
+      },
+      "choice_restart": {
+        "description": "Для того, щоб Spook закінчив налаштування, Home Assistant потрібно перезапустити.\n\nХочете перезапустити Home Assistant зараз?",
+        "menu_options": {
+          "restart_now": "Перезапустити зараз",
+          "restart_later": "Перезапустити пізніше"
+        }
+      }
+    }
+  },
   "entity": {
+    "button": {
+      "homeassistant_reload": {
+        "name": "Перезавантажити"
+      },
+      "homeassistant_restart": {
+        "name": "Перезапустити"
+      },
+      "repairs_ignore_all": {
+        "name": "Ігнорувати все"
+      },
+      "repairs_unignore_all": {
+        "name": "Відновити все"
+      }
+    },
+    "event": {
+      "repairs_event": {
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "create": "Проблему створено",
+              "remove": "Проблему видалено",
+              "update": "Проблема оновлена"
+            }
+          },
+          "domain": {
+            "name": "Відправник проблеми"
+          },
+          "issue_id": {
+            "name": "ID проблеми"
+          }
+        }
+      }
+    },
     "sensor": {
+      "homeassistant_air_quality": {
+        "name": "Якість повітря"
+      },
       "homeassistant_alarm_control_panel": {
         "name": "Панелі керування сигналізацією"
+      },
+      "homeassistant_area": {
+        "name": "Області"
+      },
+      "homeassistant_automation": {
+        "name": "Автоматизація"
       },
       "homeassistant_binary_sensor": {
         "name": "Бінарні датчики"
       },
+      "homeassistant_button": {
+        "name": "Кнопки"
+      },
+      "homeassistant_calendar": {
+        "name": "Календарі"
+      },
+      "homeassistant_camera": {
+        "name": "Камери"
+      },
       "homeassistant_climate": {
         "name": "Клімат"
+      },
+      "homeassistant_cover": {
+        "name": "Обкладинки"
+      },
+      "homeassistant_custom_component": {
+        "name": "Власні інтеграції"
+      },
+      "homeassistant_date": {
+        "name": "Дати"
       },
       "homeassistant_datetime": {
         "name": "Дата/час"
@@ -19,53 +96,14 @@
       "homeassistant_device_tracker": {
         "name": "Трекери пристроїв"
       },
-      "homeassistant_input_datetime": {
-        "name": "Дата/час введення"
-      },
-      "homeassistant_input_select": {
-        "name": "Вибір вхідних даних"
-      },
-      "homeassistant_stt": {
-        "name": "Розпізнавання мовлення"
-      },
-      "homeassistant_vacuum": {
-        "name": "Пилососи"
-      },
-      "homeassistant_water_heater": {
-        "name": "Водонагрівачі"
-      },
-      "homeassistant_weather": {
-        "name": "Погода"
-      },
-      "homeassistant_zone": {
-        "name": "Зони"
-      },
-      "homeassistant_automation": {
-        "name": "Автоматизація"
-      },
-      "homeassistant_calendar": {
-        "name": "Календарі"
-      },
-      "homeassistant_camera": {
-        "name": "Камери"
-      },
-      "homeassistant_cover": {
-        "name": "Обкладинки"
-      },
-      "homeassistant_air_quality": {
-        "name": "Якість повітря"
-      },
-      "homeassistant_area": {
-        "name": "Області"
-      },
-      "homeassistant_button": {
-        "name": "Кнопки"
-      },
-      "homeassistant_custom_component": {
-        "name": "Власні інтеграції"
+      "homeassistant_entities": {
+        "name": "Сутності"
       },
       "homeassistant_fan": {
         "name": "Шанувальники"
+      },
+      "homeassistant_humidifier": {
+        "name": "Зволожувачі повітря"
       },
       "homeassistant_image": {
         "name": "Зображення"
@@ -73,11 +111,23 @@
       "homeassistant_input_boolean": {
         "name": "Введіть логічні значення"
       },
+      "homeassistant_input_button": {
+        "name": "Кнопки введення"
+      },
+      "homeassistant_input_datetime": {
+        "name": "Дата/час введення"
+      },
       "homeassistant_input_number": {
         "name": "Вхідні числа"
       },
+      "homeassistant_input_select": {
+        "name": "Вибір вхідних даних"
+      },
       "homeassistant_input_text": {
         "name": "Вхідні тексти"
+      },
+      "homeassistant_integration": {
+        "name": "Інтеграції"
       },
       "homeassistant_light": {
         "name": "Світло"
@@ -85,29 +135,23 @@
       "homeassistant_lock": {
         "name": "Замки"
       },
-      "homeassistant_remote": {
-        "name": "Пульти керування"
-      },
-      "homeassistant_scene": {
-        "name": "Сцени"
-      },
-      "homeassistant_date": {
-        "name": "Дати"
-      },
-      "homeassistant_humidifier": {
-        "name": "Зволожувачі повітря"
-      },
-      "homeassistant_input_button": {
-        "name": "Кнопки введення"
-      },
-      "homeassistant_integration": {
-        "name": "Інтеграції"
-      },
       "homeassistant_media_player": {
         "name": "Медіаплеєри"
       },
       "homeassistant_number": {
         "name": "Числа"
+      },
+      "homeassistant_persistent_notification": {
+        "name": "Постійні сповіщення"
+      },
+      "homeassistant_person": {
+        "name": "Люди"
+      },
+      "homeassistant_remote": {
+        "name": "Пульти керування"
+      },
+      "homeassistant_scene": {
+        "name": "Сцени"
       },
       "homeassistant_script": {
         "name": "Скрипти"
@@ -118,20 +162,17 @@
       "homeassistant_sensor": {
         "name": "Датчики"
       },
-      "homeassistant_switch": {
-        "name": "Перемикачі"
-      },
-      "homeassistant_persistent_notification": {
-        "name": "Постійні сповіщення"
-      },
-      "homeassistant_person": {
-        "name": "Люди"
-      },
       "homeassistant_siren": {
         "name": "Сирени"
       },
+      "homeassistant_stt": {
+        "name": "Розпізнавання мовлення"
+      },
       "homeassistant_sun": {
         "name": "Сонце"
+      },
+      "homeassistant_switch": {
+        "name": "Перемикачі"
       },
       "homeassistant_text": {
         "name": "Тексти"
@@ -145,145 +186,148 @@
       "homeassistant_update": {
         "name": "Oновити"
       },
-      "homeassistant_entities": {
-        "name": "Сутності"
+      "homeassistant_vacuum": {
+        "name": "Пилососи"
+      },
+      "homeassistant_water_heater": {
+        "name": "Водонагрівачі"
+      },
+      "homeassistant_weather": {
+        "name": "Погода"
+      },
+      "homeassistant_zone": {
+        "name": "Зони"
       },
       "repairs_total_issues": {
         "name": "Всього"
       },
-      "repairs_active_issues": {
-        "name": "Активний"
-      },
       "repairs_ignored_issues": {
         "name": "Проігноровано"
+      },
+      "repairs_active_issues": {
+        "name": "Активний"
       }
     },
     "switch": {
       "cloud_alexa_report_state": {
         "name": "Звітність про стан Alexa"
       },
-      "cloud_remote": {
-        "name": "Пульт керування"
-      },
       "cloud_google_report_state": {
         "name": "Звіт про стан Google Assistant"
-      }
-    },
-    "button": {
-      "homeassistant_reload": {
-        "name": "Перезавантажити"
       },
-      "homeassistant_restart": {
-        "name": "Перезапустити"
-      },
-      "repairs_unignore_all": {
-        "name": "Відновити все"
-      },
-      "repairs_ignore_all": {
-        "name": "Ігнорувати все"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "issue_id": {
-            "name": "ID проблеми"
-          },
-          "event_type": {
-            "state": {
-              "remove": "Проблему видалено",
-              "create": "Проблему створено",
-              "update": "Проблема оновлена"
-            }
-          },
-          "domain": {
-            "name": "Відправник проблеми"
-          }
-        }
+      "cloud_remote": {
+        "name": "Пульт керування"
       }
     }
   },
   "issues": {
-    "automation_unknown_device_references": {
-      "title": "Невідомі пристрої, що використовуються в: {automation}",
-      "description": "Spook знайшов привида у вашій автоматизації 👻\n\nПід час подорожі Spook перетнувся з наступною автоматизацією:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\nЦя автоматизація посилається на такі пристрої, які невідомі Home Assistant:\n\n{devices}\n\n\n\nЩоб виправити цю помилку, [відредагуйте автоматизацію]({edit}) і видаліть використання цих неіснуючих пристроїв.\n\nSpook 👻 Не твій друг."
-    },
-    "integration_unknown_source": {
-      "title": "Невідоме джерело: {helper}",
-      "description": "Spook знайшов привида у ваших помічниках по інтегралу від суми Рімана 👻\n\nПід час подорожі Spook перетнувся з наступним помічником:\n\n{helper} (`{entity_id}`)\n\nЦей помічник має сутність-джерело, невідому Home Assistant:\n\n`{source}`\n\n\nЩоб виправити цю помилку, відредагуйте помічник і змініть сутність джерела (або видаліть помічник) і перезапустіть Home Assistant.\n\nSpook 👻 Не твій друг."
-    },
-    "script_unknown_area_references": {
-      "title": "Невідомі області, що використовуються в: {script}",
-      "description": "Spook знайшов привида у ваших скриптах 👻\n\nПід час подорожі Spook перетнувся з наступним скриптом:\n\n[{script}]({edit}) (`{entity_id}`)\n\nЦей скрипт посилається на наступні області, які невідомі Home Assistant:\n\n{areas}\n\n\n\nЩоб виправити цю помилку, [відредагуйте скрипт]({edit}) і видаліть використання цих неіснуючих областей.\n\nSpook 👻 Не твій друг."
-    },
-    "script_unknown_device_references": {
-      "title": "Невідомі пристрої, що використовуються в: {script}",
-      "description": "Spook знайшов привида у ваших скриптах 👻\n\nПід час подорожі Spook перетнувся з наступним скриптом:\n\n[{script}]({edit}) (`{entity_id}`)\n\nЦей скрипт посилається на такі пристрої, які невідомі Home Assistant:\n\n{devices}\n\n\nЩоб виправити цю помилку, [відредагуйте скрипт]({edit}) і видаліть використання цих неіснуючих пристроїв.\n\nSpook 👻 Не твій друг."
-    },
-    "lovelace_unknown_entity_references": {
-      "title": "Невідомі сутності, що використовуються в: {dashboard}",
-      "description": "Spook знайшов привида на ваших інформаційних панелях👻\n\nПід час подорожі Spook перетнувся з наступною інформаційною панеллю:\n\n[{dashboard}]({edit})\n\nЦя панель посилається на такі сутності, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, [відредагуйте інформаційну панель]({edit}) і видаліть використання цих неіснуючих сутностей.\n\nSpook 👻 Не твій друг."
-    },
-    "script_unknown_entity_references": {
-      "title": "Невідомі сутності, що використовуються в: {script}",
-      "description": "Spook знайшов привида у ваших скриптах 👻\n\nПід час подорожі Spook перетнувся з наступним скриптом:\n\n[{script}]({edit}) (`{entity_id}`)\n\nЦей скрипт посилається на такі сутності, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, [відредагуйте скрипт]({edit}) і видаліть використання цих неіснуючих сутностей.\n\nSpook 👻 Не твій друг."
-    },
-    "switch_as_x_unknown_source": {
-      "title": "Невідоме джерело: {helper}",
-      "description": "Spook знайшов привида у ваших Switch as X помічниках 👻.\n\nПід час подорожі Spook перетнувся з наступним помічником:\n\n{helper} (`{entity_id}`)\n\nЦей помічник має сутність перемикача джерел, невідому Home Assistant:\n\n`{source}`\n\n\n\nЩоб виправити цю помилку, відредагуйте помічник і змініть сутність джерела (або видаліть помічник) і перезапустіть Home Assistant.\n\nSpook 👻 Не твій друг."
-    },
-    "user_issue": {
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "title": "{title}",
-            "description": "{description}"
-          }
-        }
-      },
-      "title": "{title}"
-    },
     "automation_unknown_area_references": {
-      "title": "Невідомі області, що використовуються в: {automation}",
-      "description": "Spook знайшов привида у вашій автоматизації 👻\n\nПід час подорожі Spook перетнувся з наступною автоматизацією:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\nЦя автоматизація посилається на наступні області, які невідомі Home Assistant:\n\n{areas}\n\n\n\nЩоб виправити цю помилку, [відредагуйте автоматизацію]({edit}) і видаліть використання цих неіснуючих областей.\nSpook 👻 Не твій друг."
+      "description": "Spook знайшов привида у вашій автоматизації 👻\n\nПід час подорожі Spook перетнувся з наступною автоматизацією:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\nЦя автоматизація посилається на наступні області, які невідомі Home Assistant:\n\n{areas}\n\n\n\nЩоб виправити цю помилку, [відредагуйте автоматизацію]({edit}) і видаліть використання цих неіснуючих областей.\nSpook 👻 Не твій друг.",
+      "title": "Невідомі області, що використовуються в: {automation}"
+    },
+    "automation_unknown_device_references": {
+      "description": "Spook знайшов привида у вашій автоматизації 👻\n\nПід час подорожі Spook перетнувся з наступною автоматизацією:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\nЦя автоматизація посилається на такі пристрої, які невідомі Home Assistant:\n\n{devices}\n\n\n\nЩоб виправити цю помилку, [відредагуйте автоматизацію]({edit}) і видаліть використання цих неіснуючих пристроїв.\n\nSpook 👻 Не твій друг.",
+      "title": "Невідомі пристрої, що використовуються в: {automation}"
     },
     "automation_unknown_entity_references": {
       "description": "Spook знайшов привида у вашій автоматизації 👻\n\nПід час подорожі Spook перетнувся з наступною автоматизацією:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\nЦя автоматизація посилається на такі сутності, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, [відредагуйте автоматизацію]({edit}) і видаліть використання цих неіснуючих суб'єкти.\n\nSpook 👻 Не твій друг.",
       "title": "Невідомі сутності, що використовуються в: {automation}"
     },
+    "automation_unknown_floor_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+      "title": "Unknown floors used in: {automation}"
+    },
+    "automation_unknown_label_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+      "title": "Unknown labels used in: {automation}"
+    },
+    "automation_unknown_service_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+      "title": "Unknown actions used in: {automation}"
+    },
     "group_unknown_members": {
-      "title": "Невідомі члени групи ввійшли: {group}",
-      "description": "Привид знайшов привида у ваших групах 👻\n\nПід час подорожі Spook перетнувся з наступною групою:\n\n{group} (`{entity_id}`)\n\nУ цій групі є учасники, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, відредагуйте групу, видаліть використання цих неіснуючих сутностей і перезапустіть Home Assistant.\n\nSpook 👻 Не твій друг."
+      "description": "Привид знайшов привида у ваших групах 👻\n\nПід час подорожі Spook перетнувся з наступною групою:\n\n{group} (`{entity_id}`)\n\nУ цій групі є учасники, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, відредагуйте групу, видаліть використання цих неіснуючих сутностей і перезапустіть Home Assistant.\n\nSpook 👻 Не твій друг.",
+      "title": "Невідомі члени групи ввійшли: {group}"
+    },
+    "integration_unknown_source": {
+      "description": "Spook знайшов привида у ваших помічниках по інтегралу від суми Рімана 👻\n\nПід час подорожі Spook перетнувся з наступним помічником:\n\n{helper} (`{entity_id}`)\n\nЦей помічник має сутність-джерело, невідому Home Assistant:\n\n`{source}`\n\n\nЩоб виправити цю помилку, відредагуйте помічник і змініть сутність джерела (або видаліть помічник) і перезапустіть Home Assistant.\n\nSpook 👻 Не твій друг.",
+      "title": "Невідоме джерело: {helper}"
+    },
+    "lovelace_unknown_entity_references": {
+      "description": "Spook знайшов привида на ваших інформаційних панелях👻\n\nПід час подорожі Spook перетнувся з наступною інформаційною панеллю:\n\n[{dashboard}]({edit})\n\nЦя панель посилається на такі сутності, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, [відредагуйте інформаційну панель]({edit}) і видаліть використання цих неіснуючих сутностей.\n\nSpook 👻 Не твій друг.",
+      "title": "Невідомі сутності, що використовуються в: {dashboard}"
+    },
+    "proximity_unknown_ignored_zones": {
+      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
+      "title": "Unknown ignored zones: {name}"
+    },
+    "proximity_unknown_tracked_entities": {
+      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
+      "title": "Unknown tracked entities: {name}"
+    },
+    "proximity_unknown_zone": {
+      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
+      "title": "Unknown zone: {zone}"
+    },
+    "scene_unknown_entity_references": {
+      "description": "Spook знайшов у ваших сценах привида 👻\n\nПропливаючи навколо, Spook перетнув шлях з наступною сценою:\n\n[{scene}]({edit})\n\nЦя сцена посилається на такі об 'єкти, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, [edit the scene]({edit}) і видалити використання цих неіснуючих об 'єктів.\n\nSpook 👻 не твій друзяка.",
+      "title": "Невідомі об'єкти, що використовуються в: {scene}"
+    },
+    "script_unknown_area_references": {
+      "description": "Spook знайшов привида у ваших скриптах 👻\n\nПід час подорожі Spook перетнувся з наступним скриптом:\n\n[{script}]({edit}) (`{entity_id}`)\n\nЦей скрипт посилається на наступні області, які невідомі Home Assistant:\n\n{areas}\n\n\n\nЩоб виправити цю помилку, [відредагуйте скрипт]({edit}) і видаліть використання цих неіснуючих областей.\n\nSpook 👻 Не твій друг.",
+      "title": "Невідомі області, що використовуються в: {script}"
+    },
+    "script_unknown_device_references": {
+      "description": "Spook знайшов привида у ваших скриптах 👻\n\nПід час подорожі Spook перетнувся з наступним скриптом:\n\n[{script}]({edit}) (`{entity_id}`)\n\nЦей скрипт посилається на такі пристрої, які невідомі Home Assistant:\n\n{devices}\n\n\nЩоб виправити цю помилку, [відредагуйте скрипт]({edit}) і видаліть використання цих неіснуючих пристроїв.\n\nSpook 👻 Не твій друг.",
+      "title": "Невідомі пристрої, що використовуються в: {script}"
+    },
+    "script_unknown_entity_references": {
+      "description": "Spook знайшов привида у ваших скриптах 👻\n\nПід час подорожі Spook перетнувся з наступним скриптом:\n\n[{script}]({edit}) (`{entity_id}`)\n\nЦей скрипт посилається на такі сутності, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, [відредагуйте скрипт]({edit}) і видаліть використання цих неіснуючих сутностей.\n\nSpook 👻 Не твій друг.",
+      "title": "Невідомі сутності, що використовуються в: {script}"
+    },
+    "script_unknown_floor_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+      "title": "Unknown floors used in: {script}"
+    },
+    "script_unknown_label_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+      "title": "Unknown labels used in: {script}"
+    },
+    "script_unknown_service_references": {
+      "description": "Spook знайшов привида у ваших скриптах 👻\n\nПід час подорожі Spook перетнувся з наступним скриптом:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Не твій друг.",
+      "title": "Unknown actions used in: {script}"
+    },
+    "switch_as_x_unknown_source": {
+      "description": "Spook знайшов привида у ваших Switch as X помічниках 👻.\n\nПід час подорожі Spook перетнувся з наступним помічником:\n\n{helper} (`{entity_id}`)\n\nЦей помічник має сутність перемикача джерел, невідому Home Assistant:\n\n`{source}`\n\n\n\nЩоб виправити цю помилку, відредагуйте помічник і змініть сутність джерела (або видаліть помічник) і перезапустіть Home Assistant.\n\nSpook 👻 Не твій друг.",
+      "title": "Невідоме джерело: {helper}"
+    },
+    "utility_meter_unknown_source": {
+      "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "title": "Unknown source: {helper}"
+    },
+    "trend_unknown_source": {
+      "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "title": "Unknown source: {helper}"
+    },
+    "user_issue": {
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "description": "{description}",
+            "title": "{title}"
+          }
+        }
+      },
+      "title": "{title}"
     },
     "restart_required": {
       "title": "Потрібен перезапуск",
       "fix_flow": {
         "step": {
           "confirm_restart": {
-            "description": "Щоб Spook 👻 завершив налаштування, Home Assistant потрібно перезапустити.\n\nВиберіть \"Надіслати\", щоб перезапустити Home Assistant зараз.",
-            "title": "Потрібен перезапуск"
+            "title": "Потрібен перезапуск",
+            "description": "Щоб Spook 👻 завершив налаштування, Home Assistant потрібно перезапустити.\n\nВиберіть \"Надіслати\", щоб перезапустити Home Assistant зараз."
           }
-        }
-      }
-    },
-    "scene_unknown_entity_references": {
-      "description": "Spook знайшов у ваших сценах привида 👻\n\nПропливаючи навколо, Spook перетнув шлях з наступною сценою:\n\n[{scene}]({edit})\n\nЦя сцена посилається на такі об 'єкти, які невідомі Home Assistant:\n\n{entities}\n\n\n\nЩоб виправити цю помилку, [edit the scene]({edit}) і видалити використання цих неіснуючих об 'єктів.\n\nSpook 👻 не твій друзяка.",
-      "title": "Невідомі об'єкти, що використовуються в: {scene}"
-    }
-  },
-  "config": {
-    "abort": {
-      "already_spooked": "Так... ну... ні. Добре, дякую, бувай!"
-    },
-    "step": {
-      "user": {
-        "description": "Ви читали readme? Ви читали ліцензію? Ви дійсно впевнені?"
-      },
-      "choice_restart": {
-        "description": "Для того, щоб Spook закінчив налаштування, Home Assistant потрібно перезапустити.\n\nХочете перезапустити Home Assistant зараз?",
-        "menu_options": {
-          "restart_later": "Перезапустити пізніше",
-          "restart_now": "Перезапустити зараз"
         }
       }
     }

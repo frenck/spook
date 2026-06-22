@@ -51,17 +51,21 @@ class RepairsSpookEventEntity(RepairsSpookEntity, EventEntity):
     entity_description: RepairsSpookEventEntityDescription
     _attr_name = None
 
+    @callback
+    def _handle_repairs_issue_registry_updated_event(self, event: Event) -> None:
+        """Handle repairs issue registry updates."""
+        data = {**event.data}
+        if (event_type := data.pop("action", None)) is None:
+            return
+
+        self._trigger_event(event_type, data)
+        self.async_schedule_update_ha_state()
+
     async def async_added_to_hass(self) -> None:
         """Register for event updates."""
-
-        @callback
-        def _fire(event: Event) -> None:
-            """Update state."""
-            data = {**event.data}
-            event_type = data.pop("action")
-            self._trigger_event(event_type, data)
-            self.async_schedule_update_ha_state()
-
         self.async_on_remove(
-            self.hass.bus.async_listen(EVENT_REPAIRS_ISSUE_REGISTRY_UPDATED, _fire),
+            self.hass.bus.async_listen(
+                EVENT_REPAIRS_ISSUE_REGISTRY_UPDATED,
+                self._handle_repairs_issue_registry_updated_event,
+            ),
         )

@@ -1,128 +1,64 @@
 {
+  "config": {
+    "abort": {
+      "already_spooked": "ใช่ ... ดี..!"
+    },
+    "step": {
+      "user": {
+        "description": "คุณอ่าน? คุณอ่านใบอนุญาต? คุณแน่ใจว่า?"
+      },
+      "choice_restart": {
+        "description": "ในการสั่งซื้อสําหรับคู่สมรสที่จะตั้งค่า, บ้านผู้จัดการต้องเริ่มต้น.\n\nคุณต้องการที่จะเริ่มต้น หน้าแรก ผู้ช่วยตอนนี้?",
+        "menu_options": {
+          "restart_now": "เริ่มต้นตอนนี้",
+          "restart_later": "เริ่มต้น"
+        }
+      }
+    }
+  },
   "entity": {
+    "button": {
+      "homeassistant_reload": {
+        "name": "โหลด"
+      },
+      "homeassistant_restart": {
+        "name": "เริ่มต้น"
+      },
+      "repairs_ignore_all": {
+        "name": "ความเชื่อทั้งหมด"
+      },
+      "repairs_unignore_all": {
+        "name": "ญาติ"
+      }
+    },
+    "event": {
+      "repairs_event": {
+        "state_attributes": {
+          "event_type": {
+            "state": {
+              "create": "ปัญหา",
+              "remove": "การลบ",
+              "update": "ตรวจสอบ"
+            }
+          },
+          "domain": {
+            "name": "ปัญหา"
+          },
+          "issue_id": {
+            "name": "ข้อความ"
+          }
+        }
+      }
+    },
     "sensor": {
-      "homeassistant_siren": {
-        "name": "โล่"
+      "homeassistant_air_quality": {
+        "name": "คุณภาพเครื่องปรับอากาศ"
       },
-      "homeassistant_water_heater": {
-        "name": "เครื่องทําน้ําอุ่น"
-      },
-      "homeassistant_device_tracker": {
-        "name": "อุปกรณ์ติดตาม"
-      },
-      "homeassistant_light": {
-        "name": "ไฟ"
-      },
-      "homeassistant_input_number": {
-        "name": "รหัส"
-      },
-      "homeassistant_button": {
-        "name": "ปุ่ม"
-      },
-      "homeassistant_cover": {
-        "name": "รวม"
+      "homeassistant_alarm_control_panel": {
+        "name": "การควบคุมแผงควบคุม"
       },
       "homeassistant_area": {
         "name": "พื้นที่"
-      },
-      "homeassistant_datetime": {
-        "name": "วันที่ / เวลา"
-      },
-      "homeassistant_number": {
-        "name": "จํานวน"
-      },
-      "homeassistant_switch": {
-        "name": "สวิทช์"
-      },
-      "homeassistant_tts": {
-        "name": "ข้อความ"
-      },
-      "homeassistant_text": {
-        "name": "ข้อความ"
-      },
-      "homeassistant_script": {
-        "name": "สคริปต์"
-      },
-      "homeassistant_input_boolean": {
-        "name": "อินพุต"
-      },
-      "homeassistant_sensor": {
-        "name": "เซ็นเซอร์"
-      },
-      "repairs_ignored_issues": {
-        "name": "อธิบาย"
-      },
-      "homeassistant_humidifier": {
-        "name": "ความชื้น"
-      },
-      "homeassistant_update": {
-        "name": "ปรับปรุง"
-      },
-      "homeassistant_persistent_notification": {
-        "name": "การแจ้งเตือน"
-      },
-      "homeassistant_custom_component": {
-        "name": "การรวมที่กําหนดเอง"
-      },
-      "homeassistant_input_datetime": {
-        "name": "วันที่ป้อนข้อมูล / เวลา"
-      },
-      "homeassistant_weather": {
-        "name": "สภาพอากาศ"
-      },
-      "homeassistant_input_text": {
-        "name": "อินพุตข้อความ"
-      },
-      "homeassistant_fan": {
-        "name": "พัดลม"
-      },
-      "homeassistant_sun": {
-        "name": "ดวงอาทิตย์"
-      },
-      "homeassistant_input_button": {
-        "name": "ปุ่ม"
-      },
-      "homeassistant_climate": {
-        "name": "สภาพภูมิอากาศ"
-      },
-      "homeassistant_person": {
-        "name": "คน"
-      },
-      "homeassistant_stt": {
-        "name": "อาวุธ"
-      },
-      "homeassistant_image": {
-        "name": "รูปภาพ"
-      },
-      "homeassistant_date": {
-        "name": "วันที่"
-      },
-      "homeassistant_entities": {
-        "name": "งาน"
-      },
-      "homeassistant_camera": {
-        "name": "กล้อง"
-      },
-      "homeassistant_input_select": {
-        "name": "เลือก"
-      },
-      "homeassistant_select": {
-        "name": "เลือก"
-      },
-      "repairs_active_issues": {
-        "name": "การใช้งาน"
-      },
-      "homeassistant_remote": {
-        "name": "ระยะไกล"
-      },
-      "homeassistant_device": {
-        "name": "อุปกรณ์อุปกรณ์"
-      },
-      "homeassistant_zone": {
-        "name": "โซน"
-      },
-      "homeassistant_air_quality": {
-        "name": "คุณภาพเครื่องปรับอากาศ"
       },
       "homeassistant_automation": {
         "name": "ระบบอัตโนมัติ"
@@ -130,32 +66,146 @@
       "homeassistant_binary_sensor": {
         "name": "เซ็นเซอร์สอง"
       },
-      "homeassistant_lock": {
-        "name": "ล็อค"
-      },
-      "homeassistant_alarm_control_panel": {
-        "name": "การควบคุมแผงควบคุม"
-      },
-      "repairs_total_issues": {
-        "name": "ทั้งหมด"
+      "homeassistant_button": {
+        "name": "ปุ่ม"
       },
       "homeassistant_calendar": {
         "name": "ปฏิทิน"
       },
-      "homeassistant_vacuum": {
-        "name": "สูญญากาศ"
+      "homeassistant_camera": {
+        "name": "กล้อง"
       },
-      "homeassistant_scene": {
-        "name": "ที่เกิดเหตุ"
+      "homeassistant_climate": {
+        "name": "สภาพภูมิอากาศ"
+      },
+      "homeassistant_cover": {
+        "name": "รวม"
+      },
+      "homeassistant_custom_component": {
+        "name": "การรวมที่กําหนดเอง"
+      },
+      "homeassistant_date": {
+        "name": "วันที่"
+      },
+      "homeassistant_datetime": {
+        "name": "วันที่ / เวลา"
+      },
+      "homeassistant_device": {
+        "name": "อุปกรณ์อุปกรณ์"
+      },
+      "homeassistant_device_tracker": {
+        "name": "อุปกรณ์ติดตาม"
+      },
+      "homeassistant_entities": {
+        "name": "งาน"
+      },
+      "homeassistant_fan": {
+        "name": "พัดลม"
+      },
+      "homeassistant_humidifier": {
+        "name": "ความชื้น"
+      },
+      "homeassistant_image": {
+        "name": "รูปภาพ"
+      },
+      "homeassistant_input_boolean": {
+        "name": "อินพุต"
+      },
+      "homeassistant_input_button": {
+        "name": "ปุ่ม"
+      },
+      "homeassistant_input_datetime": {
+        "name": "วันที่ป้อนข้อมูล / เวลา"
+      },
+      "homeassistant_input_number": {
+        "name": "รหัส"
+      },
+      "homeassistant_input_select": {
+        "name": "เลือก"
+      },
+      "homeassistant_input_text": {
+        "name": "อินพุตข้อความ"
       },
       "homeassistant_integration": {
         "name": "บูรณาการ"
       },
-      "homeassistant_time": {
-        "name": "เวลา"
+      "homeassistant_light": {
+        "name": "ไฟ"
+      },
+      "homeassistant_lock": {
+        "name": "ล็อค"
       },
       "homeassistant_media_player": {
         "name": "ผู้เล่น"
+      },
+      "homeassistant_number": {
+        "name": "จํานวน"
+      },
+      "homeassistant_persistent_notification": {
+        "name": "การแจ้งเตือน"
+      },
+      "homeassistant_person": {
+        "name": "คน"
+      },
+      "homeassistant_remote": {
+        "name": "ระยะไกล"
+      },
+      "homeassistant_scene": {
+        "name": "ที่เกิดเหตุ"
+      },
+      "homeassistant_script": {
+        "name": "สคริปต์"
+      },
+      "homeassistant_select": {
+        "name": "เลือก"
+      },
+      "homeassistant_sensor": {
+        "name": "เซ็นเซอร์"
+      },
+      "homeassistant_siren": {
+        "name": "โล่"
+      },
+      "homeassistant_stt": {
+        "name": "อาวุธ"
+      },
+      "homeassistant_sun": {
+        "name": "ดวงอาทิตย์"
+      },
+      "homeassistant_switch": {
+        "name": "สวิทช์"
+      },
+      "homeassistant_text": {
+        "name": "ข้อความ"
+      },
+      "homeassistant_time": {
+        "name": "เวลา"
+      },
+      "homeassistant_tts": {
+        "name": "ข้อความ"
+      },
+      "homeassistant_update": {
+        "name": "ปรับปรุง"
+      },
+      "homeassistant_vacuum": {
+        "name": "สูญญากาศ"
+      },
+      "homeassistant_water_heater": {
+        "name": "เครื่องทําน้ําอุ่น"
+      },
+      "homeassistant_weather": {
+        "name": "สภาพอากาศ"
+      },
+      "homeassistant_zone": {
+        "name": "โซน"
+      },
+      "repairs_total_issues": {
+        "name": "ทั้งหมด"
+      },
+      "repairs_ignored_issues": {
+        "name": "อธิบาย"
+      },
+      "repairs_active_issues": {
+        "name": "การใช้งาน"
       }
     },
     "switch": {
@@ -168,120 +218,118 @@
       "cloud_remote": {
         "name": "ระยะไกล"
       }
-    },
-    "button": {
-      "repairs_ignore_all": {
-        "name": "ความเชื่อทั้งหมด"
-      },
-      "homeassistant_reload": {
-        "name": "โหลด"
-      },
-      "homeassistant_restart": {
-        "name": "เริ่มต้น"
-      },
-      "repairs_unignore_all": {
-        "name": "ญาติ"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "event_type": {
-            "state": {
-              "update": "ตรวจสอบ",
-              "create": "ปัญหา",
-              "remove": "การลบ"
-            }
-          },
-          "domain": {
-            "name": "ปัญหา"
-          },
-          "issue_id": {
-            "name": "ข้อความ"
-          }
-        }
-      }
-    }
-  },
-  "config": {
-    "abort": {
-      "already_spooked": "ใช่ ... ดี..!"
-    },
-    "step": {
-      "user": {
-        "description": "คุณอ่าน? คุณอ่านใบอนุญาต? คุณแน่ใจว่า?"
-      },
-      "choice_restart": {
-        "menu_options": {
-          "restart_now": "เริ่มต้นตอนนี้",
-          "restart_later": "เริ่มต้น"
-        },
-        "description": "ในการสั่งซื้อสําหรับคู่สมรสที่จะตั้งค่า, บ้านผู้จัดการต้องเริ่มต้น.\n\nคุณต้องการที่จะเริ่มต้น หน้าแรก ผู้ช่วยตอนนี้?"
-      }
     }
   },
   "issues": {
-    "lovelace_unknown_entity_references": {
-      "title": "เป็นที่รู้จักกันใน: {dashboard}",
-      "description": "คู่สมรสพบว่าเป็นฮีโร่ในแดชบอร์ดของคุณ\n\nในขณะที่ลอยรอบ, คู่สมรสข้ามกับแดชบอร์ดต่อไปนี้:\n\n[{dashboard}]({edit})\n\nแดชบอร์ดนี้อ้างอิงของหน่วยงานต่อไปนี้, ซึ่งไม่ทราบว่าบ้าน:\n\n{entities}\n\n\n\nเพื่อแก้ไขข้อผิดพลาดนี้ [เป็นแดชบอร์ด]({edit}) และลบการใช้งานเหล่านี้ไม่ได้\n\n Spo 👻 ไม่ hom."
-    },
-    "integration_unknown_source": {
-      "description": "คู่สมรสพบในฮีโร่ของคุณใน Riemann\n\nในขณะที่ลอยรอบ, คู่สมรสข้ามกับวิธีการต่อไปนี้:\n\nวันที่สมัคร\n\nความช่วยเหลือนี้มีความเชี่ยวชาญในบริษัทในเครือ\n\nชื่อ คําพูด\n\n\n\nเพื่อแก้ไขข้อผิดพลาดนี้, การแก้ไขและปรับแหล่งที่มา (หรือลบวิธีการช่วย) และรีสตาร์ทบ้าน.\n\n Spo 👻 ไม่ hom.",
-      "title": "ที่มา: ประกาศ"
+    "automation_unknown_area_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
+      "title": "Unknown areas used in: {automation}"
     },
     "automation_unknown_device_references": {
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "อุปกรณ์ที่รู้จักกันดีใน: httpอัตโนมัติ"
+      "title": "Unknown devices used in: {automation}"
     },
-    "user_issue": {
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "title": "{title}",
-            "description": "{description}"
-          }
-        }
-      },
-      "title": "{title}"
+    "automation_unknown_entity_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+      "title": "Unknown entities used in: {automation}"
     },
-    "switch_as_x_unknown_source": {
-      "title": "ที่มา: ประกาศ",
-      "description": "คู่สมรสจะพบผีในสวิตช์ของคุณเป็น X ช่วย👻\n\nในขณะที่ลอยรอบ, คู่สมรสข้ามกับวิธีการต่อไปนี้:\n\nวันที่สมัคร\n\nนี้ช่วยให้หน่วยงานที่ได้รับการยอมรับกับบ้าน:\n\nชื่อ คําพูด\n\n\n\nเพื่อแก้ไขข้อผิดพลาดนี้, การแก้ไขและปรับแหล่งที่มา (หรือลบวิธีการช่วย) และรีสตาร์ทบ้าน.\n\n Spo 👻 ไม่ hom."
+    "automation_unknown_floor_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+      "title": "Unknown floors used in: {automation}"
     },
-    "script_unknown_device_references": {
-      "title": "อุปกรณ์ที่รู้จักกันดีใน: httpPage}",
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie."
+    "automation_unknown_label_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+      "title": "Unknown labels used in: {automation}"
+    },
+    "automation_unknown_service_references": {
+      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+      "title": "Unknown actions used in: {automation}"
+    },
+    "group_unknown_members": {
+      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "title": "สมาชิกที่เป็นที่รู้จักใน: {group}"
+    },
+    "integration_unknown_source": {
+      "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "title": "Unknown source: {helper}"
+    },
+    "lovelace_unknown_entity_references": {
+      "description": "คู่สมรสพบว่าเป็นฮีโร่ในแดชบอร์ดของคุณ\n\nในขณะที่ลอยรอบ, คู่สมรสข้ามกับแดชบอร์ดต่อไปนี้:\n\n[{dashboard}]({edit})\n\nแดชบอร์ดนี้อ้างอิงของหน่วยงานต่อไปนี้, ซึ่งไม่ทราบว่าบ้าน:\n\n{entities}\n\n\n\nเพื่อแก้ไขข้อผิดพลาดนี้ [เป็นแดชบอร์ด]({edit}) และลบการใช้งานเหล่านี้ไม่ได้\n\n Spo 👻 ไม่ hom.",
+      "title": "เป็นที่รู้จักกันใน: {dashboard}"
+    },
+    "proximity_unknown_ignored_zones": {
+      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
+      "title": "Unknown ignored zones: {name}"
+    },
+    "proximity_unknown_tracked_entities": {
+      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
+      "title": "Unknown tracked entities: {name}"
+    },
+    "proximity_unknown_zone": {
+      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
+      "title": "Unknown zone: {zone}"
+    },
+    "scene_unknown_entity_references": {
+      "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+      "title": "Unknown entities used in: {scene}"
     },
     "script_unknown_area_references": {
       "description": "คู่สมรสพบในพระคัมภีร์ในสคริปต์ของคุณ\n\nในขณะที่ลอยรอบ, คู่สมรสข้ามกับสคริปต์ต่อไปนี้:\n\n[{script}]({edit}) (`{entity_id}`)\n\nสคริปต์นี้อ้างอิงพื้นที่ต่อไปนี้, ซึ่งไม่ทราบว่าบ้าน:\n\n{areas}\n\n\n\nเพื่อแก้ไขข้อผิดพลาดนี้ [เป็นสคริปต์] ({edit}) และลบการใช้พื้นที่เหล่านี้ไม่ได้\n\n Spo 👻 ไม่ hom.",
       "title": "พื้นที่ที่รู้จักกันดีใน: {script}"
     },
-    "automation_unknown_area_references": {
-      "title": "พื้นที่ที่รู้จักกันดีใน: httpอัตโนมัติ",
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie."
+    "script_unknown_device_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
+      "title": "Unknown devices used in: {script}"
     },
-    "restart_required": {
+    "script_unknown_entity_references": {
+      "description": "คู่สมรสพบในพระคัมภีร์ในสคริปต์ของคุณ\n\nในขณะที่ลอยรอบ, คู่สมรสข้ามกับสคริปต์ต่อไปนี้:\n\n[{script}]({edit}) (`{entity_id}`)\n\nสคริปต์นี้อ้างอิงของหน่วยงานต่อไปนี้, ซึ่งไม่ทราบว่าบ้าน:\n\n{entities}\n\n\n\nเพื่อแก้ไขข้อผิดพลาดนี้ [เป็นสคริปต์] ({edit}) และลบการใช้งานเหล่านี้ไม่ได้\n\n Spo 👻 ไม่ hom.",
+      "title": "เป็นที่รู้จักกันใน: {script}"
+    },
+    "script_unknown_floor_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+      "title": "Unknown floors used in: {script}"
+    },
+    "script_unknown_label_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+      "title": "Unknown labels used in: {script}"
+    },
+    "script_unknown_service_references": {
+      "description": "คู่สมรสพบในพระคัมภีร์ในสคริปต์ของคุณ\n\nในขณะที่ลอยรอบ, คู่สมรสข้ามกับสคริปต์ต่อไปนี้:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\n Spo 👻 ไม่ hom.",
+      "title": "Unknown actions used in: {script}"
+    },
+    "switch_as_x_unknown_source": {
+      "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "title": "Unknown source: {helper}"
+    },
+    "utility_meter_unknown_source": {
+      "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "title": "Unknown source: {helper}"
+    },
+    "trend_unknown_source": {
+      "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+      "title": "Unknown source: {helper}"
+    },
+    "user_issue": {
       "fix_flow": {
         "step": {
-          "confirm_restart": {
-            "description": "สําหรับคู่สมรส 👻เพื่อตั้งค่าการตั้งค่า, บ้านสมาร์ทต้องเริ่มต้น.\n\nเลือกเพื่อเริ่มเล่น หน้าแรก.",
-            "title": "เริ่มต้น"
+          "confirm": {
+            "description": "{description}",
+            "title": "{title}"
           }
         }
       },
-      "title": "เริ่มต้น"
+      "title": "{title}"
     },
-    "script_unknown_entity_references": {
-      "title": "เป็นที่รู้จักกันใน: {script}",
-      "description": "คู่สมรสพบในพระคัมภีร์ในสคริปต์ของคุณ\n\nในขณะที่ลอยรอบ, คู่สมรสข้ามกับสคริปต์ต่อไปนี้:\n\n[{script}]({edit}) (`{entity_id}`)\n\nสคริปต์นี้อ้างอิงของหน่วยงานต่อไปนี้, ซึ่งไม่ทราบว่าบ้าน:\n\n{entities}\n\n\n\nเพื่อแก้ไขข้อผิดพลาดนี้ [เป็นสคริปต์] ({edit}) และลบการใช้งานเหล่านี้ไม่ได้\n\n Spo 👻 ไม่ hom."
-    },
-    "automation_unknown_entity_references": {
-      "title": "เป็นที่รู้จักกันใน: httpอัตโนมัติ",
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie."
-    },
-    "group_unknown_members": {
-      "title": "สมาชิกที่เป็นที่รู้จักใน: {group}",
-      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie."
+    "restart_required": {
+      "title": "เริ่มต้น",
+      "fix_flow": {
+        "step": {
+          "confirm_restart": {
+            "title": "เริ่มต้น",
+            "description": "สําหรับคู่สมรส 👻เพื่อตั้งค่าการตั้งค่า, บ้านสมาร์ทต้องเริ่มต้น.\n\nเลือกเพื่อเริ่มเล่น หน้าแรก."
+          }
+        }
+      }
     }
   }
 }
