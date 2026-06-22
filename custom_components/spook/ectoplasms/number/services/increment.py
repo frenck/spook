@@ -10,6 +10,7 @@ import voluptuous as vol
 from homeassistant.components.number import DOMAIN, NumberEntity
 
 from ....services import AbstractSpookEntityComponentService
+from . import native_value_as_float
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -36,7 +37,7 @@ class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
             )
             raise ValueError(msg)
 
-        value = float(entity.value) + amount
+        value = native_value_as_float(entity) + amount
 
         if entity.max_value is not None:
             value = min(value, entity.max_value)
