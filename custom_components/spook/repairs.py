@@ -123,7 +123,7 @@ class AbstractSpookRepairBase(ABC):
 
     async def async_deactivate(self) -> None:
         """Unregister the repair."""
-        for issue_id in self.issue_ids:
+        for issue_id in self.issue_ids.copy():
             self.async_delete_issue(issue_id)
 
 
@@ -211,10 +211,12 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     return True
                 return self.inspect_on_reload == event_data.get("domain")
 
-            self.hass.bus.async_listen(
-                "call_service",
-                _async_call_inspect_debouncer,
-                event_filter=_filter_event,
+            self._event_subs.add(
+                self.hass.bus.async_listen(
+                    "call_service",
+                    _async_call_inspect_debouncer,
+                    event_filter=_filter_event,
+                ),
             )
 
         if self.inspect_config_entry_changed:
@@ -231,16 +233,20 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     return
                 await self.inspect_debouncer.async_call()
 
-            async_dispatcher_connect(
-                self.hass,
-                SIGNAL_CONFIG_ENTRY_CHANGED,
-                _async_config_entry_changed,
+            self._event_subs.add(
+                async_dispatcher_connect(
+                    self.hass,
+                    SIGNAL_CONFIG_ENTRY_CHANGED,
+                    _async_config_entry_changed,
+                ),
             )
 
     async def async_deactivate(self) -> None:
         """Unregister the repair."""
-        for sub in self._event_subs:
+        for sub in self._event_subs.copy():
             sub()
+            self._event_subs.discard(sub)
+        self.inspect_debouncer.async_shutdown()
         await super().async_deactivate()
 
 
