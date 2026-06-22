@@ -107,6 +107,34 @@ async def extract_entities_from_trigger_config(
     return entities
 
 
+def extract_event_types_from_trigger_config(config: dict[str, Any] | list) -> set[str]:
+    """Extract event types from trigger configuration."""
+    event_types = set()
+
+    if not config:
+        return event_types
+
+    if isinstance(config, list):
+        for item in config:
+            event_types.update(extract_event_types_from_trigger_config(item))
+        return event_types
+
+    if not isinstance(config, dict):
+        return event_types
+
+    value = config.get("event_type")
+    if isinstance(value, str):
+        event_types.add(value)
+    elif isinstance(value, list):
+        event_types.update(item for item in value if isinstance(item, str))
+
+    for value in config.values():
+        if isinstance(value, (dict, list)):
+            event_types.update(extract_event_types_from_trigger_config(value))
+
+    return event_types
+
+
 async def extract_entities_from_condition_config(
     hass: HomeAssistant, config: dict[str, Any] | list
 ) -> set[str]:
@@ -313,6 +341,11 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             all_entities.update(
                 await extract_entities_from_automation_config(
                     self.hass, entity.raw_config
+                )
+            )
+            all_entities.difference_update(
+                extract_event_types_from_trigger_config(
+                    entity.raw_config.get("trigger")
                 )
             )
 
