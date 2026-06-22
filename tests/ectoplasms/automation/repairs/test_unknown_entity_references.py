@@ -75,6 +75,24 @@ async def test_value_template_ignores_jinja_import_filename(
     assert await extract_entities_from_value(hass, template) == set()
 
 
+async def test_value_template_ignores_jinja_import_as_filename(
+    hass: HomeAssistant,
+) -> None:
+    """Jinja import-as filenames are not entity references."""
+    template = "{% import 'date.jinja' as date_helpers %}{{ date_helpers.now() }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_ignores_whitespace_control_jinja_import_filename(
+    hass: HomeAssistant,
+) -> None:
+    """Jinja import filenames with whitespace control are not entity references."""
+    template = "{%- from 'date.jinja' import how_about_now -%}{{ how_about_now() }}"
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
 async def test_value_template_ignores_concatenated_helper_entity_id(
     hass: HomeAssistant,
 ) -> None:

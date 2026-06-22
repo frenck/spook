@@ -433,7 +433,7 @@ def _is_jinja_import_match(template_str: str, match: re.Match[str]) -> bool:
     block = template_str[block_start : block_end + 2]
     return bool(
         re.match(
-            r"\{%\s*(?:from\s+['\"][^'\"]+['\"]\s+import|import\s+['\"][^'\"]+['\"]\s+as)",
+            r"\{%-?\s*(?:from\s+['\"][^'\"]+['\"]\s+import|import\s+['\"][^'\"]+['\"]\s+as)",
             block,
         )
     )
