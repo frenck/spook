@@ -632,6 +632,9 @@ def async_find_services_in_sequence(  # noqa: C901
     """Find all services called in a sequence."""
     called_services: set[str] = set()
     for step in sequence:
+        if not step.get(CONF_ENABLED, True):
+            continue
+
         action = cv.determine_script_action(step)
 
         if (
