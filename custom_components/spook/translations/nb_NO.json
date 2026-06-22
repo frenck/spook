@@ -266,20 +266,24 @@
             "description": ""
         },
         "trend_unknown_source": {
-            "description": "Spook har funnet et spøkelse i trendhjelperne dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen har en kildeentitet som er ukjent for Home Assistant:\n\n`{source}`\n\nFor å fikse denne feilen, rediger hjelperen og juster kildeentiteten (eller fjern hjelperen) og start Home Assistant på nytt.\n\nSpook 👻 Ikke din homie."
+            "description": "Spook har funnet et spøkelse i trendhjelperne dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen har en kildeentitet som er ukjent for Home Assistant:\n\n`{source}`\n\nFor å fikse denne feilen, rediger hjelperen og juster kildeentiteten (eller fjern hjelperen) og start Home Assistant på nytt.\n\nSpook 👻 Ikke din homie.",
+            "title": "Ukjent kilde: {helper}"
         },
         "automation_unknown_floor_references": {
             "description": "",
             "title": ""
         },
         "proximity_unknown_zone": {
-            "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen er basert på en sone som er ukjent for Home Assistant:\n\n`{zone}`\n\nFor å fikse denne feilen, siden du ikke kan endre sonen til en nærhetskonfigurasjon, er det eneste alternativet å fjerne denne spesifikke nærhetsintegreringsinstansen.\n\nSpook 👻 Ikke din homie."
+            "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen er basert på en sone som er ukjent for Home Assistant:\n\n`{zone}`\n\nFor å fikse denne feilen, siden du ikke kan endre sonen til en nærhetskonfigurasjon, er det eneste alternativet å fjerne denne spesifikke nærhetsintegreringsinstansen.\n\nSpook 👻 Ikke din homie.",
+            "title": "Ukjent sone: {zone}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen sporer personer eller enheter som er ukjente for Home Assistant:\n\n{entities}\n\nFor å fikse denne feilen, rediger konfigurasjonen og fjern denne/disse enhetene.\n\nSpook 👻 Ikke din homie."
+            "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen sporer personer eller enheter som er ukjente for Home Assistant:\n\n{entities}\n\nFor å fikse denne feilen, rediger konfigurasjonen og fjern denne/disse enhetene.\n\nSpook 👻 Ikke din homie.",
+            "title": "Ukjente sporede enheter: {name}"
         },
         "utility_meter_unknown_source": {
-            "description": "Spook har funnet et spøkelse i hjelperne for nyttemålere dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen har en kildeentitet som er ukjent for Home Assistant:\n\n`{source}`\n\nFor å fikse denne feilen, rediger hjelperen og juster kildeentiteten (eller fjern hjelperen) og start Home Assistant på nytt.\n\nSpook 👻 Ikke din homie."
+            "description": "Spook har funnet et spøkelse i hjelperne for nyttemålere dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende hjelper:\n\n{helper} (`{entity_id}`)\n\nDenne hjelperen har en kildeentitet som er ukjent for Home Assistant:\n\n`{source}`\n\nFor å fikse denne feilen, rediger hjelperen og juster kildeentiteten (eller fjern hjelperen) og start Home Assistant på nytt.\n\nSpook 👻 Ikke din homie.",
+            "title": "Ukjent kilde: {helper}"
         },
         "automation_unknown_service_references": {
             "description": "Spook har funnet et spøkelse i automatiseringene dine 👻\n\nMens han svevde rundt, krysset Spook veien til følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatiseringen refererer til følgende tjenester, som er ukjente for Home Assistant:\n\n{services}\n\nFor å fikse denne feilen, [rediger automatiseringen]({edit}) og fjern bruken av disse ikke-eksisterende tjenestene.\n\nSpook 👻 Ikke din homie.",
@@ -290,7 +294,8 @@
             "description": ""
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen ignorerer soner som er ukjente for Home Assistant:\n\n{zones}\n\nFor å fikse denne feilen, rediger konfigurasjonen og fjern denne/disse sonene.\n\nSpook 👻 Ikke din homie."
+            "description": "Spook har funnet et spøkelse i nærhetskonfigurasjonen din 👻\n\nMens han svevde rundt, krysset Spook veien til følgende nærhetskonfigurasjon:\n\n{name}\n\nDenne konfigurasjonen ignorerer soner som er ukjente for Home Assistant:\n\n{zones}\n\nFor å fikse denne feilen, rediger konfigurasjonen og fjern denne/disse sonene.\n\nSpook 👻 Ikke din homie.",
+            "title": "Ukjente ignorerte soner: {name}"
         }
     }
 }
