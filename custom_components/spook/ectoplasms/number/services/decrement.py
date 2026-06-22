@@ -36,7 +36,7 @@ class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
             )
             raise ValueError(msg)
 
-        value = entity.value - amount
+        value = float(entity.value) - amount
 
         if entity.min_value is not None:
             value = max(value, entity.min_value)
