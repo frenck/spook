@@ -27,7 +27,7 @@ class SpookService(AbstractSpookAdminService):
     service = "add_area_to_floor"
     schema = {
         vol.Required("floor_id"): cv.string,
-        vol.Required("entity_id"): vol.All(cv.ensure_list, [cv.string]),
+        vol.Required("area_id"): vol.All(cv.ensure_list, [cv.string]),
     }
 
     async def async_handle_service(self, call: ServiceCall) -> None:
