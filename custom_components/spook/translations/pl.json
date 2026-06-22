@@ -169,7 +169,7 @@
                 "name": "Zamiana mowy na tekst"
             },
             "homeassistant_sun": {
-                "name": "Suns"
+                "name": ""
             },
             "homeassistant_switch": {
                 "name": "Przełączniki"
@@ -216,7 +216,7 @@
                 "name": "Raportowanie Google"
             },
             "cloud_remote": {
-                "name": "Remote"
+                "name": ""
             }
         }
     },
@@ -235,11 +235,11 @@
         },
         "automation_unknown_floor_references": {
             "description": "Spook znalazł ducha w Twoich automatyzacjach👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odnosi się do następujących pięter, które nie są znane Home Assistant:\n\n{floors}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) i zaprzestań używania tych nieistniejących pięter.\n\nSpook 👻 Twój ziomek.",
-            "title": "Unknown floors used in: {automation}"
+            "title": ""
         },
         "automation_unknown_label_references": {
             "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących etykiet, które są nieznane Home Assistant:\n\n{labels}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) i zaprzestań używania tych nieistniejących etykiet.\n\nSpook 👻 Twój ziomek.",
-            "title": "Unknown labels used in: {automation}"
+            "title": ""
         },
         "automation_unknown_service_references": {
             "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 Twój ziomek.",
@@ -258,15 +258,15 @@
             "title": "Nieznane encje użyte w: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
+            "description": "",
             "title": "Nieznane ignorowane strefy: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "",
+            "title": ""
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
+            "description": "",
             "title": "Nieznana strefa: {zone}"
         },
         "scene_unknown_entity_references": {
@@ -287,10 +287,10 @@
         },
         "script_unknown_floor_references": {
             "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących pięter, które nie są znane Home Assistant:\n\n{floors}\n\n\n\nAby naprawić ten błąd, [edit the script]({edit})  zaprzestań używania tych nieistniejących pięter.\n\nSpook 👻 Twój ziomek.",
-            "title": "Unknown floors used in: {script}"
+            "title": ""
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+            "description": "",
             "title": "Nieznane etykiety użyte w: {script}"
         },
         "script_unknown_service_references": {
@@ -298,7 +298,7 @@
             "title": "Nieznane akcje użyte w: {script}"
         },
         "switch_as_x_unknown_source": {
-            "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+            "description": "",
             "title": "Nieznane źródło: {helper}"
         },
         "utility_meter_unknown_source": {
