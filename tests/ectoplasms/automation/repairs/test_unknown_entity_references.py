@@ -66,6 +66,20 @@ async def test_value_template_ignores_concatenated_entity_id_literal(
     assert await extract_entities_from_value(hass, template) == set()
 
 
+async def test_value_template_ignores_entity_id_prefix_string_match(
+    hass: HomeAssistant,
+) -> None:
+    """String prefix checks are not complete entity references."""
+    template = (
+        "{% for entity in states.binary_sensor if "
+        "entity.entity_id.startswith('binary_sensor.proxmox') %}"
+        "{{ entity.state }}"
+        "{% endfor %}"
+    )
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
 async def test_value_template_ignores_concatenated_helper_entity_id(
     hass: HomeAssistant,
 ) -> None:

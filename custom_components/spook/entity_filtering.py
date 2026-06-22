@@ -418,6 +418,21 @@ def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> 
     return before_literal.endswith("~") or after_literal.startswith("~")
 
 
+def _is_string_method_argument_match(template_str: str, match: re.Match[str]) -> bool:
+    """Return if an entity-like literal is used as a string method argument."""
+    groups = match.groups()
+    if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return False
+
+    entity_start = match.span(1)[0]
+    before_entity = template_str[:entity_start].rstrip()
+    if not before_entity.endswith(("'", '"')):
+        return False
+
+    before_literal = before_entity[:-1].rstrip()
+    return bool(re.search(r"\.(?:starts|ends)with\s*\($", before_literal))
+
+
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
     """Return the entity ID captured by a template regex match."""
     groups = match.groups()
@@ -446,7 +461,9 @@ def extract_entities_from_template_regex(
 
     for pattern in ENTITY_ID_TEMPLATE_PATTERNS:
         for match in re.finditer(pattern, template_str, re.IGNORECASE):
-            if _is_concatenated_template_match(template_str, match):
+            if _is_concatenated_template_match(
+                template_str, match
+            ) or _is_string_method_argument_match(template_str, match):
                 continue
 
             entity_id = _entity_id_from_template_match(match)
