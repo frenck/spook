@@ -6,7 +6,9 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
+from custom_components.spook import entity_filtering
 from custom_components.spook.entity_filtering import (
+    async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
     extract_entities_from_template_regex,
     extract_template_strings_from_config,
@@ -223,3 +225,93 @@ async def test_filter_template_entities_ignores_ignored_domains(
     )
 
     assert unknown == {"light.missing"}
+
+
+async def test_extract_entities_from_config_reuses_known_services(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test config template extraction reuses service lookup results."""
+    calls = 0
+
+    def async_get_all_services(_: HomeAssistant) -> set[str]:
+        """Return registered services."""
+        nonlocal calls
+        calls += 1
+        return {"light.turn_on"}
+
+    monkeypatch.setattr(
+        entity_filtering,
+        "async_get_all_services",
+        async_get_all_services,
+    )
+
+    config = {
+        "first": "{{ states('sensor.one') }} {{ 'light.turn_on' }}",
+        "second": "{{ states('sensor.two') }} {{ 'light.turn_on' }}",
+    }
+
+    assert await async_extract_entities_from_config(hass, config) == {
+        "sensor.one",
+        "sensor.two",
+    }
+    assert calls == 1
+
+
+async def test_extract_entities_from_config_reuses_duplicate_template_results(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test duplicate template strings are extracted once per config scan."""
+    calls = 0
+    original = entity_filtering.async_extract_entities_from_template_string
+
+    async def async_extract_entities_from_template_string(
+        hass: HomeAssistant,
+        template_str: str,
+        known_services: set[str] | None = None,
+    ) -> set[str]:
+        """Extract entity IDs from a template string."""
+        nonlocal calls
+        calls += 1
+        return await original(hass, template_str, known_services)
+
+    monkeypatch.setattr(
+        entity_filtering,
+        "async_extract_entities_from_template_string",
+        async_extract_entities_from_template_string,
+    )
+    template = "{{ states('sensor.duplicated') }}"
+
+    assert await async_extract_entities_from_config(
+        hass,
+        {"first": template, "second": {"nested": template}},
+    ) == {"sensor.duplicated"}
+    assert calls == 1
+
+
+async def test_filter_plain_entity_ids_does_not_get_services(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test plain entity filtering avoids service lookups."""
+    calls = 0
+
+    def async_get_all_services(_: HomeAssistant) -> set[str]:
+        """Return registered services."""
+        nonlocal calls
+        calls += 1
+        return {"light.turn_on"}
+
+    monkeypatch.setattr(
+        entity_filtering,
+        "async_get_all_services",
+        async_get_all_services,
+    )
+
+    assert await async_filter_known_entity_ids_with_templates(
+        hass,
+        {"sensor.missing", "light.unknown"},
+        known_entity_ids=set(),
+    ) == {"sensor.missing", "light.unknown"}
+    assert calls == 0
