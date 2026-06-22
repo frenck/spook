@@ -33,7 +33,7 @@ class SpookService(AbstractSpookEntityComponentService[NumberEntity]):
         if not math.isclose(amount % entity.step, 0, abs_tol=1e-9):
             msg = (
                 f"Amount {amount} not valid for {entity.entity_id}, "
-                f"it needs to be a multiple of {entity.step}",
+                f"it needs to be a multiple of {entity.step}"
             )
             raise ValueError(msg)
 
