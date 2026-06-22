@@ -430,7 +430,19 @@ def _is_string_method_argument_match(template_str: str, match: re.Match[str]) ->
         return False
 
     before_literal = before_entity[:-1].rstrip()
-    return bool(re.search(r"\.(?:starts|ends)with\s*\(\s*\(*\s*$", before_literal))
+    for method in (".startswith", ".endswith"):
+        if method not in before_literal:
+            continue
+
+        after_method = before_literal.rsplit(method, maxsplit=1)[1].lstrip()
+        if not after_method.startswith("("):
+            continue
+
+        between_call_and_argument = after_method[1:].strip()
+        if not between_call_and_argument or set(between_call_and_argument) == {"("}:
+            return True
+
+    return False
 
 
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
