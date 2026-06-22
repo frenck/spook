@@ -58,6 +58,38 @@ async def test_value_template_extracts_referenced_entity(
     assert await extract_entities_from_value(hass, template) == {"light.kitchen"}
 
 
+async def test_value_template_ignores_concatenated_entity_id_literal(
+    hass: HomeAssistant,
+) -> None:
+    """Templated entity ID fragments are not complete entity references."""
+    template = "{{ 'switch.camera' ~ cam_id ~ '_movies' }}"
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_ignores_concatenated_helper_entity_id(
+    hass: HomeAssistant,
+) -> None:
+    """Helper calls using templated entity IDs do not expose a static entity."""
+    template = "{{ is_state('switch.camera' ~ cam_id ~ '_movies', 'on') }}"
+    assert await extract_entities_from_value(hass, template) == set()
+
+
+async def test_value_template_keeps_concatenated_state_value(
+    hass: HomeAssistant,
+) -> None:
+    """Concatenated values still expose static entity references."""
+    template = "{{ states.light.kitchen.state ~ '_suffix' }}"
+    assert await extract_entities_from_value(hass, template) == {"light.kitchen"}
+
+
+async def test_value_template_keeps_concatenated_filtered_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Filtered entity references are kept when their value is concatenated."""
+    template = "{{ 'prefix' ~ ('light.kitchen' | states) }}"
+    assert await extract_entities_from_value(hass, template) == {"light.kitchen"}
+
+
 async def test_value_non_string_non_collection_returns_empty(
     hass: HomeAssistant,
 ) -> None:
@@ -162,11 +194,58 @@ async def test_action_target_block(hass: HomeAssistant) -> None:
     }
 
 
+async def test_action_target_template_entity_id_fragment(hass: HomeAssistant) -> None:
+    """A templated ``target.entity_id`` fragment is not treated as an entity."""
+    config = {
+        "action": "switch.turn_on",
+        "target": {"entity_id": "{{ 'switch.camera' ~ cam_id ~ '_movies' }}"},
+    }
+    assert await extract_entities_from_action_config(hass, config) == set()
+
+
 async def test_action_data_dict(hass: HomeAssistant) -> None:
     """Entities buried inside ``data`` values are captured."""
     config = {
-        "service": "notify.notify",
+        "service": "light.turn_on",
         "data": {"message": "hello", "target": "person.alice"},
+    }
+    assert await extract_entities_from_action_config(hass, config) == {"person.alice"}
+
+
+async def test_notify_action_data_target_is_not_an_entity_reference(
+    hass: HomeAssistant,
+) -> None:
+    """Notify ``data.target`` values are service targets, not entity references."""
+    config = {
+        "action": "notify.mobile_app_phone",
+        "data": {
+            "target": "notify.old_tablet",
+            "message": "{{ states('sensor.temperature') }}",
+        },
+    }
+    assert await extract_entities_from_action_config(hass, config) == {
+        "sensor.temperature"
+    }
+
+
+async def test_notify_service_data_target_is_not_an_entity_reference(
+    hass: HomeAssistant,
+) -> None:
+    """Legacy service syntax follows the same notify target rule."""
+    config = {
+        "service": "notify.mobile_app_phone",
+        "data": {"target": ["notify.old_tablet", "notify.old_phone"]},
+    }
+    assert await extract_entities_from_action_config(hass, config) == set()
+
+
+async def test_non_notify_action_data_target_remains_entity_reference(
+    hass: HomeAssistant,
+) -> None:
+    """Non-notify service data is still scanned for entity IDs."""
+    config = {
+        "action": "calendar.create_event",
+        "data": {"target": "person.alice"},
     }
     assert await extract_entities_from_action_config(hass, config) == {"person.alice"}
 

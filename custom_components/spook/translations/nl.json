@@ -293,6 +293,10 @@
       "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script verwijst naar de volgende labels, die Home Assistant niet kent:\n\n{labels}\n\nOm deze fout te verhelpen, [bewerk je het script]({edit}) en verwijder je het gebruik van deze niet-bestaande labels.\n\nSpook 👻 Je homie.",
       "title": "Onbekende labels gebruikt in: {script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook heeft een geest gevonden in jouw scripts 👻\n\nTerwijl hij rond zweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script verwijst naar de volgende acties, die onbekend zijn voor Home Assistant:\n\n{services}\n\nOm deze fout te verhelpen, [bewerk het script]({edit}) en verwijder het gebruik van deze niet-bestaande acties.\n\nSpook 👻 Your homie.",
+      "title": "Onbekende acties gebruikt in: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook heeft een geest gevonden in jouw Schakelaar als X helpers 👻\n\nTerwijl hij rond zweefde, kwam Spook de volgende helper tegen:\n\n{helper} (`{entity_id}`)\n\nDeze helper heeft een bron schakelaar entiteit die onbekend is voor Home Assistant:\n\n`{source}`\n\n\n\nOm deze fout op te lossen, bewerk de helper en pas de bron schakelaar entiteit aan (of verwijder de helper) en start Home Assistant opnieuw.\n\nSpook 👻 Your homie.",
       "title": "Onbekende bron: {helper}"

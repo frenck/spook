@@ -296,6 +296,10 @@
       "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n该脚本引用了以下 Home Assistant 无法识别的标签：\n\n{labels}\n\n\n\n要修复此错误，请[编辑该脚本]({edit})并移除这些不存在的标签。\n\nSpook 👻 你的好哥们。",
       "title": "在以下脚本中使用了未知标签：{script}"
     },
+    "script_unknown_service_references": {
+      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+      "title": "Unknown actions used in: {script}"
+    },
     "switch_as_x_unknown_source": {
       "description": "Spook 在你的“将开关转换为 X”辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序包含一个 Home Assistant 无法识别的源开关实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
       "title": "未知源：{helper}"

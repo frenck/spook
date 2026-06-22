@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant import config_entries
 from homeassistant.data_entry_flow import FlowResultType
@@ -70,3 +71,19 @@ async def test_config_flow_restart_now_sets_setup_restart_flag(
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert hass.data[DOMAIN] == "Boo!"
+
+
+async def test_config_flow_aborts_when_spook_is_already_configured(
+    hass: HomeAssistant,
+) -> None:
+    """Test the config flow aborts when Spook already has an entry."""
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_USER},
+    )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "already_spooked"

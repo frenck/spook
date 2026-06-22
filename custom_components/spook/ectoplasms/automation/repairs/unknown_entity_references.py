@@ -193,6 +193,20 @@ async def _extract_entities_from_target(
     return entities
 
 
+def _get_action_service(config: dict[str, Any]) -> str | None:
+    """Return the service/action name configured for an action."""
+    service = config.get("service", config.get("action"))
+    return service if isinstance(service, str) else None
+
+
+def _should_skip_service_data_value(
+    service: str | None,
+    key: str,
+) -> bool:
+    """Return if a service data value should not be scanned for entity IDs."""
+    return service is not None and service.startswith("notify.") and key == "target"
+
+
 async def _extract_entities_from_service_data(
     hass: HomeAssistant, config: dict[str, Any]
 ) -> set[str]:
@@ -204,8 +218,11 @@ async def _extract_entities_from_service_data(
             # data field is a template string itself
             entities.update(await extract_entities_from_value(hass, data_value))
         elif isinstance(data_value, dict):
+            service = _get_action_service(config)
             # data field is a dictionary, process all its values
-            for value in data_value.values():
+            for key, value in data_value.items():
+                if _should_skip_service_data_value(service, key):
+                    continue
                 entities.update(await extract_entities_from_value(hass, value))
     return entities
 
