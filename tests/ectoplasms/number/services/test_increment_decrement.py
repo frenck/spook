@@ -4,8 +4,10 @@ from __future__ import annotations
 
 from types import SimpleNamespace
 from typing import Any
+from re import escape
 
 import pytest
+from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.spook.ectoplasms.number.services import decrement, increment
 
@@ -48,3 +50,22 @@ async def test_number_services_handle_string_native_values(
     await service_cls(hass).async_handle_service(entity, call)
 
     assert entity.set_value == expected
+
+
+@pytest.mark.parametrize(
+    "service_cls",
+    [increment.SpookService, decrement.SpookService],
+)
+async def test_number_services_raise_context_for_invalid_native_values(
+    hass: Any,
+    service_cls: type[increment.SpookService | decrement.SpookService],
+) -> None:
+    """Test invalid native values raise an actionable error."""
+    entity = MockNumberEntity("unavailable")
+    call = SimpleNamespace(data={"amount": 0.5})
+
+    with pytest.raises(
+        HomeAssistantError,
+        match=escape("Native value 'unavailable' for number.test is not a number"),
+    ):
+        await service_cls(hass).async_handle_service(entity, call)
