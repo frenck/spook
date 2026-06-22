@@ -26,9 +26,6 @@
             },
             "repairs_ignore_all": {
                 "name": "Ignora tutto"
-            },
-            "repairs_unignore_all": {
-                "name": ""
             }
         },
         "event": {
@@ -78,9 +75,6 @@
             "homeassistant_climate": {
                 "name": "Climatizzatori"
             },
-            "homeassistant_cover": {
-                "name": ""
-            },
             "homeassistant_custom_component": {
                 "name": "Integrazioni personalizzate"
             },
@@ -120,12 +114,6 @@
             "homeassistant_input_number": {
                 "name": "Ingresso numerico"
             },
-            "homeassistant_input_select": {
-                "name": ""
-            },
-            "homeassistant_input_text": {
-                "name": ""
-            },
             "homeassistant_integration": {
                 "name": "Integrazioni"
             },
@@ -141,9 +129,6 @@
             "homeassistant_number": {
                 "name": "Numeri"
             },
-            "homeassistant_persistent_notification": {
-                "name": ""
-            },
             "homeassistant_person": {
                 "name": "Persone"
             },
@@ -156,9 +141,6 @@
             "homeassistant_script": {
                 "name": "Scripts"
             },
-            "homeassistant_select": {
-                "name": ""
-            },
             "homeassistant_sensor": {
                 "name": "Sensori"
             },
@@ -168,38 +150,8 @@
             "homeassistant_stt": {
                 "name": "Speech-to-text"
             },
-            "homeassistant_sun": {
-                "name": ""
-            },
-            "homeassistant_switch": {
-                "name": ""
-            },
-            "homeassistant_text": {
-                "name": ""
-            },
-            "homeassistant_time": {
-                "name": ""
-            },
-            "homeassistant_tts": {
-                "name": ""
-            },
-            "homeassistant_update": {
-                "name": ""
-            },
-            "homeassistant_vacuum": {
-                "name": ""
-            },
-            "homeassistant_water_heater": {
-                "name": ""
-            },
             "homeassistant_weather": {
                 "name": "Meteo"
-            },
-            "homeassistant_zone": {
-                "name": ""
-            },
-            "repairs_total_issues": {
-                "name": ""
             },
             "repairs_ignored_issues": {
                 "name": "Ignorato"
@@ -222,103 +174,29 @@
     },
     "issues": {
         "automation_unknown_area_references": {
-            "description": "Mentre fluttuava in giro, Spook ha incrociato la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento alle seguenti aree, che non sono riconosciute da Home Assistant:\n\n{areas}\n\n\n\nPer risolvere questo errore, [modifica l'automazione]({edit}) ed elimina l'utilizzo di queste aree inesistenti.\n\nSpook 👻 Il tuo compare.",
-            "title": ""
+            "description": "Mentre fluttuava in giro, Spook ha incrociato la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento alle seguenti aree, che non sono riconosciute da Home Assistant:\n\n{areas}\n\n\n\nPer risolvere questo errore, [modifica l'automazione]({edit}) ed elimina l'utilizzo di queste aree inesistenti.\n\nSpook 👻 Il tuo compare."
         },
         "automation_unknown_device_references": {
-            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente automazione:\n\n{automation} ({entity_id})\n\nQuesta automazione fa riferimento ai seguenti dispositivi, che non sono riconosciuti da Home Assistant:\n\n{devices}\n\nPer risolvere questo errore, modifica l'automazione ({edit}) ed elimina l'utilizzo di questi dispositivi inesistenti.\n\nSpook 👻 Il tuo compare.",
-            "title": ""
+            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente automazione:\n\n{automation} ({entity_id})\n\nQuesta automazione fa riferimento ai seguenti dispositivi, che non sono riconosciuti da Home Assistant:\n\n{devices}\n\nPer risolvere questo errore, modifica l'automazione ({edit}) ed elimina l'utilizzo di questi dispositivi inesistenti.\n\nSpook 👻 Il tuo compare."
         },
         "automation_unknown_entity_references": {
-            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente automazione:\n\n{automation} ({entity_id})\n\nQuesta automazione fa riferimento alle seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nPer risolvere questo errore, modifica l'automazione ({edit}) ed elimina l'utilizzo di queste entità inesistenti.\n\nSpook 👻 Il tuo compare",
-            "title": ""
-        },
-        "automation_unknown_floor_references": {
-            "description": "",
-            "title": ""
-        },
-        "automation_unknown_label_references": {
-            "description": "",
-            "title": ""
+            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente automazione:\n\n{automation} ({entity_id})\n\nQuesta automazione fa riferimento alle seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nPer risolvere questo errore, modifica l'automazione ({edit}) ed elimina l'utilizzo di queste entità inesistenti.\n\nSpook 👻 Il tuo compare"
         },
         "automation_unknown_service_references": {
-            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre vagava qua e là, Spook ha incrociato la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento alle seguenti azioni, che non sono riconosciute da Home Assistant:\n\n{services}\n\nPer risolvere questo errore, modifica l'automazione ed elimina l'utilizzo di queste azioni inesistenti.\n\nSpook 👻 Il tuo compare.",
-            "title": ""
-        },
-        "group_unknown_members": {
-            "description": "",
-            "title": ""
-        },
-        "integration_unknown_source": {
-            "description": "",
-            "title": ""
-        },
-        "lovelace_unknown_entity_references": {
-            "description": "",
-            "title": ""
-        },
-        "proximity_unknown_ignored_zones": {
-            "description": "",
-            "title": ""
-        },
-        "proximity_unknown_tracked_entities": {
-            "description": "",
-            "title": ""
-        },
-        "proximity_unknown_zone": {
-            "description": "",
-            "title": ""
-        },
-        "scene_unknown_entity_references": {
-            "description": "",
-            "title": ""
-        },
-        "script_unknown_area_references": {
-            "description": "",
-            "title": ""
-        },
-        "script_unknown_device_references": {
-            "description": "",
-            "title": ""
-        },
-        "script_unknown_entity_references": {
-            "description": "",
-            "title": ""
-        },
-        "script_unknown_floor_references": {
-            "description": "",
-            "title": ""
-        },
-        "script_unknown_label_references": {
-            "description": "",
-            "title": ""
+            "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre vagava qua e là, Spook ha incrociato la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento alle seguenti azioni, che non sono riconosciute da Home Assistant:\n\n{services}\n\nPer risolvere questo errore, modifica l'automazione ed elimina l'utilizzo di queste azioni inesistenti.\n\nSpook 👻 Il tuo compare."
         },
         "script_unknown_service_references": {
             "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nQuesta automazione fa riferimento alle seguenti azioni, che non sono riconosciute da Home Assistant:\n\n{services}\n\nPer risolvere questo errore, modifica l'automazione ed elimina l'utilizzo di queste azioni inesistenti.\n\nSpook 👻 Your homie.",
             "title": "Unknown actions used in: {script}"
         },
-        "switch_as_x_unknown_source": {
-            "description": "",
-            "title": ""
-        },
-        "utility_meter_unknown_source": {
-            "description": "",
-            "title": ""
-        },
-        "trend_unknown_source": {
-            "description": "",
-            "title": ""
-        },
         "user_issue": {
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "description": "{descrizione}",
-                        "title": ""
+                        "description": "{descrizione}"
                     }
                 }
-            },
-            "title": ""
+            }
         },
         "restart_required": {
             "title": "Riavvio richiesto",
