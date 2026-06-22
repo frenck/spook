@@ -426,8 +426,13 @@ def _is_jinja_import_match(template_str: str, match: re.Match[str]) -> bool:
 
     entity_start, entity_end = match.span(1)
     block_start = template_str.rfind("{%", 0, entity_start)
+    expression_start = template_str.rfind("{{", 0, entity_start)
+    if block_start == -1 or expression_start > block_start:
+        return False
+
     block_end = template_str.find("%}", entity_end)
-    if block_start == -1 or block_end == -1:
+    expression_end = template_str.find("}}", entity_end)
+    if block_end == -1 or (expression_end != -1 and expression_end < block_end):
         return False
 
     block = template_str[block_start : block_end + 2]
