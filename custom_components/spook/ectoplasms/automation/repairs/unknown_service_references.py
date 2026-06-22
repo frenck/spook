@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from homeassistant.components import automation
 from homeassistant.const import (
+    EVENT_COMPONENT_LOADED,
     EVENT_SERVICE_REGISTERED,
     EVENT_SERVICE_REMOVED,
 )
@@ -28,6 +29,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     repair = "automation_unknown_service_references"
     inspect_events = {
         automation.EVENT_AUTOMATION_RELOADED,
+        EVENT_COMPONENT_LOADED,
         EVENT_SERVICE_REGISTERED,
         EVENT_SERVICE_REMOVED,
     }
