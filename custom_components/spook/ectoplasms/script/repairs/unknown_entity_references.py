@@ -51,6 +51,14 @@ def extract_entities_from_trigger_config(config: dict[str, Any] | list) -> set[s
     return entities
 
 
+def extract_referenced_entities_from_script(entity: script.ScriptEntity) -> set[str]:
+    """Return entity references from a script entity."""
+    try:
+        return set(entity.script.referenced_entities)
+    except TypeError:
+        return set()
+
+
 async def extract_template_entities_from_script_entity(
     hass: HomeAssistant, entity: Any
 ) -> set[str]:
@@ -135,7 +143,7 @@ class SpookRepair(AbstractSpookRepair):
                 continue
 
             # Get all referenced entities from the script
-            all_entities = set(entity.script.referenced_entities)
+            all_entities = extract_referenced_entities_from_script(entity)
 
             # Check for blueprint trigger inputs
             blueprint_entities = self._get_blueprint_trigger_entities(entity)
