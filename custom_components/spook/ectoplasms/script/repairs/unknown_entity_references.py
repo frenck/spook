@@ -55,7 +55,9 @@ def extract_referenced_entities_from_script(entity: script.ScriptEntity) -> set[
     """Return entity references from a script entity."""
     try:
         return set(entity.script.referenced_entities)
-    except TypeError:
+    except TypeError as err:
+        if str(err) != "unhashable type: 'dict'":
+            raise
         return set()
 
 

@@ -116,10 +116,22 @@ class MockBrokenScript:  # pylint: disable=too-few-public-methods
         raise TypeError(msg)
 
 
+class MockUnexpectedBrokenScript:  # pylint: disable=too-few-public-methods
+    """Mock script object with an unrelated TypeError."""
+
+    @property
+    def referenced_entities(self) -> set[str]:
+        """Raise an unexpected TypeError."""
+        msg = "unexpected failure"
+        raise TypeError(msg)
+
+
 class MockScriptEntity:  # pylint: disable=too-few-public-methods
     """Mock script entity."""
 
-    def __init__(self, script: MockScript | MockBrokenScript) -> None:
+    def __init__(
+        self, script: MockScript | MockBrokenScript | MockUnexpectedBrokenScript
+    ) -> None:
         """Initialize the mock script entity."""
         self.script = script
 
@@ -136,3 +148,11 @@ def test_extract_referenced_entities_handles_home_assistant_type_error() -> None
     entity = MockScriptEntity(MockBrokenScript())
 
     assert extract_referenced_entities_from_script(entity) == set()
+
+
+def test_extract_referenced_entities_reraises_unexpected_type_error() -> None:
+    """Test unrelated TypeErrors are not swallowed."""
+    entity = MockScriptEntity(MockUnexpectedBrokenScript())
+
+    with pytest.raises(TypeError, match="unexpected failure"):
+        extract_referenced_entities_from_script(entity)
