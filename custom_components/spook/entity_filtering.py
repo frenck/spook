@@ -122,6 +122,7 @@ ENTITY_ID_TEMPLATE_PATTERNS = [
 COMPILED_ENTITY_ID_TEMPLATE_PATTERNS = tuple(
     re.compile(pattern, re.IGNORECASE) for pattern in ENTITY_ID_TEMPLATE_PATTERNS
 )
+JINJA_COMMENT_PATTERN = re.compile(r"\{#.*?#\}", re.DOTALL)
 
 _CACHED_ALL_ENTITY_IDS: set[str] | None = None
 _UNSUB_CACHE_INVALIDATION: Callable[[], None] | None = None
@@ -407,6 +408,13 @@ async def async_extract_entities_from_template_string(
     return entities
 
 
+def _strip_jinja_comments(template_str: str) -> str:
+    """Remove Jinja comments from a template string."""
+    if "{#" not in template_str:
+        return template_str
+    return JINJA_COMMENT_PATTERN.sub("", template_str)
+
+
 def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> bool:
     """Return if a quoted entity ID literal is part of a concatenated string."""
     groups = match.groups()
@@ -504,14 +512,16 @@ def extract_entities_from_template_regex(
     if not isinstance(template_str, str):
         return set()
 
+    template_without_comments = _strip_jinja_comments(template_str)
+
     entities = set()
 
     for pattern in COMPILED_ENTITY_ID_TEMPLATE_PATTERNS:
-        for match in pattern.finditer(template_str):
+        for match in pattern.finditer(template_without_comments):
             if (
-                _is_concatenated_template_match(template_str, match)
-                or _is_jinja_import_match(template_str, match)
-                or _is_string_method_argument_match(template_str, match)
+                _is_concatenated_template_match(template_without_comments, match)
+                or _is_jinja_import_match(template_without_comments, match)
+                or _is_string_method_argument_match(template_without_comments, match)
             ):
                 continue
 
