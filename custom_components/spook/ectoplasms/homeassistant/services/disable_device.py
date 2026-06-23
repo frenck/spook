@@ -10,6 +10,7 @@ from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.helpers import config_validation as cv, device_registry as dr
 
 from ....services import AbstractSpookAdminService
+from ..device import async_disable_device_and_parent_if_needed
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -26,7 +27,4 @@ class SpookService(AbstractSpookAdminService):
         """Handle the service call."""
         device_registry = dr.async_get(self.hass)
         for device_id in call.data["device_id"]:
-            device_registry.async_update_device(
-                device_id=device_id,
-                disabled_by=dr.DeviceEntryDisabler.USER,
-            )
+            async_disable_device_and_parent_if_needed(device_registry, device_id)
