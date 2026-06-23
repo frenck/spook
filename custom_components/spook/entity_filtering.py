@@ -19,6 +19,7 @@ from homeassistant.const import (
     ENTITY_MATCH_NONE,
     EVENT_COMPONENT_LOADED,
     EVENT_HOMEASSISTANT_START,
+    EVENT_STATE_CHANGED,
     Platform,
 )
 from homeassistant.core import (
@@ -39,7 +40,7 @@ from .const import LOGGER
 from .listeners import async_listen_once_tracked
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Sequence
+    from collections.abc import Callable, Iterable, Mapping, Sequence
 
     from homeassistant.core import HomeAssistant
 
@@ -169,6 +170,13 @@ def async_setup_all_entity_ids_cache_invalidation(
 
     LOGGER.debug("Setting up Spook's all_entity_ids cache invalidation listeners.")
 
+    @callback
+    def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
+        """Return if a state was added or removed."""
+        return (
+            event_data.get("old_state") is None or event_data.get("new_state") is None
+        )
+
     # Listen for entity registry updates
     unsub_registry_update = hass.bus.async_listen(
         er.EVENT_ENTITY_REGISTRY_UPDATED, _clear_all_entity_ids_cache
@@ -180,6 +188,12 @@ def async_setup_all_entity_ids_cache_invalidation(
     # Listen for components loading
     unsub_component_loaded = hass.bus.async_listen(
         EVENT_COMPONENT_LOADED, _clear_all_entity_ids_cache
+    )
+    # Listen for state-only entities being added or removed.
+    unsub_state_changed = hass.bus.async_listen(
+        EVENT_STATE_CHANGED,
+        _clear_all_entity_ids_cache,
+        event_filter=_state_entity_changed,
     )
 
     # Perform an initial clear, just in case.
@@ -194,6 +208,7 @@ def async_setup_all_entity_ids_cache_invalidation(
         unsub_registry_update()
         unsub_hass_start()
         unsub_component_loaded()
+        unsub_state_changed()
         _UNSUB_CACHE_INVALIDATION = None  # Mark as unsubscribed
 
     _UNSUB_CACHE_INVALIDATION = _unsubscribe_listeners
