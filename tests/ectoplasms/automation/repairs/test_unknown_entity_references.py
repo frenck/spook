@@ -156,6 +156,19 @@ async def test_value_template_ignores_entity_id_suffix_string_match(
     assert await extract_entities_from_value(hass, template) == set()
 
 
+async def test_value_template_ignores_entity_id_in_jinja_comment(
+    hass: HomeAssistant,
+) -> None:
+    """Entity-like strings inside Jinja comments are not active references."""
+    template = (
+        "{#{ state_translated('sensor.toothbrush_change_head') | string }} "
+        "indicates time to change, toothbrush head #}"
+        "{{ trigger.to_state.attributes.friendly_name | string }}"
+    )
+
+    assert await extract_entities_from_value(hass, template) == set()
+
+
 async def test_value_template_ignores_concatenated_helper_entity_id(
     hass: HomeAssistant,
 ) -> None:
