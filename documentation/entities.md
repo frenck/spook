@@ -266,6 +266,173 @@ data:
 
 :::
 
+### List filtered entities
+
+This action allows you to list entities with advanced filtering options, replicating the Home Assistant entities UI filtering capabilities. This is perfect for inspection workflows, scripts, and automations that need to query entities dynamically based on various criteria.
+
+The action supports comprehensive filtering by search terms, areas, devices, domains, integrations, status, and labels. It can return either simple entity ID lists or detailed entity information including names, devices, areas, integrations, status, icons, timestamps, and labels.
+
+```{figure} ./images/entities/list_filtered_entities.png
+:alt: Screenshot of the Home Assistant list filtered entities action in the developer tools.
+:align: center
+```
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - List filtered entities 👻
+* - {term}`Action name`
+  - `homeassistant.list_filtered_entities`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - Yes
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_filtered_entities)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_filtered_entities)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `search`
+  - {term}`string <string>`
+  - No
+  - `"living room"`
+* - `areas`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["living_room", "kitchen"]`
+* - `devices`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["abc123def456", "ghi789jkl012"]`
+* - `domains`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["light", "switch", "sensor"]`
+* - `integrations`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["hue", "zwave_js", "mqtt"]`
+* - `status`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["enabled", "available"]`
+* - `labels`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["security", "automation_controlled"]`
+* - `values`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `["name", "area", "device", "status"]`
+* - `limit`
+  - {term}`integer <integer>`
+  - No
+  - `500`
+```
+
+The `search` parameter searches across entity IDs, domains, integration names, display names, device names, area names, and label names. Matching is case-insensitive and based on substring containment.
+
+The `status` parameter accepts the following values:
+
+- `available`: Entity is available (not unavailable/unknown)
+- `unavailable`: Entity state is unavailable
+- `enabled`: Entity is enabled in the registry
+- `disabled`: Entity is disabled in the registry
+- `visible`: Entity is visible (not hidden)
+- `hidden`: Entity is hidden from UI
+- `unmanageable`: Entity cannot be managed (state-only or read-only)
+- `not_provided`: Entity state is restored (no live provider)
+
+The `values` parameter controls what information is included in the response:
+
+- `name`: Entity's display name
+- `device`: Device name and ID (if applicable)
+- `area`: Area name and ID (if applicable)
+- `integration`: Integration name
+- `status`: Current status (enabled/disabled, visible/hidden, available/unavailable)
+- `icon`: Entity's icon
+- `created`: Entity creation timestamp
+- `modified`: Entity last modified timestamp
+- `labels`: Associated label names and IDs
+
+When no `values` are specified, the action returns a simple list of entity IDs for minimal response size.
+
+All filters use OR logic within each filter type (e.g., multiple areas) and AND logic across different filter types. The action includes safety limits with a default maximum of 500 results and supports up to 50,000 results when explicitly specified.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+Simple entity ID list:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.list_filtered_entities
+data:
+  domains:
+    - light
+    - switch
+  areas: living_room
+```
+
+Detailed information for entities matching search criteria:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.list_filtered_entities
+data:
+  search: "living room"
+  status:
+    - enabled
+    - available
+  values:
+    - name
+    - area
+    - device
+    - status
+  limit: 100
+```
+
+Find all unavailable Zigbee devices:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.list_filtered_entities
+data:
+  integrations: zha
+  status: unavailable
+  values:
+    - name
+    - device
+    - status
+```
+
+List entities with specific labels:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.list_filtered_entities
+data:
+  labels:
+    - security
+    - automation_controlled
+  values:
+    - name
+    - labels
+    - area
+```
+
+:::
+
 ### Update an entity's ID
 
 This action allows you to update an entity's ID on the fly.
