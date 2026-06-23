@@ -47,6 +47,10 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         """Cache known services for this inspection cycle."""
         self._known_services = async_get_all_services(self.hass)
 
+    def _should_inspect_entity(self, entity: Any) -> bool:
+        """Skip disabled automations."""
+        return entity.enabled
+
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown services called by ``entity``."""
         return async_filter_known_services(
