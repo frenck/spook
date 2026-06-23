@@ -66,7 +66,8 @@ class HomeAssistantSpookSensorEntityDescription(
 def _count_active_domain_entities(hass: HomeAssistant, domain: str) -> int:
     """Count domain entities that are not restored placeholders."""
     return sum(
-        not hass.states.get(entity_id).attributes.get("restored", False)
+        (state := hass.states.get(entity_id)) is not None
+        and not state.attributes.get("restored", False)
         for entity_id in hass.states.async_entity_ids(domain)
     )
 
