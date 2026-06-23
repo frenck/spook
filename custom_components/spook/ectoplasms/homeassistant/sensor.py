@@ -62,6 +62,16 @@ class HomeAssistantSpookSensorEntityDescription(
     update_events: set[EventType[Any] | str] = field(default_factory=set)
 
 
+@callback
+def _count_active_domain_entities(hass: HomeAssistant, domain: str) -> int:
+    """Count domain entities that are not restored placeholders."""
+    return sum(
+        (state := hass.states.get(entity_id)) is not None
+        and not state.attributes.get("restored", False)
+        for entity_id in hass.states.async_entity_ids(domain)
+    )
+
+
 SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.AIR_QUALITY,
@@ -103,7 +113,7 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
         update_events={automation.EVENT_AUTOMATION_RELOADED},
-        value_fn=lambda hass: len(hass.states.async_entity_ids(automation.DOMAIN)),
+        value_fn=lambda hass: _count_active_domain_entities(hass, automation.DOMAIN),
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.BINARY_SENSOR,
@@ -422,7 +432,7 @@ SENSORS: tuple[HomeAssistantSpookSensorEntityDescription, ...] = (
         entity_category=EntityCategory.DIAGNOSTIC,
         state_class=SensorStateClass.TOTAL,
         update_events={EVENT_COMPONENT_LOADED, er.EVENT_ENTITY_REGISTRY_UPDATED},
-        value_fn=lambda hass: len(hass.states.async_entity_ids(script.DOMAIN)),
+        value_fn=lambda hass: _count_active_domain_entities(hass, script.DOMAIN),
     ),
     HomeAssistantSpookSensorEntityDescription(
         key=Platform.SELECT,
