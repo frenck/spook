@@ -323,12 +323,22 @@ async def test_time_date_entities_are_known(
     hass: HomeAssistant,
 ) -> None:
     """Test Home Assistant time/date entities are treated as known."""
+    expected_entity_ids = {
+        "sensor.time",
+        "sensor.date",
+        "sensor.date_time",
+        "sensor.date_time_utc",
+        "sensor.date_time_iso",
+        "sensor.time_date",
+        "sensor.time_utc",
+    }
     known_entity_ids = async_get_all_entity_ids(hass)
 
+    assert expected_entity_ids == KNOWN_TIME_DATE_ENTITY_IDS
     assert (
         await async_filter_known_entity_ids_with_templates(
             hass,
-            KNOWN_TIME_DATE_ENTITY_IDS,
+            expected_entity_ids,
             known_entity_ids=known_entity_ids,
         )
         == set()
