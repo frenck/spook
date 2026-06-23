@@ -12,6 +12,10 @@ silently.
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from types import SimpleNamespace
+
+from homeassistant.const import EVENT_STATE_CHANGED
+from homeassistant.core import State
 
 from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_references import (
     SpookRepair,
@@ -512,3 +516,71 @@ async def test_automation_missing_sections(hass: HomeAssistant, section: str) ->
         "action": {"binary_sensor.t", "binary_sensor.c"},
     }[section]
     assert result == expected
+
+
+async def test_state_only_entity_addition_rechecks_automation_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test state-only entities trigger automation repair rechecks."""
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    repair.inspect_debouncer.async_shutdown()
+    calls = 0
+
+    def async_schedule_call() -> None:
+        """Capture scheduled inspections."""
+        nonlocal calls
+        calls += 1
+
+    repair.inspect_debouncer = SimpleNamespace(
+        async_schedule_call=async_schedule_call,
+        async_shutdown=lambda: None,
+    )
+
+    hass.bus.async_fire(
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "sensor.backup_state",
+            "old_state": None,
+            "new_state": State("sensor.backup_state", "on"),
+        },
+    )
+    await hass.async_block_till_done()
+
+    assert calls == 1
+
+    await repair.async_deactivate()
+
+
+async def test_state_only_entity_update_does_not_recheck_automation_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test normal state changes do not trigger automation repair rechecks."""
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    repair.inspect_debouncer.async_shutdown()
+    calls = 0
+
+    def async_schedule_call() -> None:
+        """Capture scheduled inspections."""
+        nonlocal calls
+        calls += 1
+
+    repair.inspect_debouncer = SimpleNamespace(
+        async_schedule_call=async_schedule_call,
+        async_shutdown=lambda: None,
+    )
+
+    hass.bus.async_fire(
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "sensor.backup_state",
+            "old_state": State("sensor.backup_state", "off"),
+            "new_state": State("sensor.backup_state", "on"),
+        },
+    )
+    await hass.async_block_till_done()
+
+    assert calls == 0
+
+    await repair.async_deactivate()
