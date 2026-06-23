@@ -125,4 +125,58 @@ async def test_config_flow_can_enable_existing_disabled_entry(
 
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "enabled_existing"
-    async_set_disabled_by.assert_awaited_once_with(entry.entry_id, None)
+    async_set_disabled_by.assert_awaited_once_with(entry.entry_id, disabled_by=None)
+
+
+async def test_config_flow_enable_existing_disabled_entry_can_fail(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the config flow aborts when enabling an existing entry fails."""
+    entry = MockConfigEntry(
+        disabled_by=config_entries.ConfigEntryDisabler.USER,
+        domain=DOMAIN,
+        title="Your homie",
+        data={},
+    )
+    entry.add_to_hass(hass)
+    async_set_disabled_by = AsyncMock(return_value=False)
+    monkeypatch.setattr(
+        hass.config_entries,
+        "async_set_disabled_by",
+        async_set_disabled_by,
+    )
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_USER},
+    )
+    result = await hass.config_entries.flow.async_configure(
+        result["flow_id"],
+        user_input={"next_step_id": "enable_existing"},
+    )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "enable_failed"
+    async_set_disabled_by.assert_awaited_once_with(entry.entry_id, disabled_by=None)
+
+
+async def test_config_flow_aborts_when_enabled_and_disabled_entries_exist(
+    hass: HomeAssistant,
+) -> None:
+    """Test enabled entries take precedence over disabled ones."""
+    MockConfigEntry(domain=DOMAIN, title="Your homie", data={}).add_to_hass(hass)
+    MockConfigEntry(
+        disabled_by=config_entries.ConfigEntryDisabler.USER,
+        domain=DOMAIN,
+        title="Your homie",
+        data={},
+    ).add_to_hass(hass)
+
+    result = await hass.config_entries.flow.async_init(
+        DOMAIN,
+        context={"source": config_entries.SOURCE_USER},
+    )
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "already_spooked"
