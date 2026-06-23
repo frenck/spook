@@ -48,3 +48,25 @@ async def test_event_trigger_data_device_id_is_not_reported_unknown(
     repair._known_device_ids = set()
 
     assert await repair._async_compute_unknown_references(entity) == set()
+
+
+async def test_event_trigger_data_device_id_in_plural_triggers_is_not_reported_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Plural event triggers can contain device IDs that are not device references."""
+    entity = MockAutomationEntity(
+        raw_config={
+            "triggers": [
+                {
+                    "trigger": "event",
+                    "event_type": "hcu_integration_event",
+                    "event_data": {"device_id": "3014F711A0001F20C98F2F47"},
+                },
+            ],
+        },
+        referenced_devices={"3014F711A0001F20C98F2F47"},
+    )
+    repair = SpookRepair(hass)
+    repair._known_device_ids = set()
+
+    assert await repair._async_compute_unknown_references(entity) == set()
