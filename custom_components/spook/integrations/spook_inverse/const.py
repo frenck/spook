@@ -5,6 +5,7 @@ from homeassistant.const import Platform
 DOMAIN = "spook_inverse"
 PLATFORMS = [
     Platform.BINARY_SENSOR,
+    Platform.COVER,
     Platform.SWITCH,
 ]
 
