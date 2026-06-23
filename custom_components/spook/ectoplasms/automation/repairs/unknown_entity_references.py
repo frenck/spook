@@ -53,22 +53,25 @@ async def extract_entities_from_automation_config(
         return entities
 
     # Extract entities from trigger config
-    if "trigger" in config:
-        entities.update(
-            await extract_entities_from_trigger_config(hass, config["trigger"])
-        )
+    for key in ("trigger", "triggers"):
+        if key in config:
+            entities.update(
+                await extract_entities_from_trigger_config(hass, config[key])
+            )
 
     # Extract entities from condition config
-    if "condition" in config:
-        entities.update(
-            await extract_entities_from_condition_config(hass, config["condition"])
-        )
+    for key in ("condition", "conditions"):
+        if key in config:
+            entities.update(
+                await extract_entities_from_condition_config(hass, config[key])
+            )
 
     # Extract entities from action config
-    if "action" in config:
-        entities.update(
-            await extract_entities_from_action_config(hass, config["action"])
-        )
+    for key in ("action", "actions"):
+        if key in config:
+            entities.update(
+                await extract_entities_from_action_config(hass, config[key])
+            )
 
     return entities
 
@@ -343,11 +346,10 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
                     self.hass, entity.raw_config
                 )
             )
-            all_entities.difference_update(
-                extract_event_types_from_trigger_config(
-                    entity.raw_config.get("trigger")
+            for key in ("trigger", "triggers"):
+                all_entities.difference_update(
+                    extract_event_types_from_trigger_config(entity.raw_config.get(key))
                 )
-            )
 
         # Extract entities from Template objects within the automation entity
         all_entities.update(

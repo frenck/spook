@@ -427,6 +427,54 @@ async def test_automation_full_config(hass: HomeAssistant) -> None:
     }
 
 
+async def test_automation_full_config_with_plural_keys(hass: HomeAssistant) -> None:
+    """A modern automation config yields entities from plural sections."""
+    config = {
+        "alias": "Test",
+        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.motion"}],
+        "conditions": [
+            {
+                "condition": "state",
+                "entity_id": "input_boolean.snooze_uptime_alerts",
+                "state": "off",
+            }
+        ],
+        "actions": [
+            {"action": "light.turn_on", "target": {"entity_id": "light.kitchen"}},
+        ],
+    }
+
+    assert await extract_entities_from_automation_config(hass, config) == {
+        "binary_sensor.motion",
+        "input_boolean.snooze_uptime_alerts",
+        "light.kitchen",
+    }
+
+
+async def test_plural_condition_entity_is_reported_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """A missing entity in a plural ``conditions`` section is reported."""
+    entity = MockAutomationEntity(
+        raw_config={
+            "conditions": [
+                {
+                    "condition": "state",
+                    "entity_id": "input_boolean.snooze_uptime_alerts",
+                    "state": "off",
+                }
+            ],
+        },
+        referenced_entities=set(),
+    )
+    repair = SpookRepair(hass)
+    repair._known_entity_ids = set()
+
+    assert await repair._async_compute_unknown_references(entity) == {
+        "input_boolean.snooze_uptime_alerts"
+    }
+
+
 async def test_automation_non_dict_returns_empty(hass: HomeAssistant) -> None:
     """A non-dict argument short-circuits to an empty set."""
     assert await extract_entities_from_automation_config(hass, []) == set()
