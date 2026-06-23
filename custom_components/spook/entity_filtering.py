@@ -52,6 +52,20 @@ IGNORED_ENTITY_DOMAINS = (
     "scene.",
 )
 
+# Home Assistant's legacy time_date platform can create these entity IDs without
+# entity-registry entries. Treat them as known so references to configured
+# time/date sensors are not reported as unknown when they are not in the state
+# machine during an inspection.
+KNOWN_TIME_DATE_ENTITY_IDS = {
+    "sensor.time",
+    "sensor.date",
+    "sensor.date_time",
+    "sensor.date_time_utc",
+    "sensor.date_time_iso",
+    "sensor.time_date",
+    "sensor.time_utc",
+}
+
 # Additional known domains that are not in the Platform enum
 ADDITIONAL_DOMAINS = [
     "alert",
@@ -190,7 +204,7 @@ def async_setup_all_entity_ids_cache_invalidation(
 def async_get_all_entity_ids(
     hass: HomeAssistant, *, include_all_none: bool = False
 ) -> set[str]:
-    """Return all entity IDs, known to Home Assistant, using a cache."""
+    """Return entity IDs known to Home Assistant or treated as known by Spook."""
     # pylint: disable-next=global-statement
     global _CACHED_ALL_ENTITY_IDS  # noqa: PLW0603
 
@@ -204,7 +218,10 @@ def async_get_all_entity_ids(
         }
         entity_ids_from_states = hass.states.async_entity_ids()
 
-        combined_entity_ids = entity_ids_from_registry.union(entity_ids_from_states)
+        combined_entity_ids = entity_ids_from_registry.union(
+            entity_ids_from_states,
+            KNOWN_TIME_DATE_ENTITY_IDS,
+        )
 
         # Filter out ignored domains
         _CACHED_ALL_ENTITY_IDS = {

@@ -8,8 +8,10 @@ import pytest
 
 from custom_components.spook import entity_filtering
 from custom_components.spook.entity_filtering import (
+    KNOWN_TIME_DATE_ENTITY_IDS,
     async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
+    async_get_all_entity_ids,
     extract_entities_from_template_regex,
     extract_template_strings_from_config,
     is_template_string,
@@ -315,3 +317,29 @@ async def test_filter_plain_entity_ids_does_not_get_services(
         known_entity_ids=set(),
     ) == {"sensor.missing", "light.unknown"}
     assert calls == 0
+
+
+async def test_time_date_entities_are_known(
+    hass: HomeAssistant,
+) -> None:
+    """Test Home Assistant time/date entities are treated as known."""
+    expected_entity_ids = {
+        "sensor.time",
+        "sensor.date",
+        "sensor.date_time",
+        "sensor.date_time_utc",
+        "sensor.date_time_iso",
+        "sensor.time_date",
+        "sensor.time_utc",
+    }
+    known_entity_ids = async_get_all_entity_ids(hass)
+
+    assert expected_entity_ids == KNOWN_TIME_DATE_ENTITY_IDS
+    assert (
+        await async_filter_known_entity_ids_with_templates(
+            hass,
+            expected_entity_ids,
+            known_entity_ids=known_entity_ids,
+        )
+        == set()
+    )
