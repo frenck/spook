@@ -17,6 +17,9 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.const import EVENT_STATE_CHANGED
+from homeassistant.core import State
+
 from custom_components.spook.ectoplasms.lovelace.repairs.unknown_entity_references import (
     SpookRepair,
 )
@@ -457,3 +460,73 @@ def test_element_action_target(repair: SpookRepair) -> None:
 def test_element_non_dict_returns_empty(repair: SpookRepair) -> None:
     """A non-dict element returns an empty set."""
     assert _extract_element(repair, "not a dict") == set()  # type: ignore[arg-type]
+
+
+async def test_state_only_entity_addition_rechecks_dashboard_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test state-only entities trigger dashboard repair rechecks."""
+    hass.data["lovelace"] = SimpleNamespace(dashboards={})
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    repair.inspect_debouncer.async_shutdown()
+    calls = 0
+
+    def async_schedule_call() -> None:
+        """Capture scheduled inspections."""
+        nonlocal calls
+        calls += 1
+
+    repair.inspect_debouncer = SimpleNamespace(
+        async_schedule_call=async_schedule_call,
+        async_shutdown=lambda: None,
+    )
+
+    hass.bus.async_fire(
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "input_text.radio_sender",
+            "old_state": None,
+            "new_state": State("input_text.radio_sender", "Studio Brussel"),
+        },
+    )
+    await hass.async_block_till_done()
+
+    assert calls == 1
+
+    await repair.async_deactivate()
+
+
+async def test_state_only_entity_update_does_not_recheck_dashboard_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test normal state changes do not trigger dashboard repair rechecks."""
+    hass.data["lovelace"] = SimpleNamespace(dashboards={})
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    repair.inspect_debouncer.async_shutdown()
+    calls = 0
+
+    def async_schedule_call() -> None:
+        """Capture scheduled inspections."""
+        nonlocal calls
+        calls += 1
+
+    repair.inspect_debouncer = SimpleNamespace(
+        async_schedule_call=async_schedule_call,
+        async_shutdown=lambda: None,
+    )
+
+    hass.bus.async_fire(
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "input_text.radio_sender",
+            "old_state": State("input_text.radio_sender", "Studio Brussel"),
+            "new_state": State("input_text.radio_sender", "NPO Radio 2"),
+        },
+    )
+    await hass.async_block_till_done()
+
+    assert calls == 0
+
+    await repair.async_deactivate()
