@@ -584,6 +584,20 @@
         }
       }
     },
+    "homeassistant_expose_entity": {
+      "name": "Expose an entity to assistants",
+      "description": "Exposes an entity (or entities) to voice assistants.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity",
+          "description": "The entity/entities to expose."
+        },
+        "assistants": {
+          "name": "Assistants",
+          "description": "The assistant(s) to expose the entity to."
+        }
+      }
+    },
     "homeassistant_rename_entity": {
       "name": "Rename an entity",
       "description": "Renames an entity (or entities) on the fly.",
@@ -605,6 +619,20 @@
         "entity_id": {
           "name": "Entity",
           "description": "The entity/entities to unhide."
+        }
+      }
+    },
+    "homeassistant_unexpose_entity": {
+      "name": "Unexpose an entity from assistants",
+      "description": "Unexposes an entity (or entities) from voice assistants.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity",
+          "description": "The entity/entities to unexpose."
+        },
+        "assistants": {
+          "name": "Assistants",
+          "description": "The assistant(s) to unexpose the entity from."
         }
       }
     },
@@ -971,6 +999,10 @@
         "amount": {
           "name": "Amount",
           "description": "The amount to decrease the input number with. If not provided, the step of the number entity will be used."
+        },
+        "cycle": {
+          "name": "Cycle",
+          "description": "Wrap to the maximum value instead of stopping at the minimum value."
         }
       }
     },
@@ -981,6 +1013,10 @@
         "amount": {
           "name": "Amount",
           "description": "The amount to increase the input number with. If not provided, the step of the number entity will be used."
+        },
+        "cycle": {
+          "name": "Cycle",
+          "description": "Wrap to the minimum value instead of stopping at the maximum value."
         }
       }
     },
@@ -991,6 +1027,20 @@
     "input_number_min": {
       "name": "Set minimum value",
       "description": "Set an input number entity to its minimum value."
+    },
+    "sensor_set_display_precision": {
+      "name": "Set display precision",
+      "description": "Sets the display precision for a sensor entity.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity",
+          "description": "The sensor entity/entities to update."
+        },
+        "display_precision": {
+          "name": "Display precision",
+          "description": "The number of decimals to show for the sensor."
+        }
+      }
     },
     "input_number_create": {
       "name": "Create an input number",

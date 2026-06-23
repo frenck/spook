@@ -25,7 +25,10 @@ class SpookService(
 
     domain = DOMAIN
     service = "increment"
-    schema = {vol.Optional("amount"): vol.Coerce(float)}
+    schema = {
+        vol.Optional("amount"): vol.Coerce(float),
+        vol.Optional("cycle", default=False): bool,
+    }
 
     async def async_handle_service(
         self,
@@ -42,9 +45,12 @@ class SpookService(
             )
             raise ValueError(msg)
 
-        await entity.async_set_value(
-            min(
-                entity._current_value + amount,  # noqa: SLF001
-                entity._maximum,  # noqa: SLF001
-            ),
-        )
+        new_value = entity._current_value + amount  # noqa: SLF001
+        if new_value > entity._maximum:  # noqa: SLF001
+            new_value = (
+                entity._minimum  # noqa: SLF001
+                if call.data["cycle"]
+                else entity._maximum  # noqa: SLF001
+            )
+
+        await entity.async_set_value(new_value)
