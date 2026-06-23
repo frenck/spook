@@ -123,6 +123,9 @@ class AbstractSpookRepairBase(ABC):
 
     async def async_deactivate(self) -> None:
         """Unregister the repair."""
+        if self.hass.is_stopping:
+            return
+
         for issue_id in self.issue_ids.copy():
             self.async_delete_issue(issue_id)
 
@@ -482,8 +485,11 @@ class SpookRepairManager:
             )
             await repair.async_deactivate()
 
+            if self.hass.is_stopping:
+                continue
+
             # Remove issues created by this Spook repair
-            for domain, issue_id in self.issue_registry.issues:
+            for domain, issue_id in list(self.issue_registry.issues):
                 if domain == DOMAIN and issue_id.startswith(
                     f"{repair.domain}_{repair.repair}",
                 ):
