@@ -71,6 +71,7 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
         _: dict[str, Any] | None = None,
     ) -> ConfigFlowResult:
         """Enable the existing disabled Spook config entry."""
+        self._disabled_entry = self._async_get_user_disabled_entry()
         if self._disabled_entry is None:
             return self.async_abort(reason="already_spooked")
 
