@@ -1,335 +1,335 @@
 {
-  "config": {
-    "abort": {
-      "already_spooked": "Sí... bé... núm. K, thx, adeu!"
-    },
-    "step": {
-      "user": {
-        "description": "Vas llegir el readme? Vas llegir la llicència? T'és molt segur?"
-      },
-      "choice_restart": {
-        "description": "En ordre per Spook a l'acabat que munta, necessitats d'Assistent de la Casa per ser reprès.\n\n vols reprendre Assistent de Casa ara?",
-        "menu_options": {
-          "restart_now": "Reprèn ara",
-          "restart_later": "Reprèn més tard"
-        }
-      }
-    }
-  },
-  "entity": {
-    "button": {
-      "homeassistant_reload": {
-        "name": "Reload"
-      },
-      "homeassistant_restart": {
-        "name": "Reprèn"
-      },
-      "repairs_ignore_all": {
-        "name": "Ignora tot"
-      },
-      "repairs_unignore_all": {
-        "name": "Unignore tot"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "event_type": {
-            "state": {
-              "create": "L'assumpte creat",
-              "remove": "L'assumpte va treure",
-              "update": "L'assumpte actualitzat"
+    "config": {
+        "abort": {
+            "already_spooked": "Sí... bé... núm. K, thx, adeu!"
+        },
+        "step": {
+            "user": {
+                "description": "Vas llegir el readme? Vas llegir la llicència? T'és molt segur?"
+            },
+            "choice_restart": {
+                "description": "En ordre per Spook a l'acabat que munta, necessitats d'Assistent de la Casa per ser reprès.\n\n vols reprendre Assistent de Casa ara?",
+                "menu_options": {
+                    "restart_now": "Reprèn ara",
+                    "restart_later": "Reprèn més tard"
+                }
             }
-          },
-          "domain": {
-            "name": "Assumpte issuer"
-          },
-          "issue_id": {
-            "name": "Assumpte ID"
-          }
         }
-      }
     },
-    "sensor": {
-      "homeassistant_air_quality": {
-        "name": "Qualitat d'aire"
-      },
-      "homeassistant_alarm_control_panel": {
-        "name": "Plafons de control de l'alarma"
-      },
-      "homeassistant_area": {
-        "name": "Àrees"
-      },
-      "homeassistant_automation": {
-        "name": "Automatitzacions"
-      },
-      "homeassistant_binary_sensor": {
-        "name": "Sensors binaris"
-      },
-      "homeassistant_button": {
-        "name": "Botons"
-      },
-      "homeassistant_calendar": {
-        "name": "Calendaris"
-      },
-      "homeassistant_camera": {
-        "name": "Cambres"
-      },
-      "homeassistant_climate": {
-        "name": "Clima"
-      },
-      "homeassistant_cover": {
-        "name": "Cobertes"
-      },
-      "homeassistant_custom_component": {
-        "name": "Integracions fetes per encàrrec"
-      },
-      "homeassistant_date": {
-        "name": "Dates"
-      },
-      "homeassistant_datetime": {
-        "name": "Temps/de data"
-      },
-      "homeassistant_device": {
-        "name": "Dispositius"
-      },
-      "homeassistant_device_tracker": {
-        "name": "Rastrejadors de dispositiu"
-      },
-      "homeassistant_entities": {
-        "name": "Entitats"
-      },
-      "homeassistant_fan": {
-        "name": "Ventalls"
-      },
-      "homeassistant_humidifier": {
-        "name": "Humidificadors"
-      },
-      "homeassistant_image": {
-        "name": "Imatges"
-      },
-      "homeassistant_input_boolean": {
-        "name": "Entrada booleans"
-      },
-      "homeassistant_input_button": {
-        "name": "Botons d'entrada"
-      },
-      "homeassistant_input_datetime": {
-        "name": "L'entrada datar/temps"
-      },
-      "homeassistant_input_number": {
-        "name": "Números d'entrada"
-      },
-      "homeassistant_input_select": {
-        "name": "L'entrada selecciona"
-      },
-      "homeassistant_input_text": {
-        "name": "Textos d'entrada"
-      },
-      "homeassistant_integration": {
-        "name": "Integracions"
-      },
-      "homeassistant_light": {
-        "name": "Llums"
-      },
-      "homeassistant_lock": {
-        "name": "Panys"
-      },
-      "homeassistant_media_player": {
-        "name": "Jugadors de mitjans de comunicació"
-      },
-      "homeassistant_number": {
-        "name": "Números"
-      },
-      "homeassistant_persistent_notification": {
-        "name": "Notificacions persistents"
-      },
-      "homeassistant_person": {
-        "name": "Persones"
-      },
-      "homeassistant_remote": {
-        "name": "Remotes"
-      },
-      "homeassistant_scene": {
-        "name": "Escenes"
-      },
-      "homeassistant_script": {
-        "name": "Guions"
-      },
-      "homeassistant_select": {
-        "name": "Selecciona"
-      },
-      "homeassistant_sensor": {
-        "name": "Sensors"
-      },
-      "homeassistant_siren": {
-        "name": "Sirenes"
-      },
-      "homeassistant_stt": {
-        "name": "Parlar-a-text"
-      },
-      "homeassistant_sun": {
-        "name": "Sun"
-      },
-      "homeassistant_switch": {
-        "name": "Canvis"
-      },
-      "homeassistant_text": {
-        "name": "Textos"
-      },
-      "homeassistant_time": {
-        "name": "Temps"
-      },
-      "homeassistant_tts": {
-        "name": "Text-a-parlar"
-      },
-      "homeassistant_update": {
-        "name": "Actualització"
-      },
-      "homeassistant_vacuum": {
-        "name": "Buits"
-      },
-      "homeassistant_water_heater": {
-        "name": "Escalfadors d'aigua"
-      },
-      "homeassistant_weather": {
-        "name": "Temps"
-      },
-      "homeassistant_zone": {
-        "name": "Zones"
-      },
-      "repairs_total_issues": {
-        "name": "Total"
-      },
-      "repairs_ignored_issues": {
-        "name": "Ignorat"
-      },
-      "repairs_active_issues": {
-        "name": "Actiu"
-      }
+    "entity": {
+        "button": {
+            "homeassistant_reload": {
+                "name": "Reload"
+            },
+            "homeassistant_restart": {
+                "name": "Reprèn"
+            },
+            "repairs_ignore_all": {
+                "name": "Ignora tot"
+            },
+            "repairs_unignore_all": {
+                "name": "Unignore tot"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "L'assumpte creat",
+                            "remove": "L'assumpte va treure",
+                            "update": "L'assumpte actualitzat"
+                        }
+                    },
+                    "domain": {
+                        "name": "Assumpte issuer"
+                    },
+                    "issue_id": {
+                        "name": "Assumpte ID"
+                    }
+                }
+            }
+        },
+        "sensor": {
+            "homeassistant_air_quality": {
+                "name": "Qualitat d'aire"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Plafons de control de l'alarma"
+            },
+            "homeassistant_area": {
+                "name": "Àrees"
+            },
+            "homeassistant_automation": {
+                "name": "Automatitzacions"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "Sensors binaris"
+            },
+            "homeassistant_button": {
+                "name": "Botons"
+            },
+            "homeassistant_calendar": {
+                "name": "Calendaris"
+            },
+            "homeassistant_camera": {
+                "name": "Cambres"
+            },
+            "homeassistant_climate": {
+                "name": "Clima"
+            },
+            "homeassistant_cover": {
+                "name": "Cobertes"
+            },
+            "homeassistant_custom_component": {
+                "name": "Integracions fetes per encàrrec"
+            },
+            "homeassistant_date": {
+                "name": "Dates"
+            },
+            "homeassistant_datetime": {
+                "name": "Temps/de data"
+            },
+            "homeassistant_device": {
+                "name": "Dispositius"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Rastrejadors de dispositiu"
+            },
+            "homeassistant_entities": {
+                "name": "Entitats"
+            },
+            "homeassistant_fan": {
+                "name": "Ventalls"
+            },
+            "homeassistant_humidifier": {
+                "name": "Humidificadors"
+            },
+            "homeassistant_image": {
+                "name": "Imatges"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Entrada booleans"
+            },
+            "homeassistant_input_button": {
+                "name": "Botons d'entrada"
+            },
+            "homeassistant_input_datetime": {
+                "name": "L'entrada datar/temps"
+            },
+            "homeassistant_input_number": {
+                "name": "Números d'entrada"
+            },
+            "homeassistant_input_select": {
+                "name": "L'entrada selecciona"
+            },
+            "homeassistant_input_text": {
+                "name": "Textos d'entrada"
+            },
+            "homeassistant_integration": {
+                "name": "Integracions"
+            },
+            "homeassistant_light": {
+                "name": "Llums"
+            },
+            "homeassistant_lock": {
+                "name": "Panys"
+            },
+            "homeassistant_media_player": {
+                "name": "Jugadors de mitjans de comunicació"
+            },
+            "homeassistant_number": {
+                "name": "Números"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Notificacions persistents"
+            },
+            "homeassistant_person": {
+                "name": "Persones"
+            },
+            "homeassistant_remote": {
+                "name": "Remotes"
+            },
+            "homeassistant_scene": {
+                "name": "Escenes"
+            },
+            "homeassistant_script": {
+                "name": "Guions"
+            },
+            "homeassistant_select": {
+                "name": "Selecciona"
+            },
+            "homeassistant_sensor": {
+                "name": "Sensors"
+            },
+            "homeassistant_siren": {
+                "name": "Sirenes"
+            },
+            "homeassistant_stt": {
+                "name": "Parlar-a-text"
+            },
+            "homeassistant_sun": {
+                "name": "Sun"
+            },
+            "homeassistant_switch": {
+                "name": "Canvis"
+            },
+            "homeassistant_text": {
+                "name": "Textos"
+            },
+            "homeassistant_time": {
+                "name": "Temps"
+            },
+            "homeassistant_tts": {
+                "name": "Text-a-parlar"
+            },
+            "homeassistant_update": {
+                "name": "Actualització"
+            },
+            "homeassistant_vacuum": {
+                "name": "Buits"
+            },
+            "homeassistant_water_heater": {
+                "name": "Escalfadors d'aigua"
+            },
+            "homeassistant_weather": {
+                "name": "Temps"
+            },
+            "homeassistant_zone": {
+                "name": "Zones"
+            },
+            "repairs_total_issues": {
+                "name": "Total"
+            },
+            "repairs_ignored_issues": {
+                "name": "Ignorat"
+            },
+            "repairs_active_issues": {
+                "name": "Actiu"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa estat reportar"
+            },
+            "cloud_google_report_state": {
+                "name": "estat d'Assistent del Google reportar"
+            },
+            "cloud_remote": {
+                "name": "Remot"
+            }
+        }
     },
-    "switch": {
-      "cloud_alexa_report_state": {
-        "name": "Alexa estat reportar"
-      },
-      "cloud_google_report_state": {
-        "name": "estat d'Assistent del Google reportar"
-      },
-      "cloud_remote": {
-        "name": "Remot"
-      }
-    }
-  },
-  "issues": {
-    "automation_unknown_area_references": {
-      "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie.",
-      "title": "Les àrees desconegudes van utilitzar dins: {automation}"
-    },
-    "automation_unknown_device_references": {
-      "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie.",
-      "title": "Els dispositius desconeguts van utilitzar dins: {automation}"
-    },
-    "automation_unknown_entity_references": {
-      "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
-      "title": "Les entitats desconegudes van utilitzar dins: {automation}"
-    },
-    "automation_unknown_floor_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {automation}"
-    },
-    "automation_unknown_label_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {automation}"
-    },
-    "automation_unknown_service_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {automation}"
-    },
-    "group_unknown_members": {
-      "description": "Spook ha trobat un fantasma en els vostres grups 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el grup següent:\n\n{group} (`{entity_id}`)\n\nAquest grup té membres, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, edita el grup, treu l'ús d'aquests entitatsnoexistents i reprendre Assistent de Casa.\n\nSpook 👻 No el vostre homie.",
-      "title": "Membres de grup desconegut dins: {group}"
-    },
-    "integration_unknown_source": {
-      "description": "Spook ha trobat un fantasma dins els vostres Riemann sumen integrals helpers 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el següent helper:\n\n{helper} (`{entity_id}`)\n\nAixò helper té una entitat de font desconeguda a Assistent de Casa:\n\n`{source}`\n\n\n\nper fixar aquest error, editar el helper i ajustar l'entitat de font (o treure el helper) i reprèn Assistent de Casa.\n\nSpook 👻 No el vostre homie.",
-      "title": "Font desconeguda: {helper}"
-    },
-    "lovelace_unknown_entity_references": {
-      "description": "Spook ha trobat un fantasma en els vostres quadres de comandament 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el quadre de comandament següent:\n\n[{dashboard}]({edit})\n\nAquest quadre de comandament referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el quadre de comandament]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
-      "title": "Les entitats desconegudes van utilitzar dins: {dashboard}"
-    },
-    "proximity_unknown_ignored_zones": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-      "title": "Unknown ignored zones: {name}"
-    },
-    "proximity_unknown_tracked_entities": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown tracked entities: {name}"
-    },
-    "proximity_unknown_zone": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-      "title": "Unknown zone: {zone}"
-    },
-    "scene_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in: {scene}"
-    },
-    "script_unknown_area_references": {
-      "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie.",
-      "title": "Les àrees desconegudes van utilitzar dins: {script}"
-    },
-    "script_unknown_device_references": {
-      "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie.",
-      "title": "Els dispositius desconeguts van utilitzar dins: {script}"
-    },
-    "script_unknown_entity_references": {
-      "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
-      "title": "Les entitats desconegudes van utilitzar dins: {script}"
-    },
-    "script_unknown_floor_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {script}"
-    },
-    "script_unknown_label_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {script}"
-    },
-    "script_unknown_service_references": {
-      "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 No el vostre homie.",
-      "title": "Unknown actions used in: {script}"
-    },
-    "switch_as_x_unknown_source": {
-      "description": "Spook ha trobat un fantasma en el vostre Canvi com X helpers 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el següent helper:\n\n{helper} (`{entity_id}`)\n\nAixò helper té una entitat de canvi de la font desconeguda a Assistent de Casa:\n\n`{source}`\n\n\n\nper fixar aquest error, editar el helper i ajustar l'entitat de font (o treure el helper) i reprèn Assistent de Casa.\n\nSpook 👻 No el vostre homie.",
-      "title": "Font desconeguda: {helper}"
-    },
-    "utility_meter_unknown_source": {
-      "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "trend_unknown_source": {
-      "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source: {helper}"
-    },
-    "user_issue": {
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "description": "{description}",
+    "issues": {
+        "automation_unknown_area_references": {
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "title": "Les àrees desconegudes van utilitzar dins: {automation}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "title": "Els dispositius desconeguts van utilitzar dins: {automation}"
+        },
+        "automation_unknown_entity_references": {
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "title": "Les entitats desconegudes van utilitzar dins: {automation}"
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+            "title": "Unknown floors used in: {automation}"
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+            "title": "Unknown labels used in: {automation}"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown actions used in: {automation}"
+        },
+        "group_unknown_members": {
+            "description": "Spook ha trobat un fantasma en els vostres grups 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el grup següent:\n\n{group} (`{entity_id}`)\n\nAquest grup té membres, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, edita el grup, treu l'ús d'aquests entitatsnoexistents i reprendre Assistent de Casa.\n\nSpook 👻 No el vostre homie.",
+            "title": "Membres de grup desconegut dins: {group}"
+        },
+        "integration_unknown_source": {
+            "description": "Spook ha trobat un fantasma dins els vostres Riemann sumen integrals helpers 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el següent helper:\n\n{helper} (`{entity_id}`)\n\nAixò helper té una entitat de font desconeguda a Assistent de Casa:\n\n`{source}`\n\n\n\nper fixar aquest error, editar el helper i ajustar l'entitat de font (o treure el helper) i reprèn Assistent de Casa.\n\nSpook 👻 No el vostre homie.",
+            "title": "Font desconeguda: {helper}"
+        },
+        "lovelace_unknown_entity_references": {
+            "description": "Spook ha trobat un fantasma en els vostres quadres de comandament 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el quadre de comandament següent:\n\n[{dashboard}]({edit})\n\nAquest quadre de comandament referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el quadre de comandament]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "title": "Les entitats desconegudes van utilitzar dins: {dashboard}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
+            "title": "Unknown ignored zones: {name}"
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown tracked entities: {name}"
+        },
+        "proximity_unknown_zone": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
+            "title": "Unknown zone: {zone}"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown entities used in: {scene}"
+        },
+        "script_unknown_area_references": {
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "title": "Les àrees desconegudes van utilitzar dins: {script}"
+        },
+        "script_unknown_device_references": {
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "title": "Els dispositius desconeguts van utilitzar dins: {script}"
+        },
+        "script_unknown_entity_references": {
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
+            "title": "Les entitats desconegudes van utilitzar dins: {script}"
+        },
+        "script_unknown_floor_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+            "title": "Unknown floors used in: {script}"
+        },
+        "script_unknown_label_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+            "title": "Unknown labels used in: {script}"
+        },
+        "script_unknown_service_references": {
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 No el vostre homie.",
+            "title": "Unknown actions used in: {script}"
+        },
+        "switch_as_x_unknown_source": {
+            "description": "Spook ha trobat un fantasma en el vostre Canvi com X helpers 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el següent helper:\n\n{helper} (`{entity_id}`)\n\nAixò helper té una entitat de canvi de la font desconeguda a Assistent de Casa:\n\n`{source}`\n\n\n\nper fixar aquest error, editar el helper i ajustar l'entitat de font (o treure el helper) i reprèn Assistent de Casa.\n\nSpook 👻 No el vostre homie.",
+            "title": "Font desconeguda: {helper}"
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook has found a ghost in your utility meter helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+            "title": "Unknown source: {helper}"
+        },
+        "trend_unknown_source": {
+            "description": "Spook has found a ghost in your trend helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+            "title": "Unknown source: {helper}"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{description}",
+                        "title": "{title}"
+                    }
+                }
+            },
             "title": "{title}"
-          }
-        }
-      },
-      "title": "{title}"
-    },
-    "restart_required": {
-      "title": "Reprendre requerit",
-      "fix_flow": {
-        "step": {
-          "confirm_restart": {
+        },
+        "restart_required": {
             "title": "Reprendre requerit",
-            "description": "En ordre per Spook 👻 a l'acabat que munta, necessitats d'Assistent de la Casa per ser reprès.\n\nSelecciona lliurar per reprendre Assistent de Casa ara."
-          }
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "Reprendre requerit",
+                        "description": "En ordre per Spook 👻 a l'acabat que munta, necessitats d'Assistent de la Casa per ser reprès.\n\nSelecciona lliurar per reprendre Assistent de Casa ara."
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
