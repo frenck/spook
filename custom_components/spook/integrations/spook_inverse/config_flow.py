@@ -83,6 +83,10 @@ CONFIG_FLOW = {
         config_schema(Platform.BINARY_SENSOR),
         validate_user_input=set_inverse_type(Platform.BINARY_SENSOR),
     ),
+    Platform.COVER: SchemaFlowFormStep(
+        config_schema(Platform.COVER),
+        validate_user_input=set_inverse_type(Platform.COVER),
+    ),
     Platform.SWITCH: SchemaFlowFormStep(
         config_schema(Platform.SWITCH),
         validate_user_input=set_inverse_type(Platform.SWITCH),
@@ -95,6 +99,7 @@ OPTIONS_FLOW = {
     Platform.BINARY_SENSOR: SchemaFlowFormStep(
         partial(options_schema, Platform.BINARY_SENSOR),
     ),
+    Platform.COVER: SchemaFlowFormStep(partial(options_schema, Platform.COVER)),
     Platform.SWITCH: SchemaFlowFormStep(partial(options_schema, Platform.SWITCH)),
 }
 
