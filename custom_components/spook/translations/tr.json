@@ -1,335 +1,335 @@
 {
-  "config": {
-    "abort": {
-      "already_spooked": "Oh..hayır. Tamam, teşekkürler, görüşürüz."
-    },
-    "step": {
-      "user": {
-        "description": "Readme kısmını okudunuz mu? Lisansı okudunuz mu? Gerçekten emin misiniz?"
-      },
-      "choice_restart": {
-        "description": "Spook'un ayarlanması için, Home Asistan'ın yeniden başlaması gerekir.\n\nŞimdi Home Asistanı yeniden başlatmak ister misiniz?",
-        "menu_options": {
-          "restart_now": "Şimdi yeniden başlat",
-          "restart_later": "Daha sonra yeniden başlat"
-        }
-      }
-    }
-  },
-  "entity": {
-    "button": {
-      "homeassistant_reload": {
-        "name": "Yeniden yükleme"
-      },
-      "homeassistant_restart": {
-        "name": "Yeniden başlat"
-      },
-      "repairs_ignore_all": {
-        "name": "Hepsini yoksay"
-      },
-      "repairs_unignore_all": {
-        "name": "Hepsini varsay"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "event_type": {
-            "state": {
-              "create": "Yaratılan Sorun",
-              "remove": "Sorun kaldırıldı",
-              "update": "Sorun güncellendi"
+    "config": {
+        "abort": {
+            "already_spooked": "Oh..hayır. Tamam, teşekkürler, görüşürüz."
+        },
+        "step": {
+            "user": {
+                "description": "Readme kısmını okudunuz mu? Lisansı okudunuz mu? Gerçekten emin misiniz?"
+            },
+            "choice_restart": {
+                "description": "Spook'un ayarlanması için, Home Asistan'ın yeniden başlaması gerekir.\n\nŞimdi Home Asistanı yeniden başlatmak ister misiniz?",
+                "menu_options": {
+                    "restart_now": "Şimdi yeniden başlat",
+                    "restart_later": "Daha sonra yeniden başlat"
+                }
             }
-          },
-          "domain": {
-            "name": "Sorunu giren"
-          },
-          "issue_id": {
-            "name": "Sorun ID"
-          }
         }
-      }
     },
-    "sensor": {
-      "homeassistant_air_quality": {
-        "name": "Hava kalitesi"
-      },
-      "homeassistant_alarm_control_panel": {
-        "name": "Alarm kontrol panelleri"
-      },
-      "homeassistant_area": {
-        "name": "Alanlar"
-      },
-      "homeassistant_automation": {
-        "name": "Otomasyonlar"
-      },
-      "homeassistant_binary_sensor": {
-        "name": "İkili sensörler"
-      },
-      "homeassistant_button": {
-        "name": "Butonlar"
-      },
-      "homeassistant_calendar": {
-        "name": "Takvimler"
-      },
-      "homeassistant_camera": {
-        "name": "Kameralar"
-      },
-      "homeassistant_climate": {
-        "name": "İklimlendirme"
-      },
-      "homeassistant_cover": {
-        "name": "Kapaklar"
-      },
-      "homeassistant_custom_component": {
-        "name": "Özel entegrasyonlar"
-      },
-      "homeassistant_date": {
-        "name": "Tarihler"
-      },
-      "homeassistant_datetime": {
-        "name": "Tarih / Zaman"
-      },
-      "homeassistant_device": {
-        "name": "Cihazlar"
-      },
-      "homeassistant_device_tracker": {
-        "name": "Cihaz tarayıcıları"
-      },
-      "homeassistant_entities": {
-        "name": "Ögeler"
-      },
-      "homeassistant_fan": {
-        "name": "Fanlar"
-      },
-      "homeassistant_humidifier": {
-        "name": "Hava Nemlendiricileri"
-      },
-      "homeassistant_image": {
-        "name": "Görüntüler"
-      },
-      "homeassistant_input_boolean": {
-        "name": "Giriş mantıksalları"
-      },
-      "homeassistant_input_button": {
-        "name": "Giriş butonları"
-      },
-      "homeassistant_input_datetime": {
-        "name": "Giriş tarih/zaman"
-      },
-      "homeassistant_input_number": {
-        "name": "Giriş numaraları"
-      },
-      "homeassistant_input_select": {
-        "name": "Giriş tercihleri"
-      },
-      "homeassistant_input_text": {
-        "name": "Giriş metinleri"
-      },
-      "homeassistant_integration": {
-        "name": "Entegrasyon"
-      },
-      "homeassistant_light": {
-        "name": "Işıklar"
-      },
-      "homeassistant_lock": {
-        "name": "Kilitler"
-      },
-      "homeassistant_media_player": {
-        "name": "Media oynatıcıları"
-      },
-      "homeassistant_number": {
-        "name": "Sayılar"
-      },
-      "homeassistant_persistent_notification": {
-        "name": "Kalıcı bildirimler"
-      },
-      "homeassistant_person": {
-        "name": "Kişiler"
-      },
-      "homeassistant_remote": {
-        "name": "Uzaktan kontroller"
-      },
-      "homeassistant_scene": {
-        "name": "Sahneler"
-      },
-      "homeassistant_script": {
-        "name": "Betikler"
-      },
-      "homeassistant_select": {
-        "name": "Seçenekler"
-      },
-      "homeassistant_sensor": {
-        "name": "Sensörler"
-      },
-      "homeassistant_siren": {
-        "name": "Sirenler"
-      },
-      "homeassistant_stt": {
-        "name": "Konuşmadan-yazıya"
-      },
-      "homeassistant_sun": {
-        "name": "Güneşler"
-      },
-      "homeassistant_switch": {
-        "name": "Anahtarlar"
-      },
-      "homeassistant_text": {
-        "name": "Metinler"
-      },
-      "homeassistant_time": {
-        "name": "Zamanlar"
-      },
-      "homeassistant_tts": {
-        "name": "Yazıdan-konuşmaya"
-      },
-      "homeassistant_update": {
-        "name": "Güncelleme"
-      },
-      "homeassistant_vacuum": {
-        "name": "Süpürgeler"
-      },
-      "homeassistant_water_heater": {
-        "name": "Su ısıtıcıları"
-      },
-      "homeassistant_weather": {
-        "name": "Hava"
-      },
-      "homeassistant_zone": {
-        "name": "Bölgeler"
-      },
-      "repairs_total_issues": {
-        "name": "Toplam"
-      },
-      "repairs_ignored_issues": {
-        "name": "Yok sayıldı"
-      },
-      "repairs_active_issues": {
-        "name": "Aktif"
-      }
+    "entity": {
+        "button": {
+            "homeassistant_reload": {
+                "name": "Yeniden yükleme"
+            },
+            "homeassistant_restart": {
+                "name": "Yeniden başlat"
+            },
+            "repairs_ignore_all": {
+                "name": "Hepsini yoksay"
+            },
+            "repairs_unignore_all": {
+                "name": "Hepsini varsay"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "Yaratılan Sorun",
+                            "remove": "Sorun kaldırıldı",
+                            "update": "Sorun güncellendi"
+                        }
+                    },
+                    "domain": {
+                        "name": "Sorunu giren"
+                    },
+                    "issue_id": {
+                        "name": "Sorun ID"
+                    }
+                }
+            }
+        },
+        "sensor": {
+            "homeassistant_air_quality": {
+                "name": "Hava kalitesi"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "Alarm kontrol panelleri"
+            },
+            "homeassistant_area": {
+                "name": "Alanlar"
+            },
+            "homeassistant_automation": {
+                "name": "Otomasyonlar"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "İkili sensörler"
+            },
+            "homeassistant_button": {
+                "name": "Butonlar"
+            },
+            "homeassistant_calendar": {
+                "name": "Takvimler"
+            },
+            "homeassistant_camera": {
+                "name": "Kameralar"
+            },
+            "homeassistant_climate": {
+                "name": "İklimlendirme"
+            },
+            "homeassistant_cover": {
+                "name": "Kapaklar"
+            },
+            "homeassistant_custom_component": {
+                "name": "Özel entegrasyonlar"
+            },
+            "homeassistant_date": {
+                "name": "Tarihler"
+            },
+            "homeassistant_datetime": {
+                "name": "Tarih / Zaman"
+            },
+            "homeassistant_device": {
+                "name": "Cihazlar"
+            },
+            "homeassistant_device_tracker": {
+                "name": "Cihaz tarayıcıları"
+            },
+            "homeassistant_entities": {
+                "name": "Ögeler"
+            },
+            "homeassistant_fan": {
+                "name": "Fanlar"
+            },
+            "homeassistant_humidifier": {
+                "name": "Hava Nemlendiricileri"
+            },
+            "homeassistant_image": {
+                "name": "Görüntüler"
+            },
+            "homeassistant_input_boolean": {
+                "name": "Giriş mantıksalları"
+            },
+            "homeassistant_input_button": {
+                "name": "Giriş butonları"
+            },
+            "homeassistant_input_datetime": {
+                "name": "Giriş tarih/zaman"
+            },
+            "homeassistant_input_number": {
+                "name": "Giriş numaraları"
+            },
+            "homeassistant_input_select": {
+                "name": "Giriş tercihleri"
+            },
+            "homeassistant_input_text": {
+                "name": "Giriş metinleri"
+            },
+            "homeassistant_integration": {
+                "name": "Entegrasyon"
+            },
+            "homeassistant_light": {
+                "name": "Işıklar"
+            },
+            "homeassistant_lock": {
+                "name": "Kilitler"
+            },
+            "homeassistant_media_player": {
+                "name": "Media oynatıcıları"
+            },
+            "homeassistant_number": {
+                "name": "Sayılar"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "Kalıcı bildirimler"
+            },
+            "homeassistant_person": {
+                "name": "Kişiler"
+            },
+            "homeassistant_remote": {
+                "name": "Uzaktan kontroller"
+            },
+            "homeassistant_scene": {
+                "name": "Sahneler"
+            },
+            "homeassistant_script": {
+                "name": "Betikler"
+            },
+            "homeassistant_select": {
+                "name": "Seçenekler"
+            },
+            "homeassistant_sensor": {
+                "name": "Sensörler"
+            },
+            "homeassistant_siren": {
+                "name": "Sirenler"
+            },
+            "homeassistant_stt": {
+                "name": "Konuşmadan-yazıya"
+            },
+            "homeassistant_sun": {
+                "name": "Güneşler"
+            },
+            "homeassistant_switch": {
+                "name": "Anahtarlar"
+            },
+            "homeassistant_text": {
+                "name": "Metinler"
+            },
+            "homeassistant_time": {
+                "name": "Zamanlar"
+            },
+            "homeassistant_tts": {
+                "name": "Yazıdan-konuşmaya"
+            },
+            "homeassistant_update": {
+                "name": "Güncelleme"
+            },
+            "homeassistant_vacuum": {
+                "name": "Süpürgeler"
+            },
+            "homeassistant_water_heater": {
+                "name": "Su ısıtıcıları"
+            },
+            "homeassistant_weather": {
+                "name": "Hava"
+            },
+            "homeassistant_zone": {
+                "name": "Bölgeler"
+            },
+            "repairs_total_issues": {
+                "name": "Toplam"
+            },
+            "repairs_ignored_issues": {
+                "name": "Yok sayıldı"
+            },
+            "repairs_active_issues": {
+                "name": "Aktif"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa durum raporlama"
+            },
+            "cloud_google_report_state": {
+                "name": "Google Assistant durum raporlama"
+            },
+            "cloud_remote": {
+                "name": "Uzaktan kontrol"
+            }
+        }
     },
-    "switch": {
-      "cloud_alexa_report_state": {
-        "name": "Alexa durum raporlama"
-      },
-      "cloud_google_report_state": {
-        "name": "Google Assistant durum raporlama"
-      },
-      "cloud_remote": {
-        "name": "Uzaktan kontrol"
-      }
-    }
-  },
-  "issues": {
-    "automation_unknown_area_references": {
-      "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki alanları referanslar:\n\n{areas}\n\n\n\nBu hatayı düzeltmek için [edit the Automation] ({edit}) ve bu non-existing alanlarının kullanımını ortadan kaldırmak.\n\nSpook . senin homie değil.",
-      "title": "Bilinmeyen kullanım alanları: {automation}"
-    },
-    "automation_unknown_device_references": {
-      "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki cihazlara atıfta bulunur:\n\n{devices}\n\n\n\nBu hatayı düzeltmek için [Automasyonu düzenleyin] ({edit}) ve bu eksik cihazların kullanımını ortadan kaldırın. \n\nSpook . senin homieniz.",
-      "title": "Bilinmeyen cihazlar kullanılır: {automation}"
-    },
-    "automation_unknown_entity_references": {
-      "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the Automation]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
-      "title": "Bilinmeyen varlıklar kullanılır: {automation}"
-    },
-    "automation_unknown_floor_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {automation}"
-    },
-    "automation_unknown_label_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {automation}"
-    },
-    "automation_unknown_service_references": {
-      "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {automation}"
-    },
-    "group_unknown_members": {
-      "description": "Spook gruplarda bir hayalet buldu 👻\n\nEtrafında yüzerken, Spook aşağıdaki grupla yolu geçti:\n\n{group} ('{entity_id})\n\nBu grup, Home Asistan için bilinmeyen üyeleri vardır:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için, grubu düzenlemek, bu varlık olmayan varlıkların kullanımını ortadan kaldırmak ve Home Asistanı yeniden başlatmak.\n\nSpook . senin homie değil.",
-      "title": "Bilinmeyen grup üyeleri: {group}"
-    },
-    "integration_unknown_source": {
-      "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Bilinmeyen kaynak: {helper}"
-    },
-    "lovelace_unknown_entity_references": {
-      "description": "Spook, panolarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki paniğe yol açtı:\n\n[{dashboard}]({edit})\n\nBu pano, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the dashboard]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
-      "title": "Bilinmeyen varlıklar kullanılır: {dashboard}"
-    },
-    "proximity_unknown_ignored_zones": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-      "title": "Unknown ignored zones: {name}"
-    },
-    "proximity_unknown_tracked_entities": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown tracked entities: {name}"
-    },
-    "proximity_unknown_zone": {
-      "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-      "title": "Unknown zone: {zone}"
-    },
-    "scene_unknown_entity_references": {
-      "description": "Spook sahnelerinizde bir hayalet buldu 👻\n\nOrtalıkta dolaşırken Spook'un yolu şu sahneyle kesişti:\n\n[{scene}]({edit})\n\nBu sahne, Ev Asistanı tarafından bilinmeyen aşağıdaki varlıklara gönderme yapmaktadır:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [sahneyi düzenleyin]({edit}) ve mevcut olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Your homie.",
-      "title": "Bilinmeyen varlıklar şu sahnede kullanıldı: {scene}"
-    },
-    "script_unknown_area_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-      "title": "Bilinmeyen alanlarda kullanılır: {script}"
-    },
-    "script_unknown_device_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-      "title": "Bilinmeyen cihazlar kullanılır: {script}"
-    },
-    "script_unknown_entity_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-      "title": "Bilinmeyen ögeler: {script}"
-    },
-    "script_unknown_floor_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-      "title": "Unknown floors used in: {script}"
-    },
-    "script_unknown_label_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-      "title": "Unknown labels used in: {script}"
-    },
-    "script_unknown_service_references": {
-      "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-      "title": "Unknown actions used in: {script}"
-    },
-    "switch_as_x_unknown_source": {
-      "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Bilinmeyen kaynak: {helper}"
-    },
-    "utility_meter_unknown_source": {
-      "description": "Spook, sayaç yardımcılarınızda bir hayalet buldu 👻\n\nSpook'un ortalıkta dolaşırken yolu şu yardımcıyla kesişti:\n\n{helper} (`{entity_id}`)\n\nBu yardımcının Home Assistant tarafından bilinmeyen bir kaynak varlığı var:\n\n\"{source}\"\n\n\n\nBu hatayı düzeltmek için yardımcıyı düzenleyin ve kaynak varlığı ayarlayın (veya yardımcıyı kaldırın) ve Home Assistant'ı yeniden başlatın.\n\nSpook 👻 Your homie.",
-      "title": "Bilinmeyen kaynak: {helper}"
-    },
-    "trend_unknown_source": {
-      "description": "Spook, trend yardımcılarınızda bir hayalet buldu 👻\n\nSpook'un ortalıkta dolaşırken yolu şu yardımcıyla kesişti:\n\n{helper} (`{entity_id}`)\n\nBu yardımcının Home Assistant tarafından bilinmeyen bir kaynak varlığı var:\n\n\"{source}\"\n\n\n\nBu hatayı düzeltmek için yardımcıyı düzenleyin ve kaynak varlığı ayarlayın (veya yardımcıyı kaldırın) ve Home Assistant'ı yeniden başlatın.\n\nSpook 👻 Your homie.",
-      "title": "Bilinmeyen kaynak: {helper}"
-    },
-    "user_issue": {
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "description": "{description}",
+    "issues": {
+        "automation_unknown_area_references": {
+            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki alanları referanslar:\n\n{areas}\n\n\n\nBu hatayı düzeltmek için [edit the Automation] ({edit}) ve bu non-existing alanlarının kullanımını ortadan kaldırmak.\n\nSpook . senin homie değil.",
+            "title": "Bilinmeyen kullanım alanları: {automation}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki cihazlara atıfta bulunur:\n\n{devices}\n\n\n\nBu hatayı düzeltmek için [Automasyonu düzenleyin] ({edit}) ve bu eksik cihazların kullanımını ortadan kaldırın. \n\nSpook . senin homieniz.",
+            "title": "Bilinmeyen cihazlar kullanılır: {automation}"
+        },
+        "automation_unknown_entity_references": {
+            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the Automation]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
+            "title": "Bilinmeyen varlıklar kullanılır: {automation}"
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+            "title": "Unknown floors used in: {automation}"
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+            "title": "Unknown labels used in: {automation}"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown actions used in: {automation}"
+        },
+        "group_unknown_members": {
+            "description": "Spook gruplarda bir hayalet buldu 👻\n\nEtrafında yüzerken, Spook aşağıdaki grupla yolu geçti:\n\n{group} ('{entity_id})\n\nBu grup, Home Asistan için bilinmeyen üyeleri vardır:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için, grubu düzenlemek, bu varlık olmayan varlıkların kullanımını ortadan kaldırmak ve Home Asistanı yeniden başlatmak.\n\nSpook . senin homie değil.",
+            "title": "Bilinmeyen grup üyeleri: {group}"
+        },
+        "integration_unknown_source": {
+            "description": "Spook has found a ghost in your Riemann sum integral helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+            "title": "Bilinmeyen kaynak: {helper}"
+        },
+        "lovelace_unknown_entity_references": {
+            "description": "Spook, panolarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki paniğe yol açtı:\n\n[{dashboard}]({edit})\n\nBu pano, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the dashboard]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
+            "title": "Bilinmeyen varlıklar kullanılır: {dashboard}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
+            "title": "Unknown ignored zones: {name}"
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
+            "title": "Unknown tracked entities: {name}"
+        },
+        "proximity_unknown_zone": {
+            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
+            "title": "Unknown zone: {zone}"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook sahnelerinizde bir hayalet buldu 👻\n\nOrtalıkta dolaşırken Spook'un yolu şu sahneyle kesişti:\n\n[{scene}]({edit})\n\nBu sahne, Ev Asistanı tarafından bilinmeyen aşağıdaki varlıklara gönderme yapmaktadır:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [sahneyi düzenleyin]({edit}) ve mevcut olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Your homie.",
+            "title": "Bilinmeyen varlıklar şu sahnede kullanıldı: {scene}"
+        },
+        "script_unknown_area_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
+            "title": "Bilinmeyen alanlarda kullanılır: {script}"
+        },
+        "script_unknown_device_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
+            "title": "Bilinmeyen cihazlar kullanılır: {script}"
+        },
+        "script_unknown_entity_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+            "title": "Bilinmeyen ögeler: {script}"
+        },
+        "script_unknown_floor_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
+            "title": "Unknown floors used in: {script}"
+        },
+        "script_unknown_label_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
+            "title": "Unknown labels used in: {script}"
+        },
+        "script_unknown_service_references": {
+            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+            "title": "Unknown actions used in: {script}"
+        },
+        "switch_as_x_unknown_source": {
+            "description": "Spook has found a ghost in your Switch as X helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{entity_id}`)\n\nThis helper has a source switch entity unknown to Home Assistant:\n\n`{source}`\n\n\n\nTo fix this error, edit the helper and adjust the source entity (or remove the helper) and restart Home Assistant.\n\nSpook 👻 Your homie.",
+            "title": "Bilinmeyen kaynak: {helper}"
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook, sayaç yardımcılarınızda bir hayalet buldu 👻\n\nSpook'un ortalıkta dolaşırken yolu şu yardımcıyla kesişti:\n\n{helper} (`{entity_id}`)\n\nBu yardımcının Home Assistant tarafından bilinmeyen bir kaynak varlığı var:\n\n\"{source}\"\n\n\n\nBu hatayı düzeltmek için yardımcıyı düzenleyin ve kaynak varlığı ayarlayın (veya yardımcıyı kaldırın) ve Home Assistant'ı yeniden başlatın.\n\nSpook 👻 Your homie.",
+            "title": "Bilinmeyen kaynak: {helper}"
+        },
+        "trend_unknown_source": {
+            "description": "Spook, trend yardımcılarınızda bir hayalet buldu 👻\n\nSpook'un ortalıkta dolaşırken yolu şu yardımcıyla kesişti:\n\n{helper} (`{entity_id}`)\n\nBu yardımcının Home Assistant tarafından bilinmeyen bir kaynak varlığı var:\n\n\"{source}\"\n\n\n\nBu hatayı düzeltmek için yardımcıyı düzenleyin ve kaynak varlığı ayarlayın (veya yardımcıyı kaldırın) ve Home Assistant'ı yeniden başlatın.\n\nSpook 👻 Your homie.",
+            "title": "Bilinmeyen kaynak: {helper}"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{description}",
+                        "title": "{title}"
+                    }
+                }
+            },
             "title": "{title}"
-          }
-        }
-      },
-      "title": "{title}"
-    },
-    "restart_required": {
-      "title": "Yeniden başlatma gerekli",
-      "fix_flow": {
-        "step": {
-          "confirm_restart": {
+        },
+        "restart_required": {
             "title": "Yeniden başlatma gerekli",
-            "description": "Spook'un ayarlanması için, Home Asistan'ın yeniden başlaması gerekir.\n\nŞimdi Home Asistan'ı yeniden başlatmayı seçin."
-          }
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "Yeniden başlatma gerekli",
+                        "description": "Spook'un ayarlanması için, Home Asistan'ın yeniden başlaması gerekir.\n\nŞimdi Home Asistan'ı yeniden başlatmayı seçin."
+                    }
+                }
+            }
         }
-      }
     }
-  }
 }
