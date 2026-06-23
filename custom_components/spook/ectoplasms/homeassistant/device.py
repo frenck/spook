@@ -12,15 +12,21 @@ def async_disable_device_and_parent_if_needed(
     device_id: str,
 ) -> None:
     """Disable a device and its parent when no enabled child devices remain."""
-    device = device_registry.async_update_device(
-        device_id=device_id,
-        disabled_by=dr.DeviceEntryDisabler.USER,
-    )
-    if device is None or device.via_device_id is None:
+    device = device_registry.async_get(device_id)
+    if device is None:
+        return
+
+    if device.disabled_by is None:
+        device_registry.async_update_device(
+            device_id=device_id,
+            disabled_by=dr.DeviceEntryDisabler.USER,
+        )
+
+    if device.via_device_id is None:
         return
 
     if all(
-        child.disabled_by is not None
+        child.id == device_id or child.disabled_by is not None
         for child in device_registry.devices.values()
         if child.via_device_id == device.via_device_id
     ):

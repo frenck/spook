@@ -142,6 +142,43 @@ async def test_disable_device_service_disables_parent_without_other_children(
 
 
 @pytest.mark.usefixtures("device_services")
+async def test_disable_device_service_preserves_parent_disabled_reason(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test disabling a child device does not override the parent disable reason."""
+    grandparent = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "grandparent-device")},
+    )
+    parent = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "parent-device")},
+        disabled_by=DeviceEntryDisabler.CONFIG_ENTRY,
+        via_device=("test", "grandparent-device"),
+    )
+    child = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "child-device")},
+        via_device=("test", "parent-device"),
+    )
+
+    await hass.services.async_call(
+        DOMAIN,
+        "disable_device",
+        {"device_id": child.id},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert device_registry.async_get(child.id).disabled_by is DeviceEntryDisabler.USER
+    assert device_registry.async_get(parent.id).disabled_by is DeviceEntryDisabler.CONFIG_ENTRY
+    assert device_registry.async_get(grandparent.id).disabled_by is DeviceEntryDisabler.USER
+
+
+@pytest.mark.usefixtures("device_services")
 async def test_disable_device_service_keeps_parent_enabled_with_enabled_children(
     hass: HomeAssistant,
     hass_admin_user: MockUser,
