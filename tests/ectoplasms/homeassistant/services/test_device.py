@@ -174,8 +174,14 @@ async def test_disable_device_service_preserves_parent_disabled_reason(
     )
 
     assert device_registry.async_get(child.id).disabled_by is DeviceEntryDisabler.USER
-    assert device_registry.async_get(parent.id).disabled_by is DeviceEntryDisabler.CONFIG_ENTRY
-    assert device_registry.async_get(grandparent.id).disabled_by is DeviceEntryDisabler.USER
+    assert (
+        device_registry.async_get(parent.id).disabled_by
+        is DeviceEntryDisabler.CONFIG_ENTRY
+    )
+    assert (
+        device_registry.async_get(grandparent.id).disabled_by
+        is DeviceEntryDisabler.USER
+    )
 
 
 @pytest.mark.usefixtures("device_services")
