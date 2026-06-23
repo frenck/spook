@@ -109,3 +109,143 @@ async def test_device_services_accept_multiple_devices(
     assert all(
         device_registry.async_get(device.id).disabled_by is None for device in devices
     )
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_disable_device_service_disables_parent_without_other_children(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test disabling a child device also disables its parent device."""
+    parent = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "parent-device")},
+    )
+    child = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "child-device")},
+        via_device=("test", "parent-device"),
+    )
+
+    await hass.services.async_call(
+        DOMAIN,
+        "disable_device",
+        {"device_id": child.id},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert device_registry.async_get(child.id).disabled_by is DeviceEntryDisabler.USER
+    assert device_registry.async_get(parent.id).disabled_by is DeviceEntryDisabler.USER
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_disable_device_service_preserves_parent_disabled_reason(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test disabling a child device does not override the parent disable reason."""
+    grandparent = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "grandparent-device")},
+    )
+    parent = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "parent-device")},
+        disabled_by=DeviceEntryDisabler.CONFIG_ENTRY,
+        via_device=("test", "grandparent-device"),
+    )
+    child = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "child-device")},
+        via_device=("test", "parent-device"),
+    )
+
+    await hass.services.async_call(
+        DOMAIN,
+        "disable_device",
+        {"device_id": child.id},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert device_registry.async_get(child.id).disabled_by is DeviceEntryDisabler.USER
+    assert (
+        device_registry.async_get(parent.id).disabled_by
+        is DeviceEntryDisabler.CONFIG_ENTRY
+    )
+    assert (
+        device_registry.async_get(grandparent.id).disabled_by
+        is DeviceEntryDisabler.USER
+    )
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_disable_device_service_keeps_parent_enabled_with_enabled_children(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test disabling one child device keeps a parent with enabled children enabled."""
+    parent = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "parent-device")},
+    )
+    child = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "child-device")},
+        via_device=("test", "parent-device"),
+    )
+    device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "sibling-device")},
+        via_device=("test", "parent-device"),
+    )
+
+    await hass.services.async_call(
+        DOMAIN,
+        "disable_device",
+        {"device_id": child.id},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert device_registry.async_get(child.id).disabled_by is DeviceEntryDisabler.USER
+    assert device_registry.async_get(parent.id).disabled_by is None
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_enable_device_service_enables_parent_device(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test enabling a child device also enables its parent device."""
+    parent = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "parent-device")},
+        disabled_by=DeviceEntryDisabler.USER,
+    )
+    child = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "child-device")},
+        disabled_by=DeviceEntryDisabler.USER,
+        via_device=("test", "parent-device"),
+    )
+
+    await hass.services.async_call(
+        DOMAIN,
+        "enable_device",
+        {"device_id": child.id},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert device_registry.async_get(child.id).disabled_by is None
+    assert device_registry.async_get(parent.id).disabled_by is None
