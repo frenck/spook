@@ -77,6 +77,11 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
                     entity.raw_config.get("trigger")
                 )
             )
+            device_ids.difference_update(
+                extract_event_data_device_ids_from_trigger_config(
+                    entity.raw_config.get("triggers")
+                )
+            )
 
         return async_filter_known_device_ids(
             self.hass,
