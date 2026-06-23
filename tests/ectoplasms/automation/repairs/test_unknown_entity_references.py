@@ -161,7 +161,7 @@ async def test_value_template_ignores_entity_id_in_jinja_comment(
 ) -> None:
     """Entity-like strings inside Jinja comments are not active references."""
     template = (
-        "{#{ state_translated('sensor.toothbrush_change_head') | string }} "
+        "{# {{ state_translated('sensor.toothbrush_change_head') | string }} "
         "indicates time to change, toothbrush head #}"
         "{{ trigger.to_state.attributes.friendly_name | string }}"
     )
