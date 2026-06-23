@@ -1,7 +1,9 @@
 {
   "config": {
     "abort": {
-      "already_spooked": "Yeah... well... no. K, thx, bye!"
+      "already_spooked": "Spook is already configured.",
+      "enabled_existing": "The existing Spook entry has been enabled.",
+      "enable_failed": "The existing Spook entry could not be enabled."
     },
     "step": {
       "user": {
@@ -12,6 +14,12 @@
         "menu_options": {
           "restart_now": "Restart now",
           "restart_later": "Restart later"
+        }
+      },
+      "already_configured": {
+        "description": "Spook is already configured, but the existing entry is disabled. Do you want to enable it?",
+        "menu_options": {
+          "enable_existing": "Enable existing entry"
         }
       }
     }
