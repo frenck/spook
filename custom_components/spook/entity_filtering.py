@@ -203,7 +203,7 @@ def async_setup_all_entity_ids_cache_invalidation(
 def async_get_all_entity_ids(
     hass: HomeAssistant, *, include_all_none: bool = False
 ) -> set[str]:
-    """Return all entity IDs, known to Home Assistant, using a cache."""
+    """Return entity IDs known to Home Assistant or treated as known by Spook."""
     # pylint: disable-next=global-statement
     global _CACHED_ALL_ENTITY_IDS  # noqa: PLW0603
 

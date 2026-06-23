@@ -8,6 +8,7 @@ import pytest
 
 from custom_components.spook import entity_filtering
 from custom_components.spook.entity_filtering import (
+    KNOWN_TIME_DATE_ENTITY_IDS,
     async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
     async_get_all_entity_ids,
@@ -327,7 +328,7 @@ async def test_time_date_entities_are_known(
     assert (
         await async_filter_known_entity_ids_with_templates(
             hass,
-            {"sensor.date", "sensor.time"},
+            KNOWN_TIME_DATE_ENTITY_IDS,
             known_entity_ids=known_entity_ids,
         )
         == set()
