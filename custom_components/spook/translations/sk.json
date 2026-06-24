@@ -1,7 +1,9 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Jo... no. K, thx, bye!"
+            "already_spooked": "Spook je už nakonfigurovaný.",
+            "enabled_existing": "Existujúca položka Spook bola povolená.",
+            "enable_failed": "Existujúci záznam Spook sa nepodarilo povoliť."
         },
         "step": {
             "user": {
@@ -12,6 +14,12 @@
                 "menu_options": {
                     "restart_now": "Reštartovať teraz",
                     "restart_later": "Reštartujte neskôr"
+                }
+            },
+            "already_configured": {
+                "description": "Spook je už nakonfigurovaný, ale existujúca položka je zakázaná. Chcete ju povoliť?",
+                "menu_options": {
+                    "enable_existing": "Povoliť existujúci záznam"
                 }
             }
         }
@@ -206,6 +214,9 @@
             },
             "repairs_active_issues": {
                 "name": "Aktívne"
+            },
+            "homeassistant_todo": {
+                "name": "Zoznamy úloh"
             }
         },
         "switch": {
@@ -330,6 +341,484 @@
                     }
                 }
             }
+        }
+    },
+    "services": {
+        "blueprint_import": {
+            "fields": {
+                "url": {
+                    "description": "URL adresa, z ktorej sa má importovať plán.",
+                    "name": "URL"
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Vytvoriť oblasť",
+            "fields": {
+                "name": {
+                    "name": "Názov"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona pre oblasť."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entita"
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entita"
+                }
+            },
+            "name": "Zakázať entitu"
+        },
+        "homeassistant_enable_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entita",
+                    "description": "Entita/entity na povolenie."
+                }
+            },
+            "name": "Povoliť entitu"
+        },
+        "homeassistant_hide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entita",
+                    "description": "Entita/entity na skrytie."
+                }
+            },
+            "name": "Skryť entitu"
+        },
+        "homeassistant_rename_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entita",
+                    "description": "Entita/entity na premenovanie."
+                },
+                "name": {
+                    "name": "Názov"
+                }
+            },
+            "name": "Premenovať entitu"
+        },
+        "homeassistant_unhide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entita"
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "fields": {
+                "name": {
+                    "name": "Názov"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona pre podlahu."
+                },
+                "level": {
+                    "name": "Úroveň"
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Zariadenie"
+                }
+            },
+            "name": "Zakázať zariadenie"
+        },
+        "homeassistant_create_label": {
+            "fields": {
+                "name": {
+                    "name": "Názov"
+                },
+                "description": {
+                    "name": "Popis"
+                },
+                "icon": {
+                    "name": "Ikona"
+                },
+                "color": {
+                    "name": "Farba"
+                }
+            }
+        },
+        "homeassistant_restart": {
+            "name": "Reštart"
+        },
+        "recorder_import_statistics": {
+            "fields": {
+                "name": {
+                    "name": "Názov"
+                },
+                "source": {
+                    "name": "Zdroj",
+                    "description": "Zdroj štatistických dát."
+                },
+                "stats": {
+                    "name": "Štatistika"
+                },
+                "statistic_id": {
+                    "name": "ID štatistiky"
+                },
+                "unit_of_measurement": {
+                    "name": "Jednotky merania",
+                    "description": "Jednotky merania štatistiky."
+                }
+            }
+        },
+        "input_number_create": {
+            "fields": {
+                "icon": {
+                    "name": "Ikona"
+                },
+                "initial": {
+                    "name": "Počiatočná hodnota"
+                },
+                "step": {
+                    "name": "Veľkosť kroku",
+                    "description": "Veľkosť kroku vstupného čísla."
+                },
+                "mode": {
+                    "name": "Režim zobrazenia"
+                },
+                "unit_of_measurement": {
+                    "name": "Jednotky merania"
+                },
+                "max": {
+                    "description": "Maximálna hodnota vstupného čísla.",
+                    "name": "Maximum"
+                },
+                "name": {
+                    "name": "Názov"
+                },
+                "min": {
+                    "name": "Minimum"
+                }
+            },
+            "name": "Vytvoriť vstupné číslo"
+        },
+        "person_add_device_tracker": {
+            "fields": {
+                "entity_id": {
+                    "name": "Osoba"
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "fields": {
+                "entity_id": {
+                    "name": "Osoba"
+                }
+            }
+        },
+        "timer_set_duration": {
+            "fields": {
+                "duration": {
+                    "name": "Trvanie"
+                }
+            },
+            "description": "Nastaviť trvanie pre existujúci časovač.",
+            "name": "Nastaviť trvanie"
+        },
+        "zone_create": {
+            "fields": {
+                "name": {
+                    "name": "Názov",
+                    "description": "Názov zóny"
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona pre zónu"
+                }
+            },
+            "name": "Vytvoriť zónu"
+        },
+        "zone_update": {
+            "fields": {
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Ikona pre zónu"
+                },
+                "entity_id": {
+                    "name": "ID entity"
+                },
+                "name": {
+                    "description": "Názov zóny",
+                    "name": "Názov"
+                }
+            },
+            "name": "Aktualizovať zónu"
+        },
+        "homeassistant_add_alias_to_area": {
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti"
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti"
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti"
+                },
+                "device_id": {
+                    "name": "ID zariadenia"
+                }
+            },
+            "name": "Pridať zariadenie do oblasti"
+        },
+        "homeassistant_remove_device_from_area": {
+            "fields": {
+                "device_id": {
+                    "name": "ID zariadenia"
+                }
+            },
+            "name": "Odobrať zariadenie z oblasti"
+        },
+        "homeassistant_add_entity_to_area": {
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti"
+                },
+                "entity_id": {
+                    "name": "ID entity"
+                }
+            },
+            "name": "Pridať entitu do oblasti"
+        },
+        "homeassistant_remove_entity_from_area": {
+            "fields": {
+                "entity_id": {
+                    "name": "ID entity"
+                }
+            },
+            "name": "Odobrať entitu z oblasti"
+        },
+        "homeassistant_delete_area": {
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti"
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "fields": {
+                "floor_id": {
+                    "name": "ID podlahy"
+                }
+            },
+            "name": "Vymazať podlahu"
+        },
+        "homeassistant_add_label_to_device": {
+            "fields": {
+                "device_id": {
+                    "name": "ID zariadenia"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "ID entity"
+                }
+            }
+        },
+        "number_decrement": {
+            "name": "Znížiť hodnotu",
+            "fields": {
+                "amount": {
+                    "name": "Množstvo"
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Zvýšiť hodnotu",
+            "fields": {
+                "amount": {
+                    "name": "Množstvo"
+                }
+            }
+        },
+        "input_number_decrement": {
+            "name": "Znížiť hodnotu",
+            "fields": {
+                "amount": {
+                    "name": "Množstvo"
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Zvýšiť hodnotu",
+            "fields": {
+                "amount": {
+                    "name": "Množstvo"
+                }
+            }
+        },
+        "zone_delete": {
+            "fields": {
+                "entity_id": {
+                    "name": "ID entity"
+                }
+            },
+            "name": "Vymazať zónu"
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Zakázať integráciu"
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Povoliť integráciu"
+        },
+        "homeassistant_enable_device": {
+            "name": "Povoliť zariadenie",
+            "fields": {
+                "device_id": {
+                    "name": "ID zariadenia"
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Zakázať užívateľa",
+            "fields": {
+                "user_id": {
+                    "name": "ID užívateľa"
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Povoliť užívateľa",
+            "fields": {
+                "user_id": {
+                    "name": "ID užívateľa"
+                }
+            }
+        },
+        "number_max": {
+            "name": "Nastaviť maximálnu hodnotu"
+        },
+        "number_min": {
+            "name": "Nastaviť minimálnu hodnotu"
+        },
+        "input_number_max": {
+            "name": "Nastaviť maximálnu hodnotu"
+        },
+        "input_number_min": {
+            "name": "Nastaviť minimálnu hodnotu"
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Vymazať všetky osirelé entity"
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Zoznam všetkých osirelých databázových entít"
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Pridať oblasť do podlahy",
+            "fields": {
+                "floor_id": {
+                    "name": "ID podlahy"
+                },
+                "area_id": {
+                    "name": "ID oblasti"
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Odobrať oblasť z podlahy",
+            "fields": {
+                "area_id": {
+                    "name": "ID oblasti"
+                }
+            }
+        },
+        "select_random": {
+            "fields": {
+                "options": {
+                    "name": "Nastavenia"
+                }
+            }
+        },
+        "input_select_random": {
+            "fields": {
+                "options": {
+                    "name": "Nastavenia"
+                }
+            }
+        },
+        "repairs_create": {
+            "fields": {
+                "title": {
+                    "name": "Nadpis"
+                },
+                "description": {
+                    "name": "Popis"
+                },
+                "domain": {
+                    "name": "Doména"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "fields": {
+                "floor_id": {
+                    "name": "ID podlahy"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "fields": {
+                "floor_id": {
+                    "name": "ID podlahy"
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "fields": {
+                "floor_id": {
+                    "name": "ID podlahy"
+                }
+            }
+        },
+        "input_select_sort": {
+            "name": "Možnosti triedenia"
+        },
+        "input_number_delete": {
+            "name": "Vymazať vstupné číslo"
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Ignorovať všetky aktuálne objavené zariadenia"
         }
     }
 }
