@@ -747,6 +747,25 @@ async def async_extract_entities_from_config(
     return entities
 
 
+def extract_called_services_from_config(config: Any) -> set[str]:
+    """Extract services called from an automation or script config."""
+    if isinstance(config, list):
+        return async_find_services_in_sequence(config)
+
+    if not isinstance(config, dict):
+        return set()
+
+    called_services: set[str] = set()
+    for key in ("action", "actions", CONF_SEQUENCE):
+        sequence = config.get(key)
+        if isinstance(sequence, dict):
+            called_services |= async_find_services_in_sequence([sequence])
+        elif isinstance(sequence, list):
+            called_services |= async_find_services_in_sequence(sequence)
+
+    return called_services
+
+
 @callback
 def async_find_services_in_sequence(  # noqa: C901
     sequence: Sequence[dict[str, Any]],

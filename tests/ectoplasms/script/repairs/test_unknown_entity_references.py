@@ -101,9 +101,14 @@ def test_trigger_blueprint_input_shape() -> None:
 class MockScript:  # pylint: disable=too-few-public-methods
     """Mock script object."""
 
-    def __init__(self, referenced_entities: set[str]) -> None:
+    def __init__(
+        self,
+        referenced_entities: set[str],
+        config: dict[str, Any] | None = None,
+    ) -> None:
         """Initialize the mock script."""
         self.referenced_entities = referenced_entities
+        self.config = config
 
 
 class MockBrokenScript:  # pylint: disable=too-few-public-methods
@@ -141,6 +146,25 @@ def test_extract_referenced_entities_from_script() -> None:
     entity = MockScriptEntity(MockScript({"light.kitchen"}))
 
     assert extract_referenced_entities_from_script(entity) == {"light.kitchen"}
+
+
+def test_extract_referenced_entities_from_script_ignores_notify_action() -> None:
+    """Test notify action names reported by Home Assistant are not entities."""
+    entity = MockScriptEntity(
+        MockScript(
+            {"notify.my_phone"},
+            config={
+                "sequence": [
+                    {
+                        "action": "notify.my_phone",
+                        "data": {"message": "Doorbell"},
+                    }
+                ],
+            },
+        )
+    )
+
+    assert extract_referenced_entities_from_script(entity) == set()
 
 
 def test_extract_referenced_entities_handles_home_assistant_type_error() -> None:

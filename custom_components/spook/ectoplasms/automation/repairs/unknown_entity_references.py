@@ -17,6 +17,7 @@ from ....entity_filtering import (
     async_extract_entities_from_template_string,
     async_filter_known_entity_ids_with_templates,
     async_get_all_entity_ids,
+    extract_called_services_from_config,
     is_template_string,
 )
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
@@ -369,6 +370,9 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
 
         # Also extract entities directly from raw configuration if available
         if hasattr(entity, "raw_config") and entity.raw_config:
+            all_entities.difference_update(
+                extract_called_services_from_config(entity.raw_config)
+            )
             all_entities.update(
                 await extract_entities_from_automation_config(
                     self.hass, entity.raw_config
