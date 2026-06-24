@@ -1,7 +1,9 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Ja.... maar nee. Bedankt maar, later!"
+            "already_spooked": "Ja.... maar nee. Bedankt maar, later!",
+            "enabled_existing": "De bestaande Spook ingave werd geactiveerd",
+            "enable_failed": "De bestaande Spook ingave kon niet worden geactiveerd."
         },
         "step": {
             "user": {
@@ -12,6 +14,12 @@
                 "menu_options": {
                     "restart_now": "Herstart nu",
                     "restart_later": "Herstart later"
+                }
+            },
+            "already_configured": {
+                "description": "Spook is al geconfigureerd, maar de bestaande ingave is uitgeschakeld. Wilt u deze inschakelen?",
+                "menu_options": {
+                    "enable_existing": "Bestaande ingave activeren"
                 }
             }
         }
@@ -206,6 +214,9 @@
             },
             "repairs_active_issues": {
                 "name": "Actief"
+            },
+            "homeassistant_todo": {
+                "name": "To-do lijsten"
             }
         },
         "switch": {
@@ -328,6 +339,143 @@
                         "title": "Herstart vereist",
                         "description": "Om de instelling van Spook af te ronden moet Home Assistant worden herstart.\n\nDruk Bevestigen om Home Assistant nu te herstarten."
                     }
+                }
+            }
+        }
+    },
+    "services": {
+        "boo": {
+            "name": "Boe!",
+            "description": "Deze actie uitvoeren jaagt Home Assistant de daver op het lijf. Deze actie zal altijd falen."
+        },
+        "random_fail": {
+            "name": "Willekeurige mislukking",
+            "description": "De uitvoer van deze actie zal willekeurig mislukken."
+        },
+        "blueprint_import": {
+            "name": "Blueprint importeren",
+            "description": "Importeer een blueprint.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "De URL van waar de blueprint te importeren."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Maak een ruimte",
+            "description": "Maakt onmiddellijk een nieuwe ruimte",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam voor de nieuwe ruimte."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Icoon voor de nieuwe ruimte."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "Een lijst van aliassen voor de ruimte. Dit is handig wanneer je de ruimte gebruikt in een andere taal of andere bijnaam."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Voeg een alias toe aan de ruimte",
+            "description": "Voegt een alias toe aan een ruimte",
+            "fields": {
+                "area_id": {
+                    "name": "ruimte ID",
+                    "description": "Het ID van de ruimte om een alias aan toe te voegen."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias (of lijst van aliassen) om toe te voegen aan de ruimte."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Verwijder een alias van een ruimte",
+            "description": "Verwijdert een alias van een ruimte.",
+            "fields": {
+                "area_id": {
+                    "name": "Ruimte ID",
+                    "description": "Het ID van de ruimte om de alias van te verwijderen."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias (of lijst van aliassen) om te verwijderen van de ruimte."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Stel aliassen in voor een ruimte",
+            "description": "Stelt aliassen in voor een ruimte. Overschrijft en verwijdert alle bestaande aliassen en vervangt ze volledig met de nieuwe.",
+            "fields": {
+                "area_id": {
+                    "name": "Ruimte ID",
+                    "description": "Het ID van de ruimte om aliassen voor in te stellen."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen ingesteld voor de ruimte."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Voeg een apparaat toe aan een ruimte",
+            "description": "Voegt een apparaat toe aan een ruimte. Let op, indien het apparaat al toegewezen is aan een ruimte, zal het verwijdert worden uit de vorige ruimte.",
+            "fields": {
+                "area_id": {
+                    "name": "Ruimte ID",
+                    "description": "Het ID van de ruimte om het apparaat aan toe te voegen."
+                },
+                "device_id": {
+                    "name": "Apparaat ID",
+                    "description": "Het ID van het apparaat (of apparaten)  om toe te voegen aan de ruimte."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Verwijder een apparaat uit een ruimte",
+            "description": "Verwijdert een apparaat uit een ruimte. Vermits een apparaat aan slechts 1 ruimte kan toebehoren, behoeft deze oproep geen specifieke ruimte.",
+            "fields": {
+                "device_id": {
+                    "name": "Apparaat ID",
+                    "description": "Het ID van het apparaat om te verwijderen uit een ruimte."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Voeg een apparaat toe aan een ruimte",
+            "description": "Voegt een entiteit toe aan een ruimte. Let op, indien de entiteit al toegewezen is aan een ruimte, zal het verwijdert worden uit de vorige ruimte. Dit overschrijft de ruimte van het apparaat, waar de entiteit lid van is.",
+            "fields": {
+                "area_id": {
+                    "name": "Ruimte ID",
+                    "description": "Het ID van de ruimte om de entiteit aan toe te voegen."
+                },
+                "entity_id": {
+                    "name": "Entiteit ID",
+                    "description": "Het ID van de entiteit(en) om toe te voegen aan de ruimte."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Verwijder een entiteit uit een ruimte.",
+            "description": "verwijdert een entiteit uit een ruimte. Vermits een entiteit slechts in 1 ruimte kan bestaan, behoeft deze oproep geen specifieke ruimte. Let op, na deze oproep zal de entiteit zich bevinden in de ruimte van het apparaat waartoe de entiteit behoort.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit ID",
+                    "description": "Het ID van de entiteit(en) om uit de ruimte te verwijderen."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Verwijder een ruimte",
+            "description": "Verwijdert onmiddellijk een ruimte.",
+            "fields": {
+                "area_id": {
+                    "name": "Ruimte ID"
                 }
             }
         }
