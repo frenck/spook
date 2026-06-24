@@ -1,7 +1,7 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Ja... nun... nein. Okay, danke, tschüss!"
+            "already_spooked": "Spook ist bereits konfiguriert."
         },
         "step": {
             "user": {
@@ -12,6 +12,12 @@
                 "menu_options": {
                     "restart_now": "Jetzt neu starten",
                     "restart_later": "Später neu starten"
+                }
+            },
+            "already_configured": {
+                "description": "Spook ist bereits konfiguriert, aber  der bestehende Eintrag ist deaktiviert. Möchtest du ihn aktivieren?",
+                "menu_options": {
+                    "enable_existing": "Aktiviere existierenden Eintrag"
                 }
             }
         }
@@ -206,6 +212,9 @@
             },
             "repairs_active_issues": {
                 "name": "Aktiv"
+            },
+            "homeassistant_todo": {
+                "name": "To-do Listen"
             }
         },
         "switch": {
@@ -330,6 +339,11 @@
                     }
                 }
             }
+        }
+    },
+    "services": {
+        "boo": {
+            "name": "Boo!"
         }
     }
 }
