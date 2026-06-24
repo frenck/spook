@@ -13,6 +13,7 @@ from ....entity_filtering import (
     async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
     async_get_all_entity_ids,
+    extract_called_services_from_config,
 )
 from ....repairs import AbstractSpookRepair
 
@@ -54,11 +55,19 @@ def extract_entities_from_trigger_config(config: dict[str, Any] | list) -> set[s
 def extract_referenced_entities_from_script(entity: script.ScriptEntity) -> set[str]:
     """Return entity references from a script entity."""
     try:
-        return set(entity.script.referenced_entities)
+        referenced_entities = set(entity.script.referenced_entities)
     except TypeError as err:
         if str(err) != "unhashable type: 'dict'":
             raise
         return set()
+
+    config = None
+    if hasattr(entity.script, "config"):
+        config = entity.script.config
+    elif hasattr(entity.script, "_config"):
+        config = getattr(entity.script, "_config", None)
+
+    return referenced_entities - extract_called_services_from_config(config)
 
 
 async def extract_template_entities_from_script_entity(

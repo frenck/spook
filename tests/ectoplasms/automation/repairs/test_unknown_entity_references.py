@@ -492,6 +492,27 @@ async def test_plural_condition_entity_is_reported_unknown(
     }
 
 
+async def test_notify_action_is_not_reported_as_unknown_entity(
+    hass: HomeAssistant,
+) -> None:
+    """A notify action name reported by Home Assistant is not an entity."""
+    entity = MockAutomationEntity(
+        raw_config={
+            "actions": [
+                {
+                    "action": "notify.my_phone",
+                    "data": {"message": "Doorbell"},
+                }
+            ],
+        },
+        referenced_entities={"notify.my_phone"},
+    )
+    repair = SpookRepair(hass)
+    repair._known_entity_ids = set()
+
+    assert await repair._async_compute_unknown_references(entity) == set()
+
+
 async def test_automation_non_dict_returns_empty(hass: HomeAssistant) -> None:
     """A non-dict argument short-circuits to an empty set."""
     assert await extract_entities_from_automation_config(hass, []) == set()
