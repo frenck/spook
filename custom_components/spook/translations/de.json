@@ -1,7 +1,9 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook ist bereits konfiguriert."
+            "already_spooked": "Spook ist bereits konfiguriert.",
+            "enabled_existing": "Der vorhandene Spook Eintrag wurde aktiviert.",
+            "enable_failed": "Der vorhandene Spook Eintrag konnte nicht aktiviert werden."
         },
         "step": {
             "user": {
@@ -344,6 +346,181 @@
     "services": {
         "boo": {
             "name": "Boo!"
+        },
+        "random_fail": {
+            "description": "Die Ausführung dieser Aktion wird zufällig fehlschlagen."
+        },
+        "repairs_create": {
+            "fields": {
+                "description": {
+                    "name": "Beschreibung"
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "fields": {
+                "area_id": {
+                    "name": "Bereich ID"
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "fields": {
+                "description": {
+                    "name": "Beschreibung"
+                },
+                "color": {
+                    "name": "Farbe"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Alle verwaisten Entitäten löschen",
+            "description": "Löscht alle verwaisten Entitäten die keiner Integration mehr zugeordnet/bereitgestellt sind. Beachte, falls die Integration erst vor Kurzem gelöscht wurde, ist gegebenenfalls ein Neustart von Home Assistant nötigt, damit diese als verwaist angezeigt werden.\n**WARNUNG** Entitäten könnten auch als verwaist markiert sein, falls eine Integration offline ist oder nach einem Neustart von Home Assistant noch nicht funktioniert. Der Aufruf dieser Aktion löscht auch diese Entitäten."
+        },
+        "homeassistant_create_area": {
+            "fields": {
+                "name": {
+                    "name": "Name"
+                },
+                "aliases": {
+                    "name": "Aliase"
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entität"
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "fields": {
+                "user_id": {
+                    "name": "Nutzer ID"
+                }
+            }
+        },
+        "blueprint_import": {
+            "description": "Blaupause importieren.",
+            "name": "Blaupause importieren"
+        },
+        "recorder_import_statistics": {
+            "description": "Langzeitstatistiken importieren.",
+            "name": "Statistiken importieren"
+        },
+        "input_number_create": {
+            "fields": {
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "timer_set_duration": {
+            "fields": {
+                "duration": {
+                    "name": "Dauer"
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "fields": {
+                "user_id": {
+                    "name": "Nutzer ID"
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Geräte ID"
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "fields": {
+                "area_id": {
+                    "name": "Bereich ID"
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Etage anlegen",
+            "fields": {
+                "name": {
+                    "name": "Name"
+                },
+                "aliases": {
+                    "name": "Aliase"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliase"
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliase"
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Geräte ID"
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "fields": {
+                "device_id": {
+                    "name": "Geräte ID"
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Konfigurationseintrag"
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Konfigurationseintrag"
+                }
+            }
         }
     }
 }
