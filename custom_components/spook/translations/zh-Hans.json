@@ -1,17 +1,25 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "额…… 那个…… 不行。好的，谢谢，拜拜！"
+            "already_spooked": "Spook 已经配置好了。",
+            "enabled_existing": "现有的 Spook 条目已被启用。",
+            "enable_failed": "无法启用现有的 Spook 条目。"
         },
         "step": {
             "user": {
-                "description": "你阅读了 README（自述文件）了吗？你阅读了许可证吗？你真的确定吗？"
+                "description": "你阅读了 README 了吗？你阅读了许可证吗？你真的确定吗？"
             },
             "choice_restart": {
                 "description": "为了让 Spook 完成设置，需要重新启动 Home Assistant。\n\n你现在要重新启动 Home Assistant 吗？",
                 "menu_options": {
                     "restart_now": "现在重新启动",
                     "restart_later": "稍后重新启动"
+                }
+            },
+            "already_configured": {
+                "description": "Spook 已经配置好了，但现有的条目处于禁用状态。你想启用它吗？",
+                "menu_options": {
+                    "enable_existing": "启用现有条目"
                 }
             }
         }
@@ -331,6 +339,854 @@
                         "title": "需要重新启动",
                         "description": "为了让 Spook 👻 完成设置，需要重新启动 Home Assistant。\n\n选择提交以立即重新启动 Home Assistant。"
                     }
+                }
+            }
+        }
+    },
+    "services": {
+        "boo": {
+            "name": "吓一跳！",
+            "description": "调用此动作会“惊吓” Home Assistant。执行此动作始终会失败。"
+        },
+        "random_fail": {
+            "name": "随机失败",
+            "description": "执行此动作会随机失败。"
+        },
+        "blueprint_import": {
+            "name": "导入蓝图",
+            "description": "导入一个蓝图。",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "要导入蓝图的 URL 地址。"
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "创建区域",
+            "description": "动态创建一个新区域。",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "要创建的区域名称。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "用于该区域的图标。"
+                },
+                "aliases": {
+                    "name": "别名",
+                    "description": "为该区域设置多个别名。可用于不同语言或不同称呼场景。"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "为区域添加别名",
+            "description": "向现有区域添加别名。",
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要添加别名的区域 ID。"
+                },
+                "alias": {
+                    "name": "别名",
+                    "description": "要添加到该区域的别名（或别名列表）。"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "从区域中移除别名",
+            "description": "从区域中移除一个别名。",
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要移除别名的区域 ID。"
+                },
+                "alias": {
+                    "name": "别名",
+                    "description": "从该区域移除的别名（或别名列表）。"
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "设置区域别名",
+            "description": "设置区域的别名。这会覆盖并移除任何现有别名，完全替换为新别名。",
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要设置别名的区域 ID。"
+                },
+                "aliases": {
+                    "name": "别名",
+                    "description": "要为该区域设置的别名。"
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "将设备添加到区域",
+            "description": "将设备分配到指定区域。请注意，如果设备已在某个区域中，它将从之前的区域中移除。",
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要添加设备的区域 ID。"
+                },
+                "device_id": {
+                    "name": "设备 ID",
+                    "description": "要添加到该区域的设备 ID。"
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "从区域移除设备",
+            "description": "从区域中移除设备。由于一个设备只能属于一个区域，此调用无需指定区域名称。",
+            "fields": {
+                "device_id": {
+                    "name": "设备 ID",
+                    "description": "要移除区域信息的设备 ID。"
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "将实体添加到区域",
+            "description": "将实体分配到指定区域。请注意，如果实体已在某个区域中，它将从之前的区域中移除。这会覆盖提供该实体的设备所属的区域设置。",
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要添加实体的区域 ID。"
+                },
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要添加到该区域的实体 ID（或实体 ID 列表）。"
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "从区域移除实体",
+            "description": "从区域中移除实体。由于一个实体只能属于一个区域，此调用无需指定区域。请注意，调用后该实体仍可能属于提供它的设备所在的区域。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要从其移除区域归属的实体 ID（或实体 ID 列表）。"
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "删除区域",
+            "description": "删除区域。",
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要删除的区域 ID。"
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "禁用集成",
+            "description": "禁用一个集成的配置条目。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "配置条目",
+                    "description": "要禁用的集成配置条目。"
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "启用集成",
+            "description": "启用一个集成的配置条目。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "配置条目",
+                    "description": "要启用的集成配置条目。"
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "禁用设备",
+            "description": "立即禁用一个或多个设备。",
+            "fields": {
+                "device_id": {
+                    "name": "设备",
+                    "description": "要禁用的设备。"
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "启用设备",
+            "description": "立即启用一个或多个设备。",
+            "fields": {
+                "device_id": {
+                    "name": "设备 ID",
+                    "description": "要启用的原始设备 ID。被禁用的设备不会显示在 Home Assistant 的设备选择器中。可通过 YAML 列表提供多个设备 ID。"
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "禁用用户",
+            "description": "禁用用户账户，阻止其登录。",
+            "fields": {
+                "user_id": {
+                    "name": "用户 ID",
+                    "description": "要禁用的用户 ID（或用户 ID 列表）。"
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "启用用户",
+            "description": "启用用户账户，使其可以登录。",
+            "fields": {
+                "user_id": {
+                    "name": "用户 ID",
+                    "description": "要启用的用户 ID（或用户 ID 列表）。"
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "更新实体的 ID",
+            "description": "立即更新实体的 ID。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要更新的实体（或实体列表）。"
+                },
+                "new_entity_id": {
+                    "name": "新的实体 ID",
+                    "description": "要为该实体设置的新 ID。"
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "禁用实体",
+            "description": "立即禁用一个或多个实体。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要禁用的实体。"
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "添加设备跟踪器",
+            "description": "为某个用户添加设备追踪器。",
+            "fields": {
+                "entity_id": {
+                    "name": "人员",
+                    "description": "要将设备追踪器添加到的人员实体 ID。"
+                },
+                "device_tracker": {
+                    "name": "设备追踪器",
+                    "description": "要添加到该人员的设备追踪器实体 ID。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "为设备添加标签",
+            "description": "为设备添加标签。如果同时提供多个标签或多个设备，将为所有设备与标签的组合逐一添加。",
+            "fields": {
+                "label_id": {
+                    "name": "标签 ID",
+                    "description": "要为其添加设备的标签 ID（或多个 ID）。"
+                },
+                "device_id": {
+                    "name": "设备 ID",
+                    "description": "要为其添加标签的设备 ID（或多个 ID）。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "为区域添加标签",
+            "description": "为区域添加标签。如果同时提供多个标签或多个区域，将为所有区域与标签的组合逐一添加。",
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要为其添加标签的区域 ID（或多个 ID）。"
+                },
+                "label_id": {
+                    "name": "标签 ID",
+                    "description": "要为其添加区域的标签 ID（或多个 ID）。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "为实体添加标签",
+            "description": "为实体添加标签。如果同时提供多个标签或多个实体，将为所有实体与标签的组合逐一添加。",
+            "fields": {
+                "label_id": {
+                    "name": "标签 ID",
+                    "description": "要为其添加实体的标签 ID（或多个 ID）。"
+                },
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要为其添加标签的实体 ID（或多个 ID）。"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "为楼层添加别名",
+            "description": "为楼层添加别名。",
+            "fields": {
+                "alias": {
+                    "name": "别名",
+                    "description": "要添加到该楼层的别名（或别名列表）。"
+                },
+                "floor_id": {
+                    "name": "楼层 ID",
+                    "description": "要添加别名的楼层 ID。"
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "将区域添加到楼层",
+            "description": "将区域添加到楼层。请注意，如果该区域已属于某个楼层，它将从原楼层移除。",
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要添加到楼层的区域 ID。"
+                },
+                "floor_id": {
+                    "name": "楼层 ID",
+                    "description": "要添加区域的楼层 ID。"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "fields": {
+                "alias": {
+                    "name": "别名",
+                    "description": "要从该楼层移除的别名（或别名列表）。"
+                },
+                "floor_id": {
+                    "name": "楼层 ID",
+                    "description": "要移除别名的楼层 ID。"
+                }
+            },
+            "name": "从楼层中移除别名",
+            "description": "从楼层移除别名。"
+        },
+        "homeassistant_set_floor_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "别名",
+                    "description": "要设置的新别名列表。"
+                },
+                "floor_id": {
+                    "name": "楼层 ID",
+                    "description": "要设置别名的楼层 ID。"
+                }
+            },
+            "name": "设置楼层别名",
+            "description": "设置楼层的别名，会完全替换现有别名。"
+        },
+        "homeassistant_create_floor": {
+            "fields": {
+                "aliases": {
+                    "name": "别名",
+                    "description": "楼层的别名列表，可用于多语言名称或自定义昵称。"
+                },
+                "name": {
+                    "name": "名称",
+                    "description": "要创建的楼层名称。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "用于该楼层的图标。"
+                },
+                "level": {
+                    "name": "层数",
+                    "description": "楼层在您家中所处的层级（高度）。"
+                }
+            },
+            "name": "创建楼层",
+            "description": "立即创建一个新的楼层。"
+        },
+        "recorder_import_statistics": {
+            "fields": {
+                "stats": {
+                    "description": "要导入的统计数据映射/字典列表。每个字典必须包含一个 start 键，其值为日期时间字符串。其他可用的可选字段包括 mean、sum、min、max、last_reset 和 state。除 last_reset 必须为日期时间字符串外，其余字段均为可选，且值可以是整数或浮点数。",
+                    "name": "统计列表"
+                },
+                "statistic_id": {
+                    "name": "统计 ID",
+                    "description": "要导入其统计数据的统计 ID（实体 ID）。"
+                },
+                "name": {
+                    "name": "名称",
+                    "description": "统计数据的名称。"
+                },
+                "source": {
+                    "name": "来源",
+                    "description": "统计数据的来源。"
+                },
+                "unit_of_measurement": {
+                    "name": "测量单位",
+                    "description": "统计数据的测量单位。"
+                },
+                "has_mean": {
+                    "name": "包含平均值",
+                    "description": "统计数据是否包含平均值。"
+                },
+                "has_sum": {
+                    "name": "包含总和值",
+                    "description": "统计数据是否包含总和值。"
+                }
+            },
+            "name": "导入统计数据",
+            "description": "导入长期统计数据。"
+        },
+        "number_increment": {
+            "fields": {
+                "amount": {
+                    "name": "数量",
+                    "description": "要增加的数值量。若未提供，则会使用该数值实体的步长。"
+                }
+            },
+            "name": "增加数值",
+            "description": "将数值实体的值增加指定的数量。"
+        },
+        "input_number_decrement": {
+            "fields": {
+                "amount": {
+                    "name": "数量",
+                    "description": "要减少的输入数字量。若未提供，则会使用该数值实体的步长。"
+                }
+            },
+            "description": "将数值输入的值减少指定的数量。",
+            "name": "减少数值"
+        },
+        "input_number_increment": {
+            "fields": {
+                "amount": {
+                    "name": "数量",
+                    "description": "要增加的输入数字量。若未提供，则会使用该数值实体的步长。"
+                }
+            },
+            "name": "增加数值",
+            "description": "将输入数字实体的值增加指定的数量。"
+        },
+        "number_decrement": {
+            "fields": {
+                "amount": {
+                    "name": "数量",
+                    "description": "要减少的数值量。若未提供，则会使用该数值实体的步长。"
+                }
+            },
+            "description": "将数值实体的值减少指定的数量。",
+            "name": "减少数值"
+        },
+        "homeassistant_remove_area_from_floor": {
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "要从楼层中移除的区域 ID。"
+                }
+            },
+            "name": "从楼层移除区域",
+            "description": "从楼层移除区域。因为区域只能隶属于单一楼层，所以无需额外指定楼层。"
+        },
+        "homeassistant_remove_label_from_area": {
+            "fields": {
+                "area_id": {
+                    "name": "区域 ID",
+                    "description": "需要从这些区域移除标签的区域 ID（或多个 ID）。"
+                },
+                "label_id": {
+                    "name": "标签 ID",
+                    "description": "需要从区域移除的标签 ID（或多个 ID）。"
+                }
+            },
+            "name": "从区域移除标签",
+            "description": "从区域中移除标签。如果同时提供多个标签或多个区域，将移除所有标签与区域的组合关联。"
+        },
+        "homeassistant_create_label": {
+            "fields": {
+                "color": {
+                    "name": "颜色",
+                    "description": "用于标签的颜色。可以是列表中的颜色名称，也可以是十六进制颜色代码（例如 #FF0000）。"
+                },
+                "description": {
+                    "description": "标签的描述。",
+                    "name": "描述"
+                },
+                "name": {
+                    "name": "名称",
+                    "description": "要创建的标签名称。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "用于该标签的图标。"
+                }
+            },
+            "name": "创建标签",
+            "description": "立即创建一个新的标签。"
+        },
+        "homeassistant_enable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "配置条目",
+                    "description": "要为其启用更新轮询的集成配置条目。"
+                }
+            },
+            "name": "启用轮询更新",
+            "description": "启用集成配置条目的轮询更新。"
+        },
+        "homeassistant_disable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "配置条目",
+                    "description": "要禁用其更新轮询的集成配置条目。"
+                }
+            },
+            "name": "禁用轮询更新",
+            "description": "禁用集成配置条目的轮询更新。"
+        },
+        "input_number_create": {
+            "description": "立即创建一个新的数值输入助手（input number）。",
+            "name": "创建数值输入助手（input number）",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "要创建的输入数字的名称。"
+                },
+                "input_number_id": {
+                    "name": "该输入数字实体的实体 ID",
+                    "description": "新输入数字的实体 ID。input_number. 前缀会自动添加。若未提供，则会根据名称自动生成实体 ID。"
+                },
+                "min": {
+                    "name": "最小值",
+                    "description": "该输入数字允许设置的最小数值。"
+                },
+                "max": {
+                    "name": "最大值",
+                    "description": "该输入数字允许设置的最大数值。"
+                },
+                "initial": {
+                    "name": "初始值",
+                    "description": "Home Assistant 启动时输入数字的初始值。"
+                },
+                "step": {
+                    "name": "步长",
+                    "description": "该输入数字每次调整时使用的步进值。"
+                },
+                "mode": {
+                    "name": "显示模式",
+                    "description": "用于控制输入数字在界面上以滑块或输入框方式呈现的模式。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "为该输入数字指定的图标。"
+                },
+                "unit_of_measurement": {
+                    "name": "测量单位",
+                    "description": "用于表示该输入数字数值含义的单位。"
+                }
+            }
+        },
+        "zone_create": {
+            "description": "立即创建一个新的区域（Zone）。",
+            "name": "创建区域",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "区域名称"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "用于该区域的图标。"
+                },
+                "latitude": {
+                    "name": "纬度",
+                    "description": "区域的纬度。此字段可使用模板。"
+                },
+                "longitude": {
+                    "name": "经度",
+                    "description": "区域的经度。此字段可使用模板。"
+                },
+                "radius": {
+                    "name": "半径",
+                    "description": "区域半径"
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "创建问题",
+            "fields": {
+                "description": {
+                    "name": "描述",
+                    "description": "问题的描述。支持 Markdown。"
+                },
+                "title": {
+                    "name": "标题",
+                    "description": "问题的标题。"
+                },
+                "issue_id": {
+                    "name": "问题 ID",
+                    "description": "问题可以带有一个标识符，用于在需要时通过该 ID 取消该问题，同时可避免重复创建相同问题。若未提供，则会自动生成一个随机 ID。"
+                },
+                "domain": {
+                    "name": "域",
+                    "description": "此字段用于设置问题所属的域。默认情况下（未设置时）将使用 spook，因此问题会显示 Spook 的图标。如果将其设置为 homeassistant，则会使用 Home Assistant 的图标；也可以设置为 hue、zwave_js、mqtt 等，以使用对应集成的图标。"
+                },
+                "severity": {
+                    "name": "严重程度",
+                    "description": "问题的严重程度。用于确定该问题的优先级。若未设置，则默认为 warning。"
+                },
+                "persistent": {
+                    "name": "持久性",
+                    "description": "是否让该问题保持持久化，这意味着它会在 Home Assistant 重启后继续存在。默认情况下，问题不会持久化。"
+                }
+            },
+            "description": "在 Home Assistant 修复中手动创建并上报问题。"
+        },
+        "homeassistant_delete_floor": {
+            "name": "删除楼层",
+            "description": "删除一个楼层。",
+            "fields": {
+                "floor_id": {
+                    "name": "楼层 ID",
+                    "description": "要删除的楼层 ID。"
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "删除标签",
+            "description": "删除一个标签。",
+            "fields": {
+                "label_id": {
+                    "name": "标签 ID",
+                    "description": "要删除的标签 ID。"
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "删除所有孤立实体",
+            "description": "删除所有不再有集成声明或提供的孤立实体。请注意，如果集成刚刚被移除，可能需要重启 Home Assistant 才能识别出它们是孤立的。\\n\\n**警告**：如果集成由于离线或自启动以来未工作，实体也可能被标记为孤立。调用此动作也会删除这些实体。"
+        },
+        "input_number_delete": {
+            "name": "删除输入数字",
+            "description": "删除输入数字。只有通过界面创建和管理的输入数字才能由 Spook 操作；YAML 定义的输入数字无法管理。"
+        },
+        "zone_delete": {
+            "name": "删除区域",
+            "description": "删除区域。此操作仅适用于通过界面创建和管理的区域；通过 YAML 创建和管理的区域无法由 Spook 管理。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要移除的实体 ID（或实体 ID 列表）。"
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "启用实体",
+            "description": "立即启用一个或多个实体。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要启用的实体。"
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "隐藏实体",
+            "description": "立即隐藏一个或多个实体。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要隐藏的实体。"
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "重命名实体",
+            "description": "立即重命名一个或多个实体。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要重命名的实体。"
+                },
+                "name": {
+                    "name": "名称",
+                    "description": "实体的新名称。"
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "取消隐藏实体",
+            "description": "立即取消隐藏一个或多个实体。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要取消隐藏的实体。"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "从设备中移除标签",
+            "description": "从设备中移除标签。如果同时提供多个标签或多个设备，将移除所有标签与设备的组合关联。",
+            "fields": {
+                "label_id": {
+                    "name": "标签 ID",
+                    "description": "需要从设备移除的标签 ID（或多个 ID）。"
+                },
+                "device_id": {
+                    "name": "设备 ID",
+                    "description": "需要从这些设备移除标签的设备 ID（或多个 ID）。"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "从实体移除标签",
+            "description": "从实体中移除标签。如果同时提供多个标签或多个实体，将移除所有标签与实体的组合关联。",
+            "fields": {
+                "label_id": {
+                    "name": "标签 ID",
+                    "description": "需要从实体移除的标签 ID（或多个 ID）。"
+                },
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "需要从这些实体移除标签的实体 ID（或多个 ID）。"
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "忽略所有当前已发现的设备",
+            "description": "忽略集成仪表盘上显示的所有当前已发现设备。这不会忽略此后新发现的设备。",
+            "fields": {
+                "domain": {
+                    "name": "集成域",
+                    "description": "要忽略发现设备的集成域。如果不提供，所有域的已发现设备都将被忽略。"
+                }
+            }
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "列出所有数据库中的孤立实体",
+            "description": "列出数据库中所有未被任何集成声明的孤立实体。"
+        },
+        "homeassistant_restart": {
+            "name": "重新启动",
+            "description": "重新启动 Home Assistant 的动作。",
+            "fields": {
+                "safe_mode": {
+                    "name": "安全模式",
+                    "description": "是否以安全模式重启。这将禁用所有自定义集成和前端模块。"
+                },
+                "force": {
+                    "name": "强制重启",
+                    "description": "强制重启。警告！这不会优雅地关闭 Home Assistant，它会跳过配置检查并忽略正在进行的数据库迁移。仅在您确切知道自己在做什么时使用。"
+                }
+            }
+        },
+        "select_random": {
+            "name": "选择随机选项",
+            "description": "为一个 select 实体随机选择一个选项。",
+            "fields": {
+                "options": {
+                    "name": "选项",
+                    "description": "限制可供选择的选项。如果不提供，将考虑所有可用选项。"
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "选择随机选项",
+            "description": "为一个 input_select 实体随机选择一个选项。",
+            "fields": {
+                "options": {
+                    "name": "选项",
+                    "description": "限制可供选择的选项。如果不提供，将考虑所有可用选项。"
+                }
+            }
+        },
+        "input_select_shuffle": {
+            "name": "打乱选项",
+            "description": "打乱 input_select 实体的可选项顺序。此操作不具持久性，在重新加载或 Home Assistant 重启后将恢复原状。"
+        },
+        "input_select_sort": {
+            "name": "排序选项",
+            "description": "对 input_select 实体的可选项列表进行排序。此操作不具持久性，在重新加载或 Home Assistant 重启后将恢复原状。"
+        },
+        "number_max": {
+            "name": "设为最大值",
+            "description": "将数值实体设置为其最大值。"
+        },
+        "number_min": {
+            "name": "设为最小值",
+            "description": "将数值实体设置为其最小值。"
+        },
+        "input_number_max": {
+            "name": "设为最大值",
+            "description": "将输入数字实体设置为其最大值。"
+        },
+        "input_number_min": {
+            "name": "设为最小值",
+            "description": "将输入数字实体设置为其最小值。"
+        },
+        "person_remove_device_tracker": {
+            "name": "移除设备追踪器",
+            "description": "从人员中移除设备追踪器。",
+            "fields": {
+                "entity_id": {
+                    "name": "人员",
+                    "description": "要从中移除设备追踪器的人员实体 ID。"
+                },
+                "device_tracker": {
+                    "name": "设备追踪器",
+                    "description": "要从人员中移除的设备追踪器实体 ID。"
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "忽略所有问题",
+            "description": "忽略 Home Assistant 修复中当前已上报的所有问题。"
+        },
+        "repairs_remove": {
+            "name": "移除问题",
+            "description": "移除一个手动创建的 Home Assistant 修复问题。此操作只能移除通过 repairs_create 创建的问题。",
+            "fields": {
+                "issue_id": {
+                    "name": "问题 ID",
+                    "description": "要移除的问题 ID。"
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "取消忽略所有问题",
+            "description": "取消忽略 Home Assistant 修复中当前已上报的所有问题。"
+        },
+        "timer_set_duration": {
+            "name": "设置时长",
+            "description": "为现有计时器设置持续时间。",
+            "fields": {
+                "duration": {
+                    "name": "时长",
+                    "description": "计时器的新时长，可以是时间跨度字符串。"
+                }
+            }
+        },
+        "zone_update": {
+            "name": "更新区域",
+            "description": "动态更新区域属性。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要更新的实体 ID（或实体 ID 列表）。"
+                },
+                "name": {
+                    "name": "名称",
+                    "description": "区域的新名称。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "区域的新图标。"
+                },
+                "latitude": {
+                    "name": "纬度",
+                    "description": "区域的新纬度。此字段可使用模板。"
+                },
+                "longitude": {
+                    "name": "经度",
+                    "description": "区域的新经度。此字段可使用模板。"
+                },
+                "radius": {
+                    "name": "半径",
+                    "description": "区域的新半径"
                 }
             }
         }
