@@ -13,6 +13,9 @@
                     "restart_now": "Genstart nu",
                     "restart_later": "Genstart senere"
                 }
+            },
+            "already_configured": {
+                "description": "Spook er allerede konfigureret, men det eksisterende element er deaktiveret. Vil du aktivere det?"
             }
         }
     },
@@ -328,6 +331,25 @@
                         "title": "Genstart påkrævet",
                         "description": "For at Spook 👻kan afslutte opsætningen skal Home Assistant genstartes.\n\nVælg Opret for at genstarte Home Assistant nu."
                     }
+                }
+            }
+        }
+    },
+    "services": {
+        "recorder_import_statistics": {
+            "fields": {
+                "stats": {
+                    "name": "Statistikker"
+                },
+                "statistic_id": {
+                    "name": "Statistikker ID"
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "fields": {
+                "aliases": {
+                    "description": "Aliasser, der kan indstilles for området."
                 }
             }
         }
