@@ -345,10 +345,12 @@
     },
     "services": {
         "boo": {
-            "name": "Boo!"
+            "name": "Boo!",
+            "description": "Der Aufruf dieser Aktion führt bei Home Assistant zu einer Störung. Die Ausführung dieser Aktion schlägt immer fehl."
         },
         "random_fail": {
-            "description": "Die Ausführung dieser Aktion wird zufällig fehlschlagen."
+            "description": "Die Ausführung dieser Aktion wird zufällig fehlschlagen.",
+            "name": "Zufälliger Fehler"
         },
         "repairs_create": {
             "fields": {
@@ -407,7 +409,13 @@
         },
         "blueprint_import": {
             "description": "Blaupause importieren.",
-            "name": "Blaupause importieren"
+            "name": "Blaupause importieren",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "Die URL, von der der Blueprint importiert werden soll."
+                }
+            }
         },
         "recorder_import_statistics": {
             "description": "Langzeitstatistiken importieren.",
@@ -462,16 +470,30 @@
         "homeassistant_add_alias_to_area": {
             "fields": {
                 "alias": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "Der Alias (oder die Liste der Aliase), der/die dem Bereich hinzugefügt werden soll(en)."
+                },
+                "area_id": {
+                    "name": "Bereichs ID",
+                    "description": "Die ID des Bereichs, dem der Alias hinzugefügt werden soll."
                 }
-            }
+            },
+            "name": "Einem Bereich einen Alias hinzufügen",
+            "description": "Fügt einem Bereich einen Alias hinzu."
         },
         "homeassistant_remove_alias_from_area": {
             "fields": {
                 "alias": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "Der Alias (oder die Liste der Aliase), der/die aus dem Bereich entfernt werden soll(en)."
+                },
+                "area_id": {
+                    "name": "Bereichs ID",
+                    "description": "Die ID des Bereichs, aus dem der Alias entfernt werden soll."
                 }
-            }
+            },
+            "name": "Einen Alias aus einem Bereich entfernen",
+            "description": "Entfernt einen Alias aus einem Bereich."
         },
         "homeassistant_add_alias_to_floor": {
             "fields": {
@@ -484,8 +506,13 @@
             "fields": {
                 "aliases": {
                     "name": "Aliase"
+                },
+                "area_id": {
+                    "name": "Bereichs ID"
                 }
-            }
+            },
+            "name": "Legt Aliase für einen Bereich fest",
+            "description": "Legt Aliase für einen Bereich fest. Überschreibt und entfernt alle vorhandenen Aliase und ersetzt sie vollständig durch die neuen."
         },
         "homeassistant_set_floor_aliases": {
             "fields": {
