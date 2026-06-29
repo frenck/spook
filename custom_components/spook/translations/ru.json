@@ -1,7 +1,7 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Ээээ... нет... Спасибо, пока!"
+            "already_spooked": "Spook уже настроен."
         },
         "step": {
             "user": {
@@ -330,6 +330,23 @@
                     }
                 }
             }
+        }
+    },
+    "services": {
+        "homeassistant_add_label_to_device": {
+            "name": "Добавить ярлык к устройству"
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Добавить ярлык к пространству"
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Добавить устройство в пространство"
+        },
+        "homeassistant_delete_floor": {
+            "name": "Удалить этаж"
+        },
+        "homeassistant_delete_label": {
+            "name": "Удалить ярлык"
         }
     }
 }
