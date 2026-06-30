@@ -362,7 +362,7 @@
         "homeassistant_remove_area_from_floor": {
             "fields": {
                 "area_id": {
-                    "name": "Bereich ID"
+                    "name": "Bereichs-ID"
                 }
             }
         },
@@ -377,7 +377,8 @@
                 "name": {
                     "name": "Name"
                 }
-            }
+            },
+            "name": "Ein Label erstellen"
         },
         "homeassistant_delete_all_orphaned_entities": {
             "name": "Alle verwaisten Entitäten löschen",
@@ -386,12 +387,20 @@
         "homeassistant_create_area": {
             "fields": {
                 "name": {
-                    "name": "Name"
+                    "name": "Name",
+                    "description": "Name des zu erstellenden Bereichs."
                 },
                 "aliases": {
-                    "name": "Aliase"
+                    "name": "Aliase",
+                    "description": "Eine Liste von Aliasnamen für den Bereich. Dies ist nützlich, wenn du den Bereich in einer anderen Sprache oder unter einem anderen Spitznamen verwenden möchtest."
+                },
+                "icon": {
+                    "name": "Symbol",
+                    "description": "Symbol für den Bereich."
                 }
-            }
+            },
+            "name": "Bereich anlegen",
+            "description": "Neuen Bereich direkt anlegen."
         },
         "homeassistant_disable_entity": {
             "fields": {
@@ -419,12 +428,29 @@
         },
         "recorder_import_statistics": {
             "description": "Langzeitstatistiken importieren.",
-            "name": "Statistiken importieren"
+            "name": "Statistiken importieren",
+            "fields": {
+                "has_mean": {
+                    "name": "Hat einen Mittelwert"
+                },
+                "has_sum": {
+                    "name": "Hat eine Summe"
+                },
+                "name": {
+                    "description": "Der Name der Statistik."
+                }
+            }
         },
         "input_number_create": {
             "fields": {
                 "name": {
                     "name": "Name"
+                },
+                "max": {
+                    "name": "Maximum"
+                },
+                "min": {
+                    "name": "Minimum"
                 }
             }
         },
@@ -445,14 +471,17 @@
         "homeassistant_enable_device": {
             "fields": {
                 "device_id": {
-                    "name": "Geräte ID"
+                    "name": "Geräte-ID"
                 }
             }
         },
         "homeassistant_add_entity_to_area": {
             "fields": {
                 "area_id": {
-                    "name": "Bereich ID"
+                    "name": "Bereichs-ID"
+                },
+                "entity_id": {
+                    "name": "Entitäts-ID"
                 }
             }
         },
@@ -463,9 +492,17 @@
                     "name": "Name"
                 },
                 "aliases": {
-                    "name": "Aliase"
+                    "name": "Aliase",
+                    "description": "Eine Liste von Aliasnamen für die Etage. Dies ist nützlich, wenn du die Etage in einer anderen Sprache oder unter einem anderen Spitznamen verwenden möchtest."
+                },
+                "icon": {
+                    "name": "Symbol"
+                },
+                "level": {
+                    "name": "Ebene"
                 }
-            }
+            },
+            "description": "Neue Etage direkt anlegen."
         },
         "homeassistant_add_alias_to_area": {
             "fields": {
@@ -488,7 +525,7 @@
                     "description": "Der Alias (oder die Liste der Aliase), der/die aus dem Bereich entfernt werden soll(en)."
                 },
                 "area_id": {
-                    "name": "Bereichs ID",
+                    "name": "Bereichs-ID",
                     "description": "Die ID des Bereichs, aus dem der Alias entfernt werden soll."
                 }
             },
@@ -499,8 +536,12 @@
             "fields": {
                 "alias": {
                     "name": "Alias"
+                },
+                "floor_id": {
+                    "name": "Etagen-ID"
                 }
-            }
+            },
+            "name": "Einer Etage ein Alias hinzufügen"
         },
         "homeassistant_set_area_aliases": {
             "fields": {
@@ -508,7 +549,8 @@
                     "name": "Aliase"
                 },
                 "area_id": {
-                    "name": "Bereichs ID"
+                    "name": "Bereichs-ID",
+                    "description": "Die ID des Bereichs, für den die Aliase festgelegt werden sollen."
                 }
             },
             "name": "Legt Aliase für einen Bereich fest",
@@ -518,20 +560,27 @@
             "fields": {
                 "aliases": {
                     "name": "Aliase"
+                },
+                "floor_id": {
+                    "name": "Etagen-ID"
                 }
             }
         },
         "homeassistant_add_label_to_device": {
             "fields": {
                 "device_id": {
-                    "name": "Geräte ID"
+                    "name": "Geräte-ID"
+                },
+                "label_id": {
+                    "name": "Label-ID"
                 }
-            }
+            },
+            "name": "Ein Label einem Gerät zuweisen"
         },
         "homeassistant_remove_device_from_area": {
             "fields": {
                 "device_id": {
-                    "name": "Geräte ID"
+                    "name": "Geräte-ID"
                 }
             }
         },
@@ -546,6 +595,149 @@
             "fields": {
                 "config_entry_id": {
                     "name": "Konfigurationseintrag"
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "fields": {
+                "area_id": {
+                    "name": "Bereichs-ID"
+                },
+                "device_id": {
+                    "name": "Geräte-ID"
+                }
+            },
+            "name": "Ein Gerät einem Bereich zuweisen"
+        },
+        "homeassistant_add_label_to_area": {
+            "fields": {
+                "area_id": {
+                    "name": "Bereichs-ID"
+                },
+                "label_id": {
+                    "name": "Label-ID"
+                }
+            },
+            "name": "Ein Label einem Bereich zuweisen"
+        },
+        "homeassistant_remove_label_from_area": {
+            "fields": {
+                "area_id": {
+                    "name": "Bereichs-ID"
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "fields": {
+                "area_id": {
+                    "name": "Bereichs-ID"
+                },
+                "floor_id": {
+                    "name": "Etagen-ID"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Geräte-ID"
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                },
+                "label_id": {
+                    "name": "Label-ID"
+                }
+            },
+            "name": "Ein Label einer Entität zuweisen"
+        },
+        "homeassistant_rename_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entität"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entität"
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entität"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID"
+                },
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "fields": {
+                "floor_id": {
+                    "name": "Etagen-ID"
+                },
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "fields": {
+                "floor_id": {
+                    "name": "Etagen-ID"
+                }
+            }
+        },
+        "homeassistant_restart": {
+            "fields": {
+                "force": {
+                    "name": "Neustart erzwingen"
+                }
+            }
+        },
+        "zone_create": {
+            "fields": {
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "fields": {
+                "entity_id": {
+                    "name": "Person"
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "fields": {
+                "entity_id": {
+                    "name": "Person"
                 }
             }
         }
