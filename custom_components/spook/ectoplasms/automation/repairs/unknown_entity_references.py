@@ -263,7 +263,8 @@ async def _extract_entities_from_service_data(
         data_value = config["data"]
         if isinstance(data_value, str):
             # data field is a template string itself
-            entities.update(await extract_entities_from_value(hass, data_value))
+            found = await extract_entities_from_value(hass, data_value)
+            entities.update(_filter_out_notify_service_references(found))
         elif isinstance(data_value, dict):
             service = _get_action_service(config)
             # data field is a dictionary, process all its values

@@ -439,6 +439,22 @@ async def test_action_data_as_template_string(hass: HomeAssistant) -> None:
     }
 
 
+async def test_action_data_bare_notify_string_is_not_an_entity_reference(
+    hass: HomeAssistant,
+) -> None:
+    """A literal ``notify.*`` string assigned directly to ``data`` is not an entity.
+
+    Mirrors ``test_third_party_service_data_notify_list_is_not_an_entity_reference``
+    but for the bare-string ``data`` branch, which forwards a legacy notify
+    *service* identifier rather than an entity reference.
+    """
+    config = {
+        "action": "some_custom_domain.some_service",
+        "data": "notify.old_tablet",
+    }
+    assert await extract_entities_from_action_config(hass, config) == set()
+
+
 async def test_action_if_then_else_nested(hass: HomeAssistant) -> None:
     """``if``/``then``/``else`` nested actions are walked."""
     config = {
