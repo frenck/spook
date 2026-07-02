@@ -378,6 +378,45 @@ async def test_notify_service_data_target_is_not_an_entity_reference(
     assert await extract_entities_from_action_config(hass, config) == set()
 
 
+async def test_third_party_service_data_notify_list_is_not_an_entity_reference(
+    hass: HomeAssistant,
+) -> None:
+    """Legacy notify service names forwarded by a third-party action are not entities.
+
+    Reproduces a real-world false positive: a custom "fan-out notifier" action
+    (e.g. ``notifier_hub.send``) accepts a list of legacy ``notify.*`` service
+    names under an arbitrary ``data`` key. These are service identifiers, not
+    entity references, and must not be flagged as unknown entities even though
+    the calling service is not itself in the ``notify`` domain.
+    """
+    config = {
+        "action": "notifier_hub.send",
+        "data": {
+            "title": "Hello",
+            "message": "World",
+            "notify": ["notify.mobile_app_phone", "notify.old_tablet"],
+        },
+    }
+    assert await extract_entities_from_action_config(hass, config) == set()
+
+
+async def test_notify_target_entity_id_is_still_detected(hass: HomeAssistant) -> None:
+    """A genuine ``target.entity_id`` reference to a notify entity is still found.
+
+    Guards against overreaching the ``data``-payload notify filter: entities in
+    the ``notify`` domain referenced through ``target.entity_id`` (the only
+    legitimate way to target a notify *entity*, as opposed to a legacy notify
+    *service*) must still be reported when unknown.
+    """
+    config = {
+        "action": "some_domain.some_service",
+        "target": {"entity_id": "notify.mobile_app_phone"},
+    }
+    assert await extract_entities_from_action_config(hass, config) == {
+        "notify.mobile_app_phone"
+    }
+
+
 async def test_non_notify_action_data_target_remains_entity_reference(
     hass: HomeAssistant,
 ) -> None:

@@ -241,6 +241,19 @@ def _should_skip_service_data_value(
     return service is not None and service.startswith("notify.") and key == "target"
 
 
+def _filter_out_notify_service_references(entities: set[str]) -> set[str]:
+    """Drop ``notify.*`` matches found in a ``data`` payload.
+
+    A genuine reference to a ``notify`` domain entity is always expressed via
+    ``target.entity_id`` (handled separately by ``_extract_entities_from_target``).
+    A ``notify.*``-shaped string found as a free-form value inside ``data`` is,
+    in practice, a legacy notify *service* identifier forwarded by a
+    third-party integration (e.g. a "send to multiple notifiers" action), not
+    an entity reference - so it should never be flagged as unknown.
+    """
+    return {entity for entity in entities if not entity.startswith("notify.")}
+
+
 async def _extract_entities_from_service_data(
     hass: HomeAssistant, config: dict[str, Any]
 ) -> set[str]:
@@ -257,7 +270,8 @@ async def _extract_entities_from_service_data(
             for key, value in data_value.items():
                 if _should_skip_service_data_value(service, key):
                     continue
-                entities.update(await extract_entities_from_value(hass, value))
+                found = await extract_entities_from_value(hass, value)
+                entities.update(_filter_out_notify_service_references(found))
     return entities
 
 
