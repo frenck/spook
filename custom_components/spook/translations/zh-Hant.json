@@ -1,338 +1,1194 @@
 {
-  "config": {
-    "abort": {
-      "already_spooked": "呃... 好吧... 不要。謝啦，掰！"
-    },
-    "step": {
-      "user": {
-        "description": "你讀過 Readme 了嗎？讀過授權合約了嗎？你真的確定嗎？"
-      },
-      "choice_restart": {
-        "description": "為了讓 Spook 完成設定，Home Assistant 需要重新啟動。\n\n你現在要重新啟動 Home Assistant 嗎？",
-        "menu_options": {
-          "restart_now": "立即重新啟動",
-          "restart_later": "稍後重新啟動"
-        }
-      }
-    }
-  },
-  "entity": {
-    "button": {
-      "homeassistant_reload": {
-        "name": "重新載入"
-      },
-      "homeassistant_restart": {
-        "name": "重新啟動"
-      },
-      "repairs_ignore_all": {
-        "name": "全部忽略"
-      },
-      "repairs_unignore_all": {
-        "name": "取消全部忽略"
-      }
-    },
-    "event": {
-      "repairs_event": {
-        "state_attributes": {
-          "event_type": {
-            "state": {
-              "create": "已建立問題",
-              "remove": "已移除問題",
-              "update": "已更新問題"
+    "config": {
+        "abort": {
+            "already_spooked": "Spook 已經配置好了。",
+            "enabled_existing": "現有的 Spook 項目已被啟用。",
+            "enable_failed": "無法啟用現有的 Spook 項目。"
+        },
+        "step": {
+            "user": {
+                "description": "你閱讀過 README 了嗎？你閱讀過授權合約了嗎？你真的確定嗎？"
+            },
+            "choice_restart": {
+                "description": "為了讓 Spook 完成設定，Home Assistant 需要重新啟動。\n\n你現在要重新啟動 Home Assistant 嗎？",
+                "menu_options": {
+                    "restart_now": "立即重新啟動",
+                    "restart_later": "稍後重新啟動"
+                }
+            },
+            "already_configured": {
+                "description": "Spook 已經配置好了，但現有的項目處於停用狀態。你想啟用它嗎？",
+                "menu_options": {
+                    "enable_existing": "啟用現有項目"
+                }
             }
-          },
-          "domain": {
-            "name": "問題發佈者"
-          },
-          "issue_id": {
-            "name": "問題 ID"
-          }
         }
-      }
     },
-    "sensor": {
-      "homeassistant_air_quality": {
-        "name": "空氣品質"
-      },
-      "homeassistant_alarm_control_panel": {
-        "name": "警報控制面板"
-      },
-      "homeassistant_area": {
-        "name": "區域"
-      },
-      "homeassistant_automation": {
-        "name": "自動化"
-      },
-      "homeassistant_binary_sensor": {
-        "name": "二元感測器"
-      },
-      "homeassistant_button": {
-        "name": "按鈕"
-      },
-      "homeassistant_calendar": {
-        "name": "行事曆"
-      },
-      "homeassistant_camera": {
-        "name": "攝影機"
-      },
-      "homeassistant_climate": {
-        "name": "空調"
-      },
-      "homeassistant_cover": {
-        "name": "遮蓋物"
-      },
-      "homeassistant_custom_component": {
-        "name": "自定義整合"
-      },
-      "homeassistant_date": {
-        "name": "日期"
-      },
-      "homeassistant_datetime": {
-        "name": "日期/時間"
-      },
-      "homeassistant_device": {
-        "name": "裝置"
-      },
-      "homeassistant_device_tracker": {
-        "name": "裝置追蹤器"
-      },
-      "homeassistant_entities": {
-        "name": "實體"
-      },
-      "homeassistant_fan": {
-        "name": "風扇"
-      },
-      "homeassistant_humidifier": {
-        "name": "加濕器"
-      },
-      "homeassistant_image": {
-        "name": "圖片"
-      },
-      "homeassistant_input_boolean": {
-        "name": "輸入佈林值"
-      },
-      "homeassistant_input_button": {
-        "name": "輸入按鈕"
-      },
-      "homeassistant_input_datetime": {
-        "name": "輸入日期/時間"
-      },
-      "homeassistant_input_number": {
-        "name": "輸入數值"
-      },
-      "homeassistant_input_select": {
-        "name": "輸入選單"
-      },
-      "homeassistant_input_text": {
-        "name": "輸入文本"
-      },
-      "homeassistant_integration": {
-        "name": "整合"
-      },
-      "homeassistant_light": {
-        "name": "燈光"
-      },
-      "homeassistant_lock": {
-        "name": "鎖"
-      },
-      "homeassistant_media_player": {
-        "name": "媒體播放器"
-      },
-      "homeassistant_number": {
-        "name": "數值"
-      },
-      "homeassistant_persistent_notification": {
-        "name": "永久通知"
-      },
-      "homeassistant_person": {
-        "name": "人員"
-      },
-      "homeassistant_remote": {
-        "name": "遙控器"
-      },
-      "homeassistant_scene": {
-        "name": "場景"
-      },
-      "homeassistant_script": {
-        "name": "腳本"
-      },
-      "homeassistant_select": {
-        "name": "選單"
-      },
-      "homeassistant_sensor": {
-        "name": "感測器"
-      },
-      "homeassistant_siren": {
-        "name": "警報器"
-      },
-      "homeassistant_stt": {
-        "name": "語音轉文字"
-      },
-      "homeassistant_sun": {
-        "name": "太陽"
-      },
-      "homeassistant_switch": {
-        "name": "開關"
-      },
-      "homeassistant_text": {
-        "name": "文本"
-      },
-      "homeassistant_time": {
-        "name": "時間"
-      },
-      "homeassistant_todo": {
-        "name": "待辦清單"
-      },
-      "homeassistant_tts": {
-        "name": "文字轉語音"
-      },
-      "homeassistant_update": {
-        "name": "更新"
-      },
-      "homeassistant_vacuum": {
-        "name": "吸塵器"
-      },
-      "homeassistant_water_heater": {
-        "name": "熱水器"
-      },
-      "homeassistant_weather": {
-        "name": "天氣"
-      },
-      "homeassistant_zone": {
-        "name": "空間"
-      },
-      "repairs_total_issues": {
-        "name": "總計"
-      },
-      "repairs_ignored_issues": {
-        "name": "已忽略"
-      },
-      "repairs_active_issues": {
-        "name": "作用中"
-      }
+    "entity": {
+        "button": {
+            "homeassistant_reload": {
+                "name": "重新載入"
+            },
+            "homeassistant_restart": {
+                "name": "重新啟動"
+            },
+            "repairs_ignore_all": {
+                "name": "全部忽略"
+            },
+            "repairs_unignore_all": {
+                "name": "取消全部忽略"
+            }
+        },
+        "event": {
+            "repairs_event": {
+                "state_attributes": {
+                    "event_type": {
+                        "state": {
+                            "create": "問題已建立",
+                            "remove": "問題已移除",
+                            "update": "問題已更新"
+                        }
+                    },
+                    "domain": {
+                        "name": "問題發佈者"
+                    },
+                    "issue_id": {
+                        "name": "問題 ID"
+                    }
+                }
+            }
+        },
+        "sensor": {
+            "homeassistant_air_quality": {
+                "name": "空氣品質"
+            },
+            "homeassistant_alarm_control_panel": {
+                "name": "警報控制面板"
+            },
+            "homeassistant_area": {
+                "name": "區域"
+            },
+            "homeassistant_automation": {
+                "name": "自動化"
+            },
+            "homeassistant_binary_sensor": {
+                "name": "二元感測器"
+            },
+            "homeassistant_button": {
+                "name": "按鈕"
+            },
+            "homeassistant_calendar": {
+                "name": "行事曆"
+            },
+            "homeassistant_camera": {
+                "name": "攝影機"
+            },
+            "homeassistant_climate": {
+                "name": "空調"
+            },
+            "homeassistant_cover": {
+                "name": "遮蓋物"
+            },
+            "homeassistant_custom_component": {
+                "name": "自定義整合"
+            },
+            "homeassistant_date": {
+                "name": "日期"
+            },
+            "homeassistant_datetime": {
+                "name": "日期/時間"
+            },
+            "homeassistant_device": {
+                "name": "裝置"
+            },
+            "homeassistant_device_tracker": {
+                "name": "裝置追蹤器"
+            },
+            "homeassistant_entities": {
+                "name": "實體"
+            },
+            "homeassistant_fan": {
+                "name": "風扇"
+            },
+            "homeassistant_humidifier": {
+                "name": "加濕器"
+            },
+            "homeassistant_image": {
+                "name": "圖片"
+            },
+            "homeassistant_input_boolean": {
+                "name": "輸入佈林值"
+            },
+            "homeassistant_input_button": {
+                "name": "輸入按鈕"
+            },
+            "homeassistant_input_datetime": {
+                "name": "輸入日期/時間"
+            },
+            "homeassistant_input_number": {
+                "name": "輸入數值"
+            },
+            "homeassistant_input_select": {
+                "name": "輸入選單"
+            },
+            "homeassistant_input_text": {
+                "name": "輸入文本"
+            },
+            "homeassistant_integration": {
+                "name": "整合"
+            },
+            "homeassistant_light": {
+                "name": "燈光"
+            },
+            "homeassistant_lock": {
+                "name": "鎖"
+            },
+            "homeassistant_media_player": {
+                "name": "媒體播放器"
+            },
+            "homeassistant_number": {
+                "name": "數值"
+            },
+            "homeassistant_persistent_notification": {
+                "name": "永久通知"
+            },
+            "homeassistant_person": {
+                "name": "人員"
+            },
+            "homeassistant_remote": {
+                "name": "遙控器"
+            },
+            "homeassistant_scene": {
+                "name": "場景"
+            },
+            "homeassistant_script": {
+                "name": "腳本"
+            },
+            "homeassistant_select": {
+                "name": "選單"
+            },
+            "homeassistant_sensor": {
+                "name": "感測器"
+            },
+            "homeassistant_siren": {
+                "name": "警報器"
+            },
+            "homeassistant_stt": {
+                "name": "語音轉文字"
+            },
+            "homeassistant_sun": {
+                "name": "太陽"
+            },
+            "homeassistant_switch": {
+                "name": "開關"
+            },
+            "homeassistant_text": {
+                "name": "文本"
+            },
+            "homeassistant_time": {
+                "name": "時間"
+            },
+            "homeassistant_todo": {
+                "name": "待辦清單"
+            },
+            "homeassistant_tts": {
+                "name": "文字轉語音"
+            },
+            "homeassistant_update": {
+                "name": "更新"
+            },
+            "homeassistant_vacuum": {
+                "name": "吸塵器"
+            },
+            "homeassistant_water_heater": {
+                "name": "熱水器"
+            },
+            "homeassistant_weather": {
+                "name": "天氣"
+            },
+            "homeassistant_zone": {
+                "name": "區域"
+            },
+            "repairs_total_issues": {
+                "name": "總計"
+            },
+            "repairs_ignored_issues": {
+                "name": "已忽略"
+            },
+            "repairs_active_issues": {
+                "name": "未解決"
+            }
+        },
+        "switch": {
+            "cloud_alexa_report_state": {
+                "name": "Alexa 狀態報告"
+            },
+            "cloud_google_report_state": {
+                "name": "Google Assistant 狀態報告"
+            },
+            "cloud_remote": {
+                "name": "遠端"
+            }
+        }
     },
-    "switch": {
-      "cloud_alexa_report_state": {
-        "name": "Alexa 狀態回報"
-      },
-      "cloud_google_report_state": {
-        "name": "Google Assistant 狀態回報"
-      },
-      "cloud_remote": {
-        "name": "遠端"
-      }
-    }
-  },
-  "issues": {
-    "automation_unknown_area_references": {
-      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的區域：\n\n{areas}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的區域。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明區域：{automation}"
-    },
-    "automation_unknown_device_references": {
-      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的裝置：\n\n{devices}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的裝置。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明裝置：{automation}"
-    },
-    "automation_unknown_entity_references": {
-      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明實體：{automation}"
-    },
-    "automation_unknown_floor_references": {
-      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的樓層：\n\n{floors}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的樓層。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明樓層：{automation}"
-    },
-    "automation_unknown_label_references": {
-      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的標籤：\n\n{labels}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的標籤。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明標籤：{automation}"
-    },
-    "automation_unknown_service_references": {
-      "description": "Spook 在你的自動化中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的動作：\n\n{services}\n\n\n\n若要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不存在的動作。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明動作：{automation}"
-    },
-    "group_unknown_members": {
-      "description": "Spook 在你的群組中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下群組：\n\n{group} (`{entity_id}`)\n\n此群組包含 Home Assistant 無法辨識的成員實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請編輯群組、移除這些不存在的實體，然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
-      "title": "群組包含不明成員：{group}"
-    },
-    "integration_unknown_source": {
-      "description": "Spook 在你的 Riemann 總和積分輔助項目中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n此輔助項目的來源實體是 Home Assistant 無法辨識的：\n\n`{source}`\n\n\n\n若要修正此錯誤，請編輯該輔助項目並調整來源實體（或刪除此輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
-      "title": "不明來源：{helper}"
-    },
-    "lovelace_unknown_entity_references": {
-      "description": "Spook 在你的儀表板中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下儀表板：\n\n[{dashboard}]({edit})\n\n此儀表板引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請 [編輯儀表板]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明實體：{dashboard}"
-    },
-    "proximity_unknown_ignored_zones": {
-      "description": "Spook 在你的鄰近感應（Proximity）設定中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下設定：\n\n{name}\n\n此設定正在忽略 Home Assistant 無法辨識的區域：\n\n{zones}\n\n\n\n若要修正此錯誤，請編輯設定並移除這些區域。\n\nSpook 👻 你的好麻吉。",
-      "title": "不明的忽略區域：{name}"
-    },
-    "proximity_unknown_tracked_entities": {
-      "description": "Spook 在你的鄰近感應（Proximity）設定中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下設定：\n\n{name}\n\n此設定正在追蹤 Home Assistant 無法辨識的人員或裝置追蹤器：\n\n{entities}\n\n\n\n若要修正此錯誤，請編輯設定並移除這些實體。\n\nSpook 👻 你的好麻吉。",
-      "title": "不明的追蹤實體：{name}"
-    },
-    "proximity_unknown_zone": {
-      "description": "Spook 在你的鄰近感應（Proximity）設定中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下設定：\n\n{name}\n\n此設定基於一個 Home Assistant 無法辨識的區域：\n\n`{zone}`\n\n\n\n若要修正此錯誤，由於無法直接變更鄰近感應設定的區域，唯一的辦法是刪除此特定的整合實例。\n\nSpook 👻 你的好麻吉。",
-      "title": "不明區域：{zone}"
-    },
-    "scene_unknown_entity_references": {
-      "description": "Spook 在你的場景中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下場景：\n\n[{scene}]({edit})\n\n此場景引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請 [編輯場景]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明實體：{scene}"
-    },
-    "script_unknown_area_references": {
-      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的區域：\n\n{areas}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的區域。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明區域：{script}"
-    },
-    "script_unknown_device_references": {
-      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的裝置：\n\n{devices}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的裝置。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明裝置：{script}"
-    },
-    "script_unknown_entity_references": {
-      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明實體：{script}"
-    },
-    "script_unknown_floor_references": {
-      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的樓層：\n\n{floors}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的樓層。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明樓層：{script}"
-    },
-    "script_unknown_label_references": {
-      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本引用了以下 Home Assistant 無法辨識的標籤：\n\n{labels}\n\n\n\n若要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不存在的標籤。\n\nSpook 👻 你的好麻吉。",
-      "title": "使用了不明標籤：{script}"
-    },
-    "script_unknown_service_references": {
-      "description": "Spook 在你的腳本中發現了一個幽靈 👻\n\n在四處飄盪時，Spook 遇到了以下腳本：\n\n[{script}]({edit})（`{entity_id}`）\n\n此腳本引用了以下 Home Assistant 無法識別的動作：\n\n{services}\n\n要修復此問題，請[編輯腳本]({edit})並移除這些不存在的動作。\n\nSpook 👻 你的好夥伴。",
-      "title": "使用了未知動作：{script}"
-    },
-    "switch_as_x_unknown_source": {
-      "description": "Spook 在你的「將開關設為 X」輔助項目中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n此輔助項目的來源開關實體是 Home Assistant 無法辨識的：\n\n`{source}`\n\n\n\n若要修正此錯誤，請編輯該輔助項目並調整來源實體（或刪除此輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
-      "title": "不明來源：{helper}"
-    },
-    "utility_meter_unknown_source": {
-      "description": "Spook 在你的能源計量輔助項目中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n此輔助項目的來源實體是 Home Assistant 無法辨識的：\n\n`{source}`\n\n\n\n若要修正此錯誤，請編輯該輔助項目並調整來源實體（或刪除此輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
-      "title": "不明來源：{helper}"
-    },
-    "trend_unknown_source": {
-      "description": "Spook 在你的趨勢輔助項目中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇見了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n此輔助項目的來源實體是 Home Assistant 無法辨識的：\n\n`{source}`\n\n\n\n若要修正此錯誤，請編輯該輔助項目並調整來源實體（或刪除此輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 你的好麻吉。",
-      "title": "不明來源：{helper}"
-    },
-    "user_issue": {
-      "fix_flow": {
-        "step": {
-          "confirm": {
-            "description": "{description}",
+    "issues": {
+        "automation_unknown_area_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的區域：\n\n{areas}\n\n\n\n要修復此錯誤，請 [編輯此自動化]({edit}) 並移除這些不存在的區域。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知區域：{automation}"
+        },
+        "automation_unknown_device_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的裝置：\n\n{devices}\n\n\n\n要修復此錯誤，請 [編輯此自動化]({edit}) 並移除這些不存在的裝置。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知裝置：{automation}"
+        },
+        "automation_unknown_entity_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n要修復此錯誤，請 [編輯此自動化]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知實體：{automation}"
+        },
+        "automation_unknown_floor_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的樓層：\n\n{floors}\n\n\n\n要修復此錯誤，請 [編輯此自動化]({edit}) 並移除這些不存在的樓層。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知樓層：{automation}"
+        },
+        "automation_unknown_label_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的標籤：\n\n{labels}\n\n\n\n要修復此錯誤，請 [編輯此自動化]({edit}) 並移除這些不存在的標籤。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知標籤：{automation}"
+        },
+        "automation_unknown_service_references": {
+            "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化引用了以下 Home Assistant 無法辨識的動作：\n\n{services}\n\n\n\n要修復此錯誤，請 [編輯此自動化]({edit}) 並移除這些不存在的動作。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下項目中使用了未知動作：{automation}"
+        },
+        "group_unknown_members": {
+            "description": "Spook 在您的群組中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下群組：\n\n{group} (`{entity_id}`)\n\n該群組包含以下 Home Assistant 無法辨識的成員：\n\n{entities}\n\n\n\n要修復此錯誤，請編輯該群組，移除這些不存在的實體，然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
+            "title": "以下群組中存在未知成員：{group}"
+        },
+        "integration_unknown_source": {
+            "description": "Spook 在您的黎曼和積分輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n該輔助項目具有一個 Home Assistant 無法辨識的來源實體：\n\n`{source}`\n\n\n\n要修復此錯誤，請編輯該輔助項目並調整來源實體（或移除該輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
+            "title": "未知來源：{helper}"
+        },
+        "lovelace_unknown_entity_references": {
+            "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下儀表板：\n\n[{dashboard}]({edit})\n\n該儀表板引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n要修復此錯誤，請 [編輯該儀表板]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下儀表板中使用了未知實體：{dashboard}"
+        },
+        "proximity_unknown_ignored_zones": {
+            "description": "Spook 在您的鄰近感應配置中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下鄰近感應配置：\n\n{name}\n\n該配置忽略了以下 Home Assistant 無法辨識的區域：\n\n{zones}\n\n\n\n要修復此錯誤，請編輯該配置並移除這些區域。\n\nSpook 👻 您的好夥伴。",
+            "title": "未知的忽略區域：{name}"
+        },
+        "proximity_unknown_tracked_entities": {
+            "description": "Spook 在您的鄰近感應配置中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下鄰近感應配置：\n\n{name}\n\n該配置正在追蹤以下 Home Assistant 無法辨識的人員或裝置追蹤器：\n\n{entities}\n\n\n\n要修復此錯誤，請編輯該配置並移除這些實體。\n\nSpook 👻 您的好夥伴。",
+            "title": "未知的追蹤實體：{name}"
+        },
+        "proximity_unknown_zone": {
+            "description": "Spook 在您的鄰近感應配置中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下鄰近感應配置：\n\n{name}\n\n該配置基於一個 Home Assistant 無法辨識的區域：\n\n`{zone}`\n\n\n\n要修復此錯誤，由於您無法更改鄰近感應配置的區域，唯一的選擇是移除該特定的鄰近感應整合執行個體。\n\nSpook 👻 您的好夥伴。",
+            "title": "未知區域：{zone}"
+        },
+        "scene_unknown_entity_references": {
+            "description": "Spook 在您的場景中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下場景：\n\n[{scene}]({edit})\n\n該場景引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n要修復此錯誤，請 [編輯該場景]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下場景中使用了未知實體：{scene}"
+        },
+        "script_unknown_area_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本引用了以下 Home Assistant 無法辨識的區域：\n\n{areas}\n\n\n\n要修復此錯誤，請 [編輯該腳本]({edit}) 並移除這些不存在的區域。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知區域：{script}"
+        },
+        "script_unknown_device_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本引用了以下 Home Assistant 無法辨識的裝置：\n\n{devices}\n\n\n\n要修復此錯誤，請 [編輯該腳本]({edit}) 並移除這些不存在的裝置。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知裝置：{script}"
+        },
+        "script_unknown_entity_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n要修復此錯誤，請 [編輯該腳本]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知實體：{script}"
+        },
+        "script_unknown_floor_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本引用了以下 Home Assistant 無法辨識的樓層：\n\n{floors}\n\n\n\n要修復此錯誤，請 [編輯該腳本]({edit}) 並移除這些不存在的樓層。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知樓層：{script}"
+        },
+        "script_unknown_label_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n該腳本引用了以下 Home Assistant 無法辨識的標籤：\n\n{labels}\n\n\n\n要修復此錯誤，請 [編輯該腳本]({edit}) 並移除這些不存在的標籤。\n\nSpook 👻 您的好夥伴。",
+            "title": "在以下腳本中使用了未知標籤：{script}"
+        },
+        "script_unknown_service_references": {
+            "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇到了以下腳本：\n\n[{script}]({edit})（`{entity_id}`）\n\n該腳本引用了以下 Home Assistant 無法辨識的動作：\n\n{services}\n\n要修復此問題，請 [編輯腳本]({edit}) 並移除這些不存在的動作。\n\nSpook 👻 您的好夥伴。",
+            "title": "使用了未知動作：{script}"
+        },
+        "switch_as_x_unknown_source": {
+            "description": "Spook 在您的「將開關轉換為 X」輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n該輔助項目包含一個 Home Assistant 無法辨識的來源開關實體：\n\n`{source}`\n\n\n\n要修復此錯誤，請編輯該輔助項目並調整來源實體（或移除該輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
+            "title": "未知來源：{helper}"
+        },
+        "utility_meter_unknown_source": {
+            "description": "Spook 在您的能源計量輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n該輔助項目包含一個 Home Assistant 無法辨識的來源實體：\n\n`{source}`\n\n\n\n要修復此錯誤，請編輯該輔助項目並調整來源實體（或移除該輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
+            "title": "未知來源：{helper}"
+        },
+        "trend_unknown_source": {
+            "description": "Spook 在您的趨勢輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n該輔助項目包含一個 Home Assistant 無法辨識的來源實體：\n\n`{source}`\n\n\n\n要修復此錯誤，請編輯該輔助項目並調整來源實體（或移除該輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
+            "title": "未知來源：{helper}"
+        },
+        "user_issue": {
+            "fix_flow": {
+                "step": {
+                    "confirm": {
+                        "description": "{description}",
+                        "title": "{title}"
+                    }
+                }
+            },
             "title": "{title}"
-          }
-        }
-      },
-      "title": "{title}"
-    },
-    "restart_required": {
-      "title": "需要重新啟動",
-      "fix_flow": {
-        "step": {
-          "confirm_restart": {
+        },
+        "restart_required": {
             "title": "需要重新啟動",
-            "description": "為了讓 Spook 👻 完成設定，Home Assistant 需要重新啟動。\n\n請選擇提交以立即重新啟動 Home Assistant。"
-          }
+            "fix_flow": {
+                "step": {
+                    "confirm_restart": {
+                        "title": "需要重新啟動",
+                        "description": "為了讓 Spook 👻 完成設定，需要重新啟動 Home Assistant。\n\n選擇提交以立即重新啟動 Home Assistant。"
+                    }
+                }
+            }
         }
-      }
+    },
+    "services": {
+        "boo": {
+            "name": "嚇一跳！ 👻",
+            "description": "調用此動作會「驚嚇」 Home Assistant。執行此動作將始終失敗。"
+        },
+        "random_fail": {
+            "name": "隨機失敗 👻",
+            "description": "執行此動作會隨機失敗。"
+        },
+        "blueprint_import": {
+            "name": "匯入藍圖 👻",
+            "description": "匯入一個藍圖。",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "要匯入藍圖的 URL 地址。"
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "建立區域 👻",
+            "description": "動態建立一個新區域。",
+            "fields": {
+                "name": {
+                    "name": "名稱",
+                    "description": "要建立的區域名稱。"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "用於該區域的圖示。"
+                },
+                "aliases": {
+                    "name": "別名",
+                    "description": "該區域的別名清單。如果您想在不同語言或使用不同暱稱時引用該區域，這很有用。"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "為區域新增別名 👻",
+            "description": "向現有區域新增別名。",
+            "fields": {
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要新增別名的區域 ID。"
+                },
+                "alias": {
+                    "name": "別名",
+                    "description": "要新增到該區域的別名（或別名清單）。"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "從區域移除別名 👻",
+            "description": "從區域中移除一個別名。",
+            "fields": {
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要移除別名的區域 ID。"
+                },
+                "alias": {
+                    "name": "別名",
+                    "description": "從該區域移除的別名（或別名清單）。"
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "設置區域別名 👻",
+            "description": "設置區域的別名。這會覆蓋並移除任何現有別名，完全替換為新別名。",
+            "fields": {
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要設置別名的區域 ID。"
+                },
+                "aliases": {
+                    "name": "別名",
+                    "description": "要為該區域設置的別名。"
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "將裝置新增至區域 👻",
+            "description": "將裝置分配到指定區域。請注意，如果裝置已在某個區域中，它將從之前的區域中移除。",
+            "fields": {
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要新增裝置的區域 ID。"
+                },
+                "device_id": {
+                    "name": "裝置 ID",
+                    "description": "要新增到該區域的裝置 ID。"
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "從區域移除裝置 👻",
+            "description": "從區域中移除裝置。由於一個裝置只能屬於一個區域，此調用無需指定區域名稱。",
+            "fields": {
+                "device_id": {
+                    "name": "裝置 ID",
+                    "description": "要移除區域資訊的裝置 ID。"
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "將實體新增至區域 👻",
+            "description": "將實體分配到指定區域。請注意，如果實體已在某個區域中，它將從之前的區域中移除。這會覆蓋提供該實體的裝置所屬的區域設置。",
+            "fields": {
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要新增實體的區域 ID。"
+                },
+                "entity_id": {
+                    "name": "實體 ID",
+                    "description": "要新增到該區域的實體 ID（或實體清單）。"
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "從區域移除實體 👻",
+            "description": "從區域中移除實體。由於一個實體只能屬於一個區域，此調用無需指定區域。請注意，調用後該實體仍可能屬於提供它的裝置所在的區域。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體 ID",
+                    "description": "要從其移除區域資訊的實體 ID（或實體清單）。"
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "刪除區域 👻",
+            "description": "即時刪除一個區域。",
+            "fields": {
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要刪除的區域 ID。"
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "停用整合 👻",
+            "description": "停用一個整合的設定條目。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "設定條目",
+                    "description": "要停用的整合設定條目。"
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "啟用整合 👻",
+            "description": "啟用一個整合的設定條目。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "設定條目",
+                    "description": "要啟用的整合設定條目。"
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "停用裝置 👻",
+            "description": "即時停用一個或多個裝置。",
+            "fields": {
+                "device_id": {
+                    "name": "裝置",
+                    "description": "要停用的裝置。"
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "啟用裝置 👻",
+            "description": "即時啟用一個或多個裝置。",
+            "fields": {
+                "device_id": {
+                    "name": "裝置 ID",
+                    "description": "要啟用的原始裝置 ID。被停用的裝置不會顯示在 Home Assistant 的裝置選擇器中。可透過 YAML 清單提供多個 ID。"
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "停用使用者 👻",
+            "description": "停用使用者帳戶，阻止其登入。",
+            "fields": {
+                "user_id": {
+                    "name": "使用者 ID",
+                    "description": "要停用的使用者 ID。"
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "啟用使用者 👻",
+            "description": "啟用使用者帳戶，使其可以登入。",
+            "fields": {
+                "user_id": {
+                    "name": "使用者 ID",
+                    "description": "要啟用的使用者 ID。"
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "更新實體 ID 👻",
+            "description": "即時更新實體的 ID。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體",
+                    "description": "要更新的實體。"
+                },
+                "new_entity_id": {
+                    "name": "新實體 ID",
+                    "description": "實體的新 ID。"
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "停用實體 👻",
+            "description": "即時停用一個或多個實體。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體",
+                    "description": "要停用的實體。"
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "啟用實體 👻",
+            "description": "即時啟用一個或多個實體。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體",
+                    "description": "要啟用的實體。"
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "隱藏實體 👻",
+            "description": "即時隱藏一個或多個實體。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體",
+                    "description": "要隱藏的實體。"
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "重新命名實體 👻",
+            "description": "即時重新命名一個或多個實體。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體",
+                    "description": "要重新命名的實體。"
+                },
+                "name": {
+                    "name": "名稱",
+                    "description": "實體的新名稱。"
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "取消隱藏實體 👻",
+            "description": "即時取消隱藏一個或多個實體。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體",
+                    "description": "要取消隱藏的實體。"
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "建立樓層 👻",
+            "description": "動態建立一個新樓層。",
+            "fields": {
+                "name": {
+                    "name": "名稱",
+                    "description": "要建立的樓層名稱。"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "用於該樓層的圖示。"
+                },
+                "level": {
+                    "name": "層數",
+                    "description": "樓層在您家中所處的層級。"
+                },
+                "aliases": {
+                    "name": "別名",
+                    "description": "該樓層的別名清單。如果您想在不同語言或使用不同暱稱時引用該樓層，這很有用。"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "為樓層新增別名 👻",
+            "description": "向樓層新增別名。",
+            "fields": {
+                "floor_id": {
+                    "name": "樓層 ID",
+                    "description": "要新增別名的樓層 ID。"
+                },
+                "alias": {
+                    "name": "別名",
+                    "description": "要新增到樓層的別名（或別名清單）。"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "從樓層移除別名 👻",
+            "description": "從樓層移除別名。",
+            "fields": {
+                "floor_id": {
+                    "name": "樓層 ID",
+                    "description": "要移除別名的樓層 ID。"
+                },
+                "alias": {
+                    "name": "別名",
+                    "description": "從該樓層移除的別名（或別名清單）。"
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "設置樓層別名 👻",
+            "description": "設置樓層的別名。這會覆蓋並移除任何現有別名，完全替換為新別名。",
+            "fields": {
+                "floor_id": {
+                    "name": "樓層 ID",
+                    "description": "要設置別名的樓層 ID。"
+                },
+                "aliases": {
+                    "name": "別名",
+                    "description": "要為該樓層設置的別名。"
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "將區域新增至樓層 👻",
+            "description": "將區域新增至樓層。請注意，如果該區域已在某個樓層中，它將從之前的樓層中移除。",
+            "fields": {
+                "floor_id": {
+                    "name": "樓層 ID",
+                    "description": "要新增區域的樓層 ID。"
+                },
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要新增到樓層的區域 ID。"
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "從樓層移除區域 👻",
+            "description": "從樓層移除區域。由於區域只能位於一個樓層，此調用無需指定樓層。",
+            "fields": {
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要移除樓層資訊的區域 ID。"
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "刪除樓層 👻",
+            "description": "即時刪除一個樓層。",
+            "fields": {
+                "floor_id": {
+                    "name": "樓層 ID",
+                    "description": "要刪除的樓層 ID。"
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "建立標籤 👻",
+            "description": "動態建立一個新標籤。",
+            "fields": {
+                "name": {
+                    "name": "名稱",
+                    "description": "要建立的標籤名稱。"
+                },
+                "description": {
+                    "name": "描述",
+                    "description": "標籤的描述。"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "用於該標籤的圖示。"
+                },
+                "color": {
+                    "name": "顏色",
+                    "description": "用於標籤的顏色。可以是清單中的顏色名稱，也可以是十六進位顏色代碼（如 #FF0000）。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "為區域新增標籤 👻",
+            "description": "為區域新增標籤。如果提供多個標籤或多個區域，將新增所有組合。",
+            "fields": {
+                "label_id": {
+                    "name": "標籤 ID",
+                    "description": "要新增到區域的標籤 ID。"
+                },
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要新增標籤的區域 ID。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "為裝置新增標籤 👻",
+            "description": "為裝置新增標籤。如果提供多個標籤或多個裝置，將新增所有組合。",
+            "fields": {
+                "label_id": {
+                    "name": "標籤 ID",
+                    "description": "要新增到裝置的標籤 ID。"
+                },
+                "device_id": {
+                    "name": "裝置 ID",
+                    "description": "要新增標籤的裝置 ID。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "為實體新增標籤 👻",
+            "description": "為實體新增標籤。如果提供多個標籤或多個實體，將新增所有組合。",
+            "fields": {
+                "label_id": {
+                    "name": "標籤 ID",
+                    "description": "要新增到實體的標籤 ID。"
+                },
+                "entity_id": {
+                    "name": "實體 ID",
+                    "description": "要新增標籤的實體 ID。"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "從區域移除標籤 👻",
+            "description": "從區域中移除標籤。如果提供多個標籤或多個區域，將移除所有組合。",
+            "fields": {
+                "label_id": {
+                    "name": "標籤 ID",
+                    "description": "要從區域移除的標籤 ID。"
+                },
+                "area_id": {
+                    "name": "區域 ID",
+                    "description": "要移除標籤的區域 ID。"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "從裝置移除標籤 👻",
+            "description": "從裝置中移除標籤。如果提供多個標籤或多個裝置，將移除所有組合。",
+            "fields": {
+                "label_id": {
+                    "name": "標籤 ID",
+                    "description": "要從裝置移除的標籤 ID。"
+                },
+                "device_id": {
+                    "name": "裝置 ID",
+                    "description": "要移除標籤的裝置 ID。"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "從實體移除標籤 👻",
+            "description": "從實體中移除標籤。如果提供多個標籤或多個實體，將移除所有組合。",
+            "fields": {
+                "label_id": {
+                    "name": "標籤 ID",
+                    "description": "要從實體移除的標籤 ID。"
+                },
+                "entity_id": {
+                    "name": "實體 ID",
+                    "description": "要移除標籤的實體 ID。"
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "刪除標籤 👻",
+            "description": "即時刪除一個標籤。",
+            "fields": {
+                "label_id": {
+                    "name": "標籤 ID",
+                    "description": "要刪除的標籤 ID。"
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "忽略所有當前已發現的裝置 👻",
+            "description": "忽略整合面板上顯示的所有當前已發現裝置。這不會忽略在此之後發現的裝置。",
+            "fields": {
+                "domain": {
+                    "name": "整合領域",
+                    "description": "要忽略所有發現裝置的整合領域。如果不提供，將考慮忽略所有領域。"
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "停用輪詢更新 👻",
+            "description": "停用整合設定條目的輪詢更新。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "設定條目",
+                    "description": "要停用輪詢更新的整合設定條目。"
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "啟用輪詢更新 👻",
+            "description": "啟用整合設定條目的輪詢更新。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "設定條目",
+                    "description": "要啟用輪詢更新的整合設定條目。"
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "刪除所有孤立實體 👻",
+            "description": "刪除所有不再有整合宣告或提供的孤立實體。請注意，如果整合剛剛被移除，可能需要重啟 Home Assistant 才能識別出它們是孤立的。\n**警告**：實體可能因為整合在 Home Assistant 啟動後離線或無法運作而被標記為孤立。調用此動作也會刪除這些實體。"
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "列出所有資料庫中的孤立實體 👻",
+            "description": "列出所有未被任何整合宣告的資料庫孤立實體。"
+        },
+        "homeassistant_restart": {
+            "name": "重新啟動 👻",
+            "description": "重新啟動 Home Assistant 的動作。",
+            "fields": {
+                "safe_mode": {
+                    "name": "安全模式",
+                    "description": "是否以安全模式重啟。這將停用所有自定義整合和前端模組。"
+                },
+                "force": {
+                    "name": "強制重啟",
+                    "description": "強制重啟。警告！這不會優雅地關閉 Home Assistant，它會跳過設定檢查並忽略正在進行的資料庫遷移。僅在您知道自己在做什麼時使用。"
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "匯入統計數據 👻",
+            "description": "匯入長期統計數據。",
+            "fields": {
+                "statistic_id": {
+                    "name": "統計 ID",
+                    "description": "要為其匯入的統計 ID（實體 ID）。"
+                },
+                "name": {
+                    "name": "名稱",
+                    "description": "統計數據的名稱。"
+                },
+                "source": {
+                    "name": "來源",
+                    "description": "統計數據的來源。"
+                },
+                "unit_of_measurement": {
+                    "name": "測量單位",
+                    "description": "統計數據的測量單位。"
+                },
+                "has_mean": {
+                    "name": "包含平均值",
+                    "description": "統計數據是否包含平均值。"
+                },
+                "has_sum": {
+                    "name": "包含總和值",
+                    "description": "統計數據是否包含總和值。"
+                },
+                "stats": {
+                    "name": "統計清單",
+                    "description": "要匯入的映射或字典統計清單。字典必須包含帶日期時間字串的「start」鍵，其他有效選項為「mean」、「sum」、「min」、「max」、「last_reset」和「state」。除「last_reset」（日期時間字串）外，其餘均為可選，且為整數或浮點數。"
+                }
+            }
+        },
+        "select_random": {
+            "name": "選擇隨機選項 👻",
+            "description": "為選擇（select）實體選擇一個隨機選項。",
+            "fields": {
+                "options": {
+                    "name": "選項",
+                    "description": "限制可供選擇的選項。如果不提供，將考慮所有選項。"
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "選擇隨機選項 👻",
+            "description": "為輸入選擇（input_select）實體選擇一個隨機選項。",
+            "fields": {
+                "options": {
+                    "name": "選項",
+                    "description": "限制可供選擇的選項。如果不提供，將考慮所有選項。"
+                }
+            }
+        },
+        "input_select_shuffle": {
+            "name": "隨機打亂選項 👻",
+            "description": "打亂 `input_select` 實體的可選選項清單。這不是永久性的，一旦重新載入或 Home Assistant 重啟，將恢復原樣。"
+        },
+        "input_select_sort": {
+            "name": "排序選項 👻",
+            "description": "對 `input_select` 實體的可選選項清單進行排序。這不是永久性的，一旦重新載入或 Home Assistant 重啟，將恢復原樣。"
+        },
+        "number_decrement": {
+            "name": "減少數值 👻",
+            "description": "將數字實體的數值減少一定量。",
+            "fields": {
+                "amount": {
+                    "name": "量",
+                    "description": "要減少數值的量。如果不提供，將使用數字實體的步進值。"
+                }
+            }
+        },
+        "number_increment": {
+            "name": "增加數值 👻",
+            "description": "將數字實體的數值增加一定量。",
+            "fields": {
+                "amount": {
+                    "name": "量",
+                    "description": "要增加數值的量。如果不提供，將使用數字實體的步進值。"
+                }
+            }
+        },
+        "number_max": {
+            "name": "設為最大值 👻",
+            "description": "將數字實體設置為其最大值。"
+        },
+        "number_min": {
+            "name": "設為最小值 👻",
+            "description": "將數字實體設置為其最小值。"
+        },
+        "input_number_decrement": {
+            "name": "減少數值 👻",
+            "description": "將輸入數字（input_number）實體的數值減少一定量。",
+            "fields": {
+                "amount": {
+                    "name": "量",
+                    "description": "要減少輸入數字的量。如果不提供，將使用數字實體的步進值。"
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "增加數值 👻",
+            "description": "將輸入數字（input_number）實體的數值增加一定量。",
+            "fields": {
+                "amount": {
+                    "name": "量",
+                    "description": "要增加輸入數字的量。如果不提供，將使用數字實體的步進值。"
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "設為最大值 👻",
+            "description": "將輸入數字實體設置為其最大值。"
+        },
+        "input_number_min": {
+            "name": "設為最小值 👻",
+            "description": "將輸入數字實體設置為其最小值。"
+        },
+        "input_number_create": {
+            "name": "建立數值輸入助手 👻",
+            "description": "動態建立一個新的數值輸入助手（input_number）。",
+            "fields": {
+                "name": {
+                    "name": "名稱",
+                    "description": "新數值輸入助手的名稱。"
+                },
+                "input_number_id": {
+                    "name": "數值輸入助手實體 ID",
+                    "description": "新數值輸入助手的實體 ID。input_number. 前綴會自動添加。如果不提供，實體 ID 將根據名稱生成。"
+                },
+                "min": {
+                    "name": "最小值",
+                    "description": "數值輸入助手的最小值。"
+                },
+                "max": {
+                    "name": "最大值",
+                    "description": "數值輸入助手的最大值。"
+                },
+                "initial": {
+                    "name": "初始值",
+                    "description": "Home Assistant 啟動時數值輸入助手的初始值。"
+                },
+                "step": {
+                    "name": "步進大小",
+                    "description": "數值輸入助手的步進大小。"
+                },
+                "mode": {
+                    "name": "顯示模式",
+                    "description": "數值輸入助手的顯示模式，可以是滑桿或輸入框。"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "用於數值輸入助手的圖示。"
+                },
+                "unit_of_measurement": {
+                    "name": "測量單位",
+                    "description": "數值輸入助手的測量單位。"
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "刪除數值輸入助手 👻",
+            "description": "刪除數值輸入助手。這僅適用於透過 UI 建立和管理的數值輸入助手。透過 YAML 建立和管理的數值輸入助手無法由 Spook 管理。"
+        },
+        "person_add_device_tracker": {
+            "name": "新增裝置追蹤器 👻",
+            "description": "為某個人員新增裝置追蹤器。",
+            "fields": {
+                "entity_id": {
+                    "name": "人員",
+                    "description": "要新增裝置追蹤器的人員實體 ID。"
+                },
+                "device_tracker": {
+                    "name": "裝置追蹤器",
+                    "description": "要新增給該人員的裝置追蹤器實體 ID。"
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "移除裝置追蹤器 👻",
+            "description": "從某個人員中移除裝置追蹤器。",
+            "fields": {
+                "entity_id": {
+                    "name": "人員",
+                    "description": "要移除裝置追蹤器的人員實體 ID。"
+                },
+                "device_tracker": {
+                    "name": "裝置追蹤器",
+                    "description": "要從該人員中移除的裝置追蹤器實體 ID。"
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "建立問題 👻",
+            "description": "在 Home Assistant 修復面板中手動建立並引發一個問題。",
+            "fields": {
+                "title": {
+                    "name": "標題",
+                    "description": "問題的標題。"
+                },
+                "description": {
+                    "name": "描述",
+                    "description": "問題的描述。支援 Markdown 格式。"
+                },
+                "issue_id": {
+                    "name": "問題 ID",
+                    "description": "問題可以具有識別碼，如果需要，日後可以使用該 ID 取消它。它還可以防止建立重複的問題。如果不提供，將生成一個隨機 ID。"
+                },
+                "domain": {
+                    "name": "領域",
+                    "description": "此欄位可用於設置問題的領域。例如，預設情況下（如果未設置），它將使用「spook」。這會導致 Spook 顯示在該問題的圖示或圖像中。如果您將其設置為「homeassistant」，將使用 Home Assistant 圖示，或者使用「hue」、「zwave_js」、「mqtt」等來使用對應整合的圖示。"
+                },
+                "severity": {
+                    "name": "嚴重程度",
+                    "description": "問題的嚴重程度。這將用於確定問題的優先級。如果未設置，將使用「warning」。"
+                },
+                "persistent": {
+                    "name": "持久性",
+                    "description": "如果問題應該是持久性的，這意味著它在 Home Assistant 重啟後仍然存在。預設情況下，問題不是持久性的。"
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "忽略所有問題 👻",
+            "description": "忽略當前在 Home Assistant 修復面板中引發的所有問題。"
+        },
+        "repairs_remove": {
+            "name": "移除問題 👻",
+            "description": "移除一個手動建立的 Home Assistant 修復問題。此動作只能移除使用 `repairs_create` 動作建立的問題。",
+            "fields": {
+                "issue_id": {
+                    "name": "問題 ID",
+                    "description": "要移除的問題 ID。"
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "取消忽略所有問題 👻",
+            "description": "取消忽略當前在 Home Assistant 修復面板中引發的所有問題。"
+        },
+        "timer_set_duration": {
+            "name": "設置時長 👻",
+            "description": "為現有計時器設置時長。",
+            "fields": {
+                "duration": {
+                    "name": "時長",
+                    "description": "計時器的新時長，格式為時間間隔字串。"
+                }
+            }
+        },
+        "zone_create": {
+            "name": "建立空間 👻",
+            "description": "動態在 Home Assistant 中建立一個新空間（地理圍欄）。",
+            "fields": {
+                "name": {
+                    "name": "名稱",
+                    "description": "空間名稱"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "用於該空間的圖示"
+                },
+                "latitude": {
+                    "name": "緯度",
+                    "description": "空間的緯度。這可以是一個模板。"
+                },
+                "longitude": {
+                    "name": "經度",
+                    "description": "空間的經度。這可以是一個模板。"
+                },
+                "radius": {
+                    "name": "半徑",
+                    "description": "空間半徑"
+                }
+            }
+        },
+        "zone_update": {
+            "name": "更新空間 👻",
+            "description": "動態更新空間的屬性。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體 ID",
+                    "description": "要更新的實體（或多個實體）ID。"
+                },
+                "name": {
+                    "name": "名稱",
+                    "description": "空間名稱"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "用於該空間的圖示"
+                },
+                "latitude": {
+                    "name": "緯度",
+                    "description": "空間的緯度。這可以是一個模板。"
+                },
+                "longitude": {
+                    "name": "經度",
+                    "description": "空間的經度。這可以是一個模板。"
+                },
+                "radius": {
+                    "name": "半徑",
+                    "description": "空間半徑"
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "刪除空間 👻",
+            "description": "刪除空間。這僅適用於透過 UI 建立和管理的空間。透過 YAML 建立和管理的空間無法由 Spook 管理。",
+            "fields": {
+                "entity_id": {
+                    "name": "實體 ID",
+                    "description": "要移除的實體（或多個實體）ID。"
+                }
+            }
+        }
     }
-  }
 }
