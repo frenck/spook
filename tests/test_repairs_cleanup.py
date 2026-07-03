@@ -1,14 +1,17 @@
 """Tests for Spook repair cleanup."""
 # ruff: noqa: SLF001
-# pylint: disable=protected-access
+# pylint: disable=protected-access,wrong-import-order
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.exceptions import HomeAssistantError
+
 from custom_components.spook import repairs
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.repairs import AbstractSpookRepair, AbstractSpookRepairBase
+import pytest
 
 EXPECTED_UNSUBSCRIBE_COUNT = 3
 
@@ -18,7 +21,6 @@ if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry, ConfigEntryChange
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
-    import pytest
 
 
 class MockRepairBase(AbstractSpookRepairBase):
@@ -166,9 +168,13 @@ class MockCleanupRepair(AbstractSpookRepair):
 
     inspected_ids: set[str] = set()
     current_issue_ids: set[str] = set()
+    raise_on_inspect = False
 
     async def async_inspect(self) -> None:
         """Inspect the repair."""
+        if self.raise_on_inspect:
+            msg = "Inspection went bump in the night"
+            raise HomeAssistantError(msg)
         self.possible_issue_ids.clear()
         self.possible_issue_ids.update(self.inspected_ids)
         for issue_id in self.current_issue_ids:
@@ -253,3 +259,63 @@ async def test_cleanup_deletes_stale_issues_for_inspected_items(
     await repair._async_inspect_with_cleanup()
 
     assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one") is None
+
+
+async def test_cleanup_survives_failing_inspection(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a failing inspection keeps the cleanup bookkeeping intact.
+
+    When an inspection raises, the previously registered issue IDs must be
+    restored so the next successful inspection can still clean up issues
+    for items that were resolved or removed in the meantime.
+    """
+    repair = MockCleanupRepair(hass)
+    repair.inspected_ids = {"one"}
+    repair.current_issue_ids = {"one"}
+
+    await repair._async_inspect_with_cleanup()
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+
+    repair.raise_on_inspect = True
+    with pytest.raises(HomeAssistantError):
+        await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+    assert repair.issue_ids == {"one"}
+
+    repair.raise_on_inspect = False
+    repair.inspected_ids = set()
+    repair.current_issue_ids = set()
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one") is None
+
+
+async def test_cleanup_deletes_stale_issues_for_items_removed_before_restart(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test stale issues for items removed while Home Assistant was down.
+
+    Issues persist in the issue registry across restarts. An issue whose
+    item no longer exists at all is never inspected again, so cleanup must
+    consider the persisted issues of this repair as candidates too.
+    """
+    repairs.ir.async_create_issue(
+        hass,
+        domain=DOMAIN,
+        issue_id="mock_repair_gone",
+        is_fixable=False,
+        severity=repairs.ir.IssueSeverity.WARNING,
+        translation_key="mock_repair",
+    )
+
+    repair = MockCleanupRepair(hass)
+    repair.inspected_ids = set()
+    repair.current_issue_ids = set()
+
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_gone") is None

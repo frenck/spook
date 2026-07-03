@@ -164,19 +164,38 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         # items that were removed entirely since the previous inspection.
         previous_issue_ids = self.issue_ids.copy()
 
+        # Issues persisted in the issue registry for this repair. Covers
+        # leftovers from before a restart, including those for items that
+        # were removed while Home Assistant was down.
+        prefix = f"{self.repair}_"
+        registry_issue_ids = {
+            issue_id.removeprefix(prefix)
+            for domain, issue_id in self.issue_registry.issues
+            if domain == DOMAIN and issue_id.startswith(prefix)
+        }
+
         # Reset registered issues. If they are still valid, they will be
         # re-registered during the inspection.
         self.issue_ids.clear()
 
-        await self.async_inspect()
+        try:
+            await self.async_inspect()
+        except Exception:
+            # Restore the bookkeeping so the next successful inspection can
+            # still clean up issues from before the failure.
+            self.issue_ids.update(previous_issue_ids)
+            raise
 
         # Remove issues that are no longer valid after the inspection:
         # - previous_issue_ids covers issues whose item was resolved or
         #   removed since the previous inspection.
-        # - possible_issue_ids covers stale issues for inspected items that
-        #   this runtime never registered, like leftovers from before a
-        #   restart.
-        for issue_id in (previous_issue_ids | self.possible_issue_ids) - self.issue_ids:
+        # - registry_issue_ids covers stale issues persisted from an earlier
+        #   runtime.
+        # - possible_issue_ids covers inspected items, as a safety net.
+        stale_issue_ids = (
+            previous_issue_ids | registry_issue_ids | self.possible_issue_ids
+        ) - self.issue_ids
+        for issue_id in stale_issue_ids:
             self.async_delete_issue(issue_id)
 
     async def async_activate(self) -> None:  # noqa: C901
