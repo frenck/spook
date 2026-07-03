@@ -1,0 +1,47 @@
+name: Tests (Home Assistant dev)
+
+# Daily canary: run the test suite against the Home Assistant dev branch.
+# Spook reaches into Home Assistant internals by design; this catches
+# upstream changes that break Spook before they ship in a release.
+# Failures here are an early warning, not a release blocker.
+
+on:
+  schedule:
+    - cron: "0 4 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  DEFAULT_PYTHON: "3.14"
+
+jobs:
+  test-ha-dev:
+    name: Pytest against Home Assistant dev
+    runs-on: ubuntu-latest
+    if: github.repository == 'frenck/spook'
+    steps:
+      - name: ⤵️ Check out code from GitHub
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: 🏗 Set up uv
+        uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b # v8.1.0
+        with:
+          enable-cache: true
+          python-version: ${{ env.DEFAULT_PYTHON }}
+
+      - name: 🏗 Install dependencies
+        run: uv sync --frozen --dev
+
+      - name: 👻 Install Home Assistant dev
+        run: |
+          uv pip install --prerelease=allow \
+            "homeassistant @ git+https://github.com/home-assistant/core.git@dev"
+          uv run --no-sync python -c \
+            'from homeassistant.const import __version__; print(f"Home Assistant {__version__}")'
+
+      - name: 🚀 Run tests
+        run: uv run --no-sync pytest --no-cov
