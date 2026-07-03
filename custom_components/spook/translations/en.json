@@ -268,6 +268,10 @@
       "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
       "title": "Unknown group members in: {group}"
     },
+    "lovelace_missing_resources": {
+      "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind. To fix this error, open Settings > Dashboards > Resources and remove or correct these resources.\n\nSpook 👻 Your homie.",
+      "title": "Dashboard resources point at missing files"
+    },
     "lovelace_unknown_area_references": {
       "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n{dashboard}\n\nThis dashboard references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nThis often happens when an area was renamed or removed. To fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
       "title": "Unknown areas used in dashboard: {dashboard}"
