@@ -183,9 +183,14 @@ class AbstractSpookEntityService(AbstractSpookServiceBase, Generic[_EntityT]):
 
         if not (
             platform := next(
-                platform
-                for platform in self.hass.data[DATA_ENTITY_PLATFORM][self.domain]
-                if platform.domain == self.platform
+                (
+                    platform
+                    for platform in self.hass.data.get(DATA_ENTITY_PLATFORM, {}).get(
+                        self.domain, []
+                    )
+                    if platform.domain == self.platform
+                ),
+                None,
             )
         ):
             msg = (
@@ -229,7 +234,7 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
             self.service,
         )
 
-        if self.domain not in self.hass.data[DATA_INSTANCES]:
+        if self.domain not in self.hass.data.get(DATA_INSTANCES, {}):
             msg = (
                 f"Could not find entity component {self.domain} to register "
                 f"service: {self.domain}.{self.service}",
@@ -317,6 +322,22 @@ class SpookServiceManager:
         await self.hass.async_add_import_executor_job(_load_all_service_modules)
 
         for module in modules:
+            self._async_setup_service_module(module)
+
+        await self.async_inject_service_translations()
+        self._translation_listener = self.hass.bus.async_listen(
+            EVENT_CORE_CONFIG_UPDATE,
+            self._async_core_config_updated,
+        )
+
+    @callback
+    def _async_setup_service_module(self, module: ModuleType) -> None:
+        """Set up a single service module, isolating failures.
+
+        A service that fails to set up must not prevent the rest of Spook
+        from loading.
+        """
+        try:
             service = module.SpookService(self.hass)
             if isinstance(
                 service,
@@ -333,12 +354,14 @@ class SpookServiceManager:
                 ).pop(service.service)
 
             self.async_register_service(service)
-
-        await self.async_inject_service_translations()
-        self._translation_listener = self.hass.bus.async_listen(
-            EVENT_CORE_CONFIG_UPDATE,
-            self._async_core_config_updated,
-        )
+        # pylint: disable-next=broad-exception-caught
+        except Exception:  # noqa: BLE001
+            LOGGER.exception(
+                "Spook service %s failed to set up and has been skipped; "
+                "please report this issue at "
+                "https://github.com/frenck/spook/issues",
+                module.__name__,
+            )
 
     @callback
     def async_register_service(self, service: AbstractSpookService) -> None:

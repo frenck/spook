@@ -43,7 +43,30 @@ async def async_forward_setup_entry(
                 LOGGER.debug("Setting up Spook ectoplasm: %s", module_path)
 
     await hass.async_add_import_executor_job(_load_all_ectoplasm_modules)
-    await asyncio.gather(*(module.async_setup_entry(hass, entry) for module in modules))
+    await asyncio.gather(
+        *(_async_setup_ectoplasm(hass, entry, module) for module in modules)
+    )
+
+
+async def _async_setup_ectoplasm(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    module: ModuleType,
+) -> None:
+    """Set up a single ectoplasm, isolating failures.
+
+    An ectoplasm that fails to set up must not prevent the rest of Spook
+    from loading.
+    """
+    try:
+        await module.async_setup_entry(hass, entry)
+    # pylint: disable-next=broad-exception-caught
+    except Exception:  # noqa: BLE001
+        LOGGER.exception(
+            "Spook ectoplasm %s failed to set up and has been skipped; "
+            "please report this issue at https://github.com/frenck/spook/issues",
+            module.__name__,
+        )
 
 
 async def async_forward_platform_entry_setups_to_ectoplasm(
@@ -73,7 +96,29 @@ async def async_forward_platform_entry_setups_to_ectoplasm(
     await hass.async_add_import_executor_job(_load_all_ectoplasm_platform_modules)
     await asyncio.gather(
         *(
-            module.async_setup_entry(hass, entry, async_add_entities)
+            _async_setup_ectoplasm_platform(hass, entry, async_add_entities, module)
             for module in modules
         )
     )
+
+
+async def _async_setup_ectoplasm_platform(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    async_add_entities: AddEntitiesCallback,
+    module: ModuleType,
+) -> None:
+    """Set up a single ectoplasm platform, isolating failures.
+
+    An ectoplasm platform that fails to set up must not prevent the rest
+    of Spook from loading.
+    """
+    try:
+        await module.async_setup_entry(hass, entry, async_add_entities)
+    # pylint: disable-next=broad-exception-caught
+    except Exception:  # noqa: BLE001
+        LOGGER.exception(
+            "Spook ectoplasm platform %s failed to set up and has been skipped; "
+            "please report this issue at https://github.com/frenck/spook/issues",
+            module.__name__,
+        )

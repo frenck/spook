@@ -497,10 +497,27 @@ class SpookRepairManager:
         await self.hass.async_add_import_executor_job(_load_all_repair_modules)
         await asyncio.gather(
             *(
-                create_eager_task(self.async_activate(module.SpookRepair(self.hass)))
+                create_eager_task(self._async_setup_repair_module(module))
                 for module in modules
             )
         )
+
+    async def _async_setup_repair_module(self, module: ModuleType) -> None:
+        """Set up a single repair module, isolating failures.
+
+        A repair that fails to set up must not prevent the rest of Spook
+        from loading.
+        """
+        try:
+            await self.async_activate(module.SpookRepair(self.hass))
+        # pylint: disable-next=broad-exception-caught
+        except Exception:  # noqa: BLE001
+            LOGGER.exception(
+                "Spook repair %s failed to set up and has been skipped; "
+                "please report this issue at "
+                "https://github.com/frenck/spook/issues",
+                module.__name__,
+            )
 
     async def async_activate(self, repair: AbstractSpookRepair) -> None:
         """Register a Spook repair."""
