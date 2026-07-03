@@ -337,6 +337,7 @@ class SpookServiceManager:
         A service that fails to set up must not prevent the rest of Spook
         from loading.
         """
+        service: AbstractSpookServiceBase | None = None
         try:
             service = module.SpookService(self.hass)
             if isinstance(
@@ -356,6 +357,18 @@ class SpookServiceManager:
             self.async_register_service(service)
         # pylint: disable-next=broad-exception-caught
         except Exception:  # noqa: BLE001
+            # If the service this one overrides was already unregistered,
+            # restore it; a failing setup must not silently remove a core
+            # service until the next restart.
+            if (
+                isinstance(service, ReplaceExistingService)
+                and service.overriden_service is not None
+            ):
+                # pylint: disable-next=protected-access
+                self.hass.services._services.setdefault(  # noqa: SLF001
+                    service.domain,
+                    {},
+                )[service.service] = service.overriden_service
             LOGGER.exception(
                 "Spook service %s failed to set up and has been skipped; "
                 "please report this issue at "

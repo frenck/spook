@@ -11,9 +11,14 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
+from pytest_homeassistant_custom_component.common import async_mock_service
+
 from custom_components.spook import setup_helpers
 from custom_components.spook.repairs import AbstractSpookRepair, SpookRepairManager
-from custom_components.spook.services import SpookServiceManager
+from custom_components.spook.services import (
+    ReplaceExistingService,
+    SpookServiceManager,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -30,8 +35,8 @@ class _WorkingRepair(AbstractSpookRepair):
         """Inspect the repair."""
 
 
-class _BrokenRepair:  # pylint: disable=too-few-public-methods
-    """Repair that explodes on construction."""
+class _ExplodingConstructor:  # pylint: disable=too-few-public-methods
+    """Stand-in repair or service that explodes on construction."""
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the repair."""
@@ -47,7 +52,9 @@ async def test_broken_repair_module_does_not_abort_setup(
     """Test a repair failing to set up is skipped and logged."""
     manager = SpookRepairManager(hass)
 
-    broken = SimpleNamespace(__name__="mock.broken_repair", SpookRepair=_BrokenRepair)
+    broken = SimpleNamespace(
+        __name__="mock.broken_repair", SpookRepair=_ExplodingConstructor
+    )
     working = SimpleNamespace(
         __name__="mock.working_repair", SpookRepair=_WorkingRepair
     )
@@ -108,9 +115,47 @@ async def test_broken_service_module_does_not_abort_setup(
     """Test a service failing to set up is skipped and logged."""
     manager = SpookServiceManager(hass)
 
-    module = SimpleNamespace(__name__="mock.broken_service", SpookService=_BrokenRepair)
+    module = SimpleNamespace(
+        __name__="mock.broken_service", SpookService=_ExplodingConstructor
+    )
 
     manager._async_setup_service_module(module)
 
     assert not manager._services
     assert "mock.broken_service failed to set up" in caplog.text
+
+
+class _BrokenOverrideService(ReplaceExistingService):
+    """Service override that explodes during registration."""
+
+    domain = "light"
+    service = "turn_on"
+
+    def async_register(self) -> None:
+        """Register the service."""
+        msg = "Boo! This one is haunted"
+        raise RuntimeError(msg)
+
+
+async def test_failed_service_override_restores_original_service(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a failing service override restores the original service.
+
+    When the service to override was already unregistered but the
+    replacement fails to register, the original must be put back instead
+    of silently disappearing until the next restart.
+    """
+    async_mock_service(hass, "light", "turn_on")
+    manager = SpookServiceManager(hass)
+
+    module = SimpleNamespace(
+        __name__="mock.broken_override",
+        SpookService=_BrokenOverrideService,
+    )
+
+    manager._async_setup_service_module(module)
+
+    assert hass.services.has_service("light", "turn_on")
+    assert "mock.broken_override failed to set up" in caplog.text
