@@ -526,11 +526,10 @@ class SpookRepairManager:
             if self.hass.is_stopping:
                 continue
 
-            # Remove issues created by this Spook repair
+            # Remove issues created by this Spook repair. Issue IDs are
+            # created as "<repair>_<issue_id>" (see async_create_issue).
             for domain, issue_id in list(self.issue_registry.issues):
-                if domain == DOMAIN and issue_id.startswith(
-                    f"{repair.domain}_{repair.repair}",
-                ):
+                if domain == DOMAIN and issue_id.startswith(f"{repair.repair}_"):
                     self.issue_registry.async_delete(domain, issue_id)
 
 

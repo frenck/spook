@@ -133,12 +133,12 @@ async def test_repair_manager_removes_issues_on_unload(hass: HomeAssistant) -> N
     await repair.async_activate()
     manager = repairs.SpookRepairManager(hass)
     manager._repairs.add(repair)
-    manager.issue_registry.issues[(DOMAIN, "mock_mock_repair_one")] = None
+    manager.issue_registry.issues[(DOMAIN, "mock_repair_one")] = None
     manager.issue_registry.issues[(DOMAIN, "unrelated_issue")] = None
 
     await manager.async_on_unload()
 
-    assert (DOMAIN, "mock_mock_repair_one") not in manager.issue_registry.issues
+    assert (DOMAIN, "mock_repair_one") not in manager.issue_registry.issues
     assert (DOMAIN, "unrelated_issue") in manager.issue_registry.issues
 
 
@@ -151,12 +151,12 @@ async def test_repair_manager_keeps_issues_on_shutdown(
     await repair.async_activate()
     manager = repairs.SpookRepairManager(hass)
     manager._repairs.add(repair)
-    manager.issue_registry.issues[(DOMAIN, "mock_mock_repair_one")] = None
+    manager.issue_registry.issues[(DOMAIN, "mock_repair_one")] = None
     monkeypatch.setattr(hass, "is_stopping", True)
 
     await manager.async_on_unload()
 
-    assert (DOMAIN, "mock_mock_repair_one") in manager.issue_registry.issues
+    assert (DOMAIN, "mock_repair_one") in manager.issue_registry.issues
 
 
 class MockCleanupRepair(AbstractSpookRepair):
