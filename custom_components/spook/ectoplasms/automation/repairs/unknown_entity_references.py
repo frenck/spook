@@ -11,15 +11,15 @@ from homeassistant.core import Event, callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
-from ....entity_filtering import (
+from ....entity_filtering import async_get_all_entity_ids
+from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from ....template_extraction import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_config,
     async_extract_entities_from_template_string,
     async_filter_known_entity_ids_with_templates,
-    async_get_all_entity_ids,
     is_template_string,
 )
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
