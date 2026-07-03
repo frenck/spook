@@ -41,16 +41,6 @@ def _issue_id(entry: MockConfigEntry) -> str:
             {"name": "Ghostly", "target_sensor": "sensor.ghost", "heater": "switch.x"},
             id="multi-key",
         ),
-        pytest.param(
-            "bayesian",
-            {
-                "name": "Ghostly",
-                "observations": [
-                    {"entity_id": "sensor.ghost", "platform": "state"},
-                ],
-            },
-            id="nested-observations",
-        ),
     ],
 )
 async def test_unknown_source_creates_issue(
@@ -133,6 +123,51 @@ async def test_unrelated_config_entries_are_ignored(
         domain="hue",
         title="Bridge",
         options={"source": "sensor.ghost"},
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+
+
+async def test_bayesian_observation_subentry_is_inspected(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test bayesian observations, stored as config subentries, are checked."""
+    entry = MockConfigEntry(
+        domain="bayesian",
+        title="Ghostly",
+        options={"name": "Ghostly"},
+        subentries_data=[
+            {
+                "subentry_type": "observation",
+                "title": "Ghost seen",
+                "unique_id": None,
+                "data": {"entity_id": "sensor.ghost", "platform": "state"},
+            },
+        ],
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    assert issue
+    assert issue.translation_placeholders
+    assert "sensor.ghost" in issue.translation_placeholders["sources"]
+
+
+async def test_bayesian_without_subentries_does_not_crash(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a bayesian entry with no observation subentries is fine."""
+    entry = MockConfigEntry(
+        domain="bayesian",
+        title="Odd",
+        options={"name": "Odd"},
     )
     entry.add_to_hass(hass)
 

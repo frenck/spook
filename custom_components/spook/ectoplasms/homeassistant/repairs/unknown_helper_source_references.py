@@ -49,12 +49,10 @@ def _source_values(entry: ConfigEntry) -> set[str]:
         elif isinstance(raw, list):
             values.update(item for item in raw if isinstance(item, str))
 
-    # Bayesian nests each source under an observation.
+    # Bayesian stores each observation as a config subentry.
     if entry.domain == "bayesian":
-        for observation in entry.options.get("observations", []):
-            if isinstance(observation, dict) and isinstance(
-                entity_id := observation.get("entity_id"), str
-            ):
+        for subentry in entry.subentries.values():
+            if isinstance(entity_id := subentry.data.get("entity_id"), str):
                 values.add(entity_id)
 
     return values
