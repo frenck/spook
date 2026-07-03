@@ -8,6 +8,7 @@ from homeassistant.components import automation
 from homeassistant.helpers import device_registry as dr
 
 from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
+from ....reference_extraction import extract_targets_from_config
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 
 
@@ -72,6 +73,11 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         device_ids = set(entity.referenced_devices)
 
         if hasattr(entity, "raw_config") and entity.raw_config:
+            # Also walk the raw configuration; the built-in extraction misses
+            # references nested in some step types, like repeat sequences.
+            # The walker never collects from event trigger payloads, so the
+            # subtraction below only affects built-in extraction results.
+            device_ids.update(extract_targets_from_config(entity.raw_config).device_ids)
             device_ids.difference_update(
                 extract_event_data_device_ids_from_trigger_config(
                     entity.raw_config.get("trigger")
