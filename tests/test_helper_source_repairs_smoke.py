@@ -1,21 +1,21 @@
-"""Smoke tests for the unknown source entity repairs.
+"""Smoke tests for the table-driven unknown helper source repair.
 
-These repairs read private attributes of helper entities provided by
-Home Assistant core (like ``_sensor_source_id``). Each test sets up the
-real helper integration with a nonexistent source entity and runs the
-repair against it, so a core rename of those private attributes fails
-here instead of at the user's place.
+Each test sets up a real helper integration with a nonexistent source
+entity and runs the repair against it, so a change to a helper's config
+entry option shape fails here instead of at the user's place.
 """
 
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
-import importlib
 from typing import TYPE_CHECKING, Any
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.spook.const import DOMAIN
+from custom_components.spook.ectoplasms.homeassistant.repairs.unknown_helper_source_references import (
+    SpookRepair,
+)
 import pytest
 
 if TYPE_CHECKING:
@@ -89,14 +89,12 @@ async def test_unknown_source_repair_smoke(
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
 
-    repair_module = importlib.import_module(
-        f"custom_components.spook.ectoplasms.{helper_domain}.repairs.unknown_source",
-    )
-    repair = repair_module.SpookRepair(hass)
-    await repair.async_inspect()
+    await SpookRepair(hass).async_inspect()
 
-    prefix = f"{repair.repair}_"
-    assert any(
-        issue_domain == DOMAIN and issue_id.startswith(prefix)
-        for issue_domain, issue_id in issue_registry.issues
-    ), f"No {repair.repair} issue was created for the ghost source"
+    issue = issue_registry.async_get_issue(
+        DOMAIN,
+        f"unknown_helper_source_references_{entry.entry_id}",
+    )
+    assert issue, f"No issue was created for the {helper_domain} ghost source"
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["domain"] == helper_domain

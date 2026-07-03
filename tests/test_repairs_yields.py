@@ -8,11 +8,9 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.entity_component import DATA_INSTANCES
-from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 
 from custom_components.spook.repairs import (
     AbstractSpookEntityComponentUnknownReferencesRepair,
-    AbstractSpookEntityPlatformUnknownSourceRepair,
 )
 
 if TYPE_CHECKING:
@@ -43,18 +41,6 @@ class _ReferencesRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         return set()
 
 
-class _SourceRepair(AbstractSpookEntityPlatformUnknownSourceRepair):
-    """Mock unknown-source repair."""
-
-    domain = "integration"
-    repair = "mock_repair"
-
-    def _get_source_entity_id(self, entity: Any) -> str:
-        """Return a source entity ID that is always known."""
-        del entity
-        return "sensor.time"
-
-
 def _count_sleeps(monkeypatch: pytest.MonkeyPatch) -> list[float]:
     """Record asyncio.sleep calls made during the test."""
     calls: list[float] = []
@@ -82,30 +68,6 @@ async def test_component_inspection_yields_to_event_loop(
     )
 
     repair = _ReferencesRepair(hass)
-    calls = _count_sleeps(monkeypatch)
-
-    await repair.async_inspect()
-
-    assert calls == [0] * EXPECTED_YIELDS
-
-
-async def test_platform_inspection_yields_to_event_loop(
-    hass: HomeAssistant,
-    monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Test the entity platform inspection yields periodically."""
-    platform = SimpleNamespace(
-        domain="sensor",
-        entities={
-            f"sensor.spooky_{index}": SimpleNamespace(
-                entity_id=f"sensor.spooky_{index}",
-            )
-            for index in range(ENTITY_COUNT)
-        },
-    )
-    hass.data.setdefault(DATA_ENTITY_PLATFORM, {})["integration"] = [platform]
-
-    repair = _SourceRepair(hass)
     calls = _count_sleeps(monkeypatch)
 
     await repair.async_inspect()
