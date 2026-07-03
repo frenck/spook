@@ -10,6 +10,7 @@ from homeassistant.helpers import device_registry as dr
 from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
 from ....reference_extraction import extract_targets_from_config
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from ....template_extraction import extract_device_ids_from_config
 
 
 def extract_event_data_device_ids_from_trigger_config(
@@ -88,6 +89,8 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
                     entity.raw_config.get("triggers")
                 )
             )
+            # Devices referenced via device_entities() in templates.
+            device_ids.update(extract_device_ids_from_config(entity.raw_config))
 
         return async_filter_known_device_ids(
             self.hass,
