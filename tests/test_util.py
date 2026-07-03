@@ -20,6 +20,10 @@ from custom_components.spook.entity_filtering import (
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers import (
+        floor_registry as fr,
+        label_registry as lr,
+    )
 
 
 @pytest.mark.parametrize(
@@ -343,3 +347,18 @@ async def test_time_date_entities_are_known(
         )
         == set()
     )
+
+
+async def test_async_filter_known_floor_ids_defaults_to_floor_registry(
+    hass: HomeAssistant,
+    floor_registry: fr.FloorRegistry,
+    label_registry: lr.LabelRegistry,
+) -> None:
+    """Test floor IDs are filtered against the floor registry by default."""
+    floor = floor_registry.async_create("Upstairs")
+    label = label_registry.async_create("Basement")
+
+    assert entity_filtering.async_filter_known_floor_ids(
+        hass,
+        floor_ids={floor.floor_id, label.label_id, "ghost_floor"},
+    ) == {label.label_id, "ghost_floor"}
