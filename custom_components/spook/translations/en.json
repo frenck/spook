@@ -264,6 +264,10 @@
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following triggers, which cannot be provided by any integration available to Home Assistant:\n\n{triggers}\n\n\n\nThis often happens when the integration providing a trigger was removed. To fix this error, [edit the automation]({edit}) and remove the use of these unavailable triggers, or restore the integration providing them.\n\nSpook 👻 Your homie.",
       "title": "Unknown triggers used in: {automation}"
     },
+    "energy_unknown_references": {
+      "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. To fix this error, open Settings > Dashboards > Energy and update or remove these entities.\n\nSpook 👻 Your homie.",
+      "title": "Unknown entities used in the energy dashboard"
+    },
     "group_unknown_members": {
       "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
       "title": "Unknown group members in: {group}"
