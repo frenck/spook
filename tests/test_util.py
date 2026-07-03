@@ -6,16 +6,18 @@ from typing import TYPE_CHECKING, Any
 
 import pytest
 
-from custom_components.spook import entity_filtering
+from custom_components.spook import entity_filtering, template_extraction
 from custom_components.spook.entity_filtering import (
     KNOWN_TIME_DATE_ENTITY_IDS,
+    async_get_all_entity_ids,
+    split_comma_separated_entity_ids,
+)
+from custom_components.spook.template_extraction import (
     async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
-    async_get_all_entity_ids,
     extract_entities_from_template_regex,
     extract_template_strings_from_config,
     is_template_string,
-    split_comma_separated_entity_ids,
 )
 
 if TYPE_CHECKING:
@@ -247,7 +249,7 @@ async def test_extract_entities_from_config_reuses_known_services(
         return {"light.turn_on"}
 
     monkeypatch.setattr(
-        entity_filtering,
+        template_extraction,
         "async_get_all_services",
         async_get_all_services,
     )
@@ -270,7 +272,7 @@ async def test_extract_entities_from_config_reuses_duplicate_template_results(
 ) -> None:
     """Test duplicate template strings are extracted once per config scan."""
     calls = 0
-    original = entity_filtering.async_extract_entities_from_template_string
+    original = template_extraction.async_extract_entities_from_template_string
 
     async def async_extract_entities_from_template_string(
         hass: HomeAssistant,
@@ -283,7 +285,7 @@ async def test_extract_entities_from_config_reuses_duplicate_template_results(
         return await original(hass, template_str, known_services)
 
     monkeypatch.setattr(
-        entity_filtering,
+        template_extraction,
         "async_extract_entities_from_template_string",
         async_extract_entities_from_template_string,
     )
@@ -310,7 +312,7 @@ async def test_filter_plain_entity_ids_does_not_get_services(
         return {"light.turn_on"}
 
     monkeypatch.setattr(
-        entity_filtering,
+        template_extraction,
         "async_get_all_services",
         async_get_all_services,
     )
@@ -384,3 +386,21 @@ async def test_entity_id_cache_lifecycle(hass: HomeAssistant) -> None:
     cache = hass.data[entity_filtering.DATA_ALL_ENTITY_IDS_CACHE]
     assert cache.entity_ids is None
     assert cache.unsubscribe is None
+
+
+def test_template_candidate_extraction_is_cached() -> None:
+    """Test repeated extraction of the same template hits the cache.
+
+    Repairs re-inspect the same unchanged templates on every cycle; the
+    regex scan must only run once per distinct template string.
+    """
+    # pylint: disable-next=protected-access
+    extract = template_extraction._extract_entity_candidates_from_template  # noqa: SLF001
+    extract.cache_clear()
+
+    template = "{{ states('sensor.cached') }}"
+    assert extract(template) == frozenset({"sensor.cached"})
+    assert extract(template) == frozenset({"sensor.cached"})
+
+    assert extract.cache_info().hits == 1
+    assert extract.cache_info().misses == 1

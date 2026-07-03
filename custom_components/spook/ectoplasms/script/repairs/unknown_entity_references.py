@@ -8,12 +8,12 @@ from homeassistant.components import script
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
-from ....entity_filtering import (
+from ....entity_filtering import async_get_all_entity_ids
+from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from ....template_extraction import (
     async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
-    async_get_all_entity_ids,
 )
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
