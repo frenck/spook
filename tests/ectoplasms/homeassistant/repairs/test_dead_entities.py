@@ -104,3 +104,24 @@ async def test_restored_entity_of_unloaded_entry_is_not_reported(
         issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
         is None
     )
+
+
+async def test_restored_entity_without_config_entry_is_not_reported(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a restored entity with no config entry is not reported.
+
+    Without a config entry its load state cannot be confirmed, so it is
+    deliberately left alone.
+    """
+    _register_restored(hass, entity_registry, None, "yamlish")
+
+    await SpookRepair(hass).async_inspect()
+
+    assert not any(
+        issue_id.startswith("dead_entities_")
+        for domain, issue_id in issue_registry.issues
+        if domain == DOMAIN
+    )
