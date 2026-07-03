@@ -104,3 +104,64 @@ def extract_targets_from_config(config: Any) -> ExtractedTargets:
     targets = ExtractedTargets()
     _walk(config, targets)
     return targets
+
+
+# Additional keys whose subtree carries payload or opaque data when
+# extracting trigger and condition platform keys. Service data can hold
+# keys like ``platform`` or ``condition`` (a weather condition, for
+# example), and blueprint inputs are free-form.
+_PLATFORM_KEY_EXCLUDED_KEYS = _EXCLUDED_KEYS | frozenset(
+    {
+        "data",
+        "data_template",
+        "service_data",
+        "use_blueprint",
+    },
+)
+
+
+@dataclass
+class ExtractedPlatformKeys:
+    """Trigger and condition platform keys extracted from a raw config."""
+
+    trigger_keys: set[str] = field(default_factory=set)
+    condition_keys: set[str] = field(default_factory=set)
+
+
+def _walk_platform_keys(config: Any, found: ExtractedPlatformKeys) -> None:
+    """Recursively collect trigger and condition platform keys."""
+    if isinstance(config, list):
+        for item in config:
+            _walk_platform_keys(item, found)
+        return
+
+    if not isinstance(config, dict):
+        return
+
+    if isinstance(condition := config.get("condition"), str):
+        found.condition_keys.add(condition)
+    else:
+        # Only collect trigger keys outside condition configurations: the
+        # trigger condition carries trigger IDs (not platform keys) in its
+        # own ``trigger`` field.
+        for key in ("trigger", "platform"):
+            if isinstance(trigger := config.get(key), str):
+                found.trigger_keys.add(trigger)
+                break
+
+    for key, value in config.items():
+        if key in _PLATFORM_KEY_EXCLUDED_KEYS:
+            continue
+        _walk_platform_keys(value, found)
+
+
+def extract_platform_keys_from_config(config: Any) -> ExtractedPlatformKeys:
+    """Extract trigger and condition platform keys from a raw config.
+
+    Collects the type of every trigger (``platform:``/``trigger:``) and
+    condition (``condition:``) used anywhere in the configuration,
+    including ``wait_for_trigger`` blocks and nested sequences.
+    """
+    found = ExtractedPlatformKeys()
+    _walk_platform_keys(config, found)
+    return found
