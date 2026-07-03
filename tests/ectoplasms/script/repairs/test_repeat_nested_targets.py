@@ -13,10 +13,14 @@ import importlib
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
+from homeassistant.setup import async_setup_component
+
+from custom_components.spook.const import DOMAIN
 import pytest
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers import issue_registry as ir
 
 
 def _raw_config_with_repeat_nested(key: str, value: str) -> dict:
@@ -66,3 +70,52 @@ async def test_repeat_nested_reference_is_detected(
     )
 
     assert await repair._async_compute_unknown_references(entity) == {ghost_id}
+
+
+async def test_repeat_nested_target_detected_on_real_script_entity(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test detection against a real script entity, end to end.
+
+    Pins that production ``ScriptEntity`` instances expose ``raw_config``;
+    a mock-only test could keep passing if that attribute ever went away.
+    """
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "spooky": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "count": 2,
+                                "sequence": [
+                                    {
+                                        "action": "light.turn_on",
+                                        "target": {"area_id": "ghost_area"},
+                                    },
+                                ],
+                            },
+                        },
+                    ],
+                },
+            },
+        },
+    )
+    await hass.async_block_till_done()
+
+    module = importlib.import_module(
+        "custom_components.spook.ectoplasms.script.repairs.unknown_area_references",
+    )
+    repair = module.SpookRepair(hass)
+    await repair.async_inspect()
+
+    issue = issue_registry.async_get_issue(
+        DOMAIN,
+        "script_unknown_area_references_script.spooky",
+    )
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["areas"] == "- `ghost_area`"
