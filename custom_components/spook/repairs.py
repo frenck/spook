@@ -41,6 +41,11 @@ if TYPE_CHECKING:
     from homeassistant.util.event_type import EventType
 
 
+# Yield to the event loop every this many inspected entities; inspections
+# are CPU-bound and must not stall the loop on large installations.
+INSPECTION_YIELD_INTERVAL = 50
+
+
 class AbstractSpookRepairBase(ABC):
     """Abstract base class to hold a Spook repairs."""
 
@@ -354,7 +359,12 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
 
         await self._async_setup_inspection()
 
-        for entity in entity_component.entities:
+        for index, entity in enumerate(entity_component.entities):
+            if index and index % INSPECTION_YIELD_INTERVAL == 0:
+                # Inspections are CPU-bound; periodically yield to the event
+                # loop so large installations do not stall it.
+                await asyncio.sleep(0)
+
             self.possible_issue_ids.add(entity.entity_id)
 
             if isinstance(entity, self.unavailable_entity_class):
@@ -424,6 +434,7 @@ class AbstractSpookEntityPlatformUnknownSourceRepair(AbstractSpookRepair, ABC):
 
         known_entity_ids = async_get_all_entity_ids(self.hass)
 
+        inspected = 0
         for platform in platforms:
             if (
                 self.source_platform_domain is not None
@@ -432,6 +443,12 @@ class AbstractSpookEntityPlatformUnknownSourceRepair(AbstractSpookRepair, ABC):
                 continue
 
             for entity in platform.entities.values():
+                inspected += 1
+                if inspected % INSPECTION_YIELD_INTERVAL == 0:
+                    # Inspections are CPU-bound; periodically yield to the
+                    # event loop so large installations do not stall it.
+                    await asyncio.sleep(0)
+
                 self.possible_issue_ids.add(entity.entity_id)
                 source = self._get_source_entity_id(entity)
                 if source not in known_entity_ids:
