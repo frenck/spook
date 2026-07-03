@@ -100,6 +100,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     unavailable_entity_class = script.UnavailableScriptEntity
     entity_label = "script"
     reference_label = "entities"
+    references_are_entities = True
     edit_url_pattern = "/config/script/edit/{unique_id}"
 
     _known_entity_ids: set[str]

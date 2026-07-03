@@ -324,6 +324,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     unavailable_entity_class = automation.UnavailableAutomationEntity
     entity_label = "automation"
     reference_label = "entities"
+    references_are_entities = True
     edit_url_pattern = "/config/automation/edit/{unique_id}"
 
     _known_entity_ids: set[str]
