@@ -52,10 +52,8 @@ class SpookRepair(AbstractSpookRepair):
                     },
                 )
                 LOGGER.debug(
-                    (
-                        "Spook found unknown floors in %s "
-                        "and created an issue for it; Floors: %s",
-                    ),
+                    "Spook found unknown floors in %s "
+                    "and created an issue for it; Floors: %s",
                     entity.entity_id,
                     ", ".join(unknown_floors),
                 )

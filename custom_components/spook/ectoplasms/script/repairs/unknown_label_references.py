@@ -52,10 +52,8 @@ class SpookRepair(AbstractSpookRepair):
                     },
                 )
                 LOGGER.debug(
-                    (
-                        "Spook found unknown labels in %s "
-                        "and created an issue for it; Labels: %s",
-                    ),
+                    "Spook found unknown labels in %s "
+                    "and created an issue for it; Labels: %s",
                     entity.entity_id,
                     ", ".join(unknown_labels),
                 )
