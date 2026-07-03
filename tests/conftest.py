@@ -9,11 +9,7 @@ from pytest_homeassistant_custom_component.syrupy import HomeAssistantSnapshotEx
 
 from homeassistant import config_entries, loader, setup
 
-from custom_components.spook import entity_filtering
-
 if TYPE_CHECKING:
-    from collections.abc import Generator
-
     from syrupy.assertion import SnapshotAssertion
 
     from homeassistant.core import HomeAssistant
@@ -30,22 +26,6 @@ def allow_unreleased_spook(monkeypatch: pytest.MonkeyPatch) -> None:
 def auto_enable_custom_integrations(enable_custom_integrations: None) -> None:
     """Enable custom integrations in Home Assistant tests."""
     _ = enable_custom_integrations
-
-
-@pytest.fixture(autouse=True)
-def reset_entity_id_cache() -> Generator[None]:
-    """Reset Spook's module-global entity ID cache state between tests.
-
-    The cache and its invalidation listeners live at module level in
-    ``entity_filtering``; without a reset, a cache populated from one
-    test's ``hass`` instance leaks into the next test.
-    """
-    yield
-    # pylint: disable-next=protected-access
-    if (unsub := entity_filtering._UNSUB_CACHE_INVALIDATION) is not None:  # noqa: SLF001
-        unsub()
-    # pylint: disable-next=protected-access
-    entity_filtering._clear_all_entity_ids_cache()  # noqa: SLF001
 
 
 @pytest.fixture
