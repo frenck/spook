@@ -362,3 +362,25 @@ async def test_async_filter_known_floor_ids_defaults_to_floor_registry(
         hass,
         floor_ids={floor.floor_id, label.label_id, "ghost_floor"},
     ) == {label.label_id, "ghost_floor"}
+
+
+async def test_entity_id_cache_lifecycle(hass: HomeAssistant) -> None:
+    """Test the per-instance entity ID cache wiring.
+
+    Setting up invalidation twice returns the same unsubscribe callable,
+    a state addition invalidates the cache, and unsubscribing clears it.
+    """
+    unsub = entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+    assert entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass) is unsub
+
+    assert "light.new" not in async_get_all_entity_ids(hass)
+
+    hass.states.async_set("light.new", "on")
+    await hass.async_block_till_done()
+
+    assert "light.new" in async_get_all_entity_ids(hass)
+
+    unsub()
+    cache = hass.data[entity_filtering.DATA_ALL_ENTITY_IDS_CACHE]
+    assert cache.entity_ids is None
+    assert cache.unsubscribe is None
