@@ -41,8 +41,8 @@ class SpookRepair(AbstractSpookRepair):
         known_entity_ids = async_get_all_entity_ids(self.hass)
 
         for entry_id, coordinator in coordinators.items():
+            self.possible_issue_ids.add(entry_id)
             if coordinator.proximity_zone_id not in known_entity_ids:
-                self.possible_issue_ids.add(entry_id)
                 self.async_create_issue(
                     issue_id=entry_id,
                     translation_placeholders={

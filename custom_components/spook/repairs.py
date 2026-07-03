@@ -149,29 +149,38 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         self._event_subs = set()
         self.possible_issue_ids = set()
 
+    async def _async_inspect_with_cleanup(self) -> None:
+        """Run an inspection and clean up issues that are no longer valid."""
+        # Don't inspect if we are stopping
+        if self.hass.is_stopping:
+            return
+
+        if not self.automatically_clean_up_issues:
+            await self.async_inspect()
+            return
+
+        # Issues registered by earlier inspections. Anything not re-registered
+        # during this inspection is no longer valid, including issues for
+        # items that were removed entirely since the previous inspection.
+        previous_issue_ids = self.issue_ids.copy()
+
+        # Reset registered issues. If they are still valid, they will be
+        # re-registered during the inspection.
+        self.issue_ids.clear()
+
+        await self.async_inspect()
+
+        # Remove issues that are no longer valid after the inspection:
+        # - previous_issue_ids covers issues whose item was resolved or
+        #   removed since the previous inspection.
+        # - possible_issue_ids covers stale issues for inspected items that
+        #   this runtime never registered, like leftovers from before a
+        #   restart.
+        for issue_id in (previous_issue_ids | self.possible_issue_ids) - self.issue_ids:
+            self.async_delete_issue(issue_id)
+
     async def async_activate(self) -> None:  # noqa: C901
         """Handle the activating a repair."""
-
-        async def _async_inspect() -> None:
-            # Don't inspect if we are stopping
-            if self.hass.is_stopping:
-                return
-
-            if self.automatically_clean_up_issues:
-                # Reset registered issues. If they are still valid, they will be
-                # re-registered during the inspection.
-                self.issue_ids.clear()
-
-            await self.async_inspect()
-
-            if self.automatically_clean_up_issues:
-                # Remove issues that are not longer created after inspection.
-                for issue_id in self.possible_issue_ids - self.issue_ids:
-                    self.async_delete_issue(issue_id)
-                # Remove issues that are no longer valid.
-                for issue_id in self.issue_ids - self.possible_issue_ids:
-                    self.async_delete_issue(issue_id)
-
         # Debouncer to prevent multiple inspections / inspections fired quickly
         # after each other.
         self.inspect_debouncer = Debouncer(
@@ -179,7 +188,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             LOGGER,
             cooldown=3,
             immediate=False,
-            function=_async_inspect,
+            function=self._async_inspect_with_cleanup,
         )
 
         # Spook says: Bounce!

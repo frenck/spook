@@ -17,6 +17,7 @@ if TYPE_CHECKING:
 
     from homeassistant.config_entries import ConfigEntry, ConfigEntryChange
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers import issue_registry as ir
     import pytest
 
 
@@ -154,3 +155,101 @@ async def test_repair_manager_keeps_issues_on_shutdown(
     await manager.async_on_unload()
 
     assert (DOMAIN, "mock_mock_repair_one") in manager.issue_registry.issues
+
+
+class MockCleanupRepair(AbstractSpookRepair):
+    """Mock repair with automatic issue cleanup."""
+
+    domain = "mock"
+    repair = "mock_repair"
+    automatically_clean_up_issues = True
+
+    inspected_ids: set[str] = set()
+    current_issue_ids: set[str] = set()
+
+    async def async_inspect(self) -> None:
+        """Inspect the repair."""
+        self.possible_issue_ids.clear()
+        self.possible_issue_ids.update(self.inspected_ids)
+        for issue_id in self.current_issue_ids:
+            self.async_create_issue(issue_id=issue_id)
+
+
+async def test_cleanup_keeps_valid_issues(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test issues re-registered during an inspection are kept."""
+    repair = MockCleanupRepair(hass)
+    repair.inspected_ids = {"one"}
+    repair.current_issue_ids = {"one"}
+
+    await repair._async_inspect_with_cleanup()
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+
+
+async def test_cleanup_deletes_resolved_issues(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test issues are deleted when the inspected item no longer has one."""
+    repair = MockCleanupRepair(hass)
+    repair.inspected_ids = {"one"}
+    repair.current_issue_ids = {"one"}
+
+    await repair._async_inspect_with_cleanup()
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+
+    repair.current_issue_ids = set()
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one") is None
+
+
+async def test_cleanup_deletes_issues_for_removed_items(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test issues are deleted when their item is removed entirely."""
+    repair = MockCleanupRepair(hass)
+    repair.inspected_ids = {"one"}
+    repair.current_issue_ids = {"one"}
+
+    await repair._async_inspect_with_cleanup()
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+
+    repair.inspected_ids = set()
+    repair.current_issue_ids = set()
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one") is None
+
+
+async def test_cleanup_deletes_stale_issues_for_inspected_items(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test stale issues from an earlier runtime are deleted.
+
+    Issues persist in the issue registry across restarts, while the repair's
+    in-memory bookkeeping starts empty. An inspected item without a current
+    problem must have its leftover issue removed.
+    """
+    repairs.ir.async_create_issue(
+        hass,
+        domain=DOMAIN,
+        issue_id="mock_repair_one",
+        is_fixable=False,
+        severity=repairs.ir.IssueSeverity.WARNING,
+        translation_key="mock_repair",
+    )
+
+    repair = MockCleanupRepair(hass)
+    repair.inspected_ids = {"one"}
+    repair.current_issue_ids = set()
+
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, "mock_repair_one") is None
