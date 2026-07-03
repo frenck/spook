@@ -76,3 +76,47 @@ def extract_entities_from_dashboard_node(node: Any) -> set[str]:
     entities: set[str] = set()
     _walk(node, entities)
     return entities
+
+
+# Keys whose value holds one or more area references. ``area`` is the area
+# card and area view strategy; ``area_id`` is a service-call area target.
+_AREA_REFERENCE_KEYS = frozenset({"area", "area_id"})
+
+
+def _collect_plain(value: Any, out: set[str]) -> None:
+    """Collect plain string IDs from a key's string or list value."""
+    if isinstance(value, str):
+        out.add(value)
+    elif isinstance(value, list):
+        out.update(item for item in value if isinstance(item, str))
+
+
+def _walk_areas(node: Any, areas: set[str]) -> None:
+    """Recursively collect area references from a configuration node."""
+    if isinstance(node, list):
+        for item in node:
+            _walk_areas(item, areas)
+        return
+
+    if not isinstance(node, dict):
+        return
+
+    for key in _AREA_REFERENCE_KEYS:
+        if key in node:
+            _collect_plain(node[key], areas)
+
+    # The areas dashboard strategy lists area IDs to hide or order.
+    if isinstance(areas_display := node.get("areas_display"), dict):
+        for sub_key in ("hidden", "order"):
+            _collect_plain(areas_display.get(sub_key), areas)
+
+    for value in node.values():
+        if isinstance(value, (dict, list)):
+            _walk_areas(value, areas)
+
+
+def extract_areas_from_dashboard_node(node: Any) -> set[str]:
+    """Return the area references found anywhere in a dashboard node."""
+    areas: set[str] = set()
+    _walk_areas(node, areas)
+    return areas
