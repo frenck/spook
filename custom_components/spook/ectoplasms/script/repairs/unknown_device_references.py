@@ -10,6 +10,7 @@ from homeassistant.helpers import device_registry as dr
 from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
 from ....reference_extraction import extract_targets_from_config
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from ....template_extraction import extract_device_ids_from_config
 
 if TYPE_CHECKING:
     from typing import Any
@@ -43,6 +44,8 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         # references nested in some step types, like repeat sequences.
         if raw_config := getattr(entity, "raw_config", None):
             device_ids.update(extract_targets_from_config(raw_config).device_ids)
+            # Devices referenced via device_entities() in templates.
+            device_ids.update(extract_device_ids_from_config(raw_config))
 
         return async_filter_known_device_ids(
             self.hass,

@@ -6,6 +6,7 @@ from typing import Any
 
 import pytest
 
+from custom_components.spook.template_extraction import extract_device_ids_from_config
 from custom_components.spook.reference_extraction import (
     extract_platform_keys_from_config,
     extract_targets_from_config,
@@ -239,3 +240,34 @@ def test_platform_keys_skip_payloads_and_trigger_condition_ids() -> None:
 
     assert keys.trigger_keys == {"event"}
     assert keys.condition_keys == {"trigger"}
+
+
+def test_device_ids_extracted_from_template_config() -> None:
+    """Test device_entities() device IDs are pulled from templated config."""
+    config = {
+        "actions": [
+            {
+                "action": "light.turn_on",
+                "target": {
+                    "entity_id": "{{ device_entities('abc123device') }}",
+                },
+            },
+            {
+                "action": "notify.notify",
+                "data": {
+                    "message": (
+                        '{{ device_entities("def456device") | length }} devices'
+                    ),
+                },
+            },
+        ],
+    }
+
+    assert extract_device_ids_from_config(config) == {"abc123device", "def456device"}
+
+
+def test_device_extraction_ignores_non_device_templates() -> None:
+    """Test templates without device_entities yield no device IDs."""
+    config = {"value_template": "{{ states('sensor.x') }}"}
+
+    assert extract_device_ids_from_config(config) == set()

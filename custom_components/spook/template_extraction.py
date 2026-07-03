@@ -103,6 +103,14 @@ COMPILED_ENTITY_ID_TEMPLATE_PATTERNS = tuple(
 
 JINJA_COMMENT_PATTERN = re.compile(r"\{#.*?#\}", re.DOTALL)
 
+# The ``device_entities`` template function takes a device registry ID
+# directly (no name or entity resolution), so a quoted literal is
+# unambiguously a device reference.
+_DEVICE_ENTITIES_PATTERN = re.compile(
+    r"device_entities\s*\(\s*['\"]([^'\"]+)['\"]",
+    re.IGNORECASE,
+)
+
 
 def is_template_string(value: str) -> bool:
     """Check if a string looks like a Jinja2 template."""
@@ -437,3 +445,18 @@ async def async_extract_entities_from_config(
                 exc,  # Pass the exception for logging
             )
     return entities
+
+
+@lru_cache(maxsize=1024)
+def _extract_device_ids_from_template(template_str: str) -> frozenset[str]:
+    """Extract device IDs referenced via ``device_entities`` in a template."""
+    template_without_comments = _strip_jinja_comments(template_str)
+    return frozenset(_DEVICE_ENTITIES_PATTERN.findall(template_without_comments))
+
+
+def extract_device_ids_from_config(config: Any) -> set[str]:
+    """Extract device IDs referenced via ``device_entities`` in templates."""
+    device_ids: set[str] = set()
+    for template_str in extract_template_strings_from_config(config):
+        device_ids.update(_extract_device_ids_from_template(template_str))
+    return device_ids
