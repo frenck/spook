@@ -66,17 +66,6 @@ KNOWN_TIME_DATE_ENTITY_IDS = {
     "sensor.time_utc",
 }
 
-# Additional known domains that are not in the Platform enum
-
-# Build a list of all known domains
-
-# Home Assistant core entity ID validation patterns (from homeassistant/core.py)
-# Modified _DOMAIN pattern to only match known domains
-
-# Template function names that accept entity IDs as first parameter
-
-# Build regex patterns using Home Assistant's core validation patterns
-
 
 @dataclass
 class EntityIDsCache:

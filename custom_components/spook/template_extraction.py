@@ -23,6 +23,7 @@ if TYPE_CHECKING:
 
     from homeassistant.core import HomeAssistant
 
+# Additional known domains that are not in the Platform enum
 ADDITIONAL_DOMAINS = [
     "alert",
     "automation",
@@ -45,19 +46,17 @@ ADDITIONAL_DOMAINS = [
     "zone",
 ]
 
-
+# Build a list of all known domains
 KNOWN_DOMAINS = [platform.value for platform in Platform] + ADDITIONAL_DOMAINS
 
-
+# Home Assistant core entity ID validation patterns (from homeassistant/core.py)
 _OBJECT_ID = r"(?!_)[\da-z_]+(?<!_)"
-
-
+# Modified _DOMAIN pattern to only match known domains
 _DOMAIN = r"(?:" + "|".join(KNOWN_DOMAINS) + r")"
-
-
 ENTITY_ID_PATTERN = _DOMAIN + r"\." + _OBJECT_ID
 
 
+# Template function names that accept entity IDs as first parameter
 _ENTITY_FUNCTIONS = [
     "states",
     "is_state",
@@ -81,6 +80,7 @@ _ENTITY_FUNCTIONS = [
 ]
 
 
+# Build regex patterns using Home Assistant's core validation patterns
 _STATES_DOMAIN_ENTITY_GROUPS = 2
 
 
