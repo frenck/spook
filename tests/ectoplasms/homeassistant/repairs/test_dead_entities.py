@@ -83,7 +83,7 @@ async def test_live_entity_is_not_reported(
     )
 
 
-async def test_restored_entity_of_unloaded_entry_is_not_reported(
+async def test_restored_entity_of_retrying_entry_is_not_reported(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
     issue_registry: ir.IssueRegistry,
