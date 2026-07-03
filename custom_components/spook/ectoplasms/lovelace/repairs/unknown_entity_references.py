@@ -17,6 +17,7 @@ from homeassistant.helpers import entity_registry as er
 from ....const import LOGGER
 from ....dashboard_extraction import extract_entities_from_dashboard_node
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
+from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
@@ -105,8 +106,8 @@ class SpookRepair(AbstractSpookRepair):
                 self.async_create_issue(
                     issue_id=url_path,
                     translation_placeholders={
-                        "entities": "\n".join(
-                            f"- `{entity_id}`" for entity_id in sorted(unknown_entities)
+                        "entities": async_describe_unknown_entities(
+                            self.hass, sorted(unknown_entities)
                         ),
                         "dashboard": title,
                         "edit": f"/{url_path}/{first_view_path}?edit=1",

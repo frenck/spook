@@ -11,6 +11,7 @@ from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPl
 
 from ....const import LOGGER
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
+from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
 
 
@@ -58,8 +59,8 @@ class SpookRepair(AbstractSpookRepair):
                     self.async_create_issue(
                         issue_id=entity.entity_id,
                         translation_placeholders={
-                            "entities": "\n".join(
-                                f"- `{entity_id}`" for entity_id in unknown_entities
+                            "entities": async_describe_unknown_entities(
+                                self.hass, sorted(unknown_entities)
                             ),
                             "group": entity.name,
                             "entity_id": entity.entity_id,
