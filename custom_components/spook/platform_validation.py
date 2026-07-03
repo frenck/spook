@@ -34,6 +34,37 @@ if TYPE_CHECKING:
     from homeassistant.util.hass_dict import HassKey
 
 
+def _resolve_domain(
+    key: str,
+    aliases: Mapping[str | None, str | None],
+) -> str | None:
+    """Return the integration domain for a platform key.
+
+    Aliases only apply to bare keys; ``None`` marks a built-in.
+    """
+    domain = key.partition(".")[0]
+    if "." not in key:
+        return aliases.get(domain, domain)
+    return domain
+
+
+async def _async_domain_can_provide(
+    hass: HomeAssistant,
+    domain: str,
+    platform_file: str,
+) -> bool:
+    """Return whether the integration for ``domain`` can provide the platform.
+
+    An existing but not yet loaded integration has nothing registered;
+    it is trusted when it ships the platform file at all.
+    """
+    try:
+        integration = await async_get_integration(hass, domain)
+    except IntegrationNotFound:
+        return False
+    return bool(integration.platforms_exists((platform_file,)))
+
+
 async def _async_filter_unknown_keys(
     hass: HomeAssistant,
     *,
@@ -54,27 +85,15 @@ async def _async_filter_unknown_keys(
         if not key or not isinstance(key, str) or key in registered:
             continue
 
-        domain = key.partition(".")[0]
-        if "." not in key:
-            # Aliases only apply to bare keys; ``None`` marks a built-in.
-            domain = aliases.get(domain, domain)  # type: ignore[assignment]
-            if domain is None:
-                continue
+        domain = _resolve_domain(key, aliases)
 
-        # The integration registered its platform; whether this specific
-        # key exists on it is validated by Home Assistant itself.
-        if domain in registered_domains:
+        # ``None`` is a built-in. A registered domain is trusted; whether
+        # this specific key exists on it is validated by Home Assistant.
+        if domain is None or domain in registered_domains:
             continue
 
         if (can_provide := domain_can_provide.get(domain)) is None:
-            try:
-                integration = await async_get_integration(hass, domain)
-            except IntegrationNotFound:
-                can_provide = False
-            else:
-                # The integration exists but is not loaded (so nothing is
-                # registered yet); trust it when it ships this platform.
-                can_provide = bool(integration.platforms_exists((platform_file,)))
+            can_provide = await _async_domain_can_provide(hass, domain, platform_file)
             domain_can_provide[domain] = can_provide
 
         if not can_provide:
