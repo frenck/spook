@@ -32,7 +32,9 @@ async def test_script_with_unknown_area_creates_issue(
         unique_id="spooky",
         script=SimpleNamespace(referenced_areas={area.id, "ghost_area"}),
     )
-    hass.data[DATA_INSTANCES] = {"script": SimpleNamespace(entities=[entity])}
+    hass.data.setdefault(DATA_INSTANCES, {})["script"] = SimpleNamespace(
+        entities=[entity],
+    )
 
     repair = SpookRepair(hass)
     await repair.async_inspect()
