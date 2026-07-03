@@ -303,6 +303,16 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return the set of unknown referenced IDs for a single entity."""
 
+    def _edit_url(self, entity: Any) -> str:
+        """Return the URL to edit the given entity.
+
+        Items created in YAML can lack a unique ID, in which case there is no
+        editor to deep-link to; fall back to the domain's overview page.
+        """
+        if entity.unique_id is None:
+            return f"/config/{self.domain}/dashboard"
+        return self.edit_url_pattern.format(unique_id=entity.unique_id)
+
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
         self.possible_issue_ids.clear()
@@ -338,7 +348,7 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
                         f"- `{item}`" for item in sorted_unknown
                     ),
                     self.entity_label: entity.name,
-                    "edit": self.edit_url_pattern.format(unique_id=entity.unique_id),
+                    "edit": self._edit_url(entity),
                     "entity_id": entity.entity_id,
                 },
             )
