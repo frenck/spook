@@ -46,6 +46,9 @@ async def _async_filter_unknown_keys(
     registered: dict[str, str] = hass.data.get(registry_key) or {}
     registered_domains = set(registered.values())
 
+    # Keys often share a domain; resolve each integration only once.
+    domain_can_provide: dict[str, bool] = {}
+
     unknown = set()
     for key in keys:
         if not key or not isinstance(key, str) or key in registered:
@@ -63,15 +66,18 @@ async def _async_filter_unknown_keys(
         if domain in registered_domains:
             continue
 
-        try:
-            integration = await async_get_integration(hass, domain)
-        except IntegrationNotFound:
-            unknown.add(key)
-            continue
+        if (can_provide := domain_can_provide.get(domain)) is None:
+            try:
+                integration = await async_get_integration(hass, domain)
+            except IntegrationNotFound:
+                can_provide = False
+            else:
+                # The integration exists but is not loaded (so nothing is
+                # registered yet); trust it when it ships this platform.
+                can_provide = bool(integration.platforms_exists((platform_file,)))
+            domain_can_provide[domain] = can_provide
 
-        # The integration exists but is not loaded (so nothing registered
-        # yet); only report when it cannot provide this platform at all.
-        if not integration.platforms_exists((platform_file,)):
+        if not can_provide:
             unknown.add(key)
 
     return unknown
