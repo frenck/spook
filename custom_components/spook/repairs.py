@@ -302,8 +302,10 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
 
     #: Entity class representing an unavailable/broken instance. Entities of
     #: this type are still tracked in ``possible_issue_ids`` but skipped during
-    #: issue creation.
-    unavailable_entity_class: type
+    #: issue creation. ``None`` inspects every entity, including unavailable
+    #: ones; repairs that diagnose *why* an entity is broken need exactly
+    #: those.
+    unavailable_entity_class: type | None = None
 
     #: Translation placeholder key holding the entity's display name (e.g.
     #: ``"automation"`` or ``"script"``).
@@ -368,7 +370,9 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
 
             self.possible_issue_ids.add(entity.entity_id)
 
-            if isinstance(entity, self.unavailable_entity_class):
+            unavailable_class = self.unavailable_entity_class
+            # pylint: disable-next=isinstance-second-argument-not-valid-type
+            if unavailable_class is not None and isinstance(entity, unavailable_class):
                 continue
 
             if not self._should_inspect_entity(entity):

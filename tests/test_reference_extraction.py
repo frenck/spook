@@ -6,7 +6,10 @@ from typing import Any
 
 import pytest
 
-from custom_components.spook.reference_extraction import extract_targets_from_config
+from custom_components.spook.reference_extraction import (
+    extract_platform_keys_from_config,
+    extract_targets_from_config,
+)
 
 
 def test_repeat_nested_targets_are_found() -> None:
@@ -171,3 +174,68 @@ def test_empty_or_scalar_configs_yield_nothing(config: Any) -> None:
     assert not targets.device_ids
     assert not targets.floor_ids
     assert not targets.label_ids
+
+
+def test_platform_keys_from_all_sections() -> None:
+    """Test trigger and condition keys are collected everywhere."""
+    config = {
+        "triggers": [
+            {"trigger": "state", "entity_id": "light.kitchen"},
+            {"platform": "samsung_tv.turned_on"},
+        ],
+        "conditions": [
+            {
+                "condition": "or",
+                "conditions": [{"condition": "sun", "after": "sunset"}],
+            },
+        ],
+        "actions": [
+            {
+                "repeat": {
+                    "count": 2,
+                    "sequence": [
+                        {
+                            "wait_for_trigger": [{"trigger": "ghost.appeared"}],
+                        },
+                        {"condition": "template", "value_template": "{{ true }}"},
+                    ],
+                },
+            },
+        ],
+    }
+
+    keys = extract_platform_keys_from_config(config)
+
+    assert keys.trigger_keys == {"state", "samsung_tv.turned_on", "ghost.appeared"}
+    assert keys.condition_keys == {"or", "sun", "template"}
+
+
+def test_platform_keys_skip_payloads_and_trigger_condition_ids() -> None:
+    """Test payload data and trigger condition IDs are not platform keys.
+
+    Service data can hold ``platform`` or ``condition`` keys (a weather
+    condition, for example), and the trigger *condition* references
+    trigger IDs, not platforms, in its ``trigger`` field.
+    """
+    config = {
+        "triggers": [
+            {
+                "trigger": "event",
+                "event_type": "x",
+                "event_data": {"platform": "payload"},
+            },
+        ],
+        "conditions": [{"condition": "trigger", "trigger": "my_trigger_id"}],
+        "actions": [
+            {
+                "action": "weather.set",
+                "data": {"condition": "sunny", "platform": "payload"},
+            },
+        ],
+        "use_blueprint": {"input": {"condition": "free-form"}},
+    }
+
+    keys = extract_platform_keys_from_config(config)
+
+    assert keys.trigger_keys == {"event"}
+    assert keys.condition_keys == {"trigger"}
