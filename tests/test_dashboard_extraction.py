@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 
 from custom_components.spook.dashboard_extraction import (
+    extract_areas_from_dashboard_node,
     extract_entities_from_dashboard_node,
 )
 
@@ -178,3 +179,48 @@ def test_non_reference_keys_and_sources_are_ignored() -> None:
 def test_degenerate_nodes_yield_nothing(node: Any) -> None:
     """Test scalar, empty, and malformed nodes produce no references."""
     assert extract_entities_from_dashboard_node(node) == set()
+
+
+def test_area_references_from_cards_and_strategy() -> None:
+    """Test area references are collected from area cards and strategies."""
+    config = {
+        "views": [
+            {
+                "strategy": {
+                    "type": "areas",
+                    "areas_display": {
+                        "hidden": ["attic"],
+                        "order": ["kitchen", "hallway"],
+                    },
+                },
+            },
+            {
+                "cards": [
+                    {"type": "area", "area": "living_room"},
+                    {
+                        "type": "button",
+                        "tap_action": {
+                            "action": "perform-action",
+                            "target": {"area_id": ["garage", "shed"]},
+                        },
+                    },
+                ],
+            },
+        ],
+    }
+
+    assert extract_areas_from_dashboard_node(config) == {
+        "attic",
+        "kitchen",
+        "hallway",
+        "living_room",
+        "garage",
+        "shed",
+    }
+
+
+def test_area_extraction_ignores_unrelated_keys() -> None:
+    """Test non-area keys are not collected as area references."""
+    config = {"type": "entity", "entity": "sensor.x", "name": "kitchen"}
+
+    assert extract_areas_from_dashboard_node(config) == set()
