@@ -2,16 +2,19 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING
+
 from homeassistant.components import script
 from homeassistant.helpers import device_registry as dr
-from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 
-from ....const import LOGGER
 from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
-from ....repairs import AbstractSpookRepair
+from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+
+if TYPE_CHECKING:
+    from typing import Any
 
 
-class SpookRepair(AbstractSpookRepair):
+class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     """Spook repair tries to find unknown referenced devices in scripts."""
 
     domain = script.DOMAIN
@@ -20,43 +23,21 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = True
     inspect_on_reload = True
 
-    automatically_clean_up_issues = True
+    unavailable_entity_class = script.UnavailableScriptEntity
+    entity_label = "script"
+    reference_label = "devices"
+    edit_url_pattern = "/config/script/edit/{unique_id}"
 
-    async def async_inspect(self) -> None:
-        """Trigger a inspection."""
-        if self.domain not in self.hass.data[DATA_INSTANCES]:
-            return
+    _known_device_ids: set[str]
 
-        entity_component: EntityComponent[script.ScriptEntity] = self.hass.data[
-            DATA_INSTANCES
-        ][self.domain]
+    async def _async_setup_inspection(self) -> None:
+        """Cache known device IDs for this inspection cycle."""
+        self._known_device_ids = async_get_all_device_ids(self.hass)
 
-        known_device_ids = async_get_all_device_ids(self.hass)
-
-        LOGGER.debug("Spook is inspecting: %s", self.repair)
-        for entity in entity_component.entities:
-            self.possible_issue_ids.add(entity.entity_id)
-            if not isinstance(entity, script.UnavailableScriptEntity) and (
-                unknown_devices := async_filter_known_device_ids(
-                    self.hass,
-                    device_ids=entity.script.referenced_devices,
-                    known_device_ids=known_device_ids,
-                )
-            ):
-                self.async_create_issue(
-                    issue_id=entity.entity_id,
-                    translation_placeholders={
-                        "devices": "\n".join(
-                            f"- `{device}`" for device in unknown_devices
-                        ),
-                        "script": entity.name,
-                        "edit": f"/config/script/edit/{entity.unique_id}",
-                        "entity_id": entity.entity_id,
-                    },
-                )
-                LOGGER.debug(
-                    "Spook found unknown devices in %s "
-                    "and created an issue for it; Devices: %s",
-                    entity.entity_id,
-                    ", ".join(unknown_devices),
-                )
+    async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
+        """Return unknown device IDs referenced by ``entity``."""
+        return async_filter_known_device_ids(
+            self.hass,
+            device_ids=entity.script.referenced_devices,
+            known_device_ids=self._known_device_ids,
+        )
