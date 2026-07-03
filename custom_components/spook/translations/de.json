@@ -356,8 +356,20 @@
             "fields": {
                 "description": {
                     "name": "Beschreibung"
+                },
+                "domain": {
+                    "description": "In diesem Feld kann die Domäne des Problems festgelegt werden. Standardmäßig (sofern nicht anders festgelegt) wird beispielsweise „spook“ verwendet. Dadurch wird „Spook“ im Logo bzw. Bild des Problem angezeigt. Wenn Sie den Wert auf „homeassistant“ setzen, wird das Home Assistant-Logo verwendet. Verwenden Sie „hue“, „zwave_js“, „mqtt“ usw., um das Logo der jeweiligen Integration zu verwenden.",
+                    "name": "Domäne"
+                },
+                "issue_id": {
+                    "description": "Das Problem kann eine Kennung enthalten, mit der du es bei Bedarf später anhand dieser ID stornieren kannst. Außerdem wird dadurch verhindert, dass doppelte Tickets erstellt werden. Wird keine Kennung angegeben, wird eine zufällige ID generiert.",
+                    "name": "Problem-ID"
+                },
+                "severity": {
+                    "name": "Schweregrad"
                 }
-            }
+            },
+            "name": "Erstellt ein Problem"
         },
         "homeassistant_remove_area_from_floor": {
             "fields": {
@@ -365,24 +377,30 @@
                     "name": "Bereichs-ID"
                 }
             },
-            "name": "Einen Bereich von einer Etage entfernen"
+            "name": "Einen Bereich von einer Etage entfernen",
+            "description": "Entfernt einen Bereich aus einer Etage. Da sich ein Bereich nur in einer Etage befinden kann, muss bei diesem Aufruf die Etage nicht angegeben werden."
         },
         "homeassistant_create_label": {
             "fields": {
                 "description": {
-                    "name": "Beschreibung"
+                    "name": "Beschreibung",
+                    "description": "Beschreibung des Labels."
                 },
                 "color": {
-                    "name": "Farbe"
+                    "name": "Farbe",
+                    "description": "Für die Beschriftung zu verwendende Farbe. Dies kann ein Farbname aus der Liste oder ein Hex-Farbcode (z. B. #FF0000) sein."
                 },
                 "name": {
-                    "name": "Name"
+                    "name": "Name",
+                    "description": "Der Name des Labels das angelegt werden soll."
                 },
                 "icon": {
-                    "description": "Symbol für das Label."
+                    "description": "Symbol für das Label.",
+                    "name": "Symbol"
                 }
             },
-            "name": "Ein Label erstellen"
+            "name": "Ein Label erstellen",
+            "description": "Legt ein neues Label direkt an."
         },
         "homeassistant_delete_all_orphaned_entities": {
             "name": "Alle verwaisten Entitäten löschen",
@@ -411,14 +429,17 @@
                 "entity_id": {
                     "name": "Entität"
                 }
-            }
+            },
+            "name": "Eine Entität deaktivieren.",
+            "description": "Deaktiviert eine Entität (oder mehrere) sofort."
         },
         "homeassistant_enable_user": {
             "fields": {
                 "user_id": {
                     "name": "Nutzer ID"
                 }
-            }
+            },
+            "name": "Benutzer aktivieren"
         },
         "blueprint_import": {
             "description": "Blaupause importieren.",
@@ -435,10 +456,12 @@
             "name": "Statistiken importieren",
             "fields": {
                 "has_mean": {
-                    "name": "Hat einen Mittelwert"
+                    "name": "Hat einen Mittelwert",
+                    "description": "Ob die Statistik einen Mittelwert enthält."
                 },
                 "has_sum": {
-                    "name": "Hat eine Summe"
+                    "name": "Hat eine Summe",
+                    "description": "Ob die Statistik eine Summe hat."
                 },
                 "name": {
                     "description": "Der Name der Statistik.",
@@ -446,13 +469,17 @@
                 },
                 "source": {
                     "name": "Quelle"
+                },
+                "stats": {
+                    "description": "Eine Liste von Zuordnungen/Wörterbüchern mit zu importierenden Statistiken. Die Wörterbücher müssen einen Schlüssel „start“ mit einer Datums- und Zeitangabe enthalten. Weitere gültige Optionen sind „mean“, „sum“, „min“, „max“, „last_reset“ und „state“. Alle diese Angaben sind optional und können entweder eine Ganzzahl oder eine Gleitkommazahl sein, mit Ausnahme von „last_reset“, das eine Datums- und Zeitangabe ist."
                 }
             }
         },
         "input_number_create": {
             "fields": {
                 "name": {
-                    "name": "Name"
+                    "name": "Name",
+                    "description": "Der Name des neuen Eingabezahl-Helfers."
                 },
                 "max": {
                     "name": "Maximum",
@@ -466,12 +493,22 @@
                     "name": "Anzeigemodus"
                 },
                 "icon": {
-                    "name": "Symbol"
+                    "name": "Symbol",
+                    "description": "Das Symbol für einen Zahleneingabe-Helfer."
                 },
                 "initial": {
                     "name": "Startwert"
+                },
+                "step": {
+                    "name": "Schrittlänge"
+                },
+                "input_number_id": {
+                    "description": "Die Entitäts-ID für den neuen Eingabe-Zahlen-Helfer. Das Präfix „input_number.“ wird automatisch hinzugefügt. Wird keine Entitäts-ID angegeben, wird diese anhand des Namens generiert.",
+                    "name": "Zahleneingabe Entitäts-ID"
                 }
-            }
+            },
+            "description": "Legt einen neuen Eingabezahl-Helfer direkt an.",
+            "name": "Erstelle eine Zahleneingabe"
         },
         "timer_set_duration": {
             "fields": {
@@ -485,33 +522,43 @@
         "homeassistant_disable_user": {
             "fields": {
                 "user_id": {
-                    "name": "Nutzer ID"
+                    "name": "Nutzer ID",
+                    "description": "Die IDs der Nutzer die deaktiviert werden sollen."
                 }
-            }
+            },
+            "name": "Benutzer deaktivieren",
+            "description": "Deaktiviert ein Benutzerkonto, sodass sich der Benutzer nicht mehr anmelden kann."
         },
         "homeassistant_enable_device": {
             "fields": {
                 "device_id": {
-                    "name": "Geräte-ID"
+                    "name": "Geräte-ID",
+                    "description": "Die Roh-Geräte-ID des Geräts, das aktiviert werden soll. Deaktivierte Geräte werden in der Geräteauswahl von Home Assistant nicht angezeigt. Es können mehrere IDs als YAML-Liste angegeben werden."
                 }
-            }
+            },
+            "name": "Gerät aktivieren",
+            "description": "Aktiviert ein Gerät sofort."
         },
         "homeassistant_add_entity_to_area": {
             "fields": {
                 "area_id": {
-                    "name": "Bereichs-ID"
+                    "name": "Bereichs-ID",
+                    "description": "Die ID des Bereiches zu der die Entität zugeordnet werden soll."
                 },
                 "entity_id": {
-                    "name": "Entitäts-ID"
+                    "name": "Entitäts-ID",
+                    "description": "Die ID der Entität (oder Entitäten), die dem Bereich zugeordnet werden soll(en)."
                 }
             },
-            "name": "Eine Entität einem Bereich zuordnen."
+            "name": "Eine Entität einem Bereich zuordnen.",
+            "description": "Fügt einem Bereich ein Entität hinzu. Beachte: Befindet sich das Objekt bereits in einem Bereich, wird es aus dem bisherigen Bereich entfernt. Dadurch wird der Bereich überschrieben, in dem sich das Gerät befindet, das diese Entität bereitstellt."
         },
         "homeassistant_create_floor": {
             "name": "Etage anlegen",
             "fields": {
                 "name": {
-                    "name": "Name"
+                    "name": "Name",
+                    "description": "Der Name der Etage die angelegt werden soll."
                 },
                 "aliases": {
                     "name": "Aliase",
@@ -540,7 +587,7 @@
                 }
             },
             "name": "Einem Bereich ein Alias hinzufügen",
-            "description": "Fügt einem Bereich einen Alias hinzu."
+            "description": "Fügt ein Alias einem Bereich hinzu."
         },
         "homeassistant_remove_alias_from_area": {
             "fields": {
@@ -559,14 +606,16 @@
         "homeassistant_add_alias_to_floor": {
             "fields": {
                 "alias": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "Der Alias (oder eine Liste von Aliasen) die einer Etage zugeordnet werden sollen."
                 },
                 "floor_id": {
                     "name": "Etagen-ID",
                     "description": "Die ID der Etage der Aliase zugeordnet werden sollen."
                 }
             },
-            "name": "Einer Etage ein Alias hinzufügen"
+            "name": "Einer Etage ein Alias hinzufügen",
+            "description": "Fügt ein Alias zu einer Etage hinzu."
         },
         "homeassistant_set_area_aliases": {
             "fields": {
@@ -588,7 +637,8 @@
                     "name": "Aliase"
                 },
                 "floor_id": {
-                    "name": "Etagen-ID"
+                    "name": "Etagen-ID",
+                    "description": "Die ID der Etage der die Aliase zugeordnet werden sollen."
                 }
             },
             "name": "Weist Aliase einer Etage zu"
@@ -602,7 +652,8 @@
                     "name": "Label-ID"
                 }
             },
-            "name": "Ein Label einem Gerät zuweisen"
+            "name": "Ein Label einem Gerät zuweisen",
+            "description": "Fügt einem Gerät ein Label hinzu. Wenn mehrere Labels oder mehrere Geräte angegeben werden, werden alle Kombinationen hinzugefügt."
         },
         "homeassistant_remove_device_from_area": {
             "fields": {
@@ -617,16 +668,20 @@
         "homeassistant_disable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationseintrag"
+                    "name": "Konfigurationseintrag",
+                    "description": "Der Eintrag in der Integrationskonfiguration, für den das Polling deaktiviert werden soll."
                 }
-            }
+            },
+            "description": "Deaktiviert das Polling für einen Integrationskonfigurationseintrag."
         },
         "homeassistant_enable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationseintrag"
+                    "name": "Konfigurationseintrag",
+                    "description": "Der Eintrag in der Integrationskonfiguration, für den das Polling aktiviert werden soll."
                 }
-            }
+            },
+            "description": "Aktiviert das Polling für einen Integrationskonfigurationseintrag."
         },
         "homeassistant_add_device_to_area": {
             "fields": {
@@ -636,7 +691,7 @@
                 },
                 "device_id": {
                     "name": "Geräte-ID",
-                    "description": "Die ID der Geräte die einem Bereich zugeordnet werden sollen."
+                    "description": "Die IDs der Geräte die einem Bereich zugeordnet werden sollen."
                 }
             },
             "name": "Ein Gerät einem Bereich zuweisen",
@@ -651,7 +706,8 @@
                     "name": "Label-ID"
                 }
             },
-            "name": "Ein Label einem Bereich zuordnen"
+            "name": "Ein Label einem Bereich zuordnen",
+            "description": "Fügt einem Bereich ein Label hinzu. Wenn mehrere Labels oder mehrere Bereiche angegeben werden, werden alle Kombinationen hinzugefügt."
         },
         "homeassistant_remove_label_from_area": {
             "fields": {
@@ -663,15 +719,18 @@
                     "description": "Die IDs der Labels die aus einem/mehreren Bereichen entfernt werden sollen."
                 }
             },
-            "name": "Ein Label von einem Bereich entfernen"
+            "name": "Ein Label von einem Bereich entfernen",
+            "description": "Entfernt ein Label von einem Bereich. Wenn mehrere Labels oder mehrere Bereiche angegeben werden, werden alle Kombinationen entfernt."
         },
         "homeassistant_add_area_to_floor": {
             "fields": {
                 "area_id": {
-                    "name": "Bereichs-ID"
+                    "name": "Bereichs-ID",
+                    "description": "Die IDs der Bereiche die zu einer Etage hinzugefügt werden sollen."
                 },
                 "floor_id": {
-                    "name": "Etagen-ID"
+                    "name": "Etagen-ID",
+                    "description": "Die ID der Etage zu der ein Bereich hinzugefügt werden soll."
                 }
             },
             "name": "Einen Bereich einer Etage hinzufügen",
@@ -686,7 +745,8 @@
                     "name": "Label-ID"
                 }
             },
-            "name": "Ein Label von einem Gerät entfernen"
+            "name": "Ein Label von einem Gerät entfernen",
+            "description": "Entfernt ein Label von einem Gerät. Wenn mehrere Labels oder mehrere Geräte angegeben werden, werden alle Kombinationen entfernt."
         },
         "homeassistant_add_label_to_entity": {
             "fields": {
@@ -697,7 +757,8 @@
                     "name": "Label-ID"
                 }
             },
-            "name": "Ein Label einer Entität zuweisen"
+            "name": "Ein Label einer Entität zuweisen",
+            "description": "Fügt einer Entität ein Label hinzu. Wenn mehrere Labels oder mehrere Entitäten angegeben werden, werden alle Kombinationen hinzugefügt."
         },
         "homeassistant_rename_entity": {
             "fields": {
@@ -723,10 +784,12 @@
         "homeassistant_remove_entity_from_area": {
             "fields": {
                 "entity_id": {
-                    "name": "Entitäts-ID"
+                    "name": "Entitäts-ID",
+                    "description": "Die ID der Entität (oder mehrere), aus denen der Bereich entfernt werden soll."
                 }
             },
-            "name": "Eine Entität von einem Bereich entfernen"
+            "name": "Eine Entität von einem Bereich entfernen",
+            "description": "Entfernt eine Entität aus einem Bereich. Da sich eine Entität nur in einem Bereich befinden kann, muss bei diesem Aufruf der Bereich nicht angegeben werden. Beachte: die Entität wird sich nach diesem Aufruf weiterhin im Bereich des Geräts befinden, das sie bereitstellt."
         },
         "homeassistant_hide_entity": {
             "fields": {
@@ -744,25 +807,30 @@
                     "name": "Entitäts-ID"
                 }
             },
-            "name": "Ein Label von einer Entität entfernen"
+            "name": "Ein Label von einer Entität entfernen",
+            "description": "Entfernt ein Label von einer Entität. Wenn mehrere Labels oder mehrere Entitäten angegeben werden, werden alle Kombinationen entfernt."
         },
         "homeassistant_remove_alias_from_floor": {
             "fields": {
                 "floor_id": {
-                    "name": "Etagen-ID"
+                    "name": "Etagen-ID",
+                    "description": "Die ID der Etage von der ein Alias entfernt werden sollen."
                 },
                 "alias": {
                     "name": "Alias"
                 }
             },
-            "name": "Ein Alias von einer Etage entfernen"
+            "name": "Ein Alias von einer Etage entfernen",
+            "description": "Entfernt ein Label von einer Etage."
         },
         "homeassistant_delete_floor": {
             "fields": {
                 "floor_id": {
                     "name": "Etagen-ID"
                 }
-            }
+            },
+            "name": "Löscht eine Etage",
+            "description": "Löscht eine Etage sofort."
         },
         "homeassistant_restart": {
             "fields": {
@@ -784,12 +852,17 @@
                 "icon": {
                     "description": "Symbol für die Zone."
                 }
-            }
+            },
+            "description": "Legt eine neue Zone in Home Assistant direkt an.",
+            "name": "Erstellt eine Zone"
         },
         "person_add_device_tracker": {
             "fields": {
                 "entity_id": {
                     "name": "Person"
+                },
+                "device_tracker": {
+                    "name": "Geräte-Tracker"
                 }
             },
             "name": "Einen Geräte-Tracker hinzufügen",
@@ -799,6 +872,9 @@
             "fields": {
                 "entity_id": {
                     "name": "Person"
+                },
+                "device_tracker": {
+                    "name": "Geräte-Tracker"
                 }
             },
             "name": "Einen Geräte-Tracker entfernen",
@@ -810,7 +886,8 @@
                 "issue_id": {
                     "name": "Problem-ID"
                 }
-            }
+            },
+            "description": "Entfernt ein manuell erstelltes Reparatur-Problem in Home Assistant. Diese Aktion kann nur Probleme entfernen, die mit der Aktion `repairs_create` erstellt wurden."
         },
         "number_decrement": {
             "fields": {
@@ -849,7 +926,8 @@
                     "name": "Entität"
                 },
                 "new_entity_id": {
-                    "name": "Neue Entitäts-ID"
+                    "name": "Neue Entitäts-ID",
+                    "description": "Die neue ID für die Entität."
                 }
             }
         },
@@ -858,7 +936,9 @@
                 "label_id": {
                     "name": "Label-ID"
                 }
-            }
+            },
+            "name": "Ein Label löschen",
+            "description": "Löscht ein Label sofort."
         },
         "zone_update": {
             "fields": {
@@ -884,6 +964,85 @@
                     "name": "Optionen"
                 }
             }
+        },
+        "homeassistant_disable_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Gerät",
+                    "description": "Geräte die deaktiviert werden sollen."
+                }
+            },
+            "name": "Ein Gerät deaktivieren",
+            "description": "Deaktiviert ein Gerät sofort."
+        },
+        "homeassistant_delete_area": {
+            "fields": {
+                "area_id": {
+                    "name": "Bereichs-ID",
+                    "description": "Die ID des Bereiches der gelöscht werden soll."
+                }
+            },
+            "description": "Löscht einen Bereich sofort.",
+            "name": "Löscht einen Bereich"
+        },
+        "homeassistant_disable_config_entry": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Konfigurationseintrag",
+                    "description": "Der Integrationskonfigurationseintrag der deaktiviert werden soll."
+                }
+            },
+            "name": "Eine Integration deaktivieren",
+            "description": "Deaktiviert einen Integrationskonfigurationseintrag."
+        },
+        "input_number_decrement": {
+            "fields": {
+                "amount": {
+                    "name": "Wert"
+                }
+            },
+            "description": "Verringert die den Wert der Eingabezahl-Entität um einen bestimmten Wert.",
+            "name": "Wert verringern"
+        },
+        "homeassistant_ignore_all_discovered": {
+            "description": "Ignoriere alle derzeit erkannten Geräte, die auf dem Integrations-Dashboard angezeigt werden. Geräte, die danach erkannt werden, werden dadurch nicht ignoriert.",
+            "fields": {
+                "domain": {
+                    "description": "Die Integrationsdomäne, für die alle erkannten Geräte ignoriert werden sollen. Wird kein Wert angegeben, gelten alle Domänen als ignoriert."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Ignoriere alle Probleme"
+        },
+        "homeassistant_enable_config_entry": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Konfigurationseintrag",
+                    "description": "Der zu aktivierende Eintrag in der Integrationskonfiguration."
+                }
+            },
+            "name": "Integration aktivieren",
+            "description": "Aktiviert einen Integrationskonfigurationseintrag."
+        },
+        "input_number_delete": {
+            "name": "Löscht eine Zahleneingabe",
+            "description": "Einen Eingabezahl-Helfer löschen. Dies funktioniert nur mit Eingabezahlen, die über die Benutzeroberfläche erstellt und verwaltet wurden. Eingabezahlen, die in YAML erstellt und verwaltet wurden, können von Spook nicht verwaltet werden."
+        },
+        "zone_delete": {
+            "name": "Löscht eine Zone",
+            "description": "Löscht eine Zone. Dies funktioniert nur bei Zonen, die über die Benutzeroberfläche erstellt und verwaltet wurden. Zonen, die in YAML erstellt und verwaltet wurden, können von Spook nicht verwaltet werden."
+        },
+        "homeassistant_enable_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entität"
+                }
+            },
+            "name": "Entität aktivieren"
+        },
+        "input_select_shuffle": {
+            "description": "Mischt die Liste der auswählbaren Optionen für eine `input_select`-Entität. Diese Änderung wird nicht gespeichert und wird beim Neuladen oder beim Neustart von Home Assistant rückgängig gemacht."
         }
     }
 }
