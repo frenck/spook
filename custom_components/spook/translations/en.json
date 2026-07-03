@@ -276,6 +276,10 @@
       "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
       "title": "Unknown entities used in: {dashboard}"
     },
+    "orphaned_statistics": {
+      "description": "Spook has found a ghost in your recorder 👻\n\nHome Assistant is keeping long-term statistics for the following, but there is no matching entity for them anymore:\n\n{statistics}\n\n\n\nThis usually happens when a sensor was removed while its statistics were kept. To fix this error, open Developer Tools > Statistics and fix them there, or remove them using the `recorder.clear_statistics` action.\n\nSpook 👻 Your homie.",
+      "title": "Orphaned long-term statistics found"
+    },
     "proximity_unknown_ignored_zones": {
       "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
       "title": "Unknown ignored zones: {name}"
