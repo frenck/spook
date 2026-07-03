@@ -55,10 +55,8 @@ class SpookRepair(AbstractSpookRepair):
                     },
                 )
                 LOGGER.debug(
-                    (
-                        "Spook found unknown devices in %s "
-                        "and created an issue for it; Devices: %s",
-                    ),
+                    "Spook found unknown devices in %s "
+                    "and created an issue for it; Devices: %s",
                     entity.entity_id,
                     ", ".join(unknown_devices),
                 )
