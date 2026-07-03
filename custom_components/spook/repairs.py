@@ -149,29 +149,57 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         self._event_subs = set()
         self.possible_issue_ids = set()
 
+    async def _async_inspect_with_cleanup(self) -> None:
+        """Run an inspection and clean up issues that are no longer valid."""
+        # Don't inspect if we are stopping
+        if self.hass.is_stopping:
+            return
+
+        if not self.automatically_clean_up_issues:
+            await self.async_inspect()
+            return
+
+        # Issues registered by earlier inspections. Anything not re-registered
+        # during this inspection is no longer valid, including issues for
+        # items that were removed entirely since the previous inspection.
+        previous_issue_ids = self.issue_ids.copy()
+
+        # Issues persisted in the issue registry for this repair. Covers
+        # leftovers from before a restart, including those for items that
+        # were removed while Home Assistant was down.
+        prefix = f"{self.repair}_"
+        registry_issue_ids = {
+            issue_id.removeprefix(prefix)
+            for domain, issue_id in self.issue_registry.issues
+            if domain == DOMAIN and issue_id.startswith(prefix)
+        }
+
+        # Reset registered issues. If they are still valid, they will be
+        # re-registered during the inspection.
+        self.issue_ids.clear()
+
+        try:
+            await self.async_inspect()
+        except Exception:
+            # Restore the bookkeeping so the next successful inspection can
+            # still clean up issues from before the failure.
+            self.issue_ids.update(previous_issue_ids)
+            raise
+
+        # Remove issues that are no longer valid after the inspection:
+        # - previous_issue_ids covers issues whose item was resolved or
+        #   removed since the previous inspection.
+        # - registry_issue_ids covers stale issues persisted from an earlier
+        #   runtime.
+        # - possible_issue_ids covers inspected items, as a safety net.
+        stale_issue_ids = (
+            previous_issue_ids | registry_issue_ids | self.possible_issue_ids
+        ) - self.issue_ids
+        for issue_id in stale_issue_ids:
+            self.async_delete_issue(issue_id)
+
     async def async_activate(self) -> None:  # noqa: C901
         """Handle the activating a repair."""
-
-        async def _async_inspect() -> None:
-            # Don't inspect if we are stopping
-            if self.hass.is_stopping:
-                return
-
-            if self.automatically_clean_up_issues:
-                # Reset registered issues. If they are still valid, they will be
-                # re-registered during the inspection.
-                self.issue_ids.clear()
-
-            await self.async_inspect()
-
-            if self.automatically_clean_up_issues:
-                # Remove issues that are not longer created after inspection.
-                for issue_id in self.possible_issue_ids - self.issue_ids:
-                    self.async_delete_issue(issue_id)
-                # Remove issues that are no longer valid.
-                for issue_id in self.issue_ids - self.possible_issue_ids:
-                    self.async_delete_issue(issue_id)
-
         # Debouncer to prevent multiple inspections / inspections fired quickly
         # after each other.
         self.inspect_debouncer = Debouncer(
@@ -179,7 +207,7 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
             LOGGER,
             cooldown=3,
             immediate=False,
-            function=_async_inspect,
+            function=self._async_inspect_with_cleanup,
         )
 
         # Spook says: Bounce!
