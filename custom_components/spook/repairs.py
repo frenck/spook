@@ -29,6 +29,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
+from .entity_suggestions import async_describe_unknown_entities
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Mapping
@@ -316,6 +317,16 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
     #: ``{unique_id}`` field (e.g. ``"/config/automation/edit/{unique_id}"``).
     edit_url_pattern: str
 
+    #: When the references are entities, enrich each with why it is unknown
+    #: (deleted on/by, or a likely rename). Only set on entity repairs.
+    references_are_entities: bool = False
+
+    def _format_references(self, references: list[str]) -> str:
+        """Return the bulleted reference list for the issue message."""
+        if self.references_are_entities:
+            return async_describe_unknown_entities(self.hass, references)
+        return "\n".join(f"- `{reference}`" for reference in references)
+
     async def _async_setup_inspection(self) -> None:
         """Prepare per-inspection state (called once per inspection cycle).
 
@@ -384,9 +395,7 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
             self.async_create_issue(
                 issue_id=entity.entity_id,
                 translation_placeholders={
-                    self.reference_label: "\n".join(
-                        f"- `{item}`" for item in sorted_unknown
-                    ),
+                    self.reference_label: self._format_references(sorted_unknown),
                     self.entity_label: entity.name,
                     "edit": self._edit_url(entity),
                     "entity_id": entity.entity_id,
