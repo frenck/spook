@@ -60,9 +60,9 @@ def _count_sleeps(monkeypatch: pytest.MonkeyPatch) -> list[float]:
     calls: list[float] = []
     original_sleep = asyncio.sleep
 
-    async def _counting_sleep(delay: float) -> None:
+    async def _counting_sleep(delay: float, result: object = None) -> object:
         calls.append(delay)
-        await original_sleep(delay)
+        return await original_sleep(delay, result)
 
     monkeypatch.setattr(asyncio, "sleep", _counting_sleep)
     return calls

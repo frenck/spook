@@ -41,8 +41,9 @@ if TYPE_CHECKING:
     from homeassistant.util.event_type import EventType
 
 
-# Yield to the event loop every this many inspected entities; inspections
-# are CPU-bound and must not stall the loop on large installations.
+# Yield to the event loop after every batch of this many inspected
+# entities; inspections are CPU-bound and must not stall the loop on
+# large installations.
 INSPECTION_YIELD_INTERVAL = 50
 
 
@@ -443,11 +444,11 @@ class AbstractSpookEntityPlatformUnknownSourceRepair(AbstractSpookRepair, ABC):
                 continue
 
             for entity in platform.entities.values():
-                inspected += 1
-                if inspected % INSPECTION_YIELD_INTERVAL == 0:
+                if inspected and inspected % INSPECTION_YIELD_INTERVAL == 0:
                     # Inspections are CPU-bound; periodically yield to the
                     # event loop so large installations do not stall it.
                     await asyncio.sleep(0)
+                inspected += 1
 
                 self.possible_issue_ids.add(entity.entity_id)
                 source = self._get_source_entity_id(entity)
