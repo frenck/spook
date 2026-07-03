@@ -345,7 +345,7 @@ def async_filter_known_floor_ids(
 ) -> set[str]:
     """Filter out known floor IDs."""
     if known_floor_ids is None:
-        known_floor_ids = async_get_all_label_ids(hass)
+        known_floor_ids = async_get_all_floor_ids(hass)
     return {
         floor_id
         for floor_id in floor_ids - known_floor_ids
