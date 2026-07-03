@@ -26,18 +26,15 @@ from homeassistant.helpers import (
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_component import DATA_INSTANCES
-from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
-from .entity_filtering import async_get_all_entity_ids
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Mapping
     from types import ModuleType
 
     from homeassistant.data_entry_flow import FlowResult
-    from homeassistant.helpers.entity_platform import EntityPlatform
     from homeassistant.util.event_type import EventType
 
 
@@ -402,75 +399,6 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
                 self.reference_label.capitalize(),
                 ", ".join(sorted_unknown),
             )
-
-
-class AbstractSpookEntityPlatformUnknownSourceRepair(AbstractSpookRepair, ABC):
-    """Base class for repairs that find unknown source entities on helpers.
-
-    Handles the shared boilerplate for inspecting entities loaded via
-    `EntityPlatform` (e.g. ``switch_as_x``, ``integration``, ``utility_meter``,
-    ``trend``): walking the platforms, optionally filtering by platform domain,
-    pulling each entity's source attribute via a subclass hook, and raising an
-    issue when the source is no longer known to Home Assistant.
-    """
-
-    automatically_clean_up_issues = True
-
-    #: When set, only entities living on platforms whose ``domain`` equals this
-    #: value are inspected. ``None`` (the default) inspects every platform of
-    #: the integration domain.
-    source_platform_domain: str | None = None
-
-    @abstractmethod
-    def _get_source_entity_id(self, entity: Any) -> str:
-        """Return the source entity ID for the given helper entity."""
-
-    async def async_inspect(self) -> None:
-        """Trigger an inspection."""
-        self.possible_issue_ids.clear()
-
-        LOGGER.debug("Spook is inspecting: %s", self.repair)
-
-        platforms: list[EntityPlatform] | None
-        if not (
-            platforms := self.hass.data.get(DATA_ENTITY_PLATFORM, {}).get(self.domain)
-        ):
-            return  # Nothing to do, integration is not loaded.
-
-        known_entity_ids = async_get_all_entity_ids(self.hass)
-
-        inspected = 0
-        for platform in platforms:
-            if (
-                self.source_platform_domain is not None
-                and platform.domain != self.source_platform_domain
-            ):
-                continue
-
-            for entity in platform.entities.values():
-                if inspected and inspected % INSPECTION_YIELD_INTERVAL == 0:
-                    # Inspections are CPU-bound; periodically yield to the
-                    # event loop so large installations do not stall it.
-                    await asyncio.sleep(0)
-                inspected += 1
-
-                self.possible_issue_ids.add(entity.entity_id)
-                source = self._get_source_entity_id(entity)
-                if source not in known_entity_ids:
-                    self.async_create_issue(
-                        issue_id=entity.entity_id,
-                        translation_placeholders={
-                            "entity_id": entity.entity_id,
-                            "helper": entity.name,
-                            "source": source,
-                        },
-                    )
-                    LOGGER.debug(
-                        "Spook found unknown source entity %s in %s "
-                        "and created an issue for it",
-                        source,
-                        entity.entity_id,
-                    )
 
 
 class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):

@@ -20,14 +20,14 @@ if TYPE_CHECKING:
 # ``er.async_resolve_entity_id``); a key may hold a single value or a list.
 #
 # Deliberately excluded: ``group`` (already covered by the group unknown
-# members repair) and the helpers with their own source repairs
-# (``integration``, ``switch_as_x``, ``trend``, ``utility_meter``).
+# members repair).
 SOURCE_OPTION_KEYS: dict[str, tuple[str, ...]] = {
     "derivative": ("source",),
     "filter": ("entity_id",),
     "generic_hygrostat": ("target_sensor", "humidifier"),
     "generic_thermostat": ("target_sensor", "heater"),
     "history_stats": ("entity_id",),
+    "integration": ("source",),
     "min_max": ("entity_ids",),
     "mold_indicator": (
         "indoor_temp_sensor",
@@ -35,7 +35,10 @@ SOURCE_OPTION_KEYS: dict[str, tuple[str, ...]] = {
         "outdoor_temp_sensor",
     ),
     "statistics": ("entity_id",),
+    "switch_as_x": ("entity_id",),
     "threshold": ("entity_id",),
+    "trend": ("entity_id",),
+    "utility_meter": ("source",),
 }
 
 
