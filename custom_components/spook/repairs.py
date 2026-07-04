@@ -23,6 +23,7 @@ from homeassistant.helpers import (
     entity_registry as er,
     floor_registry as fr,
     issue_registry as ir,
+    label_registry as lr,
 )
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
@@ -593,17 +594,20 @@ class StaleAccessTokenFixFlow(RepairsFlow):
 
 
 class _RemoveOrIgnoreFixFlow(RepairsFlow):
-    """Base for an empty registry thing: remove it, or keep and stop nagging.
+    """Base for a leftover registry thing: remove it, or keep and stop nagging.
 
-    Empty registry things (areas, floors) are tidiness, not breakage, so
-    keeping one is a valid choice. A fixable issue cannot be dismissed from
-    the repairs UI, so the flow offers an explicit "keep it" option that
-    ignores the issue instead. Subclasses set ``_key`` (the placeholder and
-    ``empty_<thing>_id`` data key stem) and implement ``_remove``.
+    Leftover registry things (empty areas, empty floors, unused labels) are
+    tidiness, not breakage, so keeping one is a valid choice. A fixable issue
+    cannot be dismissed from the repairs UI, so the flow offers an explicit
+    "keep it" option that ignores the issue instead. Subclasses set ``_key``
+    (the placeholder key), ``_id_key`` (the data key holding the id), and
+    implement ``_remove``.
     """
 
-    #: Placeholder key and ``empty_<key>_id`` data-key stem (e.g. "area").
+    #: Placeholder key naming the thing (e.g. "area").
     _key: str
+    #: Data key holding the thing's id (e.g. "empty_area_id").
+    _id_key: str
 
     async def async_step_init(
         self,
@@ -623,7 +627,7 @@ class _RemoveOrIgnoreFixFlow(RepairsFlow):
         _: dict[str, str] | None = None,
     ) -> FlowResult:
         """Remove the thing, if it still exists."""
-        self._remove(str((self.data or {}).get(f"empty_{self._key}_id", "")))
+        self._remove(str((self.data or {}).get(self._id_key, "")))
         return self.async_create_entry(data={})
 
     async def async_step_ignore(
@@ -649,6 +653,7 @@ class EmptyAreaFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for an empty area: remove it, or keep it and stop nagging."""
 
     _key = "area"
+    _id_key = "empty_area_id"
 
     @callback
     def _remove(self, thing_id: str) -> None:
@@ -663,6 +668,7 @@ class EmptyFloorFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for an empty floor: remove it, or keep it and stop nagging."""
 
     _key = "floor"
+    _id_key = "empty_floor_id"
 
     @callback
     def _remove(self, thing_id: str) -> None:
@@ -670,6 +676,21 @@ class EmptyFloorFixFlow(_RemoveOrIgnoreFixFlow):
         registry = fr.async_get(self.hass)
         # The floor may already be gone if removed elsewhere meanwhile.
         if registry.async_get_floor(thing_id):
+            registry.async_delete(thing_id)
+
+
+class UnusedLabelFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for an unused label: remove it, or keep it and stop nagging."""
+
+    _key = "label"
+    _id_key = "unused_label_id"
+
+    @callback
+    def _remove(self, thing_id: str) -> None:
+        """Remove the label, if it still exists."""
+        registry = lr.async_get(self.hass)
+        # The label may already be gone if removed elsewhere meanwhile.
+        if registry.async_get_label(thing_id):
             registry.async_delete(thing_id)
 
 
@@ -690,4 +711,6 @@ async def async_create_fix_flow(
         return EmptyAreaFixFlow()
     if data and data.get("empty_floor_id"):
         return EmptyFloorFixFlow()
+    if data and data.get("unused_label_id"):
+        return UnusedLabelFixFlow()
     return ConfirmRepairFlow()
