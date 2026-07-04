@@ -4,7 +4,10 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
+
+from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 from homeassistant.exceptions import HomeAssistantError
 
@@ -13,11 +16,13 @@ from custom_components.spook.const import DOMAIN
 from custom_components.spook.repairs import AbstractSpookRepair, AbstractSpookRepairBase
 import pytest
 
-EXPECTED_UNSUBSCRIBE_COUNT = 3
+EXPECTED_UNSUBSCRIBE_COUNT = 4
+EXPECTED_INTERVAL_INSPECTIONS = 2
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
+    from freezegun.api import FrozenDateTimeFactory
     from homeassistant.config_entries import ConfigEntry, ConfigEntryChange
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
@@ -48,6 +53,7 @@ class MockRepair(AbstractSpookRepair):
     inspect_events = {"mock_event"}
     inspect_config_entry_changed = True
     inspect_on_reload = True
+    inspect_interval = timedelta(days=1)
 
     inspections = 0
 
@@ -125,6 +131,61 @@ async def test_deactivate_unsubscribes_all_activation_listeners(
 
     assert len(unsubscribed) == 1
     assert not repair._event_subs
+
+
+class MockIntervalRepair(AbstractSpookRepair):
+    """Mock repair that re-inspects on a fixed interval alone."""
+
+    domain = "mock"
+    repair = "mock_repair"
+    inspect_interval = timedelta(days=1)
+
+    inspections = 0
+
+    async def async_inspect(self) -> None:
+        """Inspect the repair."""
+        self.inspections += 1
+
+
+async def _flush_debouncer(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Advance past the inspection debouncer cooldown and let it fire."""
+    freezer.tick(timedelta(seconds=5))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+
+async def test_inspect_interval_reinspects_over_time(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an interval-only repair re-inspects as time passes."""
+    repair = MockIntervalRepair(hass)
+    await repair.async_activate()
+
+    # A single timer subscription, no events wired.
+    assert len(repair._event_subs) == 1
+
+    # The initial activation bounce runs one inspection.
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == 1
+
+    # A day later the interval fires another inspection.
+    freezer.tick(timedelta(days=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_INTERVAL_INSPECTIONS
+
+    # After deactivation the timer no longer fires.
+    await repair.async_deactivate()
+    freezer.tick(timedelta(days=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    await _flush_debouncer(hass, freezer)
+    assert repair.inspections == EXPECTED_INTERVAL_INSPECTIONS
 
 
 async def test_repair_manager_removes_issues_on_unload(hass: HomeAssistant) -> None:

@@ -26,6 +26,7 @@ from homeassistant.helpers import (
 from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
@@ -33,6 +34,7 @@ from .entity_suggestions import async_describe_unknown_entities
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Mapping
+    from datetime import datetime, timedelta
     from types import ModuleType
 
     from homeassistant.data_entry_flow import FlowResult
@@ -142,6 +144,11 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     inspect_config_entry_changed: bool | str = False
     inspect_on_reload: bool | str = False
 
+    #: Re-run the inspection on this fixed interval, on top of any event
+    #: triggers. Needed by repairs whose findings change with the passage of
+    #: time alone (e.g. something going stale), not in response to an event.
+    inspect_interval: timedelta | None = None
+
     automatically_clean_up_issues: bool = False
     possible_issue_ids: set[str]
 
@@ -217,16 +224,28 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
         # Spook says: Bounce!
         await self.inspect_debouncer.async_call()
 
-        if self.inspect_events is None:
-            return
-
         async def _async_call_inspect_debouncer(_: Event) -> None:
             # Trigger an inspection when an event is received from the event bus.
             await self.inspect_debouncer.async_call()
 
-        for event in self.inspect_events:
+        if self.inspect_events is not None:
+            for event in self.inspect_events:
+                self._event_subs.add(
+                    self.hass.bus.async_listen(event, _async_call_inspect_debouncer),
+                )
+
+        if self.inspect_interval is not None:
+
+            async def _async_call_inspect_debouncer_interval(_: datetime) -> None:
+                # Trigger an inspection when the interval timer fires.
+                await self.inspect_debouncer.async_call()
+
             self._event_subs.add(
-                self.hass.bus.async_listen(event, _async_call_inspect_debouncer),
+                async_track_time_interval(
+                    self.hass,
+                    _async_call_inspect_debouncer_interval,
+                    self.inspect_interval,
+                ),
             )
 
         if self.inspect_on_reload:
@@ -536,12 +555,53 @@ class RestartRequiredFixFlow(RepairsFlow):
         return self.async_show_form(step_id="confirm_restart")
 
 
+class StaleAccessTokenFixFlow(RepairsFlow):
+    """Handler for a repairs issue flow that revokes a stale access token."""
+
+    def __init__(
+        self,
+        token_id: str,
+        placeholders: dict[str, str],
+    ) -> None:
+        """Initialize the flow with the token to revoke."""
+        self._token_id = token_id
+        self._placeholders = placeholders
+
+    async def async_step_init(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Handle asking confirmation of the revoke."""
+        return await self.async_step_confirm()
+
+    async def async_step_confirm(
+        self,
+        user_input: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Handle the confirm of the token revoke."""
+        if user_input is not None:
+            # The token may already be gone if revoked elsewhere meanwhile.
+            if token := self.hass.auth.async_get_refresh_token(self._token_id):
+                self.hass.auth.async_remove_refresh_token(token)
+            return self.async_create_entry(data={})
+
+        return self.async_show_form(
+            step_id="confirm",
+            description_placeholders=self._placeholders,
+        )
+
+
 async def async_create_fix_flow(
     _hass: HomeAssistant,
     issue_id: str,
-    _data: dict[str, str | int | float | None] | None,
+    data: dict[str, str | int | float | None] | None,
 ) -> RepairsFlow:
     """Create flow."""
     if issue_id == "restart_required":
         return RestartRequiredFixFlow()
+    if data and (token_id := data.get("stale_access_token_id")):
+        placeholders = {
+            key: str(data.get(key, "")) for key in ("token", "owner", "last_active")
+        }
+        return StaleAccessTokenFixFlow(str(token_id), placeholders)
     return ConfirmRepairFlow()
