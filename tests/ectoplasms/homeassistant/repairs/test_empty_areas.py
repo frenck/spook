@@ -159,12 +159,28 @@ async def test_fix_flow_remove_option_removes_area(
     # The menu is shown first, area still present.
     menu = await flow.async_step_init()
     assert menu["type"] == FlowResultType.MENU
+    assert menu["menu_options"] == ["remove", "manage", "ignore"]
     assert area_registry.async_get_area(area.id) is not None
 
     # Choosing remove deletes the area.
     result = await flow.async_step_remove()
     assert result["type"] == FlowResultType.CREATE_ENTRY
     assert area_registry.async_get_area(area.id) is None
+
+
+async def test_fix_flow_manage_option_keeps_area(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+) -> None:
+    """Test the fix-it-myself option aborts and leaves the area in place."""
+    area = area_registry.async_create("Ghost Room")
+
+    flow = _flow_for(hass, area.id, "Ghost Room")
+    result = await flow.async_step_manage()
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "manage"
+    assert area_registry.async_get_area(area.id) is not None
 
 
 async def test_fix_flow_ignore_option_dismisses_issue(

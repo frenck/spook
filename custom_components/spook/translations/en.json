@@ -277,12 +277,14 @@
             "description": "The area {area} has no devices, no entities, and no automation or script targeting it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove this empty area",
-              "ignore": "Keep it, stop telling me"
+              "ignore": "Keep it, stop telling me",
+              "manage": "Let me fix it myself"
             }
           }
         },
         "abort": {
-          "issue_ignored": "Spook will keep quiet about this area from now on."
+          "issue_ignored": "Spook will keep quiet about this area from now on.",
+          "manage": "You can manage this area yourself on the [Areas page](/config/areas/dashboard)."
         }
       }
     },
@@ -295,12 +297,14 @@
             "description": "The floor {floor} has no areas, and no automation or script targeting it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove this empty floor",
-              "ignore": "Keep it, stop telling me"
+              "ignore": "Keep it, stop telling me",
+              "manage": "Let me fix it myself"
             }
           }
         },
         "abort": {
-          "issue_ignored": "Spook will keep quiet about this floor from now on."
+          "issue_ignored": "Spook will keep quiet about this floor from now on.",
+          "manage": "You can manage this floor yourself on the [Areas page](/config/areas/dashboard)."
         }
       }
     },
@@ -337,13 +341,15 @@
             "description": "Spook has found a ghost in your people 👻\n\n{person} tracks the following device trackers, which are unknown to Home Assistant:\n\n{device_trackers}\n\nThis often happens when a device tracker was renamed or its integration was removed.\n\nRemove them from {person}, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove these device trackers",
-              "ignore": "Keep them, stop telling me"
+              "ignore": "Keep them, stop telling me",
+              "manage": "Let me fix it myself"
             }
           }
         },
         "abort": {
           "issue_ignored": "Spook will keep quiet about this person from now on.",
-          "not_editable": "This person is set up in YAML, so Spook cannot edit it. Update the person in your configuration instead."
+          "not_editable": "This person is set up in YAML, so Spook cannot edit it. Update the person in your configuration instead.",
+          "manage": "You can manage this person yourself on the [People page](/config/person)."
         }
       }
     },
@@ -415,12 +421,14 @@
             "description": "The long-lived access token `{token}` (owner: {owner}) has not been used since {last_active}.\n\nRevoke it, or keep it and Spook will stop pointing it out. Revoking it stops anything still using this token from working until it gets a new one.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Revoke this token",
-              "ignore": "Keep it, stop telling me"
+              "ignore": "Keep it, stop telling me",
+              "manage": "Let me fix it myself"
             }
           }
         },
         "abort": {
-          "issue_ignored": "Spook will keep quiet about this token from now on."
+          "issue_ignored": "Spook will keep quiet about this token from now on.",
+          "manage": "You can manage long-lived access tokens yourself under [your profile's security settings](/profile/security)."
         }
       }
     },
@@ -445,12 +453,14 @@
             "description": "The blueprint {blueprint} is not used by any {domain}.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove this unused blueprint",
-              "ignore": "Keep it, stop telling me"
+              "ignore": "Keep it, stop telling me",
+              "manage": "Let me fix it myself"
             }
           }
         },
         "abort": {
-          "issue_ignored": "Spook will keep quiet about this blueprint from now on."
+          "issue_ignored": "Spook will keep quiet about this blueprint from now on.",
+          "manage": "You can manage this blueprint yourself on the [Blueprints page](/config/blueprint/dashboard)."
         }
       }
     },
@@ -463,12 +473,14 @@
             "description": "The label {label} is not applied to any entity, device, or area, and no automation or script targets it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
             "menu_options": {
               "remove": "Remove this unused label",
-              "ignore": "Keep it, stop telling me"
+              "ignore": "Keep it, stop telling me",
+              "manage": "Let me fix it myself"
             }
           }
         },
         "abort": {
-          "issue_ignored": "Spook will keep quiet about this label from now on."
+          "issue_ignored": "Spook will keep quiet about this label from now on.",
+          "manage": "You can manage this label yourself on the [Labels page](/config/labels)."
         }
       }
     },

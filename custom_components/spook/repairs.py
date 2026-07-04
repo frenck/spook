@@ -580,16 +580,27 @@ class _RemoveOrIgnoreFixFlow(RepairsFlow):
         self,
         _: dict[str, str] | None = None,
     ) -> FlowResult:
-        """Offer to remove the thing or keep and ignore it."""
+        """Offer to remove the thing, fix it yourself, or keep and ignore it."""
         return self.async_show_menu(
             step_id="init",
-            menu_options=["remove", "ignore"],
+            menu_options=["remove", "manage", "ignore"],
             description_placeholders=self._menu_placeholders(),
         )
 
     def _menu_placeholders(self) -> dict[str, str]:
         """Return the placeholders naming the thing in the menu step."""
         return {self._key: str((self.data or {}).get(self._key, ""))}
+
+    async def async_step_manage(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Point the user at where to fix it themselves.
+
+        Aborts rather than completing, so the issue stays until the user
+        actually resolves it. The abort message links to the right page.
+        """
+        return self.async_abort(reason="manage")
 
     async def async_step_remove(
         self,
