@@ -286,6 +286,24 @@
         }
       }
     },
+    "empty_floors": {
+      "title": "Empty floor: {floor}",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Empty floor: {floor}",
+            "description": "The floor {floor} has no areas, and no automation or script targeting it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "menu_options": {
+              "remove": "Remove this empty floor",
+              "ignore": "Keep it, stop telling me"
+            }
+          }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about this floor from now on."
+        }
+      }
+    },
     "energy_unknown_references": {
       "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. To fix this error, open Settings > Dashboards > Energy and update or remove these entities.\n\nSpook 👻 Your homie.",
       "title": "Unknown entities used in the energy dashboard"
