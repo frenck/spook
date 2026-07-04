@@ -328,6 +328,25 @@
       "description": "Spook has found a ghost in your recorder 👻\n\nHome Assistant is keeping long-term statistics for the following, but there is no matching entity for them anymore:\n\n{statistics}\n\n\n\nThis usually happens when a sensor was removed while its statistics were kept. To fix this error, open Developer Tools > Statistics and fix them there, or remove them using the `recorder.clear_statistics` action.\n\nSpook 👻 Your homie.",
       "title": "Orphaned long-term statistics found"
     },
+    "person_unknown_device_trackers": {
+      "title": "Unknown device trackers tracked by: {person}",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Unknown device trackers tracked by: {person}",
+            "description": "Spook has found a ghost in your people 👻\n\n{person} tracks the following device trackers, which are unknown to Home Assistant:\n\n{device_trackers}\n\nThis often happens when a device tracker was renamed or its integration was removed.\n\nRemove them from {person}, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+            "menu_options": {
+              "remove": "Remove these device trackers",
+              "ignore": "Keep them, stop telling me"
+            }
+          }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about this person from now on.",
+          "not_editable": "This person is set up in YAML, so Spook cannot edit it. Update the person in your configuration instead."
+        }
+      }
+    },
     "proximity_unknown_ignored_zones": {
       "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
       "title": "Unknown ignored zones: {name}"

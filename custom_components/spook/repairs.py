@@ -19,6 +19,7 @@ from homeassistant.config_entries import (
     ConfigEntryChange,
 )
 from homeassistant.core import Event, HomeAssistant, callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     area_registry as ar,
     device_registry as dr,
@@ -734,6 +735,56 @@ class UnusedBlueprintFixFlow(_RemoveOrIgnoreFixFlow):
         return self.async_create_entry(data={})
 
 
+class PersonUnknownDeviceTrackerFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for a person's unknown device trackers.
+
+    Offers to strip the unknown device trackers from the person, or to keep
+    them and ignore the issue. Removal reuses Spook's own
+    ``person.remove_device_tracker`` action, which only edits storage-backed
+    persons; a YAML person cannot be edited, so that is reported instead.
+    """
+
+    _key = "person"
+    _id_key = "person_entity_id"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the person and the offending device trackers in the menu."""
+        data = self.data or {}
+        return {
+            "person": str(data.get("person", "")),
+            "device_trackers": str(data.get("device_trackers", "")),
+        }
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Remove the still-unknown device trackers from the person."""
+        data = self.data or {}
+        entity_id = str(data.get("person_entity_id", ""))
+        candidates = [t for t in str(data.get("unknown_trackers", "")).split(",") if t]
+
+        entity_registry = er.async_get(self.hass)
+        unknown = [
+            tracker
+            for tracker in candidates
+            if entity_registry.async_get(tracker) is None
+            and self.hass.states.get(tracker) is None
+        ]
+        if unknown:
+            try:
+                await self.hass.services.async_call(
+                    "person",
+                    "remove_device_tracker",
+                    {"entity_id": entity_id, "device_tracker": unknown},
+                    blocking=True,
+                )
+            except HomeAssistantError:
+                # YAML persons are not editable; nothing Spook can remove.
+                return self.async_abort(reason="not_editable")
+        return self.async_create_entry(data={})
+
+
 # Remove-or-ignore fix flows, keyed by the data field that identifies their
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
@@ -741,6 +792,7 @@ _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "empty_floor_id": EmptyFloorFixFlow,
     "unused_label_id": UnusedLabelFixFlow,
     "unused_blueprint_path": UnusedBlueprintFixFlow,
+    "person_entity_id": PersonUnknownDeviceTrackerFixFlow,
 }
 
 
