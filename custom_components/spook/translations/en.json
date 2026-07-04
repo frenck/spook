@@ -421,6 +421,10 @@
       "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n{helper}\n\nIts templates reference the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed. To fix this error, reconfigure the template helper to reference existing entities.\n\nSpook 👻 Your homie.",
       "title": "Unknown entities used in template helper: {helper}"
     },
+    "unknown_customized_entities": {
+      "description": "Spook has found a ghost in your customizations 👻\n\nThe `customize:` section pins attributes on the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed while its customization stayed behind. To fix this error, edit the `customize:` section in your configuration and remove these entities.\n\nSpook 👻 Your homie.",
+      "title": "Unknown entities in your customizations"
+    },
     "unknown_helper_source_references": {
       "description": "Spook has found a ghost in your helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{domain}`)\n\nThis helper references the following source entities, which are unknown to Home Assistant:\n\n{sources}\n\n\n\nThis often happens when a source entity was renamed or removed. To fix this error, reconfigure the helper to point at existing entities, or remove the helper.\n\nSpook 👻 Your homie.",
       "title": "Unknown source entities used in helper: {helper}"
