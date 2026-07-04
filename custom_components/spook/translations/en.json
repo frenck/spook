@@ -391,10 +391,17 @@
       "title": "Long-lived access token looks forgotten: {token}",
       "fix_flow": {
         "step": {
-          "confirm": {
-            "title": "Revoke this long-lived access token?",
-            "description": "The long-lived access token `{token}` (owner: {owner}) has not been used since {last_active}.\n\nSelect submit to revoke it now. Anything still using this token will stop working until it gets a new one.\n\nSpook 👻 Your homie."
+          "init": {
+            "title": "Long-lived access token looks forgotten: {token}",
+            "description": "The long-lived access token `{token}` (owner: {owner}) has not been used since {last_active}.\n\nRevoke it, or keep it and Spook will stop pointing it out. Revoking it stops anything still using this token from working until it gets a new one.\n\nSpook 👻 Your homie.",
+            "menu_options": {
+              "remove": "Revoke this token",
+              "ignore": "Keep it, stop telling me"
+            }
           }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about this token from now on."
         }
       }
     },

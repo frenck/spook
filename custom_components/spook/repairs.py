@@ -559,42 +559,6 @@ class RestartRequiredFixFlow(RepairsFlow):
         return self.async_show_form(step_id="confirm_restart")
 
 
-class StaleAccessTokenFixFlow(RepairsFlow):
-    """Handler for a repairs issue flow that revokes a stale access token."""
-
-    def __init__(
-        self,
-        token_id: str,
-        placeholders: dict[str, str],
-    ) -> None:
-        """Initialize the flow with the token to revoke."""
-        self._token_id = token_id
-        self._placeholders = placeholders
-
-    async def async_step_init(
-        self,
-        _: dict[str, str] | None = None,
-    ) -> FlowResult:
-        """Handle asking confirmation of the revoke."""
-        return await self.async_step_confirm()
-
-    async def async_step_confirm(
-        self,
-        user_input: dict[str, str] | None = None,
-    ) -> FlowResult:
-        """Handle the confirm of the token revoke."""
-        if user_input is not None:
-            # The token may already be gone if revoked elsewhere meanwhile.
-            if token := self.hass.auth.async_get_refresh_token(self._token_id):
-                self.hass.auth.async_remove_refresh_token(token)
-            return self.async_create_entry(data={})
-
-        return self.async_show_form(
-            step_id="confirm",
-            description_placeholders=self._placeholders,
-        )
-
-
 class _RemoveOrIgnoreFixFlow(RepairsFlow):
     """Base for a leftover registry thing: remove it, or keep and stop nagging.
 
@@ -698,6 +662,31 @@ class UnusedLabelFixFlow(_RemoveOrIgnoreFixFlow):
             registry.async_delete(thing_id)
 
 
+class StaleAccessTokenFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for a stale access token: revoke it, or keep it and stop nagging.
+
+    A fixable issue cannot be dismissed from the repairs UI, so keeping a
+    token you still want is offered explicitly as the "keep it" option.
+    """
+
+    _key = "token"
+    _id_key = "stale_access_token_id"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the token, owner, and last-used date in the menu step."""
+        data = self.data or {}
+        return {
+            key: str(data.get(key, "")) for key in ("token", "owner", "last_active")
+        }
+
+    @callback
+    def _remove(self, thing_id: str) -> None:
+        """Revoke the token, if it still exists."""
+        # The token may already be gone if revoked elsewhere meanwhile.
+        if token := self.hass.auth.async_get_refresh_token(thing_id):
+            self.hass.auth.async_remove_refresh_token(token)
+
+
 class UnusedBlueprintFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for an unused blueprint: remove it, or keep it and stop nagging.
 
@@ -737,6 +726,7 @@ class UnusedBlueprintFixFlow(_RemoveOrIgnoreFixFlow):
 # Remove-or-ignore fix flows, keyed by the data field that identifies their
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
+    "stale_access_token_id": StaleAccessTokenFixFlow,
     "empty_area_id": EmptyAreaFixFlow,
     "empty_floor_id": EmptyFloorFixFlow,
     "unused_label_id": UnusedLabelFixFlow,
@@ -752,11 +742,6 @@ async def async_create_fix_flow(
     """Create flow."""
     if issue_id == "restart_required":
         return RestartRequiredFixFlow()
-    if data and (token_id := data.get("stale_access_token_id")):
-        placeholders = {
-            key: str(data.get(key, "")) for key in ("token", "owner", "last_active")
-        }
-        return StaleAccessTokenFixFlow(str(token_id), placeholders)
     if data:
         for key, flow in _REMOVE_OR_IGNORE_FLOWS.items():
             if data.get(key):

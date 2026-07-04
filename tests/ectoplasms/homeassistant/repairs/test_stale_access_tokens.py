@@ -176,11 +176,25 @@ async def test_never_used_token_falls_back_to_created_at(
     assert issue.translation_placeholders["last_active"] == created.date().isoformat()
 
 
-async def test_fix_flow_revokes_token(
+def _token_flow(hass: HomeAssistant, token_id: str) -> StaleAccessTokenFixFlow:
+    """Build a stale-token fix flow as the framework would wire it up."""
+    flow = StaleAccessTokenFixFlow()
+    flow.hass = hass
+    flow.issue_id = _issue_id(token_id)
+    flow.data = {
+        "stale_access_token_id": token_id,
+        "token": "Old",
+        "owner": "Frenck",
+        "last_active": "2025-01-01",
+    }
+    return flow
+
+
+async def test_fix_flow_remove_revokes_token(
     hass: HomeAssistant,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test confirming the fix flow revokes the token."""
+    """Test the revoke menu option removes the token."""
     token = _token("stale", TOKEN_TYPE_LONG_LIVED_ACCESS_TOKEN, 400, "Old")
     removed: list[object] = []
 
@@ -189,11 +203,7 @@ async def test_fix_flow_revokes_token(
         "async_get_refresh_token",
         lambda ref: token if ref == "stale" else None,
     )
-    monkeypatch.setattr(
-        hass.auth,
-        "async_remove_refresh_token",
-        removed.append,
-    )
+    monkeypatch.setattr(hass.auth, "async_remove_refresh_token", removed.append)
 
     flow = await async_create_fix_flow(
         hass,
@@ -207,35 +217,56 @@ async def test_fix_flow_revokes_token(
     )
     assert isinstance(flow, StaleAccessTokenFixFlow)
     flow.hass = hass
+    flow.data = {"stale_access_token_id": "stale"}
 
-    # The form is shown first, no token removed yet.
-    await flow.async_step_init()
+    # The menu is shown first, no token removed yet.
+    menu = await flow.async_step_init()
+    assert menu["type"] == "menu"
     assert not removed
 
-    # Confirming revokes the token.
-    await flow.async_step_confirm({})
+    # Choosing revoke removes the token.
+    result = await flow.async_step_remove()
+    assert result["type"] == "create_entry"
     assert removed == [token]
 
 
-async def test_fix_flow_survives_already_revoked_token(
+async def test_fix_flow_remove_survives_already_revoked_token(
     hass: HomeAssistant,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test confirming a token that is already gone does not blow up."""
+    """Test revoking a token that is already gone does not blow up."""
     removed: list[object] = []
-    monkeypatch.setattr(
-        hass.auth,
-        "async_get_refresh_token",
-        lambda _token_id: None,
-    )
-    monkeypatch.setattr(
-        hass.auth,
-        "async_remove_refresh_token",
-        removed.append,
-    )
+    monkeypatch.setattr(hass.auth, "async_get_refresh_token", lambda _ref: None)
+    monkeypatch.setattr(hass.auth, "async_remove_refresh_token", removed.append)
 
-    flow = StaleAccessTokenFixFlow("gone", {})
-    flow.hass = hass
+    flow = _token_flow(hass, "gone")
+    result = await flow.async_step_remove()
 
-    await flow.async_step_confirm({})
+    assert result["type"] == "create_entry"
     assert not removed
+
+
+async def test_fix_flow_ignore_option_dismisses_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the keep menu option ignores the issue and keeps the token."""
+    user = SimpleNamespace(
+        system_generated=False,
+        name="Frenck",
+        refresh_tokens={
+            "a": _token("stale", TOKEN_TYPE_LONG_LIVED_ACCESS_TOKEN, 400, "Old"),
+        },
+    )
+    _set_users(hass, monkeypatch, [user])
+    await SpookRepair(hass).async_inspect()
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id("stale"))
+
+    flow = _token_flow(hass, "stale")
+    result = await flow.async_step_ignore()
+
+    assert result["type"] == "abort"
+    issue = issue_registry.async_get_issue(DOMAIN, _issue_id("stale"))
+    assert issue is not None
+    assert issue.dismissed_version is not None
