@@ -4,11 +4,13 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 import asyncio
+from contextlib import suppress
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, final
 
+from homeassistant.components import blueprint
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
 from homeassistant.config_entries import (
@@ -617,10 +619,12 @@ class _RemoveOrIgnoreFixFlow(RepairsFlow):
         return self.async_show_menu(
             step_id="init",
             menu_options=["remove", "ignore"],
-            description_placeholders={
-                self._key: str((self.data or {}).get(self._key, "")),
-            },
+            description_placeholders=self._menu_placeholders(),
         )
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Return the placeholders naming the thing in the menu step."""
+        return {self._key: str((self.data or {}).get(self._key, ""))}
 
     async def async_step_remove(
         self,
@@ -694,6 +698,52 @@ class UnusedLabelFixFlow(_RemoveOrIgnoreFixFlow):
             registry.async_delete(thing_id)
 
 
+class UnusedBlueprintFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for an unused blueprint: remove it, or keep it and stop nagging.
+
+    Blueprint removal deletes a file, so it overrides ``async_step_remove``
+    with the async removal instead of the synchronous ``_remove`` hook.
+    """
+
+    _key = "blueprint"
+    _id_key = "unused_blueprint_path"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the blueprint and its domain in the menu step."""
+        data = self.data or {}
+        return {
+            "blueprint": str(data.get("blueprint", "")),
+            "domain": str(data.get("unused_blueprint_domain", "")),
+        }
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Remove the blueprint file, if it still exists and is not in use."""
+        data = self.data or {}
+        domain = str(data.get("unused_blueprint_domain", ""))
+        path = str(data.get("unused_blueprint_path", ""))
+        domain_blueprints: dict[str, blueprint.DomainBlueprints] = self.hass.data.get(
+            blueprint.DOMAIN, {}
+        )
+        if domain_blueprint := domain_blueprints.get(domain):
+            # It may already be gone, or have gained a consumer meanwhile.
+            with suppress(FileNotFoundError, blueprint.BlueprintInUse):
+                await domain_blueprint.async_remove_blueprint(path)
+        return self.async_create_entry(data={})
+
+
+# Remove-or-ignore fix flows, keyed by the data field that identifies their
+# leftover registry thing.
+_REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
+    "empty_area_id": EmptyAreaFixFlow,
+    "empty_floor_id": EmptyFloorFixFlow,
+    "unused_label_id": UnusedLabelFixFlow,
+    "unused_blueprint_path": UnusedBlueprintFixFlow,
+}
+
+
 async def async_create_fix_flow(
     _hass: HomeAssistant,
     issue_id: str,
@@ -707,10 +757,8 @@ async def async_create_fix_flow(
             key: str(data.get(key, "")) for key in ("token", "owner", "last_active")
         }
         return StaleAccessTokenFixFlow(str(token_id), placeholders)
-    if data and data.get("empty_area_id"):
-        return EmptyAreaFixFlow()
-    if data and data.get("empty_floor_id"):
-        return EmptyFloorFixFlow()
-    if data and data.get("unused_label_id"):
-        return UnusedLabelFixFlow()
+    if data:
+        for key, flow in _REMOVE_OR_IGNORE_FLOWS.items():
+            if data.get(key):
+                return flow()
     return ConfirmRepairFlow()
