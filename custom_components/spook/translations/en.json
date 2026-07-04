@@ -268,6 +268,24 @@
       "description": "Spook has found a ghost in your entities 👻\n\nThe {integration} integration finished setting up, but the following entities it registered never appeared, so they no longer exist:\n\n{entities}\n\n\n\nThis usually happens when a device or its entities were removed at the source but their registry entries stayed behind. To fix this error, remove these entities from the entity registry if you no longer need them.\n\nSpook 👻 Your homie.",
       "title": "Non-existing entities registered by: {integration}"
     },
+    "empty_areas": {
+      "title": "Empty area: {area}",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Empty area: {area}",
+            "description": "The area {area} has no devices, no entities, and no automation or script targeting it.\n\nRemove it, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "menu_options": {
+              "remove": "Remove this empty area",
+              "ignore": "Keep it, stop telling me"
+            }
+          }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about this area from now on."
+        }
+      }
+    },
     "energy_unknown_references": {
       "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. To fix this error, open Settings > Dashboards > Energy and update or remove these entities.\n\nSpook 👻 Your homie.",
       "title": "Unknown entities used in the energy dashboard"

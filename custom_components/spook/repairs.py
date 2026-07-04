@@ -591,6 +591,56 @@ class StaleAccessTokenFixFlow(RepairsFlow):
         )
 
 
+class EmptyAreaFixFlow(RepairsFlow):
+    """Handler for an empty area: remove it, or keep it and stop nagging.
+
+    An empty area is tidiness, not breakage, so keeping it is a valid
+    choice. A fixable issue cannot be dismissed from the repairs UI, so the
+    flow offers an explicit "keep it" option that ignores the issue instead.
+    """
+
+    async def async_step_init(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Offer to remove the area or keep and ignore it."""
+        return self.async_show_menu(
+            step_id="init",
+            menu_options=["remove", "ignore"],
+            description_placeholders=self._area_placeholders,
+        )
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Remove the area, if it still exists."""
+        registry = ar.async_get(self.hass)
+        area_id = str((self.data or {}).get("empty_area_id", ""))
+        # The area may already be gone if removed elsewhere meanwhile.
+        if registry.async_get_area(area_id):
+            registry.async_delete(area_id)
+        return self.async_create_entry(data={})
+
+    async def async_step_ignore(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Keep the area and ignore the issue.
+
+        Aborting (rather than creating an entry) keeps the issue so the
+        ignore sticks; a completed fix flow would delete it and it would
+        just come back on the next inspection.
+        """
+        ir.async_ignore_issue(self.hass, DOMAIN, self.issue_id, ignore=True)
+        return self.async_abort(reason="issue_ignored")
+
+    @property
+    def _area_placeholders(self) -> dict[str, str]:
+        """Return the menu placeholders naming the area."""
+        return {"area": str((self.data or {}).get("area", ""))}
+
+
 async def async_create_fix_flow(
     _hass: HomeAssistant,
     issue_id: str,
@@ -604,4 +654,6 @@ async def async_create_fix_flow(
             key: str(data.get(key, "")) for key in ("token", "owner", "last_active")
         }
         return StaleAccessTokenFixFlow(str(token_id), placeholders)
+    if data and data.get("empty_area_id"):
+        return EmptyAreaFixFlow()
     return ConfirmRepairFlow()
