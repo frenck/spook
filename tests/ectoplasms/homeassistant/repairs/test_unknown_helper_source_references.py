@@ -32,11 +32,6 @@ def _issue_id(entry: MockConfigEntry) -> str:
             id="single-key-source",
         ),
         pytest.param(
-            "min_max",
-            {"name": "Ghostly", "entity_ids": ["sensor.real", "sensor.ghost"]},
-            id="list-key",
-        ),
-        pytest.param(
             "generic_thermostat",
             {"name": "Ghostly", "target_sensor": "sensor.ghost", "heater": "switch.x"},
             id="multi-key",

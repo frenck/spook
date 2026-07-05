@@ -19,8 +19,9 @@ if TYPE_CHECKING:
 # value is either an entity ID or an entity registry ID (both resolved via
 # ``er.async_resolve_entity_id``); a key may hold a single value or a list.
 #
-# Deliberately excluded: ``group`` (already covered by the group unknown
-# members repair).
+# Deliberately excluded: ``group`` (covered by the group unknown members
+# repair) and ``min_max`` (covered by the min_max unknown sources repair,
+# which can prune the missing members).
 SOURCE_OPTION_KEYS: dict[str, tuple[str, ...]] = {
     "derivative": ("source",),
     "filter": ("entity_id",),
@@ -28,7 +29,6 @@ SOURCE_OPTION_KEYS: dict[str, tuple[str, ...]] = {
     "generic_thermostat": ("target_sensor", "heater"),
     "history_stats": ("entity_id",),
     "integration": ("source",),
-    "min_max": ("entity_ids",),
     "mold_indicator": (
         "indoor_temp_sensor",
         "indoor_humidity_sensor",

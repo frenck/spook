@@ -36,6 +36,7 @@ from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
+from .entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from .entity_suggestions import async_describe_unknown_entities
 
 if TYPE_CHECKING:
@@ -51,6 +52,10 @@ if TYPE_CHECKING:
 # entities; inspections are CPU-bound and must not stall the loop on
 # large installations.
 INSPECTION_YIELD_INTERVAL = 50
+
+# A min/max helper needs at least this many members to function; Spook must
+# not prune it below this.
+_MIN_MAX_MINIMUM_MEMBERS = 2
 
 
 class AbstractSpookRepairBase(ABC):
@@ -838,6 +843,55 @@ class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
         return self.async_create_entry(data={})
 
 
+class MinMaxUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for a min/max helper's missing members.
+
+    Prunes the members that no longer exist from the helper's config entry,
+    keeping the ones that remain, so the helper carries on working.
+    """
+
+    _key = "helper"
+    _id_key = "min_max_config_entry_id"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the helper and its missing members in the menu step."""
+        data = self.data or {}
+        return {
+            "helper": str(data.get("helper", "")),
+            "sources": str(data.get("sources", "")),
+        }
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Remove the members that no longer exist from the helper."""
+        entry_id = str((self.data or {}).get("min_max_config_entry_id", ""))
+        entry = self.hass.config_entries.async_get_entry(entry_id)
+        if entry is not None:
+            entity_registry = er.async_get(self.hass)
+            known_entity_ids = async_get_all_entity_ids(self.hass)
+            members = list(entry.options.get("entity_ids") or [])
+            remaining = [
+                value
+                for value in members
+                if (resolved := er.async_resolve_entity_id(entity_registry, value))
+                is not None
+                and not async_filter_known_entity_ids(
+                    self.hass, [resolved], known_entity_ids=known_entity_ids
+                )
+            ]
+            if remaining != members:
+                if len(remaining) < _MIN_MAX_MINIMUM_MEMBERS:
+                    # A min/max helper needs at least two members; pruning
+                    # would leave too few and break it. Let the user decide.
+                    return self.async_abort(reason="too_few_members")
+                self.hass.config_entries.async_update_entry(
+                    entry, options={**entry.options, "entity_ids": remaining}
+                )
+        return self.async_create_entry(data={})
+
+
 # Remove-or-ignore fix flows, keyed by the data field that identifies their
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
@@ -848,6 +902,7 @@ _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "unused_blueprint_path": UnusedBlueprintFixFlow,
     "person_entity_id": PersonUnknownDeviceTrackerFixFlow,
     "group_entity_id": GroupUnknownMembersFixFlow,
+    "min_max_config_entry_id": MinMaxUnknownSourcesFixFlow,
 }
 
 
