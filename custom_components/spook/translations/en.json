@@ -1,4 +1,16 @@
 {
+  "conditions": {
+    "chance": {
+      "name": "Chance",
+      "description": "Passes a set percentage of the time, chosen at random each check. Handy for adding a bit of variation to your automations.",
+      "fields": {
+        "percentage": {
+          "name": "Percentage",
+          "description": "How often this condition should pass, as a percentage."
+        }
+      }
+    }
+  },
   "config": {
     "abort": {
       "already_spooked": "Spook is already configured.",

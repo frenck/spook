@@ -1,0 +1,12 @@
+chance:
+  fields:
+    percentage:
+      required: true
+      example: 20
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: slider
