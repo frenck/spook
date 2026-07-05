@@ -113,12 +113,20 @@ class SpookRepair(AbstractSpookRepair):
             if not unknown:
                 continue
 
+            sources = "\n".join(f"- `{source}`" for source in sorted(unknown))
             self.async_create_issue(
                 issue_id=entry.entry_id,
                 issue_domain=entry.domain,
+                is_fixable=True,
+                data={
+                    "helper_config_entry_id": entry.entry_id,
+                    "helper": entry.title,
+                    "domain": entry.domain,
+                    "sources": sources,
+                },
                 translation_placeholders={
                     "helper": entry.title,
                     "domain": entry.domain,
-                    "sources": "\n".join(f"- `{source}`" for source in sorted(unknown)),
+                    "sources": sources,
                 },
             )

@@ -11,8 +11,10 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, final
 
 from homeassistant.components import blueprint
+from homeassistant.components.automation import automations_with_entity
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
+from homeassistant.components.script import scripts_with_entity
 from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntry,
@@ -40,7 +42,7 @@ from .entity_filtering import async_filter_known_entity_ids, async_get_all_entit
 from .entity_suggestions import async_describe_unknown_entities
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Mapping
+    from collections.abc import Callable, Coroutine, Mapping, Sized
     from datetime import datetime, timedelta
     from types import ModuleType
 
@@ -56,6 +58,11 @@ INSPECTION_YIELD_INTERVAL = 50
 # A min/max helper needs at least this many members to function; Spook must
 # not prune it below this.
 _MIN_MAX_MINIMUM_MEMBERS = 2
+
+
+def _plural(items: Sized) -> str:
+    """Return the plural suffix for a sized collection."""
+    return "" if len(items) == 1 else "s"
 
 
 class AbstractSpookRepairBase(ABC):
@@ -892,6 +899,63 @@ class MinMaxUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         return self.async_create_entry(data={})
 
 
+class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for a helper whose source entities are gone.
+
+    A single-source helper whose source no longer exists is broken; there is
+    nothing to prune, so the fix is to remove the whole helper. Warns, up
+    front, when the helper is still used by automations or scripts, and is
+    honest that those become dangling references, which Spook itself will
+    then point out.
+    """
+
+    _key = "helper"
+    _id_key = "helper_config_entry_id"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the helper, its missing sources, and where it is used."""
+        data = self.data or {}
+        return {
+            "helper": str(data.get("helper", "")),
+            "domain": str(data.get("domain", "")),
+            "sources": str(data.get("sources", "")),
+            "usage": self._usage_text(str(data.get("helper_config_entry_id", ""))),
+        }
+
+    def _usage_text(self, entry_id: str) -> str:
+        """Describe which automations and scripts still use the helper."""
+        entity_registry = er.async_get(self.hass)
+        automations: set[str] = set()
+        scripts: set[str] = set()
+        for entity in er.async_entries_for_config_entry(entity_registry, entry_id):
+            automations.update(automations_with_entity(self.hass, entity.entity_id))
+            scripts.update(scripts_with_entity(self.hass, entity.entity_id))
+
+        if not automations and not scripts:
+            return "It is not used by any automation or script."
+
+        parts: list[str] = []
+        if automations:
+            parts.append(f"{len(automations)} automation{_plural(automations)}")
+        if scripts:
+            parts.append(f"{len(scripts)} script{_plural(scripts)}")
+        return (
+            f"It is still used by {' and '.join(parts)}. Removing the helper "
+            "leaves them referencing a missing entity, which Spook will then "
+            "point out for you."
+        )
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Remove the whole helper, if it still exists."""
+        entry_id = str((self.data or {}).get("helper_config_entry_id", ""))
+        if self.hass.config_entries.async_get_entry(entry_id) is not None:
+            await self.hass.config_entries.async_remove(entry_id)
+        return self.async_create_entry(data={})
+
+
 # Remove-or-ignore fix flows, keyed by the data field that identifies their
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
@@ -903,6 +967,7 @@ _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "person_entity_id": PersonUnknownDeviceTrackerFixFlow,
     "group_entity_id": GroupUnknownMembersFixFlow,
     "min_max_config_entry_id": MinMaxUnknownSourcesFixFlow,
+    "helper_config_entry_id": HelperUnknownSourcesFixFlow,
 }
 
 

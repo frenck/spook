@@ -8,9 +8,14 @@ from typing import TYPE_CHECKING, Any
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 import pytest
 
+from custom_components.spook import repairs
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.homeassistant.repairs.unknown_helper_source_references import (
     SpookRepair,
+)
+from custom_components.spook.repairs import (
+    HelperUnknownSourcesFixFlow,
+    async_create_fix_flow,
 )
 
 if TYPE_CHECKING:
@@ -169,3 +174,93 @@ async def test_bayesian_without_subentries_does_not_crash(
     await SpookRepair(hass).async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+
+
+async def test_issue_is_fixable_with_config_entry_data(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the issue is fixable and carries the config entry id."""
+    entry = MockConfigEntry(
+        domain="derivative",
+        title="Ghostly",
+        options={"name": "Ghostly", "source": "sensor.ghost"},
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    assert issue
+    assert issue.is_fixable
+    assert issue.data
+    assert issue.data["helper_config_entry_id"] == entry.entry_id
+
+
+async def test_fix_flow_remove_deletes_helper(
+    hass: HomeAssistant,
+) -> None:
+    """Test the remove option removes the whole helper config entry."""
+    entry = MockConfigEntry(
+        domain="derivative",
+        title="Ghostly",
+        options={"name": "Ghostly", "source": "sensor.ghost"},
+    )
+    entry.add_to_hass(hass)
+
+    flow = await async_create_fix_flow(
+        hass,
+        _issue_id(entry),
+        {"helper_config_entry_id": entry.entry_id, "helper": "Ghostly"},
+    )
+    assert isinstance(flow, HelperUnknownSourcesFixFlow)
+    flow.hass = hass
+    flow.data = {"helper_config_entry_id": entry.entry_id}
+
+    result = await flow.async_step_remove()
+
+    assert result["type"] == "create_entry"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is None
+
+
+async def test_menu_warns_when_used_by_automation(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the menu warns, honestly, when the helper is still in use."""
+    entry = MockConfigEntry(domain="derivative", title="Ghostly")
+    entry.add_to_hass(hass)
+    reg = entity_registry.async_get_or_create(
+        "sensor", "derivative", "x", config_entry=entry
+    )
+    monkeypatch.setattr(
+        repairs,
+        "automations_with_entity",
+        lambda _hass, eid: ["automation.a"] if eid == reg.entity_id else [],
+    )
+
+    flow = HelperUnknownSourcesFixFlow()
+    flow.hass = hass
+    flow.data = {"helper_config_entry_id": entry.entry_id, "helper": "Ghostly"}
+
+    menu = await flow.async_step_init()
+    usage = menu["description_placeholders"]["usage"]
+    assert "1 automation" in usage
+    assert "Spook will then point out" in usage
+
+
+async def test_menu_reports_when_unused(
+    hass: HomeAssistant,
+) -> None:
+    """Test the menu states the helper is unused when it is."""
+    entry = MockConfigEntry(domain="derivative", title="Ghostly")
+    entry.add_to_hass(hass)
+
+    flow = HelperUnknownSourcesFixFlow()
+    flow.hass = hass
+    flow.data = {"helper_config_entry_id": entry.entry_id, "helper": "Ghostly"}
+
+    menu = await flow.async_step_init()
+    usage = menu["description_placeholders"]["usage"]
+    assert usage == "It is not used by any automation or script."
