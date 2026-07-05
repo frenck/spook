@@ -479,8 +479,24 @@
       "title": "Unknown entities in your customizations"
     },
     "unknown_helper_source_references": {
-      "description": "Spook has found a ghost in your helpers 👻\n\nWhile floating around, Spook crossed path with the following helper:\n\n{helper} (`{domain}`)\n\nThis helper references the following source entities, which are unknown to Home Assistant:\n\n{sources}\n\n\n\nThis often happens when a source entity was renamed or removed. To fix this error, reconfigure the helper to point at existing entities, or remove the helper.\n\nSpook 👻 Your homie.",
-      "title": "Unknown source entities used in helper: {helper}"
+      "title": "Unknown source entities used in helper: {helper}",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Unknown source entities used in helper: {helper}",
+            "description": "Spook has found a ghost in your helpers 👻\n\nThe helper {helper} (`{domain}`) references the following source entities, which are unknown to Home Assistant:\n\n{sources}\n\nWithout its sources this helper cannot work. {usage}\n\nRemove the helper, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+            "menu_options": {
+              "remove": "Remove this helper",
+              "manage": "Let me fix it myself",
+              "ignore": "Keep it, stop telling me"
+            }
+          }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about this helper from now on.",
+          "manage": "You can manage this helper yourself on the [Helpers page](/config/helpers)."
+        }
+      }
     },
     "unused_blueprints": {
       "title": "Unused blueprint: {blueprint}",
