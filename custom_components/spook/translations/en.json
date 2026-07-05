@@ -313,8 +313,25 @@
       "title": "Unknown entities used in the energy dashboard"
     },
     "group_unknown_members": {
-      "description": "Spook has found a ghost in your groups 👻\n\nWhile floating around, Spook crossed path with the following group:\n\n{group} (`{entity_id}`)\n\nThis group has members, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the group, remove the use of these non-existing entities and restart Home Assistant.\n\nSpook 👻 Your homie.",
-      "title": "Unknown group members in: {group}"
+      "title": "Unknown group members in: {group}",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Unknown group members in: {group}",
+            "description": "Spook has found a ghost in your groups 👻\n\nThe group {group} (`{entity_id}`) has members that are unknown to Home Assistant:\n\n{entities}\n\nRemove them from the group, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+            "menu_options": {
+              "remove": "Remove these members",
+              "manage": "Let me fix it myself",
+              "ignore": "Keep them, stop telling me"
+            }
+          }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about this group from now on.",
+          "not_editable": "This group is set up in YAML, so Spook cannot edit it. Update the group in your configuration instead.",
+          "manage": "You can manage this group yourself on the [Helpers page](/config/helpers)."
+        }
+      }
     },
     "lovelace_missing_resources": {
       "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind. To fix this error, open Settings > Dashboards > Resources and remove or correct these resources.\n\nSpook 👻 Your homie.",

@@ -18,6 +18,7 @@ from homeassistant.config_entries import (
     ConfigEntry,
     ConfigEntryChange,
 )
+from homeassistant.const import CONF_ENTITIES
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
@@ -785,6 +786,58 @@ class PersonUnknownDeviceTrackerFixFlow(_RemoveOrIgnoreFixFlow):
         return self.async_create_entry(data={})
 
 
+class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for a group's unknown members.
+
+    Prunes the missing members from a UI-managed group's config entry. Only
+    config-entry groups can be edited; a YAML group cannot, so that is
+    reported instead.
+    """
+
+    _key = "group"
+    _id_key = "group_entity_id"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the group and its missing members in the menu step."""
+        data = self.data or {}
+        return {
+            "group": str(data.get("group", "")),
+            "entity_id": str(data.get("group_entity_id", "")),
+            "entities": str(data.get("entities", "")),
+        }
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Remove the members that no longer exist from the group."""
+        entity_id = str((self.data or {}).get("group_entity_id", ""))
+        entity_registry = er.async_get(self.hass)
+
+        entry_entity = entity_registry.async_get(entity_id)
+        if entry_entity is None or entry_entity.config_entry_id is None:
+            # A YAML group; its members live in configuration.yaml.
+            return self.async_abort(reason="not_editable")
+
+        # If the config entry itself is already gone, there is nothing left
+        # to prune; the group's own entity is gone too, so the issue clears
+        # on the next inspection. Completing the flow is the honest outcome.
+        entry = self.hass.config_entries.async_get_entry(entry_entity.config_entry_id)
+        if entry is not None:
+            members = list(entry.options.get(CONF_ENTITIES) or [])
+            remaining = [
+                member
+                for member in members
+                if entity_registry.async_get(member) is not None
+                or self.hass.states.get(member) is not None
+            ]
+            if remaining != members:
+                self.hass.config_entries.async_update_entry(
+                    entry, options={**entry.options, CONF_ENTITIES: remaining}
+                )
+        return self.async_create_entry(data={})
+
+
 # Remove-or-ignore fix flows, keyed by the data field that identifies their
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
@@ -794,6 +847,7 @@ _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "unused_label_id": UnusedLabelFixFlow,
     "unused_blueprint_path": UnusedBlueprintFixFlow,
     "person_entity_id": PersonUnknownDeviceTrackerFixFlow,
+    "group_entity_id": GroupUnknownMembersFixFlow,
 }
 
 
