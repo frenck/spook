@@ -56,12 +56,19 @@ class SpookRepair(AbstractSpookRepair):
                 if unknown_entities := async_filter_known_entity_ids(
                     self.hass, entity_ids=members, known_entity_ids=known_entity_ids
                 ):
+                    described = async_describe_unknown_entities(
+                        self.hass, sorted(unknown_entities)
+                    )
                     self.async_create_issue(
                         issue_id=entity.entity_id,
+                        is_fixable=True,
+                        data={
+                            "group_entity_id": entity.entity_id,
+                            "group": entity.name,
+                            "entities": described,
+                        },
                         translation_placeholders={
-                            "entities": async_describe_unknown_entities(
-                                self.hass, sorted(unknown_entities)
-                            ),
+                            "entities": described,
                             "group": entity.name,
                             "entity_id": entity.entity_id,
                         },
