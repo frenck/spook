@@ -9,6 +9,16 @@
           "description": "How often this condition should pass, as a percentage."
         }
       }
+    },
+    "cooldown": {
+      "name": "Cooldown",
+      "description": "Passes only if this automation or script has not run within the given time (or has never run). A built-in cooldown, so it does not re-fire too often.",
+      "fields": {
+        "duration": {
+          "name": "Duration",
+          "description": "How long to wait after the last run before this condition passes again."
+        }
+      }
     }
   },
   "config": {
