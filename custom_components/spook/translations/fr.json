@@ -334,5 +334,131 @@
                 }
             }
         }
+    },
+    "services": {
+        "person_add_device_tracker": {
+            "name": "Ajouter un tracker d'appareil",
+            "description": "Ajoutez un tracker d'appareil à une personne."
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Ajouter un label à un appareil",
+            "description": "Ajoute une étiquette à un appareil. Si plusieurs étiquettes ou plusieurs appareils sont fournis, toutes les combinaisons seront ajoutées."
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Ajouter un label à une zone",
+            "description": "Ajoute une étiquette à une zone. Si plusieurs étiquettes ou plusieurs zones sont fournies, toutes les combinaisons seront ajoutées."
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Ajouter un label à une entité",
+            "description": "Ajoute une étiquette à une entité. Si plusieurs étiquettes ou plusieurs entités sont fournies, toutes les combinaisons seront ajoutées."
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Ajouter un alias à un étage",
+            "description": "Ajoute un alias à un étage.",
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Ajouter un alias à une zone",
+            "description": "Ajoute un alias à une zone.",
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Ajouter une zone à un étage",
+            "description": "Ajoute une zone à un étage. Attention, si la zone se trouve déjà sur un étage, elle sera supprimée de l'étage précédent."
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Ajouter une entité à un étage",
+            "description": "Ajoute une entité à une zone. Attention, si l'entité est déjà dans une zone, elle sera supprimée de la zone précédente. Cela remplacera la zone dans laquelle se trouve l'appareil qui fournit cette entité."
+        },
+        "homeassistant_add_device_to_area": {
+            "description": "Ajoute un appareil à une zone. Attention, si l'appareil se trouve déjà dans une zone, il sera supprimé de la zone précédente."
+        },
+        "homeassistant_remove_alias_from_area": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliases",
+                    "description": "Une liste d'alias pour la zone. Ceci est utile si vous souhaitez utiliser la zone dans une autre langue ou un autre pseudo."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliases"
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliases",
+                    "description": "Une liste d'alias pour l'étage. Ceci est utile si vous souhaitez utiliser la parole dans une autre langue ou un autre surnom."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliases"
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "fields": {
+                "stats": {
+                    "description": "Une liste de mappages/dictionnaires avec des statistiques à importer. Les dictionnaires doivent contenir une clé \"start\" avec une chaîne datetime. Les autres options valides sont \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" et \"state\". Tous ces éléments sont facultatifs et sont soit un entier, soit un flottant, à l'exception de \"last_reset\" qui est une chaîne datetime."
+                }
+            }
+        },
+        "number_decrement": {
+            "fields": {
+                "amount": {
+                    "name": "Montant"
+                }
+            }
+        },
+        "number_increment": {
+            "fields": {
+                "amount": {
+                    "name": "Montant"
+                }
+            }
+        },
+        "input_number_decrement": {
+            "fields": {
+                "amount": {
+                    "name": "Montant"
+                }
+            }
+        },
+        "input_number_increment": {
+            "fields": {
+                "amount": {
+                    "name": "Montant"
+                }
+            }
+        }
     }
 }
