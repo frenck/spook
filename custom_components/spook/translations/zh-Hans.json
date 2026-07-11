@@ -257,12 +257,7 @@
             "title": "在以下项中使用了未知动作：{automation}"
         },
         "group_unknown_members": {
-            "description": "Spook 在你的组中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下组：\n\n{group} (`{entity_id}`)\n\n该组包含以下 Home Assistant 无法识别的成员：\n\n{entities}\n\n\n\n要修复此错误，请编辑该组，移除这些不存在的实体，然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
             "title": "以下组中存在未知成员：{group}"
-        },
-        "integration_unknown_source": {
-            "description": "Spook 在你的黎曼和积分辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序具有一个 Home Assistant 无法识别的源实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
-            "title": "未知源：{helper}"
         },
         "lovelace_unknown_entity_references": {
             "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下仪表盘：\n\n[{dashboard}]({edit})\n\n该仪表盘引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n要修复此错误，请[编辑该仪表盘]({edit})并移除这些不存在的实体。\n\nSpook 👻 你的好哥们。",
@@ -307,18 +302,6 @@
         "script_unknown_service_references": {
             "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处飘荡时，Spook 遇到了以下脚本：\n\n[{script}]({edit})（`{entity_id}`）\n\n该脚本引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n要修复此问题，请[编辑脚本]({edit})并移除这些不存在的动作。\n\nSpook 👻 你的好伙伴。",
             "title": "使用了未知动作：{script}"
-        },
-        "switch_as_x_unknown_source": {
-            "description": "Spook 在你的“将开关转换为 X”辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序包含一个 Home Assistant 无法识别的源开关实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
-            "title": "未知源：{helper}"
-        },
-        "utility_meter_unknown_source": {
-            "description": "Spook 在你的公用事业仪表辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序包含一个 Home Assistant 无法识别的源实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
-            "title": "未知源：{helper}"
-        },
-        "trend_unknown_source": {
-            "description": "Spook 在你的趋势辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下辅助程序：\n\n{helper} (`{entity_id}`)\n\n该辅助程序包含一个 Home Assistant 无法识别的源实体：\n\n`{source}`\n\n\n\n要修复此错误，请编辑该辅助程序并调整源实体（或移除该辅助程序），然后重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。",
-            "title": "未知源：{helper}"
         },
         "user_issue": {
             "fix_flow": {

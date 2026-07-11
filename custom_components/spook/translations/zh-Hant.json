@@ -257,12 +257,7 @@
             "title": "在以下項目中使用了未知動作：{automation}"
         },
         "group_unknown_members": {
-            "description": "Spook 在您的群組中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下群組：\n\n{group} (`{entity_id}`)\n\n該群組包含以下 Home Assistant 無法辨識的成員：\n\n{entities}\n\n\n\n要修復此錯誤，請編輯該群組，移除這些不存在的實體，然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
             "title": "以下群組中存在未知成員：{group}"
-        },
-        "integration_unknown_source": {
-            "description": "Spook 在您的黎曼和積分輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n該輔助項目具有一個 Home Assistant 無法辨識的來源實體：\n\n`{source}`\n\n\n\n要修復此錯誤，請編輯該輔助項目並調整來源實體（或移除該輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
-            "title": "未知來源：{helper}"
         },
         "lovelace_unknown_entity_references": {
             "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下儀表板：\n\n[{dashboard}]({edit})\n\n該儀表板引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n要修復此錯誤，請 [編輯該儀表板]({edit}) 並移除這些不存在的實體。\n\nSpook 👻 您的好夥伴。",
@@ -307,18 +302,6 @@
         "script_unknown_service_references": {
             "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處飄蕩時，Spook 遇到了以下腳本：\n\n[{script}]({edit})（`{entity_id}`）\n\n該腳本引用了以下 Home Assistant 無法辨識的動作：\n\n{services}\n\n要修復此問題，請 [編輯腳本]({edit}) 並移除這些不存在的動作。\n\nSpook 👻 您的好夥伴。",
             "title": "使用了未知動作：{script}"
-        },
-        "switch_as_x_unknown_source": {
-            "description": "Spook 在您的「將開關轉換為 X」輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n該輔助項目包含一個 Home Assistant 無法辨識的來源開關實體：\n\n`{source}`\n\n\n\n要修復此錯誤，請編輯該輔助項目並調整來源實體（或移除該輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
-            "title": "未知來源：{helper}"
-        },
-        "utility_meter_unknown_source": {
-            "description": "Spook 在您的能源計量輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n該輔助項目包含一個 Home Assistant 無法辨識的來源實體：\n\n`{source}`\n\n\n\n要修復此錯誤，請編輯該輔助項目並調整來源實體（或移除該輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
-            "title": "未知來源：{helper}"
-        },
-        "trend_unknown_source": {
-            "description": "Spook 在您的趨勢輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下輔助項目：\n\n{helper} (`{entity_id}`)\n\n該輔助項目包含一個 Home Assistant 無法辨識的來源實體：\n\n`{source}`\n\n\n\n要修復此錯誤，請編輯該輔助項目並調整來源實體（或移除該輔助項目），然後重新啟動 Home Assistant。\n\nSpook 👻 您的好夥伴。",
-            "title": "未知來源：{helper}"
         },
         "user_issue": {
             "fix_flow": {
