@@ -1,7 +1,7 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Ouais... bon... non. Ok, merci, au revoir !"
+            "already_spooked": "Spook est déja configuré."
         },
         "step": {
             "user": {
@@ -94,7 +94,7 @@
                 "name": "Appareils"
             },
             "homeassistant_device_tracker": {
-                "name": "Traceurs d'appareils"
+                "name": "Dispositifs de suivi"
             },
             "homeassistant_entities": {
                 "name": "Entités"
@@ -166,7 +166,7 @@
                 "name": "Sirènes"
             },
             "homeassistant_stt": {
-                "name": "Speech-to-text"
+                "name": "Reconnaissance vocale (STT)"
             },
             "homeassistant_sun": {
                 "name": "Soleils"
@@ -316,20 +316,64 @@
                     }
                 }
             }
+        },
+        "dead_entities": {
+            "title": "Entités inexistantes enregistrées par: {integration}"
+        },
+        "lovelace_missing_resources": {
+            "title": "Les ressources du tableau de bord font référence a des fichiers manquants"
+        },
+        "empty_areas": {
+            "title": "Pièce vide: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Pièce vide: {area}"
+                    }
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Étage vide: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Étage vide: {floor}"
+                    }
+                }
+            }
         }
     },
     "services": {
         "person_add_device_tracker": {
             "name": "Ajouter un tracker d'appareil",
-            "description": "Ajoutez un tracker d'appareil à une personne."
+            "description": "Ajoutez un tracker d'appareil à une personne.",
+            "fields": {
+                "device_tracker": {
+                    "name": "Dispositif de suivi"
+                },
+                "entity_id": {
+                    "name": "Personne"
+                }
+            }
         },
         "homeassistant_add_label_to_device": {
             "name": "Ajouter un label à un appareil",
-            "description": "Ajoute une étiquette à un appareil. Si plusieurs étiquettes ou plusieurs appareils sont fournis, toutes les combinaisons seront ajoutées."
+            "description": "Ajoute une étiquette à un appareil. Si plusieurs étiquettes ou plusieurs appareils sont fournis, toutes les combinaisons seront ajoutées.",
+            "fields": {
+                "device_id": {
+                    "name": "ID de l'appareil"
+                }
+            }
         },
         "homeassistant_add_label_to_area": {
             "name": "Ajouter un label à une zone",
-            "description": "Ajoute une étiquette à une zone. Si plusieurs étiquettes ou plusieurs zones sont fournies, toutes les combinaisons seront ajoutées."
+            "description": "Ajoute une étiquette à une zone. Si plusieurs étiquettes ou plusieurs zones sont fournies, toutes les combinaisons seront ajoutées.",
+            "fields": {
+                "area_id": {
+                    "name": "ID de la pièce"
+                }
+            }
         },
         "homeassistant_add_label_to_entity": {
             "name": "Ajouter un label à une entité",
@@ -350,24 +394,49 @@
             "fields": {
                 "alias": {
                     "name": "Alias"
+                },
+                "area_id": {
+                    "name": "ID de la pièce"
                 }
             }
         },
         "homeassistant_add_area_to_floor": {
             "name": "Ajouter une zone à un étage",
-            "description": "Ajoute une zone à un étage. Attention, si la zone se trouve déjà sur un étage, elle sera supprimée de l'étage précédent."
+            "description": "Ajoute une zone à un étage. Attention, si la zone se trouve déjà sur un étage, elle sera supprimée de l'étage précédent.",
+            "fields": {
+                "area_id": {
+                    "name": "ID de la pièce"
+                }
+            }
         },
         "homeassistant_add_entity_to_area": {
             "name": "Ajouter une entité à un étage",
-            "description": "Ajoute une entité à une zone. Attention, si l'entité est déjà dans une zone, elle sera supprimée de la zone précédente. Cela remplacera la zone dans laquelle se trouve l'appareil qui fournit cette entité."
+            "description": "Ajoute une entité à une pièce. Attention, si l'entité est déjà dans une pièce, elle sera supprimée de la pièce précédente. Cela remplacera la pièce dans laquelle se trouve l'appareil qui fournit cette entité.",
+            "fields": {
+                "area_id": {
+                    "name": "ID de la pièce"
+                }
+            }
         },
         "homeassistant_add_device_to_area": {
-            "description": "Ajoute un appareil à une zone. Attention, si l'appareil se trouve déjà dans une zone, il sera supprimé de la zone précédente."
+            "description": "Ajoute un appareil à une pièce. Attention, si l'appareil se trouve déjà dans une pièce, il sera supprimé de la pièce précédente.",
+            "fields": {
+                "device_id": {
+                    "name": "ID de l'appareil"
+                },
+                "area_id": {
+                    "name": "ID de la pièce"
+                }
+            },
+            "name": "Ajouter un appareil à une pièce"
         },
         "homeassistant_remove_alias_from_area": {
             "fields": {
                 "alias": {
                     "name": "Alias"
+                },
+                "area_id": {
+                    "name": "ID de la pièce"
                 }
             }
         },
@@ -381,37 +450,57 @@
         "homeassistant_create_area": {
             "fields": {
                 "aliases": {
-                    "name": "Aliases",
-                    "description": "Une liste d'alias pour la zone. Ceci est utile si vous souhaitez utiliser la zone dans une autre langue ou un autre pseudo."
+                    "name": "Alias",
+                    "description": "Une liste d'alias pour la pièce. Ceci est utile si vous souhaitez utiliser la pièce dans une autre langue ou avec un nom alternatif."
+                },
+                "name": {
+                    "name": "Nom"
                 }
-            }
+            },
+            "name": "Créer une pièce",
+            "description": "Crée une nouvelle pièce dynamiquement."
         },
         "homeassistant_set_area_aliases": {
             "fields": {
                 "aliases": {
-                    "name": "Aliases"
+                    "name": "Alias"
+                },
+                "area_id": {
+                    "name": "ID de la pièce"
                 }
             }
         },
         "homeassistant_create_floor": {
             "fields": {
                 "aliases": {
-                    "name": "Aliases",
-                    "description": "Une liste d'alias pour l'étage. Ceci est utile si vous souhaitez utiliser la parole dans une autre langue ou un autre surnom."
+                    "name": "Alias",
+                    "description": "Une liste d'alias pour l'étage. Ceci est utile si vous souhaitez utiliser l'étage dans une autre langue ou avec un nom alternatif."
+                },
+                "name": {
+                    "name": "Nom"
                 }
-            }
+            },
+            "name": "Créer un étage",
+            "description": "Crée un nouvel étage dynamiquement."
         },
         "homeassistant_set_floor_aliases": {
             "fields": {
                 "aliases": {
-                    "name": "Aliases"
+                    "name": "Alias"
                 }
             }
         },
         "recorder_import_statistics": {
             "fields": {
                 "stats": {
-                    "description": "Une liste de mappages/dictionnaires avec des statistiques à importer. Les dictionnaires doivent contenir une clé \"start\" avec une chaîne datetime. Les autres options valides sont \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" et \"state\". Tous ces éléments sont facultatifs et sont soit un entier, soit un flottant, à l'exception de \"last_reset\" qui est une chaîne datetime."
+                    "description": "Une liste de mappages/dictionnaires avec des statistiques à importer. Les dictionnaires doivent contenir une clé \"start\" avec une chaîne datetime. Les autres options valides sont \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" et \"state\". Tous ces éléments sont facultatifs et sont soit un entier, soit un flottant, à l'exception de \"last_reset\" qui est une chaîne datetime.",
+                    "name": "Statistiques"
+                },
+                "name": {
+                    "name": "Nom"
+                },
+                "statistic_id": {
+                    "name": "ID de statistiques"
                 }
             }
         },
@@ -420,7 +509,9 @@
                 "amount": {
                     "name": "Montant"
                 }
-            }
+            },
+            "description": "Diminuer la valeur d'une entité numérique d'un certain nombre.",
+            "name": "Diminuer la valeur"
         },
         "number_increment": {
             "fields": {
@@ -434,7 +525,9 @@
                 "amount": {
                     "name": "Montant"
                 }
-            }
+            },
+            "name": "Diminuer la valeur",
+            "description": "Diminuer la valeur d'une entité d'entrée numérique d'un certain nombre."
         },
         "input_number_increment": {
             "fields": {
@@ -442,6 +535,255 @@
                     "name": "Montant"
                 }
             }
+        },
+        "homeassistant_disable_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Appareil"
+                }
+            },
+            "name": "Désactiver un appareil",
+            "description": "Désactive un appareil dynamiquement."
+        },
+        "homeassistant_remove_device_from_area": {
+            "fields": {
+                "device_id": {
+                    "name": "ID de l'appareil"
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "fields": {
+                "device_id": {
+                    "name": "ID de l'appareil"
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "fields": {
+                "name": {
+                    "description": "Le nom de l'étiquette à créer",
+                    "name": "Nom"
+                },
+                "color": {
+                    "name": "Couleur",
+                    "description": "Couleur à utiliser pour l'étiquette. Utilise le nom de couleur de la liste ou un code hexadécimal (par example, #FF0000)"
+                },
+                "description": {
+                    "description": "Description de l'étiquette.",
+                    "name": "Description"
+                }
+            },
+            "name": "Créer une étiquette",
+            "description": "Créer une nouvelle étiquette dynamiquement."
+        },
+        "homeassistant_delete_floor": {
+            "name": "Supprimer l'étage",
+            "description": "Supprime une étage dynamiquement."
+        },
+        "homeassistant_delete_label": {
+            "name": "Supprimer une étiquette",
+            "description": "Supprimer une étiquette dynamiquement."
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Supprimer toutes les entités orphelines",
+            "description": "Supprime toutes les entités orphelines qui ne sont plus associées à une intégration les prenant en charge . Prenez note qui si l'intégration vient d'être supprimé, Home Assistant pourrait avoir besoin d'une redémarrage pour réaliser qu'elles sont orphelines.\n\n**ATTENTION** Les entités pourraient avoir été catégorisés comme orpheline parce l'intégration associé est hors-service ou n'a pas encore démarré après un redémarrage de Home Assistant. Appeler cette action va supprimer ces entité également."
+        },
+        "homeassistant_delete_area": {
+            "name": "Supprimer une pièce",
+            "fields": {
+                "area_id": {
+                    "name": "ID de la pièce"
+                }
+            },
+            "description": "Supprime une pièce dynamiquement."
+        },
+        "input_number_delete": {
+            "name": "Supprimer une entrée numérique",
+            "description": "Supprimer une entrée numérique. Cette action fonctionne uniquement avec les entrées numériques créés and gérés depuis l'interface. Les entrées numériques créés en YAML ne peuvent pas être gérés par Spook."
+        },
+        "input_number_create": {
+            "fields": {
+                "min": {
+                    "name": "Minimum"
+                },
+                "name": {
+                    "name": "Nom"
+                },
+                "step": {
+                    "name": "Taille du pas"
+                },
+                "unit_of_measurement": {
+                    "name": "Unité de mesure"
+                },
+                "mode": {
+                    "name": "Mode d'affichage"
+                }
+            },
+            "description": "Créer une nouvelle entrée numérique dynamiquement.",
+            "name": "Créer une entrée numérique"
+        },
+        "homeassistant_rename_entity": {
+            "fields": {
+                "name": {
+                    "name": "Nom"
+                }
+            }
+        },
+        "zone_create": {
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "Nom de la zone"
+                },
+                "radius": {
+                    "name": "Rayon",
+                    "description": "Rayon de la zone"
+                }
+            },
+            "description": "Créer une nouvelle zone dans home assistant dynamiquement.",
+            "name": "Créer une zone"
+        },
+        "zone_update": {
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "Nom de la zone"
+                },
+                "radius": {
+                    "name": "Rayon",
+                    "description": "Rayon de la zone"
+                }
+            }
+        },
+        "timer_set_duration": {
+            "fields": {
+                "duration": {
+                    "description": "Nouvelle durée pour le minuteur, comme une string timedelta",
+                    "name": "Durée"
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "fields": {
+                "new_entity_id": {
+                    "name": "Nouvel ID d'entité"
+                }
+            }
+        },
+        "select_random": {
+            "fields": {
+                "options": {
+                    "name": "Options"
+                }
+            }
+        },
+        "input_select_random": {
+            "fields": {
+                "options": {
+                    "name": "Options"
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Supprimer une zone",
+            "description": "Supprimer une zone. Cette action fonctionne uniquement avec les zones créés and gérés depuis l'interface. Les zones créés en YAML ne peuvent pas être gérés par Spook."
+        },
+        "homeassistant_remove_area_from_floor": {
+            "fields": {
+                "area_id": {
+                    "name": "ID de la pièce"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "fields": {
+                "area_id": {
+                    "name": "ID de la pièce"
+                }
+            }
+        },
+        "boo": {
+            "name": "Boo!",
+            "description": "L’appel de cette action donne la frousse à Home Assistant. Son exécution échouera toujours."
+        },
+        "homeassistant_disable_config_entry": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entrée de configuration"
+                }
+            },
+            "name": "Désactiver une intégration",
+            "description": "Désactive une entrée de configuration d'intégration."
+        },
+        "homeassistant_enable_config_entry": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entrée de configuration"
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entrée de configuration"
+                }
+            },
+            "name": "Désactiver la vérification périodique des mises à jour",
+            "description": "Désactiver la vérification périodique des mises à jour d'une entrée de configuration d'intégration."
+        },
+        "homeassistant_enable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entrée de configuration"
+                }
+            }
+        },
+        "input_select_sort": {
+            "name": "Options de triage"
+        },
+        "repairs_create": {
+            "fields": {
+                "description": {
+                    "name": "Description"
+                },
+                "domain": {
+                    "name": "Domaine"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "fields": {
+                "device_id": {
+                    "name": "ID de l'appareil"
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "fields": {
+                "device_tracker": {
+                    "name": "Dispositif de suivi"
+                },
+                "entity_id": {
+                    "name": "Personne"
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Désactiver une entité",
+            "description": "Désactive une entité (ou des entités) dynamiquement."
+        },
+        "homeassistant_disable_user": {
+            "name": "Désactiver un utilisateur",
+            "description": "Désactive un compte utilisateur, ce qui l'empêchera de se connecter."
+        },
+        "random_fail": {
+            "name": "Échec aléatoire"
+        }
+    },
+    "conditions": {
+        "chance": {
+            "name": "Chance"
         }
     }
 }
