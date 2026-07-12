@@ -377,7 +377,12 @@
         },
         "homeassistant_add_label_to_entity": {
             "name": "Ajouter un label à une entité",
-            "description": "Ajoute une étiquette à une entité. Si plusieurs étiquettes ou plusieurs entités sont fournies, toutes les combinaisons seront ajoutées."
+            "description": "Ajoute une étiquette à une entité. Si plusieurs étiquettes ou plusieurs entités sont fournies, toutes les combinaisons seront ajoutées.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entité"
+                }
+            }
         },
         "homeassistant_add_alias_to_floor": {
             "name": "Ajouter un alias à un étage",
@@ -385,6 +390,9 @@
             "fields": {
                 "alias": {
                     "name": "Alias"
+                },
+                "floor_id": {
+                    "name": "ID d'étage"
                 }
             }
         },
@@ -406,6 +414,9 @@
             "fields": {
                 "area_id": {
                     "name": "ID de la pièce"
+                },
+                "floor_id": {
+                    "name": "ID d'étage"
                 }
             }
         },
@@ -415,6 +426,9 @@
             "fields": {
                 "area_id": {
                     "name": "ID de la pièce"
+                },
+                "entity_id": {
+                    "name": "ID d'entité"
                 }
             }
         },
@@ -444,6 +458,9 @@
             "fields": {
                 "alias": {
                     "name": "Alias"
+                },
+                "floor_id": {
+                    "name": "ID d'étage"
                 }
             }
         },
@@ -455,6 +472,10 @@
                 },
                 "name": {
                     "name": "Nom"
+                },
+                "icon": {
+                    "name": "Icône",
+                    "description": "Icône à utiliser pour cette pièce"
                 }
             },
             "name": "Créer une pièce",
@@ -478,6 +499,9 @@
                 },
                 "name": {
                     "name": "Nom"
+                },
+                "icon": {
+                    "name": "Icône"
                 }
             },
             "name": "Créer un étage",
@@ -487,6 +511,9 @@
             "fields": {
                 "aliases": {
                     "name": "Alias"
+                },
+                "floor_id": {
+                    "name": "ID d'étage"
                 }
             }
         },
@@ -501,6 +528,12 @@
                 },
                 "statistic_id": {
                     "name": "ID de statistiques"
+                },
+                "has_mean": {
+                    "name": "Inclut une moyenne"
+                },
+                "has_sum": {
+                    "name": "Inclut une somme"
                 }
             }
         },
@@ -557,7 +590,9 @@
                 "device_id": {
                     "name": "ID de l'appareil"
                 }
-            }
+            },
+            "name": "Activer un appareil",
+            "description": "Active un appareil dynamiquement."
         },
         "homeassistant_create_label": {
             "fields": {
@@ -572,6 +607,9 @@
                 "description": {
                     "description": "Description de l'étiquette.",
                     "name": "Description"
+                },
+                "icon": {
+                    "name": "Icône"
                 }
             },
             "name": "Créer une étiquette",
@@ -579,7 +617,12 @@
         },
         "homeassistant_delete_floor": {
             "name": "Supprimer l'étage",
-            "description": "Supprime une étage dynamiquement."
+            "description": "Supprime une étage dynamiquement.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID d'étage"
+                }
+            }
         },
         "homeassistant_delete_label": {
             "name": "Supprimer une étiquette",
@@ -618,6 +661,9 @@
                 },
                 "mode": {
                     "name": "Mode d'affichage"
+                },
+                "icon": {
+                    "name": "Icône"
                 }
             },
             "description": "Créer une nouvelle entrée numérique dynamiquement.",
@@ -627,6 +673,9 @@
             "fields": {
                 "name": {
                     "name": "Nom"
+                },
+                "entity_id": {
+                    "name": "Entité"
                 }
             }
         },
@@ -639,6 +688,9 @@
                 "radius": {
                     "name": "Rayon",
                     "description": "Rayon de la zone"
+                },
+                "icon": {
+                    "name": "Icône"
                 }
             },
             "description": "Créer une nouvelle zone dans home assistant dynamiquement.",
@@ -653,6 +705,12 @@
                 "radius": {
                     "name": "Rayon",
                     "description": "Rayon de la zone"
+                },
+                "entity_id": {
+                    "name": "ID d'entité"
+                },
+                "icon": {
+                    "name": "Icône"
                 }
             }
         },
@@ -668,6 +726,9 @@
             "fields": {
                 "new_entity_id": {
                     "name": "Nouvel ID d'entité"
+                },
+                "entity_id": {
+                    "name": "Entité"
                 }
             }
         },
@@ -687,7 +748,12 @@
         },
         "zone_delete": {
             "name": "Supprimer une zone",
-            "description": "Supprimer une zone. Cette action fonctionne uniquement avec les zones créés and gérés depuis l'interface. Les zones créés en YAML ne peuvent pas être gérés par Spook."
+            "description": "Supprimer une zone. Cette action fonctionne uniquement avec les zones créés and gérés depuis l'interface. Les zones créés en YAML ne peuvent pas être gérés par Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entité"
+                }
+            }
         },
         "homeassistant_remove_area_from_floor": {
             "fields": {
@@ -721,7 +787,9 @@
                 "config_entry_id": {
                     "name": "Entrée de configuration"
                 }
-            }
+            },
+            "name": "Activer une intégration",
+            "description": "Active une entrée de configuration d'intégration."
         },
         "homeassistant_disable_polling": {
             "fields": {
@@ -737,7 +805,9 @@
                 "config_entry_id": {
                     "name": "Entrée de configuration"
                 }
-            }
+            },
+            "name": "Activer la vérification périodique des mises à jour",
+            "description": "Active la vérification périodique des mises à jour pour une entrée de configuration d'intégration."
         },
         "input_select_sort": {
             "name": "Options de triage"
@@ -771,7 +841,12 @@
         },
         "homeassistant_disable_entity": {
             "name": "Désactiver une entité",
-            "description": "Désactive une entité (ou des entités) dynamiquement."
+            "description": "Désactive une entité (ou des entités) dynamiquement.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entité"
+                }
+            }
         },
         "homeassistant_disable_user": {
             "name": "Désactiver un utilisateur",
@@ -779,11 +854,67 @@
         },
         "random_fail": {
             "name": "Échec aléatoire"
+        },
+        "homeassistant_enable_entity": {
+            "name": "Activer une entité",
+            "description": "Active une entité (ou des entités) dynamiquement.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entité"
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Activer un utilisateur",
+            "description": "Active un compte utilisateur, le permettant de se connecter"
+        },
+        "homeassistant_hide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entité"
+                }
+            },
+            "name": "Masquer une entité",
+            "description": "Masque une entité (ou des entités) dynamiquement."
+        },
+        "homeassistant_unhide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entité"
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entité"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entité"
+                }
+            }
+        },
+        "homeassistant_restart": {
+            "fields": {
+                "force": {
+                    "name": "Redémarrage forcé",
+                    "description": "Force le redémarrage. ATTENTION! Cette action n'arrêtera pas Home Assistant correctement. Elle omettra la vérification des configuration et les migrations de base de données en cours. Utilisez cette action uniquement si vous savez ce que vous faites."
+                }
+            }
         }
     },
     "conditions": {
         "chance": {
-            "name": "Chance"
+            "name": "Chance",
+            "fields": {
+                "percentage": {
+                    "description": "À quelle frequence la condition sera valide, en pourcentage."
+                }
+            }
         }
     }
 }
