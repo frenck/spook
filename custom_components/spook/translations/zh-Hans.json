@@ -257,7 +257,25 @@
             "title": "在以下项中使用了未知动作：{automation}"
         },
         "group_unknown_members": {
-            "title": "以下组中存在未知成员：{group}"
+            "title": "以下组中存在未知成员：{group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "组 {group} 中存在未知成员",
+                        "description": "Spook 在你的组中发现了一个幽灵 👻\n\n组 {group} (`{entity_id}`) 包含以下 Home Assistant 无法识别的成员：\n\n{entities}\n\n将其从组中移除，或者保留它们（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "移除这些成员",
+                            "manage": "让我自己处理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此组发声。",
+                    "not_editable": "此组是在 YAML 中设置的，因此 Spook 无法编辑它。请改为在你的配置中更新此组。",
+                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此组。"
+                }
+            }
         },
         "lovelace_unknown_entity_references": {
             "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下仪表盘：\n\n[{dashboard}]({edit})\n\n该仪表盘引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n要修复此错误，请[编辑该仪表盘]({edit})并移除这些不存在的实体。\n\nSpook 👻 你的好哥们。",
@@ -322,6 +340,212 @@
                         "title": "需要重新启动",
                         "description": "为了让 Spook 👻 完成设置，需要重新启动 Home Assistant。\n\n选择提交以立即重新启动 Home Assistant。"
                     }
+                }
+            }
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下条件，但 Home Assistant 中没有任何可用的集成能提供这些条件：\n\n{conditions}\n\n\n\n这通常发生在提供条件的集成被移除时。要修复此错误，请[编辑此自动化]({edit})并移除这些不可用的条件，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下项中使用了未知条件：{automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下触发器，但 Home Assistant 中没有任何可用的集成能提供这些触发器：\n\n{triggers}\n\n\n\n这通常发生在提供触发器的集成被移除时。要修复此错误，请[编辑此自动化]({edit})并移除这些不可用的触发器，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下项中使用了未知触发器：{automation}"
+        },
+        "dead_entities": {
+            "description": "Spook 在你的实体中发现了一个幽灵 👻\n\n{integration} 集成已完成设置，但它注册的以下实体从未出现，因此它们已不再存在：\n\n{entities}\n\n\n\n这通常发生在设备或其实体在源端被移除，但它们的注册条目仍保留在系统中的情况。要修复此错误，如果你不再需要这些实体，请将其从实体注册表中移除。\n\nSpook 👻 你的好哥们。",
+            "title": "由 {integration} 注册的实体不存在"
+        },
+        "empty_areas": {
+            "title": "空区域：{area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "空区域：{area}",
+                        "description": "区域 {area} 没有关联的设备、实体，也没有针对它的自动化或脚本。\n\n移除它，或者保留它（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "移除此空区域",
+                            "ignore": "保留，不要再提示我",
+                            "manage": "让我自己处理"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此区域发声。",
+                    "manage": "你可以在 [区域页面](/config/areas/dashboard) 自行管理此区域。"
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "空楼层：{floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "空楼层：{floor}",
+                        "description": "楼层 {floor} 没有任何关联区域，也没有针对它的自动化或脚本。\n\n移除它，或者保留它（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "移除此空楼层",
+                            "ignore": "保留，不要再提示我",
+                            "manage": "让我自己处理"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此楼层发声。",
+                    "manage": "你可以在 [区域页面](/config/areas/dashboard) 自行管理此楼层。"
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "description": "Spook 在你的能源仪表盘中发现了一个幽灵 👻\n\n能源仪表盘引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n这通常发生在能源配置中使用的实体被重命名或移除时。要修复此错误，请打开 设置 > 仪表盘 > 能源 并更新或移除这些实体。\n\nSpook 👻 你的好哥们。",
+            "title": "能源仪表盘中使用了未知实体"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n以下仪表盘资源指向了不存在的文件：\n\n{resources}\n\n\n\n这通常发生在自定义卡片或其文件被移除，但资源条目仍保留在系统中的情况。要修复此错误，请打开 设置 > 仪表盘 > 资源 并移除或修正这些资源。\n\nSpook 👻 你的好哥们。",
+            "title": "仪表盘资源指向缺失的文件"
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下仪表盘：\n\n{dashboard}\n\n此仪表盘引用了以下 Home Assistant 无法识别的区域：\n\n{areas}\n\n\n\n这通常发生在区域被重命名或移除时。要修复此错误，请[编辑该仪表盘]({edit})并移除这些不存在的区域。\n\nSpook 👻 你的好哥们。",
+            "title": "仪表盘 {dashboard} 中使用了未知区域"
+        },
+        "min_max_unknown_sources": {
+            "title": "最大值/最小值辅助程序 {helper} 中使用了未知成员",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "最大值/最小值辅助程序 {helper} 中使用了未知成员",
+                        "description": "Spook 在你的辅助程序中发现了一个幽灵 👻\n\n最大值/最小值辅助程序 {helper} 组合了以下 Home Assistant 无法识别的成员：\n\n{sources}\n\n移除它们以便辅助程序继续使用剩余成员，或者保留它们（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "移除这些成员",
+                            "manage": "让我自己处理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此辅助程序发声。",
+                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此辅助程序。",
+                    "too_few_members": "最大值/最小值辅助程序需要至少两个成员，因此移除缺失的成员会导致成员过少。请自行在 [辅助程序页面](/config/helpers) 重新配置或移除该辅助程序。"
+                }
+            }
+        },
+        "orphaned_statistics": {
+            "description": "Spook 在你的录制器中发现了一个幽灵 👻\n\nHome Assistant 正在为以下项保留长期统计数据，但已没有与之匹配的实体：\n\n{statistics}\n\n\n\n这通常发生在传感器被移除但统计数据被保留时。要修复此错误，请打开 开发者工具 > 统计数据 在那里进行修复，或者使用 `recorder.clear_statistics` 动作将其移除。\n\nSpook 👻 你的好哥们。",
+            "title": "发现孤立的长期统计数据"
+        },
+        "person_unknown_device_trackers": {
+            "title": "{person} 追踪了未知的设备追踪器",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "{person} 追踪了未知的设备追踪器",
+                        "description": "Spook 在你的人员设置中发现了一个幽灵 👻\n\n{person} 正在追踪以下 Home Assistant 无法识别的设备追踪器：\n\n{device_trackers}\n\n这通常发生在设备追踪器被重命名或其集成被移除时。\n\n将其从 {person} 中移除，或者保留它们（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "移除这些设备追踪器",
+                            "ignore": "保留，不要再提示我",
+                            "manage": "让我自己处理"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此人员发声。",
+                    "not_editable": "此人员是在 YAML 中设置的，因此 Spook 无法编辑它。请改为在你的配置中更新此人员。",
+                    "manage": "你可以在 [人员页面](/config/person) 自行管理此人员。"
+                }
+            }
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本使用了以下条件，但 Home Assistant 中没有任何可用的集成能提供这些条件：\n\n{conditions}\n\n\n\n这通常发生在提供条件的集成被移除时。要修复此错误，请[编辑该脚本]({edit})并移除这些不可用的条件，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下脚本中使用了未知条件：{script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook 在你的脚本中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下脚本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此脚本使用了以下触发器，但 Home Assistant 中没有任何可用的集成能提供这些触发器：\n\n{triggers}\n\n\n\n这通常发生在提供触发器的集成被移除时。要修复此错误，请[编辑该脚本]({edit})并移除这些不可用的触发器，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
+            "title": "在以下脚本中使用了未知触发器：{script}"
+        },
+        "stale_access_tokens": {
+            "title": "长期访问令牌似乎被遗忘了：{token}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "长期访问令牌似乎被遗忘了：{token}",
+                        "description": "长期访问令牌 `{token}`（所有者：{owner}）自 {last_active} 以来一直未被使用。\n\n撤销它，或者保留它（Spook 将不再提示）。撤销该令牌将导致任何仍在使用它的程序停止工作，直到获取新令牌为止。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "撤销此令牌",
+                            "ignore": "保留，不要再提示我",
+                            "manage": "让我自己处理"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此令牌发声。",
+                    "manage": "你可以在[个人资料的安全设置](/profile/security)中自行管理长期访问令牌。"
+                }
+            }
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook 在你的模板辅助程序中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板辅助程序：\n\n{helper}\n\n其模板引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n这通常发生在实体被重命名或移除时。要修复此错误，请重新配置该模板辅助程序以引用现有实体。\n\nSpook 👻 你的好哥们。",
+            "title": "模板辅助程序 {helper} 中使用了未知实体"
+        },
+        "unknown_customized_entities": {
+            "description": "Spook 在你的自定义设置中发现了一个幽灵 👻\n\n`customize:` 部分在以下实体上固定了属性，但 Home Assistant 无法识别这些实体：\n\n{entities}\n\n\n\n这通常发生在实体被重命名或移除，但其自定义设置仍保留在系统中的情况。要修复此错误，请编辑配置中的 `customize:` 部分并移除这些实体。\n\nSpook 👻 你的好哥们。",
+            "title": "自定义设置中存在未知实体"
+        },
+        "unknown_helper_source_references": {
+            "title": "辅助程序 {helper} 中使用了未知源实体",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "辅助程序 {helper} 中使用了未知源实体",
+                        "description": "Spook 在你的辅助程序中发现了一个幽灵 👻\n\n辅助程序 {helper} (`{domain}`) 引用了以下 Home Assistant 无法识别的源实体：\n\n{sources}\n\n如果没有源实体，此辅助程序将无法工作。{usage}\n\n移除该辅助程序，或者保留它（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "移除此辅助程序",
+                            "manage": "让我自己处理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此辅助程序发声。",
+                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此辅助程序。"
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "未使用的蓝图：{blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "未使用的蓝图：{blueprint}",
+                        "description": "蓝图 {blueprint} 未被任何 {domain} 使用。\n\n移除它，或者保留它（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "移除此未使用的蓝图",
+                            "ignore": "保留，不要再提示我",
+                            "manage": "让我自己处理"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此蓝图发声。",
+                    "manage": "你可以在 [蓝图页面](/config/blueprint/dashboard) 自行管理此蓝图。"
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "未使用的标签：{label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "未使用的标签：{label}",
+                        "description": "标签 {label} 未应用于任何实体、设备或区域，也没有任何自动化或脚本针对它。\n\n移除它，或者保留它（Spook 将不再提示）。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "移除此未使用的标签",
+                            "ignore": "保留，不要再提示我",
+                            "manage": "让我自己处理"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此标签发声。",
+                    "manage": "你可以在 [标签页面](/config/labels) 自行管理此标签。"
                 }
             }
         }
@@ -1170,6 +1394,18 @@
                 "radius": {
                     "name": "半径",
                     "description": "区域半径"
+                }
+            }
+        }
+    },
+    "conditions": {
+        "chance": {
+            "name": "概率 👻",
+            "description": "按设定的百分比概率通过，每次检查时随机选择。方便为您的自动化添加一些随机性。",
+            "fields": {
+                "percentage": {
+                    "name": "百分比",
+                    "description": "此条件通过的频率，以百分比表示。"
                 }
             }
         }
