@@ -257,10 +257,18 @@
             "title": "Unbekannte Aktionen, die in {automation} verwendet werden."
         },
         "group_unknown_members": {
-            "title": "Unbekannte Gruppenmitglieder in: {group}"
+            "title": "Unbekannte Gruppenmitglieder in: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unbekannte Gruppenmitglieder in: {group}",
+                        "description": "Spook hat einen Geist in deinen Gruppen entdeckt 👻\n\nDie Gruppe {group} (`{entity_id}`) enthält Mitglieder, die Home Assistant nicht bekannt sind:\n\n{entities}\n\nEntferne sie aus der Gruppe oder behalte sie – dann wird Spook nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel."
+                    }
+                }
+            }
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard verweist auf die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und entferne die Verwendung dieser nicht existierenden Entitäten.\n\nSpook 👻 Your homie.",
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard verweist auf die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nUm diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und entferne die Verwendung dieser nicht existierenden Entitäten.\n\nSpook 👻 Dein Helfer.",
             "title": "Unbekannte Entitäten verwendet in: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
@@ -324,6 +332,45 @@
                     }
                 }
             }
+        },
+        "unused_labels": {
+            "title": "Ungenutztes Label: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ungenutztes Label: {label}"
+                    }
+                }
+            }
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook hat einen Geist in deinen Automationen gefunden 👻\n\n\n\nBeim Herumfliegen hat Spook den Weg der folgenden Automationen gekreuzt:\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nDiese Automatisation benutzt die folgenden Bedingungen, die nicht mehr von anderen Integration in Home Assistant zur Verfügung gestellt werden:\n\n\n\n{conditions}\n\n\n\n\n\n\n\nDies passiert meist wenn die Integration die die Bedingungen bereitstellt, gelöscht wurde. Um den Fehler zu beheben [edit the automation]({edit}) und entferne die verwaisten Bedingungen oder reaktiviere die Integration, die sie bereitgestellt hatte.\n\n\n\nSpook 👻 Dein Helfer.",
+            "title": "Unbekannt Bedingung wird benutzt in: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook hat ein Gespenst in deinen Automatisierungen gefunden 👻\n\nWährend er herumflatterte, kreuzte Spook den Weg mit der folgenden Automatisierung:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDiese Automatisierung verweist auf die folgenden Auslöser, die Home Assistant nicht kennt:\n\n{triggers}\n\nUm diesen Fehler zu beheben, [bearbeite die Automatisierung]({edit}) und entferne die Verwendung dieser nicht vorhandenen Auslöser.\n\nSpook 👻 Dein Helfer."
+        },
+        "unused_blueprints": {
+            "title": "Unbenutzte Blaupause: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unbenutzte Blaupause: {blueprint}"
+                    }
+                }
+            }
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nDieses Dashboard verweist auf Dateien, die die nicht mehr existieren:\n\n{resources}\n\n\n\nDies tritt in der Regel auf, wenn eine benutzerdefinierte Karte oder deren Dateien gelöscht wurden, die Ressource jedoch noch vorhanden ist. Um diesen Fehler zu beheben, öffnen Sie „Einstellungen“ > „Dashboards“ > „Ressourcen“ und entfernen oder korrigieren Sie diese Ressourcen.\n\nSpook 👻 Dein Helfer."
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook hat einen Geist in deinen Dashboards entdeckt 👻\n\nBeim Herumschwebe kam Spook auf das folgende Dashboard:\n\n{dashboard}\n\nDieses Dashboard verweist auf die folgenden Bereiche, die Home Assistant nicht kennt:\n\n{areas}\n\n\n\nDies passiert häufig, wenn ein Bereich umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und entferne die Verweise auf diese nicht mehr existierenden Bereiche.\n\nSpook 👻 Dein Kumpel."
+        },
+        "dead_entities": {
+            "description": "Spook hat einen Geist in Ihren Entitäten gefunden 👻\n\nDie Einrichtung der {integration}-Integration wurde abgeschlossen, aber die folgenden Entitäten, die dabei registriert wurden, sind nie aufgetaucht und existieren daher nicht mehr:\n\n{entities}\n\n\n\nDies passiert in der Regel, wenn ein Gerät oder dessen Entitäten an der Quelle entfernt wurden, ihre Registrierungseinträge jedoch zurückblieben. Um diesen Fehler zu beheben, entferne diese Entitäten aus dem Entitätenregister, falls du sie nicht mehr benötigst.\n\nSpook 👻 Dein Kumpel."
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook hat einen Geist in deinen Template-Helfern entdeckt 👻\n\nBeim Herumschwebe traf Spook auf den folgenden Template-Helper:\n\n{helper}\n\nSeine Templates verweisen auf die folgenden Entitäten, die Home Assistant nicht kennt:\n\n{entities}\n\n\n\nDies passiert häufig, wenn eine Entität umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, konfiguriere den Template-Helper neu, sodass er auf vorhandene Entitäten verweist.\n\nSpook 👻 Dein Kumpel."
         }
     },
     "services": {
@@ -1026,6 +1073,18 @@
         },
         "input_select_shuffle": {
             "description": "Mischt die Liste der auswählbaren Optionen für eine `input_select`-Entität. Diese Änderung wird nicht gespeichert und wird beim Neuladen oder beim Neustart von Home Assistant rückgängig gemacht."
+        }
+    },
+    "conditions": {
+        "chance": {
+            "name": "Wahrscheinlichkeit",
+            "fields": {
+                "percentage": {
+                    "name": "Prozentwert",
+                    "description": "Wie oft soll diese Bedingung zutreffen (in Prozent)."
+                }
+            },
+            "description": "Lässt einen festgelegten Prozentsatz an Zeit vergehen, der bei jeder Überprüfung zufällig ausgewählt wird. Praktisch, um ein wenig Abwechslung in Ihre Automatisierungen zu bringen."
         }
     }
 }
