@@ -1,7 +1,9 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook est déja configuré."
+            "already_spooked": "Spook est déja configuré.",
+            "enable_failed": "Impossible d'activer l'entrée de configuration existante de Spook.",
+            "enabled_existing": "L'entrée de configuration existante de Spook a été activée."
         },
         "step": {
             "user": {
@@ -17,7 +19,8 @@
             "already_configured": {
                 "menu_options": {
                     "enable_existing": "Activer la configuration existante"
-                }
+                },
+                "description": "Spook est déjà configuré, mais son entrée de configuration est désactivée. Voulez-vous l'activer?"
             }
         }
     },
@@ -218,10 +221,10 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Rapport status Alexa"
+                "name": "Rapport de statut Alexa"
             },
             "cloud_google_report_state": {
-                "name": "Rapport de status Google Assistant"
+                "name": "Rapport de statut Google Assistant"
             },
             "cloud_remote": {
                 "name": "Télécommande"
@@ -262,8 +265,14 @@
                             "ignore": "Garde le et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Enlever ces membres"
-                        }
+                        },
+                        "title": "Membres du groupe inconnus dans: {group}"
                     }
+                },
+                "abort": {
+                    "manage": "Tu peux configurer ce groupe dans la [page des Entrées](/config/helpers).",
+                    "issue_ignored": "Spook ne mentionnera plus ce groupe à partir de maintenant.",
+                    "not_editable": "Ce group à été configuré en YAML, alors Spook ne peut pas le modifier. Mettez à jour le groupe dans votre configuration."
                 }
             }
         },
@@ -280,11 +289,11 @@
             "title": "Entités suivies inconnues: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook a trouvé un fantôme dans votre configuration de proximité 👻\n\nEn flottant autour, Spook a croisé la configuration de proximité suivante :\n\n{name}\n\nCette configuration est basée sur une zone inconnue de Home Assistant :\n\n`{zone}`\n\nPour corriger cette erreur, comme vous ne pouvez pas changer la zone d'une configuration de proximité, la seule option est de supprimer cette instance spécifique d'intégration de proximité.\n\nSpook 👻 Your homie.",
+            "description": "Spook a trouvé un fantôme dans votre configuration de proximité 👻\n\nEn flottant autour, Spook a croisé la configuration de proximité suivante:\n\n{name}\n\nCette configuration est basée sur une zone inconnue de Home Assistant:\n\n`{zone}`\n\nPour corriger cette erreur, comme vous ne pouvez pas changer la zone d'une configuration de proximité, la seule option est de supprimer cette instance spécifique d'intégration de proximité.\n\nSpook 👻 Your homie.",
             "title": "Zone inconnue: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook a trouvé un fantôme dans vos scenes👻\n\nEn flottant dans les parages, Spook est tombé sur la scène suivante :\n\n[{scene}]({edit})\n\nCette automatisation fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\nPour résoudre cette erreur, [modifiez la scene]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Your homie.",
+            "description": "Spook a trouvé un fantôme dans vos scènes👻\n\nEn flottant dans les parages, Spook est tombé sur la scène suivante :\n\n[{scene}]({edit})\n\nCette scène fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\nPour résoudre cette erreur, [modifiez la scène]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Your homie.",
             "title": "Entités inconnues utilisées dans :{scene}"
         },
         "script_unknown_area_references": {
@@ -337,7 +346,8 @@
             "title": "Entités inexistantes enregistrées par: {integration}"
         },
         "lovelace_missing_resources": {
-            "title": "Les ressources du tableau de bord font référence a des fichiers manquants"
+            "title": "Les ressources du tableau de bord font référence a des fichiers manquants",
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nLa ressource de tableau de bord suivante fait référence à des fichiers qui n'existent pas:\n\n\n\n{resources}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une carte personnalisée ou ses fichiers sont supprimés malgré que la configuration de la ressource reste configurée. Pour corriger cette erreur, ouvrez Paramètres > Tableaux de bord > Ressources et retirez ou corrigez ces ressources.\n\n\n\nSpook 👻 Your homie."
         },
         "empty_areas": {
             "title": "Pièce vide: {area}",
@@ -349,8 +359,13 @@
                             "ignore": "Garde la et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer la pièce vide"
-                        }
+                        },
+                        "description": "La pièce {area} n'a aucun appareil, aucune entité ni automatisation ou script lui faisant référence.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler.\n\n\n\nSpook 👻 Your homie."
                     }
+                },
+                "abort": {
+                    "issue_ignored": "Spook ne mentionnera plus cette pièce à partir de maintenant.",
+                    "manage": "Tu peux configurer cette pièce dans la [page des Pièces](/config/areas/dashboard)."
                 }
             }
         },
@@ -364,8 +379,13 @@
                             "ignore": "Garde le et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer l'étage vide"
-                        }
+                        },
+                        "description": "L'étage {floor} n'a aucune pièce, ni aucune automatisation ou script lui faisant référence.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler.\n\n\n\nSpook 👻 Your homie."
                     }
+                },
+                "abort": {
+                    "issue_ignored": "Spook ne mentionnera plus cet étage à partir de maintenant.",
+                    "manage": "Tu peux configurer l'étage dans la [page des Pièces](/config/areas/dashboard)."
                 }
             }
         },
@@ -379,7 +399,7 @@
                             "remove": "Révoquer ce jeton"
                         },
                         "title": "Jeton d'accès longue durée semble oublié: {token}",
-                        "description": "Le jeton d'accès longue durée « {token} » (propriétaire: {owner}) n'à pas été utilisé depuis {last_active}.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler.Le révorquer cessera le fonctionnement de ce qui l'utilise jusqu'a ce qu'il en obtienne un nouveau.\n\n\n\nSpook 👻 Your homie."
+                        "description": "Le jeton d'accès longue durée « {token} » (propriétaire: {owner}) n'à pas été utilisé depuis {last_active}.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler. Le révorquer cessera le fonctionnement de ce qui l'utilise jusqu'a ce qu'il en obtienne un nouveau.\n\n\n\nSpook 👻 Your homie."
                     }
                 },
                 "abort": {
@@ -397,10 +417,16 @@
                             "ignore": "Garde la et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer l'entrée"
-                        }
+                        },
+                        "title": "Entités sources inconnues utilisées dans l'entrée: {helper}"
                     }
+                },
+                "abort": {
+                    "manage": "Tu peux configurer cette entrée dans la [page des Entrées](/config/helpers).",
+                    "issue_ignored": "Spook ne mentionnera plus cette entrée à partir de maintenant."
                 }
-            }
+            },
+            "title": "Entités sources inconnues utilisées dans l'entrée: {helper}"
         },
         "unused_blueprints": {
             "fix_flow": {
@@ -410,10 +436,17 @@
                             "ignore": "Garde le et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer le blueprint inutilisé"
-                        }
+                        },
+                        "description": "Le blueprint {blueprint} n'est pas utilisé par aucun {domain}.\n\n\n\nSupprime le ou garde le et Spook arrêtera de le mentionner.\n\n\n\nSpook 👻 Your homie.",
+                        "title": "Blueprint inutilisé: {blueprint}"
                     }
+                },
+                "abort": {
+                    "manage": "Tu peux configurer ce blueprint dans la [page des Blueprints](/config/blueprint/dashboard).",
+                    "issue_ignored": "Spook ne mentionnera plus ce blueprint à partir de maintenant."
                 }
-            }
+            },
+            "title": "Blueprint inutilisé: {blueprint}"
         },
         "unused_labels": {
             "fix_flow": {
@@ -423,10 +456,16 @@
                             "ignore": "Garde la et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer l'étiquette inutilisée"
-                        }
+                        },
+                        "title": "Étiquette inutilisé: {label}"
                     }
+                },
+                "abort": {
+                    "manage": "Tu peux configurer cette étiquette dans la [page des Étiquettes](/config/labels).",
+                    "issue_ignored": "Spook ne mentionnera plus cette étiquette à partir de maintenant."
                 }
-            }
+            },
+            "title": "Étiquette inutilisée: {label}"
         },
         "min_max_unknown_sources": {
             "fix_flow": {
@@ -436,10 +475,17 @@
                             "ignore": "Garde le et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Retirer ces membres"
-                        }
+                        },
+                        "title": "Membres inconnus utilisé dans une entrée min/max: {helper}"
                     }
+                },
+                "abort": {
+                    "manage": "Tu peux configurer cette entrée dans la [page des Entrées](/config/helpers).",
+                    "issue_ignored": "Spook ne mentionnera plus cette entrée à partir de maintenant.",
+                    "too_few_members": "Une entrée min/max à besoin d'au moins 2 membres, alors de retirer celles manquantes n'en laisserait pas suffisament. Reconfigurez ou supprimez l'entrée vous même à l'aide de la [page Entrées](/config/helpers)."
                 }
-            }
+            },
+            "title": "Membres inconnus utilisé dans une entrée min/max: {helper}"
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -452,12 +498,46 @@
                         },
                         "title": "Dispositifs de suivi inconnus suivis par: {person}"
                     }
+                },
+                "abort": {
+                    "manage": "Tu peux configurer cette personne dans la [page des Personnes](/config/person).",
+                    "issue_ignored": "Spook ne mentionnera plus cette personne à partir de maintenant.",
+                    "not_editable": "Cette personne est configurée en YAML alors Spook ne peut pas la modifier. Mettez a jour la personne dans votre configuration."
                 }
             },
             "title": "Dispositifs de suivi inconnus suivis par: {person}"
         },
         "orphaned_statistics": {
             "title": "Statistiques long terme orpheline trouvée"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante:\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation utilise ces conditions qui ne peuvent être fournies par aucune intégration disponible à Home Assistant:\n\n\n\n{conditions}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces conditions ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie.",
+            "title": "Conditions inconnues utilisées dans: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "title": "Déclencheurs inconnus utilisé dans: {automation}",
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante:\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation fait référence aux déclencheurs suivants, qui sont inconnus de Home Assistant:\n\n\n\n{triggers}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces déclencheurs ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie."
+        },
+        "energy_unknown_references": {
+            "title": "Entités inconnues utilisé dans le tableau de bord Énergie",
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nLe tableau de bord Énergie fait référence à ces entités, qui sont inconnues de Home Assistant:\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'entité utilisé dans la configuration du tableau de bord Énergie soit renommé ou supprimé. Pour corriger cette erreur, ouvrez les Paramètres > Tableaux de bord > Énergie et mettez à jour ou supprimez ces entités.\n\n\n\nSpook 👻 Your homie."
+        },
+        "lovelace_unknown_area_references": {
+            "title": "Pièce inconnue utilisée dans ce tableau de bord: {dashboard}",
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant:\n\n\n\n{dashboard}\n\n\n\nCe tableau de bord fait référence aux pièces suivantes, qui sont inconnues de Home Assistant:\n\n\n\n{areas}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une pièce est renommée ou supprimée. Pour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\n\n\nSpook 👻 Your homie."
+        },
+        "script_unknown_condition_references": {
+            "title": "Condition inconnue utilisée dans: {script}"
+        },
+        "unknown_customized_entities": {
+            "title": "Entité inconnue dans vos personnalisations",
+            "description": "Spook a trouvé un fantôme dans vos personnalisations 👻\n\n\n\nLa section `customize:` définit les attributs pour les entités suivantes, qui sont inconnues de Home Assistant:\n\n\n\n{entities}\n\n\n\n\n\n\n\nIl arrive souvent qu'une entité soit renommée ou supprimé malgré que les personalisations sont restés. Pour corriger cette erreur, modifiez la section `customize:` de votre configuration et retirez ces entités.\n\n\n\nSpook 👻 Your homie."
+        },
+        "template_unknown_entity_references": {
+            "title": "Entités inconnues utilisée dans une entrée template: {helper}"
+        },
+        "script_unknown_trigger_references": {
+            "title": "Déclencheur inconnu utilisé dans: {script}"
         }
     },
     "services": {
@@ -470,7 +550,8 @@
                     "description": "ID de l'entité du dispositif de suivi à ajouter à une personne."
                 },
                 "entity_id": {
-                    "name": "Personne"
+                    "name": "Personne",
+                    "description": "L'ID d'entité de la personne à qui ajouter le dispositif de suivi."
                 }
             }
         },
@@ -479,10 +560,12 @@
             "description": "Ajoute une étiquette à un appareil. Si plusieurs étiquettes ou plusieurs appareils sont fournis, toutes les combinaisons seront ajoutées.",
             "fields": {
                 "device_id": {
-                    "name": "ID de l'appareil"
+                    "name": "ID de l'appareil",
+                    "description": "Le ou les ID(s) du ou des appareils auxquels ajouter la ou les étiquettes."
                 },
                 "label_id": {
-                    "name": "ID de l'étiquette"
+                    "name": "ID de l'étiquette",
+                    "description": "Le ou les ID(s) de la ou les étiquettes à ajouter à un ou des appareils."
                 }
             }
         },
@@ -491,10 +574,12 @@
             "description": "Ajoute une étiquette à une pièce. Si plusieurs étiquettes ou plusieurs pièces sont fournies, toutes les combinaisons seront ajoutées.",
             "fields": {
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "Le ou les ID(s) de la ou les pièces à ajouter la ou les étiquettes."
                 },
                 "label_id": {
-                    "name": "ID de l'étiquette"
+                    "name": "ID de l'étiquette",
+                    "description": "Le ou les ID(s) de la ou les étiquettes à ajouter à une ou des pièces."
                 }
             }
         },
@@ -503,10 +588,12 @@
             "description": "Ajoute une étiquette à une entité. Si plusieurs étiquettes ou plusieurs entités sont fournies, toutes les combinaisons seront ajoutées.",
             "fields": {
                 "entity_id": {
-                    "name": "ID d'entité"
+                    "name": "ID d'entité",
+                    "description": "Le ou les ID(s) de la ou des entités auxquelles ajouter la ou les étiquettes."
                 },
                 "label_id": {
-                    "name": "ID de l'étiquette"
+                    "name": "ID de l'étiquette",
+                    "description": "Le ou les ID(s) de la ou les étiquettes à ajouter a une ou des entités."
                 }
             }
         },
@@ -515,10 +602,12 @@
             "description": "Ajoute un alias à un étage.",
             "fields": {
                 "alias": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "L'alias (ou la liste d'alias) à ajouter à un étage."
                 },
                 "floor_id": {
-                    "name": "ID d'étage"
+                    "name": "ID d'étage",
+                    "description": "L'ID de l'étage à ajouter un alias."
                 }
             }
         },
@@ -527,10 +616,12 @@
             "description": "Ajoute un alias à une pièce.",
             "fields": {
                 "alias": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "L'alias (ou la liste d'alias) à ajouter à une pièce."
                 },
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "L'ID de la pièce à ajouter l'alias."
                 }
             }
         },
@@ -539,10 +630,12 @@
             "description": "Ajoute une pièce à un étage. Attention, si la pièce se trouve déjà sur un étage, elle sera supprimée de l'étage précédent.",
             "fields": {
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "L'ID de ou des pièces à ajouter à l'étage."
                 },
                 "floor_id": {
-                    "name": "ID d'étage"
+                    "name": "ID d'étage",
+                    "description": "L'ID de l'étage qu'une pièce doit y être ajouté."
                 }
             }
         },
@@ -551,10 +644,12 @@
             "description": "Ajoute une entité à une pièce. Attention, si l'entité est déjà dans une pièce, elle sera supprimée de la pièce précédente. Cela remplacera la pièce dans laquelle se trouve l'appareil qui fournit cette entité.",
             "fields": {
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "L'ID de la pièce à ajouter l'entité."
                 },
                 "entity_id": {
-                    "name": "ID d'entité"
+                    "name": "ID d'entité",
+                    "description": "L'ID de l'entité (ou des entités) à ajouter à une pièce."
                 }
             }
         },
@@ -562,10 +657,12 @@
             "description": "Ajoute un appareil à une pièce. Attention, si l'appareil se trouve déjà dans une pièce, il sera supprimé de la pièce précédente.",
             "fields": {
                 "device_id": {
-                    "name": "ID de l'appareil"
+                    "name": "ID de l'appareil",
+                    "description": "L'ID de ou des appareils à ajouter à une pièce."
                 },
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "L'ID the la pièce à ajouter l'appareil."
                 }
             },
             "name": "Ajouter un appareil à une pièce"
@@ -573,10 +670,12 @@
         "homeassistant_remove_alias_from_area": {
             "fields": {
                 "alias": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "L'alias (ou la liste d'alias) à supprimer de la pièce."
                 },
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "L'ID de la pièce dont l'alias doit être supprimé."
                 }
             },
             "name": "Supprimer l'alias d'une pièce",
@@ -585,10 +684,12 @@
         "homeassistant_remove_alias_from_floor": {
             "fields": {
                 "alias": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "L'alias (ou la liste d'alias) à supprimer de l'étage."
                 },
                 "floor_id": {
-                    "name": "ID d'étage"
+                    "name": "ID d'étage",
+                    "description": "L'ID de l'étage à laquelle enlever l'alias."
                 }
             },
             "name": "Supprimer l'alias d'un étage",
@@ -601,7 +702,8 @@
                     "description": "Une liste d'alias pour la pièce. Ceci est utile si vous souhaitez utiliser la pièce dans une autre langue ou avec un nom alternatif."
                 },
                 "name": {
-                    "name": "Nom"
+                    "name": "Nom",
+                    "description": "Le nom de la pièce à créer."
                 },
                 "icon": {
                     "name": "Icône",
@@ -614,12 +716,16 @@
         "homeassistant_set_area_aliases": {
             "fields": {
                 "aliases": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "Les alias à définir pour cette pièce."
                 },
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "L'ID de la pièce à définir l'alias."
                 }
-            }
+            },
+            "name": "Définir les alias d'une pièce",
+            "description": "Définit les alias d'une pièce. Remplace et supprime les alias existants, les remplaçant entièrement par les nouveaux."
         },
         "homeassistant_create_floor": {
             "fields": {
@@ -628,14 +734,16 @@
                     "description": "Une liste d'alias pour l'étage. Ceci est utile si vous souhaitez utiliser l'étage dans une autre langue ou avec un nom alternatif."
                 },
                 "name": {
-                    "name": "Nom"
+                    "name": "Nom",
+                    "description": "Le nom de l'étage à créer."
                 },
                 "icon": {
                     "name": "Icône",
                     "description": "Icône à utiliser pour cet étage."
                 },
                 "level": {
-                    "name": "Niveau"
+                    "name": "Niveau",
+                    "description": "Le niveau de l'étage de votre maison."
                 }
             },
             "name": "Créer un étage",
@@ -644,13 +752,16 @@
         "homeassistant_set_floor_aliases": {
             "fields": {
                 "aliases": {
-                    "name": "Alias"
+                    "name": "Alias",
+                    "description": "Les alias à définir pour cette pièce."
                 },
                 "floor_id": {
-                    "name": "ID d'étage"
+                    "name": "ID d'étage",
+                    "description": "L'ID de l'étage à définir les alias."
                 }
             },
-            "name": "Définir les alias d'un étage"
+            "name": "Définir les alias d'un étage",
+            "description": "Définit les alias d'un étage. Remplace et supprime les alias existants, les remplaçant entièrement par les nouveaux."
         },
         "recorder_import_statistics": {
             "fields": {
@@ -659,10 +770,12 @@
                     "name": "Statistiques"
                 },
                 "name": {
-                    "name": "Nom"
+                    "name": "Nom",
+                    "description": "Le nom de la statistique."
                 },
                 "statistic_id": {
-                    "name": "ID de statistiques"
+                    "name": "ID de statistiques",
+                    "description": "L'ID de statistiques (ID de l'entité) pour laquelle importer les données."
                 },
                 "has_mean": {
                     "name": "Inclut une moyenne",
@@ -671,6 +784,14 @@
                 "has_sum": {
                     "name": "Inclut une somme",
                     "description": "Si les statistiques incluent une valeur de somme."
+                },
+                "source": {
+                    "name": "Source",
+                    "description": "La source des données de statistiques."
+                },
+                "unit_of_measurement": {
+                    "description": "L'unité de mesure de la statistique.",
+                    "name": "Unité de mesure"
                 }
             },
             "description": "Importe des statistiques longue durée",
@@ -729,7 +850,8 @@
         "homeassistant_remove_device_from_area": {
             "fields": {
                 "device_id": {
-                    "name": "ID de l'appareil"
+                    "name": "ID de l'appareil",
+                    "description": "L'ID de l'appareil dont la pièce doit être retirée."
                 }
             },
             "name": "Retirer un appareil d'une pièce",
@@ -738,7 +860,8 @@
         "homeassistant_enable_device": {
             "fields": {
                 "device_id": {
-                    "name": "ID de l'appareil"
+                    "name": "ID de l'appareil",
+                    "description": "L'ID (raw) d'appareil à activer. Les appareils désactivés ne sont pas affichés par le selecteur d'appareil de Home Assistant. Plusieurs ID peuvent être fournis en utilisant une liste YAML."
                 }
             },
             "name": "Activer un appareil",
@@ -771,7 +894,8 @@
             "description": "Supprime une étage dynamiquement.",
             "fields": {
                 "floor_id": {
-                    "name": "ID d'étage"
+                    "name": "ID d'étage",
+                    "description": "L'ID de l'étage à supprimer."
                 }
             }
         },
@@ -780,7 +904,8 @@
             "description": "Supprime une étiquette dynamiquement.",
             "fields": {
                 "label_id": {
-                    "name": "ID de l'étiquette"
+                    "name": "ID de l'étiquette",
+                    "description": "L'ID de l'étiquette à supprimer."
                 }
             }
         },
@@ -792,7 +917,8 @@
             "name": "Supprimer une pièce",
             "fields": {
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "L'ID de la pièce à supprimer."
                 }
             },
             "description": "Supprime une pièce dynamiquement."
@@ -804,32 +930,40 @@
         "input_number_create": {
             "fields": {
                 "min": {
-                    "name": "Minimum"
+                    "name": "Minimum",
+                    "description": "La valeur minimale de l'entrée numérique."
                 },
                 "name": {
-                    "name": "Nom"
+                    "name": "Nom",
+                    "description": "Le nom de la nouvelle entrée numérique."
                 },
                 "step": {
-                    "name": "Taille du pas"
+                    "name": "Taille du pas",
+                    "description": "La valeur de pas de l'entrée numérique."
                 },
                 "unit_of_measurement": {
-                    "name": "Unité de mesure"
+                    "name": "Unité de mesure",
+                    "description": "L'unité de mesure de l'entrée numérique."
                 },
                 "mode": {
-                    "name": "Mode d'affichage"
+                    "name": "Mode d'affichage",
+                    "description": "Le mode d'affichage de l'entrée numérique, soit un curseur ou un champ de saisie."
                 },
                 "icon": {
-                    "name": "Icône"
+                    "name": "Icône",
+                    "description": "L'icône à utiliser pour l'entrée numérique."
                 },
                 "input_number_id": {
                     "name": "ID de l'entité d'entrées numériques",
                     "description": "L'ID d'entité pour la nouvelle entrée numérique. Le préfix « input_number » est ajouté automatiquement. Si aucune valeur n'est fournie, l'ID d'entité sera générée en utilisant son nom."
                 },
                 "max": {
-                    "name": "Maximum"
+                    "name": "Maximum",
+                    "description": "La valeur maximale de l'entrée numérique."
                 },
                 "initial": {
-                    "name": "Valeur initiale"
+                    "name": "Valeur initiale",
+                    "description": "La valeur initiale de l'entré numérique lors du démarrage de Home Assistant."
                 }
             },
             "description": "Créer une nouvelle entrée numérique dynamiquement.",
@@ -838,10 +972,12 @@
         "homeassistant_rename_entity": {
             "fields": {
                 "name": {
-                    "name": "Nom"
+                    "name": "Nom",
+                    "description": "Le nouveau nom pour la ou les entités."
                 },
                 "entity_id": {
-                    "name": "Entité"
+                    "name": "Entité",
+                    "description": "La ou les entités à renommer."
                 }
             },
             "name": "Renommer une entité",
@@ -884,7 +1020,8 @@
                     "description": "Rayon de la zone"
                 },
                 "entity_id": {
-                    "name": "ID d'entité"
+                    "name": "ID d'entité",
+                    "description": "L'ID de l'entité (ou des entités) à mettre à jour."
                 },
                 "icon": {
                     "name": "Icône",
@@ -898,12 +1035,14 @@
                     "name": "Longitude",
                     "description": "Longitude de la zone. Cette valeur peut être un template."
                 }
-            }
+            },
+            "name": "Mettre à jour une zone",
+            "description": "Mettre à jour les propriétés d'une zone dynamiquement."
         },
         "timer_set_duration": {
             "fields": {
                 "duration": {
-                    "description": "Nouvelle durée pour le minuteur, comme une string timedelta",
+                    "description": "Nouvelle durée pour le minuteur, sous la forme d'une chaîne de durée (timedelta)",
                     "name": "Durée"
                 }
             },
@@ -913,12 +1052,16 @@
         "homeassistant_update_entity_id": {
             "fields": {
                 "new_entity_id": {
-                    "name": "Nouvel ID d'entité"
+                    "name": "Nouvel ID d'entité",
+                    "description": "Le nouvel ID de l'entité."
                 },
                 "entity_id": {
-                    "name": "Entité"
+                    "name": "Entité",
+                    "description": "La ou les entités à mettre à jour."
                 }
-            }
+            },
+            "name": "Mettre à jour l'ID d'une entité",
+            "description": "Mettre à jour l'ID d'une entité dynamiquement."
         },
         "select_random": {
             "fields": {
@@ -945,14 +1088,16 @@
             "description": "Supprimer une zone. Cette action fonctionne uniquement avec les zones créés and gérés depuis l'interface. Les zones créés en YAML ne peuvent pas être gérés par Spook.",
             "fields": {
                 "entity_id": {
-                    "name": "ID d'entité"
+                    "name": "ID d'entité",
+                    "description": "L'ID de l'entité (ou des entités) à supprimer."
                 }
             }
         },
         "homeassistant_remove_area_from_floor": {
             "fields": {
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "L'ID de la pièce à retirer l'étage."
                 }
             },
             "name": "Retirer une pièce d'un étage",
@@ -961,10 +1106,12 @@
         "homeassistant_remove_label_from_area": {
             "fields": {
                 "area_id": {
-                    "name": "ID de la pièce"
+                    "name": "ID de la pièce",
+                    "description": "Le ou les ID(s) de la ou des pièces dont retirer la ou les étiquettes."
                 },
                 "label_id": {
-                    "name": "ID de l'étiquette"
+                    "name": "ID de l'étiquette",
+                    "description": "Le ou les ID(s) de la ou les étiquettes à retirer de la ou les pièces."
                 }
             },
             "name": "Supprimer l'étiquette d'une pièce",
@@ -977,7 +1124,8 @@
         "homeassistant_disable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Entrée de configuration"
+                    "name": "Entrée de configuration",
+                    "description": "L'entrée de configuration de l'intégration à désactiver."
                 }
             },
             "name": "Désactiver une intégration",
@@ -986,7 +1134,8 @@
         "homeassistant_enable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Entrée de configuration"
+                    "name": "Entrée de configuration",
+                    "description": "L'entrée de configuration d'intégration à activer."
                 }
             },
             "name": "Activer une intégration",
@@ -995,7 +1144,8 @@
         "homeassistant_disable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Entrée de configuration"
+                    "name": "Entrée de configuration",
+                    "description": "L'entrée de configuration d'intégration à désactiver la vérification périodique."
                 }
             },
             "name": "Désactiver la vérification périodique des mises à jour",
@@ -1004,14 +1154,16 @@
         "homeassistant_enable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Entrée de configuration"
+                    "name": "Entrée de configuration",
+                    "description": "L'entrée de configuration d'intégration à activer la vérification périodique."
                 }
             },
             "name": "Activer la vérification périodique des mises à jour",
             "description": "Active la vérification périodique des mises à jour pour une entrée de configuration d'intégration."
         },
         "input_select_sort": {
-            "name": "Options de triage"
+            "name": "Trier les options",
+            "description": "Trie la liste des options sélectionnables d'une entité « input_select ». Cette modification n'est pas persistante et sera remise à son état inital après le rechargement de l'entité ou le redémarrage de Home Assistant."
         },
         "repairs_create": {
             "fields": {
@@ -1046,10 +1198,12 @@
         "homeassistant_remove_label_from_device": {
             "fields": {
                 "device_id": {
-                    "name": "ID de l'appareil"
+                    "name": "ID de l'appareil",
+                    "description": "Le ou les ID(s) du ou des appareils dont retirer la ou les étiquettes."
                 },
                 "label_id": {
-                    "name": "ID de l'étiquette"
+                    "name": "ID de l'étiquette",
+                    "description": "Le ou les ID(s) de la ou les étiquettes à retirer de le ou les appareils."
                 }
             },
             "name": "Supprimer l'étiquette d'un appareil",
@@ -1062,7 +1216,8 @@
                     "description": "ID de l'entité du dispositif de suivi à retirer d'une personne."
                 },
                 "entity_id": {
-                    "name": "Personne"
+                    "name": "Personne",
+                    "description": "L'ID d'entité de la personne à qui retirer le dispositif de suivi."
                 }
             },
             "name": "Retirer un dispositif de suivi",
@@ -1073,13 +1228,20 @@
             "description": "Désactive une entité (ou des entités) dynamiquement.",
             "fields": {
                 "entity_id": {
-                    "name": "Entité"
+                    "name": "Entité",
+                    "description": "La ou les entités à désactiver."
                 }
             }
         },
         "homeassistant_disable_user": {
             "name": "Désactiver un utilisateur",
-            "description": "Désactive un compte utilisateur, ce qui l'empêchera de se connecter."
+            "description": "Désactive un compte utilisateur, ce qui l'empêchera de se connecter.",
+            "fields": {
+                "user_id": {
+                    "name": "ID de l'utilisateur",
+                    "description": "Le ou les ID(s) de le ou les utilisateurs à désactiver."
+                }
+            }
         },
         "random_fail": {
             "name": "Échec aléatoire",
@@ -1090,18 +1252,26 @@
             "description": "Active une entité (ou des entités) dynamiquement.",
             "fields": {
                 "entity_id": {
-                    "name": "Entité"
+                    "name": "Entité",
+                    "description": "La ou les entités à activer."
                 }
             }
         },
         "homeassistant_enable_user": {
             "name": "Activer un utilisateur",
-            "description": "Active un compte utilisateur, le permettant de se connecter"
+            "description": "Active un compte utilisateur, le permettant de se connecter",
+            "fields": {
+                "user_id": {
+                    "name": "ID de l'utilisateur",
+                    "description": "Le ou les ID(s) de le ou les utilisateurs à activer."
+                }
+            }
         },
         "homeassistant_hide_entity": {
             "fields": {
                 "entity_id": {
-                    "name": "Entité"
+                    "name": "Entité",
+                    "description": "La ou les entités à cacher."
                 }
             },
             "name": "Masquer une entité",
@@ -1110,14 +1280,18 @@
         "homeassistant_unhide_entity": {
             "fields": {
                 "entity_id": {
-                    "name": "Entité"
+                    "name": "Entité",
+                    "description": "La ou les entités à afficher."
                 }
-            }
+            },
+            "name": "Afficher une entité",
+            "description": "Afficher une entité (ou des entités) dynamiquement."
         },
         "homeassistant_remove_entity_from_area": {
             "fields": {
                 "entity_id": {
-                    "name": "ID d'entité"
+                    "name": "ID d'entité",
+                    "description": "L'ID de l'entité (ou des entités) dont la pièce doit être retirée."
                 }
             },
             "name": "Retirer un entité d'une pièce",
@@ -1126,10 +1300,12 @@
         "homeassistant_remove_label_from_entity": {
             "fields": {
                 "entity_id": {
-                    "name": "ID d'entité"
+                    "name": "ID d'entité",
+                    "description": "Le ou les ID(s) de la ou des entités auxquelles retirer la ou les étiquettes."
                 },
                 "label_id": {
-                    "name": "ID de l'étiquette"
+                    "name": "ID de l'étiquette",
+                    "description": "Le ou les ID(s) de la ou les étiquettes à retirer de la ou les entités."
                 }
             },
             "name": "Supprimer l'étiquette d'une entité",
@@ -1146,14 +1322,16 @@
                     "name": "Mode sans échec"
                 }
             },
-            "name": "Redémarrer"
+            "name": "Redémarrer",
+            "description": "Redémarre Home Assistant."
         },
         "homeassistant_ignore_all_discovered": {
             "name": "Ignorer tout les appareils actuellement découverts",
             "description": "Ignore tout les appareils actuellement découverts qui sont affichés sur le tableau de bord des intégrations. Les appareils découverts ultérieurement ne seront pas ignorés.",
             "fields": {
                 "domain": {
-                    "name": "Domaine de l'intégration"
+                    "name": "Domaine de l'intégration",
+                    "description": "Le domaine de l'intégration pour lequel ignorer tous les appareils découverts. Si aucune valeur n'est définie, tous les domaines seront considérés comme ignorés."
                 }
             }
         },
@@ -1177,7 +1355,13 @@
         },
         "blueprint_import": {
             "description": "Importe un blueprint",
-            "name": "Importer un blueprint"
+            "name": "Importer un blueprint",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "L'URL a partir de laquelle importer le blueprint."
+                }
+            }
         },
         "input_number_max": {
             "description": "Définit l'entité d'entrée numérique à sa valeur maximum.",
@@ -1198,6 +1382,10 @@
         "repairs_unignore_all": {
             "name": "Ne plus ignorer les corrections",
             "description": "Ne plus ignorer les corrections actuellement signalés dans les corrections Home Assistant."
+        },
+        "input_select_shuffle": {
+            "name": "Mélanger les options",
+            "description": "Mélange la liste des options sélectionnables d'une entité « input_select ». Cette modification n'est pas persistante et sera remise à son état inital après le rechargement de l'entité ou le redémarrage de Home Assistant."
         }
     },
     "conditions": {
