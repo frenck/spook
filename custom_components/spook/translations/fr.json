@@ -72,7 +72,7 @@
                 "name": "Automatisations"
             },
             "homeassistant_binary_sensor": {
-                "name": "Capteurs booléens"
+                "name": "Capteurs binaires"
             },
             "homeassistant_button": {
                 "name": "Boutons"
@@ -266,7 +266,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Enlever ces membres"
                         },
-                        "title": "Membres du groupe inconnus dans: {group}"
+                        "title": "Membres du groupe inconnus dans: {group}",
+                        "description": "Spook a trouvé un fantôme dans vos groupes 👻\n\n\n\nLe groupe {group} (`{entity_id}`) a des membres qui sont inconnus de Home Assistant:\n\n\n\n{entities}\n\n\n\nRetirez les du groupe, ou gardez les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Your homie."
                     }
                 },
                 "abort": {
@@ -343,7 +344,8 @@
             }
         },
         "dead_entities": {
-            "title": "Entités inexistantes enregistrées par: {integration}"
+            "title": "Entités inexistantes enregistrées par: {integration}",
+            "description": "Spook a trouvé un fantôme dans vos entités 👻\n\n\n\nL'intégration {integration} à terminée de se configurer, mais les entités qu'elle a enregistré ne sont jamais apparues, alors elle n'existent plus:\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive habituellement lorsque un appareil ou ses entités sont supprimés à la source mais leurs entrées dans le registre sont restées. Pour corriger cette erreur, supprimez ces entités du registre d'entité si vous en avez plus besoin.\n\n\n\nSpook 👻 Your homie."
         },
         "lovelace_missing_resources": {
             "title": "Les ressources du tableau de bord font référence a des fichiers manquants",
@@ -418,7 +420,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer l'entrée"
                         },
-                        "title": "Entités sources inconnues utilisées dans l'entrée: {helper}"
+                        "title": "Entités sources inconnues utilisées dans l'entrée: {helper}",
+                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée {helper} (`{domain}`) fait référence à ces entités sources, qui sont incoonues de Home Assistant:\n\n\n\n{sources}\n\n\n\nSans ses sources, l'entrée ne peut fonctionner. {usage}\n\n\n\nSupprimez cette entrée ou gardez la et spook arrêtera de la mentionner.\n\n\n\nSpook 👻 Your homie."
                     }
                 },
                 "abort": {
@@ -457,7 +460,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer l'étiquette inutilisée"
                         },
-                        "title": "Étiquette inutilisé: {label}"
+                        "title": "Étiquette inutilisé: {label}",
+                        "description": "L'étiquette {label} n'est appliquée à aucun entité, appareil, ou pièce, ainsi qu'aucune automatisation ou script ne lui fait référence.\n\n\n\nSupprimez-la, ou gardez-la et Spook arrêtera de le mentionner.\n\n\n\nSpook 👻 Your homie."
                     }
                 },
                 "abort": {
@@ -476,7 +480,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Retirer ces membres"
                         },
-                        "title": "Membres inconnus utilisé dans une entrée min/max: {helper}"
+                        "title": "Membres inconnus utilisé dans une entrée min/max: {helper}",
+                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée min/max {helper} combine les membres suivants, qui sont inconnus de Home Assistant:\n\n\n\n{sources}\n\n\n\nSupprimez les pour que l'entrée continue de fonctionner avec ceux qui restent, ou gardez les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Your homie."
                     }
                 },
                 "abort": {
@@ -496,7 +501,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Retirer ces dispositifs de suivi"
                         },
-                        "title": "Dispositifs de suivi inconnus suivis par: {person}"
+                        "title": "Dispositifs de suivi inconnus suivis par: {person}",
+                        "description": "Spook a trouvé un fantôme dans vos personnes 👻\n\n\n\n{person} est suivi(e) par ces dispositifs de suivi, qui sont inconnus de Home Assistant:\n\n\n\n{device_trackers}\n\n\n\nCeci arrive souvent lorsque un dispositif de suivi est renommé ou que son intégration est supprimée.\n\n\n\nSupprimez les de {person}, ou gardez-les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Your homie."
                     }
                 },
                 "abort": {
@@ -508,7 +514,8 @@
             "title": "Dispositifs de suivi inconnus suivis par: {person}"
         },
         "orphaned_statistics": {
-            "title": "Statistiques long terme orpheline trouvée"
+            "title": "Statistiques long terme orpheline trouvée",
+            "description": "Spook a trouvé un fantôme dans votre recorder 👻\n\n\n\nHome Assistant garde ces statistiques longue durée, mais ils ne correspondent à aucune entité qui existe:\n\n\n\n{statistics}\n\n\n\n\n\n\n\nCeci arrive habituellement lorsqu'un capteur est supprimé et que ses statistiques sont conservées. Pour corriger cette erreur, ouvrez Outils de développement > Statistiques et corrigez le problème, ou supprimez les en utilisant l'action `recorder.clear_statistics`.\n\n\n\nSpook 👻 Your homie."
         },
         "automation_unknown_condition_references": {
             "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante:\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation utilise ces conditions qui ne peuvent être fournies par aucune intégration disponible à Home Assistant:\n\n\n\n{conditions}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces conditions ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie.",
@@ -527,17 +534,20 @@
             "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant:\n\n\n\n{dashboard}\n\n\n\nCe tableau de bord fait référence aux pièces suivantes, qui sont inconnues de Home Assistant:\n\n\n\n{areas}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une pièce est renommée ou supprimée. Pour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\n\n\nSpook 👻 Your homie."
         },
         "script_unknown_condition_references": {
-            "title": "Condition inconnue utilisée dans: {script}"
+            "title": "Condition inconnue utilisée dans: {script}",
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le script suivant:\n\n\n\n[{script}]({edit}) (`{entity_id}`)\n\n\n\nCe script utilise ces conditions, qui ne sont fournis par aucune intégration disponible à Home Assistant:\n\n\n\n{conditions}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'intégration qui les fournissait est supprimée. Pour corriger cetter erreur, [modifiez le script]({edit}) et retirez l'utilisation de ces conditions indisponibles, ou restaurez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie."
         },
         "unknown_customized_entities": {
             "title": "Entité inconnue dans vos personnalisations",
             "description": "Spook a trouvé un fantôme dans vos personnalisations 👻\n\n\n\nLa section `customize:` définit les attributs pour les entités suivantes, qui sont inconnues de Home Assistant:\n\n\n\n{entities}\n\n\n\n\n\n\n\nIl arrive souvent qu'une entité soit renommée ou supprimé malgré que les personalisations sont restés. Pour corriger cette erreur, modifiez la section `customize:` de votre configuration et retirez ces entités.\n\n\n\nSpook 👻 Your homie."
         },
         "template_unknown_entity_references": {
-            "title": "Entités inconnues utilisée dans une entrée template: {helper}"
+            "title": "Entités inconnues utilisée dans une entrée template: {helper}",
+            "description": "Spook a trouvé un fantôme dans vos entrées template 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante:\n\n\n\n{helper}\n\n\n\nSon template fait référence à ces entités, qui sont inconnues de Home Assistant:\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une entité est renommée ou supprimée. Pour corriger cette erreur, reconfigurez l'entrée template pour qu'il fasse réference à des entités existantes.\n\n\n\nSpook 👻 Your homie."
         },
         "script_unknown_trigger_references": {
-            "title": "Déclencheur inconnu utilisé dans: {script}"
+            "title": "Déclencheur inconnu utilisé dans: {script}",
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le script suivant:\n\n\n\n[{script}]({edit}) (`{entity_id}`)\n\n\n\nCe script utilise les déclencheurs suivants, qui ne sont fournis par aucune intégration disponible à Home Assistant:\n\n\n\n{triggers}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'intégration qui les fournissait est supprimée. Pour corriger cetter erreur, [modifiez le script]({edit}) et retirez l'utilisation de ces déclencheurs indisponibles, ou restaurez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie."
         }
     },
     "services": {
@@ -1315,7 +1325,7 @@
             "fields": {
                 "force": {
                     "name": "Redémarrage forcé",
-                    "description": "Force le redémarrage. ATTENTION! Cette action n'arrêtera pas Home Assistant correctement. Elle omettra la vérification des configuration et les migrations de base de données en cours. Utilisez cette action uniquement si vous savez ce que vous faites."
+                    "description": "Force le redémarrage. ATTENTION! Cette action n'arrêtera pas Home Assistant correctement. Elle ignorera les vérifications de la configuration ainsi que les migrations de base de données en cours. Utilisez cette action uniquement si vous savez ce que vous faites."
                 },
                 "safe_mode": {
                     "description": "Cocher pour redémarrer en mode sans échec. Redémarre Home Assistant sans charger d'intégrations personnalisées ni de modules frontaux.",
