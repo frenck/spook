@@ -1,7 +1,7 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Ja.... maar nee. Bedankt maar, later!",
+            "already_spooked": "Spook is al geconfigureerd.",
             "enabled_existing": "De bestaande Spook ingave werd geactiveerd",
             "enable_failed": "De bestaande Spook ingave kon niet worden geactiveerd."
         },
@@ -609,7 +609,14 @@
     },
     "conditions": {
         "chance": {
-            "name": "Kans"
+            "name": "Kans",
+            "description": "Laat een vastgelegd percentage aan tijd verlopen, dat bij iedere check willekeurig gekozen wordt. Handig om wat variatie in je automatisering te brengen.",
+            "fields": {
+                "percentage": {
+                    "name": "Percentage",
+                    "description": "Hoe vaak aan deze voorwaarde moet worden voldaan, uitgedrukt als percentage."
+                }
+            }
         }
     }
 }
