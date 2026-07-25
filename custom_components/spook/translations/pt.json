@@ -205,7 +205,7 @@
                 "name": "Ignored"
             },
             "repairs_active_issues": {
-                "name": "Active"
+                "name": "Ativo"
             }
         },
         "switch": {
@@ -313,6 +313,27 @@
                     }
                 }
             }
+        }
+    },
+    "conditions": {
+        "chance": {
+            "fields": {
+                "percentage": {
+                    "name": "Percentagem"
+                }
+            }
+        }
+    },
+    "services": {
+        "homeassistant_add_device_to_area": {
+            "name": "Adicionar um dispositivo a uma área"
+        },
+        "person_add_device_tracker": {
+            "name": "Adicionar um rastreador de dispositivos",
+            "description": "Adicionar um rastreador de dispositivos a uma pessoa."
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Adicionar uma etiqueta a um dispositivo"
         }
     }
 }
