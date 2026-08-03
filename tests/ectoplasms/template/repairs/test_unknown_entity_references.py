@@ -48,6 +48,7 @@ async def test_unknown_entity_in_template_creates_issue(
     assert issue.translation_placeholders["entities"] == (
         "- `binary_sensor.also_ghost`\n- `sensor.ghost`"
     )
+    assert issue.translation_placeholders["edit"] == "/config/helpers"
 
 
 async def test_known_entities_create_no_issue(
@@ -103,6 +104,7 @@ async def test_unknown_action_in_template_button_creates_issue(
     )
     assert issue
     assert issue.translation_placeholders
+    assert issue.translation_placeholders["edit"] == "/config/helpers"
     assert issue.translation_placeholders["services"] == "- `script.1766687627449`"
 
 

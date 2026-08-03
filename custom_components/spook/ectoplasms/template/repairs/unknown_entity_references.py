@@ -85,5 +85,6 @@ class SpookRepair(AbstractSpookRepair):
                             self.hass, sorted(unknown_entities)
                         ),
                         "helper": entry.title,
+                        "edit": "/config/helpers",
                     },
                 )

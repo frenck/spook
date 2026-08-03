@@ -62,6 +62,7 @@ class SpookRepair(AbstractSpookRepair):
                 issue_id=entry.entry_id,
                 translation_placeholders={
                     "helper": entry.title,
+                    "edit": "/config/helpers",
                     "services": "\n".join(
                         f"- `{service}`" for service in sorted(unknown_services)
                     ),
