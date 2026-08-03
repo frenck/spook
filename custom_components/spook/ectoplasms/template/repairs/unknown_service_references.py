@@ -16,6 +16,7 @@ from ....entity_filtering import (
     async_get_all_services,
 )
 from ....repairs import AbstractSpookRepair
+from ....template_extraction import is_template_string
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -48,7 +49,11 @@ class SpookRepair(AbstractSpookRepair):
                     isinstance(step, dict) for step in option
                 ):
                     continue
-                services.update(async_find_services_in_sequence(option))
+                services.update(
+                    service
+                    for service in async_find_services_in_sequence(option)
+                    if not is_template_string(service)
+                )
 
             unknown_services = async_filter_known_services(
                 self.hass,

@@ -135,3 +135,30 @@ async def test_unknown_action_in_another_template_helper_creates_issue(
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["services"] == "- `script.missing_turn_on`"
+
+
+async def test_templated_action_in_template_helper_creates_no_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test templated actions in raw template helper options are ignored."""
+    entry = MockConfigEntry(
+        domain="template",
+        title="Dynamic notification",
+        options={
+            "name": "Dynamic notification",
+            "template_type": "button",
+            "press": [{"action": "{{ 'notify.' ~ who }}"}],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await UnknownServiceReferencesRepair(hass).async_inspect()
+
+    assert (
+        issue_registry.async_get_issue(
+            DOMAIN,
+            f"template_unknown_service_references_{entry.entry_id}",
+        )
+        is None
+    )
