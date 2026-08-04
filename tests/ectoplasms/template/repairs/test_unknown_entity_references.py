@@ -212,12 +212,11 @@ async def test_disabled_step_reference_is_qualified(
     entities = issue.translation_placeholders["entities"]
     assert "light.gone_live" in entities
     assert "light.gone_retired" in entities
-    # Only the disabled one carries the qualifier.
-    live, retired = (
-        line
-        for line in entities.splitlines()
-        if "gone_live" in line or "gone_retired" in line
-    )
+    # Only the disabled one carries the qualifier. Select each line by its
+    # entity ID, so a failure names the entity rather than the block order.
+    lines = entities.splitlines()
+    live = next(line for line in lines if "gone_live" in line)
+    retired = next(line for line in lines if "gone_retired" in line)
     assert "only referenced from disabled steps" not in live
     assert "only referenced from disabled steps" in retired
 
