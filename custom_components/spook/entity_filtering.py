@@ -374,6 +374,13 @@ def async_find_services_in_sequence(  # noqa: C901
 
         action = cv.determine_script_action(step)
 
+        if action == cv.SCRIPT_ACTION_CHECK_CONDITION:
+            # A bare condition stops the sequence at runtime when false, so
+            # later steps are only conditionally reached. Stop scanning them to
+            # avoid reporting actions of integrations that are gated off on
+            # purpose, e.g. multi-integration blueprints.
+            break
+
         if action == cv.SCRIPT_ACTION_CALL_SERVICE and CONF_SERVICE in step:
             called_services.add(step[CONF_SERVICE])
 
