@@ -33,7 +33,6 @@ class SpookService(
         call: ServiceCall,
     ) -> None:
         """Handle the service call."""
-        # pylint: disable=protected-access
         step = entity.native_step
         amount = call.data.get("amount", step)
         if not math.isclose(amount % step, 0, abs_tol=1e-9):
