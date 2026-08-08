@@ -34,17 +34,18 @@ class SpookService(
     ) -> None:
         """Handle the service call."""
         # pylint: disable=protected-access
-        amount = call.data.get("amount", entity._step)  # noqa: SLF001
-        if not math.isclose(amount % entity._step, 0, abs_tol=1e-9):  # noqa: SLF001
+        step = entity.native_step
+        amount = call.data.get("amount", step)
+        if not math.isclose(amount % step, 0, abs_tol=1e-9):
             msg = (
                 f"Amount {amount} not valid for {entity.entity_id}, "
-                f"it needs to be a multiple of {entity._step}",  # noqa: SLF001
+                f"it needs to be a multiple of {step}",
             )
             raise ValueError(msg)
 
-        await entity.async_set_value(
+        await entity.async_set_native_value(
             max(
-                entity._current_value - amount,  # noqa: SLF001
-                entity._minimum,  # noqa: SLF001
+                entity.native_value - amount,
+                entity.native_min_value,
             ),
         )
