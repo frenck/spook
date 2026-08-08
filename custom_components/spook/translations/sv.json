@@ -1,11 +1,13 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Ja... ok... nej. OK, tack, hej då!"
+            "already_spooked": "Spook är redan konfigurerad.",
+            "enable_failed": "Den befintliga Spook-konfigurationsposten kunde inte aktiveras.",
+            "enabled_existing": "Den befintliga Spook-konfigurationsposten har aktiverats."
         },
         "step": {
             "user": {
-                "description": "Läste du readme-filen? Läste du licensen? Är du verkligen säker?"
+                "description": "Har du läst readme-filen? Har du läst licensen? Är du verkligen säker?"
             },
             "choice_restart": {
                 "description": "För att Spook ska kunna göra färdigt installationen så måste Home Assistant startas om.\n\nVill du starta om Home Assistant nu?",
@@ -13,6 +15,12 @@
                     "restart_now": "Starta om nu",
                     "restart_later": "Starta om senare"
                 }
+            },
+            "already_configured": {
+                "menu_options": {
+                    "enable_existing": "Aktivera existerande post"
+                },
+                "description": "Spook är redan konfigurerad, men den befintliga konfigurationsposten är inaktiverad. Vill du aktivera den?"
             }
         }
     },
@@ -36,13 +44,13 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Problem skapad",
-                            "remove": "Issue borttagen",
+                            "create": "Problem skapat",
+                            "remove": "Problem borttaget",
                             "update": "Problem uppdaterat"
                         }
                     },
                     "domain": {
-                        "name": "Utfärda utgivare"
+                        "name": "Problem utfärdare"
                     },
                     "issue_id": {
                         "name": "Problem-ID"
@@ -109,22 +117,22 @@
                 "name": "Bilder"
             },
             "homeassistant_input_boolean": {
-                "name": "Inmatning av boolean"
+                "name": "Inmatningsbooleaner"
             },
             "homeassistant_input_button": {
                 "name": "Inmatningsknappar"
             },
             "homeassistant_input_datetime": {
-                "name": "Inmatning datum/tid"
+                "name": "Inmatningsdatum/tider"
             },
             "homeassistant_input_number": {
-                "name": "Inmatning nummer"
+                "name": "Inmatningsnummer"
             },
             "homeassistant_input_select": {
-                "name": "Inmatning val"
+                "name": "Inmatningsval"
             },
             "homeassistant_input_text": {
-                "name": "Inmatning text"
+                "name": "Inmatningstexter"
             },
             "homeassistant_integration": {
                 "name": "Integrationer"
@@ -157,7 +165,7 @@
                 "name": "Skript"
             },
             "homeassistant_select": {
-                "name": "Val"
+                "name": "Väljare"
             },
             "homeassistant_sensor": {
                 "name": "Sensorer"
@@ -184,7 +192,7 @@
                 "name": "Text-till-tal"
             },
             "homeassistant_update": {
-                "name": "Uppdatering"
+                "name": "Uppdateringar"
             },
             "homeassistant_vacuum": {
                 "name": "Dammsugare"
@@ -206,6 +214,9 @@
             },
             "repairs_active_issues": {
                 "name": "Aktiva"
+            },
+            "homeassistant_todo": {
+                "name": "Att göra-listor"
             }
         },
         "switch": {
@@ -242,14 +253,28 @@
             "title": "Okända etiketter används i: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook har hittat ett spöke i dina automatiseringar 👻\n\nMedan den svävade runt korsade Spook väg med följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\nFör att åtgärda felet, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande åtgärder.\n\nSpook 👻 Din polare.",
+            "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt korsade Spook väg med följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\n\n\nFör att åtgärda felet, [redigera automatiseringen]({edit}) och ta bort användningen av dessa icke-existerande åtgärder.\n\nSpook 👻 Din polare.",
             "title": "Okända åtgärder används i: {automation}"
         },
         "group_unknown_members": {
-            "title": "Okända gruppmedlemmar i: {group}"
+            "title": "Okända gruppmedlemmar i: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Ta bort dessa medlemmar"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna grupp från och med nu."
+                }
+            }
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook har hittat ett fel i din instrumentpanel 👻\n\nMedan han svävade runt hittade Spook följande instrumentpanel:\n\n[{dashboard}]({edit})\n\nDen här instrumentpanelen refererar till följande entiteter som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda felet, [redigera instrumentpanelen]({edit}) och ta bort användningen av dessa icke-existerande entiteter.\n\nSpook 👻 Din polare.",
+            "description": "Spook har hittat ett fel i din kontrollpanel 👻\n\nMedan han svävade runt hittade Spook följande kontrollpanel:\n\n[{dashboard}]({edit})\n\nDen här kontrollpanelen refererar till följande entiteter som är okända för Home Assistant:\n\n{entities}\n\nFör att åtgärda felet, [redigera kontrollpanelen]({edit}) och ta bort användningen av dessa icke-existerande entiteter.\n\nSpook 👻 Din polare.",
             "title": "Okända entiteter används i: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
@@ -313,6 +338,903 @@
                     }
                 }
             }
+        },
+        "lovelace_missing_resources": {
+            "title": "Kontrollpanelsresurser hänvisar till filer som saknas"
+        },
+        "empty_areas": {
+            "title": "Tomt område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tomt område: {area}",
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Ta bort detta tomma område"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om detta område från och med nu."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Tom våning: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tom våning: {floor}",
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Ta bort denna tomma våning"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna våning från och med nu."
+                }
+            }
+        },
+        "stale_access_tokens": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Återkalla denna token"
+                        },
+                        "title": "Långlivad åtkomsttoken verkar bortglömd: {token}"
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna token från och med nu."
+                }
+            },
+            "title": "Långlivad åtkomsttoken verkar bortglömd: {token}"
+        },
+        "unknown_helper_source_references": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Ta bort denna hjälpare"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna hjälpare från och med nu."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Ta bort denna oanvända blueprint"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna blueprint från och med nu."
+                }
+            }
+        },
+        "unused_labels": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Ta bort denna oanvända etikett"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna etikett från och med nu."
+                }
+            }
+        },
+        "min_max_unknown_sources": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Ta bort dessa medlemmar"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna hjälpare från och med nu."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "ignore": "Behåll och sluta att meddela mig",
+                            "manage": "Låt mig fixa det själv",
+                            "remove": "Ta bort dessa enhetsspårare"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna person från och med nu."
+                }
+            }
+        },
+        "dead_entities": {
+            "title": "Icke-existerande entiteter registrerade av: {integration}"
+        },
+        "orphaned_statistics": {
+            "title": "Föräldralös långtidsstatistik hittad"
+        }
+    },
+    "services": {
+        "homeassistant_add_device_to_area": {
+            "name": "Lägg till en enhet till ett område",
+            "description": "Lägger till en enhet till ett område. Om enheten redan tillhör området så kommer den istället att tas bort från området.",
+            "fields": {
+                "area_id": {
+                    "name": "Områdes-ID"
+                },
+                "device_id": {
+                    "name": "Enhets-ID"
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Lägg till en enhetsspårare",
+            "description": "Lägger till en enhetsspårare till en person",
+            "fields": {
+                "device_tracker": {
+                    "name": "Enhetsspårare",
+                    "description": "Enhetsspårarens entitets-ID som ska adderas till personen."
+                },
+                "entity_id": {
+                    "name": "Person"
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Lägg till en etikett till en enhet",
+            "description": "Lägger till en etikett till en enhet. Om flera etiketter eller enheter anges så kommer alla kombinationer att läggas till.",
+            "fields": {
+                "device_id": {
+                    "name": "Enhets-ID"
+                },
+                "label_id": {
+                    "name": "Etikett-ID"
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Lägg till en etikett till ett område",
+            "description": "Lägger till en etikett till ett område. Om flera etiketter eller områden anges så kommer alla kombinationer att läggas till.",
+            "fields": {
+                "area_id": {
+                    "name": "Områdes-ID"
+                },
+                "label_id": {
+                    "name": "Etikett-ID"
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Lägg till en etikett till en entitet",
+            "description": "Lägger till en etikett till en entitet. Om flera etiketter eller entiteter anges så kommer alla kombinationer att läggas till.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID"
+                },
+                "label_id": {
+                    "name": "Etikett-ID"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Lägg till ett alias till en våning",
+            "description": "Lägger till ett alias till en våning.",
+            "fields": {
+                "alias": {
+                    "name": "Alias",
+                    "description": "Det eller de alias som ska läggas till för våningen."
+                },
+                "floor_id": {
+                    "name": "Vånings-ID"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Lägg till ett alias till ett område",
+            "description": "Lägger till ett alias till ett område.",
+            "fields": {
+                "alias": {
+                    "name": "Alias",
+                    "description": "Det eller de alias som ska läggas till för området."
+                },
+                "area_id": {
+                    "name": "Områdes-ID"
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Lägg till ett område till en våning",
+            "description": "Lägger till ett område till en våning. Om området redan tillhör våningen så kommer den istället att tas bort från våningen.",
+            "fields": {
+                "area_id": {
+                    "name": "Områdes-ID"
+                },
+                "floor_id": {
+                    "name": "Vånings-ID"
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Lägg till en entitet till ett område",
+            "description": "Lägger till en entitet till ett område. Om entiteten redan tillhör området så kommer den istället att tas bort från området. Detta åsidosätter det område som enheten, som tillhandahåller denna entitet, tillhör.",
+            "fields": {
+                "area_id": {
+                    "name": "Områdes-ID"
+                },
+                "entity_id": {
+                    "name": "Entitets-ID"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "fields": {
+                "alias": {
+                    "name": "Alias",
+                    "description": "Det eller de alias som ska tas bort från området."
+                },
+                "area_id": {
+                    "name": "Områdes-ID"
+                }
+            },
+            "name": "Ta bort ett alias från ett område",
+            "description": "Tar bort ett alias från ett område."
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "fields": {
+                "alias": {
+                    "name": "Alias",
+                    "description": "Det eller de alias som ska tas bort från våningen."
+                },
+                "floor_id": {
+                    "name": "Vånings-ID"
+                }
+            },
+            "name": "Ta bort ett alias från en våning",
+            "description": "Tar bort ett alias från en våning."
+        },
+        "homeassistant_set_floor_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Alias",
+                    "description": "De alias som ska ställas in för våningen."
+                },
+                "floor_id": {
+                    "name": "Vånings-ID"
+                }
+            },
+            "name": "Ställ in alias för en våning",
+            "description": "Ställer in alias för en våning. Skriver över och tar bort redan existerande alias och ersätter dem fullt ut med dessa nya."
+        },
+        "homeassistant_create_floor": {
+            "fields": {
+                "aliases": {
+                    "name": "Alias",
+                    "description": "En lista över våningens alias. Detta är användbart om du vill använda våningen på ett annat språk eller med olika smeknamn."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Den ikon att använda för våningen."
+                },
+                "level": {
+                    "name": "Nivå"
+                },
+                "name": {
+                    "name": "Namn"
+                }
+            },
+            "name": "Skapa en våning",
+            "description": "Skapar en ny våning direkt."
+        },
+        "homeassistant_create_area": {
+            "fields": {
+                "aliases": {
+                    "name": "Alias",
+                    "description": "En lista över områdets alias. Detta är användbart om du vill använda området på ett annat språk eller med olika smeknamn."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Den ikon att använda för området."
+                },
+                "name": {
+                    "name": "Namn"
+                }
+            },
+            "name": "Skapa ett område",
+            "description": "Skapar ett nytt område direkt."
+        },
+        "homeassistant_set_area_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Alias",
+                    "description": "De alias som ska ställas in för området."
+                },
+                "area_id": {
+                    "name": "Områdes-ID"
+                }
+            },
+            "name": "Ställ in alias för ett område",
+            "description": "Ställer in alias för ett område. Skriver över och tar bort redan existerande alias och ersätter dem fullt ut med dessa nya."
+        },
+        "homeassistant_delete_area": {
+            "fields": {
+                "area_id": {
+                    "name": "Områdes-ID"
+                }
+            },
+            "name": "Ta bort ett område",
+            "description": "Tar bort ett område direkt."
+        },
+        "homeassistant_remove_area_from_floor": {
+            "fields": {
+                "area_id": {
+                    "name": "Områdes-ID"
+                }
+            },
+            "name": "Ta bort ett område från en våning",
+            "description": "Tar bort ett område från en våning. Eftersom ett område endast kan tillhöra en våning så behöver den här åtgärden inte specificera vilken våning."
+        },
+        "homeassistant_remove_label_from_area": {
+            "fields": {
+                "area_id": {
+                    "name": "Områdes-ID"
+                },
+                "label_id": {
+                    "name": "Etikett-ID"
+                }
+            },
+            "name": "Ta bort en etikett från ett område",
+            "description": "Tar bort en etikett från ett område. Om flera etiketter eller områden anges så kommer alla kombinationer att tas bort."
+        },
+        "boo": {
+            "name": "Bu!",
+            "description": "Denna åtgärd kommer att skrämma Home Assistant. Att utföra denna åtgärd kommer alltid att misslyckas."
+        },
+        "homeassistant_create_label": {
+            "fields": {
+                "color": {
+                    "name": "Färg",
+                    "description": "Den färg som etiketten ska ha. Kan vara ett färgnamn från listan, eller en hexadecimal färgkod (som #FF0000)."
+                },
+                "description": {
+                    "name": "Beskrivning",
+                    "description": "Etikettens beskrivning."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Den ikon att använda för etiketten."
+                },
+                "name": {
+                    "name": "Namn"
+                }
+            },
+            "name": "Skapa en etikett",
+            "description": "Skapar en ny etikett direkt."
+        },
+        "homeassistant_disable_config_entry": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Konfigurationspost"
+                }
+            },
+            "name": "Inaktivera en integration",
+            "description": "Inaktiverar en integrations konfigurationspost."
+        },
+        "homeassistant_enable_config_entry": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Konfigurationspost"
+                }
+            },
+            "name": "Aktivera en integration",
+            "description": "Aktiverar en integrations konfigurationspost."
+        },
+        "homeassistant_disable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Konfigurationspost"
+                }
+            },
+            "name": "Inaktivera pollning för uppdateringar",
+            "description": "Inaktiverar pollning av uppdateringar för en integrations konfigurationspost."
+        },
+        "homeassistant_enable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "name": "Konfigurationspost"
+                }
+            },
+            "name": "Aktivera pollning för uppdateringar",
+            "description": "Aktiverar pollning av uppdateringar för en integrations konfigurationspost."
+        },
+        "input_number_create": {
+            "name": "Skapa ett inmatningsnummer",
+            "description": "Skapar en ny hjälpare för inmatningsnummer direkt.",
+            "fields": {
+                "mode": {
+                    "name": "Visningsläge"
+                },
+                "icon": {
+                    "name": "Ikon"
+                },
+                "initial": {
+                    "name": "Inledande värde"
+                },
+                "input_number_id": {
+                    "name": "Inmatningsnummer entitets-ID"
+                },
+                "max": {
+                    "name": "Maximum"
+                },
+                "min": {
+                    "name": "Minimum"
+                },
+                "name": {
+                    "name": "Namn"
+                },
+                "step": {
+                    "name": "Stegstorlek"
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Skapa en zon",
+            "description": "Skapar en ny zon direkt.",
+            "fields": {
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Den ikon att använda för zonen."
+                },
+                "latitude": {
+                    "name": "Latitud",
+                    "description": "Zonens latitud. Detta kan vara en mall."
+                },
+                "longitude": {
+                    "name": "Longitud",
+                    "description": "Zonens longitud. Detta kan vara en mall."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Zonens namn"
+                },
+                "radius": {
+                    "name": "Radie",
+                    "description": "Zonens radie"
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Skapa ett problem",
+            "fields": {
+                "description": {
+                    "name": "Beskrivning",
+                    "description": "Beskrivningen av problemet. Stöder Markdown."
+                },
+                "domain": {
+                    "name": "Domän"
+                },
+                "persistent": {
+                    "description": "Om problemet ska vara beständigt, vilket innebär att det kommer att överleva omstarter av Home Assistant. Som standard är problem inte beständiga.",
+                    "name": "Beständigt"
+                },
+                "issue_id": {
+                    "name": "Problem-ID"
+                },
+                "severity": {
+                    "name": "Allvarlighetsgrad"
+                }
+            },
+            "description": "Skapar manuellt ett problem i Home Assistant Repairs."
+        },
+        "number_decrement": {
+            "name": "Minska värde",
+            "fields": {
+                "amount": {
+                    "name": "Mängd"
+                }
+            },
+            "description": "Minska en nummerentitets värde med en viss mängd."
+        },
+        "input_number_decrement": {
+            "name": "Minska värde",
+            "description": "Minska ett inmatningsnummers värde med en viss mängd.",
+            "fields": {
+                "amount": {
+                    "name": "Mängd"
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Ta bort en våning",
+            "description": "Tar bort en våning direkt.",
+            "fields": {
+                "floor_id": {
+                    "name": "Vånings-ID"
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Ta bort en etikett",
+            "description": "Tar bort en etikett direkt.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID"
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Ta bort alla föräldralösa entiteter",
+            "description": "Tar bort alla föräldralösa entiteter som inte längre tillhör en integration. Om integrationen nyligen tagits bort kan det behövas en omstart för att Home Assistant ska inse att de är föräldralösa.\n**VARNING*** Entiteter kan ha markerats som föräldralösa eftersom en integration är offline eller inte fungerar sedan Home Assistant startade. Att utföra denna åtgärd kommer att ta bort även dessa entiteter."
+        },
+        "input_number_delete": {
+            "name": "Ta bort ett inmatningsnummer",
+            "description": "Tar bort en hjälpare för inmatningsnummer. Detta fungerar bara för inmatningsnummer som är skapade via användargränssnittet. Inmatningsnummer som har skapats via YAML kan inte ändras av Spook."
+        },
+        "number_increment": {
+            "fields": {
+                "amount": {
+                    "name": "Mängd"
+                }
+            },
+            "description": "Öka en nummerentitets värde med en viss mängd.",
+            "name": "Öka värde"
+        },
+        "input_number_increment": {
+            "fields": {
+                "amount": {
+                    "name": "Mängd"
+                }
+            },
+            "description": "Öka ett inmatningsnummers värde med en viss mängd.",
+            "name": "Öka värde"
+        },
+        "zone_delete": {
+            "name": "Ta bort en zon",
+            "description": "Tar bort en zon. Detta fungerar bara för zoner som är skapade via användargränssnittet. Zoner som har skapats via YAML kan inte ändras av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID"
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Enhet",
+                    "description": "Den eller de enheter som ska inaktiveras."
+                }
+            },
+            "name": "Inaktivera en enhet",
+            "description": "Inaktiverar en enhet direkt."
+        },
+        "homeassistant_remove_device_from_area": {
+            "fields": {
+                "device_id": {
+                    "name": "Enhets-ID"
+                }
+            },
+            "name": "Ta bort en enhet från ett område",
+            "description": "Tar bort en enhet från ett område. Eftersom en enhet endast kan tillhöra ett område så behöver den här åtgärden inte specificera vilket område."
+        },
+        "homeassistant_enable_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Enhets-ID"
+                }
+            },
+            "name": "Aktivera en enhet",
+            "description": "Aktiverar en enhet direkt."
+        },
+        "homeassistant_remove_label_from_device": {
+            "fields": {
+                "device_id": {
+                    "name": "Enhets-ID"
+                },
+                "label_id": {
+                    "name": "Etikett-ID"
+                }
+            },
+            "name": "Ta bort en etikett från en enhet",
+            "description": "Tar bort en etikett från en enhet. Om flera etiketter eller enheter anges så kommer alla kombinationer att tas bort."
+        },
+        "person_remove_device_tracker": {
+            "fields": {
+                "device_tracker": {
+                    "name": "Enhetsspårare",
+                    "description": "Enhetsspårarens entitets-ID som ska tas bort från personen."
+                },
+                "entity_id": {
+                    "name": "Person"
+                }
+            },
+            "name": "Ta bort en enhetsspårare",
+            "description": "Tar bort en enhetsspårare från en person."
+        },
+        "homeassistant_disable_entity": {
+            "name": "Inaktivera en entitet",
+            "description": "Inaktiverar en eller flera entiteter direkt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter som ska inaktiveras."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Inaktivera en användare",
+            "description": "Inaktiverar ett användarkonto, förhindrar dem att logga in."
+        },
+        "timer_set_duration": {
+            "fields": {
+                "duration": {
+                    "name": "Varaktighet",
+                    "description": "Ny varaktighet för timern, anges som en timedelta-sträng."
+                }
+            },
+            "description": "Ställer in en varaktighet för en existerande timer.",
+            "name": "Ställ in varaktighet"
+        },
+        "homeassistant_enable_entity": {
+            "name": "Aktivera en entitet",
+            "description": "Aktiverar en eller flera entiteter direkt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter som ska aktiveras."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Aktivera en användare",
+            "description": "Aktiverar ett användarkonto, tillåter dem att logga in."
+        },
+        "homeassistant_update_entity_id": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter som ska uppdateras."
+                },
+                "new_entity_id": {
+                    "name": "Ny enitets-ID"
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter som ska döljas."
+                }
+            },
+            "name": "Dölj en entitet",
+            "description": "Döljer en eller flera entiteter direkt."
+        },
+        "homeassistant_rename_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter som ska döpas om."
+                },
+                "name": {
+                    "name": "Namn"
+                }
+            },
+            "name": "Döp om en entitet",
+            "description": "Döper om en eller flera entiteter direkt."
+        },
+        "homeassistant_unhide_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter som ska sluta döljas."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID"
+                }
+            },
+            "name": "Ta bort en entitet från ett område",
+            "description": "Tar bort en entitet från ett område. Eftersom en entitet endast kan tillhöra ett område så behöver den här åtgärden inte specificera vilket område. Observera att entiteten efter denna åtgärd fortfarande kommer tillhöra det område för den enhet som tillhandahåller denna entitet tillhör."
+        },
+        "homeassistant_remove_label_from_entity": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID"
+                },
+                "label_id": {
+                    "name": "Etikett-ID"
+                }
+            },
+            "name": "Ta bort en etikett från en entitet",
+            "description": "Tar bort en etikett från en entitet. Om flera etiketter eller entiteter anges så kommer alla kombinationer att tas bort."
+        },
+        "zone_update": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID"
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Den ikon att använda för zonen."
+                },
+                "latitude": {
+                    "name": "Latitud",
+                    "description": "Zonens latitud. Detta kan vara en mall."
+                },
+                "longitude": {
+                    "name": "Longitud",
+                    "description": "Zonens longitud. Detta kan vara en mall."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Zonens namn"
+                },
+                "radius": {
+                    "name": "Radie",
+                    "description": "Zonens radie"
+                }
+            }
+        },
+        "homeassistant_restart": {
+            "fields": {
+                "force": {
+                    "name": "Tvinga omstart",
+                    "description": "Tvinga en omstart. VARNING! Detta kommer stänga av Home Assistant direkt genom att hoppa över konfigurationskontroller och ignorera körande databasmigreringar. Använd endast detta om du vet vad du gör."
+                },
+                "safe_mode": {
+                    "description": "Om omstarten ska göras i säkert läge. Detta kommer att inaktivera alla anpassade integrationer och frontend-moduler.",
+                    "name": "Säkert läge"
+                }
+            },
+            "name": "Starta om",
+            "description": "Starta om Home Assistant-åtgärden"
+        },
+        "recorder_import_statistics": {
+            "fields": {
+                "has_mean": {
+                    "name": "Har ett medelvärde",
+                    "description": "Om statistikuppgiften har ett medelvärde."
+                },
+                "has_sum": {
+                    "name": "Har en summa",
+                    "description": "Om statistikuppgiften har en summa."
+                },
+                "name": {
+                    "name": "Namn"
+                },
+                "source": {
+                    "name": "Källa"
+                },
+                "stats": {
+                    "name": "Statistik"
+                },
+                "statistic_id": {
+                    "name": "Statistik-ID"
+                }
+            },
+            "description": "Importera långtidsstatistik.",
+            "name": "Importera statistik"
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Ignorera alla för närvarande upptäckta enheter",
+            "description": "Ignorera alla för närvarande upptäckta enheter som visas på integrationssidan. Detta kommer inte att ignorera enheter som upptäcks efter denna åtgärd.",
+            "fields": {
+                "domain": {
+                    "name": "Integrationens domän"
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Ignorera alla problem",
+            "description": "Ignorera alla problem som för närvarande finns i Home Assistant Repairs."
+        },
+        "blueprint_import": {
+            "description": "Importera en blueprint.",
+            "name": "Importera blueprint"
+        },
+        "repairs_remove": {
+            "fields": {
+                "issue_id": {
+                    "name": "Problem-ID"
+                }
+            },
+            "name": "Ta bort problem",
+            "description": "Tar bort ett manuellt skapat Home Assistant Repair-problem. Denna åtgärd kan endast ta bort problem som har skapats med `repairs_create`-åtgärden."
+        },
+        "select_random": {
+            "fields": {
+                "options": {
+                    "description": "Begränsar alternativen att välja mellan. Om inget anges så kommer alla alternativ att övervägas.",
+                    "name": "Alternativ"
+                }
+            },
+            "name": "Välj slumpmässigt alternativ",
+            "description": "Väljer ett slumpmässigt alternativ för en väljar-entitet."
+        },
+        "input_select_random": {
+            "fields": {
+                "options": {
+                    "description": "Begränsar alternativen att välja mellan. Om inget anges så kommer alla alternativ att övervägas.",
+                    "name": "Alternativ"
+                }
+            },
+            "name": "Välj slumpmässigt alternativ",
+            "description": "Väljer ett slumpmässigt alternativ för en `input_select`-entitet."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Lista alla föräldralösa databasentiteter",
+            "description": "Listar alla föräldralösa databasentiteter som inte tillhör någon integration."
+        },
+        "random_fail": {
+            "description": "Att utföra denna åtgärd kommer slumpmässigt att misslyckas.",
+            "name": "Slumpmässigt misslyckande"
+        },
+        "input_select_shuffle": {
+            "description": "Blandar listan över valbara alternativ för en `input_select`-entitet. Detta är inte beständigt och kommer att återställas vid varje omladdning eller när Home Assistant startas om.",
+            "name": "Blanda alternativ"
+        },
+        "input_select_sort": {
+            "description": "Sorterar listan över valbara alternativ för en `input_select`-entitet. Detta är inte beständigt och kommer att återställas vid varje omladdning eller när Home Assistant startas om.",
+            "name": "Sortera alternativ"
+        },
+        "input_number_max": {
+            "description": "Ställer in ett inmatningsnummer till dess högsta värde.",
+            "name": "Ställ in högsta värde"
+        },
+        "input_number_min": {
+            "description": "Ställer in ett inmatningsnummer till dess lägsta värde.",
+            "name": "Ställ in lägsta värde"
+        },
+        "number_max": {
+            "description": "Ställer in en nummerentitet till dess högsta värde.",
+            "name": "Ställ in högsta värde"
+        },
+        "number_min": {
+            "description": "Ställer in en nummerentitet till dess lägsta värde.",
+            "name": "Ställ in lägsta värde"
+        }
+    },
+    "conditions": {
+        "chance": {
+            "fields": {
+                "percentage": {
+                    "description": "Hur ofta detta villkor ska vara uppfyllt, som en procentandel.",
+                    "name": "Procentandel"
+                }
+            },
+            "name": "Chans",
+            "description": "Ett villkor som uppfylls en viss procentandel av tiden, som väljs helt slumpmässigt vid varje check. Passar bra för att lägga till lite variation i dina automatiseringar."
         }
     }
 }
