@@ -35,7 +35,11 @@ class SpookService(
         """Handle the service call."""
         step = entity.native_step
         amount = call.data.get("amount", step)
-        if not math.isclose(amount % step, 0, abs_tol=1e-9):
+        remainder = amount % step
+        if not (
+            math.isclose(remainder, 0, abs_tol=1e-9)
+            or math.isclose(remainder, step, abs_tol=1e-9)
+        ):
             msg = (
                 f"Amount {amount} not valid for {entity.entity_id}, "
                 f"it needs to be a multiple of {step}",
