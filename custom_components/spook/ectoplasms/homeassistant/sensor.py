@@ -599,7 +599,7 @@ async def async_setup_entry(
 
 
 class HomeAssistantSpookSensorEntity(HomeAssistantSpookEntity, SensorEntity):
-    """Spook sensor providig Home Asistant information."""
+    """Spook sensor providing Home Assistant information."""
 
     entity_description: HomeAssistantSpookSensorEntityDescription
     _unsub_debouncer: Callable[[], None] | None = None
