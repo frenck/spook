@@ -216,7 +216,20 @@ def async_filter_known_area_ids(
 def async_get_all_device_ids(hass: HomeAssistant) -> set[str]:
     """Return all device IDs, known to Home Assistant."""
     device_registry = dr.async_get(hass)
-    return {device.id for device in device_registry.devices.values()}
+    device_ids = {device.id for device in device_registry.devices.values()}
+
+    # Home Assistant Core 2026.8 split devices that belonged to multiple config
+    # entries into one device per config entry. The pre-split device ID is no
+    # longer registered, but it still resolves to those new devices, so anything
+    # targeting it keeps working. Those IDs are known, just not enumerated.
+    # Can be removed when Core drops composite devices in 2027.8.
+    get_composite_splits: Callable[[], Mapping[str, Any]] | None = getattr(
+        device_registry.devices, "get_composite_splits", None
+    )
+    if get_composite_splits is not None:
+        device_ids.update(get_composite_splits().keys())
+
+    return device_ids
 
 
 @callback
