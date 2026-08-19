@@ -40,8 +40,8 @@ class SpookService(
         # Float modulo wraps around just short of the step, 0.3 % 0.1 is
         # 0.09999999999999998, so a remainder against either end is a clean multiple.
         if not (
-            math.isclose(remainder, 0, abs_tol=1e-9)
-            or math.isclose(remainder, step, abs_tol=1e-9)
+            math.isclose(remainder, 0, rel_tol=0, abs_tol=1e-9)
+            or math.isclose(remainder, step, rel_tol=0, abs_tol=1e-9)
         ):
             msg = (
                 f"Amount {amount} not valid for {entity.entity_id}, "
