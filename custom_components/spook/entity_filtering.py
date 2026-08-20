@@ -376,10 +376,11 @@ def split_comma_separated_entity_ids(entity_id: str) -> list[str]:
 
 
 @callback
-def async_find_services_in_sequence(  # noqa: C901
+def async_find_services_in_sequence(  # noqa: C901, PLR0912
     sequence: Sequence[dict[str, Any]],
 ) -> set[str]:
     """Find all services called in a sequence."""
+    # pylint: disable=too-many-branches
     called_services: set[str] = set()
     for step in sequence:
         if step.get(CONF_ENABLED) is False:

@@ -133,7 +133,7 @@ def test_find_services_condition_gates_only_its_own_sequence() -> None:
 
     assert async_find_services_in_sequence(sequence) == {"light.turn_on"}
 
-    
+
 def test_registered_device_ids_are_known(
     hass: HomeAssistant,
     device_registry: dr.DeviceRegistry,
