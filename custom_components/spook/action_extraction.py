@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
-async def extract_entities_from_action_config(
+async def async_extract_entities_from_action_config(
     hass: HomeAssistant, config: dict[str, Any] | list
 ) -> set[str]:
     """Extract entity IDs from action configuration."""
@@ -27,7 +27,7 @@ async def extract_entities_from_action_config(
 
     if isinstance(config, list):
         for item in config:
-            entities.update(await extract_entities_from_action_config(hass, item))
+            entities.update(await async_extract_entities_from_action_config(hass, item))
         return entities
 
     if not isinstance(config, dict):
@@ -55,7 +55,7 @@ async def _extract_entities_from_action_fields(
     entities = set()
     for key in ("entity_id", "device_id"):
         if key in config:
-            entities.update(await extract_entities_from_value(hass, config[key]))
+            entities.update(await async_extract_entities_from_value(hass, config[key]))
     return entities
 
 
@@ -68,7 +68,9 @@ async def _extract_entities_from_target(
         target = config["target"]
         for key in ("entity_id", "device_id", "area_id", "label_id"):
             if key in target:
-                entities.update(await extract_entities_from_value(hass, target[key]))
+                entities.update(
+                    await async_extract_entities_from_value(hass, target[key])
+                )
     return entities
 
 
@@ -95,14 +97,14 @@ async def _extract_entities_from_service_data(
         data_value = config["data"]
         if isinstance(data_value, str):
             # data field is a template string itself
-            entities.update(await extract_entities_from_value(hass, data_value))
+            entities.update(await async_extract_entities_from_value(hass, data_value))
         elif isinstance(data_value, dict):
             service = _get_action_service(config)
             # data field is a dictionary, process all its values
             for key, value in data_value.items():
                 if _should_skip_service_data_value(service, key):
                     continue
-                entities.update(await extract_entities_from_value(hass, value))
+                entities.update(await async_extract_entities_from_value(hass, value))
     return entities
 
 
@@ -113,11 +115,15 @@ async def _extract_entities_from_nested_configs(
     entities = set()
     for value in config.values():
         if isinstance(value, (dict, list)):
-            entities.update(await extract_entities_from_action_config(hass, value))
+            entities.update(
+                await async_extract_entities_from_action_config(hass, value)
+            )
     return entities
 
 
-async def extract_entities_from_value(hass: HomeAssistant, value: Any) -> set[str]:
+async def async_extract_entities_from_value(
+    hass: HomeAssistant, value: Any
+) -> set[str]:
     """Extract entity IDs from a configuration value."""
     entities = set()
 
@@ -142,7 +148,7 @@ async def extract_entities_from_value(hass: HomeAssistant, value: Any) -> set[st
             entities.add(value)
     elif isinstance(value, list):
         for item in value:
-            entities.update(await extract_entities_from_value(hass, item))
+            entities.update(await async_extract_entities_from_value(hass, item))
     elif (
         isinstance(value, dict)
         and "entity" in value

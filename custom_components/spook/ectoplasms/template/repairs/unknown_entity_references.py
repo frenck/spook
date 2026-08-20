@@ -8,7 +8,7 @@ from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
 from homeassistant.core import Event, callback
 from homeassistant.helpers import entity_registry as er
 
-from ....action_extraction import extract_entities_from_action_config
+from ....action_extraction import async_extract_entities_from_action_config
 from ....const import LOGGER
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
@@ -80,7 +80,7 @@ class SpookRepair(AbstractSpookRepair):
             # config (target, entity_id, service data) rather than through Jinja,
             # so the template extraction above does not see them.
             for option in options.values():
-                referenced |= await extract_entities_from_action_config(
+                referenced |= await async_extract_entities_from_action_config(
                     self.hass, option
                 )
 

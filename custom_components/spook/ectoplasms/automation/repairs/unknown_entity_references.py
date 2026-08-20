@@ -10,8 +10,8 @@ from homeassistant.core import Event, callback
 from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import (
-    extract_entities_from_action_config,
-    extract_entities_from_value,
+    async_extract_entities_from_action_config,
+    async_extract_entities_from_value,
 )
 from ....entity_filtering import async_get_all_entity_ids
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
@@ -72,7 +72,7 @@ async def extract_entities_from_automation_config(
     for key in ("action", "actions"):
         if key in config:
             entities.update(
-                await extract_entities_from_action_config(hass, config[key])
+                await async_extract_entities_from_action_config(hass, config[key])
             )
 
     return entities
@@ -98,11 +98,11 @@ async def extract_entities_from_trigger_config(
     # Entity ID fields in triggers
     for key in ("entity_id", "device_id"):
         if key in config:
-            entities.update(await extract_entities_from_value(hass, config[key]))
+            entities.update(await async_extract_entities_from_value(hass, config[key]))
 
     # Zone trigger has zone field
     if "zone" in config:
-        entities.update(await extract_entities_from_value(hass, config["zone"]))
+        entities.update(await async_extract_entities_from_value(hass, config["zone"]))
 
     # Extract from nested configs
     for value in config.values():
@@ -160,7 +160,7 @@ async def extract_entities_from_condition_config(
     # Entity ID fields in conditions
     for key in ("entity_id", "device_id", "zone"):
         if key in config:
-            entities.update(await extract_entities_from_value(hass, config[key]))
+            entities.update(await async_extract_entities_from_value(hass, config[key]))
 
     # Extract from nested configs
     for value in config.values():
@@ -168,8 +168,6 @@ async def extract_entities_from_condition_config(
             entities.update(await extract_entities_from_condition_config(hass, value))
 
     return entities
-
-
 
 
 class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
