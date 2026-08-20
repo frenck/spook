@@ -15,6 +15,10 @@ from .template_extraction import (
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
+# The pattern enumerates every known domain, so it is long. This walker
+# visits every value in a configuration, so compile it once.
+_ENTITY_ID_RE = re.compile(rf"^{ENTITY_ID_PATTERN}$")
+
 
 async def async_extract_entities_from_action_config(
     hass: HomeAssistant, config: dict[str, Any] | list
@@ -143,7 +147,7 @@ async def async_extract_entities_from_value(
                     value,
                     exc,
                 )
-        elif re.match(rf"^{ENTITY_ID_PATTERN}$", value):
+        elif _ENTITY_ID_RE.match(value):
             # Check if it matches the entity ID pattern with known domains
             entities.add(value)
     elif isinstance(value, list):

@@ -80,6 +80,11 @@ class SpookRepair(AbstractSpookRepair):
             # config (target, entity_id, service data) rather than through Jinja,
             # so the template extraction above does not see them.
             for option in options.values():
+                # Only structured options can hold an action; a plain string
+                # option walks straight back out of the extractor.
+                if not isinstance(option, (dict, list)):
+                    continue
+
                 referenced |= await async_extract_entities_from_action_config(
                     self.hass, option
                 )
