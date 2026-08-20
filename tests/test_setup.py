@@ -65,6 +65,23 @@ class _NoopSpookRepairManager:
         """Unload no repairs."""
 
 
+class _RecordingSpookRepairManager:
+    """Repair manager that records whether it was set up."""
+
+    setups = 0
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the recording repair manager."""
+        self.hass = hass
+
+    async def async_setup(self) -> None:
+        """Record that repairs were set up."""
+        type(self).setups += 1
+
+    async def async_on_unload(self) -> None:
+        """Unload no repairs."""
+
+
 def _sub_integration_names() -> set[str]:
     """Return bundled Spook sub-integration names."""
     return {
@@ -296,3 +313,75 @@ async def test_setup_entry_restart_required_paths(
     assert issue.severity is ir.IssueSeverity.WARNING
     assert issue.translation_key == "restart_required"
     await original_async_stop()
+
+
+async def test_repairs_are_set_up_when_loaded_after_start(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test repairs still start when the entry loads after Home Assistant did.
+
+    Reloading the config entry, or setting Spook up for the first time on a
+    running instance, re-runs async_setup_entry long after
+    EVENT_HOMEASSISTANT_STARTED has fired. Waiting for that event alone leaves
+    every repair check dead until a core restart, with nothing in the log.
+    """
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup."""
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_noop)
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _RecordingSpookRepairManager)
+    monkeypatch.setattr(_RecordingSpookRepairManager, "setups", 0)
+
+    hass.set_state(CoreState.running)
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert _RecordingSpookRepairManager.setups == 1
+
+
+async def test_repairs_are_set_up_once_when_loaded_before_start(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the normal boot path still sets repairs up exactly once."""
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup."""
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_noop)
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _RecordingSpookRepairManager)
+    monkeypatch.setattr(_RecordingSpookRepairManager, "setups", 0)
+
+    hass.set_state(CoreState.not_running)
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    # Nothing yet, repairs deliberately wait for a settled instance.
+    assert _RecordingSpookRepairManager.setups == 0
+
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
+    await hass.async_block_till_done()
+
+    assert _RecordingSpookRepairManager.setups == 1
