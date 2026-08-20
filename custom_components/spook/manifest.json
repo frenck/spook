@@ -1,7 +1,15 @@
 {
   "domain": "spook",
   "name": "Spook",
-  "after_dependencies": ["blueprint", "cloud", "energy", "proximity", "timer"],
+  "after_dependencies": [
+    "blueprint",
+    "cloud",
+    "counter",
+    "energy",
+    "group",
+    "proximity",
+    "timer"
+  ],
   "codeowners": ["@frenck"],
   "config_flow": true,
   "dependencies": [

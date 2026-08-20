@@ -75,7 +75,7 @@ def test_every_sensor_has_a_translation() -> None:
     missing = [
         sensor.translation_key
         for sensor in SENSORS
-        if sensor.translation_key not in translations
+        if not translations.get(sensor.translation_key, {}).get("name")
     ]
 
     assert not missing
