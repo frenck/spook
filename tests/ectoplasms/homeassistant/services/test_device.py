@@ -9,6 +9,7 @@ import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.components.homeassistant import DOMAIN
+from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.core import Context, HomeAssistant
 from homeassistant.helpers.device_registry import DeviceEntryDisabler
 
@@ -35,6 +36,22 @@ def device_services(hass: HomeAssistant) -> None:
 def config_entry(hass: HomeAssistant) -> MockConfigEntry:
     """Return a config entry for test devices."""
     entry = MockConfigEntry(domain="test", title="Test")
+    entry.add_to_hass(hass)
+    return entry
+
+
+@pytest.fixture
+def disabled_config_entry(hass: HomeAssistant) -> MockConfigEntry:
+    """Return a disabled config entry for test devices.
+
+    Devices it owns are disabled by the config entry, which is the only
+    consistent way to reach that disable reason since Home Assistant 2026.8.
+    """
+    entry = MockConfigEntry(
+        domain="test",
+        title="Disabled test",
+        disabled_by=ConfigEntryDisabler.USER,
+    )
     entry.add_to_hass(hass)
     return entry
 
@@ -146,6 +163,7 @@ async def test_disable_device_service_preserves_parent_disabled_reason(
     hass: HomeAssistant,
     hass_admin_user: MockUser,
     config_entry: MockConfigEntry,
+    disabled_config_entry: MockConfigEntry,
     device_registry: DeviceRegistry,
 ) -> None:
     """Test disabling a child device does not override the parent disable reason."""
@@ -154,11 +172,13 @@ async def test_disable_device_service_preserves_parent_disabled_reason(
         identifiers={("test", "grandparent-device")},
     )
     parent = device_registry.async_get_or_create(
-        config_entry_id=config_entry.entry_id,
+        config_entry_id=disabled_config_entry.entry_id,
         identifiers={("test", "parent-device")},
-        disabled_by=DeviceEntryDisabler.CONFIG_ENTRY,
         via_device=("test", "grandparent-device"),
     )
+
+    assert parent.disabled_by is DeviceEntryDisabler.CONFIG_ENTRY
+
     child = device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
@@ -249,3 +269,71 @@ async def test_enable_device_service_enables_parent_device(
 
     assert device_registry.async_get(child.id).disabled_by is None
     assert device_registry.async_get(parent.id).disabled_by is None
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_enable_device_service_survives_via_device_self_reference(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test enabling a device whose via_device_id points at itself."""
+    device = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "self-referencing-device")},
+        disabled_by=DeviceEntryDisabler.USER,
+    )
+    device_registry.async_update_device(device_id=device.id, via_device_id=device.id)
+
+    await hass.services.async_call(
+        DOMAIN,
+        "enable_device",
+        {"device_id": device.id},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert device_registry.async_get(device.id).disabled_by is None
+
+
+@pytest.mark.usefixtures("device_services")
+async def test_device_services_survive_via_device_cycle(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    config_entry: MockConfigEntry,
+    device_registry: DeviceRegistry,
+) -> None:
+    """Test the device services on two devices forming a via_device cycle."""
+    first = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "cycle-first-device")},
+    )
+    second = device_registry.async_get_or_create(
+        config_entry_id=config_entry.entry_id,
+        identifiers={("test", "cycle-second-device")},
+    )
+    device_registry.async_update_device(device_id=first.id, via_device_id=second.id)
+    device_registry.async_update_device(device_id=second.id, via_device_id=first.id)
+
+    await hass.services.async_call(
+        DOMAIN,
+        "disable_device",
+        {"device_id": first.id},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert device_registry.async_get(first.id).disabled_by is DeviceEntryDisabler.USER
+    assert device_registry.async_get(second.id).disabled_by is DeviceEntryDisabler.USER
+
+    await hass.services.async_call(
+        DOMAIN,
+        "enable_device",
+        {"device_id": first.id},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert device_registry.async_get(first.id).disabled_by is None
+    assert device_registry.async_get(second.id).disabled_by is None
