@@ -4,15 +4,23 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.helpers import config_validation as cv
+from pytest_homeassistant_custom_component.common import MockConfigEntry
+
+from homeassistant.helpers import (
+    config_validation as cv,
+    device_registry as dr,
+)
 
 from custom_components.spook.entity_filtering import (
+    async_filter_known_device_ids,
     async_filter_known_services,
     async_find_services_in_sequence,
+    async_get_all_device_ids,
 )
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    import pytest
 
 
 def test_find_services_skips_disabled_nested_steps() -> None:
@@ -124,3 +132,51 @@ def test_find_services_condition_gates_only_its_own_sequence() -> None:
     ]
 
     assert async_find_services_in_sequence(sequence) == {"light.turn_on"}
+
+    
+def test_registered_device_ids_are_known(
+    hass: HomeAssistant,
+    device_registry: dr.DeviceRegistry,
+) -> None:
+    """Test registered devices are known and made-up IDs are not."""
+    entry = MockConfigEntry(domain="test", title="Test")
+    entry.add_to_hass(hass)
+    device = device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={("test", "device")},
+    )
+
+    assert device.id in async_get_all_device_ids(hass)
+    assert async_filter_known_device_ids(
+        hass,
+        device_ids={device.id, "not-a-device"},
+    ) == {"not-a-device"}
+
+
+def test_composite_device_ids_are_known(
+    hass: HomeAssistant,
+    device_registry: dr.DeviceRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test pre-split device IDs are not reported as unknown.
+
+    Home Assistant Core 2026.8 split devices spanning multiple config entries
+    into one device per entry. The pre-split ID is gone from the registry, but
+    still resolves, so automations targeting it keep working.
+    """
+    entry = MockConfigEntry(domain="test", title="Test")
+    entry.add_to_hass(hass)
+    split = device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={("test", "split-device")},
+    )
+    # Stubbed so the test also runs on cores that predate the device split.
+    monkeypatch.setattr(
+        device_registry.devices,
+        "get_composite_splits",
+        lambda: {"pre-split-id": [split]},
+        raising=False,
+    )
+
+    assert "pre-split-id" in async_get_all_device_ids(hass)
+    assert async_filter_known_device_ids(hass, device_ids={"pre-split-id"}) == set()

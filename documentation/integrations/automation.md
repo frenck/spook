@@ -9,7 +9,7 @@ date: 2024-02-10T15:58:22+01:00
 ---
 
 ```{image} https://brands.home-assistant.io/automation/logo.png
-:alt: The Home Asistant automation icon
+:alt: The Home Assistant automation icon
 :width: 250px
 :align: center
 ```
