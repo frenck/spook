@@ -230,3 +230,80 @@ async def test_scene_created_by_a_script_is_not_reported(
     )
 
     assert _reported(issue_registry) is None
+
+
+async def test_scene_id_in_either_payload_key_counts(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test both payload keys are read, not just whichever comes first.
+
+    A step can carry `data` and `data_template` at once, with the scene_id in
+    either. Home Assistant merges them, so preferring one key loses the other.
+    """
+    hass.states.async_set("light.hall", "on")
+
+    await _inspect(
+        hass,
+        [
+            {
+                "service": "scene.create",
+                "data": {"snapshot_entities": ["light.hall"]},
+                "data_template": {"scene_id": "split"},
+            },
+            {"action": "scene.turn_on", "target": {"entity_id": "scene.split"}},
+        ],
+    )
+
+    assert _reported(issue_registry) is None
+
+
+async def test_scene_created_by_a_broken_automation_is_still_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a configuration Home Assistant rejected does not vouch for a scene.
+
+    Home Assistant keeps a placeholder entity for an automation it could not
+    validate, and that placeholder still carries the raw configuration. It can
+    never run, so the scene it would have created does not exist.
+    """
+    hass.states.async_set("light.hall", "on")
+
+    assert await async_setup_component(
+        hass,
+        automation.DOMAIN,
+        {
+            "automation": [
+                {
+                    # No triggers key, so validation fails and Home Assistant
+                    # keeps an unavailable placeholder for it.
+                    "alias": "Broken",
+                    "actions": [
+                        {
+                            "action": "scene.create",
+                            "data": {
+                                "scene_id": "never_made",
+                                "snapshot_entities": ["light.hall"],
+                            },
+                        },
+                    ],
+                },
+                {
+                    "alias": "Scene test",
+                    "triggers": [{"trigger": "event", "event_type": "poke"}],
+                    "actions": [
+                        {
+                            "action": "scene.turn_on",
+                            "target": {"entity_id": "scene.never_made"},
+                        },
+                    ],
+                },
+            ],
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass)._async_inspect_with_cleanup()
+
+    assert "scene.never_made" in (_reported(issue_registry) or "")

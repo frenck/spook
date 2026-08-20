@@ -5,8 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.automation import DOMAIN as AUTOMATION_DOMAIN
-from homeassistant.components.script import DOMAIN as SCRIPT_DOMAIN
+from homeassistant.components import automation, script
 from homeassistant.const import (
     CONF_CHOOSE,
     CONF_DEFAULT,
@@ -67,6 +66,12 @@ IGNORED_ENTITY_DOMAINS = (
 # `scene.create` builds a scene at runtime, named after its `scene_id`.
 _SCENE_CREATE_ACTIONS = ("scene.create",)
 _CONF_SCENE_ID = "scene_id"
+
+# Placeholders Home Assistant keeps for configurations it could not validate.
+_UNAVAILABLE_ENTITY_CLASSES = (
+    automation.UnavailableAutomationEntity,
+    script.UnavailableScriptEntity,
+)
 
 # Home Assistant's legacy time_date platform can create these entity IDs without
 # entity-registry entries. Treat them as known so references to configured
@@ -194,9 +199,18 @@ def _find_created_scene_ids(config: Any) -> set[str]:
 
     if config.get("action", config.get(CONF_SERVICE)) in _SCENE_CREATE_ACTIONS:
         # This walks raw configuration, where the legacy `data_template` key
-        # has not been folded into `data` yet. Home Assistant still accepts it.
-        data = config.get(CONF_SERVICE_DATA, config.get(CONF_SERVICE_DATA_TEMPLATE))
-        if isinstance(data, dict):
+        # has not been folded into `data` yet. Home Assistant accepts both and
+        # merges them, so read both rather than preferring one.
+        data = {
+            key: value
+            for payload in (
+                config.get(CONF_SERVICE_DATA),
+                config.get(CONF_SERVICE_DATA_TEMPLATE),
+            )
+            if isinstance(payload, dict)
+            for key, value in payload.items()
+        }
+        if data:
             scene_id = data.get(_CONF_SCENE_ID)
             # A templated scene_id cannot be resolved, so it is left alone and
             # the scene it builds stays reportable.
@@ -224,10 +238,15 @@ def async_get_created_scene_ids(hass: HomeAssistant) -> set[str]:
     if (scene_ids := cache.created_scene_ids) is None:
         scene_ids = set()
         instances = hass.data.get(DATA_INSTANCES, {})
-        for domain in (AUTOMATION_DOMAIN, SCRIPT_DOMAIN):
+        for domain in (automation.DOMAIN, script.DOMAIN):
             if (entity_component := instances.get(domain)) is None:
                 continue
             for entity in entity_component.entities:
+                if isinstance(entity, _UNAVAILABLE_ENTITY_CLASSES):
+                    # Kept around for a configuration Home Assistant rejected.
+                    # It cannot run, so it creates nothing.
+                    continue
+
                 if (raw_config := getattr(entity, "raw_config", None)) is not None:
                     scene_ids |= _find_created_scene_ids(raw_config)
         cache.created_scene_ids = scene_ids
