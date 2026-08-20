@@ -36,12 +36,10 @@ def _last_triggered(variables: Any) -> datetime | None:
     if not isinstance(this, dict):
         return None
 
+    # Home Assistant parses the restored value back into a datetime before it
+    # reaches the state machine, so this is never the raw ISO string.
     raw = this.get("attributes", {}).get("last_triggered")
-    if isinstance(raw, datetime):
-        return raw
-    if isinstance(raw, str):
-        return dt_util.parse_datetime(raw)
-    return None
+    return raw if isinstance(raw, datetime) else None
 
 
 class SpookCondition(Condition):
