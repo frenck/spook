@@ -245,7 +245,7 @@
             "title": "Entidades desconhecidas utilizadas em: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação refere os seguintes pisos que são desconhecidos para o Home Assistant:\n\n{devices}\n\n\n\nPara corrigir este erro, [edita a automação]({edit}) e remove os pisos inexistentes.\n\nSpook 👻 O teu amigo.",
+            "description": "Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação refere os seguintes pisos que são desconhecidos para o Home Assistant:\n\n{floors}\n\n\n\nPara corrigir este erro, [edita a automação]({edit}) e remove os pisos inexistentes.\n\nSpook 👻 O teu amigo.",
             "title": "Unknown floors used in: {automation}"
         },
         "automation_unknown_label_references": {
@@ -317,7 +317,7 @@
             "fix_flow": {
                 "step": {
                     "confirm": {
-                        "description": "{descrição}",
+                        "description": "{description}",
                         "title": "{title}"
                     }
                 }
@@ -425,7 +425,7 @@
         },
         "lovelace_unknown_area_references": {
             "description": "O Spook encontrou um fantasma nos teus dashboards 👻\n\nEnquanto flutuava por ai, o Spook cruzou-se com o seguinte dashboard:\n\n{dashboard}\n\nEste dashboard contém as seguintes áreas que são desconhecidas para o Home Assistant:\n\n{areas}\n\n\n\nIsto geralmente acontece quando uma área foi renomeada ou removida. Para corrigir este erro, [edita a dashboard]({edit}) e remove as entidades inexistentes.\n\nSpook 👻 O teu amigo.",
-            "title": "Áreas desconhecidas utilizadas na dashboard: {automation}"
+            "title": "Áreas desconhecidas utilizadas na dashboard: {dashboard}"
         },
         "energy_unknown_references": {
             "description": "O Spook encontrou um fantasma no teu dashboard de energia 👻\n\nEste dashboard contém as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nIsto geralmente acontece quando uma entidade usada na configuração da energia foi renomeada ou removida. Para corrigir este erro, vai a Configurações > Painéis > Energia e atualiza ou remove as entidades.\n\nSpook 👻 O teu amigo."
@@ -434,7 +434,7 @@
             "description": "O Spook encontrou um fantasma nas tuas entidades 👻\n\nA integração {integration} foi configurada, mas as seguinte entidades que ela registou não estão disponíveis ou já não existem:\n\n{entities}\n\n\n\nIsto geralmente acontece quando um dispositivo ou a sua entidade foi removida na origem mas os seus registos ficaram para trás. Para corrigir este erro, remove essas entidades do registo se já as utilizares.\n\nSpook 👻 O teu amigo."
         },
         "script_unknown_condition_references": {
-            "title": "Condições desconhecidas usadas em: {scripts}"
+            "title": "Condições desconhecidas usadas em: {script}"
         }
     },
     "conditions": {
