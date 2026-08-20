@@ -14,7 +14,10 @@ from typing import TYPE_CHECKING
 
 from homeassistant.helpers import entity_registry as er
 
-from .entity_filtering import async_get_all_entity_ids
+from .entity_filtering import (
+    async_get_all_entity_ids_by_domain,
+    async_get_rename_suggestion_cache,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -42,13 +45,14 @@ def async_describe_unknown_entities(
         deleted.entity_id: deleted
         for deleted in entity_registry.deleted_entities.values()
     }
-    known_entity_ids = async_get_all_entity_ids(hass)
+    known_by_domain = async_get_all_entity_ids_by_domain(hass)
+    suggestions = async_get_rename_suggestion_cache(hass)
     # Parenthesized, like the deleted-on and did-you-mean details below.
     suffix = f" ({note})" if note else ""
 
     return "\n".join(
         f"- `{entity_id}`"
-        + _detail(entity_id, deleted_by_entity_id, known_entity_ids)
+        + _detail(entity_id, deleted_by_entity_id, known_by_domain, suggestions)
         + suffix
         for entity_id in entity_ids
     )
@@ -57,20 +61,41 @@ def async_describe_unknown_entities(
 def _detail(
     entity_id: str,
     deleted_by_entity_id: dict[str, er.DeletedRegistryEntry],
-    known_entity_ids: set[str],
+    known_by_domain: dict[str, list[str]],
+    suggestions: dict[str, str | None],
 ) -> str:
     """Return the trailing detail for a single unknown entity ID."""
     if (deleted := deleted_by_entity_id.get(entity_id)) is not None:
         when = deleted.modified_at.date().isoformat()
         return f" (deleted on {when}, was provided by `{deleted.platform}`)"
 
+    if (match := _rename_suggestion(entity_id, known_by_domain, suggestions)) is None:
+        return ""
+
+    return f" (did you mean `{match}`?)"
+
+
+def _rename_suggestion(
+    entity_id: str,
+    known_by_domain: dict[str, list[str]],
+    suggestions: dict[str, str | None],
+) -> str | None:
+    """Return a similarly named known entity ID, if one is close enough.
+
+    Only entities in the same domain are considered. A rename that crossed
+    domains is not a rename, and comparing against every entity in the
+    instance is what made this expensive.
+    """
+    if entity_id in suggestions:
+        return suggestions[entity_id]
+
+    domain = entity_id.split(".", 1)[0]
     matches = difflib.get_close_matches(
         entity_id,
-        known_entity_ids,
+        known_by_domain.get(domain, ()),
         n=1,
         cutoff=_RENAME_SIMILARITY_CUTOFF,
     )
-    if matches:
-        return f" (did you mean `{matches[0]}`?)"
+    suggestions[entity_id] = matches[0] if matches else None
 
-    return ""
+    return suggestions[entity_id]

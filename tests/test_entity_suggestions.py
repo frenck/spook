@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from custom_components.spook import entity_filtering
 from custom_components.spook.entity_suggestions import async_describe_unknown_entities
 
 if TYPE_CHECKING:
@@ -56,4 +57,52 @@ def test_deleted_takes_precedence_over_rename(
     # the deleted path is covered above.
     assert "did you mean" in async_describe_unknown_entities(
         hass, ["sensor.temperatur"]
+    )
+
+
+def test_rename_suggestion_stays_within_the_domain(hass: HomeAssistant) -> None:
+    """Test a near match in another domain is not offered as a rename.
+
+    A rename that crossed domains is not a rename, and only comparing within
+    the domain is what keeps this cheap on a large instance.
+    """
+    hass.states.async_set("binary_sensor.living_room_motion", "off")
+
+    assert async_describe_unknown_entities(hass, ["sensor.living_room_motion"]) == (
+        "- `sensor.living_room_motion`"
+    )
+
+
+def test_rename_suggestion_is_reused_across_calls(hass: HomeAssistant) -> None:
+    """Test the same missing entity is not recomputed for every reference.
+
+    One removed entity is usually referenced from many automations, and each
+    builds its own issue text. The answer has to be stable across those.
+    """
+    hass.states.async_set("sensor.living_room_temperature", "21")
+
+    first = async_describe_unknown_entities(hass, ["sensor.living_room_temperatur"])
+    second = async_describe_unknown_entities(hass, ["sensor.living_room_temperatur"])
+
+    assert first == second
+    assert "did you mean" in first
+
+
+def test_rename_suggestion_follows_the_entity_ids_cache(hass: HomeAssistant) -> None:
+    """Test a cached answer does not outlive the entities it was based on.
+
+    The suggestion cache is cleared along with the known entity IDs, so a
+    "nothing similar exists" answer has to stop being true once something
+    similar shows up.
+    """
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+
+    assert async_describe_unknown_entities(hass, ["sensor.living_room_temperatur"]) == (
+        "- `sensor.living_room_temperatur`"
+    )
+
+    hass.states.async_set("sensor.living_room_temperature", "21")
+
+    assert "did you mean" in async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
     )
