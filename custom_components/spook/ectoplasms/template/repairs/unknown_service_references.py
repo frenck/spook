@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
+import voluptuous as vol
+
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_SERVICE_REGISTERED,
     EVENT_SERVICE_REMOVED,
 )
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import config_validation as cv
 
 from ....const import LOGGER
 from ....entity_filtering import (
@@ -16,7 +18,6 @@ from ....entity_filtering import (
     async_get_all_services,
 )
 from ....repairs import AbstractSpookRepair
-from ....template_extraction import is_template_string
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -28,7 +29,6 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_COMPONENT_LOADED,
         EVENT_SERVICE_REGISTERED,
         EVENT_SERVICE_REMOVED,
-        er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
     inspect_config_entry_changed = "template"
     inspect_on_reload = "template"
@@ -43,17 +43,23 @@ class SpookRepair(AbstractSpookRepair):
         for entry in self.hass.config_entries.async_entries(self.domain):
             self.possible_issue_ids.add(entry.entry_id)
 
+            # Which options hold actions grows with every new template helper
+            # type, so ask Home Assistant instead of keeping a list of keys.
+            #
+            # Validating is not just a shape check. The walker reads keys that
+            # only exist after validation, so raw options make it raise on
+            # shapes the action editor writes every day, a `parallel` block
+            # among them. Validation normalizes those, and turns a templated
+            # action name into a Template, which is not a string and so falls
+            # out of the known-services filter on its own.
             services = set()
             for option in entry.options.values():
-                if not isinstance(option, list) or not all(
-                    isinstance(step, dict) for step in option
-                ):
+                try:
+                    sequence = cv.SCRIPT_SCHEMA(option)
+                except vol.Invalid:
                     continue
-                services.update(
-                    service
-                    for service in async_find_services_in_sequence(option)
-                    if not is_template_string(service)
-                )
+
+                services.update(async_find_services_in_sequence(sequence))
 
             unknown_services = async_filter_known_services(
                 self.hass,
