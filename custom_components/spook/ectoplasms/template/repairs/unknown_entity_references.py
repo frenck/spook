@@ -8,6 +8,7 @@ from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
 from homeassistant.core import Event, callback
 from homeassistant.helpers import entity_registry as er
 
+from ....action_extraction import async_extract_entities_from_action_config
 from ....const import LOGGER
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
@@ -70,9 +71,24 @@ class SpookRepair(AbstractSpookRepair):
         for entry in self.hass.config_entries.async_entries(self.domain):
             self.possible_issue_ids.add(entry.entry_id)
 
-            referenced = await async_extract_entities_from_config(
-                self.hass, dict(entry.options)
-            )
+            options = dict(entry.options)
+            referenced = await async_extract_entities_from_config(self.hass, options)
+
+            # Template helpers can also run action sequences: a button's press,
+            # a switch's turn_on/turn_off, a cover's open/close, an alarm's
+            # arm/disarm and so on. Those reference entities through structured
+            # config (target, entity_id, service data) rather than through Jinja,
+            # so the template extraction above does not see them.
+            for option in options.values():
+                # Only structured options can hold an action; a plain string
+                # option walks straight back out of the extractor.
+                if not isinstance(option, (dict, list)):
+                    continue
+
+                referenced |= await async_extract_entities_from_action_config(
+                    self.hass, option
+                )
+
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass,
                 referenced,
