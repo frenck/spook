@@ -25,8 +25,6 @@ from .services import SpookServiceManager
 from .setup_helpers import async_forward_setup_entry
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
-
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import Event, HomeAssistant
 
@@ -87,18 +85,23 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)
 
-    _ghost_busters_unsub: Callable[[], None] | None = None
-
-    async def _ghost_busters(_: Event) -> None:
+    async def _ghost_busters(_: Event | None = None) -> None:
         """Send them in, time for some ghost chasing."""
         await repairs.async_setup()
         entry.async_on_unload(repairs.async_on_unload)
 
-    # Wait until Home Assistant is started, before doing repairs
-    _ghost_busters_unsub = async_listen_once_tracked(
-        hass, EVENT_HOMEASSISTANT_STARTED, _ghost_busters
-    )
-    entry.async_on_unload(_ghost_busters_unsub)
+    if hass.state == CoreState.running:
+        # Home Assistant is already up, so the started event has been and gone.
+        # This is the reload path, and setting up for the first time on a
+        # running instance. Waiting for an event that cannot fire again would
+        # leave every repair check dead until a core restart, silently.
+        await _ghost_busters()
+    else:
+        # Otherwise wait for a settled instance, so repairs do not inspect a
+        # half-loaded Home Assistant and report things that are still coming.
+        entry.async_on_unload(
+            async_listen_once_tracked(hass, EVENT_HOMEASSISTANT_STARTED, _ghost_busters)
+        )
 
     # Set up platforms
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
