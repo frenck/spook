@@ -113,6 +113,7 @@ class SpookRepair(AbstractSpookRepair):
                     translation_placeholders={
                         "entities": self._describe(unknown_entities, unknown_active),
                         "helper": entry.title,
+                        "edit": "/config/helpers",
                     },
                 )
 
