@@ -79,6 +79,12 @@ class SpookRepair(AbstractSpookRepair):
             # arm/disarm and so on. Those reference entities through structured
             # config (target, entity_id, service data) rather than through Jinja,
             # so the template extraction above does not see them.
+            #
+            # Extracting the actions twice separates references that a step
+            # carrying `enabled: false` is the only source of: those cannot
+            # break a run, so the report says so instead of listing them
+            # alongside the ones that can.
+            active = set(referenced)
             for option in options.values():
                 # Only structured options can hold an action; a plain string
                 # option walks straight back out of the extractor.
@@ -88,18 +94,48 @@ class SpookRepair(AbstractSpookRepair):
                 referenced |= await async_extract_entities_from_action_config(
                     self.hass, option
                 )
+                active |= await async_extract_entities_from_action_config(
+                    self.hass, option, include_disabled=False
+                )
 
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass,
                 referenced,
                 known_entity_ids=known_entity_ids,
             ):
+                unknown_active = async_filter_known_entity_ids(
+                    self.hass,
+                    active,
+                    known_entity_ids=known_entity_ids,
+                )
                 self.async_create_issue(
                     issue_id=entry.entry_id,
                     translation_placeholders={
-                        "entities": async_describe_unknown_entities(
-                            self.hass, sorted(unknown_entities)
-                        ),
+                        "entities": self._describe(unknown_entities, unknown_active),
                         "helper": entry.title,
                     },
                 )
+
+    def _describe(self, unknown: set[str], unknown_active: set[str]) -> str:
+        """Describe the unknown entities, qualifying the disabled-only ones.
+
+        An entity is only qualified when nothing that runs references it. A
+        Jinja template inside a disabled step is still seen by the template
+        extraction, so such a reference stays unqualified -- the report errs
+        towards saying too much rather than calling a live problem harmless.
+        """
+        described = async_describe_unknown_entities(self.hass, sorted(unknown_active))
+        if disabled_only := unknown - unknown_active:
+            described = "\n".join(
+                part
+                for part in (
+                    described,
+                    async_describe_unknown_entities(
+                        self.hass,
+                        sorted(disabled_only),
+                        note="only referenced from disabled steps",
+                    ),
+                )
+                if part
+            )
+        return described

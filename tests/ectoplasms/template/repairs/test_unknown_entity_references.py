@@ -174,3 +174,200 @@ async def test_non_action_options_create_no_issue(
         DOMAIN,
         f"template_unknown_entity_references_{entry.entry_id}",
     )
+
+
+async def test_disabled_step_reference_is_qualified(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a reference only a disabled step makes is marked as such."""
+    entry = MockConfigEntry(
+        domain="template",
+        title="Half-retired button",
+        options={
+            "name": "Half-retired button",
+            "template_type": "button",
+            "press": [
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.gone_live"},
+                },
+                {
+                    "action": "light.turn_on",
+                    "enabled": False,
+                    "target": {"entity_id": "light.gone_retired"},
+                },
+            ],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(
+        DOMAIN,
+        f"template_unknown_entity_references_{entry.entry_id}",
+    )
+    assert issue
+    entities = issue.translation_placeholders["entities"]
+    assert "light.gone_live" in entities
+    assert "light.gone_retired" in entities
+    # Only the disabled one carries the qualifier. Select each line by its
+    # entity ID, so a failure names the entity rather than the block order.
+    lines = entities.splitlines()
+    live = next(line for line in lines if "gone_live" in line)
+    retired = next(line for line in lines if "gone_retired" in line)
+    assert "only referenced from disabled steps" not in live
+    assert "only referenced from disabled steps" in retired
+
+
+async def test_disabled_step_only_still_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a helper whose only bad reference is disabled is still reported.
+
+    Disabled steps come back: a seasonal device parked for half a year is
+    still a broken reference waiting to happen, so it is qualified, not
+    dropped.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Parked button",
+        options={
+            "name": "Parked button",
+            "template_type": "button",
+            "press": [
+                {
+                    "action": "light.turn_on",
+                    "enabled": False,
+                    "target": {"entity_id": "light.seasonal"},
+                },
+            ],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(
+        DOMAIN,
+        f"template_unknown_entity_references_{entry.entry_id}",
+    )
+    assert issue
+    entities = issue.translation_placeholders["entities"]
+    assert "light.seasonal" in entities
+    assert "only referenced from disabled steps" in entities
+
+
+async def test_enabled_key_in_service_data_is_not_a_disabled_step(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an `enabled` key inside a payload does not disable its surroundings.
+
+    Only list members are steps. A service data payload carrying its own
+    `enabled` field must not hide the entities nested around it.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Payload button",
+        options={
+            "name": "Payload button",
+            "template_type": "button",
+            "press": [
+                {
+                    "action": "test.service",
+                    "data": {"payload": {"enabled": False, "entity_id": "light.gone"}},
+                },
+            ],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(
+        DOMAIN,
+        f"template_unknown_entity_references_{entry.entry_id}",
+    )
+    assert issue
+    entities = issue.translation_placeholders["entities"]
+    assert "light.gone" in entities
+    assert "only referenced from disabled steps" not in entities
+
+
+async def test_enabled_key_in_payload_list_is_not_a_disabled_step(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an `enabled` key in a payload list does not disable its surroundings.
+
+    Service data is arbitrary payload, and a list in there is not a sequence
+    of steps. Only the dict case was pinned down before, which left a list
+    one level deeper reported as disabled while nothing was disabled.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Payload list button",
+        options={
+            "name": "Payload list button",
+            "template_type": "button",
+            "press": [
+                {
+                    "action": "mqtt.publish",
+                    "data": {
+                        "payload": {
+                            "items": [{"enabled": False, "entity_id": "light.gone"}],
+                        },
+                    },
+                },
+            ],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(
+        DOMAIN,
+        f"template_unknown_entity_references_{entry.entry_id}",
+    )
+    assert issue
+    entities = issue.translation_placeholders["entities"]
+    assert "light.gone" in entities
+    assert "only referenced from disabled steps" not in entities
+
+
+async def test_templated_enabled_counts_as_active(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a step whose `enabled` is a template is treated as running."""
+    entry = MockConfigEntry(
+        domain="template",
+        title="Maybe button",
+        options={
+            "name": "Maybe button",
+            "template_type": "button",
+            "press": [
+                {
+                    "action": "light.turn_on",
+                    "enabled": "{{ 1 == 2 }}",
+                    "target": {"entity_id": "light.gone"},
+                },
+            ],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(
+        DOMAIN,
+        f"template_unknown_entity_references_{entry.entry_id}",
+    )
+    assert issue
+    entities = issue.translation_placeholders["entities"]
+    assert "light.gone" in entities
+    assert "only referenced from disabled steps" not in entities

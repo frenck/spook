@@ -29,17 +29,27 @@ _RENAME_SIMILARITY_CUTOFF = 0.8
 def async_describe_unknown_entities(
     hass: HomeAssistant,
     entity_ids: Iterable[str],
+    *,
+    note: str | None = None,
 ) -> str:
-    """Return a bulleted, enriched description of unknown entity IDs."""
+    """Return a bulleted, enriched description of unknown entity IDs.
+
+    A ``note`` is appended to every line, to qualify a group of entity IDs
+    that share something worth saying once per entry.
+    """
     entity_registry = er.async_get(hass)
     deleted_by_entity_id = {
         deleted.entity_id: deleted
         for deleted in entity_registry.deleted_entities.values()
     }
     known_entity_ids = async_get_all_entity_ids(hass)
+    # Parenthesized, like the deleted-on and did-you-mean details below.
+    suffix = f" ({note})" if note else ""
 
     return "\n".join(
-        f"- `{entity_id}`" + _detail(entity_id, deleted_by_entity_id, known_entity_ids)
+        f"- `{entity_id}`"
+        + _detail(entity_id, deleted_by_entity_id, known_entity_ids)
+        + suffix
         for entity_id in entity_ids
     )
 
