@@ -297,6 +297,48 @@ async def test_enabled_key_in_service_data_is_not_a_disabled_step(
     assert "only referenced from disabled steps" not in entities
 
 
+async def test_enabled_key_in_payload_list_is_not_a_disabled_step(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an `enabled` key in a payload list does not disable its surroundings.
+
+    Service data is arbitrary payload, and a list in there is not a sequence
+    of steps. Only the dict case was pinned down before, which left a list
+    one level deeper reported as disabled while nothing was disabled.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Payload list button",
+        options={
+            "name": "Payload list button",
+            "template_type": "button",
+            "press": [
+                {
+                    "action": "mqtt.publish",
+                    "data": {
+                        "payload": {
+                            "items": [{"enabled": False, "entity_id": "light.gone"}],
+                        },
+                    },
+                },
+            ],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(
+        DOMAIN,
+        f"template_unknown_entity_references_{entry.entry_id}",
+    )
+    assert issue
+    entities = issue.translation_placeholders["entities"]
+    assert "light.gone" in entities
+    assert "only referenced from disabled steps" not in entities
+
+
 async def test_templated_enabled_counts_as_active(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,

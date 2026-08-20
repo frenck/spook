@@ -28,6 +28,7 @@ async def async_extract_entities_from_action_config(
     *,
     include_disabled: bool = True,
     _in_sequence: bool = False,
+    _in_payload: bool = False,
 ) -> set[str]:
     """Extract entity IDs from action configuration.
 
@@ -36,9 +37,9 @@ async def async_extract_entities_from_action_config(
     configuration only references from steps that do not run.
 
     ``enabled`` only counts on list members, which is where steps, triggers and
-    conditions live. Service data is walked as plain nesting, so a payload that
-    happens to carry an ``enabled`` key of its own does not silently hide the
-    entities around it.
+    conditions live, and never below a ``data`` key. Service data is arbitrary
+    payload: a dict or a list in there that happens to carry an ``enabled`` key
+    of its own must not hide the entities around it.
     """
     entities = set()
 
@@ -53,6 +54,7 @@ async def async_extract_entities_from_action_config(
                     item,
                     include_disabled=include_disabled,
                     _in_sequence=True,
+                    _in_payload=_in_payload,
                 )
             )
         return entities
@@ -60,7 +62,12 @@ async def async_extract_entities_from_action_config(
     if not isinstance(config, dict):
         return entities
 
-    if not include_disabled and _in_sequence and config.get(CONF_ENABLED) is False:
+    if (
+        not include_disabled
+        and _in_sequence
+        and not _in_payload
+        and config.get(CONF_ENABLED) is False
+    ):
         return entities
 
     # Extract entity IDs from direct fields
@@ -75,7 +82,7 @@ async def async_extract_entities_from_action_config(
     # Extract from nested configs (like if/then/else, repeat, etc.)
     entities.update(
         await _extract_entities_from_nested_configs(
-            hass, config, include_disabled=include_disabled
+            hass, config, include_disabled=include_disabled, in_payload=_in_payload
         )
     )
 
@@ -143,15 +150,22 @@ async def _extract_entities_from_service_data(
 
 
 async def _extract_entities_from_nested_configs(
-    hass: HomeAssistant, config: dict[str, Any], *, include_disabled: bool = True
+    hass: HomeAssistant,
+    config: dict[str, Any],
+    *,
+    include_disabled: bool = True,
+    in_payload: bool = False,
 ) -> set[str]:
     """Extract entities from nested configurations."""
     entities = set()
-    for value in config.values():
+    for key, value in config.items():
         if isinstance(value, (dict, list)):
             entities.update(
                 await async_extract_entities_from_action_config(
-                    hass, value, include_disabled=include_disabled
+                    hass,
+                    value,
+                    include_disabled=include_disabled,
+                    _in_payload=in_payload or key == "data",
                 )
             )
     return entities
