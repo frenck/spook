@@ -48,10 +48,14 @@ async def test_config_validation(hass: HomeAssistant) -> None:
 async def test_full_chance_always_passes(hass: HomeAssistant) -> None:
     """Test 100 percent always passes."""
     condition = SpookCondition(hass, ConditionConfig(options={"percentage": 100}))
-    assert all(condition(hass) for _ in range(50))
+    await condition.async_setup()
+
+    assert all(condition.async_check() for _ in range(50))
 
 
 async def test_zero_chance_never_passes(hass: HomeAssistant) -> None:
     """Test 0 percent never passes."""
     condition = SpookCondition(hass, ConditionConfig(options={"percentage": 0}))
-    assert not any(condition(hass) for _ in range(50))
+    await condition.async_setup()
+
+    assert not any(condition.async_check() for _ in range(50))
