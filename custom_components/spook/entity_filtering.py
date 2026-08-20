@@ -93,7 +93,9 @@ class EntityIDsCache:
     """Per Home Assistant instance cache of all known entity IDs."""
 
     entity_ids: set[str] | None = None
+    entity_ids_by_domain: dict[str, list[str]] | None = None
     created_scene_ids: set[str] | None = None
+    rename_suggestions: dict[str, str | None] | None = None
     unsubscribe: Callable[[], None] | None = None
 
 
@@ -132,7 +134,9 @@ def async_setup_all_entity_ids_cache_invalidation(
         """Clear the cached set of all entity IDs."""
         LOGGER.debug("Clearing all_entity_ids cache.")
         cache.entity_ids = None
+        cache.entity_ids_by_domain = None
         cache.created_scene_ids = None
+        cache.rename_suggestions = None
 
     @callback
     def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
@@ -170,7 +174,9 @@ def async_setup_all_entity_ids_cache_invalidation(
         unsub_component_loaded()
         unsub_state_changed()
         cache.entity_ids = None
+        cache.entity_ids_by_domain = None
         cache.created_scene_ids = None
+        cache.rename_suggestions = None
         cache.unsubscribe = None  # Mark as unsubscribed
 
     cache.unsubscribe = _unsubscribe_listeners
@@ -296,6 +302,41 @@ def async_get_all_entity_ids(
     if include_all_none:
         return entity_ids.union({ENTITY_MATCH_ALL, ENTITY_MATCH_NONE})
     return entity_ids.copy()
+
+
+@callback
+def async_get_all_entity_ids_by_domain(hass: HomeAssistant) -> dict[str, list[str]]:
+    """Return the known entity IDs, grouped by domain.
+
+    Looking for a similarly named entity only makes sense within a domain, and
+    comparing against every entity in the instance is the expensive way to
+    find that out.
+    """
+    cache = _async_get_cache(hass)
+
+    if (by_domain := cache.entity_ids_by_domain) is None:
+        by_domain = {}
+        for entity_id in async_get_all_entity_ids(hass):
+            by_domain.setdefault(entity_id.split(".", 1)[0], []).append(entity_id)
+        cache.entity_ids_by_domain = by_domain
+
+    return by_domain
+
+
+@callback
+def async_get_rename_suggestion_cache(hass: HomeAssistant) -> dict[str, str | None]:
+    """Return the per-instance cache of rename suggestions.
+
+    One missing entity is usually referenced from several automations, and each
+    of those builds its own issue description. Without this, the same string
+    comparison runs once per reference instead of once per entity.
+    """
+    cache = _async_get_cache(hass)
+
+    if cache.rename_suggestions is None:
+        cache.rename_suggestions = {}
+
+    return cache.rename_suggestions
 
 
 @callback
