@@ -43,7 +43,8 @@ def async_describe_unknown_entities(
         for deleted in entity_registry.deleted_entities.values()
     }
     known_entity_ids = async_get_all_entity_ids(hass)
-    suffix = f" — {note}" if note else ""
+    # Parenthesized, like the deleted-on and did-you-mean details below.
+    suffix = f" ({note})" if note else ""
 
     return "\n".join(
         f"- `{entity_id}`"
