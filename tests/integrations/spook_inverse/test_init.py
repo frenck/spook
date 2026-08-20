@@ -48,7 +48,7 @@ async def test_async_get_source_entity_device_id_resolves_entity_id(
 async def test_async_migrate_entry_removes_helper_from_source_device(
     hass: HomeAssistant,
 ) -> None:
-    """Test migration removes the helper from the old source device."""
+    """Test migration removes the helper's duplicate of the source device."""
     source_entry = MockConfigEntry(domain="switch", title="Source")
     source_entry.add_to_hass(hass)
 
@@ -78,22 +78,20 @@ async def test_async_migrate_entry_removes_helper_from_source_device(
     )
     migrated_entry.add_to_hass(hass)
 
-    device_registry.async_get_or_create(
+    # A device belongs to a single config entry since Home Assistant 2026.8, so a
+    # helper that claimed the source device's identity now owns a fork of it.
+    helper_device = device_registry.async_get_or_create(
         config_entry_id=migrated_entry.entry_id,
         identifiers={("switch", "source-device")},
     )
-    assert (
-        migrated_entry.entry_id in device_registry.async_get(device.id).config_entries
-    )
+    assert helper_device.id != device.id
+    assert helper_device.config_entries == {migrated_entry.entry_id}
 
     assert await hass.config_entries.async_setup(migrated_entry.entry_id)
     await hass.async_block_till_done()
 
     assert migrated_entry.minor_version == MIGRATION_MINOR_VERSION
-    assert (
-        migrated_entry.entry_id
-        not in device_registry.async_get(device.id).config_entries
-    )
+    assert device_registry.async_get(helper_device.id) is None
 
 
 async def test_async_migrate_entry_handles_unresolved_source_entity_id(

@@ -77,6 +77,23 @@ async def test_number_services_raise_readable_error_for_invalid_amount(
     "service_cls",
     [increment.SpookService, decrement.SpookService],
 )
+async def test_number_services_reject_near_multiples_of_large_steps(
+    hass: Any,
+    service_cls: type[increment.SpookService | decrement.SpookService],
+) -> None:
+    """Test the tolerance stays absolute and does not grow with the step."""
+    entity = MockNumberEntity(0)
+    entity.step = 1_000_000_000
+    call = SimpleNamespace(data={"amount": 999_999_999})
+
+    with pytest.raises(ValueError, match="needs to be a multiple of"):
+        await service_cls(hass).async_handle_service(entity, call)
+
+
+@pytest.mark.parametrize(
+    "service_cls",
+    [increment.SpookService, decrement.SpookService],
+)
 async def test_number_services_raise_context_for_invalid_native_values(
     hass: Any,
     service_cls: type[increment.SpookService | decrement.SpookService],

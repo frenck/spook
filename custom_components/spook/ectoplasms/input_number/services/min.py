@@ -24,5 +24,4 @@ class SpookService(AbstractSpookEntityComponentService[InputNumber]):
         call: ServiceCall,  # noqa: ARG002
     ) -> None:
         """Handle the service call."""
-        # pylint: disable-next=protected-access
-        await entity.async_set_value(entity._minimum)  # noqa: SLF001
+        await entity.async_set_native_value(entity.native_min_value)
