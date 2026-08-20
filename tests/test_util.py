@@ -223,7 +223,6 @@ async def test_filter_template_entities_ignores_ignored_domains(
     unknown = await async_filter_known_entity_ids_with_templates(
         hass,
         {
-            "{{ states('scene.goodnight') }}",
             "{{ states('group.family') }}",
             "{{ states('device_tracker.phone') }}",
             "persistent_notification.update",
@@ -233,6 +232,24 @@ async def test_filter_template_entities_ignores_ignored_domains(
     )
 
     assert unknown == {"light.missing"}
+
+
+async def test_filter_template_entities_reports_missing_scenes(
+    hass: HomeAssistant,
+) -> None:
+    """Test scenes are checked rather than ignored wholesale.
+
+    Scenes used to sit in the ignored domains because `scene.create` builds
+    them at runtime. Those are found by scanning configurations now, so a
+    scene nothing creates is a genuinely missing one.
+    """
+    unknown = await async_filter_known_entity_ids_with_templates(
+        hass,
+        {"{{ states('scene.goodnight') }}"},
+        known_entity_ids=set(),
+    )
+
+    assert unknown == {"scene.goodnight"}
 
 
 async def test_extract_entities_from_config_reuses_known_services(

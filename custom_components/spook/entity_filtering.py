@@ -5,6 +5,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.components import automation, script
 from homeassistant.const import (
     CONF_CHOOSE,
     CONF_DEFAULT,
@@ -14,12 +15,15 @@ from homeassistant.const import (
     CONF_REPEAT,
     CONF_SEQUENCE,
     CONF_SERVICE,
+    CONF_SERVICE_DATA,
+    CONF_SERVICE_DATA_TEMPLATE,
     CONF_THEN,
     ENTITY_MATCH_ALL,
     ENTITY_MATCH_NONE,
     EVENT_COMPONENT_LOADED,
     EVENT_HOMEASSISTANT_START,
     EVENT_STATE_CHANGED,
+    Platform,
 )
 from homeassistant.core import (
     callback,
@@ -33,6 +37,7 @@ from homeassistant.helpers import (
     floor_registry as fr,
     label_registry as lr,
 )
+from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.util.hass_dict import HassKey
 
 from .const import LOGGER
@@ -44,12 +49,28 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
-# Entity domains to ignore when filtering unknown entities
+# Entity domains to ignore when filtering unknown entities. These can be
+# created on the fly by an action, so a reference to one that does not exist
+# yet is not necessarily broken.
+#
+# Scenes used to be in here for the same reason. They are not any more: a
+# scene created by an action is found by scanning for `scene.create` instead,
+# which reports the genuinely missing ones rather than none of them. The same
+# treatment is possible for `group.set` and `device_tracker.see`.
 IGNORED_ENTITY_DOMAINS = (
     "device_tracker.",
     "group.",
     "persistent_notification.",
-    "scene.",
+)
+
+# `scene.create` builds a scene at runtime, named after its `scene_id`.
+_SCENE_CREATE_ACTIONS = ("scene.create",)
+_CONF_SCENE_ID = "scene_id"
+
+# Placeholders Home Assistant keeps for configurations it could not validate.
+_UNAVAILABLE_ENTITY_CLASSES = (
+    automation.UnavailableAutomationEntity,
+    script.UnavailableScriptEntity,
 )
 
 # Home Assistant's legacy time_date platform can create these entity IDs without
@@ -72,6 +93,7 @@ class EntityIDsCache:
     """Per Home Assistant instance cache of all known entity IDs."""
 
     entity_ids: set[str] | None = None
+    created_scene_ids: set[str] | None = None
     unsubscribe: Callable[[], None] | None = None
 
 
@@ -110,6 +132,7 @@ def async_setup_all_entity_ids_cache_invalidation(
         """Clear the cached set of all entity IDs."""
         LOGGER.debug("Clearing all_entity_ids cache.")
         cache.entity_ids = None
+        cache.created_scene_ids = None
 
     @callback
     def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
@@ -147,10 +170,91 @@ def async_setup_all_entity_ids_cache_invalidation(
         unsub_component_loaded()
         unsub_state_changed()
         cache.entity_ids = None
+        cache.created_scene_ids = None
         cache.unsubscribe = None  # Mark as unsubscribed
 
     cache.unsubscribe = _unsubscribe_listeners
     return _unsubscribe_listeners
+
+
+def _find_created_scene_ids(config: Any) -> set[str]:
+    """Find scene IDs a configuration creates, at any nesting depth.
+
+    Walks arbitrary nesting rather than the script grammar, because a
+    ``scene.create`` step is recognizable on its own and can sit inside any
+    branch, repeat or parallel block.
+    """
+    scene_ids: set[str] = set()
+
+    if isinstance(config, list):
+        for item in config:
+            scene_ids |= _find_created_scene_ids(item)
+        return scene_ids
+
+    if not isinstance(config, dict):
+        return scene_ids
+
+    if config.get(CONF_ENABLED) is False:
+        return scene_ids
+
+    if config.get("action", config.get(CONF_SERVICE)) in _SCENE_CREATE_ACTIONS:
+        # This walks raw configuration, where the legacy `data_template` key
+        # has not been folded into `data` yet. Home Assistant accepts both and
+        # merges them, so read both rather than preferring one.
+        data = {
+            key: value
+            for payload in (
+                config.get(CONF_SERVICE_DATA),
+                config.get(CONF_SERVICE_DATA_TEMPLATE),
+            )
+            if isinstance(payload, dict)
+            for key, value in payload.items()
+        }
+        if data:
+            scene_id = data.get(_CONF_SCENE_ID)
+            # A templated scene_id cannot be resolved, so it is left alone and
+            # the scene it builds stays reportable.
+            if isinstance(scene_id, str) and scene_id:
+                scene_ids.add(f"{Platform.SCENE}.{scene_id}")
+
+    for value in config.values():
+        if isinstance(value, (dict, list)):
+            scene_ids |= _find_created_scene_ids(value)
+
+    return scene_ids
+
+
+@callback
+def async_get_created_scene_ids(hass: HomeAssistant) -> set[str]:
+    """Return scene entity IDs that configured actions create at runtime.
+
+    ``scene.create`` builds a scene while an automation or script runs, so
+    nothing in the registry knows about it until then, and after a restart it
+    is gone again until the action runs once more. Referencing one is not a
+    broken reference, so collect them and treat them as known.
+    """
+    cache = _async_get_cache(hass)
+
+    if (scene_ids := cache.created_scene_ids) is None:
+        scene_ids = set()
+        instances = hass.data.get(DATA_INSTANCES, {})
+        for domain in (automation.DOMAIN, script.DOMAIN):
+            if (entity_component := instances.get(domain)) is None:
+                continue
+            for entity in entity_component.entities:
+                if isinstance(entity, _UNAVAILABLE_ENTITY_CLASSES):
+                    # Kept around for a configuration Home Assistant rejected.
+                    # It cannot run, so it creates nothing.
+                    continue
+
+                if (raw_config := getattr(entity, "raw_config", None)) is not None:
+                    scene_ids |= _find_created_scene_ids(raw_config)
+        cache.created_scene_ids = scene_ids
+        LOGGER.debug(
+            "Spook found %s scenes created by configured actions", len(scene_ids)
+        )
+
+    return scene_ids.copy()
 
 
 @callback
@@ -173,6 +277,7 @@ def async_get_all_entity_ids(
         combined_entity_ids = entity_ids_from_registry.union(
             entity_ids_from_states,
             KNOWN_TIME_DATE_ENTITY_IDS,
+            async_get_created_scene_ids(hass),
         )
 
         # Filter out ignored domains
