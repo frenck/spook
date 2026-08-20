@@ -16,6 +16,8 @@ from homeassistant.const import (
     CONF_REPEAT,
     CONF_SEQUENCE,
     CONF_SERVICE,
+    CONF_SERVICE_DATA,
+    CONF_SERVICE_DATA_TEMPLATE,
     CONF_THEN,
     ENTITY_MATCH_ALL,
     ENTITY_MATCH_NONE,
@@ -163,6 +165,7 @@ def async_setup_all_entity_ids_cache_invalidation(
         unsub_component_loaded()
         unsub_state_changed()
         cache.entity_ids = None
+        cache.created_scene_ids = None
         cache.unsubscribe = None  # Mark as unsubscribed
 
     cache.unsubscribe = _unsubscribe_listeners
@@ -190,7 +193,9 @@ def _find_created_scene_ids(config: Any) -> set[str]:
         return scene_ids
 
     if config.get("action", config.get(CONF_SERVICE)) in _SCENE_CREATE_ACTIONS:
-        data = config.get("data")
+        # This walks raw configuration, where the legacy `data_template` key
+        # has not been folded into `data` yet. Home Assistant still accepts it.
+        data = config.get(CONF_SERVICE_DATA, config.get(CONF_SERVICE_DATA_TEMPLATE))
         if isinstance(data, dict):
             scene_id = data.get(_CONF_SCENE_ID)
             # A templated scene_id cannot be resolved, so it is left alone and

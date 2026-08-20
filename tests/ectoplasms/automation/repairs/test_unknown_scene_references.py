@@ -12,7 +12,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.components import automation
+from homeassistant.components import automation, script
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.const import DOMAIN
@@ -162,3 +162,71 @@ async def test_templated_scene_id_is_still_reported(
     )
 
     assert "scene.dynamic" in (_reported(issue_registry) or "")
+
+
+async def test_scene_created_with_legacy_data_template_is_not_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the legacy `data_template` form is read too.
+
+    Raw configuration has not had `data_template` folded into `data` yet, and
+    Home Assistant still accepts it, so a scene created that way has to count.
+    """
+    hass.states.async_set("light.hall", "on")
+
+    await _inspect(
+        hass,
+        [
+            {
+                "service": "scene.create",
+                "data_template": {
+                    "scene_id": "legacy",
+                    "snapshot_entities": ["light.hall"],
+                },
+            },
+            {"action": "scene.turn_on", "target": {"entity_id": "scene.legacy"}},
+        ],
+    )
+
+    assert _reported(issue_registry) is None
+
+
+async def test_scene_created_by_a_script_is_not_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a scene a script creates counts for an automation that uses it.
+
+    Scripts are scanned as well as automations, because the snapshot and the
+    restore do not have to live in the same place.
+    """
+    hass.states.async_set("light.hall", "on")
+
+    assert await async_setup_component(
+        hass,
+        script.DOMAIN,
+        {
+            "script": {
+                "snapshotter": {
+                    "sequence": [
+                        {
+                            "action": "scene.create",
+                            "data": {
+                                "scene_id": "from_script",
+                                "snapshot_entities": ["light.hall"],
+                            },
+                        },
+                    ],
+                },
+            },
+        },
+    )
+    await hass.async_block_till_done()
+
+    await _inspect(
+        hass,
+        [{"action": "scene.turn_on", "target": {"entity_id": "scene.from_script"}}],
+    )
+
+    assert _reported(issue_registry) is None
