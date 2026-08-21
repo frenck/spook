@@ -217,6 +217,15 @@
             },
             "homeassistant_todo": {
                 "name": "Tehtävälistat"
+            },
+            "homeassistant_counter": {
+                "name": "Laskurit"
+            },
+            "homeassistant_group": {
+                "name": "Ryhmät"
+            },
+            "homeassistant_timer": {
+                "name": "Ajastimet"
             }
         },
         "switch": {
@@ -548,6 +557,18 @@
                     "manage": "Voit hallita tunnisteita itse [tunnisteet-sivulta](/config/labels)."
                 }
             }
+        },
+        "alert_unknown_entity_references": {
+            "description": "Spook on löytänyt kummituksen hälytyksistäsi 👻\n\nHälytys {alert} (`{entity_id}`) valvoo entiteettiä, joka on Home Assistantille tuntematon:\n\n{entities}\n\nHälytys voi laueta vain valvomastaan entiteetistä, joten tämä ei voi enää koskaan laueta. Ulospäin se näyttää täsmälleen samalta kuin hälytys, jolla ei ole mitään kerrottavaa.\n\nKorjataksesi tämän ongelman, muokkaa konfiguraatiosi `alert:`-osiota ja osoita tämä hälytys entiteettiin, joka on olemassa.\n\nSpook 👻 Kamusi.",
+            "title": "Hälytys valvoo tuntematonta entiteettiä: {alert}"
+        },
+        "alert_unknown_notifiers": {
+            "description": "Spook on löytänyt kummituksen hälytyksistäsi 👻\n\nHälytys {alert} (`{entity_id}`) ilmoittaa seuraavien toimintojen kautta, jotka ovat Home Assistantille tuntemattomia:\n\n{notifiers}\n\nHälytys laukeaa edelleen ja jatkaa kierroksiaan, mutta nämä ilmoitukset eivät mene minnekään. Home Assistant kirjaa sen vain sillä hetkellä, kun hälytys laukeaa, ja se on huono hetki huomata, ettei kukaan kuuntele.\n\nKorjataksesi tämän ongelman, muokkaa tämän hälytyksen `notifiers:`-luetteloa konfiguraatiossasi ja poista tai korjaa nämä merkinnät.\n\nSpook 👻 Kamusi.",
+            "title": "Hälytys käyttää tuntemattomia ilmoittajia: {alert}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook on löytänyt kummituksen mallipohja-avustajistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohja-avustajaan:\n\n[{helper}]({edit})\n\nSe viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\nNäin käy usein, kun toiminnon tarjonnut integraatio on poistettu tai skripti on nimetty uudelleen tai poistettu. Korjataksesi tämän ongelman, määritä mallipohja-avustaja käyttämään olemassa olevia toimintoja.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia toimintoja käytössä mallipohja-avustajassa: {helper}"
         }
     },
     "services": {
@@ -823,21 +844,21 @@
         },
         "homeassistant_disable_config_entry": {
             "name": "Poista integraatio käytöstä",
-            "description": "Poistaa integraatiokonfiguraation käytöstä.",
+            "description": "Poistaa integraatiomerkinnän käytöstä.",
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfiguraatio",
-                    "description": "Integraatiokonfiguraatio, joka poistetaan käytöstä."
+                    "name": "Integraatiomerkintä",
+                    "description": "Integraatiomerkintä, joka poistetaan käytöstä."
                 }
             }
         },
         "homeassistant_enable_config_entry": {
             "name": "Ota integraatio käyttöön",
-            "description": "Ottaa integraatiokonfiguraation käyttöön.",
+            "description": "Ottaa integraatiomerkinnän käyttöön.",
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfiguraatio",
-                    "description": "Integraatiokonfiguraatio, joka otetaan käyttöön."
+                    "name": "Integraatiomerkintä",
+                    "description": "Integraatiomerkintä, joka otetaan käyttöön."
                 }
             }
         },
@@ -1055,21 +1076,21 @@
         },
         "homeassistant_disable_polling": {
             "name": "Lopeta päivitysten kysyminen",
-            "description": "Lopettaa päivitysten kysymisen integraatiokonfiguraatiolta.",
+            "description": "Poistaa integraatiomerkinnän päivitysten kyselyn käytöstä.",
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfiguraatio",
-                    "description": "Integraatiokonfiguraatio, jonka päivitysten kysyminen lopetetaan."
+                    "name": "Integraatiomerkintä",
+                    "description": "Integraatiomerkintä, jonka kysely poistetaan käytöstä."
                 }
             }
         },
         "homeassistant_enable_polling": {
             "name": "Aloita päivitysten kysyminen",
-            "description": "Aloittaa päivitysten kysymisen integraatiokonfiguraatiolta.",
+            "description": "Ottaa integraatiomerkinnän päivitysten kyselyn käyttöön.",
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfiguraatio",
-                    "description": "Integraatiokonfiguraatio, jonka päivitysten kysyminen aloitetaan."
+                    "name": "Integraatiomerkintä",
+                    "description": "Integraatiomerkintä, jonka kysely otetaan käyttöön."
                 }
             }
         },
@@ -1192,6 +1213,10 @@
                 "amount": {
                     "name": "Määrä",
                     "description": "Määrä jolla numeroarvoa vähennetään. Jos arvoa ei anneta, käytetään entiteetin askelkokoa."
+                },
+                "cycle": {
+                    "description": "Jatka alueen toisesta päästä sen sijaan, että pysähtyisit tähän, samaan tapaan kuin valinnan seuraava vaihtoehto alkaa alusta.",
+                    "name": "Kierto"
                 }
             }
         },
@@ -1202,6 +1227,10 @@
                 "amount": {
                     "name": "Määrä",
                     "description": "Määrä jolla numeroarvoa nostetaan. Jos arvoa ei anneta, käytetään entiteetin askelkokoa."
+                },
+                "cycle": {
+                    "description": "Jatka alueen toisesta päästä sen sijaan, että pysähtyisit tähän, samaan tapaan kuin valinnan seuraava vaihtoehto alkaa alusta.",
+                    "name": "Kierto"
                 }
             }
         },
@@ -1396,6 +1425,48 @@
                     "description": "Poistettavien entiteettien ID:t."
                 }
             }
+        },
+        "homeassistant_expose_entity": {
+            "description": "Tuo entiteetin (tai entiteetit) ääniavustajien saataville.",
+            "fields": {
+                "assistants": {
+                    "description": "Avustaja tai avustajat, joita tämä koskee.",
+                    "name": "Avustajat"
+                },
+                "entity_id": {
+                    "description": "Entiteetti tai entiteetit, jotka tuodaan saataville.",
+                    "name": "Entiteetti"
+                }
+            },
+            "name": "Tuo entiteetti avustajien saataville"
+        },
+        "homeassistant_unexpose_entity": {
+            "description": "Poistaa entiteetin (tai entiteetit) ääniavustajien saatavilta.",
+            "fields": {
+                "assistants": {
+                    "description": "Avustaja tai avustajat, joita tämä koskee.",
+                    "name": "Avustajat"
+                },
+                "entity_id": {
+                    "description": "Entiteetti tai entiteetit, jotka poistetaan saatavilta.",
+                    "name": "Entiteetti"
+                }
+            },
+            "name": "Poista entiteetti avustajien saatavilta"
+        },
+        "sensor_set_display_precision": {
+            "description": "Asettaa, montako desimaalia yhdelle tai useammalle sensorille näytetään.",
+            "fields": {
+                "display_precision": {
+                    "description": "Sensorille näytettävien desimaalien määrä.",
+                    "name": "Näyttötarkkuus"
+                },
+                "entity_id": {
+                    "description": "Sensorientiteetti tai -entiteetit, joita muutetaan.",
+                    "name": "Entiteetti"
+                }
+            },
+            "name": "Aseta näyttötarkkuus"
         }
     },
     "conditions": {
@@ -1408,6 +1479,16 @@
                     "description": "Kuinka usein tämän ehdon pitäisi täyttyä, prosentteina."
                 }
             }
+        },
+        "cooldown": {
+            "description": "Toteutuu vain, jos tämä automaatio tai skripti ei ole suoriutunut annetun ajan sisällä (tai ei ole koskaan suoriutunut). Sisäänrakennettu jäähtymisaika, jotta se ei laukea uudelleen liian usein.",
+            "fields": {
+                "duration": {
+                    "description": "Kuinka kauan viimeisen suorituksen jälkeen odotetaan, ennen kuin tämä ehto toteutuu uudelleen.",
+                    "name": "Kesto"
+                }
+            },
+            "name": "Jäähtymisaika"
         }
     }
 }
