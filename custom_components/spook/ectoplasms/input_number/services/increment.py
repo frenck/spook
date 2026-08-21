@@ -2,15 +2,18 @@
 
 from __future__ import annotations
 
-import math
 from typing import TYPE_CHECKING
-
-import voluptuous as vol
 
 from homeassistant.components.input_number import DOMAIN, InputNumber
 
 from ....services import AbstractSpookEntityComponentService, ReplaceExistingService
-from . import native_value_as_float
+from . import (
+    CONF_CYCLE,
+    STEP_SERVICE_SCHEMA,
+    cycled_value,
+    native_value_as_float,
+    step_amount,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -21,12 +24,13 @@ class SpookService(
 ):
     """Input number entity service, increase value by a single step.
 
-    It override the built-in increment service to allow for a custom amount.
+    It overrides the built-in increment service to allow for a custom amount,
+    and to cycle around the range instead of stopping at the end of it.
     """
 
     domain = DOMAIN
     service = "increment"
-    schema = {vol.Optional("amount"): vol.Coerce(float)}
+    schema = STEP_SERVICE_SCHEMA
 
     async def async_handle_service(
         self,
@@ -34,24 +38,13 @@ class SpookService(
         call: ServiceCall,
     ) -> None:
         """Handle the service call."""
-        step = entity.native_step
-        amount = call.data.get("amount", step)
-        remainder = amount % step
-        # Float modulo wraps around just short of the step, 0.3 % 0.1 is
-        # 0.09999999999999998, so a remainder against either end is a clean multiple.
-        if not (
-            math.isclose(remainder, 0, rel_tol=0, abs_tol=1e-9)
-            or math.isclose(remainder, step, rel_tol=0, abs_tol=1e-9)
-        ):
-            msg = (
-                f"Amount {amount} not valid for {entity.entity_id}, "
-                f"it needs to be a multiple of {step}"
-            )
-            raise ValueError(msg)
+        new_value = native_value_as_float(entity) + step_amount(entity, call)
 
-        await entity.async_set_native_value(
-            min(
-                native_value_as_float(entity) + amount,
-                entity.native_max_value,
-            ),
-        )
+        if new_value > entity.native_max_value:
+            new_value = (
+                cycled_value(entity, new_value)
+                if call.data[CONF_CYCLE]
+                else entity.native_max_value
+            )
+
+        await entity.async_set_native_value(new_value)
