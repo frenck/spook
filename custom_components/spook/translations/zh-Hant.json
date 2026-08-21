@@ -569,6 +569,10 @@
         "template_unknown_service_references": {
             "description": "Spook 在您的範本助手中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下範本助手：\n\n[{helper}]({edit})\n\n它引用了以下 Home Assistant 無法辨識的動作：\n\n{services}\n\n這通常是因為提供某個動作的整合已被移除，或某個腳本被重新命名或刪除了。要修復此錯誤，請重新設定該範本助手，使其使用存在的動作。\n\nSpook 👻 您的好夥伴。",
             "title": "範本助手中使用了未知動作：{helper}"
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook 在您的通知群組中發現了一個幽靈 👻\n\n通知群組 `{group}` 會轉發到以下 Home Assistant 無法辨識的動作：\n\n{members}\n\n該群組仍會投遞給其餘成員，也仍會向呼叫方回報成功，因此上游察覺不到任何異常。這個故障只會在日誌裡留下一條孤零零的 \"Task exception was never retrieved\"，它不會指明是哪個群組，讀起來就像一個程式缺陷。原本在該成員背後的人，就這樣再也收不到通知了。\n\n要修復此錯誤，請編輯設定中該群組的 `services:` 清單，移除或更正這些項目。\n\nSpook 👻 您的好夥伴。",
+            "title": "以下通知群組中存在未知成員：{group}"
         }
     },
     "services": {
