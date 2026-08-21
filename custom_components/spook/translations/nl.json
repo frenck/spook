@@ -569,6 +569,10 @@
                 }
             },
             "title": "Ongebruikt label: {label}"
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook heeft een geest gevonden in je notificatiegroepen 👻\n\nDe notificatiegroep `{group}` stuurt door naar de volgende acties, die Home Assistant niet kent:\n\n{members}\n\nDe groep bezorgt nog steeds aan de rest van zijn leden, en meldt nog steeds succes terug aan wie hem aanriep, dus stroomopwaarts merkt niemand iets. De fout komt alleen boven als een losse \"Task exception was never retrieved\" in het logboek, die geen groep noemt en leest als een bug. Wie er achter dat lid zat, krijgt simpelweg geen bericht meer.\n\nOm deze fout te verhelpen, bewerk je de `services:` lijst van deze groep in je configuratie en verwijder of corrigeer je deze regels.\n\nSpook 👻 Je homie.",
+            "title": "Onbekende leden in notificatiegroep: {group}"
         }
     },
     "services": {
