@@ -1,11 +1,14 @@
 """Tests for the person unknown device trackers repair."""
 
-# pylint: disable=wrong-import-order
+# ruff: noqa: SLF001
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
+from homeassistant.const import EVENT_STATE_CHANGED
+from homeassistant.core import State
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
@@ -189,3 +192,119 @@ async def test_fix_flow_remove_yaml_person_aborts(
 
     assert result["type"] == "abort"
     assert result["reason"] == "not_editable"
+
+
+async def _count_scheduled_inspections(
+    hass: HomeAssistant,
+    old_state: State | None,
+    new_state: State | None,
+) -> int:
+    """Return how many inspections one state change schedules."""
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    repair.inspect_debouncer.async_shutdown()
+    calls = 0
+
+    def async_schedule_call() -> None:
+        """Capture scheduled inspections."""
+        nonlocal calls
+        calls += 1
+
+    repair.inspect_debouncer = SimpleNamespace(
+        async_schedule_call=async_schedule_call,
+        async_shutdown=lambda: None,
+    )
+
+    hass.bus.async_fire(
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "device_tracker.phone",
+            "old_state": old_state,
+            "new_state": new_state,
+        },
+    )
+    await hass.async_block_till_done()
+
+    await repair.async_deactivate()
+    return calls
+
+
+async def test_state_only_tracker_going_away_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a person breaks when a state-only tracker it follows disappears.
+
+    A state-only device tracker leaves no trace in the entity registry, so
+    this transition happens without a single registry event.
+    """
+    hass.states.async_set("device_tracker.phone", "home")
+    _install_person(hass, ["device_tracker.phone"])
+    repair = SpookRepair(hass)
+
+    await repair._async_inspect_with_cleanup()
+    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+
+    hass.states.async_remove("device_tracker.phone")
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+
+
+async def test_issue_clears_when_a_state_only_tracker_returns(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the issue goes away once a state-only tracker exists again."""
+    _install_person(hass, ["device_tracker.phone"])
+    repair = SpookRepair(hass)
+
+    await repair._async_inspect_with_cleanup()
+    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+
+    hass.states.async_set("device_tracker.phone", "home")
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+
+
+async def test_state_only_tracker_addition_rechecks_person_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state entity appearing schedules an inspection."""
+    assert (
+        await _count_scheduled_inspections(
+            hass, None, State("device_tracker.phone", "home")
+        )
+        == 1
+    )
+
+
+async def test_state_only_tracker_removal_rechecks_person_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state entity disappearing schedules an inspection."""
+    assert (
+        await _count_scheduled_inspections(
+            hass, State("device_tracker.phone", "home"), None
+        )
+        == 1
+    )
+
+
+async def test_ordinary_tracker_state_change_does_not_recheck(
+    hass: HomeAssistant,
+) -> None:
+    """Test a tracker simply moving does not schedule an inspection.
+
+    Device trackers change state constantly. Rechecking on every one of
+    those would be pure noise.
+    """
+    assert (
+        await _count_scheduled_inspections(
+            hass,
+            State("device_tracker.phone", "home"),
+            State("device_tracker.phone", "not_home"),
+        )
+        == 0
+    )
