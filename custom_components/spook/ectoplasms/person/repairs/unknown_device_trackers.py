@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import person
-from homeassistant.const import EVENT_COMPONENT_LOADED
+from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
@@ -14,6 +15,9 @@ from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from homeassistant.core import Event
     from homeassistant.helpers.entity_component import EntityComponent
 
 
@@ -34,6 +38,36 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_on_reload = True
     automatically_clean_up_issues = True
+
+    async def async_activate(self) -> None:
+        """Handle activating the repair."""
+        await super().async_activate()
+
+        # A device tracker can be state-only, which is the normal case for
+        # anything reporting over MQTT or the legacy known_devices.yaml. Those
+        # come and go without the entity registry hearing a thing, so registry
+        # events alone miss both the moment a person breaks and the moment it
+        # recovers.
+        @callback
+        def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
+            """Return if a state entity was added or removed."""
+            return (
+                event_data.get("old_state") is None
+                or event_data.get("new_state") is None
+            )
+
+        @callback
+        def _async_call_inspect_debouncer(_: Event) -> None:
+            """Trigger an inspection when a state entity is added or removed."""
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _async_call_inspect_debouncer,
+                event_filter=_state_entity_changed,
+            ),
+        )
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
