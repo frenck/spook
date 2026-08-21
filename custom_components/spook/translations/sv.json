@@ -548,6 +548,10 @@
         "script_unknown_trigger_references": {
             "title": "Okända utlösare används i: {script}",
             "description": "Spook har hittat ett spöke bland dina skript 👻\n\nMedan han svävade runt hittade Spook följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript använder följande utlösare som inte tillhandahålls av någon integration i Home Assistant:\n\n{triggers}\n\n\n\nDetta kan hända när den integration som tillhandahåller utlösarna tas bort. För att åtgärda felet, [redigera skriptet]({edit}) och ta bort användningen av dessa utlösare, eller återställ den integration som tillhandahöll dem.\n\nSpook 👻 Din polare."
+        },
+        "template_unknown_service_references": {
+            "title": "",
+            "description": ""
         }
     },
     "services": {
@@ -1408,6 +1412,16 @@
             },
             "name": "Chans",
             "description": "Ett villkor som uppfylls en viss procentandel av tiden, som väljs helt slumpmässigt vid varje check. Passar bra för att lägga till lite variation i dina automatiseringar."
+        },
+        "cooldown": {
+            "description": "",
+            "fields": {
+                "duration": {
+                    "description": "",
+                    "name": ""
+                }
+            },
+            "name": ""
         }
     }
 }
