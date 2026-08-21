@@ -59,17 +59,19 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 ### Unknown referenced areas
 
-Dashboards are inspected for the use of {term}`areas <area>`. Cards can target an area rather than a list of entities, and when that area is renamed or removed the card is left pointing at nothing. If Spook finds such a case, it will raise a repair issue naming the dashboard and the areas that are missing.
+Dashboards are inspected for the use of {term}`areas <area>`. An area can be referenced in more than one way: by an area card, by the area view strategy, by the areas dashboard strategy listing areas to hide or order, and by an `area_id` used as the target of an action. Spook looks for all of them and raises a repair issue naming the dashboard and the areas that are missing.
 
-A card like that does not break the dashboard. It simply shows nothing, which looks a lot like an area where nothing is happening.
+None of this breaks the dashboard. An area card with a missing area shows nothing, which looks a lot like an area where nothing is happening; a button whose action targets a missing area renders perfectly and does nothing when you press it.
 
 To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Missing dashboard resources
 
-Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks that the file behind each resource actually exists. If one does not, it will raise a repair issue listing the resources in question.
+Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks the ones it can: a resource served from `/local/` or `/hacsfiles/` maps to a file on disk, so Spook can see whether that file is there. If it is not, it will raise a repair issue listing the resources in question.
 
-This usually happens when a custom card was removed but its resource stayed behind. The cost is paid on every page load, by every browser, for a file that is never going to arrive.
+Resources on an external URL, or served by an integration, are deliberately skipped. Spook cannot verify those without going and asking, so it does not claim to.
+
+A missing local resource usually means a custom card was removed but its resource stayed behind. The cost is paid on every page load, by every browser, for a file that is never going to arrive.
 
 To resolve the raised issue, go to Settings > Dashboards > Resources and remove or correct these resources. Spook will automatically remove the repair issue once the issue is fixed.
 
