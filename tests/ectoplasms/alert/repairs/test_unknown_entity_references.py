@@ -215,12 +215,24 @@ async def test_issue_is_cleaned_up_when_the_entity_returns(
 
 async def _count_scheduled_inspections(
     hass: HomeAssistant,
+    entity_id: str,
     old_state: State | None,
     new_state: State | None,
 ) -> int:
-    """Return how many inspections one state change schedules."""
+    """Return how many inspections one state change schedules.
+
+    Runs a real inspection first, because that is what tells the listener
+    which entities are worth waking up for.
+    """
+    config = _alert_yaml(
+        garage={"name": "Garage door", "entity_id": "device_tracker.phone"},
+    )
     repair = SpookRepair(hass)
-    await repair.async_activate()
+
+    with patch(_YAML_CONFIG, return_value=config):
+        await repair.async_activate()
+        await repair.async_inspect()
+
     repair.inspect_debouncer.async_shutdown()
     calls = 0
 
@@ -236,11 +248,7 @@ async def _count_scheduled_inspections(
 
     hass.bus.async_fire(
         EVENT_STATE_CHANGED,
-        {
-            "entity_id": "device_tracker.phone",
-            "old_state": old_state,
-            "new_state": new_state,
-        },
+        {"entity_id": entity_id, "old_state": old_state, "new_state": new_state},
     )
     await hass.async_block_till_done()
 
@@ -248,43 +256,73 @@ async def _count_scheduled_inspections(
     return calls
 
 
-async def test_state_only_entity_addition_rechecks_alert_repairs(
+@pytest.mark.usefixtures("alert_set_up")
+async def test_watched_entity_addition_rechecks_alert_repairs(
     hass: HomeAssistant,
 ) -> None:
-    """Test a state entity appearing schedules an inspection."""
+    """Test a watched entity appearing schedules an inspection."""
     assert (
         await _count_scheduled_inspections(
-            hass, None, State("device_tracker.phone", "home")
+            hass,
+            "device_tracker.phone",
+            None,
+            State("device_tracker.phone", "home"),
         )
         == 1
     )
 
 
-async def test_state_only_entity_removal_rechecks_alert_repairs(
+@pytest.mark.usefixtures("alert_set_up")
+async def test_watched_entity_removal_rechecks_alert_repairs(
     hass: HomeAssistant,
 ) -> None:
-    """Test a state entity disappearing schedules an inspection.
+    """Test a watched entity disappearing schedules an inspection.
 
     This is the transition an alert breaks on without the entity registry
     ever hearing about it.
     """
     assert (
         await _count_scheduled_inspections(
-            hass, State("device_tracker.phone", "home"), None
+            hass,
+            "device_tracker.phone",
+            State("device_tracker.phone", "home"),
+            None,
         )
         == 1
     )
 
 
-async def test_state_only_entity_update_does_not_recheck_alert_repairs(
+@pytest.mark.usefixtures("alert_set_up")
+async def test_watched_entity_update_does_not_recheck_alert_repairs(
     hass: HomeAssistant,
 ) -> None:
     """Test an ordinary state change does not schedule an inspection."""
     assert (
         await _count_scheduled_inspections(
             hass,
+            "device_tracker.phone",
             State("device_tracker.phone", "home"),
             State("device_tracker.phone", "not_home"),
+        )
+        == 0
+    )
+
+
+@pytest.mark.usefixtures("alert_set_up")
+async def test_unwatched_entity_does_not_recheck_alert_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test an entity no alert watches never schedules an inspection.
+
+    An inspection re-reads the configuration from disk, so entities coming
+    and going elsewhere in Home Assistant must not drag it along.
+    """
+    assert (
+        await _count_scheduled_inspections(
+            hass,
+            "sensor.something_else",
+            None,
+            State("sensor.something_else", "42"),
         )
         == 0
     )
