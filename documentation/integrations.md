@@ -13,7 +13,7 @@ The following integration management actions are added to your Home Assistant in
 
 ### Disable an integration
 
-Disable a single instance of an integration by its {term}`config entry <config entry>`.
+Disable a single instance of an integration by its {term}`integration entry <integration entry>`.
 
 ```{figure} ./images/integration/disable_config_entry.png
 :alt: Screenshot of the Home Assistant disable config entry action in the developer tools.
@@ -84,7 +84,7 @@ data:
 
 ### Enable an integration
 
-Enable a single instance of an integration by its {term}`config entry <config entry>`.
+Enable a single instance of an integration by its {term}`integration entry <integration entry>`.
 
 ```{figure} ./images/integration/enable_config_entry.png
 :alt: Screenshot of the Home Assistant enable config entry action in the developer tools.
@@ -155,7 +155,7 @@ data:
 
 ### Disable polling for updates
 
-Disable integration polling of a single integration instance by its {term}`config entry <config entry>`.
+Disable integration polling of a single integration instance by its {term}`integration entry <integration entry>`.
 
 Some integrations frequently poll for updates. In some cases, it can be helpful to disable this temporarily. For example, in case you are not at home and want to stop polling on an integration that consumes a paid API.
 
@@ -217,7 +217,7 @@ data:
 
 ### Enable polling for updates
 
-Enable integration polling of a single integration instance by its {term}`config entry <config entry>`.
+Enable integration polling of a single integration instance by its {term}`integration entry <integration entry>`.
 
 Some integrations frequently poll for updates. In some cases, it can be helpful to enable this just temporarily. For example, in case you are not at home and want to stop polling on an integration that consumes a paid API and want to turn it back on again when you are back.
 

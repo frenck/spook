@@ -73,12 +73,6 @@ Boolean
 :::
 
 :::{glossary}
-Config entry
-: A config entry in {term}`Home Assistant` is a configuration for an {term}`integration <integration>`. It is a technical term from the developer sources leaking into the user space, which may sometimes sound confusing. In short, it is the configuration you see on the integrations page. Most integrations can be set up multiple times (like adding two Hue bridges or multiple ESPHome devices). Each such "integration instance" is a config entry.
-: This is sometimes referred to as "integration instance" or "integration entry".
-:::
-
-:::{glossary}
 Dashboard
 : A dashboard in {term}`Home Assistant` is a user interface that displays information and control {term}`entities <entity>` in your home. Dashboards are used to create a user interface to control your home, such as turning on the lights or seeing the current temperature. Dashboards are fully customizable and can be created in many different ways. There is a vibrant community that shares their dashboards so that you can get inspiration and ideas for your own dashboard.
 : You might come across the term "Lovelace", which is the codename originally used for dashboards.
@@ -168,6 +162,12 @@ Integration
 a {term}`device <device>` or {term}`action <action>` with your Home Assistant installation. Home Assistant comes with well over a thousand integrations out of the box, but you can also install your own custom integrations.
 : Custom integrations, however, are not supported by the Home Assistant project. They are not reviewed or tested by the Home Assistant development team and thus may negatively impact the stability of your Home Assistant instance.
 : Spook 👻 is a custom integration for Home Assistant that is available via {term}`HACS`.
+:::
+
+:::{glossary}
+Integration entry
+: An integration entry in {term}`Home Assistant` is a configuration for an {term}`integration <integration>`. In short, it is the configuration you see on the integrations page. Most integrations can be set up multiple times (like adding two Hue bridges or multiple ESPHome devices), and each of those is an integration entry.
+: Home Assistant's own developer documentation calls this a "config entry", and you will still see `config_entry_id` when working with it in {term}`YAML`. That is a technical term from the developer sources leaking into the user space, which is why Spook says "integration entry" instead.
 :::
 
 :::{glossary}

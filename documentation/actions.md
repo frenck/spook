@@ -230,7 +230,7 @@ Sorts the list of selectable options for an input select entity. _#12345_
 
 ## Integration: Disable
 
-This action can be used to disable a integration configuration entry (those you see on your integrations dashboard) on the fly. _#bye_
+This action can be used to disable an integration entry (those you see on your integrations dashboard) on the fly. _#bye_
 
 `homeassistant.disable_config_entry`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry), [documentation](integrations#disable-an-integration) 📚
 
@@ -244,13 +244,13 @@ Be amazed... this action does the reverse of [](#integration-disable). _#mindblo
 
 ## Integration: Disable polling for updates
 
-This action can be used to disable polling for updates on an integration configuration entry (those you see on your integrations dashboard). _#stopit_
+This action can be used to disable polling for updates on an integration entry (those you see on your integrations dashboard). _#stopit_
 
 `homeassistant.disable_polling`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling), [documentation](integrations#disable-polling-for-updates) 📚
 
 ## Integration: Enable polling for updates
 
-This action can be used to enable polling for updates on an integration configuration entry (those you see on your integrations dashboard). This service does the reverse of [](#integration-disable-polling-for-updates) _#poking_
+This action can be used to enable polling for updates on an integration entry (those you see on your integrations dashboard). This service does the reverse of [](#integration-disable-polling-for-updates) _#poking_
 
 `homeassistant.enable_polling`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling), [documentation](integrations#enable-polling-for-updates) 📚
 
