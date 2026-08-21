@@ -217,6 +217,15 @@
             },
             "homeassistant_todo": {
                 "name": "Att göra-listor"
+            },
+            "homeassistant_counter": {
+                "name": "Räknare"
+            },
+            "homeassistant_group": {
+                "name": "Grupper"
+            },
+            "homeassistant_timer": {
+                "name": "Timers"
             }
         },
         "switch": {
@@ -548,6 +557,18 @@
         "script_unknown_trigger_references": {
             "title": "Okända utlösare används i: {script}",
             "description": "Spook har hittat ett spöke bland dina skript 👻\n\nMedan han svävade runt hittade Spook följande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDetta skript använder följande utlösare som inte tillhandahålls av någon integration i Home Assistant:\n\n{triggers}\n\n\n\nDetta kan hända när den integration som tillhandahåller utlösarna tas bort. För att åtgärda felet, [redigera skriptet]({edit}) och ta bort användningen av dessa utlösare, eller återställ den integration som tillhandahöll dem.\n\nSpook 👻 Din polare."
+        },
+        "alert_unknown_entity_references": {
+            "description": "Spook har hittat ett spöke bland dina alerts 👻\n\nAlerten {alert} (`{entity_id}`) bevakar en entitet som är okänd för Home Assistant:\n\n{entities}\n\nEn alert kan bara utlösas av entiteten den bevakar, så denna kommer aldrig att utlösas igen. Utifrån ser den precis ut som en alert som inte har något att rapportera.\n\nFör att åtgärda felet, redigera avsnittet `alert:` i din konfiguration och låt alerten peka på en entitet som finns.\n\nSpook 👻 Din polare.",
+            "title": "Okänd entitet bevakas av alert: {alert}"
+        },
+        "alert_unknown_notifiers": {
+            "description": "Spook har hittat ett spöke bland dina alerts 👻\n\nAlerten {alert} (`{entity_id}`) aviserar via följande åtgärder som är okända för Home Assistant:\n\n{notifiers}\n\nAlerten utlöses fortfarande och fortsätter sina rundor, men dessa aviseringar kommer ingenstans. Home Assistant loggar det först i samma stund som alerten utlöses, vilket är ett dåligt tillfälle att upptäcka att ingen lyssnar.\n\nFör att åtgärda felet, redigera listan `notifiers:` för denna alert i din konfiguration och ta bort eller rätta dessa poster.\n\nSpook 👻 Din polare.",
+            "title": "Okända notifierare används av alert: {alert}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit})\n\nDen refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\nDet händer ofta när integrationen bakom en åtgärd har tagits bort, eller när ett skript har bytt namn eller tagits bort. För att åtgärda felet, konfigurera om mallhjälparen så att den använder åtgärder som finns.\n\nSpook 👻 Din polare.",
+            "title": "Okända åtgärder används i mallhjälparen: {helper}"
         }
     },
     "services": {
@@ -836,42 +857,42 @@
         "homeassistant_disable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationspost",
-                    "description": "Den konfigurationspost för en integration som ska inaktiveras."
+                    "name": "Integrationspost",
+                    "description": "Den integrationspost som ska inaktiveras."
                 }
             },
             "name": "Inaktivera en integration",
-            "description": "Inaktiverar en integrations konfigurationspost."
+            "description": "Inaktiverar en integrationspost."
         },
         "homeassistant_enable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationspost",
-                    "description": "Den konfigurationspost för en integration som ska aktiveras."
+                    "name": "Integrationspost",
+                    "description": "Den integrationspost som ska aktiveras."
                 }
             },
             "name": "Aktivera en integration",
-            "description": "Aktiverar en integrations konfigurationspost."
+            "description": "Aktiverar en integrationspost."
         },
         "homeassistant_disable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationspost",
-                    "description": "Den konfigurationspost för en integration att inaktivera pollning för."
+                    "name": "Integrationspost",
+                    "description": "Den integrationspost som pollning ska inaktiveras för."
                 }
             },
             "name": "Inaktivera pollning för uppdateringar",
-            "description": "Inaktiverar pollning av uppdateringar för en integrations konfigurationspost."
+            "description": "Inaktiverar pollning av uppdateringar för en integrationspost."
         },
         "homeassistant_enable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationspost",
-                    "description": "Den konfigurationspost för en integration att aktivera pollning för."
+                    "name": "Integrationspost",
+                    "description": "Den integrationspost som pollning ska aktiveras för."
                 }
             },
             "name": "Aktivera pollning för uppdateringar",
-            "description": "Aktiverar pollning av uppdateringar för en integrations konfigurationspost."
+            "description": "Aktiverar pollning av uppdateringar för en integrationspost."
         },
         "input_number_create": {
             "name": "Skapa ett inmatningsnummer",
@@ -988,6 +1009,10 @@
                 "amount": {
                     "name": "Mängd",
                     "description": "Mängden att minska inmatningsnumret med. Om inget anges så kommer nummerentitetens stegstorlek att användas."
+                },
+                "cycle": {
+                    "description": "Fortsätt från andra änden av intervallet i stället för att stanna här, på samma sätt som nästa alternativ i en lista börjar om från början.",
+                    "name": "Cykliskt"
                 }
             }
         },
@@ -1034,6 +1059,10 @@
                 "amount": {
                     "name": "Mängd",
                     "description": "Mängden att öka inmatningsnumret med. Om inget anges så kommer nummerentitetens stegstorlek att användas."
+                },
+                "cycle": {
+                    "description": "Fortsätt från andra änden av intervallet i stället för att stanna här, på samma sätt som nästa alternativ i en lista börjar om från början.",
+                    "name": "Cykliskt"
                 }
             },
             "description": "Öka ett inmatningsnummers värde med en viss mängd.",
@@ -1396,6 +1425,48 @@
         "repairs_unignore_all": {
             "name": "Avignorera alla problem",
             "description": "Avignorera alla problem som för närvarande finns i Home Assistant Repairs."
+        },
+        "homeassistant_expose_entity": {
+            "description": "Exponerar en entitet (eller entiteter) för röstassistenter.",
+            "fields": {
+                "assistants": {
+                    "description": "Assistenten eller assistenterna som detta gäller.",
+                    "name": "Assistenter"
+                },
+                "entity_id": {
+                    "description": "Entiteten eller entiteterna som ska exponeras.",
+                    "name": "Entitet"
+                }
+            },
+            "name": "Exponera en entitet för assistenter"
+        },
+        "homeassistant_unexpose_entity": {
+            "description": "Slutar exponera en entitet (eller entiteter) för röstassistenter.",
+            "fields": {
+                "assistants": {
+                    "description": "Assistenten eller assistenterna som detta gäller.",
+                    "name": "Assistenter"
+                },
+                "entity_id": {
+                    "description": "Entiteten eller entiteterna som inte längre ska exponeras.",
+                    "name": "Entitet"
+                }
+            },
+            "name": "Sluta exponera en entitet för assistenter"
+        },
+        "sensor_set_display_precision": {
+            "description": "Ställer in hur många decimaler som visas för en eller flera sensorer.",
+            "fields": {
+                "display_precision": {
+                    "description": "Antalet decimaler som ska visas för sensorn.",
+                    "name": "Visningsprecision"
+                },
+                "entity_id": {
+                    "description": "Sensorentiteten eller sensorentiteterna som ska ändras.",
+                    "name": "Entitet"
+                }
+            },
+            "name": "Ställ in visningsprecision"
         }
     },
     "conditions": {
@@ -1408,6 +1479,16 @@
             },
             "name": "Chans",
             "description": "Ett villkor som uppfylls en viss procentandel av tiden, som väljs helt slumpmässigt vid varje check. Passar bra för att lägga till lite variation i dina automatiseringar."
+        },
+        "cooldown": {
+            "description": "Uppfylls bara om denna automatisering eller detta skript inte har körts inom den angivna tiden (eller aldrig har körts). En inbyggd vilotid, så att den inte utlöses igen för ofta.",
+            "fields": {
+                "duration": {
+                    "description": "Hur länge det ska gå efter den senaste körningen innan detta villkor uppfylls igen.",
+                    "name": "Varaktighet"
+                }
+            },
+            "name": "Vilotid"
         }
     }
 }
