@@ -7,10 +7,10 @@
         },
         "step": {
             "user": {
-                "description": "Avez-vous lu le readme? Avez-vous lu la licence? Êtes-vous sûr de vous?"
+                "description": "Avez-vous lu le readme ? Avez-vous lu la licence ? Êtes-vous sûr de vous ?"
             },
             "choice_restart": {
-                "description": "Home Assistant doit être redémarré, afin de terminer la configuration de Spook.\n\nVoulez-vous redémarrer Home Assistant maintenant?",
+                "description": "Home Assistant doit être redémarré, afin de terminer la configuration de Spook.\n\nVoulez-vous redémarrer Home Assistant maintenant ?",
                 "menu_options": {
                     "restart_now": "Redémarrer maintenant",
                     "restart_later": "Redémarrer plus tard"
@@ -20,7 +20,7 @@
                 "menu_options": {
                     "enable_existing": "Activer la configuration existante"
                 },
-                "description": "Spook est déjà configuré, mais son entrée de configuration est désactivée. Voulez-vous l'activer?"
+                "description": "Spook est déjà configuré, mais son entrée de configuration est désactivée. Voulez-vous l'activer ?"
             }
         }
     },
@@ -87,7 +87,7 @@
                 "name": "Thermostat"
             },
             "homeassistant_cover": {
-                "name": "Volets"
+                "name": "Ouvertures"
             },
             "homeassistant_custom_component": {
                 "name": "Intégrations personnalisées"
@@ -217,6 +217,15 @@
             },
             "homeassistant_todo": {
                 "name": "Listes des tâches à faire"
+            },
+            "homeassistant_counter": {
+                "name": "Compteurs"
+            },
+            "homeassistant_group": {
+                "name": "Groupes"
+            },
+            "homeassistant_timer": {
+                "name": "Minuteurs"
             }
         },
         "switch": {
@@ -233,31 +242,31 @@
     },
     "issues": {
         "automation_unknown_area_references": {
-            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux pièces suivantes, qui sont inconnues de Home Assistant :\n\n{areas}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\nSpook 👻 Your homie.",
-            "title": "Pièces inconnues utilisées dans: {automation}"
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux pièces suivantes, qui sont inconnues de Home Assistant :\n\n{areas}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Pièces inconnues utilisées dans : {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux appareils suivants, qui sont inconnus de Home Assistant :\n\n{devices}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces appareils inexistants.\n\nSpook 👻 Your homie.",
-            "title": "Appareils inconnus utilisés dans : {automation}"
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux appareils suivants, qui sont inconnus de Home Assistant :\n\n{devices}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces appareils inexistants.\n\nSpook 👻 Votre pote.",
+            "title": "Appareils inconnus utilisés dans : {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Your homie.",
-            "title": "Entités inconnues utilisées dans : {automation}"
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Entités inconnues utilisées dans : {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn se promenant, Spook a croisé l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux étages suivants, qui sont inconnus de Home Assistant :\n\n{floors}\n\n\n\nPour corriger cette erreur, [éditez l'automatisation]({edit}) et supprimez les références à ces étages inexistants.\n\nSpook 👻 Your homie.",
-            "title": "Étage inconnu utilisé dans: {automation}"
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn se promenant, Spook a croisé l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux étages suivants, qui sont inconnus de Home Assistant :\n\n{floors}\n\n\n\nPour corriger cette erreur, [éditez l'automatisation]({edit}) et supprimez les références à ces étages inexistants.\n\nSpook 👻 Votre pote.",
+            "title": "Étage inconnu utilisé dans : {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn se baladant, Spook a croisé le chemin de l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`) \n\nCette automatisation fait référence aux étiquettes suivantes, qui sont inconnues de Home Assistant :\n\n{labels} \n\n\n\nPour corriger cette erreur, [éditer l'automatisation]({edit}) et supprimer l'utilisation de ces étiquettes inexistantes.\n\nSpook 👻 Your homie.",
-            "title": "Étiquettes inconnues utilisées dans: {automation}"
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn se baladant, Spook a croisé le chemin de l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`) \n\nCette automatisation fait référence aux étiquettes suivantes, qui sont inconnues de Home Assistant :\n\n{labels} \n\n\n\nPour corriger cette erreur, [éditer l'automatisation]({edit}) et supprimer l'utilisation de ces étiquettes inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Étiquettes inconnues utilisées dans : {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant autour, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nPour corriger cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces actions inexistantes.\n\nSpook 👻 Your homie.",
-            "title": "Actions inconnues utilisées dans: {automation}"
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\nEn flottant autour, Spook est tombé sur l'automatisation suivante :\n\n[{automation}]({edit}) (`{entity_id}`)\n\nCette automatisation fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nPour corriger cette erreur, [modifiez l'automatisation]({edit}) et supprimez l'utilisation de ces actions inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Actions inconnues utilisées dans : {automation}"
         },
         "group_unknown_members": {
-            "title": "Membres de groupe inconnus dans : {group}",
+            "title": "Membres de groupe inconnus dans : {group}",
             "fix_flow": {
                 "step": {
                     "init": {
@@ -266,8 +275,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Enlever ces membres"
                         },
-                        "title": "Membres du groupe inconnus dans: {group}",
-                        "description": "Spook a trouvé un fantôme dans vos groupes 👻\n\n\n\nLe groupe {group} (`{entity_id}`) a des membres qui sont inconnus de Home Assistant:\n\n\n\n{entities}\n\n\n\nRetirez les du groupe, ou gardez les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Your homie."
+                        "title": "Membres du groupe inconnus dans : {group}",
+                        "description": "Spook a trouvé un fantôme dans vos groupes 👻\n\n\n\nLe groupe {group} (`{entity_id}`) a des membres qui sont inconnus de Home Assistant :\n\n\n\n{entities}\n\n\n\nRetirez les du groupe, ou gardez les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -278,48 +287,48 @@
             }
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord fait référence aux entités suivantes, qui sont inconnues de Home Assistant:\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Your homie.",
-            "title": "Entités inconnues utilisées dans: {dashboard}"
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Entités inconnues utilisées dans : {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook a trouvé un fantôme dans votre configuration de proximité 👻\n\nEn flottant autour, Spook a croisé la configuration de proximité suivante :\n\n{name}\n\nCette configuration ignore les zones inconnues de Home Assistant :\n\n{zones}\n\nPour corriger cette erreur, modifiez la configuration et supprimez cette/ces zones.\n\nSpook 👻 Your homie.",
-            "title": "Zones ignorées inconnues: {name}"
+            "description": "Spook a trouvé un fantôme dans votre configuration de proximité 👻\n\nEn flottant autour, Spook a croisé la configuration de proximité suivante :\n\n{name}\n\nCette configuration ignore les zones inconnues de Home Assistant :\n\n{zones}\n\nPour corriger cette erreur, modifiez la configuration et supprimez cette/ces zones.\n\nSpook 👻 Votre pote.",
+            "title": "Zones ignorées inconnues : {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook a trouvé un fantôme dans votre configuration de proximité 👻\n\nEn flottant autour, Spook a croisé la configuration de proximité suivante :\n\n{name}\n\nCette configuration suit des personnes ou des dispositifs de suivi qui sont inconnus de Home Assistant :\n\n{entities}\n\nPour corriger cette erreur, modifiez la configuration et supprimez cette/ces entités.\n\nSpook 👻 Your homie.",
-            "title": "Entités suivies inconnues: {name}"
+            "description": "Spook a trouvé un fantôme dans votre configuration de proximité 👻\n\nEn flottant autour, Spook a croisé la configuration de proximité suivante :\n\n{name}\n\nCette configuration suit des personnes ou des dispositifs de suivi qui sont inconnus de Home Assistant :\n\n{entities}\n\nPour corriger cette erreur, modifiez la configuration et supprimez cette/ces entités.\n\nSpook 👻 Votre pote.",
+            "title": "Entités suivies inconnues : {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook a trouvé un fantôme dans votre configuration de proximité 👻\n\nEn flottant autour, Spook a croisé la configuration de proximité suivante:\n\n{name}\n\nCette configuration est basée sur une zone inconnue de Home Assistant:\n\n`{zone}`\n\nPour corriger cette erreur, comme vous ne pouvez pas changer la zone d'une configuration de proximité, la seule option est de supprimer cette instance spécifique d'intégration de proximité.\n\nSpook 👻 Your homie.",
-            "title": "Zone inconnue: {zone}"
+            "description": "Spook a trouvé un fantôme dans votre configuration de proximité 👻\n\nEn flottant autour, Spook a croisé la configuration de proximité suivante :\n\n{name}\n\nCette configuration est basée sur une zone inconnue de Home Assistant :\n\n`{zone}`\n\nPour corriger cette erreur, comme vous ne pouvez pas changer la zone d'une configuration de proximité, la seule option est de supprimer cette instance spécifique d'intégration de proximité.\n\nSpook 👻 Votre pote.",
+            "title": "Zone inconnue : {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook a trouvé un fantôme dans vos scènes👻\n\nEn flottant dans les parages, Spook est tombé sur la scène suivante :\n\n[{scene}]({edit})\n\nCette scène fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\nPour résoudre cette erreur, [modifiez la scène]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Your homie.",
+            "description": "Spook a trouvé un fantôme dans vos scènes👻\n\nEn flottant dans les parages, Spook est tombé sur la scène suivante :\n\n[{scene}]({edit})\n\nCette scène fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\nPour résoudre cette erreur, [modifiez la scène]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Votre pote.",
             "title": "Entités inconnues utilisées dans :{scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux pièces suivantes, qui sont inconnues de Home Assistant :\n\n{areas}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\nSpook 👻 Your homie.",
-            "title": "Pièces inconnues utilisées dans: {script}"
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux pièces suivantes, qui sont inconnues de Home Assistant :\n\n{areas}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Pièces inconnues utilisées dans : {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux appareils suivants, qui sont inconnus de Home Assistant :\n\n{devices}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces appareils inexistants.\n\nSpook 👻 Your homie.",
-            "title": "Appareils  inconnus utilisés dans: {script}"
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux appareils suivants, qui sont inconnus de Home Assistant :\n\n{devices}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces appareils inexistants.\n\nSpook 👻 Votre pote.",
+            "title": "Appareils inconnus utilisés dans : {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Your homie.",
-            "title": "Entités inconnues utilisées dans : {script}"
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nPour résoudre cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces entités inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Entités inconnues utilisées dans : {script}"
         },
         "script_unknown_floor_references": {
             "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn se promenant, Spook a croisé le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux étages suivants, qui sont inconnus de Home Assistant :\n\n{floors}\n\n\n\nPour corriger cette erreur, [éditez le script]({edit}) et supprimez les références aux étages inexistants.\n\nSpook 👻 Votre pote.",
-            "title": "Étage inconnu utilisé dans : {script}"
+            "title": "Étage inconnu utilisé dans : {script}"
         },
         "script_unknown_label_references": {
             "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn se promenant, Spook a croisé le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux étiquettes suivantes, qui sont inconnues de Home Assistant :\n\n{labels}\n\n\n\nPour corriger cette erreur, [éditez le script]({edit}) et supprimez les références aux étiquettes inexistantes.\n\nSpook 👻 Votre pote.",
-            "title": "Étiquettes inconnues utilisé dans: {script}"
+            "title": "Étiquettes inconnues utilisé dans : {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nPour corriger cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces actions inexistantes.\n\nSpook 👻 Your homie.",
-            "title": "Actions inconnues utilisées dans: {script}"
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n[{script}]({edit}) (`{entity_id}`)\n\nCe script fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nPour corriger cette erreur, [modifiez le script]({edit}) et supprimez l'utilisation de ces actions inexistantes.\n\nSpook 👻 Votre pote.",
+            "title": "Actions inconnues utilisées dans : {script}"
         },
         "user_issue": {
             "fix_flow": {
@@ -344,25 +353,25 @@
             }
         },
         "dead_entities": {
-            "title": "Entités inexistantes enregistrées par: {integration}",
-            "description": "Spook a trouvé un fantôme dans vos entités 👻\n\n\n\nL'intégration {integration} à terminée de se configurer, mais les entités qu'elle a enregistré ne sont jamais apparues, alors elle n'existent plus:\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive habituellement lorsque un appareil ou ses entités sont supprimés à la source mais leurs entrées dans le registre sont restées. Pour corriger cette erreur, supprimez ces entités du registre d'entité si vous en avez plus besoin.\n\n\n\nSpook 👻 Your homie."
+            "title": "Entités inexistantes enregistrées par : {integration}",
+            "description": "Spook a trouvé un fantôme dans vos entités 👻\n\n\n\nL'intégration {integration} à terminée de se configurer, mais les entités qu'elle a enregistré ne sont jamais apparues, alors elle n'existent plus :\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive habituellement lorsque un appareil ou ses entités sont supprimés à la source mais leurs entrées dans le registre sont restées. Pour corriger cette erreur, supprimez ces entités du registre d'entité si vous en avez plus besoin.\n\n\n\nSpook 👻 Votre pote."
         },
         "lovelace_missing_resources": {
             "title": "Les ressources du tableau de bord font référence a des fichiers manquants",
-            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nLa ressource de tableau de bord suivante fait référence à des fichiers qui n'existent pas:\n\n\n\n{resources}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une carte personnalisée ou ses fichiers sont supprimés malgré que la configuration de la ressource reste configurée. Pour corriger cette erreur, ouvrez Paramètres > Tableaux de bord > Ressources et retirez ou corrigez ces ressources.\n\n\n\nSpook 👻 Your homie."
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nLa ressource de tableau de bord suivante fait référence à des fichiers qui n'existent pas :\n\n\n\n{resources}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une carte personnalisée ou ses fichiers sont supprimés malgré que la configuration de la ressource reste configurée. Pour corriger cette erreur, ouvrez Paramètres > Tableaux de bord > Ressources et retirez ou corrigez ces ressources.\n\n\n\nSpook 👻 Votre pote."
         },
         "empty_areas": {
-            "title": "Pièce vide: {area}",
+            "title": "Pièce vide : {area}",
             "fix_flow": {
                 "step": {
                     "init": {
-                        "title": "Pièce vide: {area}",
+                        "title": "Pièce vide : {area}",
                         "menu_options": {
                             "ignore": "Garde la et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer la pièce vide"
                         },
-                        "description": "La pièce {area} n'a aucun appareil, aucune entité ni automatisation ou script lui faisant référence.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler.\n\n\n\nSpook 👻 Your homie."
+                        "description": "La pièce {area} n'a aucun appareil, aucune entité ni automatisation ou script lui faisant référence.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -372,17 +381,17 @@
             }
         },
         "empty_floors": {
-            "title": "Étage vide: {floor}",
+            "title": "Étage vide : {floor}",
             "fix_flow": {
                 "step": {
                     "init": {
-                        "title": "Étage vide: {floor}",
+                        "title": "Étage vide : {floor}",
                         "menu_options": {
                             "ignore": "Garde le et arrête de me le demander",
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer l'étage vide"
                         },
-                        "description": "L'étage {floor} n'a aucune pièce, ni aucune automatisation ou script lui faisant référence.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler.\n\n\n\nSpook 👻 Your homie."
+                        "description": "L'étage {floor} n'a aucune pièce, ni aucune automatisation ou script lui faisant référence.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -400,8 +409,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Révoquer ce jeton"
                         },
-                        "title": "Jeton d'accès longue durée semble oublié: {token}",
-                        "description": "Le jeton d'accès longue durée « {token} » (propriétaire: {owner}) n'à pas été utilisé depuis {last_active}.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler. Le révorquer cessera le fonctionnement de ce qui l'utilise jusqu'a ce qu'il en obtienne un nouveau.\n\n\n\nSpook 👻 Your homie."
+                        "title": "Jeton d'accès longue durée semble oublié : {token}",
+                        "description": "Le jeton d'accès longue durée « {token} » (propriétaire : {owner}) n'à pas été utilisé depuis {last_active}.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler. Le révorquer cessera le fonctionnement de ce qui l'utilise jusqu'a ce qu'il en obtienne un nouveau.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -409,7 +418,7 @@
                     "manage": "Vous pouvez gérer le jeton d'accès longue durée vous-même sous [vos paramètres de sécurités](/profile/security)."
                 }
             },
-            "title": "Jeton d'accès longue durée semble oublié: {token}"
+            "title": "Jeton d'accès longue durée semble oublié : {token}"
         },
         "unknown_helper_source_references": {
             "fix_flow": {
@@ -420,8 +429,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer l'entrée"
                         },
-                        "title": "Entités sources inconnues utilisées dans l'entrée: {helper}",
-                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée {helper} (`{domain}`) fait référence à ces entités sources, qui sont incoonues de Home Assistant:\n\n\n\n{sources}\n\n\n\nSans ses sources, l'entrée ne peut fonctionner. {usage}\n\n\n\nSupprimez cette entrée ou gardez la et spook arrêtera de la mentionner.\n\n\n\nSpook 👻 Your homie."
+                        "title": "Entités sources inconnues utilisées dans l'entrée : {helper}",
+                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée {helper} (`{domain}`) fait référence à ces entités sources, qui sont incoonues de Home Assistant :\n\n\n\n{sources}\n\n\n\nSans ses sources, l'entrée ne peut fonctionner. {usage}\n\n\n\nSupprimez cette entrée ou gardez la et spook arrêtera de la mentionner.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -429,7 +438,7 @@
                     "issue_ignored": "Spook ne mentionnera plus cette entrée à partir de maintenant."
                 }
             },
-            "title": "Entités sources inconnues utilisées dans l'entrée: {helper}"
+            "title": "Entités sources inconnues utilisées dans l'entrée : {helper}"
         },
         "unused_blueprints": {
             "fix_flow": {
@@ -440,8 +449,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer le blueprint inutilisé"
                         },
-                        "description": "Le blueprint {blueprint} n'est pas utilisé par aucun {domain}.\n\n\n\nSupprime le ou garde le et Spook arrêtera de le mentionner.\n\n\n\nSpook 👻 Your homie.",
-                        "title": "Blueprint inutilisé: {blueprint}"
+                        "description": "Le blueprint {blueprint} n'est pas utilisé par aucun {domain}.\n\n\n\nSupprime le ou garde le et Spook arrêtera de le mentionner.\n\n\n\nSpook 👻 Votre pote.",
+                        "title": "Blueprint inutilisé : {blueprint}"
                     }
                 },
                 "abort": {
@@ -449,7 +458,7 @@
                     "issue_ignored": "Spook ne mentionnera plus ce blueprint à partir de maintenant."
                 }
             },
-            "title": "Blueprint inutilisé: {blueprint}"
+            "title": "Blueprint inutilisé : {blueprint}"
         },
         "unused_labels": {
             "fix_flow": {
@@ -460,8 +469,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Supprimer l'étiquette inutilisée"
                         },
-                        "title": "Étiquette inutilisé: {label}",
-                        "description": "L'étiquette {label} n'est appliquée à aucun entité, appareil, ou pièce, ainsi qu'aucune automatisation ou script ne lui fait référence.\n\n\n\nSupprimez-la, ou gardez-la et Spook arrêtera de le mentionner.\n\n\n\nSpook 👻 Your homie."
+                        "title": "Étiquette inutilisé : {label}",
+                        "description": "L'étiquette {label} n'est appliquée à aucun entité, appareil, ou pièce, ainsi qu'aucune automatisation ou script ne lui fait référence.\n\n\n\nSupprimez-la, ou gardez-la et Spook arrêtera de le mentionner.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -469,7 +478,7 @@
                     "issue_ignored": "Spook ne mentionnera plus cette étiquette à partir de maintenant."
                 }
             },
-            "title": "Étiquette inutilisée: {label}"
+            "title": "Étiquette inutilisée : {label}"
         },
         "min_max_unknown_sources": {
             "fix_flow": {
@@ -480,8 +489,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Retirer ces membres"
                         },
-                        "title": "Membres inconnus utilisé dans une entrée min/max: {helper}",
-                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée min/max {helper} combine les membres suivants, qui sont inconnus de Home Assistant:\n\n\n\n{sources}\n\n\n\nSupprimez les pour que l'entrée continue de fonctionner avec ceux qui restent, ou gardez les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Your homie."
+                        "title": "Membres inconnus utilisé dans une entrée min/max : {helper}",
+                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée min/max {helper} combine les membres suivants, qui sont inconnus de Home Assistant :\n\n\n\n{sources}\n\n\n\nSupprimez les pour que l'entrée continue de fonctionner avec ceux qui restent, ou gardez les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -490,7 +499,7 @@
                     "too_few_members": "Une entrée min/max à besoin d'au moins 2 membres, alors de retirer celles manquantes n'en laisserait pas suffisament. Reconfigurez ou supprimez l'entrée vous même à l'aide de la [page Entrées](/config/helpers)."
                 }
             },
-            "title": "Membres inconnus utilisé dans une entrée min/max: {helper}"
+            "title": "Membres inconnus utilisé dans une entrée min/max : {helper}"
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -501,8 +510,8 @@
                             "manage": "Laisse-moi le corriger",
                             "remove": "Retirer ces dispositifs de suivi"
                         },
-                        "title": "Dispositifs de suivi inconnus suivis par: {person}",
-                        "description": "Spook a trouvé un fantôme dans vos personnes 👻\n\n\n\n{person} est suivi(e) par ces dispositifs de suivi, qui sont inconnus de Home Assistant:\n\n\n\n{device_trackers}\n\n\n\nCeci arrive souvent lorsque un dispositif de suivi est renommé ou que son intégration est supprimée.\n\n\n\nSupprimez les de {person}, ou gardez-les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Your homie."
+                        "title": "Dispositifs de suivi inconnus suivis par : {person}",
+                        "description": "Spook a trouvé un fantôme dans vos personnes 👻\n\n\n\n{person} est suivi(e) par ces dispositifs de suivi, qui sont inconnus de Home Assistant :\n\n\n\n{device_trackers}\n\n\n\nCeci arrive souvent lorsque un dispositif de suivi est renommé ou que son intégration est supprimée.\n\n\n\nSupprimez les de {person}, ou gardez-les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -511,43 +520,55 @@
                     "not_editable": "Cette personne est configurée en YAML alors Spook ne peut pas la modifier. Mettez a jour la personne dans votre configuration."
                 }
             },
-            "title": "Dispositifs de suivi inconnus suivis par: {person}"
+            "title": "Dispositifs de suivi inconnus suivis par : {person}"
         },
         "orphaned_statistics": {
             "title": "Statistiques long terme orpheline trouvée",
-            "description": "Spook a trouvé un fantôme dans votre recorder 👻\n\n\n\nHome Assistant garde ces statistiques longue durée, mais ils ne correspondent à aucune entité qui existe:\n\n\n\n{statistics}\n\n\n\n\n\n\n\nCeci arrive habituellement lorsqu'un capteur est supprimé et que ses statistiques sont conservées. Pour corriger cette erreur, ouvrez Outils de développement > Statistiques et corrigez le problème, ou supprimez les en utilisant l'action `recorder.clear_statistics`.\n\n\n\nSpook 👻 Your homie."
+            "description": "Spook a trouvé un fantôme dans votre recorder 👻\n\n\n\nHome Assistant garde ces statistiques longue durée, mais ils ne correspondent à aucune entité qui existe :\n\n\n\n{statistics}\n\n\n\n\n\n\n\nCeci arrive habituellement lorsqu'un capteur est supprimé et que ses statistiques sont conservées. Pour corriger cette erreur, ouvrez Outils de développement > Statistiques et corrigez le problème, ou supprimez les en utilisant l'action `recorder.clear_statistics`.\n\n\n\nSpook 👻 Votre pote."
         },
         "automation_unknown_condition_references": {
-            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante:\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation utilise ces conditions qui ne peuvent être fournies par aucune intégration disponible à Home Assistant:\n\n\n\n{conditions}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces conditions ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie.",
-            "title": "Conditions inconnues utilisées dans: {automation}"
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation utilise ces conditions qui ne peuvent être fournies par aucune intégration disponible à Home Assistant :\n\n\n\n{conditions}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces conditions ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Votre pote.",
+            "title": "Conditions inconnues utilisées dans : {automation}"
         },
         "automation_unknown_trigger_references": {
-            "title": "Déclencheurs inconnus utilisé dans: {automation}",
-            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante:\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation fait référence aux déclencheurs suivants, qui sont inconnus de Home Assistant:\n\n\n\n{triggers}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces déclencheurs ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie."
+            "title": "Déclencheurs inconnus utilisé dans : {automation}",
+            "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation fait référence aux déclencheurs suivants, qui sont inconnus de Home Assistant :\n\n\n\n{triggers}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces déclencheurs ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Votre pote."
         },
         "energy_unknown_references": {
             "title": "Entités inconnues utilisé dans le tableau de bord Énergie",
-            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nLe tableau de bord Énergie fait référence à ces entités, qui sont inconnues de Home Assistant:\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'entité utilisé dans la configuration du tableau de bord Énergie soit renommé ou supprimé. Pour corriger cette erreur, ouvrez les Paramètres > Tableaux de bord > Énergie et mettez à jour ou supprimez ces entités.\n\n\n\nSpook 👻 Your homie."
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nLe tableau de bord Énergie fait référence à ces entités, qui sont inconnues de Home Assistant :\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'entité utilisé dans la configuration du tableau de bord Énergie soit renommé ou supprimé. Pour corriger cette erreur, ouvrez les Paramètres > Tableaux de bord > Énergie et mettez à jour ou supprimez ces entités.\n\n\n\nSpook 👻 Votre pote."
         },
         "lovelace_unknown_area_references": {
-            "title": "Pièce inconnue utilisée dans ce tableau de bord: {dashboard}",
-            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant:\n\n\n\n{dashboard}\n\n\n\nCe tableau de bord fait référence aux pièces suivantes, qui sont inconnues de Home Assistant:\n\n\n\n{areas}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une pièce est renommée ou supprimée. Pour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\n\n\nSpook 👻 Your homie."
+            "title": "Pièce inconnue utilisée dans ce tableau de bord : {dashboard}",
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n\n\n{dashboard}\n\n\n\nCe tableau de bord fait référence aux pièces suivantes, qui sont inconnues de Home Assistant :\n\n\n\n{areas}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une pièce est renommée ou supprimée. Pour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et supprimez l'utilisation de ces pièces inexistantes.\n\n\n\nSpook 👻 Votre pote."
         },
         "script_unknown_condition_references": {
-            "title": "Condition inconnue utilisée dans: {script}",
-            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le script suivant:\n\n\n\n[{script}]({edit}) (`{entity_id}`)\n\n\n\nCe script utilise ces conditions, qui ne sont fournis par aucune intégration disponible à Home Assistant:\n\n\n\n{conditions}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'intégration qui les fournissait est supprimée. Pour corriger cetter erreur, [modifiez le script]({edit}) et retirez l'utilisation de ces conditions indisponibles, ou restaurez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie."
+            "title": "Condition inconnue utilisée dans : {script}",
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n\n\n[{script}]({edit}) (`{entity_id}`)\n\n\n\nCe script utilise ces conditions, qui ne sont fournis par aucune intégration disponible à Home Assistant :\n\n\n\n{conditions}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'intégration qui les fournissait est supprimée. Pour corriger cetter erreur, [modifiez le script]({edit}) et retirez l'utilisation de ces conditions indisponibles, ou restaurez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Votre pote."
         },
         "unknown_customized_entities": {
             "title": "Entité inconnue dans vos personnalisations",
-            "description": "Spook a trouvé un fantôme dans vos personnalisations 👻\n\n\n\nLa section `customize:` définit les attributs pour les entités suivantes, qui sont inconnues de Home Assistant:\n\n\n\n{entities}\n\n\n\n\n\n\n\nIl arrive souvent qu'une entité soit renommée ou supprimé malgré que les personalisations sont restés. Pour corriger cette erreur, modifiez la section `customize:` de votre configuration et retirez ces entités.\n\n\n\nSpook 👻 Your homie."
+            "description": "Spook a trouvé un fantôme dans vos personnalisations 👻\n\n\n\nLa section `customize:` définit les attributs pour les entités suivantes, qui sont inconnues de Home Assistant :\n\n\n\n{entities}\n\n\n\n\n\n\n\nIl arrive souvent qu'une entité soit renommée ou supprimé malgré que les personalisations sont restés. Pour corriger cette erreur, modifiez la section `customize:` de votre configuration et retirez ces entités.\n\n\n\nSpook 👻 Votre pote."
         },
         "template_unknown_entity_references": {
-            "title": "Entités inconnues utilisée dans une entrée template: {helper}",
-            "description": "Spook a trouvé un fantôme dans vos entrées template 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante:\n\n\n\n[{helper}]({edit})\n\n\n\nSon template fait référence à ces entités, qui sont inconnues de Home Assistant:\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une entité est renommée ou supprimée. Pour corriger cette erreur, reconfigurez l'entrée template pour qu'il fasse réference à des entités existantes.\n\n\n\nSpook 👻 Your homie."
+            "title": "Entités inconnues utilisée dans une entrée template : {helper}",
+            "description": "Spook a trouvé un fantôme dans vos entrées template 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante :\n\n\n\n[{helper}]({edit})\n\n\n\nSon template fait référence à ces entités, qui sont inconnues de Home Assistant :\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une entité est renommée ou supprimée. Pour corriger cette erreur, reconfigurez l'entrée template pour qu'il fasse réference à des entités existantes.\n\n\n\nSpook 👻 Votre pote."
         },
         "script_unknown_trigger_references": {
-            "title": "Déclencheur inconnu utilisé dans: {script}",
-            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le script suivant:\n\n\n\n[{script}]({edit}) (`{entity_id}`)\n\n\n\nCe script utilise les déclencheurs suivants, qui ne sont fournis par aucune intégration disponible à Home Assistant:\n\n\n\n{triggers}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'intégration qui les fournissait est supprimée. Pour corriger cetter erreur, [modifiez le script]({edit}) et retirez l'utilisation de ces déclencheurs indisponibles, ou restaurez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie."
+            "title": "Déclencheur inconnu utilisé dans : {script}",
+            "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le script suivant :\n\n\n\n[{script}]({edit}) (`{entity_id}`)\n\n\n\nCe script utilise les déclencheurs suivants, qui ne sont fournis par aucune intégration disponible à Home Assistant :\n\n\n\n{triggers}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'intégration qui les fournissait est supprimée. Pour corriger cetter erreur, [modifiez le script]({edit}) et retirez l'utilisation de ces déclencheurs indisponibles, ou restaurez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Votre pote."
+        },
+        "alert_unknown_entity_references": {
+            "description": "Spook a trouvé un fantôme dans vos alertes 👻\n\nL'alerte {alert} (`{entity_id}`) surveille une entité qui est inconnue de Home Assistant :\n\n{entities}\n\nUne alerte ne peut se déclencher que sur l'entité qu'elle surveille, donc celle-ci ne se déclenchera plus jamais. Vue de l'extérieur, elle ressemble exactement à une alerte qui n'a rien à signaler.\n\nPour résoudre cette erreur, modifiez la section `alert:` de votre configuration et faites pointer cette alerte vers une entité existante.\n\nSpook 👻 Votre pote.",
+            "title": "Entité inconnue surveillée par l'alerte : {alert}"
+        },
+        "alert_unknown_notifiers": {
+            "description": "Spook a trouvé un fantôme dans vos alertes 👻\n\nL'alerte {alert} (`{entity_id}`) notifie via les actions suivantes, qui sont inconnues de Home Assistant :\n\n{notifiers}\n\nL'alerte se déclenche toujours et continue ses tours, mais ces notifications n'arrivent nulle part. Home Assistant ne le consigne qu'au moment où l'alerte se déclenche, ce qui est un mauvais moment pour découvrir que personne n'écoute.\n\nPour résoudre cette erreur, modifiez la liste `notifiers:` de cette alerte dans votre configuration et supprimez ou corrigez ces entrées.\n\nSpook 👻 Votre pote.",
+            "title": "Notificateurs inconnus utilisés par l'alerte : {alert}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook a trouvé un fantôme dans vos assistants de modèle 👻\n\nEn flottant dans les parages, Spook est tombé sur l'assistant de modèle suivant :\n\n[{helper}]({edit})\n\nIl fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nCela arrive souvent lorsque l'intégration derrière une action a été supprimée, ou qu'un script a été renommé ou supprimé. Pour résoudre cette erreur, reconfigurez l'assistant de modèle pour qu'il utilise des actions existantes.\n\nSpook 👻 Votre pote.",
+            "title": "Actions inconnues utilisées dans l'assistant de modèle : {helper}"
         }
     },
     "services": {
@@ -832,16 +853,24 @@
                 "amount": {
                     "name": "Montant",
                     "description": "La quantité à décrémenter de l'entrée numérique. Si aucune valeur n'est fournie, la valeur de pas de l'entité numérique sera utilisé."
+                },
+                "cycle": {
+                    "description": "Repartir de l'autre extrémité de la plage au lieu de s'arrêter ici, comme l'option suivante d'une liste qui revient au début.",
+                    "name": "Cyclique"
                 }
             },
             "name": "Diminuer la valeur",
-            "description": "Décémenter  une entité d'entrée numérique d'une quantité donnée."
+            "description": "Décémenter une entité d'entrée numérique d'une quantité donnée."
         },
         "input_number_increment": {
             "fields": {
                 "amount": {
                     "name": "Montant",
                     "description": "La quantité à incrémenter de l'entrée numérique. Si aucune valeur n'est fournie, la valeur de pas de l'entité numérique sera utilisé."
+                },
+                "cycle": {
+                    "description": "Repartir de l'autre extrémité de la plage au lieu de s'arrêter ici, comme l'option suivante d'une liste qui revient au début.",
+                    "name": "Cyclique"
                 }
             },
             "description": "Incrémente une entité d'entrée numérique d'une quantité donnée.",
@@ -1128,48 +1157,48 @@
             "description": "Supprime une étiquette d'une pièce. Si plusieurs étiquettes ou plusieurs pièces sont fournis, toutes les associations correspondantes seront supprimées."
         },
         "boo": {
-            "name": "Boo!",
+            "name": "Boo !",
             "description": "L’appel de cette action donne la frousse à Home Assistant. Son exécution échouera toujours."
         },
         "homeassistant_disable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Entrée de configuration",
-                    "description": "L'entrée de configuration de l'intégration à désactiver."
+                    "name": "Entrée d'intégration",
+                    "description": "L'entrée d'intégration à désactiver."
                 }
             },
             "name": "Désactiver une intégration",
-            "description": "Désactive une entrée de configuration d'intégration."
+            "description": "Désactive une entrée d'intégration."
         },
         "homeassistant_enable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Entrée de configuration",
-                    "description": "L'entrée de configuration d'intégration à activer."
+                    "name": "Entrée d'intégration",
+                    "description": "L'entrée d'intégration à activer."
                 }
             },
             "name": "Activer une intégration",
-            "description": "Active une entrée de configuration d'intégration."
+            "description": "Active une entrée d'intégration."
         },
         "homeassistant_disable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Entrée de configuration",
-                    "description": "L'entrée de configuration d'intégration à désactiver la vérification périodique."
+                    "name": "Entrée d'intégration",
+                    "description": "L'entrée d'intégration pour laquelle désactiver la vérification périodique."
                 }
             },
             "name": "Désactiver la vérification périodique des mises à jour",
-            "description": "Désactiver la vérification périodique des mises à jour d'une entrée de configuration d'intégration."
+            "description": "Désactive la vérification périodique des mises à jour d'une entrée d'intégration."
         },
         "homeassistant_enable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Entrée de configuration",
-                    "description": "L'entrée de configuration d'intégration à activer la vérification périodique."
+                    "name": "Entrée d'intégration",
+                    "description": "L'entrée d'intégration pour laquelle activer la vérification périodique."
                 }
             },
             "name": "Activer la vérification périodique des mises à jour",
-            "description": "Active la vérification périodique des mises à jour pour une entrée de configuration d'intégration."
+            "description": "Active la vérification périodique des mises à jour d'une entrée d'intégration."
         },
         "input_select_sort": {
             "name": "Trier les options",
@@ -1325,7 +1354,7 @@
             "fields": {
                 "force": {
                     "name": "Redémarrage forcé",
-                    "description": "Force le redémarrage. ATTENTION! Cette action n'arrêtera pas Home Assistant correctement. Elle ignorera les vérifications de la configuration ainsi que les migrations de base de données en cours. Utilisez cette action uniquement si vous savez ce que vous faites."
+                    "description": "Force le redémarrage. ATTENTION ! Cette action n'arrêtera pas Home Assistant correctement. Elle ignorera les vérifications de la configuration ainsi que les migrations de base de données en cours. Utilisez cette action uniquement si vous savez ce que vous faites."
                 },
                 "safe_mode": {
                     "description": "Cocher pour redémarrer en mode sans échec. Redémarre Home Assistant sans charger d'intégrations personnalisées ni de modules frontaux.",
@@ -1396,6 +1425,48 @@
         "input_select_shuffle": {
             "name": "Mélanger les options",
             "description": "Mélange la liste des options sélectionnables d'une entité « input_select ». Cette modification n'est pas persistante et sera remise à son état inital après le rechargement de l'entité ou le redémarrage de Home Assistant."
+        },
+        "homeassistant_expose_entity": {
+            "description": "Expose une entité (ou des entités) aux assistants vocaux.",
+            "fields": {
+                "assistants": {
+                    "description": "Le ou les assistants concernés.",
+                    "name": "Assistants"
+                },
+                "entity_id": {
+                    "description": "La ou les entités à exposer.",
+                    "name": "Entité"
+                }
+            },
+            "name": "Exposer une entité aux assistants"
+        },
+        "homeassistant_unexpose_entity": {
+            "description": "N'expose plus une entité (ou des entités) aux assistants vocaux.",
+            "fields": {
+                "assistants": {
+                    "description": "Le ou les assistants concernés.",
+                    "name": "Assistants"
+                },
+                "entity_id": {
+                    "description": "La ou les entités à ne plus exposer.",
+                    "name": "Entité"
+                }
+            },
+            "name": "Ne plus exposer une entité aux assistants"
+        },
+        "sensor_set_display_precision": {
+            "description": "Définit le nombre de décimales affichées pour un ou plusieurs capteurs.",
+            "fields": {
+                "display_precision": {
+                    "description": "Le nombre de décimales à afficher pour le capteur.",
+                    "name": "Précision d'affichage"
+                },
+                "entity_id": {
+                    "description": "La ou les entités de type capteur à modifier.",
+                    "name": "Entité"
+                }
+            },
+            "name": "Définir la précision d'affichage"
         }
     },
     "conditions": {
@@ -1408,6 +1479,16 @@
                 }
             },
             "description": "Est satisfait à un certain pourcentage, choisi au hasard à chaque execution. Peut être utilisé pour ajouter un peu de variabilité à vos automatisations."
+        },
+        "cooldown": {
+            "description": "N'est satisfait que si cette automatisation ou ce script n'a pas été exécuté pendant la durée indiquée (ou ne l'a jamais été). Un temps de repos intégré, pour éviter des déclenchements trop rapprochés.",
+            "fields": {
+                "duration": {
+                    "description": "Combien de temps attendre après la dernière exécution avant que cette condition soit à nouveau satisfaite.",
+                    "name": "Durée"
+                }
+            },
+            "name": "Temps de repos"
         }
     }
 }
