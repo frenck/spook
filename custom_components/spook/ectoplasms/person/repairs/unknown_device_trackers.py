@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import person
+from homeassistant.components.device_tracker import DOMAIN as DEVICE_TRACKER_DOMAIN
 from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
@@ -48,24 +49,34 @@ class SpookRepair(AbstractSpookRepair):
         # come and go without the entity registry hearing a thing, so registry
         # events alone miss both the moment a person breaks and the moment it
         # recovers.
+        #
+        # Limited to device trackers, unlike the sibling repairs that watch
+        # every domain. Home Assistant validates a person's `device_trackers`
+        # with `cv.entities_domain(device_tracker)`, so nothing else can ever
+        # end up in that list and nothing else is worth waking up for.
         @callback
-        def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
-            """Return if a state entity was added or removed."""
+        def _tracker_entity_changed(event_data: Mapping[str, Any]) -> bool:
+            """Return if a device tracker state entity was added or removed."""
+            entity_id = event_data.get("entity_id")
             return (
-                event_data.get("old_state") is None
-                or event_data.get("new_state") is None
+                isinstance(entity_id, str)
+                and entity_id.startswith(f"{DEVICE_TRACKER_DOMAIN}.")
+                and (
+                    event_data.get("old_state") is None
+                    or event_data.get("new_state") is None
+                )
             )
 
         @callback
         def _async_call_inspect_debouncer(_: Event) -> None:
-            """Trigger an inspection when a state entity is added or removed."""
+            """Trigger an inspection when a device tracker appears or goes."""
             self.inspect_debouncer.async_schedule_call()
 
         self._event_subs.add(
             self.hass.bus.async_listen(
                 EVENT_STATE_CHANGED,
                 _async_call_inspect_debouncer,
-                event_filter=_state_entity_changed,
+                event_filter=_tracker_entity_changed,
             ),
         )
 
