@@ -24,11 +24,12 @@ jobs:
           node-version-file: "documentation/.nvmrc"
 
       - name: 🏗 Install MyST
-        run: npm install -g mystmd
+        working-directory: ./documentation
+        run: npm ci
 
       - name: 🚀 Build documentation
         working-directory: ./documentation
-        run: myst build --html
+        run: npx myst build --html
 
       - name: ©️ Public folder
         run: cp ./documentation/public/* ./documentation/_build/html/
