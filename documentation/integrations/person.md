@@ -185,7 +185,7 @@ This usually happens when a tracker was renamed, or when the integration providi
 
 The raised issue is fixable. Spook can remove the missing trackers from the person for you, or you can fix it yourself on the People page. A person set up in {term}`YAML` cannot be edited by Spook, so for those the issue points you at your configuration instead.
 
-## Uses cases
+## Use cases
 
 Some use cases for the enhancements Spook provides for this integration:
 
@@ -195,7 +195,7 @@ Some use cases for the enhancements Spook provides for this integration:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

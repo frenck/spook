@@ -43,7 +43,7 @@ by Home Assistant, or restore the integration or script that provided it.
 Templated action names are ignored because their value is determined at runtime.
 Spook automatically removes the repair issue once it is fixed.
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea for a new action, entity, or repair detection, [let us know
 in the discussion forums](https://github.com/frenck/spook/discussions).

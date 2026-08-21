@@ -116,7 +116,7 @@ So this is not a silent failure, it is a nameless one. Home Assistant raises a g
 
 To resolve the raised issue, you can either remove the use of these triggers or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
