@@ -17,7 +17,7 @@ from ..configuration import async_get_alert_configurations
 if TYPE_CHECKING:
     from collections.abc import Mapping
 
-    from homeassistant.core import Event
+    from homeassistant.core import Event, HomeAssistant
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -39,6 +39,11 @@ class SpookRepair(AbstractSpookRepair):
     inspect_on_reload = True
     automatically_clean_up_issues = True
 
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self._watched_entity_ids: set[str] = set()
+
     async def async_activate(self) -> None:
         """Handle activating the repair."""
         await super().async_activate()
@@ -46,24 +51,30 @@ class SpookRepair(AbstractSpookRepair):
         # An alert can watch a state-only entity, which comes and goes without
         # the entity registry hearing about it. Registry events alone would
         # miss both the moment it breaks and the moment it recovers.
+        #
+        # Narrowed to the entities some alert actually watches, because an
+        # inspection here re-reads the configuration from disk. The sibling
+        # repairs filter on add/remove alone, but they only walk objects
+        # already in memory. The set comes from the last inspection, so a
+        # newly watched entity is picked up by the reload that introduced it.
         @callback
-        def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
-            """Return if a state entity was added or removed."""
-            return (
+        def _watched_entity_changed(event_data: Mapping[str, Any]) -> bool:
+            """Return if a watched state entity was added or removed."""
+            return event_data.get("entity_id") in self._watched_entity_ids and (
                 event_data.get("old_state") is None
                 or event_data.get("new_state") is None
             )
 
         @callback
         def _async_call_inspect_debouncer(_: Event) -> None:
-            """Trigger an inspection when a state entity is added or removed."""
+            """Trigger an inspection when a watched entity appears or goes."""
             self.inspect_debouncer.async_schedule_call()
 
         self._event_subs.add(
             self.hass.bus.async_listen(
                 EVENT_STATE_CHANGED,
                 _async_call_inspect_debouncer,
-                event_filter=_state_entity_changed,
+                event_filter=_watched_entity_changed,
             ),
         )
 
@@ -73,7 +84,14 @@ class SpookRepair(AbstractSpookRepair):
 
         entity_registry = er.async_get(self.hass)
 
-        for alert in await async_get_alert_configurations(self.hass):
+        alerts = await async_get_alert_configurations(self.hass)
+        self._watched_entity_ids = {
+            alert.watched_entity_id
+            for alert in alerts
+            if alert.watched_entity_id is not None
+        }
+
+        for alert in alerts:
             self.possible_issue_ids.add(alert.entity_id)
 
             watched = alert.watched_entity_id
