@@ -569,6 +569,10 @@
         "template_unknown_service_references": {
             "description": "Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit})\n\nRefere as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{services}\n\nIsto acontece muitas vezes quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou eliminado. Para corrigir este erro, reconfigura o assistente de template para usar ações que existam.\n\nSpook 👻 O teu amigo.",
             "title": "Ações desconhecidas usadas no assistente de template: {helper}"
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook encontrou um fantasma nos teus grupos de notificação 👻\n\nO grupo de notificação `{group}` encaminha para as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{members}\n\nO grupo continua a entregar aos restantes membros e continua a comunicar sucesso a quem o chamou, pelo que nada a montante se apercebe. A falha só aparece como um \"Task exception was never retrieved\" solto no registo, que não nomeia nenhum grupo e parece um erro de programação. Quem estava por trás desse membro deixa simplesmente de ser notificado.\n\nPara corrigir este erro, edita a lista `services:` deste grupo na tua configuração e remove ou corrige estas entradas.\n\nSpook 👻 O teu amigo.",
+            "title": "Membros desconhecidos no grupo de notificação: {group}"
         }
     },
     "conditions": {
