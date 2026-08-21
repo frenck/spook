@@ -4,10 +4,14 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
+from homeassistant.const import EVENT_STATE_CHANGED
+from homeassistant.core import State
+from homeassistant.exceptions import HomeAssistantError
 
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.alert.repairs.unknown_entity_references import (
@@ -19,6 +23,7 @@ if TYPE_CHECKING:
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
 
 _YAML_CONFIG = "custom_components.spook.ectoplasms.alert.configuration.async_integration_yaml_config"
+_ISSUE_ID = "alert_unknown_entity_references_alert.garage"
 
 
 @pytest.fixture(name="alert_set_up")
@@ -49,9 +54,7 @@ async def test_watched_entity_that_is_gone_is_reported(
     with patch(_YAML_CONFIG, return_value=config):
         await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN, "alert_unknown_entity_references_alert.garage"
-    )
+    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders is not None
     assert issue.translation_placeholders["alert"] == "Garage door"
@@ -116,15 +119,73 @@ async def test_alert_not_set_up_reads_no_configuration(
 
 
 @pytest.mark.usefixtures("alert_set_up")
-async def test_unreadable_configuration_is_survived(
+async def test_configuration_is_read_strictly(hass: HomeAssistant) -> None:
+    """Test the configuration is read in a way that fails loudly.
+
+    Without `raise_on_failure`, a configuration that will not validate comes
+    back as `None`, which is indistinguishable from having no alerts and
+    would make the inspection clear every issue it had raised.
+    """
+    with patch(_YAML_CONFIG, return_value={}) as yaml_config:
+        await SpookRepair(hass).async_inspect()
+
+    yaml_config.assert_called_once_with(hass, "alert", raise_on_failure=True)
+
+
+@pytest.mark.usefixtures("alert_set_up")
+async def test_unreadable_configuration_keeps_existing_issues(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
 ) -> None:
-    """Test a configuration that will not validate does not raise."""
-    with patch(_YAML_CONFIG, return_value=None):
-        await SpookRepair(hass).async_inspect()
+    """Test a configuration Spook cannot read does not clear what it found.
 
-    assert not issue_registry.issues
+    A configuration that will not validate is not the same as a
+    configuration without alerts. Home Assistant keeps the alerts it already
+    loaded running, so the broken ones are still broken. The inspection has
+    to abort rather than report all clear.
+    """
+    config = _alert_yaml(
+        garage={"name": "Garage door", "entity_id": "binary_sensor.gone"},
+    )
+    repair = SpookRepair(hass)
+
+    with patch(_YAML_CONFIG, return_value=config):
+        await repair._async_inspect_with_cleanup()
+    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+
+    with (
+        patch(_YAML_CONFIG, side_effect=HomeAssistantError("broken")),
+        pytest.raises(HomeAssistantError),
+    ):
+        await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+
+
+@pytest.mark.usefixtures("alert_set_up")
+async def test_watched_state_only_entity_going_away_is_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an alert breaks when the state-only entity it watches disappears.
+
+    A state-only entity leaves no trace in the entity registry, so this
+    transition happens without a single registry event.
+    """
+    hass.states.async_set("device_tracker.phone", "home")
+    config = _alert_yaml(
+        garage={"name": "Garage door", "entity_id": "device_tracker.phone"},
+    )
+    repair = SpookRepair(hass)
+
+    with patch(_YAML_CONFIG, return_value=config):
+        await repair._async_inspect_with_cleanup()
+        assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+
+        hass.states.async_remove("device_tracker.phone")
+        await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
 
 
 @pytest.mark.usefixtures("alert_set_up")
@@ -144,13 +205,86 @@ async def test_issue_is_cleaned_up_when_the_entity_returns(
 
     with patch(_YAML_CONFIG, return_value=config):
         await repair._async_inspect_with_cleanup()
-        assert issue_registry.async_get_issue(
-            DOMAIN, "alert_unknown_entity_references_alert.garage"
-        )
+        assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
 
         hass.states.async_set("binary_sensor.garage", "off")
         await repair._async_inspect_with_cleanup()
 
-    assert not issue_registry.async_get_issue(
-        DOMAIN, "alert_unknown_entity_references_alert.garage"
+    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+
+
+async def _count_scheduled_inspections(
+    hass: HomeAssistant,
+    old_state: State | None,
+    new_state: State | None,
+) -> int:
+    """Return how many inspections one state change schedules."""
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    repair.inspect_debouncer.async_shutdown()
+    calls = 0
+
+    def async_schedule_call() -> None:
+        """Capture scheduled inspections."""
+        nonlocal calls
+        calls += 1
+
+    repair.inspect_debouncer = SimpleNamespace(
+        async_schedule_call=async_schedule_call,
+        async_shutdown=lambda: None,
+    )
+
+    hass.bus.async_fire(
+        EVENT_STATE_CHANGED,
+        {
+            "entity_id": "device_tracker.phone",
+            "old_state": old_state,
+            "new_state": new_state,
+        },
+    )
+    await hass.async_block_till_done()
+
+    await repair.async_deactivate()
+    return calls
+
+
+async def test_state_only_entity_addition_rechecks_alert_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state entity appearing schedules an inspection."""
+    assert (
+        await _count_scheduled_inspections(
+            hass, None, State("device_tracker.phone", "home")
+        )
+        == 1
+    )
+
+
+async def test_state_only_entity_removal_rechecks_alert_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state entity disappearing schedules an inspection.
+
+    This is the transition an alert breaks on without the entity registry
+    ever hearing about it.
+    """
+    assert (
+        await _count_scheduled_inspections(
+            hass, State("device_tracker.phone", "home"), None
+        )
+        == 1
+    )
+
+
+async def test_state_only_entity_update_does_not_recheck_alert_repairs(
+    hass: HomeAssistant,
+) -> None:
+    """Test an ordinary state change does not schedule an inspection."""
+    assert (
+        await _count_scheduled_inspections(
+            hass,
+            State("device_tracker.phone", "home"),
+            State("device_tracker.phone", "not_home"),
+        )
+        == 0
     )

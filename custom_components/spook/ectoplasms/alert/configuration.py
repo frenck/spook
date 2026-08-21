@@ -42,6 +42,12 @@ async def async_get_alert_configurations(
 
     Development of the alert integration is frozen upstream, so this shape is
     not going to move under us.
+
+    Raises when the configuration cannot be read or will not validate. That
+    is deliberate: an empty list means "no alerts", and a configuration Spook
+    could not read means nothing of the sort. Letting it raise aborts the
+    inspection before its issue cleanup runs, so alerts that were already
+    reported stay reported until Spook can actually look again.
     """
     if DOMAIN not in hass.config.components:
         return []  # Alert is not set up, so there is nothing to read.
@@ -49,8 +55,8 @@ async def async_get_alert_configurations(
     # Re-reads configuration.yaml from disk, in the executor. Cheap enough for
     # a debounced inspection, and only ever reached by the few setups that use
     # alerts at all.
-    config = await async_integration_yaml_config(hass, DOMAIN)
-    if not config or not (alerts := config.get(DOMAIN)):
+    config = await async_integration_yaml_config(hass, DOMAIN, raise_on_failure=True)
+    if not (alerts := config.get(DOMAIN)):
         LOGGER.debug("Spook found no alert configuration to inspect")
         return []
 

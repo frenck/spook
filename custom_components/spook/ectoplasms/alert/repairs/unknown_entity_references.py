@@ -2,14 +2,22 @@
 
 from __future__ import annotations
 
+from typing import TYPE_CHECKING, Any
+
 from homeassistant.components.alert.const import DOMAIN
-from homeassistant.const import EVENT_COMPONENT_LOADED
+from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
 from ..configuration import async_get_alert_configurations
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from homeassistant.core import Event
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -30,6 +38,34 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_on_reload = True
     automatically_clean_up_issues = True
+
+    async def async_activate(self) -> None:
+        """Handle activating the repair."""
+        await super().async_activate()
+
+        # An alert can watch a state-only entity, which comes and goes without
+        # the entity registry hearing about it. Registry events alone would
+        # miss both the moment it breaks and the moment it recovers.
+        @callback
+        def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
+            """Return if a state entity was added or removed."""
+            return (
+                event_data.get("old_state") is None
+                or event_data.get("new_state") is None
+            )
+
+        @callback
+        def _async_call_inspect_debouncer(_: Event) -> None:
+            """Trigger an inspection when a state entity is added or removed."""
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _async_call_inspect_debouncer,
+                event_filter=_state_entity_changed,
+            ),
+        )
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
