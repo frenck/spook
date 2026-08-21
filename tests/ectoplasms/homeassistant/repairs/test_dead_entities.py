@@ -1,6 +1,7 @@
 """Tests for the dead entities repair."""
 
-# pylint: disable=wrong-import-order
+# ruff: noqa: SLF001
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -9,11 +10,13 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import ATTR_RESTORED, STATE_UNAVAILABLE
+from homeassistant.core import State
 
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.homeassistant.repairs.dead_entities import (
     SpookRepair,
 )
+from tests.repair_helpers import async_count_scheduled_inspections
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -125,3 +128,121 @@ async def test_restored_entity_without_config_entry_is_not_reported(
         for domain, issue_id in issue_registry.issues
         if domain == DOMAIN
     )
+
+
+async def test_entity_dying_mid_session_is_reported(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an entity that dies while its entry stays loaded is reported.
+
+    Home Assistant writes the restored placeholder when an entity is removed
+    but its registry entry survives. The entity registry does not change and
+    the config entry stays loaded, so nothing else marks the moment.
+    """
+    entry = _loaded_entry(hass)
+    reg = entity_registry.async_get_or_create(
+        "sensor", "hue", "dies", config_entry=entry
+    )
+    hass.states.async_set(reg.entity_id, "21.5")
+    repair = SpookRepair(hass)
+
+    await repair._async_inspect_with_cleanup()
+    assert (
+        issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+        is None
+    )
+
+    hass.states.async_set(reg.entity_id, STATE_UNAVAILABLE, {ATTR_RESTORED: True})
+    await repair._async_inspect_with_cleanup()
+
+    assert issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+
+
+async def test_issue_clears_when_the_entity_finally_appears(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the issue goes away once the entity shows up for real."""
+    entry = _loaded_entry(hass)
+    dead = _register_restored(hass, entity_registry, entry, "late")
+    repair = SpookRepair(hass)
+
+    await repair._async_inspect_with_cleanup()
+    assert issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+
+    hass.states.async_set(dead, "21.5")
+    await repair._async_inspect_with_cleanup()
+
+    assert (
+        issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+        is None
+    )
+
+
+async def _count_scheduled_inspections(
+    hass: HomeAssistant,
+    old_state: State | None,
+    new_state: State | None,
+) -> int:
+    """Return how many inspections one state change schedules."""
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+
+    return await async_count_scheduled_inspections(
+        hass, repair, "sensor.hue_thing", old_state, new_state
+    )
+
+
+def _restored(entity_id: str = "sensor.hue_thing") -> State:
+    """Return the restored placeholder state Home Assistant writes."""
+    return State(entity_id, STATE_UNAVAILABLE, {ATTR_RESTORED: True})
+
+
+def _live(entity_id: str = "sensor.hue_thing", state: str = "21.5") -> State:
+    """Return an ordinary state."""
+    return State(entity_id, state)
+
+
+async def test_entering_the_restored_state_rechecks(hass: HomeAssistant) -> None:
+    """Test an entity dying into the placeholder schedules an inspection."""
+    assert await _count_scheduled_inspections(hass, _live(), _restored()) == 1
+
+
+async def test_leaving_the_restored_state_rechecks(hass: HomeAssistant) -> None:
+    """Test an entity coming back for real schedules an inspection."""
+    assert await _count_scheduled_inspections(hass, _restored(), _live()) == 1
+
+
+async def test_appearing_as_restored_rechecks(hass: HomeAssistant) -> None:
+    """Test the placeholder being written from nothing schedules an inspection."""
+    assert await _count_scheduled_inspections(hass, None, _restored()) == 1
+
+
+async def test_ordinary_state_change_does_not_recheck(hass: HomeAssistant) -> None:
+    """Test a normal state change schedules nothing.
+
+    This is the one that matters for cost: entities change state constantly,
+    and this repair walks every state in the machine.
+    """
+    assert await _count_scheduled_inspections(hass, _live(), _live(state="22.0")) == 0
+
+
+async def test_entity_appearing_normally_does_not_recheck(hass: HomeAssistant) -> None:
+    """Test an entity appearing without a placeholder schedules nothing.
+
+    The false-positive twin for the filter. A brand new entity was never
+    dead, so its arrival says nothing about a dead one.
+    """
+    assert await _count_scheduled_inspections(hass, None, _live()) == 0
+
+
+async def test_entity_removed_outright_does_not_recheck(hass: HomeAssistant) -> None:
+    """Test an entity removed along with its registry entry schedules nothing.
+
+    No placeholder is left behind in that case, so there is nothing for this
+    repair to find.
+    """
+    assert await _count_scheduled_inspections(hass, _live(), None) == 0

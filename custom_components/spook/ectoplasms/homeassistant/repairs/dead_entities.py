@@ -3,13 +3,25 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.config_entries import ConfigEntryState
-from homeassistant.const import ATTR_RESTORED, EVENT_COMPONENT_LOADED, STATE_UNAVAILABLE
+from homeassistant.const import (
+    ATTR_RESTORED,
+    EVENT_COMPONENT_LOADED,
+    EVENT_STATE_CHANGED,
+    STATE_UNAVAILABLE,
+)
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
+
+if TYPE_CHECKING:
+    from collections.abc import Mapping
+
+    from homeassistant.core import Event, State
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -29,6 +41,45 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_config_entry_changed = True
     automatically_clean_up_issues = True
+
+    async def async_activate(self) -> None:
+        """Handle activating the repair."""
+        await super().async_activate()
+
+        # The restored placeholder state can appear and disappear without
+        # anything else saying so. An entity removed while its registry entry
+        # survives gets one written for it, and an entity that finally shows
+        # up overwrites the one it had. Neither touches the entity registry,
+        # and the config entry stays loaded throughout, so the events above
+        # only catch this at startup or by coincidence.
+        #
+        # Watched by the restored flag flipping rather than by entities being
+        # added or removed: crossing into or out of that placeholder is the
+        # entire signal this repair reads, and it is not something an ordinary
+        # state change does.
+        @callback
+        def _restored_flag_changed(event_data: Mapping[str, Any]) -> bool:
+            """Return if an entity entered or left the restored state."""
+
+            def is_restored(state: State | None) -> bool:
+                return bool(state and state.attributes.get(ATTR_RESTORED))
+
+            return is_restored(event_data.get("old_state")) != is_restored(
+                event_data.get("new_state")
+            )
+
+        @callback
+        def _async_call_inspect_debouncer(_: Event) -> None:
+            """Trigger an inspection when the restored flag flips."""
+            self.inspect_debouncer.async_schedule_call()
+
+        self._event_subs.add(
+            self.hass.bus.async_listen(
+                EVENT_STATE_CHANGED,
+                _async_call_inspect_debouncer,
+                event_filter=_restored_flag_changed,
+            ),
+        )
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
