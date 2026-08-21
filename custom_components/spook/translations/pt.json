@@ -260,11 +260,19 @@
             "title": "Membros do grupo desconhecido em: {group}",
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este grupo a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado sobre este grupo a partir de agora.",
+                    "manage": "",
+                    "not_editable": ""
                 },
                 "step": {
                     "init": {
-                        "description": "O Spook encontrou um fantasma nos teus grupos 👻\n\nO grupo {group} (`{entity_id}`) contém membros que são desconhecidos para o Home Assistant:\n\n{entities}\n\n\n\nRemove-os do grupo, ou mantém-nas e o Spook não irá apontá-las novamente.\n\nSpook 👻 O teu amigo."
+                        "description": "O Spook encontrou um fantasma nos teus grupos 👻\n\nO grupo {group} (`{entity_id}`) contém membros que são desconhecidos para o Home Assistant:\n\n{entities}\n\n\n\nRemove-os do grupo, ou mantém-nas e o Spook não irá apontá-las novamente.\n\nSpook 👻 O teu amigo.",
+                        "menu_options": {
+                            "ignore": "",
+                            "remove": "",
+                            "manage": ""
+                        },
+                        "title": ""
                     }
                 }
             }
@@ -338,12 +346,18 @@
         "empty_areas": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado relativamente a esta área a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado relativamente a esta área a partir de agora.",
+                    "manage": ""
                 },
                 "step": {
                     "init": {
                         "description": "A área {area} não tem dispositivos, entidades, automações nem scripts direcionados a ela.\n\nRemove-a, ou mantém-na e o Spook vai deixar de a apontar.\n\nSpook 👻 O teu amigo.",
-                        "title": "Área vazia: {area}"
+                        "title": "Área vazia: {area}",
+                        "menu_options": {
+                            "remove": "",
+                            "ignore": "",
+                            "manage": ""
+                        }
                     }
                 }
             },
@@ -352,24 +366,38 @@
         "unused_blueprints": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este blueprint a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado sobre este blueprint a partir de agora.",
+                    "manage": ""
                 },
                 "step": {
                     "init": {
-                        "description": "O blueprint {blueprint} não está a ser usado por nenhum {domain}.\n\nRemove-o, ou mantém-no e o Spook vai deixar de o apontar.\n\nSpook 👻 O teu amigo."
+                        "description": "O blueprint {blueprint} não está a ser usado por nenhum {domain}.\n\nRemove-o, ou mantém-no e o Spook vai deixar de o apontar.\n\nSpook 👻 O teu amigo.",
+                        "menu_options": {
+                            "remove": "",
+                            "manage": "",
+                            "ignore": ""
+                        },
+                        "title": ""
                     }
                 }
-            }
+            },
+            "title": ""
         },
         "empty_floors": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este piso a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado sobre este piso a partir de agora.",
+                    "manage": ""
                 },
                 "step": {
                     "init": {
                         "description": "O piso {floor} não tem áreas nem automações ou scripts direcionados a ela.\n\nRemove-o, ou mantém-no e o Spook vai deixar de o apontar.\n\nSpook 👻 O teu amigo.",
-                        "title": "Piso vazio: {floor}"
+                        "title": "Piso vazio: {floor}",
+                        "menu_options": {
+                            "remove": "",
+                            "manage": "",
+                            "ignore": ""
+                        }
                     }
                 }
             },
@@ -378,63 +406,152 @@
         "min_max_unknown_sources": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este auxiliar a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado sobre este auxiliar a partir de agora.",
+                    "too_few_members": "",
+                    "manage": ""
+                },
+                "step": {
+                    "init": {
+                        "description": "",
+                        "menu_options": {
+                            "remove": "",
+                            "ignore": "",
+                            "manage": ""
+                        },
+                        "title": ""
+                    }
                 }
-            }
+            },
+            "title": ""
         },
         "unknown_helper_source_references": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este auxiliar a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado sobre este auxiliar a partir de agora.",
+                    "manage": ""
+                },
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "remove": "",
+                            "manage": "",
+                            "ignore": ""
+                        },
+                        "title": "",
+                        "description": ""
+                    }
                 }
-            }
+            },
+            "title": ""
         },
         "unused_labels": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre esta legenda a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado sobre esta legenda a partir de agora.",
+                    "manage": ""
+                },
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "remove": "",
+                            "ignore": "",
+                            "manage": ""
+                        },
+                        "description": "",
+                        "title": ""
+                    }
                 }
-            }
+            },
+            "title": ""
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre esta pessoa a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado sobre esta pessoa a partir de agora.",
+                    "not_editable": "",
+                    "manage": ""
+                },
+                "step": {
+                    "init": {
+                        "description": "",
+                        "menu_options": {
+                            "manage": "",
+                            "remove": "",
+                            "ignore": ""
+                        },
+                        "title": ""
+                    }
                 }
-            }
+            },
+            "title": ""
         },
         "stale_access_tokens": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este token a partir de agora."
+                    "issue_ignored": "Spook vai manter-se calado sobre este token a partir de agora.",
+                    "manage": ""
+                },
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "remove": "",
+                            "manage": "",
+                            "ignore": ""
+                        },
+                        "title": "",
+                        "description": ""
+                    }
                 }
-            }
+            },
+            "title": ""
         },
         "automation_unknown_condition_references": {
             "description": "O Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação utiliza as seguintes condições, que não podem ser fornecidas por nenhuma integração disponível no Home Assistant:\n\n{conditions}\n\n\n\nIsto geralmente acontece quando a integração que fornecia uma condição foi removida. Para corrigir esse erro, [edita a automação]({edit}) e remove o uso dessas condições indisponíveis ou restaura a integração que as fornecia.\n\nSpook 👻 O teu amigo.",
             "title": "Condições desconhecidas usadas em: {automation}"
         },
         "automation_unknown_trigger_references": {
-            "description": "O Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação refere os seguintes gatilhos que são desconhecidos para o Home Assistant:\n\n{triggers}\n\n\n\nIsto geralmente acontece quando a integração que fornecia uma condição foi removida. Para corrigir esse erro, [edita a automação]({edit}) e remove o uso desses gatilhos indisponíveis ou restaura a integração que as fornecia.\n\nSpook 👻 O teu amigo."
+            "description": "O Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação refere os seguintes gatilhos que são desconhecidos para o Home Assistant:\n\n{triggers}\n\n\n\nIsto geralmente acontece quando a integração que fornecia uma condição foi removida. Para corrigir esse erro, [edita a automação]({edit}) e remove o uso desses gatilhos indisponíveis ou restaura a integração que as fornecia.\n\nSpook 👻 O teu amigo.",
+            "title": ""
         },
         "unknown_customized_entities": {
-            "description": "O Spook encontrou um fantasma nas suas personalizações 👻\n\nA seção `customize:` define atributos para as seguintes entidades, que são desconhecidas pelo Home Assistant:\n\n{entities}\n\n\n\nIsto geralmente acontece quando uma entidade é renomeada ou removida, enquanto a sua personalização permanece. Para corrigir esse erro, edita a seção `customize:` na sua configuração e remove essas entidades.\n\nSpook 👻 O teu amigo."
+            "description": "O Spook encontrou um fantasma nas suas personalizações 👻\n\nA seção `customize:` define atributos para as seguintes entidades, que são desconhecidas pelo Home Assistant:\n\n{entities}\n\n\n\nIsto geralmente acontece quando uma entidade é renomeada ou removida, enquanto a sua personalização permanece. Para corrigir esse erro, edita a seção `customize:` na sua configuração e remove essas entidades.\n\nSpook 👻 O teu amigo.",
+            "title": ""
         },
         "lovelace_missing_resources": {
-            "description": "O Spook encontrou um fantasma nos seus painéis 👻\n\nOs seguintes recursos de dashboard apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsto geralmente acontece quando um cartão personalizado ou seus arquivos foram removidos, mas o recurso permaneceu. Para corrigir esse erro, vá em Configurações > Dashboards > Recursos e remova ou corrija esses recursos.\n\nSpook 👻 O teu amigo."
+            "description": "O Spook encontrou um fantasma nos seus painéis 👻\n\nOs seguintes recursos de dashboard apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsto geralmente acontece quando um cartão personalizado ou seus arquivos foram removidos, mas o recurso permaneceu. Para corrigir esse erro, vá em Configurações > Dashboards > Recursos e remova ou corrija esses recursos.\n\nSpook 👻 O teu amigo.",
+            "title": ""
         },
         "lovelace_unknown_area_references": {
             "description": "O Spook encontrou um fantasma nos teus dashboards 👻\n\nEnquanto flutuava por ai, o Spook cruzou-se com o seguinte dashboard:\n\n{dashboard}\n\nEste dashboard contém as seguintes áreas que são desconhecidas para o Home Assistant:\n\n{areas}\n\n\n\nIsto geralmente acontece quando uma área foi renomeada ou removida. Para corrigir este erro, [edita a dashboard]({edit}) e remove as entidades inexistentes.\n\nSpook 👻 O teu amigo.",
             "title": "Áreas desconhecidas utilizadas na dashboard: {dashboard}"
         },
         "energy_unknown_references": {
-            "description": "O Spook encontrou um fantasma no teu dashboard de energia 👻\n\nEste dashboard contém as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nIsto geralmente acontece quando uma entidade usada na configuração da energia foi renomeada ou removida. Para corrigir este erro, vai a Configurações > Painéis > Energia e atualiza ou remove as entidades.\n\nSpook 👻 O teu amigo."
+            "description": "O Spook encontrou um fantasma no teu dashboard de energia 👻\n\nEste dashboard contém as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nIsto geralmente acontece quando uma entidade usada na configuração da energia foi renomeada ou removida. Para corrigir este erro, vai a Configurações > Painéis > Energia e atualiza ou remove as entidades.\n\nSpook 👻 O teu amigo.",
+            "title": ""
         },
         "dead_entities": {
-            "description": "O Spook encontrou um fantasma nas tuas entidades 👻\n\nA integração {integration} foi configurada, mas as seguinte entidades que ela registou não estão disponíveis ou já não existem:\n\n{entities}\n\n\n\nIsto geralmente acontece quando um dispositivo ou a sua entidade foi removida na origem mas os seus registos ficaram para trás. Para corrigir este erro, remove essas entidades do registo se já as utilizares.\n\nSpook 👻 O teu amigo."
+            "description": "O Spook encontrou um fantasma nas tuas entidades 👻\n\nA integração {integration} foi configurada, mas as seguinte entidades que ela registou não estão disponíveis ou já não existem:\n\n{entities}\n\n\n\nIsto geralmente acontece quando um dispositivo ou a sua entidade foi removida na origem mas os seus registos ficaram para trás. Para corrigir este erro, remove essas entidades do registo se já as utilizares.\n\nSpook 👻 O teu amigo.",
+            "title": ""
         },
         "script_unknown_condition_references": {
-            "title": "Condições desconhecidas usadas em: {script}"
+            "title": "Condições desconhecidas usadas em: {script}",
+            "description": ""
+        },
+        "template_unknown_service_references": {
+            "title": "",
+            "description": ""
+        },
+        "orphaned_statistics": {
+            "title": "",
+            "description": ""
+        },
+        "template_unknown_entity_references": {
+            "title": "",
+            "description": ""
+        },
+        "script_unknown_trigger_references": {
+            "description": "",
+            "title": ""
         }
     },
     "conditions": {
@@ -444,7 +561,19 @@
                     "name": "Percentagem",
                     "description": "Com que frequência essa condição deve ser validada, em percentagem."
                 }
-            }
+            },
+            "description": "",
+            "name": ""
+        },
+        "cooldown": {
+            "description": "",
+            "fields": {
+                "duration": {
+                    "description": "",
+                    "name": ""
+                }
+            },
+            "name": ""
         }
     },
     "services": {
@@ -453,7 +582,12 @@
             "description": "Adiciona um dispositivo a uma área. Observa que, se o dispositivo já estiver numa área, ele será removido da área anterior.",
             "fields": {
                 "device_id": {
-                    "name": "ID do dispositivo"
+                    "name": "ID do dispositivo",
+                    "description": ""
+                },
+                "area_id": {
+                    "description": "",
+                    "name": ""
                 }
             }
         },
@@ -462,7 +596,12 @@
             "description": "Adicionar um rastreador de dispositivos a uma pessoa.",
             "fields": {
                 "device_tracker": {
-                    "name": "Rastreador de dispositivos"
+                    "name": "Rastreador de dispositivos",
+                    "description": ""
+                },
+                "entity_id": {
+                    "description": "",
+                    "name": ""
                 }
             }
         },
@@ -471,36 +610,58 @@
             "description": "Adiciona uma legenda a um dispositivo. Se forem fornecidos várias legendas ou vários dispositivos, todas as combinações serão adicionadas.",
             "fields": {
                 "device_id": {
-                    "name": "ID do dispositivo"
+                    "name": "ID do dispositivo",
+                    "description": ""
+                },
+                "label_id": {
+                    "name": "",
+                    "description": ""
                 }
             }
         },
         "recorder_import_statistics": {
             "fields": {
                 "stats": {
-                    "name": "Estatísticas"
+                    "name": "Estatísticas",
+                    "description": ""
                 },
                 "statistic_id": {
-                    "name": "ID das Estatísticas"
+                    "name": "ID das Estatísticas",
+                    "description": ""
                 },
                 "name": {
-                    "description": "O nome da estatística."
+                    "description": "O nome da estatística.",
+                    "name": ""
                 },
                 "has_mean": {
                     "name": "Tem uma média",
                     "description": "Se as estatísticas possuírem um valor médio."
                 },
                 "has_sum": {
-                    "name": "Tem uma soma"
+                    "name": "Tem uma soma",
+                    "description": ""
+                },
+                "source": {
+                    "description": "",
+                    "name": ""
+                },
+                "unit_of_measurement": {
+                    "name": "",
+                    "description": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "input_number_decrement": {
             "fields": {
                 "amount": {
-                    "description": "O valor a ser subtraído do número de entrada. Se não for fornecido, será utilizado o incremento (step) da entidade numérica."
+                    "description": "O valor a ser subtraído do número de entrada. Se não for fornecido, será utilizado o incremento (step) da entidade numérica.",
+                    "name": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "repairs_create": {
             "fields": {
@@ -509,9 +670,27 @@
                     "name": "Descrição"
                 },
                 "domain": {
-                    "name": "Domínio"
+                    "name": "Domínio",
+                    "description": ""
+                },
+                "title": {
+                    "name": "",
+                    "description": ""
+                },
+                "persistent": {
+                    "name": ""
+                },
+                "issue_id": {
+                    "description": "",
+                    "name": ""
+                },
+                "severity": {
+                    "description": "",
+                    "name": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "homeassistant_disable_device": {
             "fields": {
@@ -520,7 +699,8 @@
                     "name": "Dispositivo"
                 }
             },
-            "name": "Desativar um dispositivo"
+            "name": "Desativar um dispositivo",
+            "description": ""
         },
         "homeassistant_disable_entity": {
             "fields": {
@@ -538,7 +718,9 @@
                     "description": "A(s) entidade(s) a ativar.",
                     "name": "Entidade"
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "homeassistant_hide_entity": {
             "fields": {
@@ -547,15 +729,22 @@
                     "name": "Entidade"
                 }
             },
-            "name": "Esconder uma entidade"
+            "name": "Esconder uma entidade",
+            "description": ""
         },
         "homeassistant_rename_entity": {
             "fields": {
                 "entity_id": {
                     "description": "A(s) entidade(s) a renomear.",
                     "name": "Entidade"
+                },
+                "name": {
+                    "description": "",
+                    "name": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "homeassistant_unhide_entity": {
             "fields": {
@@ -563,15 +752,23 @@
                     "description": "A(s) entidade(s) a mostrar.",
                     "name": "Entidade"
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "homeassistant_update_entity_id": {
             "fields": {
                 "entity_id": {
                     "description": "A(s) entidade(s) a atualizar.",
                     "name": "Entidade"
+                },
+                "new_entity_id": {
+                    "name": "",
+                    "description": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "input_number_create": {
             "fields": {
@@ -580,95 +777,188 @@
                     "name": "Ícone"
                 },
                 "name": {
-                    "description": "O nome do novo auxiliar de entrada numérica."
+                    "description": "O nome do novo auxiliar de entrada numérica.",
+                    "name": ""
+                },
+                "initial": {
+                    "description": "",
+                    "name": ""
+                },
+                "mode": {
+                    "name": "",
+                    "description": ""
+                },
+                "input_number_id": {
+                    "description": "",
+                    "name": ""
+                },
+                "step": {
+                    "description": "",
+                    "name": ""
+                },
+                "min": {
+                    "description": "",
+                    "name": ""
+                },
+                "unit_of_measurement": {
+                    "description": "",
+                    "name": ""
+                },
+                "max": {
+                    "name": "",
+                    "description": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "homeassistant_add_area_to_floor": {
             "fields": {
                 "area_id": {
-                    "description": "O ID da(s) área(s) a ser(em) adicionada(s) ao piso."
+                    "description": "O ID da(s) área(s) a ser(em) adicionada(s) ao piso.",
+                    "name": ""
                 },
                 "floor_id": {
-                    "name": "ID do piso"
+                    "name": "ID do piso",
+                    "description": ""
                 }
             },
-            "name": "Adiciona uma área a um piso"
+            "name": "Adiciona uma área a um piso",
+            "description": ""
         },
         "homeassistant_add_alias_to_area": {
             "fields": {
                 "area_id": {
-                    "description": "O ID da área à qual adicionar o alias."
+                    "description": "O ID da área à qual adicionar o alias.",
+                    "name": ""
+                },
+                "alias": {
+                    "name": "",
+                    "description": ""
                 }
             },
-            "name": "Adiciona um alias a uma área"
+            "name": "Adiciona um alias a uma área",
+            "description": ""
         },
         "homeassistant_create_floor": {
             "fields": {
                 "name": {
-                    "description": "O nome do piso a ser criado."
+                    "description": "O nome do piso a ser criado.",
+                    "name": ""
                 },
                 "icon": {
-                    "name": "Ícone"
+                    "name": "Ícone",
+                    "description": ""
+                },
+                "level": {
+                    "name": "",
+                    "description": ""
+                },
+                "aliases": {
+                    "description": "",
+                    "name": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "homeassistant_create_label": {
             "fields": {
                 "name": {
-                    "description": "O nome da legenda a ser criada."
+                    "description": "O nome da legenda a ser criada.",
+                    "name": ""
                 },
                 "color": {
-                    "name": "Cor"
+                    "name": "Cor",
+                    "description": ""
                 },
                 "description": {
                     "name": "Descrição",
                     "description": "Descrição da legenda."
                 },
                 "icon": {
-                    "name": "Ícone"
+                    "name": "Ícone",
+                    "description": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "homeassistant_add_label_to_area": {
-            "name": "Adiciona uma legenda a uma área"
+            "name": "Adiciona uma legenda a uma área",
+            "fields": {
+                "label_id": {
+                    "name": "",
+                    "description": ""
+                },
+                "area_id": {
+                    "description": "",
+                    "name": ""
+                }
+            },
+            "description": ""
         },
         "homeassistant_add_label_to_entity": {
             "name": "Adiciona um rótulo a uma entidade",
             "fields": {
                 "entity_id": {
-                    "name": "ID da Entidade"
+                    "name": "ID da Entidade",
+                    "description": ""
+                },
+                "label_id": {
+                    "description": "",
+                    "name": ""
                 }
-            }
+            },
+            "description": ""
         },
         "homeassistant_add_alias_to_floor": {
             "name": "Adiciona um alias a um piso",
             "fields": {
                 "floor_id": {
-                    "name": "ID do piso"
+                    "name": "ID do piso",
+                    "description": ""
+                },
+                "alias": {
+                    "description": "",
+                    "name": ""
                 }
-            }
+            },
+            "description": ""
         },
         "homeassistant_add_entity_to_area": {
             "name": "Adiciona uma entidade a uma área",
             "fields": {
                 "entity_id": {
-                    "name": "ID da Entidade"
+                    "name": "ID da Entidade",
+                    "description": ""
+                },
+                "area_id": {
+                    "name": "",
+                    "description": ""
                 }
-            }
+            },
+            "description": ""
         },
         "homeassistant_delete_floor": {
             "name": "Apaga um piso",
             "description": "Apaga um piso em tempo real.",
             "fields": {
                 "floor_id": {
-                    "name": "ID do piso"
+                    "name": "ID do piso",
+                    "description": ""
                 }
             }
         },
         "homeassistant_delete_label": {
             "name": "Apaga uma legenda",
-            "description": "Apaga uma legenda em tempo real."
+            "description": "Apaga uma legenda em tempo real.",
+            "fields": {
+                "label_id": {
+                    "description": "",
+                    "name": ""
+                }
+            }
         },
         "homeassistant_delete_all_orphaned_entities": {
             "name": "Apaga todas as entidades órfãs",
@@ -676,7 +966,13 @@
         },
         "homeassistant_delete_area": {
             "name": "Apaga uma área",
-            "description": "Apaga uma área em tempo real."
+            "description": "Apaga uma área em tempo real.",
+            "fields": {
+                "area_id": {
+                    "description": "",
+                    "name": ""
+                }
+            }
         },
         "input_number_delete": {
             "name": "Apaga um número de entrada",
@@ -687,89 +983,170 @@
             "description": "Apaga uma zona. Isto funciona apenas com zonas criadas e geridas pelo editor visual. Zonas criadas e geridas via YAML não podem ser geridas pelo Spook.",
             "fields": {
                 "entity_id": {
-                    "name": "ID da Entidade"
+                    "name": "ID da Entidade",
+                    "description": ""
                 }
             }
         },
         "homeassistant_remove_device_from_area": {
             "fields": {
                 "device_id": {
-                    "name": "ID do dispositivo"
+                    "name": "ID do dispositivo",
+                    "description": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "homeassistant_enable_device": {
             "fields": {
                 "device_id": {
-                    "name": "ID do dispositivo"
+                    "name": "ID do dispositivo",
+                    "description": ""
                 }
             },
-            "name": "Ativa um dispositivo"
+            "name": "Ativa um dispositivo",
+            "description": ""
         },
         "homeassistant_remove_label_from_device": {
             "fields": {
                 "device_id": {
-                    "name": "ID do dispositivo"
+                    "name": "ID do dispositivo",
+                    "description": ""
+                },
+                "label_id": {
+                    "name": "",
+                    "description": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "person_remove_device_tracker": {
             "fields": {
                 "device_tracker": {
-                    "name": "Rastreador de dispositivos"
+                    "name": "Rastreador de dispositivos",
+                    "description": ""
+                },
+                "entity_id": {
+                    "name": "",
+                    "description": ""
+                }
+            },
+            "description": "",
+            "name": ""
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Desativar uma integração",
+            "description": "",
+            "fields": {
+                "config_entry_id": {
+                    "name": "",
+                    "description": ""
                 }
             }
         },
-        "homeassistant_disable_config_entry": {
-            "name": "Desativar uma integração"
-        },
         "homeassistant_disable_user": {
-            "name": "Desativar um utilizador"
+            "name": "Desativar um utilizador",
+            "description": "",
+            "fields": {
+                "user_id": {
+                    "description": "",
+                    "name": ""
+                }
+            }
         },
         "timer_set_duration": {
             "fields": {
                 "duration": {
-                    "name": "Duração"
+                    "name": "Duração",
+                    "description": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "homeassistant_remove_entity_from_area": {
             "fields": {
                 "entity_id": {
-                    "name": "ID da Entidade"
+                    "name": "ID da Entidade",
+                    "description": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "homeassistant_remove_label_from_entity": {
             "fields": {
                 "entity_id": {
-                    "name": "ID da Entidade"
+                    "name": "ID da Entidade",
+                    "description": ""
+                },
+                "label_id": {
+                    "name": "",
+                    "description": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "zone_update": {
             "fields": {
                 "entity_id": {
-                    "name": "ID da Entidade"
+                    "name": "ID da Entidade",
+                    "description": ""
                 },
                 "icon": {
-                    "name": "Ícone"
+                    "name": "Ícone",
+                    "description": ""
+                },
+                "radius": {
+                    "description": "",
+                    "name": ""
+                },
+                "longitude": {
+                    "description": "",
+                    "name": ""
+                },
+                "name": {
+                    "name": "",
+                    "description": ""
+                },
+                "latitude": {
+                    "name": "",
+                    "description": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "homeassistant_remove_alias_from_floor": {
             "fields": {
                 "floor_id": {
-                    "name": "ID do piso"
+                    "name": "ID do piso",
+                    "description": ""
+                },
+                "alias": {
+                    "name": "",
+                    "description": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "homeassistant_set_floor_aliases": {
             "fields": {
                 "floor_id": {
-                    "name": "ID do piso"
+                    "name": "ID do piso",
+                    "description": ""
+                },
+                "aliases": {
+                    "description": "",
+                    "name": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "homeassistant_restart": {
             "fields": {
@@ -778,24 +1155,272 @@
                     "description": "Forçar o reinício. AVISO! Isto não encerrará o Home Assistant de forma segura; ignorará as verificações de configuração e as migrações de banco de dados em execução. Utiliza apenas se souberes o que estás a fazer."
                 },
                 "safe_mode": {
-                    "description": "Caso a reinicialização deva ser feita no modo de segurança. isto desativará todas as integrações personalizadas e os módulos de frontend."
+                    "description": "Caso a reinicialização deva ser feita no modo de segurança. isto desativará todas as integrações personalizadas e os módulos de frontend.",
+                    "name": ""
                 }
-            }
+            },
+            "description": "",
+            "name": ""
         },
         "homeassistant_create_area": {
             "fields": {
                 "icon": {
                     "name": "Ícone",
                     "description": "Ícone para usar na área."
+                },
+                "name": {
+                    "name": "",
+                    "description": ""
+                },
+                "aliases": {
+                    "description": "",
+                    "name": ""
                 }
-            }
+            },
+            "name": "",
+            "description": ""
         },
         "zone_create": {
             "fields": {
                 "icon": {
-                    "name": "Ícone"
+                    "name": "Ícone",
+                    "description": ""
+                },
+                "longitude": {
+                    "name": "",
+                    "description": ""
+                },
+                "name": {
+                    "description": "",
+                    "name": ""
+                },
+                "radius": {
+                    "description": "",
+                    "name": ""
+                },
+                "latitude": {
+                    "name": "",
+                    "description": ""
+                }
+            },
+            "description": "",
+            "name": ""
+        },
+        "homeassistant_ignore_all_discovered": {
+            "fields": {
+                "domain": {
+                    "name": "",
+                    "description": ""
+                }
+            },
+            "description": "",
+            "name": ""
+        },
+        "input_number_min": {
+            "name": "",
+            "description": ""
+        },
+        "homeassistant_remove_area_from_floor": {
+            "fields": {
+                "area_id": {
+                    "name": "",
+                    "description": ""
+                }
+            },
+            "name": "",
+            "description": ""
+        },
+        "homeassistant_remove_alias_from_area": {
+            "fields": {
+                "alias": {
+                    "description": "",
+                    "name": ""
+                },
+                "area_id": {
+                    "description": "",
+                    "name": ""
+                }
+            },
+            "name": "",
+            "description": ""
+        },
+        "repairs_ignore_all": {
+            "description": "",
+            "name": ""
+        },
+        "homeassistant_enable_config_entry": {
+            "fields": {
+                "config_entry_id": {
+                    "description": "",
+                    "name": ""
+                }
+            },
+            "description": "",
+            "name": ""
+        },
+        "input_number_max": {
+            "name": "",
+            "description": ""
+        },
+        "homeassistant_enable_polling": {
+            "fields": {
+                "config_entry_id": {
+                    "description": "",
+                    "name": ""
+                }
+            },
+            "description": "",
+            "name": ""
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "",
+            "description": ""
+        },
+        "select_random": {
+            "name": "",
+            "description": "",
+            "fields": {
+                "options": {
+                    "name": "",
+                    "description": ""
                 }
             }
+        },
+        "repairs_unignore_all": {
+            "description": "",
+            "name": ""
+        },
+        "repairs_remove": {
+            "fields": {
+                "issue_id": {
+                    "description": "",
+                    "name": ""
+                }
+            },
+            "name": "",
+            "description": ""
+        },
+        "number_max": {
+            "description": "",
+            "name": ""
+        },
+        "number_min": {
+            "name": "",
+            "description": ""
+        },
+        "number_increment": {
+            "description": "",
+            "name": "",
+            "fields": {
+                "amount": {
+                    "description": "",
+                    "name": ""
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "fields": {
+                "area_id": {
+                    "description": "",
+                    "name": ""
+                },
+                "aliases": {
+                    "name": "",
+                    "description": ""
+                }
+            },
+            "name": "",
+            "description": ""
+        },
+        "homeassistant_remove_label_from_area": {
+            "description": "",
+            "fields": {
+                "label_id": {
+                    "description": "",
+                    "name": ""
+                },
+                "area_id": {
+                    "name": "",
+                    "description": ""
+                }
+            },
+            "name": ""
+        },
+        "homeassistant_enable_user": {
+            "description": "",
+            "name": "",
+            "fields": {
+                "user_id": {
+                    "description": "",
+                    "name": ""
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "",
+            "description": "",
+            "fields": {
+                "amount": {
+                    "name": "",
+                    "description": ""
+                }
+            }
+        },
+        "blueprint_import": {
+            "fields": {
+                "url": {
+                    "description": "",
+                    "name": ""
+                }
+            },
+            "name": "",
+            "description": ""
+        },
+        "random_fail": {
+            "name": "",
+            "description": ""
+        },
+        "input_select_random": {
+            "fields": {
+                "options": {
+                    "name": "",
+                    "description": ""
+                }
+            },
+            "name": "",
+            "description": ""
+        },
+        "homeassistant_disable_polling": {
+            "name": "",
+            "description": "",
+            "fields": {
+                "config_entry_id": {
+                    "description": "",
+                    "name": ""
+                }
+            }
+        },
+        "input_select_shuffle": {
+            "name": "",
+            "description": ""
+        },
+        "number_decrement": {
+            "fields": {
+                "amount": {
+                    "name": "",
+                    "description": ""
+                }
+            },
+            "name": "",
+            "description": ""
+        },
+        "boo": {
+            "description": "",
+            "name": ""
+        },
+        "input_select_sort": {
+            "description": "",
+            "name": ""
         }
     }
 }
