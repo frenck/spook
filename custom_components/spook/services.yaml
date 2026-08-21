@@ -1001,6 +1001,15 @@ input_number_decrement:
       required: false
       selector:
         number:
+    cycle:
+      name: Cycle
+      description: >-
+        Carry on from the other end of the range instead of stopping at this
+        one, the same way selecting the next option cycles a select.
+      required: false
+      default: false
+      selector:
+        boolean:
 
 input_number_increment:
   name: Increase value 👻
@@ -1018,6 +1027,15 @@ input_number_increment:
       required: false
       selector:
         number:
+    cycle:
+      name: Cycle
+      description: >-
+        Carry on from the other end of the range instead of stopping at this
+        one, the same way selecting the next option cycles a select.
+      required: false
+      default: false
+      selector:
+        boolean:
 
 input_number_max:
   name: Set maximum value 👻
