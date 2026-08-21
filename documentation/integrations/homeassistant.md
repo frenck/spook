@@ -22,7 +22,7 @@ Spook enhances the core integration by raising {term}`repairs <repairs>` issues 
 
 ## Devices & entities
 
-Spook turns Home Assistant itself into a device, with buttons to reload and restart it and a sensor counting the entities of every type you have. Those are documented on [](../devices_entities).
+Spook turns Home Assistant itself into a device, with buttons to reload and restart it and a set of counting sensors: your entities in total, one per entity type for a long list of types, and counts of things like areas, devices and integrations. Those are documented on [](../devices_entities).
 
 ## Actions
 
@@ -56,7 +56,7 @@ To resolve the raised issue, edit the `customize:` section in your configuration
 
 ### Unknown helper sources
 
-A number of {term}`helpers <helper>` are built on top of another entity: a threshold on a sensor, a derivative on a counter, a utility meter on an energy reading. Spook knows which twelve helper types store a source reference and where each one keeps it, reads that configuration, and raises a repair issue when a source is unknown to Home Assistant.
+A number of {term}`helpers <helper>` are built on top of another entity: a threshold on a sensor, a derivative on a counter, a utility meter on an energy reading. Spook knows which thirteen helper types store a source reference and where each one keeps it, reads that configuration, and raises a repair issue when a source is unknown to Home Assistant.
 
 Groups and min/max helpers are handled elsewhere on purpose. Both have a repair of their own that can do something better than reporting the problem, so this one stays out of their way.
 

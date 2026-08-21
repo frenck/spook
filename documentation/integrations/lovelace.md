@@ -61,7 +61,7 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 Dashboards are inspected for the use of {term}`areas <area>`. An area can be referenced in more than one way: by an area card, by the area view strategy, by the areas dashboard strategy listing areas to hide or order, and by an `area_id` used as the target of an action. Spook looks for all of them and raises a repair issue naming the dashboard and the areas that are missing.
 
-None of this breaks the dashboard. An area card with a missing area shows nothing, which looks a lot like an area where nothing is happening; a button whose action targets a missing area renders perfectly and does nothing when you press it.
+What you see depends on where the reference sits, and the frontend decides that rather than Spook, so this page will not promise you a particular symptom. What Spook can tell you is which dashboard names which missing area, which is the part you need either way.
 
 To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
 

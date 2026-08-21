@@ -109,7 +109,7 @@ This usually means the integration that provided the condition was removed. To r
 
 ### Unknown referenced triggers
 
-Scripts are inspected for the trigger configurations they contain, such as the ones a `wait_for_trigger` step waits on. A trigger no installed integration can provide takes the whole script down with it: it fails validation and becomes unavailable.
+Scripts are inspected for the trigger configurations they contain, such as the ones a `wait_for_trigger` step waits on. If no installed integration can provide a trigger a script waits on, the whole script goes down with it: it fails validation and becomes unavailable.
 
 Home Assistant raises a generic issue about the script without saying which trigger caused it. Spook names the trigger.
 
