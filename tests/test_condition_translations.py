@@ -8,7 +8,7 @@ from typing import TYPE_CHECKING
 
 import yaml
 
-from custom_components.spook.condition import async_get_conditions
+from custom_components.spook.condition import async_get_conditions, translation_key
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -34,8 +34,14 @@ async def test_every_condition_has_a_descriptor(hass: HomeAssistant) -> None:
 
 
 def test_every_condition_has_translations() -> None:
-    """Test every described condition has a matching translation."""
-    assert set(_descriptors()) == set(_translations())
+    """Test every described condition has a matching translation.
+
+    A condition keyed for another integration's domain cannot use that key in
+    Spook's own translation file, so it is filed under `domain_name`, the same
+    shape the actions use. The mapping comes from the code doing the injecting,
+    so this checks the real convention rather than a copy of it.
+    """
+    assert {translation_key(key) for key in _descriptors()} == set(_translations())
 
 
 def test_every_condition_field_has_translations() -> None:
@@ -48,7 +54,7 @@ def test_every_condition_field_has_translations() -> None:
 
     for condition, descriptor in _descriptors().items():
         described = set(descriptor.get("fields", {}))
-        translated = set(translations[condition].get("fields", {}))
+        translated = set(translations[translation_key(condition)].get("fields", {}))
         assert described == translated, condition
 
 
