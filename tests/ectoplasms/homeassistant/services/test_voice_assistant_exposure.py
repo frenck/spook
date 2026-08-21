@@ -143,3 +143,27 @@ async def test_an_unknown_assistant_is_refused(
     """Test only assistants Home Assistant knows about are accepted."""
     with pytest.raises(vol.Invalid):
         await _call(hass, hass_admin_user, "expose_entity", light, ["cloud.siri"])
+
+
+@pytest.mark.usefixtures("exposure_services")
+async def test_an_entity_without_a_registry_entry_is_accepted(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+) -> None:
+    """Test a YAML entity with no registry entry can still be exposed.
+
+    An entity that exists only in the state machine has no registry entry to
+    hang options on, and Home Assistant keeps its exposure somewhere else.
+    Requiring a registry entry would refuse it, which is why the check looks
+    at both.
+    """
+    hass.states.async_set("light.yaml_only", "on")
+    assert er.async_get(hass).async_get("light.yaml_only") is None
+
+    await _call(hass, hass_admin_user, "expose_entity", "light.yaml_only", [_ASSIST])
+
+    assert async_should_expose(hass, _ASSIST, "light.yaml_only") is True
+
+    await _call(hass, hass_admin_user, "unexpose_entity", "light.yaml_only", [_ASSIST])
+
+    assert async_should_expose(hass, _ASSIST, "light.yaml_only") is False
