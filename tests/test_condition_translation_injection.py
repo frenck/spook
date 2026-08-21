@@ -20,7 +20,7 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 _NAME = "component.automation.conditions.triggered_by_user.name"
-_FIELD = "component.automation.conditions.triggered_by_user.fields.user_id.name"
+_FIELD = "component.automation.conditions.triggered_by_user.fields.person.name"
 _NOT_NAME = "component.automation.conditions.not_triggered_by_user.name"
 
 
@@ -43,7 +43,7 @@ async def test_strings_land_under_the_automation_domain(hass: HomeAssistant) -> 
 
     translations = _automation_conditions(hass)
     assert translations[_NAME] == "Triggered by a user 👻"
-    assert translations[_FIELD] == "Users"
+    assert translations[_FIELD] == "People"
     assert translations[_NOT_NAME] == "Not triggered by a user 👻"
 
 
@@ -107,4 +107,4 @@ async def test_the_api_the_frontend_calls_returns_them(hass: HomeAssistant) -> N
         resources = await async_get_translations(hass, "en", "conditions", integration)
         assert resources[_NAME] == "Triggered by a user 👻", integration
         assert resources[_NOT_NAME] == "Not triggered by a user 👻", integration
-        assert resources[_FIELD] == "Users", integration
+        assert resources[_FIELD] == "People", integration
