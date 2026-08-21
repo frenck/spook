@@ -160,7 +160,7 @@ These are not harmful, but they are not free either: they take up database space
 
 To resolve the raised issue, open {term}`Developer tools` > Statistics and fix them there, or remove them with the `recorder.clear_statistics` action. Spook will automatically remove the repair issue once the issue is fixed.
 
-## Uses cases
+## Use cases
 
 Some use cases for the enhancements Spook provides for this integration:
 
@@ -170,7 +170,7 @@ Some use cases for the enhancements Spook provides for this integration:
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for this integration. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 

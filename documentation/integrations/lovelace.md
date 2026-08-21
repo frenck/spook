@@ -75,7 +75,7 @@ A missing local resource usually means a custom card was removed but its resourc
 
 To resolve the raised issue, go to Settings > Dashboards > Resources and remove or correct these resources. Spook will automatically remove the repair issue once the issue is fixed.
 
-## Features requests, ideas, and support
+## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
 
