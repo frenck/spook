@@ -47,9 +47,11 @@ While Spook is floating around in your Home Assistant instance, it will raise re
 
 ### Unknown group members
 
-Every member of a notify group is the name of another notify action, so `phone` in the configuration means the `notify.phone` action. Spook inspects every notify group to find members Home Assistant does not have. If Spook finds such a case, it will raise a repair issue, naming the group and the actions that are missing.
+Every member of a notify group is the name of another notify action, so `phone` in the configuration means the `notify.phone` action. Spook inspects every legacy YAML notify group to find members Home Assistant does not have. If Spook finds such a case, it will raise a repair issue, naming the group and the actions that are missing.
 
-The group keeps working, which is the problem. It still delivers to its remaining members and still reports success, so from the outside the notification went out. Worse than that: it fires all its members off as background tasks and waits on them without ever reading the results, so the missing action fails without a word in the log either. Whoever was behind that member simply stops being notified, and nothing anywhere says so.
+The group keeps working, which is the problem. It fires its members off as background tasks and waits on them with `asyncio.wait`, which does not re-raise, so the group action reports success to whatever called it no matter how many members failed. From the outside, the notification went out.
+
+The failure is not lost entirely. Nobody reads the task result, so the event loop eventually reports it as a stray `Task exception was never retrieved`. That arrives whenever the task happens to be collected, names no group, and reads like a bug rather than something you configured, so it is a poor way to discover that one person stopped being notified.
 
 To resolve the raised issue, edit the `services:` list of that group in your configuration and remove or correct the entries. Spook will automatically remove the repair issue once the issue is fixed.
 

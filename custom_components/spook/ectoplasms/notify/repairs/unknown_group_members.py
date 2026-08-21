@@ -23,11 +23,15 @@ class SpookRepair(AbstractSpookRepair):
     `services:` list. When one of those is renamed or its integration is
     removed, the group carries on delivering to the rest.
 
-    Nothing reports it, either. The group fires all its members as tasks and
-    awaits them with `asyncio.wait`, which does not re-raise, and nobody
-    retrieves the results. So the missing action raises into a task that is
-    never read, the group reports success, and one person quietly stops
-    getting notified.
+    The caller never learns. The group fires all its members as tasks and
+    awaits them with `asyncio.wait`, which does not re-raise, so the group
+    action reports success no matter how many members failed.
+
+    The failure is not lost entirely: nobody retrieves the task result, so
+    the event loop eventually reports it as a stray "Task exception was never
+    retrieved". That arrives whenever the task is collected, names no group,
+    and looks like a bug rather than a configuration problem, which is a poor
+    way to find out that one person stopped getting notified.
     """
 
     domain = DOMAIN
