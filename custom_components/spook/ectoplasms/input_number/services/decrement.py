@@ -40,11 +40,14 @@ class SpookService(
         """Handle the service call."""
         new_value = native_value_as_float(entity) - step_amount(entity, call)
 
-        if new_value < entity.native_min_value:
-            new_value = (
-                cycled_value(entity, new_value)
-                if call.data[CONF_CYCLE]
-                else entity.native_min_value
-            )
+        if call.data[CONF_CYCLE]:
+            # A negative amount moves the other way, so either end can be the
+            # one that gets crossed.
+            if not (entity.native_min_value <= new_value <= entity.native_max_value):
+                new_value = cycled_value(entity, new_value)
+        elif new_value < entity.native_min_value:
+            # Without cycling, only the end this action moves towards is
+            # clamped, which is what it did before cycling existed.
+            new_value = entity.native_min_value
 
         await entity.async_set_native_value(new_value)

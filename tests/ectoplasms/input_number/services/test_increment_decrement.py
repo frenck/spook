@@ -77,7 +77,7 @@ async def test_input_number_services_fall_back_to_the_step(
 ) -> None:
     """Test the services step by the entity step when no amount is given."""
     entity = MockInputNumber(1.5)
-    call = SimpleNamespace(data={})
+    call = _call()
 
     await service_cls(hass).async_handle_service(entity, call)
 
@@ -276,3 +276,89 @@ async def test_cycling_stays_in_range_when_the_step_does_not_fit(
 
     assert entity.set_value == pytest.approx(0.0)
     assert entity.native_min_value <= entity.set_value <= entity.native_max_value
+
+
+@pytest.mark.parametrize(
+    ("step", "start"),
+    [
+        # Grid 0, 0.6. Rounding would add 1.2.
+        (0.6, 0.6),
+        # Grid 0, 0.26, 0.52, 0.78. Rounding would add 1.04.
+        (0.26, 0.78),
+    ],
+)
+async def test_cycling_never_offers_a_value_above_the_maximum(
+    hass: Any,
+    step: float,
+    start: float,
+) -> None:
+    """Test the grid stops at or below the maximum when the step is uneven.
+
+    Counting slots by rounding invents one past the end, and setting a value
+    above the maximum raises. Each case starts on the last grid position, so
+    adding one step genuinely overshoots and the wrap is actually exercised.
+    """
+    entity = MockInputNumber(start, step=step)
+    entity.native_max_value = 1
+
+    await increment.SpookService(hass).async_handle_service(
+        entity, _call(amount=step, cycle=True)
+    )
+
+    assert entity.set_value == pytest.approx(0.0)
+    assert entity.native_min_value <= entity.set_value <= entity.native_max_value
+
+
+@pytest.mark.parametrize(
+    ("service_cls", "start", "expected"),
+    [
+        # Incrementing by a negative amount walks down, off the bottom.
+        (increment.SpookService, 0.5, 10.0),
+        # Decrementing by a negative amount walks up, off the top.
+        (decrement.SpookService, 9.5, 0.0),
+    ],
+)
+async def test_cycling_wraps_at_whichever_end_is_crossed(
+    hass: Any,
+    service_cls: type[increment.SpookService | decrement.SpookService],
+    start: float,
+    expected: float,
+) -> None:
+    """Test a negative amount cycles at the end it actually reaches.
+
+    A negative amount is still accepted and moves the opposite way, so the
+    boundary each action crosses is not always the one it is named after.
+    Checking only its own end would send an out-of-range value to Home
+    Assistant, which raises rather than cycling.
+    """
+    entity = MockInputNumber(start)
+
+    await service_cls(hass).async_handle_service(entity, _call(amount=-1.0, cycle=True))
+
+    assert entity.set_value == pytest.approx(expected)
+
+
+@pytest.mark.parametrize(
+    ("service_cls", "start", "expected"),
+    [
+        (increment.SpookService, 0.5, -0.5),
+        (decrement.SpookService, 9.5, 10.5),
+    ],
+)
+async def test_not_cycling_clamps_only_its_own_end(
+    hass: Any,
+    service_cls: type[increment.SpookService | decrement.SpookService],
+    start: float,
+    expected: float,
+) -> None:
+    """Test a negative amount is passed through untouched without cycling.
+
+    Each action only ever clamped the end it moves towards, and Home Assistant
+    rejects the result if it left the range. Keeping that means cycling is the
+    only thing this change alters.
+    """
+    entity = MockInputNumber(start)
+
+    await service_cls(hass).async_handle_service(entity, _call(amount=-1.0))
+
+    assert entity.set_value == pytest.approx(expected)

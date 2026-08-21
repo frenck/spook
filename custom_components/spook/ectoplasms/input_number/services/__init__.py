@@ -17,6 +17,9 @@ if TYPE_CHECKING:
 CONF_AMOUNT = "amount"
 CONF_CYCLE = "cycle"
 
+# Steps are floats, so every comparison against a step boundary needs slack.
+_FLOAT_TOLERANCE = 1e-9
+
 STEP_SERVICE_SCHEMA = {
     vol.Optional(CONF_AMOUNT): vol.Coerce(float),
     vol.Optional(CONF_CYCLE, default=False): cv.boolean,
@@ -40,8 +43,8 @@ def step_amount(entity: InputNumber, call: ServiceCall) -> float:
     # Float modulo wraps around just short of the step, 0.3 % 0.1 is
     # 0.09999999999999998, so a remainder against either end is a clean multiple.
     if not (
-        math.isclose(remainder, 0, rel_tol=0, abs_tol=1e-9)
-        or math.isclose(remainder, step, rel_tol=0, abs_tol=1e-9)
+        math.isclose(remainder, 0, rel_tol=0, abs_tol=_FLOAT_TOLERANCE)
+        or math.isclose(remainder, step, rel_tol=0, abs_tol=_FLOAT_TOLERANCE)
     ):
         msg = (
             f"Amount {amount} not valid for {entity.entity_id}, "
@@ -63,7 +66,14 @@ def cycled_value(entity: InputNumber, value: float) -> float:
     """
     minimum = entity.native_min_value
     step = entity.native_step
-    slots = round((entity.native_max_value - minimum) / step) + 1
+
+    # Floored, because the step does not have to divide the range. Rounding
+    # would invent a slot above the maximum: a step of 0.6 across 0 to 1 would
+    # offer 1.2, and setting that raises. The tolerance keeps a quotient that
+    # is a whole number in spirit, like 10 steps of 0.1, from flooring down.
+    quotient = (entity.native_max_value - minimum) / step
+    slots = math.floor(quotient + _FLOAT_TOLERANCE) + 1
+
     # Counted in whole steps, so float drift cannot push the result into the
     # neighbouring slot on the way through the modulo.
     offset = round((value - minimum) / step)
