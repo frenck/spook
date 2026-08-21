@@ -217,6 +217,15 @@
             },
             "repairs_active_issues": {
                 "name": "未解决"
+            },
+            "homeassistant_counter": {
+                "name": "计数器"
+            },
+            "homeassistant_group": {
+                "name": "群组"
+            },
+            "homeassistant_timer": {
+                "name": "计时器"
             }
         },
         "switch": {
@@ -548,6 +557,18 @@
                     "manage": "你可以在 [标签页面](/config/labels) 自行管理此标签。"
                 }
             }
+        },
+        "alert_unknown_entity_references": {
+            "description": "Spook 在你的警报中发现了一个幽灵 👻\n\n警报 {alert}（`{entity_id}`）正在监视一个 Home Assistant 无法识别的实体：\n\n{entities}\n\n警报只能由它所监视的实体触发，所以这个警报再也不会触发了。从外面看，它和一个没什么要报告的警报完全一样。\n\n要修复此错误，请编辑配置中的 `alert:` 部分，让此警报指向一个存在的实体。\n\nSpook 👻 你的好哥们。",
+            "title": "警报监视的实体未知：{alert}"
+        },
+        "alert_unknown_notifiers": {
+            "description": "Spook 在你的警报中发现了一个幽灵 👻\n\n警报 {alert}（`{entity_id}`）通过以下 Home Assistant 无法识别的动作发送通知：\n\n{notifiers}\n\n警报仍会触发，也仍会按间隔重复，但这些通知不会送到任何地方。Home Assistant 只会在警报触发的那一刻记录这件事，而那正是发现没人在听的最糟时机。\n\n要修复此错误，请编辑配置中此警报的 `notifiers:` 列表，移除或修正这些条目。\n\nSpook 👻 你的好哥们。",
+            "title": "警报使用了未知的通知器：{alert}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook 在你的模板助手中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板助手：\n\n[{helper}]({edit})\n\n它引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n这通常是因为提供某个动作的集成已被移除，或某个脚本被重命名或删除了。要修复此错误，请重新配置该模板助手，使其使用存在的动作。\n\nSpook 👻 你的好哥们。",
+            "title": "模板助手中使用了未知动作：{helper}"
         }
     },
     "services": {
@@ -689,21 +710,21 @@
         },
         "homeassistant_disable_config_entry": {
             "name": "禁用集成 👻",
-            "description": "禁用一个集成的配置条目。",
+            "description": "禁用一个集成条目。",
             "fields": {
                 "config_entry_id": {
-                    "name": "配置条目",
-                    "description": "要禁用的集成配置条目。"
+                    "name": "集成条目",
+                    "description": "要禁用的集成条目。"
                 }
             }
         },
         "homeassistant_enable_config_entry": {
             "name": "启用集成 👻",
-            "description": "启用一个集成的配置条目。",
+            "description": "启用一个集成条目。",
             "fields": {
                 "config_entry_id": {
-                    "name": "配置条目",
-                    "description": "要启用的集成配置条目。"
+                    "name": "集成条目",
+                    "description": "要启用的集成条目。"
                 }
             }
         },
@@ -954,6 +975,10 @@
                 "amount": {
                     "name": "量",
                     "description": "要减少输入数字的量。如果不提供，将使用数字实体的步长。"
+                },
+                "cycle": {
+                    "description": "到达边界时不停下，而是从范围的另一端继续，就像选择列表中的下一个选项会回到开头一样。",
+                    "name": "循环"
                 }
             },
             "description": "将输入数字（input_number）实体的数值减少一定量。",
@@ -964,6 +989,10 @@
                 "amount": {
                     "name": "量",
                     "description": "要增加输入数字的量。如果不提供，将使用数字实体的步长。"
+                },
+                "cycle": {
+                    "description": "到达边界时不停下，而是从范围的另一端继续，就像选择列表中的下一个选项会回到开头一样。",
+                    "name": "循环"
                 }
             },
             "name": "增加数值 👻",
@@ -1028,22 +1057,22 @@
         "homeassistant_enable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "配置条目",
-                    "description": "要启用轮询更新的集成配置条目。"
+                    "name": "集成条目",
+                    "description": "要启用轮询的集成条目。"
                 }
             },
             "name": "启用轮询更新 👻",
-            "description": "启用集成配置条目的轮询更新。"
+            "description": "启用某个集成条目的更新轮询。"
         },
         "homeassistant_disable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "配置条目",
-                    "description": "要禁用轮询更新的集成配置条目。"
+                    "name": "集成条目",
+                    "description": "要禁用轮询的集成条目。"
                 }
             },
             "name": "禁用轮询更新 👻",
-            "description": "禁用集成配置条目的轮询更新。"
+            "description": "禁用某个集成条目的更新轮询。"
         },
         "input_number_create": {
             "description": "动态创建一个新的数值输入助手（input_number）。",
@@ -1396,6 +1425,48 @@
                     "description": "区域半径"
                 }
             }
+        },
+        "homeassistant_expose_entity": {
+            "description": "将一个实体（或多个实体）向语音助手公开。",
+            "fields": {
+                "assistants": {
+                    "description": "此设置适用的助手。",
+                    "name": "助手"
+                },
+                "entity_id": {
+                    "description": "要公开的实体。",
+                    "name": "实体"
+                }
+            },
+            "name": "向助手公开实体 👻"
+        },
+        "homeassistant_unexpose_entity": {
+            "description": "取消将一个实体（或多个实体）向语音助手公开。",
+            "fields": {
+                "assistants": {
+                    "description": "此设置适用的助手。",
+                    "name": "助手"
+                },
+                "entity_id": {
+                    "description": "要取消公开的实体。",
+                    "name": "实体"
+                }
+            },
+            "name": "取消向助手公开实体 👻"
+        },
+        "sensor_set_display_precision": {
+            "description": "设置一个或多个传感器显示的小数位数。",
+            "fields": {
+                "display_precision": {
+                    "description": "该传感器要显示的小数位数。",
+                    "name": "显示精度"
+                },
+                "entity_id": {
+                    "description": "要修改的传感器实体。",
+                    "name": "实体"
+                }
+            },
+            "name": "设置显示精度 👻"
         }
     },
     "conditions": {
@@ -1408,6 +1479,16 @@
                     "description": "此条件通过的频率，以百分比表示。"
                 }
             }
+        },
+        "cooldown": {
+            "description": "仅当此自动化或脚本在指定时间内未运行过（或从未运行过）时才成立。一个内置的冷却时间，避免过于频繁地重新触发。",
+            "fields": {
+                "duration": {
+                    "description": "上次运行之后要等待多久，此条件才会再次成立。",
+                    "name": "持续时间"
+                }
+            },
+            "name": "冷却时间 👻"
         }
     }
 }
