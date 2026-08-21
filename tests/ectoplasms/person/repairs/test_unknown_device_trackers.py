@@ -196,6 +196,7 @@ async def test_fix_flow_remove_yaml_person_aborts(
 
 async def _count_scheduled_inspections(
     hass: HomeAssistant,
+    entity_id: str,
     old_state: State | None,
     new_state: State | None,
 ) -> int:
@@ -217,11 +218,7 @@ async def _count_scheduled_inspections(
 
     hass.bus.async_fire(
         EVENT_STATE_CHANGED,
-        {
-            "entity_id": "device_tracker.phone",
-            "old_state": old_state,
-            "new_state": new_state,
-        },
+        {"entity_id": entity_id, "old_state": old_state, "new_state": new_state},
     )
     await hass.async_block_till_done()
 
@@ -274,7 +271,7 @@ async def test_state_only_tracker_addition_rechecks_person_repairs(
     """Test a state entity appearing schedules an inspection."""
     assert (
         await _count_scheduled_inspections(
-            hass, None, State("device_tracker.phone", "home")
+            hass, "device_tracker.phone", None, State("device_tracker.phone", "home")
         )
         == 1
     )
@@ -286,7 +283,7 @@ async def test_state_only_tracker_removal_rechecks_person_repairs(
     """Test a state entity disappearing schedules an inspection."""
     assert (
         await _count_scheduled_inspections(
-            hass, State("device_tracker.phone", "home"), None
+            hass, "device_tracker.phone", State("device_tracker.phone", "home"), None
         )
         == 1
     )
@@ -303,8 +300,32 @@ async def test_ordinary_tracker_state_change_does_not_recheck(
     assert (
         await _count_scheduled_inspections(
             hass,
+            "device_tracker.phone",
             State("device_tracker.phone", "home"),
             State("device_tracker.phone", "not_home"),
+        )
+        == 0
+    )
+
+
+async def test_other_domain_lifecycle_does_not_recheck(
+    hass: HomeAssistant,
+) -> None:
+    """Test entities outside device_tracker never schedule an inspection.
+
+    Home Assistant validates a person's trackers with
+    `cv.entities_domain(device_tracker)`, so nothing in another domain can
+    ever be in that list. Waking for a sensor would be pure overhead.
+    """
+    assert (
+        await _count_scheduled_inspections(
+            hass, "sensor.something_else", None, State("sensor.something_else", "42")
+        )
+        == 0
+    )
+    assert (
+        await _count_scheduled_inspections(
+            hass, "sensor.something_else", State("sensor.something_else", "42"), None
         )
         == 0
     )
