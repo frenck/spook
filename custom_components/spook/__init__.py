@@ -16,6 +16,7 @@ from homeassistant.core import (
 )
 from homeassistant.helpers import issue_registry as ir
 
+from .condition import SpookConditionManager
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
 from .integration_linking import link_sub_integrations, unlink_sub_integrations
@@ -81,6 +82,11 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     services = SpookServiceManager(hass)
     await services.async_setup()
     entry.async_on_unload(services.async_on_unload)
+
+    # Set up conditions
+    conditions = SpookConditionManager(hass)
+    await conditions.async_setup()
+    entry.async_on_unload(conditions.async_on_unload)
 
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)

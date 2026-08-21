@@ -2,15 +2,30 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
+import sys
 from typing import TYPE_CHECKING
 
+from homeassistant.const import EVENT_CORE_CONFIG_UPDATE
+from homeassistant.core import callback
+from homeassistant.helpers import condition as condition_helper
+from homeassistant.helpers.automation import get_relative_description_key
+from homeassistant.helpers.translation import (
+    async_get_cached_translations,
+    async_get_translations,
+)
 from homeassistant.util.hass_dict import HassKey
 
+from .const import DOMAIN, LOGGER
+from .translation_injection import SpookTranslationInjector
+
 if TYPE_CHECKING:
-    from homeassistant.core import HomeAssistant
-    from homeassistant.helpers.condition import Condition
+    from collections.abc import Callable
+
+    from homeassistant.core import Event, HomeAssistant
+    from homeassistant.helpers.condition import Condition, ConditionProtocol
 
 # Core calls ``async_get_conditions`` repeatedly (once per config validation
 # and per condition instantiation), so the discovery result is cached rather
@@ -45,3 +60,206 @@ async def async_get_conditions(
     await hass.async_add_import_executor_job(_load_all_condition_modules)
     hass.data[DATA_CONDITIONS] = conditions
     return conditions
+
+
+# Home Assistant resolves a condition to the integration named by the key's
+# own prefix: `automation.triggered_by_user` sends it looking for a
+# `condition` platform on the automation integration, which does not have
+# one. The registration side already knows better, it records Spook as the
+# provider, but the lookup side re-derives the platform from the key and
+# never consults it (`helpers/condition.py`, `_async_get_condition_platform`).
+#
+# Actions have no equivalent problem: `hass.services.async_register` writes
+# straight into a flat registry, so Spook has been adding actions to other
+# integrations' domains for years. Conditions have a resolution step in the
+# way, so providing `automation.*` conditions means teaching that step about
+# the provider it already recorded.
+#
+# This patches exactly that one function, and only for keys Spook actually
+# provides: everything else is handed to the original untouched. The right
+# long-term fix is upstream, having core consult its own provider mapping.
+_ORIGINAL_GET_CONDITION_PLATFORM = "_async_get_condition_platform"
+
+
+async def _async_get_condition_platform(
+    hass: HomeAssistant,
+    condition_key: str,
+    *,
+    original: Callable,
+) -> tuple[str, ConditionProtocol | None]:
+    """Resolve Spook's own conditions, whatever domain they are keyed under."""
+    # Ask Spook rather than core's registry, so this does not depend on the
+    # order in which platforms happened to be processed.
+    conditions = await async_get_conditions(hass)
+    if get_relative_description_key(DOMAIN, condition_key) in conditions:
+        return DOMAIN, sys.modules[__name__]
+
+    return await original(hass, condition_key)
+
+
+@callback
+def async_setup_foreign_domain_conditions() -> Callable[[], None]:
+    """Teach Home Assistant to resolve Spook conditions in other domains.
+
+    Returns a callable that puts the original back. If the function Spook
+    patches is not where it used to be, this does nothing and says so, rather
+    than taking Spook down with it.
+    """
+    original = getattr(condition_helper, _ORIGINAL_GET_CONDITION_PLATFORM, None)
+    if original is None:
+        LOGGER.warning(
+            "Home Assistant's condition platform lookup has moved; Spook "
+            "conditions outside its own domain will not be available"
+        )
+        return lambda: None
+
+    async def _patched(
+        hass_: HomeAssistant, condition_key: str
+    ) -> tuple[str, ConditionProtocol | None]:
+        return await _async_get_condition_platform(
+            hass_, condition_key, original=original
+        )
+
+    setattr(condition_helper, _ORIGINAL_GET_CONDITION_PLATFORM, _patched)
+
+    @callback
+    def _restore() -> None:
+        """Put Home Assistant's own lookup back."""
+        setattr(condition_helper, _ORIGINAL_GET_CONDITION_PLATFORM, original)
+
+    return _restore
+
+
+CONDITION_TRANSLATION_CATEGORY = "conditions"
+GHOST = "👻"
+
+
+def _foreign_domain(condition_key: str) -> tuple[str, str] | None:
+    """Split a Spook condition key that belongs to another integration.
+
+    ``_automation.triggered_by_user`` is Spook's way of saying the absolute
+    key is ``automation.triggered_by_user``. Returns the domain and the name
+    within it, or None for Spook's own conditions.
+    """
+    if not condition_key.startswith("_"):
+        return None
+    domain, _, name = condition_key[1:].partition(".")
+    if not name:
+        return None
+    return domain, name
+
+
+def translation_key(condition_key: str) -> str:
+    """Return the key Spook files a condition's strings under.
+
+    Spook keeps its own strings in its own translation file, so a condition
+    keyed for another integration needs a name that survives there. Same
+    shape Spook already uses for its actions: ``domain_name``.
+    """
+    if (split := _foreign_domain(condition_key)) is None:
+        return condition_key
+    domain, name = split
+    return f"{domain}_{name}"
+
+
+@dataclass
+class SpookConditionManager:
+    """Makes Spook's conditions usable in other integrations' domains.
+
+    Two things stand in the way, and this handles both. Home Assistant
+    resolves a condition through the integration named in its key, so the
+    lookup needs teaching; and it loads translations per integration, so the
+    labels need putting where it will look for them.
+    """
+
+    hass: HomeAssistant
+
+    _translations: SpookTranslationInjector = field(init=False)
+    _restore_resolution: Callable[[], None] | None = None
+    _translation_listener: Callable[[], None] | None = None
+
+    def __post_init__(self) -> None:
+        """Post initialization."""
+        self._translations = SpookTranslationInjector(
+            self.hass,
+            CONDITION_TRANSLATION_CATEGORY,
+            "condition",
+        )
+
+    async def async_setup(self) -> None:
+        """Set up Spook's conditions."""
+        LOGGER.debug("Setting up Spook conditions")
+        self._restore_resolution = async_setup_foreign_domain_conditions()
+        await self.async_inject_condition_translations()
+        self._translation_listener = self.hass.bus.async_listen(
+            EVENT_CORE_CONFIG_UPDATE,
+            self._async_core_config_updated,
+        )
+
+    async def async_inject_condition_translations(self) -> None:
+        """Put Spook's condition strings under the domains they are keyed to."""
+        conditions = await async_get_conditions(self.hass)
+        foreign = {
+            key: split
+            for key in conditions
+            if (split := _foreign_domain(key)) is not None
+        }
+        if not foreign:
+            return
+
+        language = self.hass.config.language
+        domains = {domain for domain, _ in foreign.values()}
+        await async_get_translations(
+            self.hass,
+            language,
+            CONDITION_TRANSLATION_CATEGORY,
+            {DOMAIN, *domains},
+        )
+        spook_strings = async_get_cached_translations(
+            self.hass,
+            language,
+            CONDITION_TRANSLATION_CATEGORY,
+            DOMAIN,
+        )
+
+        for domain, name in foreign.values():
+            spook_key = translation_key(f"_{domain}.{name}")
+            spook_prefix = (
+                f"component.{DOMAIN}.{CONDITION_TRANSLATION_CATEGORY}.{spook_key}."
+            )
+            target_prefix = (
+                f"component.{domain}.{CONDITION_TRANSLATION_CATEGORY}.{name}."
+            )
+            self._translations.inject(
+                language,
+                domain,
+                {
+                    f"{target_prefix}{key.removeprefix(spook_prefix)}": (
+                        f"{value} {GHOST}"
+                        if key == f"{spook_prefix}name" and GHOST not in value
+                        else value
+                    )
+                    for key, value in spook_strings.items()
+                    if key.startswith(spook_prefix)
+                },
+            )
+
+    async def _async_core_config_updated(self, event: Event) -> None:
+        """Re-inject condition translations when the language changes."""
+        if "language" not in event.data:
+            return
+        await self.async_inject_condition_translations()
+
+    @callback
+    def async_on_unload(self) -> None:
+        """Tear down Spook's conditions."""
+        LOGGER.debug("Tearing down Spook conditions")
+        if self._translation_listener:
+            self._translation_listener()
+            self._translation_listener = None
+
+        if self._restore_resolution:
+            self._restore_resolution()
+            self._restore_resolution = None
+
+        self._translations.restore()
