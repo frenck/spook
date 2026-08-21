@@ -257,25 +257,7 @@
             "title": "Onbekende acties gebruikt in: {automation}"
         },
         "group_unknown_members": {
-            "title": "Onbekende groep leden in: {group}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "ignore": "",
-                            "remove": "",
-                            "manage": ""
-                        },
-                        "title": "",
-                        "description": ""
-                    }
-                },
-                "abort": {
-                    "manage": "",
-                    "not_editable": "",
-                    "issue_ignored": ""
-                }
-            }
+            "title": "Onbekende groep leden in: {group}"
         },
         "lovelace_unknown_entity_references": {
             "description": "Spook heeft een geest gevonden in jouw dashboards 👻\n\nTerwijl hij rond zweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard verwijst naar de volgende entiteiten, die onbekend zijn voor Home Assistant:\n\n{entities}\n\n\n\nOm deze fout op te lossen, [bewerk het dashboard]({edit}) en verwijder het gebruik van deze niet-bestaande entiteiten.\n\nSpook 👻 Your homie.",
@@ -344,214 +326,7 @@
             }
         },
         "lovelace_missing_resources": {
-            "title": "Dashboard bronnen verwijzen naar missende bestanden",
-            "description": ""
-        },
-        "empty_floors": {
-            "fix_flow": {
-                "abort": {
-                    "manage": "",
-                    "issue_ignored": ""
-                },
-                "step": {
-                    "init": {
-                        "title": "",
-                        "description": "",
-                        "menu_options": {
-                            "remove": "",
-                            "manage": "",
-                            "ignore": ""
-                        }
-                    }
-                }
-            },
-            "title": ""
-        },
-        "unused_blueprints": {
-            "fix_flow": {
-                "abort": {
-                    "issue_ignored": "",
-                    "manage": ""
-                },
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "remove": "",
-                            "manage": "",
-                            "ignore": ""
-                        },
-                        "title": "",
-                        "description": ""
-                    }
-                }
-            },
-            "title": ""
-        },
-        "empty_areas": {
-            "fix_flow": {
-                "abort": {
-                    "issue_ignored": "",
-                    "manage": ""
-                },
-                "step": {
-                    "init": {
-                        "description": "",
-                        "title": "",
-                        "menu_options": {
-                            "remove": "",
-                            "ignore": "",
-                            "manage": ""
-                        }
-                    }
-                }
-            },
-            "title": ""
-        },
-        "script_unknown_condition_references": {
-            "title": "",
-            "description": ""
-        },
-        "min_max_unknown_sources": {
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "description": "",
-                        "menu_options": {
-                            "remove": "",
-                            "ignore": "",
-                            "manage": ""
-                        },
-                        "title": ""
-                    }
-                },
-                "abort": {
-                    "too_few_members": "",
-                    "issue_ignored": "",
-                    "manage": ""
-                }
-            },
-            "title": ""
-        },
-        "person_unknown_device_trackers": {
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "description": "",
-                        "menu_options": {
-                            "manage": "",
-                            "remove": "",
-                            "ignore": ""
-                        },
-                        "title": ""
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "",
-                    "not_editable": "",
-                    "manage": ""
-                }
-            },
-            "title": ""
-        },
-        "unused_labels": {
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "remove": "",
-                            "ignore": "",
-                            "manage": ""
-                        },
-                        "description": "",
-                        "title": ""
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "",
-                    "manage": ""
-                }
-            },
-            "title": ""
-        },
-        "template_unknown_service_references": {
-            "title": "",
-            "description": ""
-        },
-        "energy_unknown_references": {
-            "description": "",
-            "title": ""
-        },
-        "stale_access_tokens": {
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "remove": "",
-                            "manage": "",
-                            "ignore": ""
-                        },
-                        "title": "",
-                        "description": ""
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "",
-                    "manage": ""
-                }
-            },
-            "title": ""
-        },
-        "unknown_helper_source_references": {
-            "fix_flow": {
-                "abort": {
-                    "manage": "",
-                    "issue_ignored": ""
-                },
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "remove": "",
-                            "manage": "",
-                            "ignore": ""
-                        },
-                        "title": "",
-                        "description": ""
-                    }
-                }
-            },
-            "title": ""
-        },
-        "orphaned_statistics": {
-            "title": "",
-            "description": ""
-        },
-        "template_unknown_entity_references": {
-            "title": "",
-            "description": ""
-        },
-        "automation_unknown_trigger_references": {
-            "title": "",
-            "description": ""
-        },
-        "dead_entities": {
-            "description": "",
-            "title": ""
-        },
-        "unknown_customized_entities": {
-            "title": "",
-            "description": ""
-        },
-        "lovelace_unknown_area_references": {
-            "description": "",
-            "title": ""
-        },
-        "script_unknown_trigger_references": {
-            "description": "",
-            "title": ""
-        },
-        "automation_unknown_condition_references": {
-            "title": "",
-            "description": ""
+            "title": "Dashboard bronnen verwijzen naar missende bestanden"
         }
     },
     "services": {
@@ -686,8 +461,7 @@
             "description": "Verwijdert onmiddellijk een ruimte.",
             "fields": {
                 "area_id": {
-                    "name": "Ruimte ID",
-                    "description": ""
+                    "name": "Ruimte ID"
                 }
             }
         },
@@ -700,14 +474,6 @@
                 "description": {
                     "name": "Omschrijving",
                     "description": "Omschrijving van het label."
-                },
-                "icon": {
-                    "name": "",
-                    "description": ""
-                },
-                "name": {
-                    "description": "",
-                    "name": ""
                 }
             },
             "name": "Maak een label",
@@ -716,202 +482,68 @@
         "homeassistant_disable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Configuratie invoer",
-                    "description": ""
+                    "name": "Configuratie invoer"
                 }
             },
-            "name": "Deactiveer een integratie",
-            "description": ""
+            "name": "Deactiveer een integratie"
         },
         "homeassistant_enable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Configuratie invoer",
-                    "description": ""
+                    "name": "Configuratie invoer"
                 }
-            },
-            "description": "",
-            "name": ""
+            }
         },
         "homeassistant_disable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Configuratie invoer",
-                    "description": ""
+                    "name": "Configuratie invoer"
                 }
             },
-            "name": "Deactiveer de update checker",
-            "description": ""
+            "name": "Deactiveer de update checker"
         },
         "homeassistant_enable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Configuratie invoer",
-                    "description": ""
+                    "name": "Configuratie invoer"
                 }
-            },
-            "description": "",
-            "name": ""
+            }
         },
         "homeassistant_create_floor": {
             "name": "Maak een verdieping",
-            "description": "Maakt een nieuwe verdieping in een handomdraai.",
-            "fields": {
-                "name": {
-                    "description": "",
-                    "name": ""
-                },
-                "level": {
-                    "name": "",
-                    "description": ""
-                },
-                "icon": {
-                    "description": "",
-                    "name": ""
-                },
-                "aliases": {
-                    "description": "",
-                    "name": ""
-                }
-            }
+            "description": "Maakt een nieuwe verdieping in een handomdraai."
         },
         "input_number_create": {
             "description": "Maak een nieuwe invoerhelper in een handomdraai.",
-            "name": "Maak een numerieke invoer",
-            "fields": {
-                "name": {
-                    "description": "",
-                    "name": ""
-                },
-                "initial": {
-                    "description": "",
-                    "name": ""
-                },
-                "mode": {
-                    "name": "",
-                    "description": ""
-                },
-                "input_number_id": {
-                    "description": "",
-                    "name": ""
-                },
-                "step": {
-                    "description": "",
-                    "name": ""
-                },
-                "icon": {
-                    "description": "",
-                    "name": ""
-                },
-                "min": {
-                    "description": "",
-                    "name": ""
-                },
-                "unit_of_measurement": {
-                    "description": "",
-                    "name": ""
-                },
-                "max": {
-                    "name": "",
-                    "description": ""
-                }
-            }
+            "name": "Maak een numerieke invoer"
         },
         "zone_create": {
             "description": "Maak een nieuwe zone in Home Assistant in een handomdraai.",
-            "name": "Maak een zone",
-            "fields": {
-                "longitude": {
-                    "name": "",
-                    "description": ""
-                },
-                "icon": {
-                    "description": "",
-                    "name": ""
-                },
-                "name": {
-                    "description": "",
-                    "name": ""
-                },
-                "radius": {
-                    "description": "",
-                    "name": ""
-                },
-                "latitude": {
-                    "name": "",
-                    "description": ""
-                }
-            }
+            "name": "Maak een zone"
         },
         "repairs_create": {
             "name": "Maak een probleem",
             "fields": {
                 "description": {
-                    "name": "Omschrijving",
-                    "description": ""
-                },
-                "title": {
-                    "name": "",
-                    "description": ""
-                },
-                "domain": {
-                    "description": "",
-                    "name": ""
-                },
-                "persistent": {
-                    "name": "",
-                    "description": ""
-                },
-                "issue_id": {
-                    "description": "",
-                    "name": ""
-                },
-                "severity": {
-                    "description": "",
-                    "name": ""
+                    "name": "Omschrijving"
                 }
-            },
-            "description": ""
+            }
         },
         "input_number_decrement": {
             "description": "Vermindert een numerieke invoer waarde met een bepaalde hoeveelheid",
-            "name": "Verminder waarde",
-            "fields": {
-                "amount": {
-                    "name": "",
-                    "description": ""
-                }
-            }
+            "name": "Verminder waarde"
         },
         "number_decrement": {
             "description": "Vermindert een numerieke waarde met een bepaalde hoeveelheid",
-            "name": "Verminder waarde",
-            "fields": {
-                "amount": {
-                    "name": "",
-                    "description": ""
-                }
-            }
+            "name": "Verminder waarde"
         },
         "homeassistant_delete_floor": {
             "name": "Verwijder een verdieping",
-            "description": "Verwijdert een verdieping in een handomdraai.",
-            "fields": {
-                "floor_id": {
-                    "name": "",
-                    "description": ""
-                }
-            }
+            "description": "Verwijdert een verdieping in een handomdraai."
         },
         "homeassistant_delete_label": {
             "name": "Verwijder een label",
-            "description": "Verwijdert een label in een handomdraai.",
-            "fields": {
-                "label_id": {
-                    "description": "",
-                    "name": ""
-                }
-            }
+            "description": "Verwijdert een label in een handomdraai."
         },
         "homeassistant_delete_all_orphaned_entities": {
             "name": "Verwijder alle wees entiteiten",
@@ -923,483 +555,56 @@
         },
         "zone_delete": {
             "name": "Verwijder een zone",
-            "description": "Verwijder een zone.  Dit werkt enkel met zones gecreëerd en beheerd via de gebruikersinterface.  Zones gecreëerd en beheerd in YAML kunnen niet beheerd worden door Spook.",
-            "fields": {
-                "entity_id": {
-                    "name": "",
-                    "description": ""
-                }
-            }
+            "description": "Verwijder een zone.  Dit werkt enkel met zones gecreëerd en beheerd via de gebruikersinterface.  Zones gecreëerd en beheerd in YAML kunnen niet beheerd worden door Spook."
         },
         "homeassistant_disable_device": {
             "fields": {
                 "device_id": {
-                    "name": "Apparaat",
-                    "description": ""
+                    "name": "Apparaat"
                 }
             },
-            "name": "Deactiveer een apparaat",
-            "description": ""
+            "name": "Deactiveer een apparaat"
         },
         "homeassistant_enable_device": {
             "fields": {
                 "device_id": {
-                    "name": "Apparaat ID",
-                    "description": ""
+                    "name": "Apparaat ID"
                 }
-            },
-            "description": "",
-            "name": ""
+            }
         },
         "homeassistant_add_label_to_device": {
             "fields": {
                 "device_id": {
-                    "name": "Apparaat ID",
-                    "description": ""
-                },
-                "label_id": {
-                    "name": "",
-                    "description": ""
+                    "name": "Apparaat ID"
                 }
-            },
-            "name": "",
-            "description": ""
+            }
         },
         "homeassistant_remove_label_from_device": {
             "fields": {
                 "device_id": {
-                    "name": "Apparaat ID",
-                    "description": ""
-                },
-                "label_id": {
-                    "name": "",
-                    "description": ""
+                    "name": "Apparaat ID"
                 }
-            },
-            "description": "",
-            "name": ""
+            }
         },
         "person_add_device_tracker": {
             "fields": {
                 "device_tracker": {
-                    "name": "Apparaat tracker",
-                    "description": ""
-                },
-                "entity_id": {
-                    "description": "",
-                    "name": ""
+                    "name": "Apparaat tracker"
                 }
-            },
-            "name": "",
-            "description": ""
+            }
         },
         "person_remove_device_tracker": {
             "fields": {
                 "device_tracker": {
-                    "name": "Apparaat tracker",
-                    "description": ""
-                },
-                "entity_id": {
-                    "name": "",
-                    "description": ""
+                    "name": "Apparaat tracker"
                 }
-            },
-            "description": "",
-            "name": ""
+            }
         },
         "homeassistant_disable_entity": {
-            "name": "Deactiveer een entiteit",
-            "fields": {
-                "entity_id": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "description": ""
+            "name": "Deactiveer een entiteit"
         },
         "homeassistant_disable_user": {
-            "name": "Deactiveer een gebruiker",
-            "description": "",
-            "fields": {
-                "user_id": {
-                    "description": "",
-                    "name": ""
-                }
-            }
-        },
-        "homeassistant_update_entity_id": {
-            "fields": {
-                "new_entity_id": {
-                    "name": "",
-                    "description": ""
-                },
-                "entity_id": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "description": "",
-            "name": ""
-        },
-        "homeassistant_ignore_all_discovered": {
-            "fields": {
-                "domain": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "description": "",
-            "name": ""
-        },
-        "input_number_min": {
-            "name": "",
-            "description": ""
-        },
-        "homeassistant_remove_area_from_floor": {
-            "fields": {
-                "area_id": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "homeassistant_hide_entity": {
-            "fields": {
-                "entity_id": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "repairs_ignore_all": {
-            "description": "",
-            "name": ""
-        },
-        "input_number_max": {
-            "name": "",
-            "description": ""
-        },
-        "homeassistant_add_area_to_floor": {
-            "fields": {
-                "floor_id": {
-                    "description": "",
-                    "name": ""
-                },
-                "area_id": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "description": "",
-            "name": ""
-        },
-        "homeassistant_list_orphaned_database_entities": {
-            "name": "",
-            "description": ""
-        },
-        "homeassistant_remove_label_from_entity": {
-            "fields": {
-                "label_id": {
-                    "name": "",
-                    "description": ""
-                },
-                "entity_id": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "select_random": {
-            "name": "",
-            "description": "",
-            "fields": {
-                "options": {
-                    "name": "",
-                    "description": ""
-                }
-            }
-        },
-        "repairs_unignore_all": {
-            "description": "",
-            "name": ""
-        },
-        "zone_update": {
-            "fields": {
-                "radius": {
-                    "description": "",
-                    "name": ""
-                },
-                "entity_id": {
-                    "description": "",
-                    "name": ""
-                },
-                "longitude": {
-                    "description": "",
-                    "name": ""
-                },
-                "icon": {
-                    "name": "",
-                    "description": ""
-                },
-                "name": {
-                    "name": "",
-                    "description": ""
-                },
-                "latitude": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "description": "",
-            "name": ""
-        },
-        "timer_set_duration": {
-            "description": "",
-            "fields": {
-                "duration": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "name": ""
-        },
-        "homeassistant_add_alias_to_floor": {
-            "fields": {
-                "floor_id": {
-                    "name": "",
-                    "description": ""
-                },
-                "alias": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "homeassistant_set_floor_aliases": {
-            "fields": {
-                "aliases": {
-                    "description": "",
-                    "name": ""
-                },
-                "floor_id": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "repairs_remove": {
-            "fields": {
-                "issue_id": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "number_max": {
-            "description": "",
-            "name": ""
-        },
-        "number_min": {
-            "name": "",
-            "description": ""
-        },
-        "number_increment": {
-            "description": "",
-            "name": "",
-            "fields": {
-                "amount": {
-                    "description": "",
-                    "name": ""
-                }
-            }
-        },
-        "recorder_import_statistics": {
-            "fields": {
-                "source": {
-                    "description": "",
-                    "name": ""
-                },
-                "statistic_id": {
-                    "description": "",
-                    "name": ""
-                },
-                "unit_of_measurement": {
-                    "name": "",
-                    "description": ""
-                },
-                "has_sum": {
-                    "description": "",
-                    "name": ""
-                },
-                "has_mean": {
-                    "description": "",
-                    "name": ""
-                },
-                "stats": {
-                    "name": "",
-                    "description": ""
-                },
-                "name": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "homeassistant_unhide_entity": {
-            "description": "",
-            "fields": {
-                "entity_id": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": ""
-        },
-        "homeassistant_add_label_to_area": {
-            "fields": {
-                "label_id": {
-                    "name": "",
-                    "description": ""
-                },
-                "area_id": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "homeassistant_remove_label_from_area": {
-            "description": "",
-            "fields": {
-                "label_id": {
-                    "description": "",
-                    "name": ""
-                },
-                "area_id": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": ""
-        },
-        "homeassistant_enable_entity": {
-            "description": "",
-            "name": "",
-            "fields": {
-                "entity_id": {
-                    "description": "",
-                    "name": ""
-                }
-            }
-        },
-        "homeassistant_add_label_to_entity": {
-            "fields": {
-                "label_id": {
-                    "description": "",
-                    "name": ""
-                },
-                "entity_id": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "description": "",
-            "name": ""
-        },
-        "homeassistant_remove_alias_from_floor": {
-            "fields": {
-                "alias": {
-                    "name": "",
-                    "description": ""
-                },
-                "floor_id": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "homeassistant_enable_user": {
-            "description": "",
-            "name": "",
-            "fields": {
-                "user_id": {
-                    "description": "",
-                    "name": ""
-                }
-            }
-        },
-        "homeassistant_rename_entity": {
-            "fields": {
-                "entity_id": {
-                    "description": "",
-                    "name": ""
-                },
-                "name": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "input_number_increment": {
-            "name": "",
-            "description": "",
-            "fields": {
-                "amount": {
-                    "name": "",
-                    "description": ""
-                }
-            }
-        },
-        "homeassistant_restart": {
-            "description": "",
-            "fields": {
-                "force": {
-                    "description": "",
-                    "name": ""
-                },
-                "safe_mode": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": ""
-        },
-        "input_select_random": {
-            "fields": {
-                "options": {
-                    "name": "",
-                    "description": ""
-                }
-            },
-            "name": "",
-            "description": ""
-        },
-        "input_select_shuffle": {
-            "name": "",
-            "description": ""
-        },
-        "input_select_sort": {
-            "description": "",
-            "name": ""
+            "name": "Deactiveer een gebruiker"
         }
     },
     "conditions": {
@@ -1412,16 +617,6 @@
                     "description": "Hoe vaak aan deze voorwaarde moet worden voldaan, uitgedrukt als percentage."
                 }
             }
-        },
-        "cooldown": {
-            "description": "",
-            "fields": {
-                "duration": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "name": ""
         }
     }
 }
