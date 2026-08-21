@@ -1,5 +1,6 @@
 """Tests for the automation.triggered_by_user conditions."""
 
+# ruff: noqa: SLF001
 # pylint: disable=protected-access
 
 # pylint: disable=wrong-import-order
@@ -14,6 +15,7 @@ from homeassistant.helpers.condition import (
     async_validate_condition_config,
 )
 from homeassistant.helpers.script import Script
+from homeassistant.setup import async_setup_component
 import pytest
 
 from custom_components.spook.ectoplasms.automation.conditions.triggered_by_user import (
@@ -90,29 +92,87 @@ async def test_fails_when_nobody_started_the_run(hass: HomeAssistant) -> None:
     )
 
 
+async def _person(hass: HomeAssistant, name: str, *, linked: bool = True) -> str:
+    """Set up a person, optionally linked to a user account, and return its ID."""
+    user_id = None
+    if linked:
+        user = await hass.auth.async_create_user(name)
+        user_id = user.id
+
+    assert await async_setup_component(
+        hass,
+        "person",
+        {
+            "person": [
+                {"id": name.lower(), "name": name, "user_id": user_id}
+                if user_id
+                else {"id": name.lower(), "name": name}
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+    return user_id
+
+
 @pytest.mark.usefixtures("resolve_foreign_conditions")
-async def test_user_filter_matches(hass: HomeAssistant) -> None:
-    """Naming a user narrows the condition to that user."""
+async def test_person_filter_matches(hass: HomeAssistant) -> None:
+    """Naming a person narrows the condition to the account they are linked to."""
+    user_id = await _person(hass, "Frenck")
+
     assert await _run(
         hass,
         {
             "condition": "automation.triggered_by_user",
-            "options": {"user_id": "ghost-hunter"},
+            "options": {"person": "person.frenck"},
         },
-        Context(user_id="ghost-hunter"),
+        Context(user_id=user_id),
     )
 
 
 @pytest.mark.usefixtures("resolve_foreign_conditions")
-async def test_user_filter_rejects_another_user(hass: HomeAssistant) -> None:
-    """A different user does not match the filter."""
+async def test_person_filter_rejects_another_user(hass: HomeAssistant) -> None:
+    """Somebody else's account does not match the named person."""
+    await _person(hass, "Frenck")
+
     assert not await _run(
         hass,
         {
             "condition": "automation.triggered_by_user",
-            "options": {"user_id": "ghost-hunter"},
+            "options": {"person": "person.frenck"},
         },
         Context(user_id="somebody-else"),
+    )
+
+
+@pytest.mark.usefixtures("resolve_foreign_conditions")
+async def test_person_without_an_account_never_matches(hass: HomeAssistant) -> None:
+    """A person with no user account linked has nothing to match against.
+
+    Worth pinning: it is a quiet way for a condition to never pass, and the
+    description says so precisely because of this.
+    """
+    await _person(hass, "Frenck", linked=False)
+
+    assert not await _run(
+        hass,
+        {
+            "condition": "automation.triggered_by_user",
+            "options": {"person": "person.frenck"},
+        },
+        Context(user_id="anyone-at-all"),
+    )
+
+
+@pytest.mark.usefixtures("resolve_foreign_conditions")
+async def test_an_unknown_person_is_skipped(hass: HomeAssistant) -> None:
+    """A person entity that does not exist does not blow up the check."""
+    assert not await _run(
+        hass,
+        {
+            "condition": "automation.triggered_by_user",
+            "options": {"person": "person.long_gone"},
+        },
+        Context(user_id="somebody"),
     )
 
 
@@ -130,18 +190,17 @@ async def test_not_triggered_by_user_is_the_inverse(hass: HomeAssistant) -> None
 
 
 @pytest.mark.usefixtures("resolve_foreign_conditions")
-async def test_a_bare_user_id_is_not_read_as_letters(hass: HomeAssistant) -> None:
-    """A condition built without validation still gets the user right.
+async def test_a_bare_person_id_is_not_read_as_letters(hass: HomeAssistant) -> None:
+    """A condition built without validation still reads one person correctly.
 
-    `set("ghost-hunter")` is a set of ten letters, and a condition that
-    compares against that matches nobody while looking perfectly reasonable.
+    Validation turns a single entity ID into a list. Handed to a condition
+    raw, a bare string iterated character by character matches nobody while
+    looking perfectly reasonable.
     """
+    user_id = await _person(hass, "Frenck")
+
     condition = SpookCondition(
-        hass, ConditionConfig(options={"user_id": "ghost-hunter"})
+        hass, ConditionConfig(options={"person": "person.frenck"})
     )
-    assert condition._async_check(  # noqa: SLF001
-        variables={"context": Context(user_id="ghost-hunter")}
-    )
-    assert not condition._async_check(  # noqa: SLF001
-        variables={"context": Context(user_id="g")}
-    )
+    assert condition._async_check(variables={"context": Context(user_id=user_id)})
+    assert not condition._async_check(variables={"context": Context(user_id="p")})
