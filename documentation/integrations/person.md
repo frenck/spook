@@ -175,7 +175,15 @@ data:
 
 ## Repairs
 
-Spook has no repair detections for this integration.
+While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
+
+### Unknown device trackers
+
+A person is a collection of device trackers, and the person's location is whatever those trackers say it is. Spook inspects every person to find trackers that no longer exist. If Spook finds such a case, it will raise a repair issue, naming the person and the trackers that are missing.
+
+This usually happens when a tracker was renamed, or when the integration providing it was removed. Nothing announces it: the person keeps working on the trackers that remain, so somebody whose phone tracker quietly disappeared just becomes a little less accurately located.
+
+The raised issue is fixable. Spook can remove the missing trackers from the person for you, or you can fix it yourself on the People page. A person set up in {term}`YAML` cannot be edited by Spook, so for those the issue points you at your configuration instead.
 
 ## Uses cases
 
