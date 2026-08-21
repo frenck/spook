@@ -16,9 +16,9 @@ date: 2026-08-21T16:20:00+02:00
 
 The energy {term}`dashboard <dashboard>` in {term}`Home Assistant` is where your consumption, production, gas, water, and battery numbers come together. It is configured once, in Settings > Dashboards > Energy, by pointing it at the {term}`entities <entity>` that carry those numbers.
 
-That configuration is a list of {term}`entity IDs <entity id>` held separately from the entities themselves. Nothing keeps the two in step, and nothing tells you when they drift apart.
+That configuration is a list of {term}`entity IDs <entity id>` held separately from the entities themselves, and nothing keeps the two in step. Home Assistant does validate it, but it shows the result only inside that configuration panel, which is a page you visit when you are changing something rather than one you check.
 
-Spook enhances the energy dashboard by raising {term}`repairs <repairs>` issues when it finds an entity in that configuration that Home Assistant no longer has.
+Spook enhances the energy dashboard by taking Home Assistant's own validation and raising a {term}`repairs <repairs>` issue for it, so a removed entity comes to you instead of waiting to be found.
 
 ## Devices & entities
 
@@ -34,9 +34,9 @@ While Spook is floating around in your Home Assistant instance, it will raise re
 
 ### Unknown referenced entities
 
-Spook inspects the energy configuration to find the entities it names that no longer exist. If Spook finds such a case, it will raise a repair issue listing the entities that are missing.
+Spook runs Home Assistant's own energy validation and looks for the one result that means a reference has gone stale: an entity that has no state at all, because it was removed. The other results it can report are either transient (an entity that happens to be unavailable right now) or a configuration choice rather than a mistake, so Spook leaves those alone.
 
-The dashboard does not complain about this. It draws the sources it can still read and leaves out the one it cannot, so the graph stays plausible while quietly being wrong. A missing gas sensor does not look like an error, it looks like a month where you used no gas.
+What this buys you is where the answer appears. The dashboard itself does not complain: it draws the sources it can still read and leaves out the one it cannot, so the graph stays plausible while quietly being wrong. A missing gas sensor does not look like an error, it looks like a month where you used no gas.
 
 To resolve the raised issue, go to Settings > Dashboards > Energy and update or remove these entities. Spook will automatically remove the repair issue once the issue is fixed.
 

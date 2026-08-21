@@ -101,13 +101,17 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 ### Unknown referenced conditions
 
-Scripts are inspected for the conditions they use. Conditions are provided by {term}`integrations <integration>`, so a condition that no installed integration can provide is one nothing will ever evaluate. If a script uses such a condition, Spook will raise a repair issue naming the script and the conditions in question.
+Scripts are inspected for the conditions they use. Conditions are provided by {term}`integrations <integration>`, so a condition that no installed integration can provide cannot be evaluated. A script like that fails validation outright and becomes unavailable, which is why Spook deliberately inspects unavailable scripts: they are the broken ones.
+
+Home Assistant does notice, but it raises a generic issue about the script. Spook names the exact conditions, which is the part you need in order to fix it.
 
 This usually means the integration that provided the condition was removed. To resolve the raised issue, you can either remove the use of these conditions or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Unknown referenced triggers
 
-Scripts are inspected for the triggers they use. A script is normally started by something else, but it can carry triggers of its own, and a trigger no installed integration can provide will never fire. If a script uses such a trigger, Spook will raise a repair issue naming the script and the triggers in question.
+Scripts are inspected for the trigger configurations they contain, such as the ones a `wait_for_trigger` step waits on. A trigger no installed integration can provide takes the whole script down with it: it fails validation and becomes unavailable.
+
+Home Assistant raises a generic issue about the script without saying which trigger caused it. Spook names the trigger.
 
 To resolve the raised issue, you can either remove the use of these triggers or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
 

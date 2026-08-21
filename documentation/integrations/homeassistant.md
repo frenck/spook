@@ -22,7 +22,7 @@ Spook enhances the core integration by raising {term}`repairs <repairs>` issues 
 
 ## Devices & entities
 
-Spook does not provide any new devices or entities for this integration.
+Spook turns Home Assistant itself into a device, with buttons to reload and restart it and a sensor counting the entities of every type you have. Those are documented on [](../devices_entities).
 
 ## Actions
 
@@ -33,6 +33,8 @@ Spook adds a large number of actions in the `homeassistant` domain, but they are
 While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
 
 Some of these are broken things, and some are only untidy ones. The untidy ones are all fixable from the issue itself, and every one of them offers to stop mentioning it, because an empty area you keep on purpose is nobody's business but yours.
+
+The tidiness repairs also hold off for a day, so setting something up and filling it in after lunch does not earn you a repair issue in between. A new area, floor or label is left alone for its first twenty-four hours. A blueprint is judged by when its file was last touched rather than when it first appeared, which also spares one you edited yesterday.
 
 ### Non-existing registered entities
 
@@ -54,7 +56,9 @@ To resolve the raised issue, edit the `customize:` section in your configuration
 
 ### Unknown helper sources
 
-Many {term}`helpers <helper>` are built on top of another entity: a threshold on a sensor, a derivative on a counter, a group on a handful of switches. Spook reads each helper's own configuration to find the source entities it names, and raises a repair issue when one of them is unknown to Home Assistant.
+A number of {term}`helpers <helper>` are built on top of another entity: a threshold on a sensor, a derivative on a counter, a utility meter on an energy reading. Spook knows which twelve helper types store a source reference and where each one keeps it, reads that configuration, and raises a repair issue when a source is unknown to Home Assistant.
+
+Groups and min/max helpers are handled elsewhere on purpose. Both have a repair of their own that can do something better than reporting the problem, so this one stays out of their way.
 
 Reading the configuration rather than the running helper matters here: it means a helper whose entity failed to set up entirely is still checked, and that is exactly the helper most likely to be broken.
 
@@ -96,8 +100,6 @@ The raised issue is fixable: Spook can remove the label for you.
 
 {term}`Blueprints <blueprint>` collect. You import one to try it, decide against it, and it stays. Spook raises a repair issue for a blueprint that no automation or script uses.
 
-A blueprint whose file was added or changed in the last day is left alone, so importing one and setting it up a few minutes later does not earn you an instant repair issue for your trouble.
-
 The raised issue is fixable: Spook can remove the blueprint for you.
 
 ## Use cases
@@ -107,7 +109,7 @@ Some use cases for the enhancements Spook provides for this integration:
 - Replacing a batch of devices. The new ones set themselves up, the old registry entries stay behind as permanently unavailable entities, and grouping them per integration turns a wall of unavailable entities into one issue you can act on.
 - Auditing who still has a key to your instance. Long-lived tokens are easy to create and easy to forget, and nothing else in Home Assistant will bring one up unprompted.
 - Cleaning up after a reorganisation. Renaming and regrouping leaves empty areas, empty floors and unused labels behind, and none of them are visible unless you go looking.
-- Finding helpers that broke months ago. A helper without its source is not merely wrong, it is silently wrong, and it will keep reporting a last known value as if nothing happened.
+- Finding helpers that broke months ago. A helper without its source is not merely wrong, it is quietly wrong: depending on the helper it may sit on a stale value, go unavailable, or never have set up at all. None of those announce themselves.
 
 ## Blueprints & tutorials
 

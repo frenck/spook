@@ -102,15 +102,19 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 ### Unknown referenced conditions
 
-Automations are inspected for the conditions they use. Conditions are provided by {term}`integrations <integration>`, so a condition that no installed integration can provide is one nothing will ever evaluate. If an automation uses such a condition, Spook will raise a repair issue naming the automation and the conditions in question.
+Automations are inspected for the conditions they use. Conditions are provided by {term}`integrations <integration>`, so a condition that no installed integration can provide cannot be evaluated. An automation like that fails validation outright and becomes unavailable, which is why Spook deliberately inspects unavailable automations: they are the broken ones.
+
+Home Assistant does notice, but it raises a generic issue about the automation. Spook names the exact conditions, which is the part you need in order to fix it.
 
 This usually means the integration that provided the condition was removed. To resolve the raised issue, you can either remove the use of these conditions or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Unknown referenced triggers
 
-Automations are inspected for the triggers they use. Like conditions, triggers come from integrations, and a trigger no installed integration can provide will never fire. If an automation uses such a trigger, Spook will raise a repair issue naming the automation and the triggers in question.
+Automations are inspected for the triggers they use. Like conditions, triggers come from integrations, and one no installed integration can provide takes the whole automation down with it: it fails validation and becomes unavailable.
 
-A trigger that never fires is the quietest kind of broken: the automation still exists, still looks fine, and simply never runs. To resolve the raised issue, you can either remove the use of these triggers or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
+So this is not a silent failure, it is a nameless one. Home Assistant raises a generic issue about the automation without saying which trigger caused it. Spook names the trigger.
+
+To resolve the raised issue, you can either remove the use of these triggers or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Features requests, ideas, and support
 
