@@ -12,7 +12,9 @@ from homeassistant.helpers import (
 )
 
 from custom_components.spook.entity_filtering import (
+    async_drop_existing_action_names,
     async_filter_known_device_ids,
+    async_filter_known_entity_ids,
     async_filter_known_services,
     async_find_services_in_sequence,
     async_get_all_device_ids,
@@ -141,3 +143,58 @@ def test_composite_device_ids_are_known(
 
     assert "pre-split-id" in async_get_all_device_ids(hass)
     assert async_filter_known_device_ids(hass, device_ids={"pre-split-id"}) == set()
+
+
+async def test_action_names_are_not_unknown_entities(hass: HomeAssistant) -> None:
+    """Test a name belonging to an existing action is not a missing entity.
+
+    A legacy notify group registers `notify.my_phone` as an action and no
+    entity at all, so a reference to it is not dangling. Reporting it sends
+    someone looking for an entity that was never meant to exist.
+    """
+    hass.services.async_register("notify", "my_phone", lambda _call: None)
+
+    unknown = async_filter_known_entity_ids(
+        hass,
+        {"notify.my_phone", "light.removed"},
+        known_entity_ids=set(),
+    )
+
+    assert unknown == {"light.removed"}
+
+
+async def test_action_names_are_only_looked_up_when_needed(
+    hass: HomeAssistant,
+) -> None:
+    """Test nothing is looked up when every reference is known.
+
+    Almost every inspection finds nothing wrong, and that case should not pay
+    for the action lookup at all.
+    """
+    hass.states.async_set("light.kept", "on")
+
+    assert (
+        async_filter_known_entity_ids(
+            hass,
+            {"light.kept"},
+            known_entity_ids={"light.kept"},
+        )
+        == set()
+    )
+
+
+async def test_a_malformed_candidate_does_not_abort_the_check(
+    hass: HomeAssistant,
+) -> None:
+    """Test a name without a domain is handled rather than raised on.
+
+    An exception here would take down the whole inspection, and not every
+    caller has already validated the shape of what it collected.
+    """
+    assert async_filter_known_entity_ids(
+        hass,
+        {"light.removed"},
+        known_entity_ids=set(),
+    ) == {"light.removed"}
+
+    assert async_drop_existing_action_names(hass, {"nodomain"}) == {"nodomain"}

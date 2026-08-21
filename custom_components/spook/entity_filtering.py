@@ -396,12 +396,47 @@ def async_filter_known_device_ids(
 
 
 @callback
+def async_drop_existing_action_names(
+    hass: HomeAssistant,
+    candidates: set[str],
+) -> set[str]:
+    """Return the candidates with existing action names removed.
+
+    An action name has the same shape as an entity ID, and some of them reach
+    a reference check as if they were one. A legacy notify group is the common
+    case: `notify.my_phone` is an action and no entity at all, and Home
+    Assistant reports it as a referenced entity when an automation uses it as
+    a legacy target. Scanning action payloads turns up the same thing, in
+    third-party actions that take a list of notifier names.
+
+    Nothing is dangling in either case, so an existing action is not an
+    unknown entity. Reporting it sends people looking for an entity that was
+    never supposed to exist.
+
+    Asks the registry per candidate rather than building the set of every
+    action in the instance, because this runs once per inspected item while
+    the candidates are only ever the handful that looked broken.
+    """
+    if not candidates:
+        return candidates
+
+    return {
+        candidate
+        for candidate in candidates
+        # Guarded: an exception here would abort the whole inspection, and not
+        # every caller has already checked the shape.
+        if "." not in candidate
+        or not hass.services.has_service(*candidate.split(".", 1))
+    }
+
+
+@callback
 def async_filter_known_entity_ids(
     hass: HomeAssistant,
     entity_ids: Iterable[str],
     known_entity_ids: set[str] | None = None,
 ) -> set[str]:
-    """Filter out known entity IDs.
+    """Filter out known entity IDs, and names that are actions.
 
     This callback version skips template processing. For template support,
     use async_filter_known_entity_ids_with_templates instead.
@@ -423,7 +458,7 @@ def async_filter_known_entity_ids(
             ):
                 result.add(entity_id)
 
-    return result
+    return async_drop_existing_action_names(hass, result)
 
 
 @callback

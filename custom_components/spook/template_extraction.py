@@ -13,6 +13,7 @@ from homeassistant.helpers.template import Template
 from .const import LOGGER
 from .entity_filtering import (
     IGNORED_ENTITY_DOMAINS,
+    async_drop_existing_action_names,
     async_get_all_entity_ids,
     async_get_all_services,
     split_comma_separated_entity_ids,
@@ -351,7 +352,8 @@ async def async_filter_known_entity_ids_with_templates(
     """Async version that can process templates to extract entity dependencies.
 
     This function processes both regular entity IDs and template strings,
-    extracting entity dependencies from templates using RenderInfo.
+    extracting entity dependencies from templates using RenderInfo. Names that
+    belong to an existing action are dropped, since those are not entities.
     """
     if known_entity_ids is None:
         known_entity_ids = async_get_all_entity_ids(hass)
@@ -390,7 +392,7 @@ async def async_filter_known_entity_ids_with_templates(
                     # Process as regular entity ID
                     unknown_entities.add(entity_id)
 
-    return unknown_entities
+    return async_drop_existing_action_names(hass, unknown_entities)
 
 
 def extract_template_strings_from_config(
