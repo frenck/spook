@@ -6,7 +6,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.helpers.translation import async_get_cached_translations
+from homeassistant.helpers.translation import (
+    async_get_cached_translations,
+    async_get_translations,
+)
+from homeassistant.setup import async_setup_component
 import pytest  # noqa: TC002
 
 from custom_components.spook import translation_injection
@@ -82,3 +86,25 @@ async def test_missing_cache_internals_are_survivable(
     await manager.async_inject_condition_translations()
 
     assert not manager._translations._overrides
+
+
+async def test_the_api_the_frontend_calls_returns_them(hass: HomeAssistant) -> None:
+    """The labels reach the automation editor, not just Spook's own cache.
+
+    `frontend/get_translations` is a thin wrapper over
+    `async_get_translations`, so calling it the way the websocket handler does
+    is the same question the condition picker asks. The automation integration
+    is set up first on purpose: loading its own translations is exactly what
+    would overwrite Spook's if the injection went in at the wrong moment.
+    """
+    assert await async_setup_component(hass, "automation", {"automation": []})
+    await hass.async_block_till_done()
+
+    manager = SpookConditionManager(hass)
+    await manager.async_inject_condition_translations()
+
+    for integration in (["automation"], None):
+        resources = await async_get_translations(hass, "en", "conditions", integration)
+        assert resources[_NAME] == "Triggered by a user 👻", integration
+        assert resources[_NOT_NAME] == "Not triggered by a user 👻", integration
+        assert resources[_FIELD] == "Users", integration
