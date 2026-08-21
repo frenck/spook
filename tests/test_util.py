@@ -315,18 +315,17 @@ async def test_extract_entities_from_config_reuses_duplicate_template_results(
     assert calls == 1
 
 
-async def test_filter_plain_entity_ids_does_not_get_services(
-    hass: HomeAssistant,
+def _counting_services(
     monkeypatch: pytest.MonkeyPatch,
-) -> None:
-    """Test plain entity filtering avoids service lookups."""
-    calls = 0
+    services: set[str],
+) -> list[int]:
+    """Count service lookups, so the cost of filtering is observable."""
+    calls = [0]
 
     def async_get_all_services(_: HomeAssistant) -> set[str]:
         """Return registered services."""
-        nonlocal calls
-        calls += 1
-        return {"light.turn_on"}
+        calls[0] += 1
+        return services
 
     monkeypatch.setattr(
         template_extraction,
@@ -334,12 +333,49 @@ async def test_filter_plain_entity_ids_does_not_get_services(
         async_get_all_services,
     )
 
+    return calls
+
+
+async def test_filter_plain_entity_ids_does_not_get_services_when_all_known(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a configuration with nothing wrong pays nothing for the check.
+
+    Action names are only subtracted from what survived the entity check, so
+    there is nothing to look up when everything is known. That is the case on
+    almost every inspection.
+    """
+    calls = _counting_services(monkeypatch, {"light.turn_on"})
+
+    assert (
+        await async_filter_known_entity_ids_with_templates(
+            hass,
+            {"sensor.known", "light.known"},
+            known_entity_ids={"sensor.known", "light.known"},
+        )
+        == set()
+    )
+    assert calls[0] == 0
+
+
+async def test_filter_plain_entity_ids_never_builds_the_service_set(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test findings are checked against the registry, not against a built set.
+
+    Enumerating every action in the instance costs more than the handful of
+    lookups actually needed, and this runs once per inspected item.
+    """
+    calls = _counting_services(monkeypatch, {"light.turn_on"})
+
     assert await async_filter_known_entity_ids_with_templates(
         hass,
-        {"sensor.missing", "light.unknown"},
+        {"sensor.missing", "light.unknown", "binary_sensor.gone"},
         known_entity_ids=set(),
-    ) == {"sensor.missing", "light.unknown"}
-    assert calls == 0
+    ) == {"sensor.missing", "light.unknown", "binary_sensor.gone"}
+    assert calls[0] == 0
 
 
 async def test_time_date_entities_are_known(

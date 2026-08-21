@@ -371,3 +371,42 @@ async def test_templated_enabled_counts_as_active(
     entities = issue.translation_placeholders["entities"]
     assert "light.gone" in entities
     assert "only referenced from disabled steps" not in entities
+
+
+async def test_notify_group_in_a_helper_action_is_not_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a legacy notify group called by a helper is not a missing entity.
+
+    Template helpers run actions too, so the same action name that trips the
+    automation check reaches this one as well.
+    """
+    hass.services.async_register("notify", "my_phone", lambda _call: None)
+
+    entry = MockConfigEntry(
+        domain="template",
+        title="Doorbell button",
+        options={
+            "name": "Doorbell button",
+            "template_type": "button",
+            "press": [
+                {
+                    "action": "notify.send_message",
+                    "target": {"entity_id": "notify.my_phone"},
+                    "data": {"message": "Doorbell"},
+                },
+            ],
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert (
+        issue_registry.async_get_issue(
+            DOMAIN,
+            f"template_unknown_entity_references_{entry.entry_id}",
+        )
+        is None
+    )
