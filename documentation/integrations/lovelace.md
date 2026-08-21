@@ -57,6 +57,22 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 - Spook is not aware of all possible configuration for all possible cards. Especially with third-party cards, configuration can sometimes differ and Spook might not be able to detect the use of an unknown entity ID in such cases.
   :::
 
+### Unknown referenced areas
+
+Dashboards are inspected for the use of {term}`areas <area>`. Cards can target an area rather than a list of entities, and when that area is renamed or removed the card is left pointing at nothing. If Spook finds such a case, it will raise a repair issue naming the dashboard and the areas that are missing.
+
+A card like that does not break the dashboard. It simply shows nothing, which looks a lot like an area where nothing is happening.
+
+To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Missing dashboard resources
+
+Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks that the file behind each resource actually exists. If one does not, it will raise a repair issue listing the resources in question.
+
+This usually happens when a custom card was removed but its resource stayed behind. The cost is paid on every page load, by every browser, for a file that is never going to arrive.
+
+To resolve the raised issue, go to Settings > Dashboards > Resources and remove or correct these resources. Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Features requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).

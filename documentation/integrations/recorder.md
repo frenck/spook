@@ -150,7 +150,15 @@ Messing with the recorder directly is not recommended. It is very easy to break 
 
 ## Repairs
 
-Spook has no repair detections for this integration.
+While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
+
+### Orphaned long-term statistics
+
+The recorder keeps long-term statistics separately from the states it records, and it keeps them by statistic ID rather than by entity. That means they outlive the entity they were collected for. Spook compares the statistics in the database against the entities that still exist and raises a repair issue listing the ones with nothing behind them anymore.
+
+These are not harmful, but they are not free either: they take up database space, and they keep showing up in pickers and graphs long after the sensor they belonged to is gone.
+
+To resolve the raised issue, open {term}`Developer tools` > Statistics and fix them there, or remove them with the `recorder.clear_statistics` action. Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Uses cases
 

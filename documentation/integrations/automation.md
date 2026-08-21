@@ -88,6 +88,30 @@ Automations are inspected for the use of actions. If an automation is using a ac
 
 To resolve the raised issue, you can either remove the reference to the non-existing actions. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Unknown referenced floors
+
+Automations are inspected for the use of {term}`floors <floor>`. If an automation is targeting a floor in one of its actions that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the floor that is referenced but not found.
+
+To resolve the raised issue, you can either remove the reference to the non-existing floor or fix the referenced floor. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown referenced labels
+
+Automations are inspected for the use of {term}`labels <label>`. If an automation is targeting a label that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the label that is referenced but not found.
+
+To resolve the raised issue, you can either remove the reference to the non-existing label or fix the referenced label. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown referenced conditions
+
+Automations are inspected for the conditions they use. Conditions are provided by {term}`integrations <integration>`, so a condition that no installed integration can provide is one nothing will ever evaluate. If an automation uses such a condition, Spook will raise a repair issue naming the automation and the conditions in question.
+
+This usually means the integration that provided the condition was removed. To resolve the raised issue, you can either remove the use of these conditions or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
+
+### Unknown referenced triggers
+
+Automations are inspected for the triggers they use. Like conditions, triggers come from integrations, and a trigger no installed integration can provide will never fire. If an automation uses such a trigger, Spook will raise a repair issue naming the automation and the triggers in question.
+
+A trigger that never fires is the quietest kind of broken: the automation still exists, still looks fine, and simply never runs. To resolve the raised issue, you can either remove the use of these triggers or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Features requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
