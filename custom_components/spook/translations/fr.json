@@ -548,10 +548,6 @@
         "script_unknown_trigger_references": {
             "title": "Déclencheur inconnu utilisé dans: {script}",
             "description": "Spook a trouvé un fantôme dans vos scripts 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur le script suivant:\n\n\n\n[{script}]({edit}) (`{entity_id}`)\n\n\n\nCe script utilise les déclencheurs suivants, qui ne sont fournis par aucune intégration disponible à Home Assistant:\n\n\n\n{triggers}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'intégration qui les fournissait est supprimée. Pour corriger cetter erreur, [modifiez le script]({edit}) et retirez l'utilisation de ces déclencheurs indisponibles, ou restaurez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Your homie."
-        },
-        "template_unknown_service_references": {
-            "title": "",
-            "description": ""
         }
     },
     "services": {
@@ -1412,16 +1408,6 @@
                 }
             },
             "description": "Est satisfait à un certain pourcentage, choisi au hasard à chaque execution. Peut être utilisé pour ajouter un peu de variabilité à vos automatisations."
-        },
-        "cooldown": {
-            "description": "",
-            "fields": {
-                "duration": {
-                    "description": "",
-                    "name": ""
-                }
-            },
-            "name": ""
         }
     }
 }
