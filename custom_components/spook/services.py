@@ -192,7 +192,7 @@ class AbstractSpookEntityService(AbstractSpookServiceBase, Generic[_EntityT]):
             msg = (
                 f"Could not find platform {self.platform} for domain "
                 f"{self.domain} to register service: "
-                f"{self.domain}.{self.service}",
+                f"{self.domain}.{self.service}"
             )
             raise RuntimeError(msg)
 
@@ -233,7 +233,7 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
         if self.domain not in self.hass.data.get(DATA_INSTANCES, {}):
             msg = (
                 f"Could not find entity component {self.domain} to register "
-                f"service: {self.domain}.{self.service}",
+                f"service: {self.domain}.{self.service}"
             )
             raise RuntimeError(msg)
 

@@ -62,6 +62,7 @@ src = ["custom_components/spook"]
 ignore = [
   "A005", # It is just wrong
   "ANN401", # Opiniated warning on disallowing dynamically typed expressions
+  "CPY001", # Spook has one LICENSE file, not a header on every file
   "D203", # Conflicts with other rules
   "D213", # Conflicts with other rules
   "RUF012", # Just broken
