@@ -19,6 +19,11 @@ if TYPE_CHECKING:
 
 CONF_DISPLAY_PRECISION = "display_precision"
 
+# The frontend hands this to Intl.NumberFormat as maximumFractionDigits, which
+# ECMA-402 caps at 100 and which throws outside that range. A sensor that
+# cannot be rendered is a worse outcome than a rejected action call.
+MAX_DISPLAY_PRECISION = 100
+
 
 class SpookService(AbstractSpookAdminService):
     """Sensor service to set how many decimals a sensor shows.
@@ -32,7 +37,7 @@ class SpookService(AbstractSpookAdminService):
     schema = {
         vol.Required(ATTR_ENTITY_ID): cv.entity_ids,
         vol.Required(CONF_DISPLAY_PRECISION): vol.All(
-            vol.Coerce(int), vol.Range(min=0)
+            vol.Coerce(int), vol.Range(min=0, max=MAX_DISPLAY_PRECISION)
         ),
     }
 

@@ -15,6 +15,9 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 
 from custom_components.spook.ectoplasms.sensor.services import set_display_precision
+from custom_components.spook.ectoplasms.sensor.services.set_display_precision import (
+    MAX_DISPLAY_PRECISION,
+)
 
 if TYPE_CHECKING:
     from tests.common import MockUser
@@ -167,3 +170,34 @@ async def test_a_negative_precision_is_refused(
         await _call(hass, hass_admin_user, sensors[0], -1)
 
     assert _precision(hass, sensors[0]) is None
+
+
+@pytest.mark.usefixtures("display_precision_service")
+async def test_an_unrenderable_precision_is_refused(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    sensors: list[str],
+) -> None:
+    """Test a precision the frontend cannot render is refused.
+
+    The number reaches Intl.NumberFormat as maximumFractionDigits, which
+    ECMA-402 caps at 100. Above that the sensor stops rendering, which is a
+    worse outcome than a rejected call, and it would be stored in the registry
+    waiting for someone to find it.
+    """
+    with pytest.raises(vol.Invalid):
+        await _call(hass, hass_admin_user, sensors[0], 1000)
+
+    assert _precision(hass, sensors[0]) is None
+
+
+@pytest.mark.usefixtures("display_precision_service")
+async def test_the_highest_renderable_precision_is_allowed(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    sensors: list[str],
+) -> None:
+    """Test the cap itself is still accepted."""
+    await _call(hass, hass_admin_user, sensors[0], 100)
+
+    assert _precision(hass, sensors[0]) == MAX_DISPLAY_PRECISION
