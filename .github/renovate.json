@@ -28,6 +28,12 @@
       "matchManagers": ["github-actions"],
       "matchUpdateTypes": ["minor", "patch"],
       "automerge": true
+    },
+    {
+      "matchManagers": ["pep621"],
+      "matchPackageNames": ["!homeassistant"],
+      "addLabels": ["python:uv"],
+      "rangeStrategy": "pin"
     }
   ]
 }
