@@ -4,12 +4,10 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
-from types import SimpleNamespace
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 import pytest
-from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.core import State
 from homeassistant.exceptions import HomeAssistantError
 
@@ -17,6 +15,7 @@ from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.alert.repairs.unknown_entity_references import (
     SpookRepair,
 )
+from tests.repair_helpers import async_count_scheduled_inspections
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -233,27 +232,9 @@ async def _count_scheduled_inspections(
         await repair.async_activate()
         await repair.async_inspect()
 
-    repair.inspect_debouncer.async_shutdown()
-    calls = 0
-
-    def async_schedule_call() -> None:
-        """Capture scheduled inspections."""
-        nonlocal calls
-        calls += 1
-
-    repair.inspect_debouncer = SimpleNamespace(
-        async_schedule_call=async_schedule_call,
-        async_shutdown=lambda: None,
+    return await async_count_scheduled_inspections(
+        hass, repair, entity_id, old_state, new_state
     )
-
-    hass.bus.async_fire(
-        EVENT_STATE_CHANGED,
-        {"entity_id": entity_id, "old_state": old_state, "new_state": new_state},
-    )
-    await hass.async_block_till_done()
-
-    await repair.async_deactivate()
-    return calls
 
 
 @pytest.mark.usefixtures("alert_set_up")

@@ -405,6 +405,10 @@
         }
       }
     },
+    "notify_unknown_group_members": {
+      "description": "Spook has found a ghost in your notify groups 👻\n\nThe notify group `{group}` forwards to the following actions, which are unknown to Home Assistant:\n\n{members}\n\nThe group still delivers to the rest of its members, and it still reports success to whatever called it, so nothing upstream notices. The failure surfaces only as a stray \"Task exception was never retrieved\" in the log, which names no group and reads like a bug. Whoever was behind that member simply stops being notified.\n\nTo fix this error, edit the `services:` list of this group in your configuration and remove or correct these entries.\n\nSpook 👻 Your homie.",
+      "title": "Unknown members in notify group: {group}"
+    },
     "orphaned_statistics": {
       "description": "Spook has found a ghost in your recorder 👻\n\nHome Assistant is keeping long-term statistics for the following, but there is no matching entity for them anymore:\n\n{statistics}\n\n\n\nThis usually happens when a sensor was removed while its statistics were kept. To fix this error, open Developer Tools > Statistics and fix them there, or remove them using the `recorder.clear_statistics` action.\n\nSpook 👻 Your homie.",
       "title": "Orphaned long-term statistics found"
