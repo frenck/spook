@@ -263,6 +263,14 @@
     }
   },
   "issues": {
+    "alert_unknown_entity_references": {
+      "title": "Unknown entity watched by alert: {alert}",
+      "description": "Spook has found a ghost in your alerts 👻\n\nThe alert {alert} (`{entity_id}`) watches an entity that is unknown to Home Assistant:\n\n{entities}\n\nAn alert can only fire on the entity it watches, so this one can never fire again. It looks the same as an alert with nothing to report.\n\nTo fix this error, edit the `alert:` section in your configuration and point this alert at an entity that exists.\n\nSpook 👻 Your homie."
+    },
+    "alert_unknown_notifiers": {
+      "title": "Unknown notifiers used by alert: {alert}",
+      "description": "Spook has found a ghost in your alerts 👻\n\nThe alert {alert} (`{entity_id}`) notifies through the following actions, which are unknown to Home Assistant:\n\n{notifiers}\n\nThe alert still fires and still does its rounds, but these notifications go nowhere. Home Assistant logs that only at the moment the alert fires, which is a poor moment to find out nobody is listening.\n\nTo fix this error, edit the `notifiers:` list of this alert in your configuration and remove or correct these entries.\n\nSpook 👻 Your homie."
+    },
     "automation_unknown_area_references": {
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
       "title": "Unknown areas used in: {automation}"
