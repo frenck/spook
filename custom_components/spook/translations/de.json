@@ -569,6 +569,10 @@
         "template_unknown_service_references": {
             "description": "Spook hat einen Geist in deinen Vorlagen-Helfern gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Vorlagen-Helfer:\n\n[{helper}]({edit})\n\nEr bezieht sich auf die folgenden Aktionen, die Home Assistant unbekannt sind:\n\n{services}\n\nDas passiert oft, wenn die Integration hinter einer Aktion entfernt wurde oder ein Skript umbenannt oder gelöscht wurde. Um diesen Fehler zu beheben, richte den Vorlagen-Helfer so ein, dass er vorhandene Aktionen verwendet.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Aktionen in Vorlagen-Helfer verwendet: {helper}"
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook hat ein Gespenst in deinen Benachrichtigungsgruppen gefunden 👻\n\nDie Benachrichtigungsgruppe `{group}` leitet an die folgenden Aktionen weiter, die Home Assistant nicht kennt:\n\n{members}\n\nDie Gruppe liefert weiterhin an ihre übrigen Mitglieder aus und meldet dem Aufrufer weiterhin Erfolg, sodass davor niemand etwas mitbekommt. Der Fehler zeigt sich nur als vereinzeltes \"Task exception was never retrieved\" im Protokoll, das keine Gruppe nennt und wie ein Programmfehler aussieht. Wer hinter diesem Mitglied stand, wird einfach nicht mehr benachrichtigt.\n\nUm diesen Fehler zu beheben, bearbeite die `services:` Liste dieser Gruppe in deiner Konfiguration und entferne oder korrigiere diese Einträge.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Mitglieder in Benachrichtigungsgruppe: {group}"
         }
     },
     "services": {
