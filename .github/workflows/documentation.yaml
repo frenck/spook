@@ -25,11 +25,11 @@ jobs:
 
       - name: 🏗 Install MyST
         working-directory: ./documentation
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - name: 🚀 Build documentation
         working-directory: ./documentation
-        run: npx myst build --html
+        run: ./node_modules/.bin/myst build --html
 
       - name: ©️ Public folder
         run: cp ./documentation/public/* ./documentation/_build/html/
