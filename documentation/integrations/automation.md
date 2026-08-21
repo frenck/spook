@@ -110,7 +110,7 @@ This usually means the integration that provided the condition was removed. To r
 
 ### Unknown referenced triggers
 
-Automations are inspected for the triggers they use. Like conditions, triggers come from integrations, and one no installed integration can provide takes the whole automation down with it: it fails validation and becomes unavailable.
+Automations are inspected for the triggers they use. Like conditions, triggers come from integrations, and if no installed integration can provide a trigger, the whole automation goes down with it: it fails validation and becomes unavailable.
 
 So this is not a silent failure, it is a nameless one. Home Assistant raises a generic issue about the automation without saying which trigger caused it. Spook names the trigger.
 
