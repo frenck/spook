@@ -302,6 +302,33 @@ homeassistant_enable_entity:
         entity:
           multiple: true
 
+homeassistant_expose_entity:
+  name: Expose an entity to assistants 👻
+  description: >-
+    Exposes an entity (or entities) to voice assistants.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to expose.
+      required: true
+      selector:
+        entity:
+          multiple: true
+    assistants:
+      name: Assistants
+      description: The assistant(s) to apply this to.
+      required: true
+      selector:
+        select:
+          multiple: true
+          options:
+            - label: Alexa
+              value: cloud.alexa
+            - label: Google Assistant
+              value: cloud.google_assistant
+            - label: Assist
+              value: conversation
+
 homeassistant_hide_entity:
   name: Hide an entity 👻
   description: >-
@@ -333,6 +360,33 @@ homeassistant_rename_entity:
       required: true
       selector:
         text:
+
+homeassistant_unexpose_entity:
+  name: Stop exposing an entity to assistants 👻
+  description: >-
+    Stops exposing an entity (or entities) to voice assistants.
+  fields:
+    entity_id:
+      name: Entity
+      description: The entity/entities to stop exposing.
+      required: true
+      selector:
+        entity:
+          multiple: true
+    assistants:
+      name: Assistants
+      description: The assistant(s) to apply this to.
+      required: true
+      selector:
+        select:
+          multiple: true
+          options:
+            - label: Alexa
+              value: cloud.alexa
+            - label: Google Assistant
+              value: cloud.google_assistant
+            - label: Assist
+              value: conversation
 
 homeassistant_unhide_entity:
   name: Unhide an entity 👻
