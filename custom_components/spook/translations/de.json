@@ -217,6 +217,15 @@
             },
             "homeassistant_todo": {
                 "name": "To-do Listen"
+            },
+            "homeassistant_counter": {
+                "name": "Zähler"
+            },
+            "homeassistant_group": {
+                "name": "Gruppen"
+            },
+            "homeassistant_timer": {
+                "name": "Timer"
             }
         },
         "switch": {
@@ -548,6 +557,18 @@
                 }
             },
             "title": "Im Helfer verwendete Entitäten mit unbekannter Quelle: {helper}"
+        },
+        "alert_unknown_entity_references": {
+            "description": "Spook hat einen Geist in deinen Alerts gefunden 👻\n\nDer Alert {alert} (`{entity_id}`) überwacht eine Entität, die Home Assistant unbekannt ist:\n\n{entities}\n\nEin Alert kann nur bei der Entität auslösen, die er überwacht, dieser also nie wieder. Von außen sieht das genauso aus wie ein Alert, der nichts zu melden hat.\n\nUm diesen Fehler zu beheben, bearbeite den Abschnitt `alert:` in deiner Konfiguration und richte diesen Alert auf eine vorhandene Entität aus.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Entität von Alert überwacht: {alert}"
+        },
+        "alert_unknown_notifiers": {
+            "description": "Spook hat einen Geist in deinen Alerts gefunden 👻\n\nDer Alert {alert} (`{entity_id}`) benachrichtigt über die folgenden Aktionen, die Home Assistant unbekannt sind:\n\n{notifiers}\n\nDer Alert löst weiterhin aus und macht weiter seine Runden, aber diese Benachrichtigungen kommen nirgendwo an. Home Assistant protokolliert das erst in dem Moment, in dem der Alert auslöst, und das ist ein schlechter Zeitpunkt, um zu merken, dass niemand mithört.\n\nUm diesen Fehler zu beheben, bearbeite die Liste `notifiers:` dieses Alerts in deiner Konfiguration und entferne oder korrigiere diese Einträge.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Notifier von Alert verwendet: {alert}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook hat einen Geist in deinen Vorlagen-Helfern gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Vorlagen-Helfer:\n\n[{helper}]({edit})\n\nEr bezieht sich auf die folgenden Aktionen, die Home Assistant unbekannt sind:\n\n{services}\n\nDas passiert oft, wenn die Integration hinter einer Aktion entfernt wurde oder ein Skript umbenannt oder gelöscht wurde. Um diesen Fehler zu beheben, richte den Vorlagen-Helfer so ein, dass er vorhandene Aktionen verwendet.\n\nSpook 👻 Dein Kumpel.",
+            "title": "Unbekannte Aktionen in Vorlagen-Helfer verwendet: {helper}"
         }
     },
     "services": {
@@ -912,21 +933,21 @@
         "homeassistant_disable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationseintrag",
-                    "description": "Der Eintrag in der Integrationskonfiguration, für den das Polling deaktiviert werden soll."
+                    "name": "Integrationseintrag",
+                    "description": "Der Integrationseintrag, für den das Polling deaktiviert werden soll."
                 }
             },
-            "description": "Deaktiviert das Polling für einen Integrationskonfigurationseintrag.",
+            "description": "Deaktiviert das Polling für einen Integrationseintrag.",
             "name": "Abfrage nach Updates deaktivieren"
         },
         "homeassistant_enable_polling": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationseintrag",
-                    "description": "Der Eintrag in der Integrationskonfiguration, für den das Polling aktiviert werden soll."
+                    "name": "Integrationseintrag",
+                    "description": "Der Integrationseintrag, für den das Polling aktiviert werden soll."
                 }
             },
-            "description": "Aktiviert das Polling für einen Integrationskonfigurationseintrag.",
+            "description": "Aktiviert das Polling für einen Integrationseintrag.",
             "name": "Polling für Updates aktivieren"
         },
         "homeassistant_add_device_to_area": {
@@ -1206,6 +1227,10 @@
                 "amount": {
                     "name": "Wert",
                     "description": "Der Wert, um den die Eingabezahl erhöht werden soll. Wird dieser Wert nicht angegeben, wird der Schritt der Zahlenentität verwendet."
+                },
+                "cycle": {
+                    "description": "Am anderen Ende des Bereichs weitermachen, statt hier stehen zu bleiben, so wie die nächste Option bei einer Auswahl wieder vorne anfängt.",
+                    "name": "Umlaufend"
                 }
             },
             "name": "Wert erhöhen",
@@ -1310,18 +1335,22 @@
         "homeassistant_disable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationseintrag",
-                    "description": "Der Integrationskonfigurationseintrag der deaktiviert werden soll."
+                    "name": "Integrationseintrag",
+                    "description": "Der Integrationseintrag, der deaktiviert werden soll."
                 }
             },
             "name": "Eine Integration deaktivieren",
-            "description": "Deaktiviert einen Integrationskonfigurationseintrag."
+            "description": "Deaktiviert einen Integrationseintrag."
         },
         "input_number_decrement": {
             "fields": {
                 "amount": {
                     "name": "Wert",
                     "description": "Der Wert, um den die eingegebene Zahl verringert werden soll. Wird dieser Wert nicht angegeben, wird der Schritt der Zahlenentität verwendet."
+                },
+                "cycle": {
+                    "description": "Am anderen Ende des Bereichs weitermachen, statt hier stehen zu bleiben, so wie die nächste Option bei einer Auswahl wieder vorne anfängt.",
+                    "name": "Umlaufend"
                 }
             },
             "description": "Verringert die den Wert der Eingabezahl-Entität um einen bestimmten Wert.",
@@ -1344,12 +1373,12 @@
         "homeassistant_enable_config_entry": {
             "fields": {
                 "config_entry_id": {
-                    "name": "Konfigurationseintrag",
-                    "description": "Der zu aktivierende Eintrag in der Integrationskonfiguration."
+                    "name": "Integrationseintrag",
+                    "description": "Der Integrationseintrag, der aktiviert werden soll."
                 }
             },
             "name": "Integration aktivieren",
-            "description": "Aktiviert einen Integrationskonfigurationseintrag."
+            "description": "Aktiviert einen Integrationseintrag."
         },
         "input_number_delete": {
             "name": "Löscht eine Zahleneingabe",
@@ -1396,6 +1425,48 @@
             },
             "name": "Zufällige Option auswählen",
             "description": "Wähle eine zufällige Option für ein ausgewähltes Objekt aus."
+        },
+        "homeassistant_expose_entity": {
+            "description": "Gibt eine Entität (oder Entitäten) für Sprachassistenten frei.",
+            "fields": {
+                "assistants": {
+                    "description": "Der oder die Assistenten, für die das gelten soll.",
+                    "name": "Assistenten"
+                },
+                "entity_id": {
+                    "description": "Die Entität(en), die freigegeben werden soll(en).",
+                    "name": "Entität"
+                }
+            },
+            "name": "Eine Entität für Assistenten freigeben"
+        },
+        "homeassistant_unexpose_entity": {
+            "description": "Gibt eine Entität (oder Entitäten) nicht mehr für Sprachassistenten frei.",
+            "fields": {
+                "assistants": {
+                    "description": "Der oder die Assistenten, für die das gelten soll.",
+                    "name": "Assistenten"
+                },
+                "entity_id": {
+                    "description": "Die Entität(en), deren Freigabe aufgehoben werden soll.",
+                    "name": "Entität"
+                }
+            },
+            "name": "Eine Entität nicht mehr für Assistenten freigeben"
+        },
+        "sensor_set_display_precision": {
+            "description": "Legt fest, wie viele Nachkommastellen für einen oder mehrere Sensoren angezeigt werden.",
+            "fields": {
+                "display_precision": {
+                    "description": "Die Anzahl der Nachkommastellen, die für den Sensor angezeigt werden.",
+                    "name": "Anzeigegenauigkeit"
+                },
+                "entity_id": {
+                    "description": "Die Sensor-Entität(en), die geändert werden soll(en).",
+                    "name": "Entität"
+                }
+            },
+            "name": "Anzeigegenauigkeit festlegen"
         }
     },
     "conditions": {
@@ -1407,7 +1478,17 @@
                     "description": "Wie oft soll diese Bedingung zutreffen (in Prozent)."
                 }
             },
-            "description": "Lässt einen festgelegten Prozentsatz an Zeit vergehen, der bei jeder Überprüfung zufällig ausgewählt wird. Praktisch, um ein wenig Abwechslung in Ihre Automatisierungen zu bringen."
+            "description": "Trifft in einem festgelegten Prozentsatz der Fälle zu, bei jeder Prüfung neu zufällig bestimmt. Praktisch, um ein wenig Abwechslung in deine Automatisierungen zu bringen."
+        },
+        "cooldown": {
+            "description": "Trifft nur zu, wenn diese Automatisierung oder dieses Skript innerhalb der angegebenen Zeit nicht gelaufen ist (oder noch nie gelaufen ist). Eine eingebaute Abklingzeit, damit nicht zu oft erneut ausgelöst wird.",
+            "fields": {
+                "duration": {
+                    "description": "Wie lange nach dem letzten Lauf gewartet werden soll, bevor diese Bedingung wieder zutrifft.",
+                    "name": "Dauer"
+                }
+            },
+            "name": "Abklingzeit"
         }
     }
 }
