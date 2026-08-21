@@ -569,6 +569,10 @@
         "template_unknown_service_references": {
             "description": "Spook on löytänyt kummituksen mallipohja-avustajistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohja-avustajaan:\n\n[{helper}]({edit})\n\nSe viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\nNäin käy usein, kun toiminnon tarjonnut integraatio on poistettu tai skripti on nimetty uudelleen tai poistettu. Korjataksesi tämän ongelman, määritä mallipohja-avustaja käyttämään olemassa olevia toimintoja.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia toimintoja käytössä mallipohja-avustajassa: {helper}"
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook on löytänyt kummituksen ilmoitusryhmistäsi 👻\n\nIlmoitusryhmä `{group}` välittää seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{members}\n\nRyhmä toimittaa edelleen muille jäsenilleen ja ilmoittaa edelleen onnistumisesta kutsujalleen, joten mikään sitä ennen ei huomaa mitään. Virhe näkyy vain yksittäisenä \"Task exception was never retrieved\" -merkintänä lokissa, joka ei nimeä mitään ryhmää ja näyttää ohjelmavirheeltä. Se, joka oli tuon jäsenen takana, ei yksinkertaisesti saa enää ilmoituksia.\n\nKorjataksesi tämän virheen, muokkaa tämän ryhmän `services:`-luetteloa määrityksissäsi ja poista tai korjaa nämä merkinnät.\n\nSpook 👻 Kamusi.",
+            "title": "Tuntemattomia jäseniä ilmoitusryhmässä: {group}"
         }
     },
     "services": {
