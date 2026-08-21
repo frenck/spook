@@ -1,7 +1,7 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Sim... bem... não. Obrigado, tchau!",
+            "already_spooked": "Spook já está configurado.",
             "enable_failed": "Não foi possível ativar a entrada existente do Spook.",
             "enabled_existing": "A entrada existente do Spook foi ativada."
         },
@@ -569,6 +569,10 @@
                 }
             },
             "title": "Etiqueta sem uso: {label}"
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook encontrou um fantasma em seus grupos de notificação 👻\n\nO grupo de notificação `{group}` encaminha para as seguintes ações, que são desconhecidas do Home Assistant:\n\n{members}\n\nO grupo continua entregando para os demais membros e continua informando sucesso para quem o chamou, então nada acima percebe. A falha aparece apenas como um \"Task exception was never retrieved\" solto no registro, que não nomeia nenhum grupo e parece um bug. Quem estava por trás desse membro simplesmente para de ser notificado.\n\nPara corrigir esse erro, edite a lista `services:` desse grupo na sua configuração e remova ou corrija essas entradas.\n\nSpook 👻 Seu mano.",
+            "title": "Membros desconhecidos no grupo de notificação: {group}"
         }
     },
     "conditions": {
