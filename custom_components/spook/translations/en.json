@@ -1,5 +1,19 @@
 {
   "conditions": {
+    "automation_triggered_by_user": {
+      "name": "Triggered by a user",
+      "description": "Passes when a user set this run going, from the interface, the app, or an API call. A run started by a schedule, a state change, or another automation does not carry a user, so this does not pass for those.",
+      "fields": {
+        "person": {
+          "name": "People",
+          "description": "Only pass when one of these people started it. Leave empty to pass for anyone. A person has to have a user account linked to them, otherwise there is nothing to match against."
+        }
+      }
+    },
+    "automation_not_triggered_by_user": {
+      "name": "Not triggered by a user",
+      "description": "Passes when nobody set this run going: a schedule, a state change, or another automation started it rather than a person. Takes no options on purpose; to exclude one specific person, use \"Triggered by a user\" instead."
+    },
     "chance": {
       "name": "Chance",
       "description": "Passes a set percentage of the time, chosen at random each check. Handy for adding a bit of variation to your automations.",

@@ -15,7 +15,7 @@ from homeassistant.helpers.translation import (
     async_get_translations,
 )
 
-from custom_components.spook import services as spook_services
+from custom_components.spook import translation_injection
 from custom_components.spook.services import (
     AbstractSpookService,
     SpookServiceManager,
@@ -82,7 +82,7 @@ async def test_service_translations_are_injected(hass: HomeAssistant) -> None:
         "en",
         "homeassistant",
         "component.homeassistant.services.restart.fields.force.required",
-    ) not in manager._service_translation_overrides
+    ) not in manager._translations._overrides
 
     manager.async_clear_service_translation_overrides()
 
@@ -171,12 +171,12 @@ async def test_service_translation_injection_handles_missing_cache(
     manager._service_schemas = {"homeassistant_restart": {}}
 
     monkeypatch.setattr(
-        spook_services, "_async_get_translations_cache", lambda _: object()
+        translation_injection, "_async_get_translations_cache", lambda _: object()
     )
 
     await manager.async_inject_service_translations()
 
-    assert not manager._service_translation_overrides
+    assert not manager._translations._overrides
 
 
 def test_service_translation_restore_handles_missing_cache(
@@ -185,17 +185,17 @@ def test_service_translation_restore_handles_missing_cache(
 ) -> None:
     """Test service translation restore handles missing cache internals."""
     manager = SpookServiceManager(hass)
-    manager._service_translation_overrides[
+    manager._translations._overrides[
         ("en", "homeassistant", "component.homeassistant.services.restart.name")
     ] = "Restart Home Assistant"
 
     monkeypatch.setattr(
-        spook_services, "_async_get_translations_cache", lambda _: object()
+        translation_injection, "_async_get_translations_cache", lambda _: object()
     )
 
     manager.async_clear_service_translation_overrides()
 
-    assert not manager._service_translation_overrides
+    assert not manager._translations._overrides
 
 
 def test_service_modules_have_service_translations() -> None:
