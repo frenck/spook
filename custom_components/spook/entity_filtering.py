@@ -556,8 +556,66 @@ def split_comma_separated_entity_ids(entity_id: str) -> list[str]:
     return [entity_id]
 
 
+def _find_services_in_call_service_step(step: dict[str, Any]) -> set[str]:
+    """Find the service called by a `service`/`action` step."""
+    called_services: set[str] = set()
+    if CONF_SERVICE in step:
+        called_services.add(step[CONF_SERVICE])
+    if "action" in step:
+        called_services.add(step["action"])
+    return called_services
+
+
+def _find_services_in_choose_step(step: dict[str, Any]) -> set[str]:
+    """Find the services called by a `choose` step's branches."""
+    called_services: set[str] = set()
+    for choice in step[CONF_CHOOSE]:
+        called_services |= async_find_services_in_sequence(choice[CONF_SEQUENCE])
+    if nested_sequence := step.get(CONF_DEFAULT):
+        called_services |= async_find_services_in_sequence(nested_sequence)
+    return called_services
+
+
+def _find_services_in_if_step(step: dict[str, Any]) -> set[str]:
+    """Find the services called by an `if` step's branches."""
+    called_services = async_find_services_in_sequence(step[CONF_THEN])
+    if nested_sequence := step.get(CONF_ELSE):
+        called_services |= async_find_services_in_sequence(nested_sequence)
+    return called_services
+
+
+def _find_services_in_parallel_step(step: dict[str, Any]) -> set[str]:
+    """Find the services called by a `parallel` step's sequences."""
+    called_services: set[str] = set()
+    for nested_sequence in step[CONF_PARALLEL]:
+        called_services |= async_find_services_in_sequence(
+            nested_sequence[CONF_SEQUENCE]
+        )
+    return called_services
+
+
+def _find_services_in_repeat_step(step: dict[str, Any]) -> set[str]:
+    """Find the services called by a `repeat` step's sequence."""
+    return async_find_services_in_sequence(step[CONF_REPEAT][CONF_SEQUENCE])
+
+
+_STEP_FINDERS: dict[str, Callable[[dict[str, Any]], set[str]]] = {
+    cv.SCRIPT_ACTION_CALL_SERVICE: _find_services_in_call_service_step,
+    cv.SCRIPT_ACTION_CHOOSE: _find_services_in_choose_step,
+    cv.SCRIPT_ACTION_IF: _find_services_in_if_step,
+    cv.SCRIPT_ACTION_PARALLEL: _find_services_in_parallel_step,
+    cv.SCRIPT_ACTION_REPEAT: _find_services_in_repeat_step,
+}
+
+
+def _async_find_services_in_step(action: str, step: dict[str, Any]) -> set[str]:
+    """Find the services called or nested within a single script step."""
+    finder = _STEP_FINDERS.get(action)
+    return finder(step) if finder is not None else set()
+
+
 @callback
-def async_find_services_in_sequence(  # noqa: C901
+def async_find_services_in_sequence(
     sequence: Sequence[dict[str, Any]],
 ) -> set[str]:
     """Find all services called in a sequence."""
@@ -568,34 +626,13 @@ def async_find_services_in_sequence(  # noqa: C901
 
         action = cv.determine_script_action(step)
 
-        if action == cv.SCRIPT_ACTION_CALL_SERVICE and CONF_SERVICE in step:
-            called_services.add(step[CONF_SERVICE])
+        if action == cv.SCRIPT_ACTION_CHECK_CONDITION:
+            # A bare condition stops the sequence at runtime when false, so
+            # later steps are only conditionally reached. Stop scanning them to
+            # avoid reporting actions of integrations that are gated off on
+            # purpose, e.g. multi-integration blueprints.
+            break
 
-        if action == cv.SCRIPT_ACTION_CALL_SERVICE and "action" in step:
-            called_services.add(step["action"])
-
-        if action == cv.SCRIPT_ACTION_CHOOSE:
-            for choice in step[CONF_CHOOSE]:
-                called_services |= async_find_services_in_sequence(
-                    choice[CONF_SEQUENCE]
-                )
-            if nested_sequence := step.get(CONF_DEFAULT):
-                called_services |= async_find_services_in_sequence(nested_sequence)
-
-        if action == cv.SCRIPT_ACTION_IF:
-            called_services |= async_find_services_in_sequence(step[CONF_THEN])
-            if nested_sequence := step.get(CONF_ELSE):
-                called_services |= async_find_services_in_sequence(nested_sequence)
-
-        if action == cv.SCRIPT_ACTION_PARALLEL:
-            for nested_sequence in step[CONF_PARALLEL]:
-                called_services |= async_find_services_in_sequence(
-                    nested_sequence[CONF_SEQUENCE]
-                )
-
-        if action == cv.SCRIPT_ACTION_REPEAT:
-            called_services |= async_find_services_in_sequence(
-                step[CONF_REPEAT][CONF_SEQUENCE]
-            )
+        called_services |= _async_find_services_in_step(action, step)
 
     return called_services

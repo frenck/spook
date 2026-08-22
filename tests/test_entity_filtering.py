@@ -97,6 +97,45 @@ async def test_templated_action_names_are_not_reported_unknown(
     assert async_filter_known_services(hass, services=found) == {"notify.ghost"}
 
 
+def test_find_services_stops_at_bare_condition() -> None:
+    """Test steps after a bare condition step are not reported."""
+    sequence = [
+        {"action": "light.turn_on"},
+        {"condition": "template", "value_template": "{{ is_state('a.b', 'on') }}"},
+        {"action": "zha.issue_zigbee_cluster_command"},
+    ]
+
+    assert async_find_services_in_sequence(sequence) == {"light.turn_on"}
+
+
+def test_find_services_ignores_disabled_bare_condition() -> None:
+    """Test a disabled condition step does not gate later steps."""
+    sequence = [
+        {"condition": "template", "value_template": "{{ false }}", "enabled": False},
+        {"action": "light.turn_on"},
+    ]
+
+    assert async_find_services_in_sequence(sequence) == {"light.turn_on"}
+
+
+def test_find_services_condition_gates_only_its_own_sequence() -> None:
+    """Test a condition inside a nested sequence does not gate the outer one."""
+    sequence = [
+        {
+            "repeat": {
+                "count": 2,
+                "sequence": [
+                    {"condition": "template", "value_template": "{{ x }}"},
+                    {"action": "zha.issue_zigbee_cluster_command"},
+                ],
+            },
+        },
+        {"action": "light.turn_on"},
+    ]
+
+    assert async_find_services_in_sequence(sequence) == {"light.turn_on"}
+
+
 def test_registered_device_ids_are_known(
     hass: HomeAssistant,
     device_registry: dr.DeviceRegistry,
