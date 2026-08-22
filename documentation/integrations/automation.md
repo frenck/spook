@@ -36,6 +36,10 @@ Spook does not provide any new devices or entities for this integration.
 
 Spook does not provide action enhancements for this integration.
 
+## Conditions
+
+Spook registers two conditions in the `automation` domain, for telling apart a run a person started from one the house started by itself: `automation.triggered_by_user` and `automation.not_triggered_by_user`. Both are documented on [](../conditions).
+
 ## Repairs
 
 While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
