@@ -5,28 +5,55 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from homeassistant.core import Context
+
+# Where a trigger keeps the context of the thing that set it off. A state
+# trigger carries the state that changed; an event trigger carries the event.
+# Triggers without one of these (time, sun, template) cannot say who was
+# behind them, because nobody was.
+_TRIGGER_CONTEXT_KEYS = ("to_state", "event", "from_state")
+
+
+def _candidates(variables: Any) -> Iterator[Any]:
+    """Yield every place the run's originating context might be found."""
+    # A script run inherits the caller's context, and the script engine puts
+    # it straight into the variables. This is the direct answer when it is
+    # there: a user pressing "Run" on a script, or calling it from the API.
+    yield variables.get("context")
+
+    # An automation does not inherit it. It deliberately starts a fresh
+    # context carrying only a parent_id (`components/automation/__init__.py`,
+    # `Context(parent_id=parent_id)`), so the user has to come from whatever
+    # the trigger captured.
+    trigger = variables.get("trigger")
+    if not hasattr(trigger, "get"):
+        return
+
+    for key in _TRIGGER_CONTEXT_KEYS:
+        yield getattr(trigger.get(key), "context", None)
 
 
 def run_context(variables: Any) -> Context | None:
-    """Return the context the current automation or script run started with.
+    """Return the context of whoever set this run going, if it can be known.
 
-    Home Assistant puts the run's context in the variables of every top-level
-    script run, which is what an automation is. Reading it there works for
-    every trigger type, unlike digging through ``trigger.to_state.context``,
-    which only exists for the trigger types that carry a state.
-
-    Returns ``None`` when there is no context to read, which happens when a
-    condition is evaluated outside a run (a template preview, for example).
+    Returns ``None`` when nothing in reach names a user: a time trigger, a
+    template trigger, or a condition being evaluated outside a run at all.
+    Callers should read that as "not a person", which is the truth.
     """
-    if variables is None:
+    if not hasattr(variables, "get"):
         return None
 
-    try:
-        context = variables["context"]
-    except TypeError, KeyError, IndexError:
-        return None
+    fallback = None
+    for context in _candidates(variables):
+        # Duck-typed rather than isinstance: this only ever reads, and a
+        # mapping standing in for a Context during a template render is
+        # just as usable.
+        if not hasattr(context, "user_id"):
+            continue
+        if context.user_id is not None:
+            return context
+        fallback = fallback or context
 
-    # Duck-typed rather than isinstance: this is read-only, and a mapping
-    # standing in for a Context during a template render is just as usable.
-    return context if hasattr(context, "user_id") else None
+    return fallback
