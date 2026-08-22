@@ -29,12 +29,6 @@ Spook enhances the following Home Assistant integrations by sprinkling some {ter
 Spook also provides {term}`helpers <helper>`. The helpers allows you to perform calculations or modifications on existing {term}`entities <entity>` and return the result of that as a new entity.
 :::
 
-:::{card} Conditions
-:footer: 📚 [Learn more](conditions.md)
-
-Spook provides new {term}`conditions <condition>` for your automations and scripts. They answer questions Home Assistant has no condition for, like whether a person set this off or whether this automation has already run recently, which otherwise take a template.
-:::
-
 :::{card} Other features
 :footer: 📚 [Learn more](other_features)
 If it doesn't fit in any of the above, you can find it here. 🙃  

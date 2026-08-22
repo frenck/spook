@@ -91,3 +91,97 @@ action: homeassistant.random_fail
 ```
 
 :::
+
+## Conditions
+
+Spook offers the following conditions that are not tied to a specific integration:
+
+### Cooldown
+
+Passes when this automation or script has not run within a given time.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Cooldown 👻
+* - Condition name
+  - `spook.cooldown`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `duration`
+  - duration
+  - Yes
+  - `00:05:00`
+```
+
+A built-in cooldown, so an automation does not re-fire more often than you want it to. An automation that has never run passes, because there is no last run to be too close to.
+
+It replaces the most copy-pasted template condition there is:
+
+```{code-block} jinja
+{{ now() - this.attributes.last_triggered > timedelta(minutes=5) }}
+```
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: spook.cooldown
+options:
+  duration: "00:05:00"
+```
+
+:::
+
+### Chance
+
+Passes a set percentage of the time, chosen at random on every check.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Chance 👻
+* - Condition name
+  - `spook.chance`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `percentage`
+  - {term}`float <float>`
+  - Yes
+  - `20`
+```
+
+For when you want a bit of variation rather than the same thing every evening.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: spook.chance
+options:
+  percentage: 20
+```
+
+:::

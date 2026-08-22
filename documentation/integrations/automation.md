@@ -38,7 +38,99 @@ Spook does not provide action enhancements for this integration.
 
 ## Conditions
 
-Spook registers two conditions in the `automation` domain, for telling apart a run a person started from one the house started by itself: `automation.triggered_by_user` and `automation.not_triggered_by_user`. Both are documented on [](../conditions).
+Spook adds the following new conditions to your Home Assistant instance:
+
+(triggered-by-a-user)=
+
+### Triggered by a user
+
+Passes when a person set this run going.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Automation: Triggered by a user 👻
+* - Condition name
+  - `automation.triggered_by_user`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `person`
+  - {term}`list of strings <list>`
+  - No
+  - Defaults to any user
+```
+
+Somebody pressing a button in the interface, tapping something in the app, or calling an action from the API all carry the user account they were made by. A schedule, a state change, or another automation does not.
+
+If the `person` attribute is not provided, the condition passes for anybody. Name one or more people to narrow it, and Spook matches against the user account each of them is linked to.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: automation.triggered_by_user
+```
+
+To only pass when specific people did it:
+
+```{code-block} yaml
+:linenos:
+condition: automation.triggered_by_user
+options:
+  person:
+    - person.frenck
+    - person.joe
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A person needs a user account linked to them. Linking one is optional on the People page, and a person without one has nothing to match against, so naming them means this condition can never pass.
+- Where the user comes from depends on the trigger. An automation does not inherit the context of whatever set it off, so Spook reads the user out of the trigger. A state trigger and an event trigger both carry it. A time trigger, a sun trigger, or a template trigger cannot, because nobody was behind them.
+- A long-lived access token counts as the person who created it. An API call authenticated with one looks exactly like that user.
+  :::
+
+### Not triggered by a user
+
+Passes when nobody set this run going.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Automation: Not triggered by a user 👻
+* - Condition name
+  - `automation.not_triggered_by_user`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+This condition has no options. A schedule, a state change, or another automation started the run rather than a person.
+
+"Nobody started this" is a different question from "not this particular person". To exclude specific people, use [](#triggered-by-a-user) instead.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: automation.not_triggered_by_user
+```
+
+:::
 
 ## Repairs
 
