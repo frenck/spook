@@ -11,13 +11,22 @@ from __future__ import annotations
 import inspect
 from typing import TYPE_CHECKING
 
+from homeassistant.components.websocket_api.commands import (
+    ALL_CONDITION_DESCRIPTIONS_JSON_CACHE,
+    _async_get_all_condition_descriptions_json,
+)
 from homeassistant.helpers import condition as condition_helper
+from homeassistant.helpers.condition import (
+    CONDITION_DESCRIPTION_CACHE,
+    async_setup as async_setup_condition_helper,
+)
 import voluptuous as vol
 import pytest
 
 from custom_components.spook.ectoplasms.automation.conditions.not_triggered_by_user import (
     SpookCondition,
 )
+from custom_components.spook import condition as spook_condition
 from custom_components.spook.condition import (
     async_get_conditions,
     async_setup_foreign_domain_conditions,
@@ -142,3 +151,77 @@ async def test_the_option_less_condition_rejects_options(hass: HomeAssistant) ->
         await SpookCondition.async_validate_config(
             hass, {"options": {"person": "person.frenck"}}
         )
+
+
+async def test_a_broken_leaf_module_costs_spook_only_its_own(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test Spook failing does not take everybody else's conditions with it.
+
+    This patch sits in front of every condition Home Assistant resolves. A
+    leaf module that fails to import must cost Spook its own conditions and
+    nothing more.
+    """
+
+    async def _boom(_hass) -> dict:  # noqa: ANN001
+        message = "a leaf module did not import"
+        raise RuntimeError(message)
+
+    monkeypatch.setattr(spook_condition, "async_get_conditions", _boom)
+    restore = async_setup_foreign_domain_conditions()
+    try:
+        patched = getattr(condition_helper, _PATCHED)
+
+        # Somebody else's condition still resolves.
+        domain, platform = await patched(hass, "sun.is_up")
+        assert domain == "sun"
+        assert platform is not None
+
+        # And the second call does not go looking again.
+        assert hass.data.get(spook_condition.DATA_DISCOVERY_FAILED) is True
+        domain, platform = await patched(hass, "sun.is_up")
+        assert domain == "sun"
+    finally:
+        restore()
+
+
+async def test_the_description_cache_key_is_the_live_one(
+    hass: HomeAssistant,
+) -> None:
+    """Test the cache Spook writes descriptors into is the one core uses.
+
+    Renaming this key in core would not raise anywhere. The conditions would
+    simply stop appearing in the automation editor, which is the sort of thing
+    that goes unnoticed for a release.
+    """
+    await async_setup_condition_helper(hass)
+    assert CONDITION_DESCRIPTION_CACHE in hass.data
+
+
+async def test_the_websocket_payload_cache_key_is_the_live_one(
+    hass: HomeAssistant,
+) -> None:
+    """Test the payload cache Spook drops is the one the websocket fills.
+
+    Same failure mode: drop the wrong key and the editor keeps serving a
+    payload from before Spook's descriptors went in, silently.
+    """
+    await async_setup_condition_helper(hass)
+    await _async_get_all_condition_descriptions_json(hass)
+
+    assert ALL_CONDITION_DESCRIPTIONS_JSON_CACHE in hass.data
+
+
+def test_the_descriptor_loader_is_still_there() -> None:
+    """Test the loader Spook borrows from core still exists.
+
+    Spook reads its own conditions.yaml with core's loader so the two agree on
+    what a descriptor looks like. It is private, so it is worth an alarm.
+    """
+    loader = getattr(condition_helper, "_load_conditions_file", None)
+    assert loader is not None, (
+        "Home Assistant no longer has condition._load_conditions_file; Spook "
+        "reads its own descriptors with it"
+    )
+    assert list(inspect.signature(loader).parameters) == ["integration"]
