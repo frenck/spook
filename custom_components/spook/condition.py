@@ -43,6 +43,10 @@ if TYPE_CHECKING:
 # than re-globbing and re-importing on every call.
 DATA_CONDITIONS: HassKey[dict[str, type[Condition]]] = HassKey("spook_conditions")
 
+# Set when discovery has thrown once, so a broken leaf module costs one
+# traceback rather than one per condition resolved from then on.
+DATA_DISCOVERY_FAILED: HassKey[bool] = HassKey("spook_conditions_failed")
+
 
 async def async_get_conditions(
     hass: HomeAssistant,
@@ -98,12 +102,32 @@ async def _async_get_condition_platform(
     *,
     original: Callable,
 ) -> tuple[str, ConditionProtocol | None]:
-    """Resolve Spook's own conditions, whatever domain they are keyed under."""
-    # Ask Spook rather than core's registry, so this does not depend on the
-    # order in which platforms happened to be processed.
-    conditions = await async_get_conditions(hass)
-    if get_relative_description_key(DOMAIN, condition_key) in conditions:
-        return DOMAIN, sys.modules[__name__]
+    """Resolve Spook's own conditions, whatever domain they are keyed under.
+
+    This sits in front of every condition Home Assistant resolves, not just
+    Spook's, so it must not be able to take the rest down with it. Anything
+    that goes wrong here means Spook loses its own conditions and nothing
+    else: the original gets the call regardless.
+    """
+    if not hass.data.get(DATA_DISCOVERY_FAILED):
+        try:
+            # Ask Spook rather than core's registry, so this does not depend on
+            # the order in which platforms happened to be processed.
+            conditions = await async_get_conditions(hass)
+        # Deliberately broad: nothing Spook does may stop another
+        # integration's conditions from resolving.
+        except Exception:  # noqa: BLE001  # pylint: disable=broad-exception-caught
+            # Remembered as well, because a leaf module that fails to
+            # import will fail on every condition in the instance otherwise,
+            # and one traceback is more use than thousands.
+            hass.data[DATA_DISCOVERY_FAILED] = True
+            LOGGER.exception(
+                "Spook could not work out which conditions it provides, so its "
+                "own conditions are unavailable. Everything else is unaffected"
+            )
+        else:
+            if get_relative_description_key(DOMAIN, condition_key) in conditions:
+                return DOMAIN, sys.modules[__name__]
 
     return await original(hass, condition_key)
 

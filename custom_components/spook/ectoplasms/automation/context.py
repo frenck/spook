@@ -41,19 +41,18 @@ def run_context(variables: Any) -> Context | None:
     Returns ``None`` when nothing in reach names a user: a time trigger, a
     template trigger, or a condition being evaluated outside a run at all.
     Callers should read that as "not a person", which is the truth.
+
+    A context that exists but names nobody is the same answer as no context,
+    so it is not worth telling them apart.
     """
     if not hasattr(variables, "get"):
         return None
 
-    fallback = None
     for context in _candidates(variables):
         # Duck-typed rather than isinstance: this only ever reads, and a
         # mapping standing in for a Context during a template render is
         # just as usable.
-        if not hasattr(context, "user_id"):
-            continue
-        if context.user_id is not None:
+        if getattr(context, "user_id", None) is not None:
             return context
-        fallback = fallback or context
 
-    return fallback
+    return None
