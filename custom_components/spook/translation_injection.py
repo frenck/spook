@@ -92,16 +92,11 @@ class SpookTranslationInjector:
         )
 
         for key, value in strings.items():
-            # A string already equal to the one going in is Spook's own, from
-            # an earlier injection: a language change, a reload, or a cache
-            # that outlived the instance that wrote it. Remembering it as the
-            # original is how Spook's text ends up permanently baked into
-            # another integration's translations.
-            original = existing.get(key)
-            if original == value:
-                original = None
-
-            self._overrides.setdefault((language, domain, key), original)
+            # `setdefault` is what keeps a re-injection (a language change, say)
+            # from recording Spook's own earlier string as the thing to restore.
+            # Guessing from the value instead would delete a native string that
+            # happened to match, which is the worse mistake of the two.
+            self._overrides.setdefault((language, domain, key), existing.get(key))
             component_cache[key] = value
 
     @callback

@@ -6,6 +6,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from homeassistant.components.websocket_api.commands import (
+    _async_get_all_condition_descriptions_json,
+)
+from homeassistant.helpers.condition import async_get_all_descriptions
 from homeassistant.helpers.translation import (
     async_get_cached_translations,
     async_get_translations,
@@ -40,11 +44,13 @@ async def test_strings_land_under_the_automation_domain(hass: HomeAssistant) -> 
 
     manager = SpookConditionManager(hass)
     await manager.async_inject_condition_translations()
-
-    translations = _automation_conditions(hass)
-    assert translations[_NAME] == "Triggered by a user 👻"
-    assert translations[_FIELD] == "People"
-    assert translations[_NOT_NAME] == "Not triggered by a user 👻"
+    try:
+        translations = _automation_conditions(hass)
+        assert translations[_NAME] == "Triggered by a user 👻"
+        assert translations[_FIELD] == "People"
+        assert translations[_NOT_NAME] == "Not triggered by a user 👻"
+    finally:
+        manager.async_on_unload()
 
 
 async def test_injection_is_undone_on_unload(hass: HomeAssistant) -> None:
@@ -84,8 +90,10 @@ async def test_missing_cache_internals_are_survivable(
 
     manager = SpookConditionManager(hass)
     await manager.async_inject_condition_translations()
-
-    assert not manager._translations._overrides
+    try:
+        assert not manager._translations._overrides
+    finally:
+        manager.async_on_unload()
 
 
 async def test_the_api_the_frontend_calls_returns_them(hass: HomeAssistant) -> None:
@@ -108,3 +116,33 @@ async def test_the_api_the_frontend_calls_returns_them(hass: HomeAssistant) -> N
         assert resources[_NAME] == "Triggered by a user 👻", integration
         assert resources[_NOT_NAME] == "Not triggered by a user 👻", integration
         assert resources[_FIELD] == "People", integration
+
+
+async def test_descriptors_reach_the_condition_picker(hass: HomeAssistant) -> None:
+    """The conditions show up in the automation editor, with their fields.
+
+    Their descriptors cannot live in `conditions.yaml`: hassfest requires
+    underscore-slug keys there and these name another domain. Without a
+    descriptor the condition still works, but the websocket drops every
+    condition whose description is None, so it disappears from the picker
+    entirely. This is the test that it does not.
+    """
+    assert await async_setup_component(hass, "automation", {"automation": []})
+    await hass.async_block_till_done()
+
+    manager = SpookConditionManager(hass)
+    # The real path: the descriptors are loaded during setup, the same way the
+    # service manager loads its own.
+    await manager.async_setup()
+    try:
+        descriptions = await async_get_all_descriptions(hass)
+        assert descriptions["automation.triggered_by_user"]["fields"]["person"]
+        assert descriptions["automation.not_triggered_by_user"] == {"fields": {}}
+
+        payload = await _async_get_all_condition_descriptions_json(hass)
+        assert b"automation.triggered_by_user" in payload
+    finally:
+        manager.async_on_unload()
+
+    after = await async_get_all_descriptions(hass)
+    assert "automation.triggered_by_user" not in after

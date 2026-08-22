@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 import voluptuous as vol
 
+from homeassistant.const import CONF_OPTIONS
 from homeassistant.helpers.condition import Condition
 
 from ..context import run_context
@@ -17,7 +18,14 @@ if TYPE_CHECKING:
     from homeassistant.helpers.condition import ConditionCheckParams
     from homeassistant.helpers.typing import ConfigType
 
-_CONDITION_SCHEMA = vol.Schema({}, extra=vol.ALLOW_EXTRA)
+# Takes nothing. An empty options block is accepted and normalised, the same
+# shape Home Assistant gives an option-less condition, but anything actually
+# set is rejected rather than quietly dropped.
+_CONDITION_SCHEMA = vol.Schema(
+    {
+        vol.Optional(CONF_OPTIONS, default=dict): vol.Schema({}),
+    }
+)
 
 
 class SpookCondition(Condition):

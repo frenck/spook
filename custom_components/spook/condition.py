@@ -6,16 +6,27 @@ from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
 import sys
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any, cast
 
+from homeassistant.components.websocket_api.commands import (
+    ALL_CONDITION_DESCRIPTIONS_JSON_CACHE,
+)
 from homeassistant.const import EVENT_CORE_CONFIG_UPDATE
 from homeassistant.core import callback
 from homeassistant.helpers import condition as condition_helper
-from homeassistant.helpers.automation import get_relative_description_key
+from homeassistant.helpers.automation import (
+    get_absolute_description_key,
+    get_relative_description_key,
+)
+from homeassistant.helpers.condition import (
+    CONDITION_DESCRIPTION_CACHE,
+    _load_conditions_file,
+)
 from homeassistant.helpers.translation import (
     async_get_cached_translations,
     async_get_translations,
 )
+from homeassistant.loader import async_get_integration
 from homeassistant.util.hass_dict import HassKey
 
 from .const import DOMAIN, LOGGER
@@ -124,7 +135,21 @@ def async_setup_foreign_domain_conditions() -> Callable[[], None]:
 
     @callback
     def _restore() -> None:
-        """Put Home Assistant's own lookup back."""
+        """Put Home Assistant's own lookup back, if Spook's is still in place.
+
+        Something else may have wrapped it after Spook did. Restoring blindly
+        would throw that away, so leave it alone and let whoever installed it
+        clean up after themselves.
+        """
+        if getattr(condition_helper, _ORIGINAL_GET_CONDITION_PLATFORM, None) is not (
+            _patched
+        ):
+            LOGGER.debug(
+                "Home Assistant's condition platform lookup was replaced after "
+                "Spook wrapped it; leaving it alone"
+            )
+            return
+
         setattr(condition_helper, _ORIGINAL_GET_CONDITION_PLATFORM, original)
 
     return _restore
@@ -149,12 +174,13 @@ def _foreign_domain(condition_key: str) -> tuple[str, str] | None:
     return domain, name
 
 
-def translation_key(condition_key: str) -> str:
-    """Return the key Spook files a condition's strings under.
+def condition_schema_key(condition_key: str) -> str:
+    """Return the key Spook files a condition's descriptor and strings under.
 
-    Spook keeps its own strings in its own translation file, so a condition
-    keyed for another integration needs a name that survives there. Same
-    shape Spook already uses for its actions: ``domain_name``.
+    Spook keeps both in its own files, so a condition keyed for another
+    integration needs a name that survives there and that hassfest accepts,
+    which rules out the dot. Same shape the actions already use:
+    ``domain_name``, as in ``homeassistant_create_area``.
     """
     if (split := _foreign_domain(condition_key)) is None:
         return condition_key
@@ -176,6 +202,8 @@ class SpookConditionManager:
 
     _translations: SpookTranslationInjector = field(init=False)
     _restore_resolution: Callable[[], None] | None = None
+    _described: list[str] = field(default_factory=list)
+    _condition_schemas: dict[str, Any] = field(default_factory=dict)
     _translation_listener: Callable[[], None] | None = None
 
     def __post_init__(self) -> None:
@@ -189,7 +217,18 @@ class SpookConditionManager:
     async def async_setup(self) -> None:
         """Set up Spook's conditions."""
         LOGGER.debug("Setting up Spook conditions")
+
+        integration = await async_get_integration(self.hass, DOMAIN)
+        self._condition_schemas = cast(
+            "dict[str, Any]",
+            await self.hass.async_add_executor_job(
+                _load_conditions_file,
+                integration,
+            ),
+        )
+
         self._restore_resolution = async_setup_foreign_domain_conditions()
+        await self.async_inject_condition_descriptions()
         await self.async_inject_condition_translations()
         self._translation_listener = self.hass.bus.async_listen(
             EVENT_CORE_CONFIG_UPDATE,
@@ -223,7 +262,7 @@ class SpookConditionManager:
         )
 
         for domain, name in foreign.values():
-            spook_key = translation_key(f"_{domain}.{name}")
+            spook_key = condition_schema_key(f"_{domain}.{name}")
             spook_prefix = (
                 f"component.{DOMAIN}.{CONDITION_TRANSLATION_CATEGORY}.{spook_key}."
             )
@@ -244,6 +283,50 @@ class SpookConditionManager:
                 },
             )
 
+    async def async_inject_condition_descriptions(self) -> None:
+        """Put the descriptors for foreign-domain conditions where core keeps them.
+
+        Home Assistant files a descriptor under the key it reads from
+        `conditions.yaml`, prefixed with the integration that owns the file.
+        For `automation_triggered_by_user` that gives `spook.…`, which is not
+        the key the condition is registered under, so core never finds it.
+
+        Without a descriptor a condition still works but vanishes from the
+        editor: the websocket drops every condition whose description is None
+        (`websocket_api/commands.py`), so it becomes YAML-only and
+        undiscoverable.
+
+        Writing into the cache is enough, because `async_get_all_descriptions`
+        only fills in the keys it finds missing and copies the rest through.
+        """
+        conditions = await async_get_conditions(self.hass)
+        foreign = [key for key in conditions if _foreign_domain(key) is not None]
+        if not foreign:
+            return
+
+        cache = self.hass.data.get(CONDITION_DESCRIPTION_CACHE)
+        if cache is None:
+            LOGGER.warning(
+                "Home Assistant's condition description cache is not there; "
+                "Spook conditions outside its own domain will not show up in "
+                "the automation editor"
+            )
+            return
+
+        for key in foreign:
+            schema = self._condition_schemas.get(condition_schema_key(key)) or {}
+            described: dict[str, Any] = {"fields": schema.get("fields", {})}
+            if (target := schema.get("target")) is not None:
+                described["target"] = target
+
+            absolute = get_absolute_description_key(DOMAIN, key)
+            cache[absolute] = described
+            self._described.append(absolute)
+
+        # The websocket serves a pre-rendered payload and only rebuilds it when
+        # the description set changes identity, so it has to be dropped by hand.
+        self.hass.data.pop(ALL_CONDITION_DESCRIPTIONS_JSON_CACHE, None)
+
     async def _async_core_config_updated(self, event: Event) -> None:
         """Re-inject condition translations when the language changes."""
         if "language" not in event.data:
@@ -261,5 +344,11 @@ class SpookConditionManager:
         if self._restore_resolution:
             self._restore_resolution()
             self._restore_resolution = None
+
+        if cache := self.hass.data.get(CONDITION_DESCRIPTION_CACHE):
+            for key in self._described:
+                cache.pop(key, None)
+            self.hass.data.pop(ALL_CONDITION_DESCRIPTIONS_JSON_CACHE, None)
+        self._described.clear()
 
         self._translations.restore()
