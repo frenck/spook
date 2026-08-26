@@ -5,6 +5,8 @@ from __future__ import annotations
 from homeassistant.core import callback
 from homeassistant.helpers import device_registry as dr
 
+from ...core_compat import async_get_device_entries
+
 
 @callback
 def async_disable_device_and_parent_if_needed(
@@ -33,7 +35,7 @@ def async_disable_device_and_parent_if_needed(
 
         if not all(
             child.id == current_id or child.disabled_by is not None
-            for child in device_registry.devices.values()
+            for child in async_get_device_entries(device_registry)
             if child.via_device_id == device.via_device_id
         ):
             return
