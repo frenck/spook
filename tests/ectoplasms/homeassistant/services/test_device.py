@@ -143,7 +143,7 @@ async def test_disable_device_service_disables_parent_without_other_children(
     child = device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
 
     await hass.services.async_call(
@@ -174,7 +174,7 @@ async def test_disable_device_service_preserves_parent_disabled_reason(
     parent = device_registry.async_get_or_create(
         config_entry_id=disabled_config_entry.entry_id,
         identifiers={("test", "parent-device")},
-        via_device=("test", "grandparent-device"),
+        via_device_id=grandparent.id,
     )
 
     assert parent.disabled_by is DeviceEntryDisabler.CONFIG_ENTRY
@@ -182,7 +182,7 @@ async def test_disable_device_service_preserves_parent_disabled_reason(
     child = device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
 
     await hass.services.async_call(
@@ -219,12 +219,12 @@ async def test_disable_device_service_keeps_parent_enabled_with_enabled_children
     child = device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
     device_registry.async_get_or_create(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "sibling-device")},
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
 
     await hass.services.async_call(
@@ -256,7 +256,7 @@ async def test_enable_device_service_enables_parent_device(
         config_entry_id=config_entry.entry_id,
         identifiers={("test", "child-device")},
         disabled_by=DeviceEntryDisabler.USER,
-        via_device=("test", "parent-device"),
+        via_device_id=parent.id,
     )
 
     await hass.services.async_call(
