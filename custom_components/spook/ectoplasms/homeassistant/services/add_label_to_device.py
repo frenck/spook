@@ -14,6 +14,7 @@ from homeassistant.helpers import (
     label_registry as lr,
 )
 
+from ....core_compat import async_update_any_device
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -43,4 +44,4 @@ class SpookService(AbstractSpookAdminService):
             if device_entry := device_registry.async_get(device_id):
                 labels = device_entry.labels.copy()
                 labels.update(call.data["label_id"])
-                device_registry.async_update_device(device_id, labels=labels)
+                async_update_any_device(device_registry, device_id, labels=labels)

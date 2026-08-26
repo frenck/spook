@@ -9,6 +9,7 @@ import voluptuous as vol
 from homeassistant.components.homeassistant import DOMAIN
 from homeassistant.helpers import config_validation as cv, device_registry as dr
 
+from ....core_compat import async_update_any_device
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -32,4 +33,4 @@ class SpookService(AbstractSpookAdminService):
             if device_entry := device_registry.async_get(device_id):
                 labels = device_entry.labels.copy()
                 labels.difference_update(call.data["label_id"])
-                device_registry.async_update_device(device_id, labels=labels)
+                async_update_any_device(device_registry, device_id, labels=labels)
