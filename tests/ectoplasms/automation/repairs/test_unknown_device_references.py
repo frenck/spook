@@ -11,13 +11,13 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from custom_components.spook.ectoplasms.automation.repairs.unknown_device_references import (
     SpookRepair,
 )
+from tests.device_registry_helpers import simulate_composite_split
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import device_registry as dr
-    import pytest
 
 
 class MockAutomationEntity:
@@ -79,7 +79,6 @@ async def test_event_trigger_data_device_id_in_plural_triggers_is_not_reported_u
 async def test_pre_split_device_id_is_not_reported_unknown(
     hass: HomeAssistant,
     device_registry: dr.DeviceRegistry,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test a device ID from before the Core 2026.8 device split is not unknown.
 
@@ -93,13 +92,7 @@ async def test_pre_split_device_id_is_not_reported_unknown(
         config_entry_id=entry.entry_id,
         identifiers={("test", "split-device")},
     )
-    # Stubbed so this test also runs on cores that predate the device split.
-    monkeypatch.setattr(
-        device_registry.devices,
-        "get_composite_splits",
-        lambda: {"pre-split-id": [split]},
-        raising=False,
-    )
+    simulate_composite_split(device_registry, split, "pre-split-id")
 
     entity = MockAutomationEntity(
         raw_config={

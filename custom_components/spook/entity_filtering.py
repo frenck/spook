@@ -41,6 +41,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.util.hass_dict import HassKey
 
 from .const import LOGGER
+from .core_compat import async_get_child_device_ids, async_get_device_entries
 from .listeners import async_listen_once_tracked
 
 if TYPE_CHECKING:
@@ -362,20 +363,23 @@ def async_filter_known_area_ids(
 def async_get_all_device_ids(hass: HomeAssistant) -> set[str]:
     """Return all device IDs, known to Home Assistant."""
     device_registry = dr.async_get(hass)
-    device_ids = {device.id for device in device_registry.devices.values()}
 
-    # Home Assistant Core 2026.8 split devices that belonged to multiple config
-    # entries into one device per config entry. The pre-split device ID is no
-    # longer registered, but it still resolves to those new devices, so anything
-    # targeting it keeps working. Those IDs are known, just not enumerated.
-    # Can be removed when Core drops composite devices in 2027.8.
-    get_composite_splits: Callable[[], Mapping[str, Any]] | None = getattr(
-        device_registry.devices, "get_composite_splits", None
-    )
-    if get_composite_splits is not None:
-        device_ids.update(get_composite_splits().keys())
+    device_ids: set[str] = set()
+    for device in async_get_device_entries(device_registry):
+        device_ids.add(device.id)
 
-    return device_ids
+        # Home Assistant Core 2026.8 split devices that belonged to multiple
+        # config entries into one device per config entry. The pre-split device
+        # ID is no longer registered, but it still resolves to those new
+        # devices, so anything targeting it keeps working. Those IDs are known,
+        # just not enumerated.
+        # Can be removed when Core drops composite devices in 2027.8.
+        if device.composite_device_id is not None:
+            device_ids.add(device.composite_device_id)
+
+    # Child devices arrived in Home Assistant Core 2026.9. They are not part of
+    # the device list above, but can be targeted like any other device.
+    return device_ids | async_get_child_device_ids(device_registry)
 
 
 @callback

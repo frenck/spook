@@ -19,10 +19,10 @@ from custom_components.spook.entity_filtering import (
     async_find_services_in_sequence,
     async_get_all_device_ids,
 )
+from tests.device_registry_helpers import simulate_composite_split
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-    import pytest
 
 
 def test_find_services_skips_disabled_nested_steps() -> None:
@@ -119,7 +119,6 @@ def test_registered_device_ids_are_known(
 def test_composite_device_ids_are_known(
     hass: HomeAssistant,
     device_registry: dr.DeviceRegistry,
-    monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test pre-split device IDs are not reported as unknown.
 
@@ -133,13 +132,7 @@ def test_composite_device_ids_are_known(
         config_entry_id=entry.entry_id,
         identifiers={("test", "split-device")},
     )
-    # Stubbed so the test also runs on cores that predate the device split.
-    monkeypatch.setattr(
-        device_registry.devices,
-        "get_composite_splits",
-        lambda: {"pre-split-id": [split]},
-        raising=False,
-    )
+    simulate_composite_split(device_registry, split, "pre-split-id")
 
     assert "pre-split-id" in async_get_all_device_ids(hass)
     assert async_filter_known_device_ids(hass, device_ids={"pre-split-id"}) == set()
