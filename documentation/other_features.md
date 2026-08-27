@@ -130,7 +130,9 @@ Five fields, in the usual order: minute, hour, day of month, month, day of week.
 
 When it fires, `trigger.schedule` holds the expression and `trigger.now` the local time it fired at.
 
-One crontab rule catches people out, and it is not ours. Give both a day of the month and a day of the week, and cron combines them with "or", not "and". So `0 7 15 * 1` runs at seven on the 15th of the month, and at seven every Monday as well. Leave one of the two as `*` if you only mean the other. The exception is a day of the month starting with `*`, such as `*/20`, which does combine with "and".
+One crontab rule catches people out, and it is not ours. Give both a day of the month and a day of the week, and cron combines them with "or", not "and". So `0 7 15 * 1` runs at seven on the 15th of the month, and at seven every Monday as well. Leave one of the two as `*` if you only mean the other.
+
+That "or" holds only while both fields are plain lists of days. Let either one start with a `*`, a step like `*/2` included, and the two combine with "and" instead: `0 7 15 * */2` is the 15th, but only when it falls on a Sunday, Tuesday, Thursday or Saturday.
 
 :::{seealso} Example trigger in {term}`YAML`
 :class: dropdown

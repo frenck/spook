@@ -297,6 +297,38 @@ async def test_day_of_month_and_day_of_week_combine_with_or(
     assert fifteenths, "no 15th, so the day-of-month half was ignored"
 
 
+@pytest.mark.parametrize(
+    ("schedule", "days", "cron_weekdays"),
+    [
+        ("0 0 15 * */2", {15}, {0, 2, 4, 6}),
+        ("0 0 */20 * 1", {1, 21}, {1}),
+    ],
+)
+async def test_a_starred_day_field_combines_with_and(
+    hass: HomeAssistant,
+    schedule: str,
+    days: set[int],
+    cron_weekdays: set[int],
+) -> None:
+    """Let either day field start with `*` and the "or" turns into an "and".
+
+    `0 0 15 * */2` is the 15th, but only when it lands on one of the days
+    `*/2` picks out. Both directions are pinned, because this is the half of
+    the rule that is easy to state the wrong way round.
+    """
+    trigger = SpookTrigger(hass, _config(schedule))
+    moment = dt_util.parse_datetime("2026-01-01 00:00:00")
+
+    for _ in range(8):
+        # pylint: disable-next=protected-access
+        moment = trigger._next(moment)  # noqa: SLF001
+        assert moment is not None
+        assert moment.day in days
+
+        # cron counts Sunday as 0; `weekday()` counts Monday as 0.
+        assert (moment.weekday() + 1) % 7 in cron_weekdays
+
+
 def _config(schedule: str) -> TriggerConfig:
     """Build a trigger config, the way core hands one over."""
     return TriggerConfig(key="spook.cron", options={"schedule": schedule})
