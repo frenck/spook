@@ -201,10 +201,11 @@ async def test_a_schedule_that_never_comes_round_is_refused(
     """An expression that parses but never fires is refused as well.
 
     `0 0 */20 * 1L` asks for the 1st or the 21st, and for the last Monday of
-    the month, which is never earlier than the 25th. cronsim parses it
-    happily and then produces nothing at all, so validation has to advance
-    the iterator once to find out. Otherwise the automation loads, sits there
-    and never runs, with nothing anywhere saying why.
+    the month, which falls no earlier than the 22nd (a 28-day February, such
+    as 2021). cronsim parses it happily and then produces nothing at all, so
+    validation has to advance the iterator once to find out. Otherwise the
+    automation loads, sits there and never runs, with nothing anywhere saying
+    why.
     """
     with pytest.raises(vol.Invalid, match="never comes round"):
         await SpookTrigger.async_validate_config(
