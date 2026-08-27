@@ -39,11 +39,12 @@ class SpookCondition(Condition):
 
     What it can see is the user behind the trigger. A state change or an
     event somebody caused carries the account that caused it, so an
-    automation reacting to that finds them. A schedule, a template, or an
-    integration acting on its own carries nobody, and neither does a run
-    forced through ``automation.trigger``: Home Assistant hands the caller's
-    context to the automation but the run itself starts a fresh one, and
-    nothing resolves it back.
+    automation reacting to that finds them, and so does one whose template
+    trigger became true because of that same change. A schedule, a sun
+    trigger, or an integration acting on its own carries nobody, and
+    neither does a run forced through ``automation.trigger``: Home
+    Assistant hands the caller's context to the automation but the run
+    itself starts a fresh one, and nothing resolves it back.
 
     Can be narrowed to specific people.
     """

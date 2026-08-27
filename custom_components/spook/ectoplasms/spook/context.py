@@ -44,7 +44,7 @@ def run_context(variables: Any) -> Context | None:
     """Return the context of whoever set this run going, if it can be known.
 
     Returns ``None`` when nothing in reach names a user: a time trigger, a
-    template trigger, a run forced through `automation.trigger`, or a
+    sun trigger, a run forced through `automation.trigger`, or a
     condition being evaluated outside a run at all. Callers should read that
     as "not a person", which is the truth as far as anything here can tell.
 

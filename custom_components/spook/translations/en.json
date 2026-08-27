@@ -2,7 +2,7 @@
   "conditions": {
     "triggered_by_user": {
       "name": "Triggered by a user",
-      "description": "Passes when a person is behind what set this off: a state change or an event they caused. A schedule, a template, or an integration acting on its own carries nobody, and neither does forcing a run with the Run button.",
+      "description": "Passes when a person is behind what set this off: a state change or an event they caused, including one that made a template trigger become true. A schedule, the sun, or an integration acting on its own carries nobody, and neither does forcing a run with the Run button.",
       "fields": {
         "person": {
           "name": "People",
@@ -12,7 +12,7 @@
     },
     "not_triggered_by_user": {
       "name": "Not triggered by a user",
-      "description": "Passes when nobody can be held responsible for this run: a schedule, a template, an integration acting on its own, or the Run button. Takes no options on purpose. To exclude specific people instead, put \"Triggered by a user\" inside a Not condition."
+      "description": "Passes when nobody can be held responsible for this run: a schedule, the sun, an integration acting on its own, or the Run button. Takes no options on purpose. To exclude specific people instead, put \"Triggered by a user\" inside a Not condition."
     },
     "chance": {
       "name": "Chance",

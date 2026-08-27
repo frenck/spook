@@ -305,3 +305,41 @@ async def test_excluding_a_person_needs_home_assistants_not(
     hass.states.async_set("input_boolean.spook_test", "on")
     await hass.async_block_till_done()
     assert ran == ["not-frenck"]
+
+
+async def test_a_template_trigger_inherits_the_change_behind_it(
+    hass: HomeAssistant,
+) -> None:
+    """A template that became true because of a person is that person's doing.
+
+    Home Assistant's template trigger hands over the state change that made
+    the template flip, so the user behind that change comes through. Worth a
+    test because it is not obvious from the outside, and because the
+    documentation said the opposite until review pointed it out.
+    """
+    user = await hass.auth.async_create_user("Ghost Hunter")
+    hass.states.async_set("input_boolean.spook_test", "off")
+    await hass.async_block_till_done()
+
+    ran = await _automations(
+        hass,
+        {
+            "platform": "template",
+            "value_template": "{{ is_state('input_boolean.spook_test', 'on') }}",
+        },
+    )
+
+    hass.states.async_set(
+        "input_boolean.spook_test", "on", context=Context(user_id=user.id)
+    )
+    await hass.async_block_till_done()
+    assert ran == ["triggered_by_user"]
+
+    # And an integration flipping it back and forth is nobody's doing.
+    hass.states.async_set("input_boolean.spook_test", "off")
+    await hass.async_block_till_done()
+    ran.clear()
+    hass.states.async_set("input_boolean.spook_test", "on")
+    await hass.async_block_till_done()
+
+    assert ran == ["not_triggered_by_user"]

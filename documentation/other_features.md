@@ -126,7 +126,7 @@ Passes when a person set this run going.
   - Defaults to any user
 ```
 
-What this can see is the person behind the trigger. Somebody flipping a switch, tapping something in the app, or calling an action from the API leaves their user account on the state change or event that follows, so an automation reacting to it finds them. A schedule, a template, or an integration acting on its own leaves nobody.
+What this can see is the person behind the trigger. Somebody flipping a switch, tapping something in the app, or calling an action from the API leaves their user account on the state change or event that follows, so an automation reacting to it finds them. A template trigger inherits it too, when the change that made the template true was theirs. A schedule, the sun, or an integration acting on its own leaves nobody.
 
 If the `person` attribute is not provided, the condition passes for anybody. Name one or more people to narrow it, and Spook matches against the user account each of them is linked to.
 
@@ -157,7 +157,7 @@ options:
 - A person needs a user account linked to them. Linking one is optional on the People page, and a person without one has nothing to match against, so naming them means this condition can never pass.
 - **Forcing a run is not attributed to anybody.** Home Assistant hands the caller's account to the automation, but the run itself starts a fresh context carrying only a pointer to the caller's, and nothing resolves that pointer back, so there is nobody for this condition to find.
 - **And pressing "Run actions" skips your conditions anyway.** `automation.trigger` defaults to `skip_condition: true`, so the conditions between the trigger and the actions are not evaluated at all and the actions simply run. That is Home Assistant's behaviour for every condition, not something particular to these two. If you want a forced run to be recognised as nobody's doing, the condition has to sit inside the actions, in an `if` or a `choose`, where it is evaluated.
-- Where the user comes from depends on the trigger. A state trigger and an event trigger carry it, when a person caused the change. A time trigger, a sun trigger, or a template trigger cannot, because nobody was behind them.
+- Where the user comes from depends on the trigger. A state trigger, an event trigger and a template trigger all carry it, as long as a person caused the change behind them. A time trigger or a sun trigger cannot, because there is no change to inherit from and nobody was behind it.
 - A long-lived access token counts as the person who created it. An API call authenticated with one looks exactly like that user.
   :::
 
@@ -176,7 +176,7 @@ Passes when nobody set this run going.
   - Newly added condition
 ```
 
-This condition has no options. It passes for anything Spook cannot pin on a person: a schedule, a template, an integration acting on its own, or a run forced with the Run button.
+This condition has no options. It passes for anything Spook cannot pin on a person: a schedule, the sun, an integration acting on its own, or a run forced with the Run button.
 
 "Nobody started this" is a different question from "not this particular person", which is why this condition takes no options. To exclude specific people, wrap [](#triggered-by-a-user) in Home Assistant's own **Not** condition:
 
