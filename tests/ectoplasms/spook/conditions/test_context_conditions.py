@@ -30,8 +30,9 @@ async def _run(hass: HomeAssistant, condition: dict, context: Context) -> bool:
     """Run a one-condition script and report whether the body ran.
 
     The condition goes through Home Assistant's own validation first, the way
-    an automation's would. Skipping that step is how a single user ID stayed a
-    bare string and matched nothing.
+    an automation's would. Skipping that step is how a single person entity ID
+    stayed a bare string, which the condition then read one character at a
+    time and matched nobody with.
     """
     ran: list[bool] = []
 
@@ -82,8 +83,14 @@ async def test_fails_when_nobody_started_the_run(hass: HomeAssistant) -> None:
     )
 
 
-async def _person(hass: HomeAssistant, name: str, *, linked: bool = True) -> str:
-    """Set up a person, optionally linked to a user account, and return its ID."""
+async def _person(hass: HomeAssistant, name: str, *, linked: bool = True) -> str | None:
+    """Set up a person and return the user account it is linked to.
+
+    Returns the account's ID, which is what the condition compares against,
+    not the person entity's. Returns None when `linked` is False, because
+    then there is no account to return: that is the case where naming the
+    person can never match anybody.
+    """
     user_id = None
     if linked:
         user = await hass.auth.async_create_user(name)
