@@ -155,7 +155,8 @@ options:
 :class: dropdown
 
 - A person needs a user account linked to them. Linking one is optional on the People page, and a person without one has nothing to match against, so naming them means this condition can never pass.
-- **Forcing a run is not attributed to anybody.** Pressing "Run actions" on an automation, or calling `automation.trigger`, does not satisfy this condition. Home Assistant hands the caller's account to the automation, but the run itself starts a fresh context carrying only a pointer to the caller's, and nothing resolves that pointer back. Use `spook.not_triggered_by_user` if you want to catch that case.
+- **Forcing a run is not attributed to anybody.** Home Assistant hands the caller's account to the automation, but the run itself starts a fresh context carrying only a pointer to the caller's, and nothing resolves that pointer back, so there is nobody for this condition to find.
+- **And pressing "Run actions" skips your conditions anyway.** `automation.trigger` defaults to `skip_condition: true`, so the conditions between the trigger and the actions are not evaluated at all and the actions simply run. That is Home Assistant's behaviour for every condition, not something particular to these two. If you want a forced run to be recognised as nobody's doing, the condition has to sit inside the actions, in an `if` or a `choose`, where it is evaluated.
 - Where the user comes from depends on the trigger. A state trigger and an event trigger carry it, when a person caused the change. A time trigger, a sun trigger, or a template trigger cannot, because nobody was behind them.
 - A long-lived access token counts as the person who created it. An API call authenticated with one looks exactly like that user.
   :::

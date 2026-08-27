@@ -179,6 +179,37 @@ async def test_forcing_a_run_is_attributed_to_nobody(hass: HomeAssistant) -> Non
     """
     user = await hass.auth.async_create_user("Ghost Hunter", group_ids=["system-admin"])
     ran = await _automations(hass, {"platform": "event", "event_type": "never"})
+    entities = [
+        "automation.triggered_by_user",
+        "automation.not_triggered_by_user",
+    ]
+
+    await hass.services.async_call(
+        "automation",
+        "trigger",
+        {"entity_id": entities, "skip_condition": False},
+        blocking=True,
+        context=Context(user_id=user.id),
+    )
+    await hass.async_block_till_done()
+
+    assert ran == ["not_triggered_by_user"]
+
+
+async def test_the_run_button_skips_top_level_conditions_entirely(
+    hass: HomeAssistant,
+) -> None:
+    """Pressing "Run actions" does not evaluate a top-level condition at all.
+
+    `automation.trigger` defaults to `skip_condition: true`, so both of these
+    automations run their actions regardless of what their condition would
+    have said. That is Home Assistant's behaviour for every condition, and it
+    is worth pinning because it makes the documented advice conditional: to
+    recognise a forced run as nobody's doing, the condition has to sit inside
+    the actions.
+    """
+    user = await hass.auth.async_create_user("Ghost Hunter", group_ids=["system-admin"])
+    ran = await _automations(hass, {"platform": "event", "event_type": "never"})
 
     await hass.services.async_call(
         "automation",
@@ -187,12 +218,11 @@ async def test_forcing_a_run_is_attributed_to_nobody(hass: HomeAssistant) -> Non
             "entity_id": [
                 "automation.triggered_by_user",
                 "automation.not_triggered_by_user",
-            ],
-            "skip_condition": False,
+            ]
         },
         blocking=True,
         context=Context(user_id=user.id),
     )
     await hass.async_block_till_done()
 
-    assert ran == ["not_triggered_by_user"]
+    assert sorted(ran) == ["not_triggered_by_user", "triggered_by_user"]
