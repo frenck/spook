@@ -222,7 +222,7 @@ A built-in cooldown, so an automation does not re-fire more often than you want 
 It replaces the most copy-pasted template condition there is:
 
 ```{code-block} jinja
-{{ now() - this.attributes.last_triggered > timedelta(minutes=5) }}
+{{ now() - this.attributes.last_triggered >= timedelta(minutes=5) }}
 ```
 
 :::{seealso} Example {term}`condition <condition>` in {term}`YAML`
