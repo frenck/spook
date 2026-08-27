@@ -91,3 +91,202 @@ action: homeassistant.random_fail
 ```
 
 :::
+
+## Conditions
+
+Spook offers the following conditions that are not tied to a specific integration:
+
+(triggered-by-a-user)=
+
+### Triggered by a user
+
+Passes when a person set this run going.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Triggered by a user 👻
+* - Condition name
+  - `spook.triggered_by_user`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `person`
+  - {term}`list of strings <list>`
+  - No
+  - Defaults to any user
+```
+
+What this can see is the person behind the trigger. Somebody flipping a switch, tapping something in the app, or calling an action from the API leaves their user account on the state change or event that follows, so an automation reacting to it finds them. A template trigger inherits it too, when the change that made the template true was theirs. A schedule, the sun, or an integration acting on its own leaves nobody.
+
+If the `person` attribute is not provided, the condition passes for anybody. Name one or more people to narrow it, and Spook matches against the user account each of them is linked to.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: spook.triggered_by_user
+```
+
+To only pass when specific people did it:
+
+```{code-block} yaml
+:linenos:
+condition: spook.triggered_by_user
+options:
+  person:
+    - person.frenck
+    - person.joe
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A person needs a user account linked to them. Linking one is optional on the People page, and a person without one has nothing to match against, so naming them means this condition can never pass.
+- **Forcing a run is not attributed to anybody.** Home Assistant hands the caller's account to the automation, but the run itself starts a fresh context carrying only a pointer to the caller's, and nothing resolves that pointer back, so there is nobody for this condition to find.
+- **And pressing "Run actions" skips your conditions anyway.** `automation.trigger` defaults to `skip_condition: true`, so the conditions between the trigger and the actions are not evaluated at all and the actions simply run. That is Home Assistant's behaviour for every condition, not something particular to these two. If you want a forced run to be recognised as nobody's doing, the condition has to sit inside the actions, in an `if` or a `choose`, where it is evaluated.
+- Where the user comes from depends on the trigger. A state trigger, an event trigger and a template trigger all carry it, as long as a person caused the change behind them. A time trigger or a sun trigger cannot, because there is no change to inherit from and nobody was behind it.
+- A long-lived access token counts as the person who created it. An API call authenticated with one looks exactly like that user.
+  :::
+
+### Not triggered by a user
+
+Passes when nobody set this run going.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Not triggered by a user 👻
+* - Condition name
+  - `spook.not_triggered_by_user`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+This condition has no options. It passes for anything Spook cannot pin on a person: a schedule, the sun, an integration acting on its own, or a run forced with the Run button.
+
+"Nobody started this" is a different question from "not this particular person", which is why this condition takes no options. To exclude specific people, wrap [](#triggered-by-a-user) in Home Assistant's own **Not** condition:
+
+```{code-block} yaml
+:linenos:
+condition: not
+conditions:
+  - condition: spook.triggered_by_user
+    options:
+      person: person.frenck
+```
+
+That passes for anybody who is not Frenck, and also when nobody was behind it at all, which is what "not Frenck" means.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: spook.not_triggered_by_user
+```
+
+:::
+
+### Cooldown
+
+Passes when this automation or script has not run within a given time.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Cooldown 👻
+* - Condition name
+  - `spook.cooldown`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `duration`
+  - duration
+  - Yes
+  - `00:05:00`
+```
+
+A built-in cooldown, so an automation does not re-fire more often than you want it to. An automation that has never run passes, because there is no last run to be too close to.
+
+It replaces the most copy-pasted template condition there is:
+
+```{code-block} jinja
+{{ now() - this.attributes.last_triggered >= timedelta(minutes=5) }}
+```
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: spook.cooldown
+options:
+  duration: "00:05:00"
+```
+
+:::
+
+### Chance
+
+Passes a set percentage of the time, chosen at random on every check.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Chance 👻
+* - Condition name
+  - `spook.chance`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `percentage`
+  - {term}`float <float>`
+  - Yes
+  - `20`
+```
+
+For when you want a bit of variation rather than the same thing every evening.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: spook.chance
+options:
+  percentage: 20
+```
+
+:::

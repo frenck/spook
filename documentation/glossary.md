@@ -9,7 +9,6 @@ date: 2024-01-09T17:14:53+01:00
 
 % TODO:
 % automation trigger
-% condition
 % jinja2
 % state
 % mapping
@@ -70,6 +69,14 @@ Boolean
 : A boolean is a data type that can only have two values: `true` or `false`.
 : You mostly come across this term in {term}`Home Assistant` when working with {term}`YAML`. In YAML, boolean values can also be written as `yes` or `no`; however, it is recommended to stick with just `true` or `false`.
 : Because `yes` and `no` are boolean values in YAML, they might cause confusion when you meant to use a {term}`string value <string>`. For example, `yes` is a boolean value, but `"yes"` is a string value.
+:::
+
+:::{glossary}
+Condition
+: A condition decides whether an {term}`automation <automation>` or {term}`script <script>` carries on. A condition between the trigger and the {term}`actions <action>` is a gate on the whole run: when it does not pass, none of the actions happen.
+: Conditions are also used inside a {term}`sequence <sequence>`, in an `if` or a `choose` block. There they only decide which branch runs, and a branch that does not run leaves the rest of the sequence alone.
+: {term}`Integrations <integration>` can provide their own conditions, which is how Spook adds some. Those are named after the integration providing them, like `sun.is_up` or `spook.triggered_by_user`, while the ones built into Home Assistant itself, `state` or `template`, carry no prefix at all.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/conditions/)
 :::
 
 :::{glossary}

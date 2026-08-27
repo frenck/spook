@@ -1,3 +1,13 @@
+triggered_by_user:
+  fields:
+    person:
+      required: false
+      example: person.frenck
+      selector:
+        entity:
+          domain: person
+          multiple: true
+not_triggered_by_user: {}
 chance:
   fields:
     percentage:
