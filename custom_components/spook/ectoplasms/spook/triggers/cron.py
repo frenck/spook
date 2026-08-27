@@ -25,7 +25,7 @@ if TYPE_CHECKING:
 
 CONF_SCHEDULE = "schedule"
 
-CRON_FIELDS = 5
+_CRON_FIELDS = 5
 
 
 def _cron_schedule(value: Any) -> str:
@@ -35,10 +35,10 @@ def _cron_schedule(value: Any) -> str:
     # cronsim also takes a six-field form, where the leading field is seconds.
     # That would hand out triggers firing every second, which is neither what
     # this documents nor something to run an automation off. Five fields only.
-    if len(schedule.split()) != CRON_FIELDS:
+    if len(schedule.split()) != _CRON_FIELDS:
         message = (
             f"Invalid crontab expression '{schedule}': expected "
-            f"{CRON_FIELDS} fields (minute, hour, day of month, month, "
+            f"{_CRON_FIELDS} fields (minute, hour, day of month, month, "
             "day of week)"
         )
         raise vol.Invalid(message)
