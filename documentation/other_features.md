@@ -158,7 +158,7 @@ options:
 
 - Nicknames are not supported. `@daily`, `@hourly` and friends are refused: write the five fields out. The automation will not load and will say what is wrong with the expression, which is better than finding out at the hour it was supposed to run.
 - Seconds are not a field. Five fields, no more: some cron implementations take a sixth field for seconds, and that form is refused here. The shortest interval is one minute.
-- A date that can never happen is refused too. `0 0 30 2 *` does not load, rather than loading and waiting forever.
+- A schedule that can never come round is refused. The 30th of February (`0 0 30 2 *`) is the obvious one, but so is `0 0 */20 * 1L`, which asks for the 1st or 21st of the month and for the last Monday, which is never earlier than the 25th. Neither loads, rather than loading and then waiting forever.
 - Schedules follow your Home Assistant time zone, including daylight saving.
 
 :::

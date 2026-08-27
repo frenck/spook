@@ -182,15 +182,29 @@ async def test_it_keeps_firing(
 
 
 async def test_an_impossible_date_is_refused(hass: HomeAssistant) -> None:
-    """A date that can never happen is rejected rather than silently never firing.
-
-    cronsim catches the 30th of February at parse time, which is the better
-    of the two behaviours: the automation fails to load and says why, instead
-    of loading and waiting forever.
-    """
-    with pytest.raises(vol.Invalid, match="Invalid crontab expression"):
+    """The 30th of February is caught while parsing, and named as such."""
+    with pytest.raises(vol.Invalid, match="Bad day-of-month"):
         await SpookTrigger.async_validate_config(
             hass, {"options": {"schedule": "0 0 30 2 *"}}
+        )
+
+
+@pytest.mark.parametrize("schedule", ["0 0 */20 * 1L", "0 0 */20 * 5#5"])
+async def test_a_schedule_that_never_comes_round_is_refused(
+    hass: HomeAssistant,
+    schedule: str,
+) -> None:
+    """An expression that parses but never fires is refused as well.
+
+    `0 0 */20 * 1L` asks for the 1st or the 21st, and for the last Monday of
+    the month, which is never earlier than the 25th. cronsim parses it
+    happily and then produces nothing at all, so validation has to advance
+    the iterator once to find out. Otherwise the automation loads, sits there
+    and never runs, with nothing anywhere saying why.
+    """
+    with pytest.raises(vol.Invalid, match="never comes round"):
+        await SpookTrigger.async_validate_config(
+            hass, {"options": {"schedule": schedule}}
         )
 
 

@@ -44,11 +44,17 @@ def _cron_schedule(value: Any) -> str:
         raise vol.Invalid(message)
 
     try:
-        # Any date will do here; this only asks whether the expression parses.
-        CronSim(schedule, datetime(2020, 1, 1))  # noqa: DTZ001
+        # Advance it once rather than only building it. Parsing accepts some
+        # expressions that can never come round, such as a day of the month
+        # and a day of the week that never fall together, and those only show
+        # themselves when the iterator runs dry. Any date will do as a start.
+        next(CronSim(schedule, datetime(2020, 1, 1)))  # noqa: DTZ001
     except CronSimError as err:
         message = f"Invalid crontab expression '{schedule}': {err}"
         raise vol.Invalid(message) from err
+    except StopIteration:
+        message = f"Crontab expression '{schedule}' never comes round"
+        raise vol.Invalid(message) from None
 
     return schedule
 
@@ -93,11 +99,10 @@ class SpookTrigger(Trigger):
     def _next(self, after: datetime) -> datetime | None:
         """Return the next time this schedule comes round, if it ever does.
 
-        cronsim 2.7 refuses an impossible date at parse time rather than
-        accepting it and never firing, so in practice this returns a time.
-        The guard stays because exhausting an iterator is a thing iterators
-        do, and a trigger that raises instead of going quiet would take the
-        automation with it.
+        Validation already turned away the expressions that never come round,
+        so in practice this returns a time. The guard stays because exhausting
+        an iterator is a thing iterators do, and a trigger that raises rather
+        than going quiet would take the automation down with it.
         """
         try:
             return next(CronSim(self._schedule, after))
