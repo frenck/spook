@@ -178,7 +178,18 @@ Passes when nobody set this run going.
 
 This condition has no options. It passes for anything Spook cannot pin on a person: a schedule, a template, an integration acting on its own, or a run forced with the Run button.
 
-"Nobody started this" is a different question from "not this particular person". To exclude specific people, use [](#triggered-by-a-user) instead.
+"Nobody started this" is a different question from "not this particular person", which is why this condition takes no options. To exclude specific people, wrap [](#triggered-by-a-user) in Home Assistant's own **Not** condition:
+
+```{code-block} yaml
+:linenos:
+condition: not
+conditions:
+  - condition: spook.triggered_by_user
+    options:
+      person: person.frenck
+```
+
+That passes for anybody who is not Frenck, and also when nobody was behind it at all, which is what "not Frenck" means.
 
 :::{seealso} Example {term}`condition <condition>` in {term}`YAML`
 :class: dropdown

@@ -226,3 +226,82 @@ async def test_the_run_button_skips_top_level_conditions_entirely(
     await hass.async_block_till_done()
 
     assert sorted(ran) == ["not_triggered_by_user", "triggered_by_user"]
+
+
+async def test_excluding_a_person_needs_home_assistants_not(
+    hass: HomeAssistant,
+) -> None:
+    """Excluding somebody means wrapping the condition, not swapping it.
+
+    Naming a person makes `triggered_by_user` pass *for* them, so the
+    documentation now points at Home Assistant's own `not` condition. That is
+    advice, and advice deserves a test: it also shows that "not Frenck" covers
+    the case where nobody was behind it at all.
+    """
+    frenck = await hass.auth.async_create_user("Frenck")
+    joe = await hass.auth.async_create_user("Joe")
+    assert await async_setup_component(
+        hass,
+        "person",
+        {
+            "person": [
+                {"id": "frenck", "name": "Frenck", "user_id": frenck.id},
+                {"id": "joe", "name": "Joe", "user_id": joe.id},
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    ran: list[str] = []
+
+    async def _mark(call) -> None:  # noqa: ANN001
+        ran.append(call.data["which"])
+
+    hass.services.async_register("test", "mark", _mark)
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "alias": "anyone but frenck",
+                    "trigger": {
+                        "platform": "state",
+                        "entity_id": "input_boolean.spook_test",
+                    },
+                    "condition": [
+                        {
+                            "condition": "not",
+                            "conditions": [
+                                {
+                                    "condition": "spook.triggered_by_user",
+                                    "options": {"person": "person.frenck"},
+                                }
+                            ],
+                        }
+                    ],
+                    "action": [
+                        {"action": "test.mark", "data": {"which": "not-frenck"}}
+                    ],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    hass.states.async_set(
+        "input_boolean.spook_test", "on", context=Context(user_id=frenck.id)
+    )
+    await hass.async_block_till_done()
+    assert not ran
+
+    hass.states.async_set(
+        "input_boolean.spook_test", "off", context=Context(user_id=joe.id)
+    )
+    await hass.async_block_till_done()
+    assert ran == ["not-frenck"]
+
+    ran.clear()
+    hass.states.async_set("input_boolean.spook_test", "on")
+    await hass.async_block_till_done()
+    assert ran == ["not-frenck"]
