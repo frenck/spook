@@ -1,4 +1,16 @@
 {
+  "triggers": {
+    "cron": {
+      "name": "Cron schedule",
+      "description": "Fires on a crontab schedule, for the times Home Assistant's own time triggers cannot express, like every weekday at seven or the last Friday of the month.",
+      "fields": {
+        "schedule": {
+          "name": "Schedule",
+          "description": "A crontab expression with five fields: minute, hour, day of month, month, day of week. Supports ranges and steps, and the day-of-week extensions, so \"MON#2\" is the second Monday and \"5L\" the last Friday. Nicknames like \"@daily\" are not supported."
+        }
+      }
+    }
+  },
   "conditions": {
     "triggered_by_user": {
       "name": "Triggered by a user",

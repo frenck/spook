@@ -92,6 +92,81 @@ action: homeassistant.random_fail
 
 :::
 
+## Triggers
+
+Spook offers the following triggers that are not tied to a specific integration:
+
+### Cron schedule
+
+Fires on a crontab schedule.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Cron schedule 👻
+* - Trigger name
+  - `spook.cron`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `schedule`
+  - {term}`string <string>`
+  - Yes
+  - `0 7 * * 1-5`
+```
+
+Home Assistant's own time triggers cover a time of day and a time pattern. Between them they cannot say "every weekday at seven" or "the last Friday of the month". A crontab expression says either in one line, and anybody who has written a crontab already knows the syntax.
+
+Five fields, in the usual order: minute, hour, day of month, month, day of week. Ranges and steps work, and so do the day-of-week extensions, so `MON#2` is the second Monday of the month and `5L` the last Friday.
+
+When it fires, `trigger.schedule` holds the expression and `trigger.now` the local time it fired at.
+
+One crontab rule catches people out, and it is not ours. Give both a day of the month and a day of the week, and cron combines them with "or", not "and". So `0 7 15 * 1` runs at seven on the 15th of the month, and at seven every Monday as well. Leave one of the two as `*` if you only mean the other.
+
+That "or" holds only while both fields are plain lists of days. Let either one start with a `*`, a step like `*/2` included, and the two combine with "and" instead: `0 7 15 * */2` is the 15th, but only when it falls on a Sunday, Tuesday, Thursday or Saturday.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Every weekday at seven in the morning:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.cron
+options:
+  schedule: "0 7 * * 1-5"
+```
+
+The last Friday of the month, at three in the afternoon:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.cron
+options:
+  schedule: "0 15 * * 5L"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Nicknames are not supported. `@daily`, `@hourly` and friends are refused: write the five fields out. The automation will not load and will say what is wrong with the expression, which is better than finding out at the hour it was supposed to run.
+- Seconds are not a field. Five fields, no more: some cron implementations take a sixth field for seconds, and that form is refused here. The shortest interval is one minute.
+- A schedule that can never come round is refused. The 30th of February (`0 0 30 2 *`) is the obvious one. So is `0 0 */20 * 1L`: the `*` makes it an "and", and no 1st or 21st of a month is ever also the last Monday. Neither loads, rather than loading and then waiting forever.
+- Schedules follow your Home Assistant time zone, including daylight saving.
+
+:::
+
 ## Conditions
 
 Spook offers the following conditions that are not tied to a specific integration:

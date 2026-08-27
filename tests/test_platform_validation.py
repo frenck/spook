@@ -46,10 +46,12 @@ async def test_unknown_integration_is_reported(hass: HomeAssistant) -> None:
 async def test_integration_without_triggers_is_reported(hass: HomeAssistant) -> None:
     """Test keys from integrations without a trigger platform are reported.
 
-    Spook itself exists as an integration but ships no trigger platform.
+    `recorder` exists, and is one of Spook's own dependencies so it is always
+    resolvable, but ships no trigger platform. Spook used to play this part
+    and cannot any more, now that it provides triggers of its own.
     """
-    assert await async_filter_unknown_trigger_keys(hass, {"spook.boo"}) == {
-        "spook.boo",
+    assert await async_filter_unknown_trigger_keys(hass, {"recorder.ghost"}) == {
+        "recorder.ghost",
     }
 
 
