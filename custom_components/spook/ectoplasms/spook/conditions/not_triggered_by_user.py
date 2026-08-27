@@ -41,7 +41,7 @@ class SpookCondition(Condition):
     one condition is how you end up with a condition nobody can read.
     """
 
-    condition = "_automation.not_triggered_by_user"
+    condition = "not_triggered_by_user"
 
     @classmethod
     async def async_validate_config(

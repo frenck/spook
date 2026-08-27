@@ -43,9 +43,7 @@ class SpookCondition(Condition):
     apart, and can narrow it to specific people.
     """
 
-    # Registered under the automation domain rather than Spook's own: the
-    # leading underscore tells Home Assistant to take the key as absolute.
-    condition = "_automation.triggered_by_user"
+    condition = "triggered_by_user"
 
     _person_entity_ids: list[str] | None
 

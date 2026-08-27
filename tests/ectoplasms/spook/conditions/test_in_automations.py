@@ -15,22 +15,10 @@ from typing import TYPE_CHECKING
 
 from homeassistant.core import Context
 from homeassistant.setup import async_setup_component
-import pytest
 
-from custom_components.spook.condition import async_setup_foreign_domain_conditions
 
 if TYPE_CHECKING:
-    from collections.abc import Generator
-
     from homeassistant.core import HomeAssistant
-
-
-@pytest.fixture(name="resolve_foreign_conditions")
-def resolve_foreign_conditions_fixture() -> Generator[None]:
-    """Install Spook's condition resolution patch for the duration of a test."""
-    restore = async_setup_foreign_domain_conditions()
-    yield
-    restore()
 
 
 async def _automations(hass: HomeAssistant, trigger: dict) -> list[str]:
@@ -50,7 +38,7 @@ async def _automations(hass: HomeAssistant, trigger: dict) -> list[str]:
                 {
                     "alias": which,
                     "trigger": trigger,
-                    "condition": [{"condition": f"automation.{which}"}],
+                    "condition": [{"condition": f"spook.{which}"}],
                     "action": [{"action": "test.mark", "data": {"which": which}}],
                 }
                 for which in ("triggered_by_user", "not_triggered_by_user")
@@ -61,7 +49,6 @@ async def _automations(hass: HomeAssistant, trigger: dict) -> list[str]:
     return ran
 
 
-@pytest.mark.usefixtures("resolve_foreign_conditions")
 async def test_an_event_fired_by_a_user(hass: HomeAssistant) -> None:
     """A user behind the event is found through the trigger."""
     ran = await _automations(hass, {"platform": "event", "event_type": "spook_test"})
@@ -72,7 +59,6 @@ async def test_an_event_fired_by_a_user(hass: HomeAssistant) -> None:
     assert ran == ["triggered_by_user"]
 
 
-@pytest.mark.usefixtures("resolve_foreign_conditions")
 async def test_an_event_fired_by_nobody(hass: HomeAssistant) -> None:
     """An event with no user behind it is nobody's doing."""
     ran = await _automations(hass, {"platform": "event", "event_type": "spook_test"})
@@ -83,7 +69,6 @@ async def test_an_event_fired_by_nobody(hass: HomeAssistant) -> None:
     assert ran == ["not_triggered_by_user"]
 
 
-@pytest.mark.usefixtures("resolve_foreign_conditions")
 async def test_a_state_change_made_by_a_user(hass: HomeAssistant) -> None:
     """A state trigger carries its user in the state that changed."""
     ran = await _automations(
@@ -98,7 +83,6 @@ async def test_a_state_change_made_by_a_user(hass: HomeAssistant) -> None:
     assert ran == ["triggered_by_user"]
 
 
-@pytest.mark.usefixtures("resolve_foreign_conditions")
 async def test_a_state_change_made_by_an_integration(hass: HomeAssistant) -> None:
     """A state change nobody asked for is not a person's doing."""
     ran = await _automations(
@@ -111,7 +95,6 @@ async def test_a_state_change_made_by_an_integration(hass: HomeAssistant) -> Non
     assert ran == ["not_triggered_by_user"]
 
 
-@pytest.mark.usefixtures("resolve_foreign_conditions")
 async def test_inside_the_action_sequence(hass: HomeAssistant) -> None:
     """The conditions also work in an `if` inside the actions.
 
@@ -136,7 +119,7 @@ async def test_inside_the_action_sequence(hass: HomeAssistant) -> None:
                     "trigger": {"platform": "event", "event_type": "spook_test"},
                     "action": [
                         {
-                            "if": [{"condition": f"automation.{which}"}],
+                            "if": [{"condition": f"spook.{which}"}],
                             "then": [{"action": "test.mark", "data": {"which": which}}],
                         }
                         for which in ("triggered_by_user", "not_triggered_by_user")

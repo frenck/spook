@@ -9,17 +9,17 @@ date: 2026-08-22T09:15:00+02:00
 
 Spook provides new conditions to Home Assistant. This reference page lists them all and points you to the right documentation for that condition.
 
-## Automation: Triggered by a user
+## Triggered by a user
 
 Passes when a person set this run going, rather than a schedule, a state change, or another automation. _#whodunnit_
 
-`automation.triggered_by_user`, [documentation](integrations/automation#triggered-by-a-user) 📚
+`spook.triggered_by_user`, [documentation](other-features#triggered-by-a-user) 📚
 
-## Automation: Not triggered by a user
+## Not triggered by a user
 
 Passes when nobody set this run going. The other half of the same question. _#nobodyhome_
 
-`automation.not_triggered_by_user`, [documentation](integrations/automation#not-triggered-by-a-user) 📚
+`spook.not_triggered_by_user`, [documentation](other-features#not-triggered-by-a-user) 📚
 
 ## Cooldown
 
