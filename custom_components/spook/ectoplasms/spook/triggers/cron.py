@@ -8,14 +8,14 @@ from typing import TYPE_CHECKING, Any
 from cronsim import CronSim, CronSimError
 import voluptuous as vol
 
-from homeassistant.const import CONF_OPTIONS
+from homeassistant.const import CONF_OPTIONS, EVENT_CORE_CONFIG_UPDATE
 from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_point_in_time
 from homeassistant.helpers.trigger import Trigger
 from homeassistant.util import dt as dt_util
 
 if TYPE_CHECKING:
-    from homeassistant.core import CALLBACK_TYPE, HomeAssistant
+    from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
     from homeassistant.helpers.trigger import (
         TriggerActionRunner,
         TriggerConfig,
@@ -116,6 +116,7 @@ class SpookTrigger(Trigger):
     ) -> CALLBACK_TYPE:
         """Attach the trigger to an action runner."""
         unsub: CALLBACK_TYPE | None = None
+        time_zone = self._hass.config.time_zone
 
         @callback
         def schedule_next(after: datetime) -> None:
@@ -124,6 +125,14 @@ class SpookTrigger(Trigger):
             if (upcoming := self._next(after)) is None:
                 return
             unsub = async_track_point_in_time(self._hass, fire, upcoming)
+
+        @callback
+        def stop_waiting() -> None:
+            """Drop the pending wait, if there is one."""
+            nonlocal unsub
+            if unsub is not None:
+                unsub()
+                unsub = None
 
         @callback
         def fire(_scheduled: datetime) -> None:
@@ -145,16 +154,38 @@ class SpookTrigger(Trigger):
                 f"cron schedule {self._schedule}",
             )
 
+        @callback
+        def core_config_changed(_event: Event) -> None:
+            """Work the pending wait out again when the time zone changes.
+
+            The wait is a single absolute instant, worked out in whichever
+            zone was configured at the time. Change the zone and that instant
+            still points at the old zone's wall clock, so one run lands at the
+            wrong hour. Core's utility meter runs on cronsim too and rebuilds
+            its schedule here for the same reason.
+            """
+            nonlocal time_zone
+            if self._hass.config.time_zone == time_zone:
+                return
+
+            time_zone = self._hass.config.time_zone
+            stop_waiting()
+            schedule_next(dt_util.now())
+
         # A local, timezone-aware time: cronsim needs the zone to get daylight
         # saving right.
         schedule_next(dt_util.now())
 
+        # Fires for any change to the core config, so the handler checks
+        # whether the time zone is the part that moved.
+        unsub_core_config = self._hass.bus.async_listen(
+            EVENT_CORE_CONFIG_UPDATE, core_config_changed
+        )
+
         @callback
         def unattach() -> None:
             """Stop waiting."""
-            nonlocal unsub
-            if unsub is not None:
-                unsub()
-                unsub = None
+            unsub_core_config()
+            stop_waiting()
 
         return unattach

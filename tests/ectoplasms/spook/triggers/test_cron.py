@@ -33,6 +33,7 @@ CRON_MODULE = "custom_components.spook.ectoplasms.spook.triggers.cron"
 # `weekday()` counts Monday as 0; crontab counts it as 1.
 MONDAY = 0
 FIFTEENTH = 15
+MORNING_SEVEN = 7
 
 
 async def _detach(hass: HomeAssistant) -> None:
@@ -221,6 +222,23 @@ async def test_a_date_years_away_is_fine(hass: HomeAssistant) -> None:
     assert (upcoming.year, upcoming.month, upcoming.day) == (2028, 2, 29)
 
 
+def _recording_tracker(
+    bookings: list[tuple[datetime, Callable[[datetime], None]]],
+) -> Callable[..., Callable[[], None]]:
+    """Stand in for `async_track_point_in_time` and note what it was asked for.
+
+    The trigger books a single absolute instant at a time, and most of what
+    is worth checking is which instant that was. Going through the harness'
+    own timers cannot show that.
+    """
+
+    def _track(_hass, action, point_in_time):  # noqa: ANN001, ANN202
+        bookings.append((point_in_time, action))
+        return lambda: None
+
+    return _track
+
+
 async def test_a_late_run_does_not_work_through_what_it_missed(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
@@ -237,20 +255,16 @@ async def test_a_late_run_does_not_work_through_what_it_missed(
     """
     freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-27 12:00:00")))
 
-    scheduled: list[tuple[datetime, Callable[[datetime], None]]] = []
+    booked: list[tuple[datetime, Callable[[datetime], None]]] = []
     ran: list[dict] = []
 
-    def _track(_hass, action, point_in_time):  # noqa: ANN001, ANN202
-        scheduled.append((point_in_time, action))
-        return lambda: None
-
-    with patch(f"{CRON_MODULE}.async_track_point_in_time", _track):
+    with patch(f"{CRON_MODULE}.async_track_point_in_time", _recording_tracker(booked)):
         trigger = SpookTrigger(hass, _config("*/1 * * * *"))
         await trigger.async_attach_runner(
             lambda payload, _description: ran.append(payload)
         )
 
-        upcoming, fire = scheduled.pop()
+        upcoming, fire = booked.pop()
         assert upcoming == dt_util.parse_datetime("2026-08-27 12:01:00").replace(
             tzinfo=upcoming.tzinfo
         )
@@ -260,7 +274,7 @@ async def test_a_late_run_does_not_work_through_what_it_missed(
         freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-27 13:00:00")))
         fire(dt_util.as_utc(upcoming))
 
-    following, _ = scheduled.pop()
+    following, _ = booked.pop()
     assert following > dt_util.now(), (
         "asked for a time in the past, so it will catch up"
     )
@@ -334,6 +348,66 @@ async def test_a_starred_day_field_combines_with_and(
 
         # cron counts Sunday as 0; `weekday()` counts Monday as 0.
         assert (moment.weekday() + 1) % 7 in cron_weekdays
+
+
+async def test_a_time_zone_change_reworks_the_pending_wait(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Change the time zone and the wait already booked is worked out again.
+
+    The wait is one absolute instant. Booked in US/Pacific, `0 7 * * *` means
+    07:00 Pacific; switch to Europe/Amsterdam and that same instant is no
+    longer seven in the morning anywhere the user cares about. Core's utility
+    meter rebuilds its cronsim schedule on this event too.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-27 12:00:00")))
+
+    booked: list[tuple[datetime, Callable[[datetime], None]]] = []
+
+    with patch(f"{CRON_MODULE}.async_track_point_in_time", _recording_tracker(booked)):
+        trigger = SpookTrigger(hass, _config("0 7 * * *"))
+        unattach = await trigger.async_attach_runner(lambda *_args: None)
+
+        first, _ = booked.pop()
+        assert first.hour == MORNING_SEVEN
+
+        await hass.config.async_update(time_zone="Europe/Amsterdam")
+        await hass.async_block_till_done()
+
+        reworked, _ = booked.pop()
+        unattach()
+
+    assert reworked != first, "the wait was left on the old zone's instant"
+    assert str(reworked.tzinfo) == "Europe/Amsterdam"
+    assert reworked.hour == MORNING_SEVEN
+
+
+async def test_an_unrelated_core_config_change_is_left_alone(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The event fires for any core config change, so only the zone counts.
+
+    Rebooking on every one of them would be harmless but pointless, and it
+    would move the wait around whenever somebody renames their house.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-27 12:00:00")))
+
+    booked: list[tuple[datetime, Callable[[datetime], None]]] = []
+
+    with patch(f"{CRON_MODULE}.async_track_point_in_time", _recording_tracker(booked)):
+        trigger = SpookTrigger(hass, _config("0 7 * * *"))
+        unattach = await trigger.async_attach_runner(lambda *_args: None)
+
+        assert len(booked) == 1
+
+        await hass.config.async_update(location_name="Somewhere else")
+        await hass.async_block_till_done()
+
+        unattach()
+
+    assert len(booked) == 1, "rebooked over a change that was not the time zone"
 
 
 def _config(schedule: str) -> TriggerConfig:
