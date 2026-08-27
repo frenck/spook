@@ -54,7 +54,7 @@ def async_disable_device_and_parent_if_needed(
     device_id: str,
 ) -> None:
     """Disable a device and its parent when nothing enabled hangs off it."""
-    # A registry can contain via_device_id cycles (including self-references),
+    # A registry can contain via_device_id cycles between distinct devices,
     # so track visited devices to avoid walking the chain forever.
     seen: set[str] = set()
     current_id: str | None = device_id
@@ -92,7 +92,7 @@ def async_enable_device_and_parent(
     device_id: str,
 ) -> None:
     """Enable a device and its parent device chain."""
-    # A registry can contain via_device_id cycles (including self-references),
+    # A registry can contain via_device_id cycles between distinct devices,
     # so track visited devices to avoid walking the chain forever.
     chain: list[str] = []
     seen: set[str] = set()
