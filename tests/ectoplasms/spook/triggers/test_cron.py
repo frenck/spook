@@ -290,11 +290,18 @@ async def test_day_of_month_and_day_of_week_combine_with_or(
         assert moment is not None
         days.append((moment.day, moment.weekday()))
 
-    mondays = [day for day, weekday in days if weekday == MONDAY]
-    fifteenths = [day for day, _ in days if day == FIFTEENTH]
+    # A Monday that is not the 15th, and a 15th that is not a Monday. Merely
+    # finding a Monday and finding a 15th would also hold for an "and", where
+    # every occurrence is both at once.
+    mondays_other_than_the_15th = [
+        day for day, weekday in days if weekday == MONDAY and day != FIFTEENTH
+    ]
+    fifteenths_other_than_mondays = [
+        day for day, weekday in days if day == FIFTEENTH and weekday != MONDAY
+    ]
 
-    assert mondays, "no Mondays, so the day-of-week half was ignored"
-    assert fifteenths, "no 15th, so the day-of-month half was ignored"
+    assert mondays_other_than_the_15th, 'only ever the 15th, so this is an "and"'
+    assert fifteenths_other_than_mondays, 'only ever a Monday, so this is an "and"'
 
 
 @pytest.mark.parametrize(
