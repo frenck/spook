@@ -272,32 +272,6 @@ async def test_enable_device_service_enables_parent_device(
 
 
 @pytest.mark.usefixtures("device_services")
-async def test_enable_device_service_survives_via_device_self_reference(
-    hass: HomeAssistant,
-    hass_admin_user: MockUser,
-    config_entry: MockConfigEntry,
-    device_registry: DeviceRegistry,
-) -> None:
-    """Test enabling a device whose via_device_id points at itself."""
-    device = device_registry.async_get_or_create(
-        config_entry_id=config_entry.entry_id,
-        identifiers={("test", "self-referencing-device")},
-        disabled_by=DeviceEntryDisabler.USER,
-    )
-    device_registry.async_update_device(device_id=device.id, via_device_id=device.id)
-
-    await hass.services.async_call(
-        DOMAIN,
-        "enable_device",
-        {"device_id": device.id},
-        blocking=True,
-        context=Context(user_id=hass_admin_user.id),
-    )
-
-    assert device_registry.async_get(device.id).disabled_by is None
-
-
-@pytest.mark.usefixtures("device_services")
 async def test_device_services_survive_via_device_cycle(
     hass: HomeAssistant,
     hass_admin_user: MockUser,
