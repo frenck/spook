@@ -92,6 +92,77 @@ action: homeassistant.random_fail
 
 :::
 
+## Triggers
+
+Spook offers the following triggers that are not tied to a specific integration:
+
+### Cron schedule
+
+Fires on a crontab schedule.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Cron schedule 👻
+* - Trigger name
+  - `spook.cron`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `schedule`
+  - {term}`string <string>`
+  - Yes
+  - `0 7 * * 1-5`
+```
+
+Home Assistant's own time triggers cover a time of day and a time pattern. Between them they cannot say "every weekday at seven" or "the last Friday of the month". A crontab expression says either in one line, and anybody who has written a crontab already knows the syntax.
+
+Five fields, in the usual order: minute, hour, day of month, month, day of week. Ranges and steps work, and so do the day-of-week extensions, so `MON#2` is the second Monday of the month and `5L` the last Friday.
+
+When it fires, `trigger.schedule` holds the expression and `trigger.now` the local time it fired at.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Every weekday at seven in the morning:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.cron
+options:
+  schedule: "0 7 * * 1-5"
+```
+
+The last Friday of the month, at three in the afternoon:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.cron
+options:
+  schedule: "0 15 * * 5L"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Nicknames are not supported. `@daily`, `@hourly` and friends are refused: write the five fields out. The automation will not load and will say what is wrong with the expression, which is better than finding out at the hour it was supposed to run.
+- Seconds are not a field. Crontab's smallest step is a minute, so this trigger cannot fire more often than that.
+- A date that can never happen is refused too. `0 0 30 2 *` does not load, rather than loading and waiting forever.
+- Schedules follow your Home Assistant time zone, including daylight saving.
+
+:::
+
 ## Conditions
 
 Spook offers the following conditions that are not tied to a specific integration:
