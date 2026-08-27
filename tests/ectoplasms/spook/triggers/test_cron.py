@@ -30,6 +30,9 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 CRON_MODULE = "custom_components.spook.ectoplasms.spook.triggers.cron"
+# `weekday()` counts Monday as 0; crontab counts it as 1.
+MONDAY = 0
+FIFTEENTH = 15
 
 
 async def _detach(hass: HomeAssistant) -> None:
@@ -265,6 +268,33 @@ async def test_a_late_run_does_not_work_through_what_it_missed(
 
     assert len(ran) == 1
     assert ran[0]["now"] == dt_util.now()
+
+
+async def test_day_of_month_and_day_of_week_combine_with_or(
+    hass: HomeAssistant,
+) -> None:
+    """Both day fields given means "or", which is what the documentation says.
+
+    The classic crontab trap, and cronsim follows it: `0 0 15 * 1` fires on
+    every Monday and on the 15th. This pins the behaviour the documentation
+    describes, so a change in cronsim shows up here rather than in somebody's
+    automation.
+    """
+    trigger = SpookTrigger(hass, _config("0 0 15 * 1"))
+    moment = dt_util.parse_datetime("2026-01-01 00:00:00")
+
+    days = []
+    for _ in range(6):
+        # pylint: disable-next=protected-access
+        moment = trigger._next(moment)  # noqa: SLF001
+        assert moment is not None
+        days.append((moment.day, moment.weekday()))
+
+    mondays = [day for day, weekday in days if weekday == MONDAY]
+    fifteenths = [day for day, _ in days if day == FIFTEENTH]
+
+    assert mondays, "no Mondays, so the day-of-week half was ignored"
+    assert fifteenths, "no 15th, so the day-of-month half was ignored"
 
 
 def _config(schedule: str) -> TriggerConfig:

@@ -130,6 +130,8 @@ Five fields, in the usual order: minute, hour, day of month, month, day of week.
 
 When it fires, `trigger.schedule` holds the expression and `trigger.now` the local time it fired at.
 
+One crontab rule catches people out, and it is not ours. Give both a day of the month and a day of the week, and cron combines them with "or", not "and". So `0 7 15 * 1` runs at seven on the 15th of the month, and at seven every Monday as well. Leave one of the two as `*` if you only mean the other. The exception is a day of the month starting with `*`, such as `*/20`, which does combine with "and".
+
 :::{seealso} Example trigger in {term}`YAML`
 :class: dropdown
 
@@ -158,7 +160,7 @@ options:
 
 - Nicknames are not supported. `@daily`, `@hourly` and friends are refused: write the five fields out. The automation will not load and will say what is wrong with the expression, which is better than finding out at the hour it was supposed to run.
 - Seconds are not a field. Five fields, no more: some cron implementations take a sixth field for seconds, and that form is refused here. The shortest interval is one minute.
-- A schedule that can never come round is refused. The 30th of February (`0 0 30 2 *`) is the obvious one, but so is `0 0 */20 * 1L`, which asks for the 1st or 21st of the month and for the last Monday, which is never earlier than the 25th. Neither loads, rather than loading and then waiting forever.
+- A schedule that can never come round is refused. The 30th of February (`0 0 30 2 *`) is the obvious one. So is `0 0 */20 * 1L`: the `*` makes it an "and", and no 1st or 21st of a month is ever also the last Monday. Neither loads, rather than loading and then waiting forever.
 - Schedules follow your Home Assistant time zone, including daylight saving.
 
 :::
