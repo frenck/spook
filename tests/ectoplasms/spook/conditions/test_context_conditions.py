@@ -52,8 +52,13 @@ async def _run(hass: HomeAssistant, condition: dict, context: Context) -> bool:
     return bool(ran)
 
 
-async def test_registered_under_the_automation_domain(hass: HomeAssistant) -> None:
-    """Both conditions are keyed for the automation domain, not Spook's."""
+async def test_both_conditions_are_discovered(hass: HomeAssistant) -> None:
+    """Both conditions turn up in Spook's own discovery, under plain keys.
+
+    Plain, because Home Assistant prefixes them with the providing
+    integration itself: these are `spook.triggered_by_user` and
+    `spook.not_triggered_by_user` by the time anybody writes one in YAML.
+    """
     conditions = await async_get_conditions(hass)
     assert "triggered_by_user" in conditions
     assert "not_triggered_by_user" in conditions

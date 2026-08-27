@@ -31,14 +31,17 @@ _CONDITION_SCHEMA = vol.Schema(
 class SpookCondition(Condition):
     """Spook condition that passes when nobody set this run going.
 
-    The counterpart of ``automation.triggered_by_user``, and a separate
-    condition on purpose: picking "not triggered by a user" from the list
-    says what it does, where a negated option on the other one would have
-    to be read twice.
+    The counterpart of ``spook.triggered_by_user``, and a separate condition
+    on purpose: picking "not triggered by a user" from the list says what it
+    does, where a negated option on the other one would have to be read
+    twice.
 
     It takes no options. "Not started by anyone" is a different question
     from "not started by this particular person", and answering both from
     one condition is how you end up with a condition nobody can read.
+
+    It passes for anything Spook cannot attribute to a person, which
+    includes a run forced through ``automation.trigger``.
     """
 
     condition = "not_triggered_by_user"

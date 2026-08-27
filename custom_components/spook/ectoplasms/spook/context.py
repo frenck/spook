@@ -10,10 +10,13 @@ if TYPE_CHECKING:
     from homeassistant.core import Context
 
 # Where a trigger keeps the context of the thing that set it off. A state
-# trigger carries the state that changed; an event trigger carries the event.
-# Triggers without one of these (time, sun, template) cannot say who was
-# behind them, because nobody was.
-_TRIGGER_CONTEXT_KEYS = ("to_state", "event", "from_state")
+# trigger carries the state it changed to; an event trigger carries the event.
+#
+# `from_state` is deliberately not here. It is the state before the change, so
+# its context belongs to whoever wrote the value that is now being replaced. A
+# user flipping a switch and an integration turning it back a minute later
+# would both look like the user.
+_TRIGGER_CONTEXT_KEYS = ("to_state", "event")
 
 
 def _candidates(variables: Any) -> Iterator[Any]:
@@ -26,7 +29,9 @@ def _candidates(variables: Any) -> Iterator[Any]:
     # An automation does not inherit it. It deliberately starts a fresh
     # context carrying only a parent_id (`components/automation/__init__.py`,
     # `Context(parent_id=parent_id)`), so the user has to come from whatever
-    # the trigger captured.
+    # the trigger captured. Nothing resolves that parent back to a context,
+    # which is why forcing a run with `automation.trigger` cannot be
+    # attributed to anybody.
     trigger = variables.get("trigger")
     if not hasattr(trigger, "get"):
         return
@@ -39,8 +44,9 @@ def run_context(variables: Any) -> Context | None:
     """Return the context of whoever set this run going, if it can be known.
 
     Returns ``None`` when nothing in reach names a user: a time trigger, a
-    template trigger, or a condition being evaluated outside a run at all.
-    Callers should read that as "not a person", which is the truth.
+    template trigger, a run forced through `automation.trigger`, or a
+    condition being evaluated outside a run at all. Callers should read that
+    as "not a person", which is the truth as far as anything here can tell.
 
     A context that exists but names nobody is the same answer as no context,
     so it is not worth telling them apart.
@@ -49,9 +55,6 @@ def run_context(variables: Any) -> Context | None:
         return None
 
     for context in _candidates(variables):
-        # Duck-typed rather than isinstance: this only ever reads, and a
-        # mapping standing in for a Context during a template render is
-        # just as usable.
         if getattr(context, "user_id", None) is not None:
             return context
 

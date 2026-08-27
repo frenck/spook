@@ -37,10 +37,15 @@ _CONDITION_SCHEMA = vol.Schema(
 class SpookCondition(Condition):
     """Spook condition that passes when a person set this run going.
 
-    A run started from the interface, the app, or an API call carries the
-    user account it was made by. A run started by a schedule, a state
-    change, or another automation does not. This condition tells those
-    apart, and can narrow it to specific people.
+    What it can see is the user behind the trigger. A state change or an
+    event somebody caused carries the account that caused it, so an
+    automation reacting to that finds them. A schedule, a template, or an
+    integration acting on its own carries nobody, and neither does a run
+    forced through ``automation.trigger``: Home Assistant hands the caller's
+    context to the automation but the run itself starts a fresh one, and
+    nothing resolves it back.
+
+    Can be narrowed to specific people.
     """
 
     condition = "triggered_by_user"

@@ -73,9 +73,9 @@ Boolean
 
 :::{glossary}
 Condition
-: A condition decides whether an {term}`automation <automation>` or {term}`script <script>` carries on. Conditions sit between the trigger and the {term}`actions <action>`: when one does not pass, nothing after it runs.
-: Conditions are also used inside a {term}`sequence <sequence>`, in an `if` or a `choose` block, to pick between different things to do.
-: {term}`Integrations <integration>` can provide their own conditions, which is how Spook adds some. A condition's name says which integration provides it, like `sun.is_up` or `automation.triggered_by_user`.
+: A condition decides whether an {term}`automation <automation>` or {term}`script <script>` carries on. A condition between the trigger and the {term}`actions <action>` is a gate on the whole run: when it does not pass, none of the actions happen.
+: Conditions are also used inside a {term}`sequence <sequence>`, in an `if` or a `choose` block. There they only decide which branch runs, and a branch that does not run leaves the rest of the sequence alone.
+: {term}`Integrations <integration>` can provide their own conditions, which is how Spook adds some. Those are named after the integration providing them, like `sun.is_up` or `spook.triggered_by_user`, while the ones built into Home Assistant itself, `state` or `template`, carry no prefix at all.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/scripts/conditions/)
 :::
 

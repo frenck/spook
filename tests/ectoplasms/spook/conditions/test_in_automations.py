@@ -16,6 +16,12 @@ from typing import TYPE_CHECKING
 from homeassistant.core import Context
 from homeassistant.setup import async_setup_component
 
+# Importing Spook puts it in `sys.modules`, which is what lets Home Assistant's
+# loader resolve the integration when it goes looking for the condition
+# platform. Without it these tests only pass when some other file in the run
+# happened to import Spook first, which is a fine way to have a test suite that
+# is green for the wrong reason.
+import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -134,3 +140,59 @@ async def test_inside_the_action_sequence(hass: HomeAssistant) -> None:
     await hass.async_block_till_done()
 
     assert ran == ["triggered_by_user"]
+
+
+async def test_an_earlier_user_is_not_blamed_for_a_later_change(
+    hass: HomeAssistant,
+) -> None:
+    """A user's write must not be attributed to the integration write after it.
+
+    The state a trigger moved away from carries the context of whoever wrote
+    it. Reading that as the cause meant a user flipping a switch and an
+    integration turning it back a minute later both looked like the user.
+    """
+    ran = await _automations(
+        hass, {"platform": "state", "entity_id": "input_boolean.spook_test"}
+    )
+
+    hass.states.async_set(
+        "input_boolean.spook_test", "on", context=Context(user_id="ghost-hunter")
+    )
+    await hass.async_block_till_done()
+    assert ran == ["triggered_by_user"]
+
+    ran.clear()
+    hass.states.async_set("input_boolean.spook_test", "off")
+    await hass.async_block_till_done()
+
+    assert ran == ["not_triggered_by_user"]
+
+
+async def test_forcing_a_run_is_attributed_to_nobody(hass: HomeAssistant) -> None:
+    """Pressing "Run actions" cannot be pinned on the person who pressed it.
+
+    Home Assistant hands the caller's account to the automation, but the run
+    starts a fresh context carrying only a pointer back to the caller's, and
+    nothing resolves that pointer. This is documented rather than worked
+    around, so it is worth pinning: if a future Home Assistant does propagate
+    it, this test fails and the documentation needs to change.
+    """
+    user = await hass.auth.async_create_user("Ghost Hunter", group_ids=["system-admin"])
+    ran = await _automations(hass, {"platform": "event", "event_type": "never"})
+
+    await hass.services.async_call(
+        "automation",
+        "trigger",
+        {
+            "entity_id": [
+                "automation.triggered_by_user",
+                "automation.not_triggered_by_user",
+            ],
+            "skip_condition": False,
+        },
+        blocking=True,
+        context=Context(user_id=user.id),
+    )
+    await hass.async_block_till_done()
+
+    assert ran == ["not_triggered_by_user"]

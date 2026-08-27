@@ -11,7 +11,7 @@ Spook provides new conditions to Home Assistant. This reference page lists them 
 
 ## Triggered by a user
 
-Passes when a person set this run going, rather than a schedule, a state change, or another automation. _#whodunnit_
+Passes when a person is behind what set this off, rather than a schedule, a template, or an integration acting on its own. _#whodunnit_
 
 `spook.triggered_by_user`, [documentation](other-features#triggered-by-a-user) 📚
 

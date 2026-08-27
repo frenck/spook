@@ -126,7 +126,7 @@ Passes when a person set this run going.
   - Defaults to any user
 ```
 
-Somebody pressing a button in the interface, tapping something in the app, or calling an action from the API all carry the user account they were made by. A schedule, a state change, or another automation does not.
+What this can see is the person behind the trigger. Somebody flipping a switch, tapping something in the app, or calling an action from the API leaves their user account on the state change or event that follows, so an automation reacting to it finds them. A schedule, a template, or an integration acting on its own leaves nobody.
 
 If the `person` attribute is not provided, the condition passes for anybody. Name one or more people to narrow it, and Spook matches against the user account each of them is linked to.
 
@@ -155,7 +155,8 @@ options:
 :class: dropdown
 
 - A person needs a user account linked to them. Linking one is optional on the People page, and a person without one has nothing to match against, so naming them means this condition can never pass.
-- Where the user comes from depends on the trigger. An automation does not inherit the context of whatever set it off, so Spook reads the user out of the trigger. A state trigger and an event trigger both carry it. A time trigger, a sun trigger, or a template trigger cannot, because nobody was behind them.
+- **Forcing a run is not attributed to anybody.** Pressing "Run actions" on an automation, or calling `automation.trigger`, does not satisfy this condition. Home Assistant hands the caller's account to the automation, but the run itself starts a fresh context carrying only a pointer to the caller's, and nothing resolves that pointer back. Use `spook.not_triggered_by_user` if you want to catch that case.
+- Where the user comes from depends on the trigger. A state trigger and an event trigger carry it, when a person caused the change. A time trigger, a sun trigger, or a template trigger cannot, because nobody was behind them.
 - A long-lived access token counts as the person who created it. An API call authenticated with one looks exactly like that user.
   :::
 
@@ -174,7 +175,7 @@ Passes when nobody set this run going.
   - Newly added condition
 ```
 
-This condition has no options. A schedule, a state change, or another automation started the run rather than a person.
+This condition has no options. It passes for anything Spook cannot pin on a person: a schedule, a template, an integration acting on its own, or a run forced with the Run button.
 
 "Nobody started this" is a different question from "not this particular person". To exclude specific people, use [](#triggered-by-a-user) instead.
 
