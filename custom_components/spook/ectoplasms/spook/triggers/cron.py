@@ -25,16 +25,31 @@ if TYPE_CHECKING:
 
 CONF_SCHEDULE = "schedule"
 
+CRON_FIELDS = 5
+
 
 def _cron_schedule(value: Any) -> str:
     """Validate a crontab expression, and say what is wrong with it if not."""
     schedule = str(value)
+
+    # cronsim also takes a six-field form, where the leading field is seconds.
+    # That would hand out triggers firing every second, which is neither what
+    # this documents nor something to run an automation off. Five fields only.
+    if len(schedule.split()) != CRON_FIELDS:
+        message = (
+            f"Invalid crontab expression '{schedule}': expected "
+            f"{CRON_FIELDS} fields (minute, hour, day of month, month, "
+            "day of week)"
+        )
+        raise vol.Invalid(message)
+
     try:
         # Any date will do here; this only asks whether the expression parses.
         CronSim(schedule, datetime(2020, 1, 1))  # noqa: DTZ001
     except CronSimError as err:
         message = f"Invalid crontab expression '{schedule}': {err}"
         raise vol.Invalid(message) from err
+
     return schedule
 
 
@@ -106,21 +121,28 @@ class SpookTrigger(Trigger):
             unsub = async_track_point_in_time(self._hass, fire, upcoming)
 
         @callback
-        def fire(now: datetime) -> None:
+        def fire(_scheduled: datetime) -> None:
             """Run the action, then line up the one after it."""
             nonlocal unsub
             unsub = None
-            local = dt_util.as_local(now)
-            schedule_next(local)
+
+            # Ask what time it is rather than trusting the time handed over:
+            # that one is the time this run was scheduled for, which stops
+            # being the current time once the machine has been asleep.
+            # Continuing from it would then work through every minute that was
+            # missed, one automation run each. Core's own time trigger fetches
+            # the time again for the same reason.
+            now = dt_util.now()
+
+            schedule_next(now)
             run_action(
-                {"schedule": self._schedule, "now": local},
+                {"schedule": self._schedule, "now": now},
                 f"cron schedule {self._schedule}",
             )
 
-        # Seeded with a timezone-aware local time on purpose: cronsim needs the
-        # zone to get daylight saving right, the same reason core's utility
-        # meter does it (home-assistant/core#102984).
-        schedule_next(dt_util.now(dt_util.get_default_time_zone()))
+        # A local, timezone-aware time: cronsim needs the zone to get daylight
+        # saving right.
+        schedule_next(dt_util.now())
 
         @callback
         def unattach() -> None:

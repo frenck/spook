@@ -157,7 +157,7 @@ options:
 :class: dropdown
 
 - Nicknames are not supported. `@daily`, `@hourly` and friends are refused: write the five fields out. The automation will not load and will say what is wrong with the expression, which is better than finding out at the hour it was supposed to run.
-- Seconds are not a field. Crontab's smallest step is a minute, so this trigger cannot fire more often than that.
+- Seconds are not a field. Five fields, no more: some cron implementations take a sixth field for seconds, and that form is refused here. The shortest interval is one minute.
 - A date that can never happen is refused too. `0 0 30 2 *` does not load, rather than loading and waiting forever.
 - Schedules follow your Home Assistant time zone, including daylight saving.
 

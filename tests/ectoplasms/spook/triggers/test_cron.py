@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
 from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
@@ -21,9 +22,14 @@ from custom_components.spook.trigger import async_get_triggers
 import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+    from datetime import datetime
+
     from freezegun.api import FrozenDateTimeFactory
 
     from homeassistant.core import HomeAssistant
+
+CRON_MODULE = "custom_components.spook.ectoplasms.spook.triggers.cron"
 
 
 async def _detach(hass: HomeAssistant) -> None:
@@ -108,6 +114,25 @@ async def test_nicknames_are_refused(hass: HomeAssistant) -> None:
         )
 
 
+@pytest.mark.parametrize("schedule", ["*/15 * * * * *", "* * * * * *", "0 7 * * *  *"])
+async def test_a_seconds_field_is_refused(hass: HomeAssistant, schedule: str) -> None:
+    """Cronsim's six-field form is not offered.
+
+    Its leading field is seconds, so `* * * * * *` would run an automation
+    every second. Five fields is what this documents, and what it takes.
+    """
+    with pytest.raises(vol.Invalid, match="expected 5 fields"):
+        await SpookTrigger.async_validate_config(
+            hass, {"options": {"schedule": schedule}}
+        )
+
+
+async def test_an_empty_schedule_is_refused(hass: HomeAssistant) -> None:
+    """An empty expression is caught by the field count, not by cronsim."""
+    with pytest.raises(vol.Invalid, match="expected 5 fields"):
+        await SpookTrigger.async_validate_config(hass, {"options": {"schedule": "   "}})
+
+
 async def test_a_valid_expression_is_accepted(hass: HomeAssistant) -> None:
     """The forms the documentation advertises all validate."""
     for schedule in ("*/5 * * * *", "0 7 * * 1-5", "0 12 * * MON#2", "0 3 L * *"):
@@ -177,6 +202,55 @@ async def test_a_date_years_away_is_fine(hass: HomeAssistant) -> None:
 
     assert upcoming is not None
     assert (upcoming.year, upcoming.month, upcoming.day) == (2028, 2, 29)
+
+
+async def test_a_late_run_does_not_work_through_what_it_missed(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """After a clock jump the trigger looks forward, not back.
+
+    Core hands the callback the time the run was scheduled for, not the time
+    the timer got round to it. Those come apart when the machine has been
+    asleep, and continuing from the scheduled time would work through every
+    minute that was missed, one automation run each.
+
+    The test harness cannot reproduce that with its own timers, so this drives
+    the trigger's callback directly and checks what it asks for next.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-27 12:00:00")))
+
+    scheduled: list[tuple[datetime, Callable[[datetime], None]]] = []
+    ran: list[dict] = []
+
+    def _track(_hass, action, point_in_time):  # noqa: ANN001, ANN202
+        scheduled.append((point_in_time, action))
+        return lambda: None
+
+    with patch(f"{CRON_MODULE}.async_track_point_in_time", _track):
+        trigger = SpookTrigger(hass, _config("*/1 * * * *"))
+        await trigger.async_attach_runner(
+            lambda payload, _description: ran.append(payload)
+        )
+
+        upcoming, fire = scheduled.pop()
+        assert upcoming == dt_util.parse_datetime("2026-08-27 12:01:00").replace(
+            tzinfo=upcoming.tzinfo
+        )
+
+        # An hour asleep. The timer only gets round to the 12:01 run now, and
+        # is handed 12:01 as its argument.
+        freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-27 13:00:00")))
+        fire(dt_util.as_utc(upcoming))
+
+    following, _ = scheduled.pop()
+    assert following > dt_util.now(), (
+        "asked for a time in the past, so it will catch up"
+    )
+    assert (following.hour, following.minute) == (13, 1)
+
+    assert len(ran) == 1
+    assert ran[0]["now"] == dt_util.now()
 
 
 def _config(schedule: str) -> TriggerConfig:
