@@ -20,3 +20,9 @@ Fires on a crontab schedule, for the times Home Assistant's own time triggers ca
 Fires when nothing has written to an entity for a while, which catches the device that died quietly instead of going unavailable. _#stale_ _#silent_ _#dead_
 
 `spook.stale`, [documentation](other-features#entity-fell-silent) 📚
+
+## Integration failed to set up
+
+Fires when a configuration entry has been unable to set itself up for a while, past the point where Home Assistant's own retries would have sorted it out. _#integration_ _#broken_ _#config-entry_
+
+`spook.integration_failed`, [documentation](other-features#integration-failed-to-set-up) 📚
