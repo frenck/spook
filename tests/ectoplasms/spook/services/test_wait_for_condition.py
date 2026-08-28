@@ -237,7 +237,7 @@ async def test_a_template_from_a_script_is_refused(hass: HomeAssistant) -> None:
     await hass.async_block_till_done()
 
     # With a timeout, because the failure this guards against is a hang.
-    with pytest.raises(HomeAssistantError, match="rendered before this action"):
+    with pytest.raises(HomeAssistantError, match="no Jinja left in it"):
         async with asyncio.timeout(5):
             await hass.services.async_call("script", "hopeful", blocking=True)
 
@@ -333,3 +333,25 @@ async def test_it_takes_what_the_condition_selector_produces(
     )
 
     assert response == {"completed": True}
+
+
+async def test_a_literal_template_is_refused_the_same_way(
+    hass: HomeAssistant,
+) -> None:
+    """Because from here it is the same thing.
+
+    A template someone typed as a literal and one a script rendered are
+    indistinguishable by the time they arrive: both have no Jinja left. So
+    both are refused, and the message says what is known rather than guessing
+    at where the value came from.
+    """
+    _register(hass)
+
+    with pytest.raises(HomeAssistantError, match="no Jinja left in it"):
+        await hass.services.async_call(
+            DOMAIN,
+            "wait_for_condition",
+            {"condition": {"condition": "template", "value_template": "true"}},
+            blocking=True,
+            return_response=True,
+        )

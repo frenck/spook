@@ -26,8 +26,8 @@ if TYPE_CHECKING:
     from homeassistant.helpers.typing import ConfigType
 
 
-def _reject_rendered_templates(config: ConfigType) -> None:
-    """Refuse a condition whose templates were rendered before we got here.
+def _reject_static_templates(config: ConfigType) -> None:
+    """Refuse a condition holding a template that cannot turn.
 
     A script renders every template in the action data before calling the
     action, condition templates included. So `{{ is_state(...) }}` arrives as
@@ -35,14 +35,19 @@ def _reject_rendered_templates(config: ConfigType) -> None:
     `numeric_state` value template arrives as a number. The condition still
     validates, still checks, and never turns, so the wait would be a hang.
 
-    A rendered template is one without any Jinja left in it, which is what
-    Home Assistant calls static. Nobody writes those on purpose.
+    What can be seen from here is that a template has no Jinja left in it,
+    which Home Assistant calls static. Where that came from cannot be seen: a
+    rendered template and a literal somebody typed are the same thing by the
+    time they arrive. Both are constants, so both are refused, and the message
+    names the likely cause without claiming to know.
     """
     if any(template.is_static for template in iter_templates(config)):
         msg = (
-            "The templates in this condition were rendered before this action "
-            "ran, so they cannot turn true any more. Use a condition without "
-            "templates, or wait on the template itself with 'wait_template'."
+            "A template in this condition has no Jinja left in it, so it is a "
+            "constant and can never turn. Usually that means a script rendered "
+            "it before this action ran, which happens to every template in "
+            "action data. Use a condition without templates, or wait on the "
+            "template itself with 'wait_template'."
         )
         raise ServiceValidationError(msg)
 
@@ -82,7 +87,7 @@ class SpookService(AbstractSpookService):
             # voluptuous error in the log says that far less clearly.
             raise ServiceValidationError(str(err)) from err
 
-        _reject_rendered_templates(condition_config)
+        _reject_static_templates(condition_config)
 
         met = self.hass.loop.create_future()
 

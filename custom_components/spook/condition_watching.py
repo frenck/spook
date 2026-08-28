@@ -9,7 +9,7 @@ import jinja2
 from jinja2 import meta as jinja_meta
 import voluptuous as vol
 
-from homeassistant.const import CONF_CONDITION, CONF_CONDITIONS
+from homeassistant.const import CONF_CONDITION, CONF_CONDITIONS, CONF_OPTIONS
 from homeassistant.core import callback
 from homeassistant.exceptions import ConditionError
 from homeassistant.helpers import condition, config_validation as cv
@@ -110,6 +110,58 @@ def _condition_types(config: Any) -> Iterator[str]:
             yield from _condition_types(item.get(CONF_CONDITIONS, []))
 
 
+# Condition types whose every turn arrives as a state change of an entity they
+# name, so the change that arrives is the change that turned them.
+#
+# Which is what makes attribution possible, and its absence is why nothing is
+# attributed otherwise. Say a condition is `and` of a state and a template: the
+# template can quietly become true, and the next unrelated update to the state
+# entity is what notices. Blaming that update, and whoever caused it, for the
+# turn would be wrong.
+_OBSERVABLE = frozenset({"numeric_state", "state", "zone"})
+
+# Keys that put a turn out of reach of the entities a condition names. A `for`
+# turns true when a duration runs out and nothing moves; a `value_template`
+# reaches for entities that cannot be read off the config.
+_UNOBSERVABLE_KEYS = ("for", "value_template")
+
+
+def _leaf_announces_every_turn(config: ConfigType) -> bool:
+    """Report whether a single condition tells us about all of its turns."""
+    if config[CONF_CONDITION] not in _OBSERVABLE:
+        return False
+
+    # A `zone` condition keeps its configuration under `options`, so both
+    # places have to be looked at.
+    options = config.get(CONF_OPTIONS) or {}
+    if any(key in config or key in options for key in _UNOBSERVABLE_KEYS):
+        return False
+
+    # A `numeric_state` threshold can name an entity, and that entity is not
+    # part of what gets extracted, so a change to it goes unnoticed.
+    return not any(
+        isinstance(config.get(bound) or options.get(bound), str)
+        for bound in ("above", "below")
+    )
+
+
+def _announces_every_turn(config: Any) -> bool:
+    """Report whether a whole condition tree tells us about all of its turns."""
+    for item in config if isinstance(config, list) else [config]:
+        if not isinstance(item, dict) or not isinstance(
+            kind := item.get(CONF_CONDITION), str
+        ):
+            return False
+
+        if kind in _NESTING:
+            if not _announces_every_turn(item.get(CONF_CONDITIONS, [])):
+                return False
+        elif not _leaf_announces_every_turn(item):
+            return False
+
+    return True
+
+
 def _as_one_condition(config: ConfigType | list[ConfigType]) -> ConfigType:
     """Turn a condition sequence into the single condition it means.
 
@@ -158,9 +210,11 @@ class ConditionWatcher:
     Only the turn. A condition that is already true when watching starts is
     not a change, and callers that care about the current value ask for it.
 
-    Reports the state change that made it turn, when there was one, so
-    whoever flipped the switch stays attributable. The backstop has nothing to
-    hand over: nobody causes the clock to move.
+    Reports the state change that made it turn, when it can be sure that is
+    what made it turn, so whoever flipped the switch stays attributable. It
+    can be sure only when every part of the condition announces its own turns;
+    see `_announces_every_turn`. Otherwise, and for the backstop, it hands
+    over nothing rather than something that might be the wrong thing.
     """
 
     def __init__(
@@ -169,12 +223,15 @@ class ConditionWatcher:
         checker: ConditionChecker,
         entity_ids: set[str],
         on_met: Callable[[Event[EventStateChangedData] | None], None],
+        *,
+        announces_every_turn: bool,
     ) -> None:
         """Initialize the watcher."""
         self._hass = hass
         self._checker = checker
         self._entity_ids = entity_ids
         self._on_met = on_met
+        self._announces_every_turn = announces_every_turn
         self._met = False
         self._unsubs: list[CALLBACK_TYPE] = []
 
@@ -239,9 +296,10 @@ class ConditionWatcher:
         """Ask again, because something the condition depends on moved.
 
         Carries that change along, the way Home Assistant's own template
-        trigger does, so whoever is behind it can still be found.
+        trigger does, so whoever is behind it can still be found. Only when
+        this change really is what turned the condition, though.
         """
-        self._async_look(event)
+        self._async_look(event if self._announces_every_turn else None)
 
     @callback
     def _async_look_again(self, _now: datetime) -> None:
@@ -305,5 +363,9 @@ async def async_condition_watcher(
     """Build a watcher for an already validated condition, ready to start."""
     checker = await condition.async_from_config(hass, validated)
     return ConditionWatcher(
-        hass, checker, condition.async_extract_entities(validated), on_met
+        hass,
+        checker,
+        condition.async_extract_entities(validated),
+        on_met,
+        announces_every_turn=_announces_every_turn(validated),
     )

@@ -19,6 +19,7 @@ import voluptuous as vol
 from custom_components.spook.condition_watching import (
     BACKSTOP,
     CONTEXT_DEPENDENT,
+    _announces_every_turn,
     _condition_types,
     async_condition_watcher,
     async_validate_condition,
@@ -468,3 +469,103 @@ async def test_the_selector_output_is_what_gets_validated(
     assert isinstance(through_selector, list)
     config = await async_validate_condition(hass, through_selector)
     assert config["condition"] == "state"
+
+
+async def test_a_turn_it_cannot_be_sure_of_names_nobody(
+    hass: HomeAssistant,
+) -> None:
+    """The case that made attribution wrong: a hidden half turning first.
+
+    Half of this `and` is a template, so nothing announces its turns. The
+    template becomes true unnoticed, and the next unrelated update to the
+    watched entity is what discovers it. Blaming that update, and whoever
+    caused it, would be wrong.
+    """
+    hass.states.async_set("input_boolean.gate", "on")
+    hass.states.async_set("sensor.temp", "10")
+    await hass.async_block_till_done()
+
+    watcher, turns = await _watching(
+        hass,
+        {
+            "condition": "and",
+            "conditions": [
+                GATE,
+                {
+                    "condition": "template",
+                    "value_template": "{{ states('sensor.temp') | int(0) > 20 }}",
+                },
+            ],
+        },
+    )
+    assert not turns
+
+    # Nothing watches this, so the turn happens without anyone noticing.
+    hass.states.async_set("sensor.temp", "25")
+    await hass.async_block_till_done()
+    assert not turns
+
+    # An unrelated update to the watched entity is what discovers it.
+    hass.states.async_set(
+        "input_boolean.gate",
+        "on",
+        {"unrelated": 1},
+        context=Context(user_id="innocent-bystander"),
+    )
+    await hass.async_block_till_done()
+    watcher.async_stop()
+
+    assert turns == [None], "blamed a change that merely happened to notice"
+
+
+def test_which_conditions_announce_their_own_turns() -> None:
+    """The rule attribution hangs on, leaf by leaf.
+
+    Measured what `async_extract_entities` really returns for each of these,
+    rather than assumed: a `for` turns true with nothing moving, a
+    `value_template` reaches for entities that are not extracted, and a
+    `numeric_state` threshold naming an entity does not extract that entity.
+    """
+    sure = [
+        {"condition": "state", "entity_id": "a.b", "state": "on"},
+        {"condition": "numeric_state", "entity_id": "s.t", "above": 5},
+        {"condition": "zone", "entity_id": "device_tracker.me", "zone": "zone.home"},
+        {
+            "condition": "and",
+            "conditions": [
+                {"condition": "state", "entity_id": "a.b", "state": "on"},
+                {"condition": "numeric_state", "entity_id": "s.t", "above": 5},
+            ],
+        },
+    ]
+    unsure = [
+        {
+            "condition": "state",
+            "entity_id": "a.b",
+            "state": "on",
+            "for": {"minutes": 5},
+        },
+        {
+            "condition": "numeric_state",
+            "entity_id": "s.t",
+            "value_template": "{{ 1 }}",
+            "above": 5,
+        },
+        {"condition": "numeric_state", "entity_id": "s.t", "above": "input_number.max"},
+        {"condition": "template", "value_template": "{{ true }}"},
+        {"condition": "time", "after": "22:00:00"},
+        {"condition": "sun", "after": "sunset"},
+        {
+            "condition": "or",
+            "conditions": [
+                {"condition": "state", "entity_id": "a.b", "state": "on"},
+                {"condition": "template", "value_template": "{{ true }}"},
+            ],
+        },
+    ]
+
+    for config in sure:
+        assert _announces_every_turn(config), config
+
+    for config in unsure:
+        assert not _announces_every_turn(config), config

@@ -77,11 +77,14 @@ class SpookTrigger(Trigger):
         def condition_met(event: Event[EventStateChangedData] | None) -> None:
             """Run the action, now that the condition has turned true.
 
-            Reports the state change that turned it, when a state change did,
-            the same shape Home Assistant's template trigger reports. Which is
-            what carries the user through: an automation starts a fresh
-            context, so a condition asking who is behind the run reads it off
-            `to_state`.
+            Reports the state change that turned it, when the watcher can be
+            sure which change that was, in the same shape Home Assistant's
+            template trigger reports. Which is what carries the user through:
+            an automation starts a fresh context, so a condition asking who is
+            behind the run reads it off `to_state`.
+
+            Empty when there is nothing it can be sure of, rather than naming
+            a change that merely happened to be the one noticed.
             """
             to_state = event.data["new_state"] if event else None
             entity_id = event.data["entity_id"] if event else None
@@ -94,7 +97,7 @@ class SpookTrigger(Trigger):
                 },
                 f"{entity_id} turned the condition true"
                 if entity_id
-                else "the condition turned true on its own",
+                else "the condition turned true",
                 to_state.context if to_state else None,
             )
 
