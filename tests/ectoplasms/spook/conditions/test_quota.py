@@ -22,6 +22,7 @@ from custom_components.spook.ectoplasms.spook.conditions.quota import (
 )
 from custom_components.spook.run_history import (
     MAX_RUNS_REMEMBERED,
+    TRACKED_ENTITIES,
     async_get_run_history,
     async_setup_run_history,
 )
@@ -570,6 +571,50 @@ async def test_a_rejected_single_mode_trigger_costs_nothing(
 
     counted = history.async_runs_within("automation.slow", timedelta(hours=1))
     assert counted == 1, f"counted {counted} runs where only one was admitted"
+
+
+async def test_checking_an_allowance_does_not_keep_it_from_being_forgotten(
+    hass: HomeAssistant,
+) -> None:
+    """Only running refreshes an entity, not being asked about.
+
+    The history holds a fixed number of automations and forgets the one that
+    ran longest ago. Reading is what a quota check does, constantly, so if
+    reading counted as recent then an automation checked every minute and run
+    never would sit there while one that actually ran got forgotten and had
+    its allowance handed back.
+    """
+    async_setup_run_history(hass)
+    history = async_get_run_history(hass)
+    window = timedelta(hours=1)
+
+    def _ran(entity_id: str) -> None:
+        hass.bus.async_fire(
+            EVENT_AUTOMATION_TRIGGERED,
+            {"entity_id": entity_id},
+            context=Context(id=f"run-{entity_id}"),
+        )
+
+    for index in range(TRACKED_ENTITIES):
+        _ran(f"automation.number_{index}")
+    await hass.async_block_till_done()
+
+    # The one that ran longest ago, asked about over and over.
+    oldest = "automation.number_0"
+    for _ in range(THREE):
+        assert history.async_runs_within(oldest, window) == 1
+
+    # One more automation runs, so something has to be forgotten.
+    _ran("automation.late_arrival")
+    await hass.async_block_till_done()
+
+    assert history.async_runs_within(oldest, window) == 0, (
+        "asking about it kept it resident"
+    )
+    assert history.async_runs_within("automation.number_1", window) == 1, (
+        "forgot one that had run more recently"
+    )
+    assert history.async_runs_within("automation.late_arrival", window) == 1
 
 
 async def test_only_the_newest_run_under_a_context_is_left_out(

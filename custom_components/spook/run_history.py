@@ -3,9 +3,8 @@
 from __future__ import annotations
 
 from collections import deque
+from datetime import datetime  # noqa: TC003
 from typing import TYPE_CHECKING
-
-from lru import LRU
 
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
 from homeassistant.const import ATTR_ENTITY_ID
@@ -15,7 +14,7 @@ from homeassistant.util.hass_dict import HassKey
 
 if TYPE_CHECKING:
     from collections.abc import Sequence
-    from datetime import datetime, timedelta
+    from datetime import timedelta
 
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
 
@@ -59,7 +58,11 @@ class RunHistory:
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the history."""
         self._hass = hass
-        self._runs: LRU = LRU(TRACKED_ENTITIES)
+        # A plain dict, ordered by when each entity last ran. An LRU would
+        # do the eviction, but its reads refresh recency, and reading here
+        # is what a quota check does: an automation checked often but never
+        # run would outlive one that actually ran.
+        self._runs: dict[str, deque[tuple[datetime, str]]] = {}
         self._unsubs: list[CALLBACK_TYPE] = []
 
     @callback
@@ -124,7 +127,7 @@ class RunHistory:
     @callback
     def _async_runs(self, entity_id: str) -> Sequence[tuple[datetime, str]]:
         """Return when this one ran and under which context, most recent first."""
-        return self._runs.get(entity_id) or ()  # type: ignore[no-any-return]
+        return self._runs.get(entity_id) or ()
 
     @callback
     def _async_ran(self, event: Event) -> None:
@@ -132,12 +135,18 @@ class RunHistory:
         if not (entity_id := event.data.get(ATTR_ENTITY_ID)):
             return
 
-        if (runs := self._runs.get(entity_id)) is None:
+        # Popped and re-inserted, so the mapping stays in order of when each
+        # entity last ran and the front is always the one to forget first.
+        runs = self._runs.pop(entity_id, None)
+        if runs is None:
             runs = deque(maxlen=_RUNS_KEPT)
-            self._runs[entity_id] = runs
+        self._runs[entity_id] = runs
 
         # Newest first, so the oldest is the one a full deque drops.
         runs.appendleft((dt_util.utcnow(), event.context.id))
+
+        while len(self._runs) > TRACKED_ENTITIES:
+            del self._runs[next(iter(self._runs))]
 
 
 @callback
