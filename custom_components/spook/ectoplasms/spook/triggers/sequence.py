@@ -10,6 +10,7 @@ import voluptuous as vol
 
 from homeassistant.const import CONF_OPTIONS, CONF_TIMEOUT
 from homeassistant.core import callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv, trigger as trigger_helper
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.trigger import Trigger
@@ -154,6 +155,17 @@ class _SequenceWatcher:
                 )
 
         await self._async_arm(0)
+
+        if self._run.unsub_step is None:
+            # Nothing to wait for, so this trigger can never fire. Raising is
+            # what gets the automation marked unavailable instead of leaving
+            # it looking healthy and silent, which is what the documentation
+            # promises. Detach the reset triggers first: nobody is going to be
+            # handed a way to do it.
+            self.async_stop()
+            msg = "Could not attach the first step of a sequence trigger"
+            raise HomeAssistantError(msg)
+
         return self.async_stop
 
     @callback
@@ -217,6 +229,10 @@ class _SequenceWatcher:
             # attach anything, having logged why. Say so as well: a sequence
             # stuck on a step it cannot listen for is a trigger that never
             # fires, and that is the failure mode worth being loud about.
+            #
+            # `async_start` turns this into a refusal for the first step, where
+            # there is still somebody to refuse to. From a step landing there
+            # is not, so a line in the log is all there is.
             LOGGER.warning(
                 "Spook could not attach step %s of a sequence trigger, "
                 "so it will not fire",
@@ -296,24 +312,36 @@ class _SequenceWatcher:
 
     @callback
     def _async_start_timeout(self) -> None:
-        """Put a deadline on the whole run, if one was configured."""
+        """Put a deadline on the whole run, if one was configured.
+
+        The deadline is tied to the run that set it. A due callback has to
+        wait for the lock like everything else, and by the time it gets in the
+        run it belongs to may have finished or been abandoned and a fresh one
+        started. Giving up on that one would end a run that had barely begun.
+        """
         if self._sequence.timeout is None:
             return
 
-        self._run.unsub_timeout = async_call_later(
-            self._hass, self._sequence.timeout.total_seconds(), self._async_timed_out
+        run = self._run
+
+        async def _due(_now: datetime) -> None:
+            """Give up on the run, if it is still the run this was set for."""
+            async with self._lock:
+                if self._stopped or self._run is not run:
+                    return
+
+                # Cleared inside the lock, and on the run this belongs to, so
+                # it cannot wipe a newer run's handle and leave that timer
+                # behind.
+                run.unsub_timeout = None
+
+                self._async_disarm_step()
+                self._async_abandon()
+                await self._async_arm(0)
+
+        run.unsub_timeout = async_call_later(
+            self._hass, self._sequence.timeout.total_seconds(), _due
         )
-
-    async def _async_timed_out(self, _now: datetime) -> None:
-        """Give up on the run, the deadline passed."""
-        self._run.unsub_timeout = None
-        async with self._lock:
-            if self._stopped:
-                return
-
-            self._async_disarm_step()
-            self._async_abandon()
-            await self._async_arm(0)
 
     @callback
     def _async_abandon(self) -> None:

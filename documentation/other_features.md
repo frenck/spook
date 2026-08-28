@@ -1025,7 +1025,7 @@ options:
 - The `timeout` covers the whole run, counted from the first step. There is no per-step deadline.
 - A run under way is abandoned when Home Assistant restarts, along with everything else in memory. A sequence half-finished before a restart starts again from the first step.
 - The automation's `trigger_variables` do not reach the steps. Home Assistant hands those to a trigger platform, not to a trigger like this one, so a step whose own configuration is written as a template referring to them has nothing to render from. Steps written the ordinary way are unaffected.
-- A step that cannot be attached at all disables that automation and says why in the log, rather than sitting there never firing. A `reset` that cannot be attached leaves the steps working, so that one only says so in the log.
+- A step that cannot be attached disables that automation and says why in the log, rather than sitting there never firing. That covers both a step Home Assistant refuses to accept and one it accepts but then cannot listen for. A `reset` that cannot be attached leaves the steps working, so that one only says so in the log.
   :::
 
 ### Condition turned true
