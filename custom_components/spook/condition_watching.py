@@ -20,13 +20,35 @@ from homeassistant.helpers.event import (
 from homeassistant.helpers.template import Template
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterator
+    from collections.abc import Iterator
     from datetime import datetime
+    from typing import Protocol
 
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
     from homeassistant.helpers.condition import ConditionChecker
     from homeassistant.helpers.event import EventStateChangedData
     from homeassistant.helpers.typing import ConfigType
+
+    class ConditionTurned(Protocol):  # pylint: disable=too-few-public-methods
+        """Told what a condition now says, and what made it say so.
+
+        Keyword-only, because `on_change(True, event)` at a call site says
+        nothing about what the `True` means.
+        """
+
+        def __call__(
+            self,
+            *,
+            met: bool,
+            event: Event[EventStateChangedData] | None,
+        ) -> None:
+            """Report the turn.
+
+            `event` is there only when the condition turned true and the
+            watcher could be sure which change did it. A turn back to false
+            hands over nothing.
+            """
+
 
 # How often a condition is asked again regardless of anything happening.
 #
@@ -39,6 +61,7 @@ if TYPE_CHECKING:
 # Which is a polling interval, not a bound on how late a turn is noticed: a
 # condition that turns true and false again between two ticks is missed.
 BACKSTOP = timedelta(seconds=30)
+
 
 # Conditions that answer about the run they are asked in: which trigger fired,
 # which automation is running, who pressed the button. Watching is asking over
@@ -239,6 +262,10 @@ class ConditionWatcher:
     can be sure only when every part of the condition announces its own turns;
     see `_announces_every_turn`. Otherwise, and for the backstop, it hands
     over nothing rather than something that might be the wrong thing.
+
+    Both turns are reported, with what the answer now is. Most callers only
+    act on the arrival, and say so by returning; one that keeps doing
+    something for as long as a condition holds needs to know when to stop.
     """
 
     def __init__(
@@ -246,7 +273,7 @@ class ConditionWatcher:
         hass: HomeAssistant,
         checker: ConditionChecker,
         entity_ids: set[str],
-        on_met: Callable[[Event[EventStateChangedData] | None], None],
+        on_change: ConditionTurned,
         *,
         announces_every_turn: bool,
     ) -> None:
@@ -254,7 +281,7 @@ class ConditionWatcher:
         self._hass = hass
         self._checker = checker
         self._entity_ids = entity_ids
-        self._on_met = on_met
+        self._on_change = on_change
         self._announces_every_turn = announces_every_turn
         self._met = False
         self._unsubs: list[CALLBACK_TYPE] = []
@@ -332,14 +359,13 @@ class ConditionWatcher:
 
     @callback
     def _async_look(self, event: Event[EventStateChangedData] | None) -> None:
-        """Ask again, and report only a turn from false to true."""
+        """Ask again, and report a turn either way."""
         met = self._async_ask()
         if met == self._met:
             return
 
         self._met = met
-        if met:
-            self._on_met(event)
+        self._on_change(met=met, event=event if met else None)
 
 
 async def async_validate_condition(
@@ -382,7 +408,7 @@ async def async_validate_condition(
 async def async_condition_watcher(
     hass: HomeAssistant,
     validated: ConfigType,
-    on_met: Callable[[Event[EventStateChangedData] | None], None],
+    on_change: ConditionTurned,
 ) -> ConditionWatcher:
     """Build a watcher for an already validated condition, ready to start."""
     checker = await condition.async_from_config(hass, validated)
@@ -391,6 +417,6 @@ async def async_condition_watcher(
         checker,
         condition.async_extract_entities(validated)
         | set(_threshold_entities(validated)),
-        on_met,
+        on_change,
         announces_every_turn=_announces_every_turn(validated),
     )
