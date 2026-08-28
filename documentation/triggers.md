@@ -44,3 +44,9 @@ Fires when a repair issue goes away, either fixed or no longer reported. _#repai
 Fires when a condition goes from false to true, using the same condition building blocks as anywhere else. _#condition_ _#template_
 
 `spook.condition_met`, [documentation](other-features#condition-turned-true) 📚
+
+## Triggers in order
+
+Fires when several triggers happen one after another, in the order given, optionally within a time limit. _#sequence_ _#order_ _#timeout_
+
+`spook.sequence`, [documentation](other-features#triggers-in-order) 📚

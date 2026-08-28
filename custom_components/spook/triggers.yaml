@@ -59,3 +59,18 @@ condition_met:
       required: true
       selector:
         condition:
+sequence:
+  fields:
+    steps:
+      required: true
+      selector:
+        trigger:
+    timeout:
+      required: false
+      example: "00:02:00"
+      selector:
+        duration:
+    reset:
+      required: false
+      selector:
+        trigger:

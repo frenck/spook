@@ -303,6 +303,14 @@ Template test function
 :::
 
 :::{glossary}
+Trigger
+: A trigger is what sets an {term}`automation <automation>` going. Something happens, a state changes, a time comes round, an event is fired, and the automation runs. An automation can have several, and any one of them firing is enough.
+: A trigger is not a {term}`condition <condition>`. A trigger is a moment; a condition is a question asked at that moment.
+: {term}`Integrations <integration>` can provide their own triggers, which is how Spook adds some. Those are named after the integration providing them, like `sun.sunset` or `spook.sequence`, while the ones built into Home Assistant itself, `state` or `time`, carry no prefix at all.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/automation/trigger/)
+:::
+
+:::{glossary}
 YAML
 : The complex definition would be: <wiki:YAML> is a human-readable data-serialization language. But a more simplified explanation would be: It is a structure in which we can write configuration files that are readable for both humans and machines.
 : It is the format {term}`Home Assistant` uses to store its configuration and data. Opinions are divided on whether YAML is a good or bad format or hard or easy to use. The fact remains, is that Home Assistant uses it a lot, and it definitly worth while learning it. YAML itself really isn't that complex, but it does have some quirks that you need to be aware of. The most complex part of using YAML with Home Assistant is not YAML itself but all the things you can do with it in Home Assistant.

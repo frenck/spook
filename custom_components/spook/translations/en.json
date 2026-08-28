@@ -1,5 +1,23 @@
 {
   "triggers": {
+    "sequence": {
+      "name": "Triggers in order",
+      "description": "Fires when several triggers happen one after another, in the order given.",
+      "fields": {
+        "steps": {
+          "name": "Steps",
+          "description": "The triggers that have to happen, in order. Only the one being waited for is listening, so a later step firing early is not a match."
+        },
+        "timeout": {
+          "name": "Timeout",
+          "description": "How long the whole sequence may take, counted from the first step. Left out, it waits indefinitely."
+        },
+        "reset": {
+          "name": "Reset",
+          "description": "Triggers that abandon a sequence already under way, putting it back to waiting for the first step."
+        }
+      }
+    },
     "condition_met": {
       "name": "Condition turned true",
       "description": "Fires when a condition goes from false to true, using the same condition building blocks as anywhere else.",
