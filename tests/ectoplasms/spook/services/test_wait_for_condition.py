@@ -196,3 +196,93 @@ async def test_it_can_be_waited_on_from_a_script(hass: HomeAssistant) -> None:
     await running
 
     assert done == ["before", "after"], "the script never carried on"
+
+
+async def test_a_template_from_a_script_is_refused(hass: HomeAssistant) -> None:
+    """The one thing a script takes away, and it must not be silent.
+
+    A script renders every template in the action data before calling the
+    action, so a template condition arrives as the `True` or `False` it was at
+    that moment. Waiting on that is waiting on a constant, so it is refused
+    instead.
+    """
+    _register(hass)
+    hass.states.async_set("input_boolean.gate", "off")
+    await hass.async_block_till_done()
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "hopeful": {
+                    "sequence": [
+                        {
+                            "action": f"{DOMAIN}.wait_for_condition",
+                            "data": {
+                                "condition": {
+                                    "condition": "template",
+                                    "value_template": (
+                                        "{{ is_state('input_boolean.gate', 'on') }}"
+                                    ),
+                                },
+                            },
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    # With a timeout, because the failure this guards against is a hang.
+    with pytest.raises(HomeAssistantError, match="rendered before this action"):
+        async with asyncio.timeout(5):
+            await hass.services.async_call("script", "hopeful", blocking=True)
+
+
+async def test_a_live_template_is_still_accepted(hass: HomeAssistant) -> None:
+    """The refusal is for rendered templates only, not for templates.
+
+    Called straight, nothing renders the data, so the template arrives intact
+    and is watched like anything else.
+    """
+    _register(hass)
+    hass.states.async_set("input_boolean.gate", "off")
+    await hass.async_block_till_done()
+
+    response = await hass.services.async_call(
+        DOMAIN,
+        "wait_for_condition",
+        {
+            "condition": {
+                "condition": "template",
+                "value_template": "{{ is_state('input_boolean.gate', 'on') }}",
+            },
+            "timeout": {"seconds": 1},
+        },
+        blocking=True,
+        return_response=True,
+    )
+
+    assert response == {"completed": False}, "refused a template it can watch"
+
+
+async def test_a_zero_timeout_looks_without_waiting(hass: HomeAssistant) -> None:
+    """Zero is an ask, not a missing value: look now, do not wait.
+
+    `timedelta(0)` is false, so treating the timeout as a truthy value turns
+    the shortest possible wait into an endless one.
+    """
+    _register(hass)
+    hass.states.async_set("input_boolean.gate", "off")
+    await hass.async_block_till_done()
+
+    async with asyncio.timeout(5):
+        assert await _wait(hass, timeout=0) == {"completed": False}
+
+    hass.states.async_set("input_boolean.gate", "on")
+    await hass.async_block_till_done()
+
+    async with asyncio.timeout(5):
+        assert await _wait(hass, timeout=0) == {"completed": True}

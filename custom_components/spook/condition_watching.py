@@ -26,8 +26,11 @@ if TYPE_CHECKING:
 # Conditions in Home Assistant are asked, not announced, so something has to
 # prompt the asking. Most of them name the entities they depend on and those
 # are watched directly, but a template condition names none that can be read
-# off the config, and a time or sun condition has none to name. Those turn
-# true on their own account, so they are asked on a timer as well.
+# off the config, and a plain time or sun condition has none to name. Those
+# turn true on their own account, so they are asked on a timer as well.
+#
+# Which is a polling interval, not a bound on how late a turn is noticed: a
+# condition that turns true and false again between two ticks is missed.
 BACKSTOP = timedelta(seconds=30)
 
 

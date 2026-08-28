@@ -176,8 +176,9 @@ Give up after five minutes, and do something else about it:
 :::{attention} Known limitations
 :class: dropdown
 
-- A condition that names entities is noticed the moment one of them changes. A template, time or sun condition names none that can be read off the config, so those are asked again every 30 seconds instead. You are waiting anyway, but it is not instant.
-- Without a `timeout` it waits for as long as the script runs. Stopping the automation or script stops the wait with it.
+- Templates in the condition do not work here, and are refused rather than quietly waited on forever. A script renders every template in the action data before calling the action, so `{{ is_state(...) }}` arrives as the `true` or `false` it happened to be at that moment, and a constant never turns. Wait on a template with `wait_template`, which is what that is for.
+- A condition that names entities is noticed the moment one of them changes. A plain time or sun condition names nothing that can be read off the config, so those are asked again every 30 seconds, and a condition that turns true and false again within those 30 seconds is missed rather than noticed late.
+- Without a `timeout` it waits for as long as the script runs. Stopping the automation or script stops the wait with it. A `timeout` of zero means look now and do not wait, so it answers `completed: false` unless the condition is already true.
 
 :::
 
@@ -984,6 +985,7 @@ options:
 :::{attention} Known limitations
 :class: dropdown
 
-- A condition that names entities is noticed the moment one of them changes. A template, time or sun condition names none that can be read off the config, so those are asked again every 30 seconds instead, which is the longest this can take to notice.
+- A condition that names entities is noticed the moment one of them changes. That covers `state`, `numeric_state` and `zone` conditions, a `time` condition pointing at an `input_datetime`, and any `and`, `or` or `not` built out of those. A template condition names nothing that can be read off the config, and a plain time or sun condition has nothing to name, so those are asked again every 30 seconds.
+- Which means a condition that turns true and false again within those 30 seconds is missed entirely, not merely noticed late. If what you are watching flickers, trigger on the thing that flickers.
 - A condition that cannot be built at all disables that automation and says why in the log, rather than sitting there never firing.
   :::

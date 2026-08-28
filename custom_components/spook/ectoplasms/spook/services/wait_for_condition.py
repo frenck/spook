@@ -3,20 +3,58 @@
 from __future__ import annotations
 
 import asyncio
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 
 from homeassistant.const import CONF_CONDITION, CONF_TIMEOUT
 from homeassistant.core import SupportsResponse
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.template import Template
 
 from ....condition_watching import async_condition_watcher, async_validate_condition
 from ....const import DOMAIN
 from ....services import AbstractSpookService
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
+
     from homeassistant.core import ServiceCall, ServiceResponse
+    from homeassistant.helpers.typing import ConfigType
+
+
+def _templates(value: Any) -> Iterator[Template]:
+    """Yield every template in a condition config, however deeply nested."""
+    if isinstance(value, Template):
+        yield value
+    elif isinstance(value, dict):
+        for item in value.values():
+            yield from _templates(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _templates(item)
+
+
+def _reject_rendered_templates(config: ConfigType) -> None:
+    """Refuse a condition whose templates were rendered before we got here.
+
+    A script renders every template in the action data before calling the
+    action, condition templates included. So `{{ is_state(...) }}` arrives as
+    the `True` or `False` it happened to be at that moment, and a
+    `numeric_state` value template arrives as a number. The condition still
+    validates, still checks, and never turns, so the wait would be a hang.
+
+    A rendered template is one without any Jinja left in it, which is what
+    Home Assistant calls static. Nobody writes those on purpose.
+    """
+    if any(template.is_static for template in _templates(config)):
+        msg = (
+            "The templates in this condition were rendered before this action "
+            "ran, so they cannot turn true any more. Use a condition without "
+            "templates, or wait on the template itself with 'wait_template'."
+        )
+        raise ServiceValidationError(msg)
 
 
 class SpookService(AbstractSpookService):
@@ -46,6 +84,7 @@ class SpookService(AbstractSpookService):
         condition_config = await async_validate_condition(
             self.hass, call.data[CONF_CONDITION]
         )
+        _reject_rendered_templates(condition_config)
 
         met = self.hass.loop.create_future()
 
@@ -65,9 +104,14 @@ class SpookService(AbstractSpookService):
             stop()
             return {"completed": True}
 
+        # A zero timeout is a valid ask: look now, do not wait. Which is why
+        # this asks whether a timeout was given rather than whether it is
+        # truthy, as `timedelta(0)` is false.
         timeout = call.data.get(CONF_TIMEOUT)
+        seconds = None if timeout is None else timeout.total_seconds()
+
         try:
-            async with asyncio.timeout(timeout.total_seconds() if timeout else None):
+            async with asyncio.timeout(seconds):
                 await met
         except TimeoutError:
             return {"completed": False}
