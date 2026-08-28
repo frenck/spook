@@ -37,6 +37,13 @@ CONF_WITHIN = "within"
 # back and forth.
 _MINIMUM_CHANGES = 2
 
+# And an upper end, because the count is also how many moments are kept per
+# entity. A thousand changes inside one window is already far past anything
+# that could be called a health problem, and the number selector offers the
+# same ceiling, so the two agree rather than the interface quietly promising
+# a limit that written configuration walks around.
+_MAXIMUM_CHANGES = 1000
+
 
 def _flapping_count(value: Any) -> int:
     """Validate the number of changes, and refuse one that is not flapping."""
@@ -45,6 +52,12 @@ def _flapping_count(value: Any) -> int:
         message = (
             f"It takes at least {_MINIMUM_CHANGES} changes to be going back "
             f"and forth, and this asks for {changes}"
+        )
+        raise vol.Invalid(message)
+    if changes > _MAXIMUM_CHANGES:
+        message = (
+            f"Looking for more than {_MAXIMUM_CHANGES} changes is not looking "
+            f"for a flapping entity, and this asks for {changes}"
         )
         raise vol.Invalid(message)
     return changes

@@ -1200,7 +1200,7 @@ Fires when an entity changes state more often than it should within a stretch of
 * - `changes`
   - {term}`integer <integer>`
   - Yes
-  - At least 2
+  - Between 2 and 1000
 * - `within`
   - {term}`string <string>`
   - Yes
@@ -1213,7 +1213,7 @@ Changes of state, not writes. An entity reporting the same value over and over i
 
 The window slides, so this is always about the most recent changes rather than a fresh count every five minutes.
 
-It reports once per spell. Once it has said an entity will not settle it stays quiet until that entity does settle, because a storm of alerts about a storm helps nobody. Settling means the last few changes no longer fall inside the window; the next time it starts up is news again.
+It reports once per spell. Once it has said an entity will not settle it stays quiet until that entity does settle, because a storm of alerts about a storm helps nobody. Settling means the last few changes no longer fall inside the window, and the next time it starts up is news again. A change that still leaves the last few inside the window is the same spell carrying on, however long it has been since the one before it.
 
 When it fires, `trigger.entity_id` names the entity, `trigger.from_state` and `trigger.to_state` are the change that tipped it over, and `trigger.changes` and `trigger.within` are what was asked for.
 
@@ -1251,7 +1251,7 @@ options:
 
 - Counting starts when the automation loads. Changes from before that are not known, so an entity that has been flapping all afternoon is reported the next time it changes enough, not immediately.
 - Each entity is counted on its own. Ten entities changing twice each is not one entity changing twenty times, which is the point, but it does mean a target full of entities that each flap a little goes unreported.
-- What is remembered is the last `changes` moments per entity, and no more, so a large target costs little. It is forgotten entirely when Home Assistant restarts or the entity leaves the target.
+- What is remembered is the last `changes` moments per entity, and no more, so a large target costs little. That is also why `changes` stops at a thousand: past that it is not describing a flapping entity any more. It is forgotten entirely when Home Assistant restarts or the entity leaves the target.
   :::
 
 (condition-turned-true)=

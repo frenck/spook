@@ -394,3 +394,77 @@ async def test_both_options_are_required(hass: HomeAssistant) -> None:
             await SpookTrigger.async_validate_config(
                 hass, {"target": {"entity_id": FLAPPER}, "options": options}
             )
+
+
+async def test_an_absurd_number_of_changes_is_refused(hass: HomeAssistant) -> None:
+    """The count is also how many moments are kept per entity.
+
+    The number selector offers a thousand as its ceiling, so written
+    configuration has to stop there too, or the interface promises a limit
+    that YAML walks straight around.
+    """
+    with pytest.raises(vol.Invalid, match="not looking for a flapping entity"):
+        await SpookTrigger.async_validate_config(
+            hass,
+            {
+                "target": {"entity_id": FLAPPER},
+                "options": {"changes": 1001, "within": "00:05:00"},
+            },
+        )
+
+
+async def test_a_second_spell_that_starts_straight_away_is_reported(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Settling and starting again inside one window's worth of quiet.
+
+    Three changes, then quiet for long enough that they no longer count, then
+    three more in quick succession. The third of those completes a window of
+    its own and is a spell in its own right.
+    """
+    hass.states.async_set(FLAPPER, "off")
+    await hass.async_block_till_done()
+    runs = await _automation(hass)
+
+    await _flap(hass, 3)
+    assert len(runs) == 1
+
+    freezer.tick(WITHIN * 3)
+
+    # The first two of the new spell still have an old change in hand, so it
+    # is the third that completes a window made only of new ones.
+    await _flap(hass, 2)
+    assert len(runs) == 1, "it reported before it had a whole new window"
+
+    await _flap(hass, 1)
+    assert len(runs) == TWICE, "the second spell went unreported"
+
+    await _detach(hass)
+
+
+async def test_carrying_on_flapping_is_still_one_spell(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A change late in the window continues a spell rather than starting one.
+
+    Three changes a minute apart fire once. A fourth four minutes later still
+    leaves the last three inside a five minute window, so the entity has not
+    settled and there is nothing new to say.
+    """
+    hass.states.async_set(FLAPPER, "off")
+    await hass.async_block_till_done()
+    runs = await _automation(hass)
+
+    for _ in range(3):
+        await _flap(hass, 1)
+        freezer.tick(timedelta(minutes=1))
+    assert len(runs) == 1
+
+    freezer.tick(timedelta(minutes=3))
+    await _flap(hass, 1)
+
+    assert len(runs) == 1, "a spell that never let up was reported twice"
+
+    await _detach(hass)
