@@ -75,15 +75,17 @@ _CONDITION_SCHEMA = vol.Schema(
 class SpookCondition(Condition):
     """Spook condition that passes until a run allowance is used up.
 
-    Passes while this automation or script has run fewer than the given
-    number of times within the given period, so something can be held to a
-    few runs an hour or a handful a day. The counterpart to
-    ``spook.cooldown``, which spaces runs out rather than capping them.
+    Passes while this automation has run fewer than the given number of times
+    within the given period, so something can be held to a few runs an hour or
+    a handful a day. The counterpart to ``spook.cooldown``, which spaces runs
+    out rather than capping them.
 
     The window rolls: a limit of five over a day means no more than five runs
     in any twenty-four hours, not five between midnights. Runs are counted
     from what actually ran, so a run some other condition turned down does
     not cost anything.
+
+    Automations only. See ``run_history`` for why scripts are left out.
     """
 
     condition = "quota"

@@ -583,7 +583,7 @@ options:
 
 ### Run allowance left
 
-Passes while this automation or script has runs to spare.
+Passes while this automation has runs to spare.
 
 ```{list-table}
 :header-rows: 1
@@ -648,9 +648,9 @@ options:
 :class: dropdown
 
 - The count starts again after a restart. Spook remembers the runs while it is running, and nothing is written down, so a restart hands back a full allowance.
-- The limit cannot go above 64. Spook keeps the last 64 runs of each automation and script, and answering a larger limit would need a longer memory than that. Above 64 runs in a window it is not really an allowance any more.
-- Only automations and scripts have an allowance. Both are counted, but a condition checked outside either has nothing to count against and passes.
-- Only the 256 most recently active automations and scripts are followed. Beyond that the least recently used one is forgotten, which hands its allowance back. Not something a normal house will reach, but it is a limit.
-- The run doing the asking does not count against itself. A script announces itself before its sequence starts, so without that a limit of one would turn down the very first run.
+- The limit cannot go above 64. Spook keeps the last 64 runs of each automation, and answering a larger limit would need a longer memory than that. Above 64 runs in a window it is not really an allowance any more.
+- Automations only. Scripts are left out on purpose: Home Assistant announces a script run before deciding whether it is allowed, so a call turned down for already running would spend an allowance on a run that never happened. A condition checked anywhere other than an automation has nothing to count against and passes.
+- Only the 256 most recently run automations are followed. Beyond that the least recently used one is forgotten, which hands its allowance back. Not something a normal house will reach, but it is a limit.
+- The run doing the asking does not count against itself. A condition sitting inside the actions is checked while the run is already under way, so without that a limit of one would turn down every run.
 
 :::

@@ -7,7 +7,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from homeassistant.helpers.condition import ConditionConfig
-from homeassistant.components.script.const import EVENT_SCRIPT_STARTED
+from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
 from homeassistant.core import Context
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
@@ -284,57 +284,16 @@ async def test_it_counts_per_automation(
     assert ran == ["first", "second"], "one automation spent the other's allowance"
 
 
-async def test_it_counts_scripts_too(
+async def test_scripts_have_no_allowance(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
 ) -> None:
-    """A script has an allowance as well, the same as `cooldown` covers both."""
-    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-28 12:00:00")))
-    async_setup_run_history(hass)
+    """Scripts are deliberately left out, so nothing is counted for them.
 
-    ran: list[int] = []
-    hass.services.async_register("test", "mark", lambda _call: ran.append(1))
-
-    assert await async_setup_component(
-        hass,
-        "script",
-        {
-            "script": {
-                "rationed": {
-                    "sequence": [
-                        {
-                            "if": [
-                                {
-                                    "condition": "spook.quota",
-                                    "options": {"limit": 1, "period": "01:00:00"},
-                                }
-                            ],
-                            "then": [{"action": "test.mark"}],
-                        }
-                    ]
-                }
-            }
-        },
-    )
-    await hass.async_block_till_done()
-
-    for _ in range(3):
-        await hass.services.async_call("script", "rationed", blocking=True)
-        await hass.async_block_till_done()
-
-    assert len(ran) == 1, f"let {len(ran)} through on an allowance of one"
-
-
-async def test_repeated_calls_sharing_a_context_still_spend_the_allowance(
-    hass: HomeAssistant,
-    freezer: FrozenDateTimeFactory,
-) -> None:
-    """A script inherits its caller's context, so runs can share one.
-
-    An automation calling the same script three times over gives all three
-    runs the same context. Leaving out every run under the current context
-    rather than only the current run would mean this script never spent
-    anything at all.
+    `EVENT_SCRIPT_STARTED` fires before the engine decides whether the run is
+    allowed, so a call turned down by `mode: single` announces itself just the
+    same. Counting those would spend an allowance on runs that never happened,
+    which is worse than not counting scripts at all.
     """
     freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-28 12:00:00")))
     async_setup_run_history(hass)
@@ -363,20 +322,48 @@ async def test_repeated_calls_sharing_a_context_still_spend_the_allowance(
             }
         },
     )
+    await hass.async_block_till_done()
+
+    for _ in range(THREE):
+        await hass.services.async_call("script", "rationed", blocking=True)
+        await hass.async_block_till_done()
+
+    assert len(ran) == THREE, "a script was rationed, which is not the promise"
+
+
+async def test_the_run_doing_the_asking_does_not_count_against_itself(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Inside the actions, the run is already under way and already counted.
+
+    An automation announces itself before its actions start, so a condition
+    sitting in an `if` finds its own run in the history. Counting that would
+    make a limit of one turn down every run there ever was.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-28 12:00:00")))
+    async_setup_run_history(hass)
+
+    ran: list[int] = []
+    hass.services.async_register("test", "mark", lambda _call: ran.append(1))
+
     assert await async_setup_component(
         hass,
         "automation",
         {
             "automation": [
                 {
-                    "alias": "caller",
+                    "alias": "rationed inside",
                     "trigger": {"platform": "event", "event_type": "kick"},
                     "action": [
                         {
-                            "repeat": {
-                                "count": 3,
-                                "sequence": [{"action": "script.rationed"}],
-                            }
+                            "if": [
+                                {
+                                    "condition": "spook.quota",
+                                    "options": {"limit": 1, "period": "01:00:00"},
+                                }
+                            ],
+                            "then": [{"action": "test.mark"}],
                         }
                     ],
                 }
@@ -387,8 +374,37 @@ async def test_repeated_calls_sharing_a_context_still_spend_the_allowance(
 
     hass.bus.async_fire("kick")
     await hass.async_block_till_done()
+    assert len(ran) == 1, "turned down the first run by counting it against itself"
 
-    assert len(ran) == 1, f"let {len(ran)} through on an allowance of one"
+    # And the allowance really is spent for the next one.
+    hass.bus.async_fire("kick")
+    await hass.async_block_till_done()
+    assert len(ran) == 1, "let a second run through on an allowance of one"
+
+
+async def test_only_the_newest_run_under_a_context_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """Contexts are inherited down a chain, so runs can share one.
+
+    Leaving out every run under the current context rather than only the
+    current run would hand an allowance back that had been spent.
+    """
+    async_setup_run_history(hass)
+    history = async_get_run_history(hass)
+
+    for _ in range(THREE):
+        hass.bus.async_fire(
+            EVENT_AUTOMATION_TRIGGERED,
+            {"entity_id": "automation.rationed"},
+            context=Context(id="shared"),
+        )
+    await hass.async_block_till_done()
+
+    counted = history.async_runs_within(
+        "automation.rationed", timedelta(hours=1), ignoring="shared"
+    )
+    assert counted == ALLOWANCE, f"left out {THREE - counted} of three runs"
 
 
 async def test_the_history_keeps_room_for_the_run_doing_the_asking(
@@ -405,22 +421,22 @@ async def test_the_history_keeps_room_for_the_run_doing_the_asking(
 
     for index in range(MAX_RUNS_REMEMBERED):
         hass.bus.async_fire(
-            EVENT_SCRIPT_STARTED,
-            {"entity_id": "script.busy"},
+            EVENT_AUTOMATION_TRIGGERED,
+            {"entity_id": "automation.busy"},
             context=Context(id=f"prior-{index}"),
         )
     await hass.async_block_till_done()
 
     # And now the run that is about to ask, arriving before the check.
     hass.bus.async_fire(
-        EVENT_SCRIPT_STARTED,
-        {"entity_id": "script.busy"},
+        EVENT_AUTOMATION_TRIGGERED,
+        {"entity_id": "automation.busy"},
         context=Context(id="current"),
     )
     await hass.async_block_till_done()
 
     prior = history.async_runs_within(
-        "script.busy", timedelta(hours=1), ignoring="current"
+        "automation.busy", timedelta(hours=1), ignoring="current"
     )
     assert prior == MAX_RUNS_REMEMBERED, (
         f"only {prior} of {MAX_RUNS_REMEMBERED} prior runs left countable"

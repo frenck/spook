@@ -8,7 +8,6 @@ from typing import TYPE_CHECKING
 from lru import LRU
 
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
-from homeassistant.components.script.const import EVENT_SCRIPT_STARTED
 from homeassistant.const import ATTR_ENTITY_ID
 from homeassistant.core import callback
 from homeassistant.util import dt as dt_util
@@ -22,9 +21,9 @@ if TYPE_CHECKING:
 
 DATA_RUN_HISTORY: HassKey[RunHistory] = HassKey("spook_run_history")
 
-# How many automations and scripts are followed at once. Whichever ran least
-# recently is dropped, which is the right one to lose: nobody asks about the
-# rate of something that has stopped running.
+# How many automations are followed at once. Whichever ran least recently is
+# dropped, which is the right one to lose: nobody asks about the rate of
+# something that has stopped running.
 TRACKED_ENTITIES = 256
 
 # How many run times are kept for each of them. This is the ceiling on what a
@@ -32,21 +31,26 @@ TRACKED_ENTITIES = 256
 # most recent one to still be there.
 MAX_RUNS_REMEMBERED = 64
 
-# One more than that is actually kept. A script announces itself before its
-# sequence starts, so the run doing the asking is already in here, and without
-# the spare it would push the oldest of the runs it is asking about out of
-# reach: a limit of 64 could then only ever see 63 and would never be reached.
+# One more than that is actually kept, as headroom for a caller that is itself
+# already in here: without the spare it would push the oldest of the runs it is
+# asking about out of reach, and a limit of 64 could then only ever see 63.
 _RUNS_KEPT = MAX_RUNS_REMEMBERED + 1
 
 
 class RunHistory:
-    """Remembers when automations and scripts last ran.
+    """Remembers when automations last ran.
 
     Home Assistant records only the most recent run, on
     ``this.attributes.last_triggered``, which answers "how long ago" but not
-    "how many". Both events used here fire when something really runs: an
-    automation whose conditions turned the run down does not announce itself,
-    so a blocked run is not counted.
+    "how many".
+
+    Automations only, and that is a decision rather than an oversight.
+    `EVENT_AUTOMATION_TRIGGERED` fires once a run is really happening: one
+    whose conditions turned it down does not announce itself, so a blocked run
+    costs nothing. Scripts have no equivalent. `EVENT_SCRIPT_STARTED` fires
+    before the engine decides whether the run is allowed at all, so a call
+    turned down by `mode: single` announces itself just the same, and counting
+    those would spend an allowance on runs that never happened.
 
     Listening starts when Spook does, so the history is already there by the
     time anything asks.
@@ -63,8 +67,7 @@ class RunHistory:
         """Start listening, and return the way to stop."""
         if not self._unsubs:
             self._unsubs = [
-                self._hass.bus.async_listen(event_type, self._async_ran)
-                for event_type in (EVENT_AUTOMATION_TRIGGERED, EVENT_SCRIPT_STARTED)
+                self._hass.bus.async_listen(EVENT_AUTOMATION_TRIGGERED, self._async_ran)
             ]
         return self.async_stop
 
@@ -86,16 +89,15 @@ class RunHistory:
         """Return how many times this one ran within the given period.
 
         ``ignoring`` leaves out the most recent run under that context, which
-        is how a caller excludes the run it is part of. A script announces
-        itself before its sequence starts, so a condition inside that sequence
-        would otherwise find its own run already counted. An automation
-        announces itself only once its conditions have passed, so for one of
-        those this changes nothing.
+        is how a caller excludes the run it is part of. An automation
+        announces itself only once its conditions have passed, so a condition
+        gating one of those is not in here yet and this changes nothing. A
+        condition sitting inside the actions is, and should not be made to
+        count the run it is part of.
 
-        The most recent one, and only that one. A script inherits its caller's
-        context, so an automation calling the same script three times over
-        gives all three runs the same one. Dropping every match would mean
-        such a script never spent anything at all.
+        The most recent one, and only that one. Contexts are inherited down a
+        chain, so several runs can share one, and dropping every match would
+        leave an allowance unspent.
         """
         since = dt_util.utcnow() - period
         within = 0

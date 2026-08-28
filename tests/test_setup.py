@@ -19,7 +19,6 @@ from homeassistant.const import (
     RESTART_EXIT_CODE,
 )
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
-from homeassistant.components.script.const import EVENT_SCRIPT_STARTED
 from homeassistant.core import Context, CoreState
 from homeassistant.helpers import issue_registry as ir
 
@@ -226,23 +225,26 @@ async def test_setup_entry_starts_and_stops_the_run_history(
     entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
     entry.add_to_hass(hass)
 
-    assert EVENT_SCRIPT_STARTED not in hass.bus.async_listeners()
-
+    # Asserted through behaviour rather than the listener list: the context
+    # register listens to the same event, so its presence proves nothing.
     assert await hass.config_entries.async_setup(entry.entry_id)
     await hass.async_block_till_done()
 
-    assert EVENT_SCRIPT_STARTED in hass.bus.async_listeners()
-
     history = async_get_run_history(hass)
-    hass.bus.async_fire(EVENT_SCRIPT_STARTED, {"entity_id": "script.nightly"})
+    hass.bus.async_fire(EVENT_AUTOMATION_TRIGGERED, {"entity_id": "automation.nightly"})
     await hass.async_block_till_done()
-    assert history.async_runs_within("script.nightly", timedelta(hours=1)) == 1
+    assert history.async_runs_within("automation.nightly", timedelta(hours=1)) == 1
 
     assert await hass.config_entries.async_unload(entry.entry_id)
     await hass.async_block_till_done()
 
-    assert EVENT_SCRIPT_STARTED not in hass.bus.async_listeners()
-    assert history.async_runs_within("script.nightly", timedelta(hours=1)) == 0
+    assert history.async_runs_within("automation.nightly", timedelta(hours=1)) == 0
+
+    hass.bus.async_fire(EVENT_AUTOMATION_TRIGGERED, {"entity_id": "automation.nightly"})
+    await hass.async_block_till_done()
+    assert history.async_runs_within("automation.nightly", timedelta(hours=1)) == 0, (
+        "carried on listening after unloading"
+    )
 
 
 async def test_unload_after_start_does_not_remove_fired_one_time_listeners(
