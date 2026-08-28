@@ -177,7 +177,8 @@ Give up after five minutes, and do something else about it:
 :class: dropdown
 
 - Templates in the condition do not work here, and are refused rather than quietly waited on forever. A script renders every template in the action data before calling the action, so `{{ is_state(...) }}` arrives as the `true` or `false` it happened to be at that moment, and a constant never turns. Wait on a template with `wait_template`, which is what that is for.
-- A condition that names entities is noticed the moment one of them changes. A plain time or sun condition names nothing that can be read off the config, so those are asked again every 30 seconds, and a condition that turns true and false again within those 30 seconds is missed rather than noticed late.
+- A condition that asks about the run it is in cannot be watched either, and is refused for the same reason: `trigger`, and Spook's own `cooldown`, `quota`, `triggered_by_user`, `not_triggered_by_user` and `triggered_by_automation`. An action call is not a trigger, so there is nothing there for them to answer.
+- The condition is asked again every 30 seconds regardless of anything happening, so the wait can end up to half a minute late. That is what covers the turns that arrive without a state change: a plain time or sun condition, a `state` condition whose `for:` runs out, a `time` condition whose moment passes. A condition that turns true and false again inside those 30 seconds is missed entirely.
 - Without a `timeout` it waits for as long as the script runs. Stopping the automation or script stops the wait with it. A `timeout` of zero means look now and do not wait, so it answers `completed: false` unless the condition is already true.
 
 :::
@@ -986,6 +987,8 @@ options:
 :class: dropdown
 
 - A condition that names entities is noticed the moment one of them changes. That covers `state`, `numeric_state` and `zone` conditions, a `time` condition pointing at an `input_datetime`, and any `and`, `or` or `not` built out of those. A template condition names nothing that can be read off the config, and a plain time or sun condition has nothing to name, so those are asked again every 30 seconds.
-- Which means a condition that turns true and false again within those 30 seconds is missed entirely, not merely noticed late. If what you are watching flickers, trigger on the thing that flickers.
+- Naming the entities is not the same as noticing every turn, because not every turn arrives as a state change. A `state` condition with a `for:` turns true when the duration runs out, and a `time` condition turns true when the clock passes the moment, and neither of those moves an entity. Those come round on the 30 second ask instead, so up to half a minute late.
+- A condition that turns true and false again within those 30 seconds is missed entirely rather than noticed late. If what you are watching flickers, trigger on the thing that flickers.
+- A condition that asks about the run it is in cannot be watched, so `trigger`, and Spook's own `cooldown`, `quota`, `triggered_by_user`, `not_triggered_by_user` and `triggered_by_automation`, are refused. Nothing has fired yet at the point this decides whether to fire.
 - A condition that cannot be built at all disables that automation and says why in the log, rather than sitting there never firing.
   :::

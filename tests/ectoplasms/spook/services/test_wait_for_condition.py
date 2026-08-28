@@ -286,3 +286,22 @@ async def test_a_zero_timeout_looks_without_waiting(hass: HomeAssistant) -> None
 
     async with asyncio.timeout(5):
         assert await _wait(hass, timeout=0) == {"completed": True}
+
+
+async def test_a_context_dependent_condition_is_refused(hass: HomeAssistant) -> None:
+    """A `trigger` condition here would be a wait that never ends.
+
+    It asks which trigger fired, and an action call is not a trigger, so it
+    answers no every time it is asked. Refused rather than waited on.
+    """
+    _register(hass)
+
+    with pytest.raises(HomeAssistantError, match="no run here to ask about"):
+        async with asyncio.timeout(5):
+            await hass.services.async_call(
+                DOMAIN,
+                "wait_for_condition",
+                {"condition": {"condition": "trigger", "id": "abc"}},
+                blocking=True,
+                return_response=True,
+            )

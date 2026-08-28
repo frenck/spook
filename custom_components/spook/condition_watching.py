@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 from datetime import timedelta
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+import voluptuous as vol
+
+from homeassistant.const import CONF_CONDITION
 from homeassistant.core import callback
 from homeassistant.exceptions import ConditionError
 from homeassistant.helpers import condition, config_validation as cv
@@ -14,7 +17,7 @@ from homeassistant.helpers.event import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
     from datetime import datetime
 
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
@@ -32,6 +35,33 @@ if TYPE_CHECKING:
 # Which is a polling interval, not a bound on how late a turn is noticed: a
 # condition that turns true and false again between two ticks is missed.
 BACKSTOP = timedelta(seconds=30)
+
+# Conditions that answer about the run they are asked in: which trigger fired,
+# which automation is running, who pressed the button. Watching is asking over
+# and over outside any run at all, so there is nothing for them to answer and
+# they say no every time. Quietly, which is why they are refused instead.
+CONTEXT_DEPENDENT = frozenset(
+    {
+        "trigger",
+        "spook.cooldown",
+        "spook.not_triggered_by_user",
+        "spook.quota",
+        "spook.triggered_by_automation",
+        "spook.triggered_by_user",
+    }
+)
+
+
+def _condition_types(config: Any) -> Iterator[str]:
+    """Yield the type of every condition in a config, however deeply nested."""
+    if isinstance(config, dict):
+        if isinstance(kind := config.get(CONF_CONDITION), str):
+            yield kind
+        for value in config.values():
+            yield from _condition_types(value)
+    elif isinstance(config, list):
+        for item in config:
+            yield from _condition_types(item)
 
 
 class ConditionWatcher:
@@ -140,9 +170,19 @@ async def async_validate_condition(
 
     Has to run in the event loop, because validating a template does.
     """
-    return await condition.async_validate_condition_config(
+    validated = await condition.async_validate_condition_config(
         hass, cv.CONDITION_SCHEMA(config)
     )
+
+    if unwatchable := CONTEXT_DEPENDENT.intersection(_condition_types(validated)):
+        msg = (
+            "Cannot watch a condition that asks about the run it is in: "
+            f"{', '.join(sorted(unwatchable))}. There is no run here to ask about, "
+            "so it would never be true."
+        )
+        raise vol.Invalid(msg)
+
+    return validated
 
 
 async def async_condition_watcher(

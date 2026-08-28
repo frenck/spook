@@ -4,6 +4,8 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from importlib import import_module
+from pathlib import Path
 from typing import TYPE_CHECKING
 
 from homeassistant.exceptions import HomeAssistantError
@@ -14,9 +16,11 @@ import voluptuous as vol
 
 from custom_components.spook.condition_watching import (
     BACKSTOP,
+    CONTEXT_DEPENDENT,
     async_condition_watcher,
     async_validate_condition,
 )
+import custom_components.spook
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -29,6 +33,8 @@ GATE_TEMPLATE = {
     "condition": "template",
     "value_template": "{{ is_state('input_boolean.gate', 'on') }}",
 }
+
+TWICE = 2
 
 
 async def _watching(
@@ -219,4 +225,51 @@ async def test_a_condition_that_does_not_exist_is_refused(
         await async_validate_condition(hass, {"condition": "not_a_condition"})
 
 
-TWICE = 2
+async def test_a_context_dependent_condition_is_refused(hass: HomeAssistant) -> None:
+    """`trigger` asks which trigger fired, and here nothing fired.
+
+    Measured: asked without variables it answers False rather than raising, so
+    accepting it would be a wait that never ends and a trigger that never
+    fires, with nothing in the log about it.
+    """
+    with pytest.raises(vol.Invalid, match="no run here to ask about"):
+        await async_validate_condition(hass, {"condition": "trigger", "id": "abc"})
+
+
+async def test_a_context_dependent_condition_is_found_when_nested(
+    hass: HomeAssistant,
+) -> None:
+    """Half an `and` is enough to make the whole thing never true."""
+    with pytest.raises(vol.Invalid, match="trigger"):
+        await async_validate_condition(
+            hass,
+            {
+                "condition": "and",
+                "conditions": [GATE, {"condition": "trigger", "id": "abc"}],
+            },
+        )
+
+
+def test_every_spook_condition_is_accounted_for() -> None:
+    """Keeps `CONTEXT_DEPENDENT` honest as Spook grows more conditions.
+
+    A condition that reaches for `variables` is asking about the run it is in,
+    so it cannot be watched. There is no way to ask a condition class whether
+    it does that, so the list is written out by hand, and this is what stops it
+    going stale: add a condition that reads `variables` and this fails until
+    the list says so.
+    """
+    conditions = (
+        Path(custom_components.spook.__file__).parent / "ectoplasms/spook/conditions"
+    )
+
+    for module_path in sorted(conditions.glob("[a-z]*.py")):
+        module = import_module(
+            f"custom_components.spook.ectoplasms.spook.conditions.{module_path.stem}"
+        )
+        name = f"spook.{module.SpookCondition.condition}"
+        reads_variables = 'kwargs.get("variables")' in module_path.read_text()
+
+        assert reads_variables == (name in CONTEXT_DEPENDENT), (
+            f"{name} reads variables but is not in CONTEXT_DEPENDENT, or the reverse"
+        )

@@ -207,3 +207,36 @@ async def test_validation_refuses_a_condition_that_does_not_exist(
         await SpookTrigger.async_validate_config(
             hass, {"options": {"condition": {"condition": "not_a_condition"}}}
         )
+
+
+async def test_a_context_dependent_condition_takes_down_its_automation(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A `trigger` condition here can only ever be false, so it is refused.
+
+    Asked outside a run it answers no, without complaining, so accepting it
+    would be an automation that quietly never fires. This is the loud version.
+    """
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "alias": "hopeful",
+                    "trigger": {
+                        "platform": "spook.condition_met",
+                        "options": {
+                            "condition": {"condition": "trigger", "id": "abc"},
+                        },
+                    },
+                    "action": [],
+                },
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    assert hass.states.get("automation.hopeful").state == "unavailable"
+    assert "no run here to ask about" in caplog.text

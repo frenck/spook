@@ -81,9 +81,15 @@ class SpookService(AbstractSpookService):
 
     async def async_handle_service(self, call: ServiceCall) -> ServiceResponse:
         """Wait for the condition, and say whether it arrived."""
-        condition_config = await async_validate_condition(
-            self.hass, call.data[CONF_CONDITION]
-        )
+        try:
+            condition_config = await async_validate_condition(
+                self.hass, call.data[CONF_CONDITION]
+            )
+        except vol.Invalid as err:
+            # Bad input from the caller, not a fault in here, and a raw
+            # voluptuous error in the log says that far less clearly.
+            raise ServiceValidationError(str(err)) from err
+
         _reject_rendered_templates(condition_config)
 
         met = self.hass.loop.create_future()
