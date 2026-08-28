@@ -110,6 +110,28 @@ def _condition_types(config: Any) -> Iterator[str]:
             yield from _condition_types(item.get(CONF_CONDITIONS, []))
 
 
+def _as_one_condition(config: ConfigType | list[ConfigType]) -> ConfigType:
+    """Turn a condition sequence into the single condition it means.
+
+    The `condition` selector both surfaces advertise hands over a sequence,
+    even for one condition and even when what was written was a single
+    mapping: `cv.CONDITIONS_SCHEMA` normalises to a list. A sequence means all
+    of them, as it does everywhere else in Home Assistant, so more than one
+    becomes an `and`.
+    """
+    if not isinstance(config, list):
+        return config
+
+    if not config:
+        msg = "A condition is required, and this one is empty."
+        raise vol.Invalid(msg)
+
+    if len(config) == 1:
+        return config[0]
+
+    return {CONF_CONDITION: "and", CONF_CONDITIONS: config}
+
+
 def _run_scoped_names(config: ConfigType) -> set[str]:
     """Return the run-scoped names the templates in a condition reach for."""
     found: set[str] = set()
@@ -240,7 +262,7 @@ class ConditionWatcher:
 
 async def async_validate_condition(
     hass: HomeAssistant,
-    config: ConfigType,
+    config: ConfigType | list[ConfigType],
 ) -> ConfigType:
     """Put a condition config through both halves of Home Assistant's checks.
 
@@ -253,7 +275,7 @@ async def async_validate_condition(
     Has to run in the event loop, because validating a template does.
     """
     validated = await condition.async_validate_condition_config(
-        hass, cv.CONDITION_SCHEMA(config)
+        hass, cv.CONDITION_SCHEMA(_as_one_condition(config))
     )
 
     if unwatchable := CONTEXT_DEPENDENT.intersection(_condition_types(validated)):

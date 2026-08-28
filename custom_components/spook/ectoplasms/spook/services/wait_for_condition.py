@@ -65,7 +65,9 @@ class SpookService(AbstractSpookService):
     service = "wait_for_condition"
     supports_response = SupportsResponse.OPTIONAL
     schema = {
-        vol.Required(CONF_CONDITION): dict,
+        # A sequence is what the `condition` selector hands over, a mapping is
+        # what people write by hand.
+        vol.Required(CONF_CONDITION): vol.Any(dict, list, str),
         vol.Optional(CONF_TIMEOUT): cv.positive_time_period,
     }
 

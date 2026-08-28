@@ -8,7 +8,9 @@ from importlib import import_module
 from pathlib import Path
 from typing import TYPE_CHECKING
 
+from homeassistant.core import Context
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import selector
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
@@ -26,7 +28,7 @@ import custom_components.spook
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
 
-    from homeassistant.core import Context, HomeAssistant
+    from homeassistant.core import HomeAssistant
     from homeassistant.helpers.typing import ConfigType
 
 GATE = {"condition": "state", "entity_id": "input_boolean.gate", "state": "on"}
@@ -45,7 +47,9 @@ async def _watching(
     """Start watching a condition and record the context of every turn."""
     turns: list[Context | None] = []
     watcher = await async_condition_watcher(
-        hass, await async_validate_condition(hass, config), turns.append
+        hass,
+        await async_validate_condition(hass, config),
+        lambda event: turns.append(event.context if event else None),
     )
     watcher.async_start()
     return watcher, turns
@@ -385,3 +389,82 @@ async def test_a_run_scoped_name_is_found_behind_an_assignment(
                 "value_template": "{% set fired = trigger %}{{ fired is not none }}",
             },
         )
+
+
+async def test_the_turn_carries_the_change_that_caused_it(
+    hass: HomeAssistant,
+) -> None:
+    """Which is how attribution survives all the way up to the automation.
+
+    Reported here rather than only at the trigger, because this is the layer
+    that either has the state change or does not.
+    """
+    hass.states.async_set("input_boolean.gate", "off")
+    await hass.async_block_till_done()
+
+    watcher, turns = await _watching(hass, GATE)
+
+    hass.states.async_set(
+        "input_boolean.gate", "on", context=Context(user_id="ghost-hunter")
+    )
+    await hass.async_block_till_done()
+    watcher.async_stop()
+
+    assert [turn.user_id for turn in turns if turn] == ["ghost-hunter"]
+
+
+async def test_the_backstop_has_nothing_to_carry(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Nobody makes the clock move, so there is nobody to name."""
+    watcher, turns = await _watching(hass, GATE_TEMPLATE)
+
+    hass.states.async_set("input_boolean.gate", "on")
+    freezer.tick(BACKSTOP)
+    async_fire_time_changed(hass, dt_util.utcnow() + BACKSTOP)
+    await hass.async_block_till_done()
+    watcher.async_stop()
+
+    assert turns == [None]
+
+
+async def test_a_sequence_of_one_is_that_one(hass: HomeAssistant) -> None:
+    """What the `condition` selector hands over, even for a single condition.
+
+    `cv.CONDITIONS_SCHEMA` normalises to a list, so anything built in the user
+    interface arrives as one. Measured: a bare mapping put through the
+    selector comes back as a list of one.
+    """
+    config = await async_validate_condition(hass, [GATE])
+
+    assert config["condition"] == "state"
+
+
+async def test_a_sequence_of_several_means_all_of_them(hass: HomeAssistant) -> None:
+    """A condition sequence is an implicit `and`, as it is everywhere else."""
+    config = await async_validate_condition(hass, [GATE, GATE_TEMPLATE])
+
+    assert config["condition"] == "and"
+    assert len(config["conditions"]) == TWICE
+
+
+async def test_an_empty_sequence_is_refused(hass: HomeAssistant) -> None:
+    """Nothing to watch is not the same as nothing to say about it."""
+    with pytest.raises(vol.Invalid, match="empty"):
+        await async_validate_condition(hass, [])
+
+
+async def test_the_selector_output_is_what_gets_validated(
+    hass: HomeAssistant,
+) -> None:
+    """Put through the real selector, not a hand-made list.
+
+    Which is the point of this one: the shape has to come from Home Assistant
+    rather than from an assumption about what the interface sends.
+    """
+    through_selector = selector.ConditionSelector()(GATE)
+
+    assert isinstance(through_selector, list)
+    config = await async_validate_condition(hass, through_selector)
+    assert config["condition"] == "state"

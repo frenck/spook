@@ -7,6 +7,7 @@ import asyncio
 from typing import TYPE_CHECKING
 
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import selector
 from homeassistant.setup import async_setup_component
 import pytest
 
@@ -305,3 +306,30 @@ async def test_a_context_dependent_condition_is_refused(hass: HomeAssistant) -> 
                 blocking=True,
                 return_response=True,
             )
+
+
+async def test_it_takes_what_the_condition_selector_produces(
+    hass: HomeAssistant,
+) -> None:
+    """The shape a call assembled in the user interface actually has.
+
+    `services.yaml` advertises the `condition` selector, which validates with
+    `cv.CONDITIONS_SCHEMA` and normalises to a list. Requiring a mapping made
+    every call built that way fail before this handler ran.
+    """
+    _register(hass)
+    hass.states.async_set("input_boolean.gate", "on")
+    await hass.async_block_till_done()
+
+    response = await hass.services.async_call(
+        DOMAIN,
+        "wait_for_condition",
+        {
+            "condition": selector.ConditionSelector()(GATE),
+            "timeout": {"seconds": 1},
+        },
+        blocking=True,
+        return_response=True,
+    )
+
+    assert response == {"completed": True}

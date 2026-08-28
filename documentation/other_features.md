@@ -133,6 +133,8 @@ Waits until a condition is true, and carries on straight away if it already is.
 
 Home Assistant can wait for a template to turn true, and it can wait for a trigger. It cannot wait for a condition, so anything you can express with the condition building blocks has to be rewritten as a template before you can wait on it.
 
+Takes one condition or a list of them, and a list means all of them, the same as anywhere else. Which is also what the visual editor sends, so both shapes have to work.
+
 The other half of what this fixes is that it looks first. `wait_for_trigger` always waits for something to happen, so if the thing you are waiting for has already happened you wait forever, which is why people wrap it in an `if`. This checks the condition before waiting, so an automation that arrives late still carries on.
 
 Returns `completed` when it is given a `response_variable`, which says whether the condition arrived or the timeout did.
@@ -960,6 +962,8 @@ Fires when a condition goes from false to true.
 ```
 
 A condition is true or false, and the moment it turns is worth reacting to. Home Assistant has a trigger for a template turning true and one for a state arriving, but nothing that takes the condition building blocks, so anything more involved than a single state has to be rewritten as a template.
+
+Takes one condition or a list of them, and a list means all of them, the same as anywhere else. Which is also what the visual editor sends, so both shapes have to work.
 
 Only the turn counts. A condition that is already true when the automation loads is not a change, so this does not fire for it, the same as the template trigger. And going back to false is not a turn either.
 

@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import selector
 from homeassistant.setup import async_setup_component
 import pytest
 
@@ -23,7 +24,10 @@ GATE = {"condition": "state", "entity_id": "input_boolean.gate", "state": "on"}
 TWICE = 2
 
 
-async def _automation(hass: HomeAssistant, condition: dict | None = None) -> list[int]:
+async def _automation(
+    hass: HomeAssistant,
+    condition: dict | list | None = None,
+) -> list[int]:
     """Set up an automation on the trigger and record every run."""
     ran: list[int] = []
     hass.services.async_register("test", "mark", lambda _call: ran.append(1))
@@ -235,3 +239,42 @@ async def test_a_context_dependent_condition_takes_down_its_automation(
 
     assert hass.states.get("automation.hopeful").state == "unavailable"
     assert "no run here" in caplog.text
+
+
+async def test_it_takes_what_the_condition_selector_produces(
+    hass: HomeAssistant,
+) -> None:
+    """The shape an automation built in the user interface actually has.
+
+    The `condition` selector validates with `cv.CONDITIONS_SCHEMA`, which
+    normalises to a list even for a single condition. Requiring a mapping made
+    every automation built that way fail to load.
+    """
+    hass.states.async_set("input_boolean.gate", "off")
+    hass.states.async_set("sensor.temp", "10")
+    await hass.async_block_till_done()
+
+    ran = await _automation(
+        hass,
+        selector.ConditionSelector()(
+            [
+                GATE,
+                {"condition": "numeric_state", "entity_id": "sensor.temp", "above": 20},
+            ]
+        ),
+    )
+
+    assert hass.states.get("automation.when_true").state == "on", (
+        "the automation did not load"
+    )
+
+    # A sequence means all of them, so half is not enough.
+    hass.states.async_set("input_boolean.gate", "on")
+    await hass.async_block_till_done()
+    assert not ran
+
+    hass.states.async_set("sensor.temp", "25")
+    await hass.async_block_till_done()
+    assert len(ran) == 1
+
+    await _detach(hass)

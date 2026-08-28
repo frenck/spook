@@ -50,7 +50,9 @@ class SpookTrigger(Trigger):
         shaped: ConfigType = vol.Schema(
             {
                 vol.Required(CONF_OPTIONS): {
-                    vol.Required(CONF_CONDITION): dict,
+                    # A sequence is what the `condition` selector hands over,
+                    # a mapping is what people write by hand.
+                    vol.Required(CONF_CONDITION): vol.Any(dict, list, str),
                 },
             }
         )(config)
