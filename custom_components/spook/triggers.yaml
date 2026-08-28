@@ -85,3 +85,18 @@ while:
       example: "00:10:00"
       selector:
         duration:
+watchdog:
+  fields:
+    arm:
+      required: true
+      selector:
+        trigger:
+    expect:
+      required: true
+      selector:
+        trigger:
+    within:
+      required: true
+      example: "00:02:00"
+      selector:
+        duration:

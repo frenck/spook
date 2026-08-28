@@ -16,7 +16,7 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.trigger import Trigger
 from homeassistant.util import dt as dt_util
 
-from ....const import DOMAIN, LOGGER
+from ....trigger_nesting import async_attach_nested
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -58,17 +58,6 @@ _TRIGGER_SCHEMA = vol.Schema(
         },
     }
 )
-
-
-@callback
-def _log(level: int, message: str, **kwargs: Any) -> None:
-    """Take the log line Home Assistant writes about a nested trigger.
-
-    `async_initialize_triggers` insists on somewhere to write, and what it
-    writes is about a trigger the user did not attach themselves, so it goes
-    to Spook's logger rather than an automation's.
-    """
-    LOGGER.log(level, "Spook sequence trigger: %s", message, **kwargs)
 
 
 @dataclass(frozen=True, slots=True)
@@ -136,23 +125,22 @@ class _SequenceWatcher:
         early is missed, and ignoring them while idle costs nothing.
         """
         if self._sequence.reset:
-            self._unsub_reset = await trigger_helper.async_initialize_triggers(
+            unsub_reset = await async_attach_nested(
                 self._hass,
                 self._sequence.reset,
                 self._async_reset_fired,
-                DOMAIN,
-                "sequence reset",
-                _log,
+                "the reset triggers of a sequence trigger",
+                "so nothing will abandon a run under way",
             )
 
-            if self._unsub_reset is None:
-                # Nothing attached, and it has already logged why. Worth
-                # repeating, because a sequence whose reset never arrives is
-                # one that quietly stops being interruptible.
-                LOGGER.warning(
-                    "Spook could not attach the reset triggers of a sequence "
-                    "trigger, so nothing will abandon a run under way"
-                )
+            if self._stopped:
+                # Stopped while this was suspended, the same window every
+                # attach in Spook has. Nobody is holding the handle any more.
+                if unsub_reset is not None:
+                    unsub_reset()
+                return self.async_stop
+
+            self._unsub_reset = unsub_reset
 
         await self._async_arm(0)
 
@@ -206,13 +194,12 @@ class _SequenceWatcher:
             """
             await self._async_step_fired(index, variables, context)
 
-        unsub = await trigger_helper.async_initialize_triggers(
+        unsub = await async_attach_nested(
             self._hass,
             [self._sequence.steps[index]],
             _fired,
-            DOMAIN,
-            f"step {index + 1}",
-            _log,
+            f"step {index + 1} of a sequence trigger",
+            "so it will not fire",
         )
 
         if self._stopped:
@@ -222,22 +209,10 @@ class _SequenceWatcher:
                 unsub()
             return
 
+        # `async_start` turns a failure here into a refusal for the first step,
+        # where there is still somebody to refuse to. From a step landing there
+        # is not, so the line `async_attach_nested` logged is all there is.
         self._run.unsub_step = unsub
-
-        if unsub is None:
-            # `async_initialize_triggers` hands back nothing when it could not
-            # attach anything, having logged why. Say so as well: a sequence
-            # stuck on a step it cannot listen for is a trigger that never
-            # fires, and that is the failure mode worth being loud about.
-            #
-            # `async_start` turns this into a refusal for the first step, where
-            # there is still somebody to refuse to. From a step landing there
-            # is not, so a line in the log is all there is.
-            LOGGER.warning(
-                "Spook could not attach step %s of a sequence trigger, "
-                "so it will not fire",
-                index + 1,
-            )
 
     @callback
     def _async_disarm_step(self) -> None:

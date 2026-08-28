@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.core import Context
 from homeassistant.helpers import selector
 from homeassistant.setup import async_setup_component
-from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
 import voluptuous as vol
@@ -86,7 +85,7 @@ async def _detach(hass: HomeAssistant) -> None:
 async def _tick(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
     """Let one interval pass."""
     freezer.tick(EVERY)
-    async_fire_time_changed(hass, dt_util.utcnow() + EVERY)
+    async_fire_time_changed(hass)
     await hass.async_block_till_done()
 
 

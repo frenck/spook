@@ -32,6 +32,24 @@
         }
       }
     },
+    "watchdog": {
+      "name": "Watchdog",
+      "description": "Fires when something that was expected to happen does not happen in time.",
+      "fields": {
+        "arm": {
+          "name": "Arm",
+          "description": "What starts the watch. The wait is measured from here, and arming again while already waiting starts the wait over."
+        },
+        "expect": {
+          "name": "Expect",
+          "description": "What is expected to follow. Arriving in time calls the watch off, and nothing fires."
+        },
+        "within": {
+          "name": "Within",
+          "description": "How long the expected thing has to arrive. This fires when that time passes and it has not."
+        }
+      }
+    },
     "condition_met": {
       "name": "Condition turned true",
       "description": "Fires when a condition goes from false to true, using the same condition building blocks as anywhere else.",
