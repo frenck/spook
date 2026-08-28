@@ -125,14 +125,12 @@ class _SequenceWatcher:
         early is missed, and ignoring them while idle costs nothing.
         """
         if self._sequence.reset:
-            # Nothing to add when this fails: `async_attach_nested` says so.
-            # A sequence whose reset never arrives keeps working, it has just
-            # quietly stopped being interruptible.
             self._unsub_reset = await async_attach_nested(
                 self._hass,
                 self._sequence.reset,
                 self._async_reset_fired,
                 "the reset triggers of a sequence trigger",
+                "so nothing will abandon a run under way",
             )
 
         await self._async_arm(0)
@@ -192,6 +190,7 @@ class _SequenceWatcher:
             [self._sequence.steps[index]],
             _fired,
             f"step {index + 1} of a sequence trigger",
+            "so it will not fire",
         )
 
         if self._stopped:

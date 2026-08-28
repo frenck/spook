@@ -32,16 +32,20 @@ async def async_attach_nested(
     configs: list[ConfigType],
     action: Callable,
     name: str,
+    consequence: str,
 ) -> CALLBACK_TYPE | None:
     """Attach triggers on behalf of a Spook trigger, and say if it worked.
 
     Returns `None` when nothing could be attached, having said so in the log.
-    Home Assistant already logs why, but a Spook trigger waiting for something
-    it could not listen for never fires, and that is the failure mode worth
-    being loud about.
+    Home Assistant already logs why; what it cannot know is what that costs
+    the trigger asking, and going quiet about that is how a trigger ends up
+    looking healthy while it can no longer do its job.
 
-    `name` is read straight into that line, so it wants to be a noun phrase:
-    "step 2 of a sequence trigger".
+    `name` and `consequence` are read straight into that line: "Spook could
+    not attach {name}, {consequence}". Which is why the consequence comes from
+    the caller. A sequence missing a step never fires again, while one missing
+    its optional reset triggers fires perfectly well and has only stopped
+    being interruptible.
 
     `action` has to be a function, not an object with an async `__call__`.
     Home Assistant decides whether to await an action by inspecting it, and an
@@ -54,6 +58,6 @@ async def async_attach_nested(
     )
 
     if unsub is None:
-        LOGGER.warning("Spook could not attach %s, so it will not fire", name)
+        LOGGER.warning("Spook could not attach %s, %s", name, consequence)
 
     return unsub

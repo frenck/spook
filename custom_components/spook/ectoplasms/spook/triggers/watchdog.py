@@ -99,8 +99,20 @@ class _Watchdog:
             (self._watch.expect, self._async_expected, "the expected triggers"),
         ):
             unsub = await async_attach_nested(
-                self._hass, configs, action, f"{name} of a watchdog trigger"
+                self._hass,
+                configs,
+                action,
+                f"{name} of a watchdog trigger",
+                "so it will not fire",
             )
+
+            if self._stopped:
+                # Stopped while this was suspended. Nobody is holding the
+                # handle any more, so let go of it here, and do not go on to
+                # attach the other half.
+                if unsub is not None:
+                    unsub()
+                return self.async_stop
 
             if unsub is None:
                 # Half a watchdog is not a watchdog: without the arming half it

@@ -666,6 +666,9 @@ async def test_a_reset_that_cannot_attach_is_reported(
     await hass.async_block_till_done()
 
     assert "could not attach the reset triggers" in caplog.text
+    assert "nothing will abandon a run under way" in caplog.text, (
+        "the line says a healthy sequence will not fire"
+    )
 
 
 async def test_a_deadline_only_ends_the_run_it_was_set_for(

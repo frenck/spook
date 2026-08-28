@@ -18,6 +18,7 @@ from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
 import voluptuous as vol
 
+from custom_components.spook import trigger_nesting
 from custom_components.spook.ectoplasms.spook.triggers import (
     watchdog as watchdog_module,
 )
@@ -308,31 +309,67 @@ async def test_a_deadline_only_ends_the_arming_it_was_set_for(
         await hass.async_block_till_done()
 
 
-async def test_stopping_while_arming_leaves_nothing_behind(
+async def test_stopping_while_attaching_leaves_nothing_behind(
     hass: HomeAssistant,
 ) -> None:
-    """Attaching suspends and stopping does not, the same as everywhere."""
+    """Stopping is synchronous and attaching is not.
+
+    Overlapped on purpose. An earlier version of this test awaited
+    `async_start` before stopping, which never puts the two at the same time
+    and passed against a watchdog that leaked its listener. Review caught
+    that, so this one holds the attach open and stops while it waits.
+    """
     await _reset(hass)
     validated = await SpookTrigger.async_validate_config(
         hass,
         {"options": {"arm": [DOOR], "expect": [MOTION], "within": {"minutes": 2}}},
     )
     options = validated["options"]
+    barks: list[dict] = []
 
     watchdog = watchdog_module._Watchdog(
         hass,
         watchdog_module._Watch(
             arm=options["arm"], expect=options["expect"], within=options["within"]
         ),
-        lambda _armed_by: None,
+        barks.append,
     )
-    stop = await watchdog.async_start()
-    stop()
 
-    # An arming that was already on its way must not start a clock.
-    await watchdog._async_armed({"trigger": {}}, None)
+    real = trigger_helper.async_initialize_triggers
+    hold = asyncio.Event()
+    attaching = asyncio.Event()
+
+    async def _suspending(*args: Any, **kwargs: Any):  # noqa: ANN202
+        if "arming" in args[4]:
+            attaching.set()
+            await hold.wait()
+        return await real(*args, **kwargs)
+
+    with patch.object(
+        trigger_nesting.trigger_helper,
+        "async_initialize_triggers",
+        _suspending,
+    ):
+        starting = hass.async_create_task(watchdog.async_start())
+        async with asyncio.timeout(5):
+            await attaching.wait()
+
+        # The automation is turned off while the arming half is being
+        # attached.
+        watchdog.async_stop()
+
+        hold.set()
+        async with asyncio.timeout(5):
+            await starting
+        await hass.async_block_till_done()
+
+    assert not watchdog._unsubs, "a listener was left behind"
+
+    # And it really is deaf: arming it does nothing.
+    await _move(hass, "binary_sensor.door", "on")
     assert watchdog._armed is None, "a stopped watchdog armed itself"
 
+    watchdog.async_stop()
     await hass.async_block_till_done()
 
 
