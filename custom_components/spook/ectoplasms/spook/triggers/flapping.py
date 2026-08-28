@@ -15,11 +15,9 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.target import TargetEntityChangeTracker, TargetSelection
 from homeassistant.helpers.trigger import Trigger
-from homeassistant.util import dt as dt_util
 
 if TYPE_CHECKING:
     from collections.abc import Callable
-    from datetime import datetime
 
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
     from homeassistant.helpers.event import EventStateChangedData
@@ -112,9 +110,14 @@ class _Recent:
     oldest one falls off by itself and the question is only ever whether the
     ones still in hand happened close enough together. No pruning, and no
     growth on an entity that changes all day.
+
+    Moments are the timestamps the events carry, in seconds, rather than
+    datetimes built from them. Cheaper on an entity that changes a lot, and
+    it is when the change happened rather than when this got round to hearing
+    about it.
     """
 
-    seen: deque[datetime]
+    seen: deque[float]
     reported: bool = False
 
 
@@ -144,7 +147,7 @@ class _FlappingEntityTracker(TargetEntityChangeTracker):
         """Initialize the tracker."""
         super().__init__(hass, target_selection, entity_filter=lambda ids: ids)
         self._changes = changes
-        self._within = within
+        self._within = within.total_seconds()
         self._on_flapping = on_flapping
         self._tracked: set[str] = set()
         self._recent: dict[str, _Recent] = {}
@@ -210,7 +213,7 @@ class _FlappingEntityTracker(TargetEntityChangeTracker):
         if recent is None:
             recent = self._recent[entity_id] = _Recent(seen=deque(maxlen=self._changes))
 
-        recent.seen.append(dt_util.utcnow())
+        recent.seen.append(event.time_fired_timestamp)
 
         if len(recent.seen) < self._changes or (
             recent.seen[-1] - recent.seen[0] > self._within
