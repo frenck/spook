@@ -15,7 +15,10 @@ import pytest
 import voluptuous as vol
 
 from custom_components.spook.condition import async_get_conditions
-from custom_components.spook.ectoplasms.spook.conditions.quota import SpookCondition
+from custom_components.spook.ectoplasms.spook.conditions.quota import (
+    MAX_PERIOD,
+    SpookCondition,
+)
 from custom_components.spook.run_history import (
     MAX_RUNS_REMEMBERED,
     async_get_run_history,
@@ -180,6 +183,43 @@ async def test_a_limit_beyond_what_is_remembered_is_refused(
         await SpookCondition.async_validate_config(
             hass, {"options": {"limit": limit, "period": "01:00:00"}}
         )
+
+
+@pytest.mark.parametrize(
+    "period",
+    [
+        {"days": MAX_PERIOD.days + 1},
+        # Long enough that subtracting it from now reaches past the start of
+        # the calendar, which used to crash the check rather than the config.
+        {"days": 999999999},
+        "9999999:00:00",
+    ],
+)
+async def test_a_period_longer_than_a_year_is_refused(
+    hass: HomeAssistant,
+    period: object,
+) -> None:
+    """A window nothing useful fits inside, and one that cannot be measured.
+
+    The history lives in memory and a restart clears it, so an allowance over
+    more than a year could not be answered honestly. And a period long enough
+    to reach past the start of the calendar broke the subtraction it is used
+    for, which failed inside the condition rather than at load.
+    """
+    with pytest.raises(vol.Invalid, match="days or shorter"):
+        await SpookCondition.async_validate_config(
+            hass, {"options": {"limit": 1, "period": period}}
+        )
+
+
+async def test_the_longest_period_on_offer_still_works(hass: HomeAssistant) -> None:
+    """And the boundary itself is usable, not just accepted."""
+    condition = SpookCondition(
+        hass, ConditionConfig(options={"limit": 1, "period": MAX_PERIOD})
+    )
+    await condition.async_setup()
+
+    assert condition.async_check(variables={}) is True
 
 
 async def test_it_allows_the_limit_and_then_stops(

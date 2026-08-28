@@ -60,12 +60,25 @@ def _limit(value: Any) -> int:
     return int(vol.Range(min=1, max=MAX_RUNS_REMEMBERED)(int(as_decimal)))
 
 
+# The longest window on offer. The history lives in memory and is cleared by a
+# restart, so an allowance measured over more than a year could not be answered
+# honestly anyway, and a period long enough to reach past the start of the
+# calendar crashes the subtraction it is used for.
+MAX_PERIOD = timedelta(days=366)
+
+
 def _period(value: Any) -> timedelta:
-    """Validate the period, and refuse one nothing can fit inside."""
+    """Validate the period, and refuse one nothing useful fits inside."""
     period = cv.positive_time_period(value)
+
     if period <= timedelta(0):
         message = "The period must be longer than zero"
         raise vol.Invalid(message)
+
+    if period > MAX_PERIOD:
+        message = f"The period must be {MAX_PERIOD.days} days or shorter"
+        raise vol.Invalid(message)
+
     return period
 
 
