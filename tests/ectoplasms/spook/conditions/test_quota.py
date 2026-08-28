@@ -28,6 +28,7 @@ import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 
 ALLOWANCE = 2
 THREE = 3
+FIVE = 5
 
 
 if TYPE_CHECKING:
@@ -112,6 +113,37 @@ async def test_a_nonsense_allowance_is_refused(
     """
     with pytest.raises(vol.Invalid):
         await SpookCondition.async_validate_config(hass, {"options": options})
+
+
+@pytest.mark.parametrize("limit", [1.5, 0.5, "5.5", True, False, "five", None])
+async def test_a_limit_that_is_not_a_whole_count_is_refused(
+    hass: HomeAssistant,
+    limit: object,
+) -> None:
+    """An allowance is a number of runs, so half a run is not one.
+
+    Coercing would hand back 1 for both 1.5 and `True`, so a mistyped limit
+    would quietly become a different one. And only half quietly: 0.5 already
+    landed below the minimum and was refused, which made the silent half
+    inconsistent as well as wrong.
+    """
+    with pytest.raises(vol.Invalid, match="whole number"):
+        await SpookCondition.async_validate_config(
+            hass, {"options": {"limit": limit, "period": "01:00:00"}}
+        )
+
+
+@pytest.mark.parametrize("limit", [5, "5", 5.0])
+async def test_a_whole_count_is_accepted_however_it_is_written(
+    hass: HomeAssistant,
+    limit: object,
+) -> None:
+    """YAML hands numbers over in more than one shape, and all of these are five."""
+    validated = await SpookCondition.async_validate_config(
+        hass, {"options": {"limit": limit, "period": "01:00:00"}}
+    )
+
+    assert validated["options"]["limit"] == FIVE
 
 
 async def test_a_limit_beyond_what_is_remembered_is_refused(

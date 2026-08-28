@@ -27,6 +27,32 @@ CONF_LIMIT = "limit"
 CONF_PERIOD = "period"
 
 
+def _limit(value: Any) -> int:
+    """Validate the limit, and refuse anything that is not a whole count.
+
+    `vol.Coerce(int)` hands back 1 for both 1.5 and `True`, so a mistyped
+    limit would quietly become a different one. And only half quietly: 0.5 is
+    already refused, because truncating it lands below the minimum. An
+    allowance is a number of runs, so it has to be a whole one.
+    """
+    message = f"The limit must be a whole number of runs, got '{value}'"
+
+    # A bool is an int as far as Python is concerned, and `True` would sail
+    # through everything below as a limit of one.
+    if isinstance(value, bool):
+        raise vol.Invalid(message)
+
+    try:
+        as_number = float(value)
+    except (TypeError, ValueError) as err:
+        raise vol.Invalid(message) from err
+
+    if not as_number.is_integer():
+        raise vol.Invalid(message)
+
+    return int(vol.Range(min=1, max=MAX_RUNS_REMEMBERED)(int(as_number)))
+
+
 def _period(value: Any) -> timedelta:
     """Validate the period, and refuse one nothing can fit inside."""
     period = cv.positive_time_period(value)
@@ -39,9 +65,7 @@ def _period(value: Any) -> timedelta:
 _CONDITION_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_OPTIONS): {
-            vol.Required(CONF_LIMIT): vol.All(
-                vol.Coerce(int), vol.Range(min=1, max=MAX_RUNS_REMEMBERED)
-            ),
+            vol.Required(CONF_LIMIT): _limit,
             vol.Required(CONF_PERIOD): _period,
         },
     }
