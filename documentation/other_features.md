@@ -92,6 +92,95 @@ action: homeassistant.random_fail
 
 :::
 
+### Wait for a condition
+
+Waits until a condition is true, and carries on straight away if it already is.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Wait for a condition 👻
+* - {term}`Action name`
+  - `spook.wait_for_condition`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - Optional response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `condition`
+  - {term}`condition <condition>`
+  - Yes
+  - Any condition, built the ordinary way
+* - `timeout`
+  - {term}`string <string>`
+  - No
+  - Waits indefinitely when left out
+```
+
+Home Assistant can wait for a template to turn true, and it can wait for a trigger. It cannot wait for a condition, so anything you can express with the condition building blocks has to be rewritten as a template before you can wait on it.
+
+The other half of what this fixes is that it looks first. `wait_for_trigger` always waits for something to happen, so if the thing you are waiting for has already happened you wait forever, which is why people wrap it in an `if`. This checks the condition before waiting, so an automation that arrives late still carries on.
+
+Returns `completed` when it is given a `response_variable`, which says whether the condition arrived or the timeout did.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+Hold the sequence until the back door is shut:
+
+```{code-block} yaml
+:linenos:
+action: spook.wait_for_condition
+data:
+  condition:
+    condition: state
+    entity_id: binary_sensor.back_door
+    state: "off"
+```
+
+Give up after five minutes, and do something else about it:
+
+```{code-block} yaml
+:linenos:
+- action: spook.wait_for_condition
+  data:
+    timeout: "00:05:00"
+    condition:
+      condition: state
+      entity_id: binary_sensor.back_door
+      state: "off"
+  response_variable: waited
+- if: "{{ not waited.completed }}"
+  then:
+    - action: notify.persistent_notification
+      data:
+        message: The back door is still open.
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A condition that names entities is noticed the moment one of them changes. A template, time or sun condition names none that can be read off the config, so those are asked again every 30 seconds instead. You are waiting anyway, but it is not instant.
+- Without a `timeout` it waits for as long as the script runs. Stopping the automation or script stops the wait with it.
+
+:::
+
 ## Triggers
 
 Spook offers the following triggers that are not tied to a specific integration:
@@ -839,3 +928,62 @@ options:
 - The run doing the asking does not count against itself. A condition sitting inside the actions is checked while the run is already under way, so without that a limit of one would turn down every run.
 
 :::
+
+### Condition turned true
+
+Fires when a condition goes from false to true.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Condition turned true 👻
+* - Trigger name
+  - `spook.condition_met`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `condition`
+  - {term}`condition <condition>`
+  - Yes
+  - Any condition, built the ordinary way
+```
+
+A condition is true or false, and the moment it turns is worth reacting to. Home Assistant has a trigger for a template turning true and one for a state arriving, but nothing that takes the condition building blocks, so anything more involved than a single state has to be rewritten as a template.
+
+Only the turn counts. A condition that is already true when the automation loads is not a change, so this does not fire for it, the same as the template trigger. And going back to false is not a turn either.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+trigger: spook.condition_met
+options:
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.back_door
+        state: "on"
+      - condition: numeric_state
+        entity_id: sensor.outside_temperature
+        below: 5
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A condition that names entities is noticed the moment one of them changes. A template, time or sun condition names none that can be read off the config, so those are asked again every 30 seconds instead, which is the longest this can take to notice.
+- A condition that cannot be built at all disables that automation and says why in the log, rather than sitting there never firing.
+  :::

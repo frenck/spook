@@ -1,5 +1,15 @@
 {
   "triggers": {
+    "condition_met": {
+      "name": "Condition turned true",
+      "description": "Fires when a condition goes from false to true, using the same condition building blocks as anywhere else.",
+      "fields": {
+        "condition": {
+          "name": "Condition",
+          "description": "The condition to watch."
+        }
+      }
+    },
     "cron": {
       "name": "Cron schedule",
       "description": "Fires on a crontab schedule, for the times Home Assistant's own time triggers cannot express, like every weekday at seven or the last Friday of the month.",
@@ -719,6 +729,20 @@
     }
   },
   "services": {
+    "wait_for_condition": {
+      "name": "Wait for a condition",
+      "description": "Wait until a condition is true. Returns straight away if it already is.",
+      "fields": {
+        "condition": {
+          "name": "Condition",
+          "description": "The condition to wait for."
+        },
+        "timeout": {
+          "name": "Timeout",
+          "description": "How long to wait before giving up. Waits indefinitely when left out."
+        }
+      }
+    },
     "boo": {
       "name": "Boo!",
       "description": "Calling this action spooks Home Assistant. Performing this action will always fail."
