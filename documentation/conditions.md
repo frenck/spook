@@ -39,6 +39,12 @@ Passes when another automation set this run going, directly or through a script.
 
 `spook.triggered_by_automation`, [documentation](other-features#triggered-by-an-automation) 📚
 
+## Repair issue outstanding
+
+Passes while a repair issue is outstanding, for holding something back until the house is in order. Issues somebody has ignored do not count. _#repairs_ _#issue_
+
+`spook.repair_issue_present`, [documentation](other-features#repair-issue-outstanding) 📚
+
 ## Run allowance left
 
 Passes while this automation has run fewer than a given number of times within a given period. The counterpart to Cooldown: that one spaces runs out, this one caps them. _#quota_ _#ratelimit_

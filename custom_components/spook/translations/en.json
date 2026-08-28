@@ -24,6 +24,30 @@
         }
       }
     },
+    "repair_issue_created": {
+      "name": "Repair issue created",
+      "description": "Fires when a new repair issue turns up, so you can hear about one without visiting the repairs page.",
+      "fields": {
+        "domain": {
+          "name": "Integrations",
+          "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+        },
+        "severity": {
+          "name": "Severity",
+          "description": "Limit this to issues of a particular severity. Leave it empty for all of them."
+        }
+      }
+    },
+    "repair_issue_removed": {
+      "name": "Repair issue resolved",
+      "description": "Fires when a repair issue goes away, either fixed or no longer reported.",
+      "fields": {
+        "domain": {
+          "name": "Integrations",
+          "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+        }
+      }
+    },
     "stale": {
       "name": "Entity fell silent",
       "description": "Fires when nothing has written to an entity for a while, which catches a device that died quietly rather than going unavailable.",
@@ -35,7 +59,30 @@
       }
     }
   },
+  "selector": {
+    "repair_issue_severity": {
+      "options": {
+        "critical": "Critical",
+        "error": "Error",
+        "warning": "Warning"
+      }
+    }
+  },
   "conditions": {
+    "repair_issue_present": {
+      "name": "Repair issue outstanding",
+      "description": "Passes while a repair issue is outstanding. Issues somebody has ignored do not count.",
+      "fields": {
+        "domain": {
+          "name": "Integrations",
+          "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+        },
+        "severity": {
+          "name": "Severity",
+          "description": "Limit this to issues of a particular severity. Leave it empty for all of them."
+        }
+      }
+    },
     "quota": {
       "name": "Run allowance left",
       "description": "Passes while this automation has run fewer than a given number of times within a given period. Scripts are not counted.",
