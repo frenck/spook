@@ -115,7 +115,27 @@ async def test_a_nonsense_allowance_is_refused(
         await SpookCondition.async_validate_config(hass, {"options": options})
 
 
-@pytest.mark.parametrize("limit", [1.5, 0.5, "5.5", True, False, "five", None])
+@pytest.mark.parametrize(
+    "limit",
+    [
+        1.5,
+        0.5,
+        "5.5",
+        True,
+        False,
+        "five",
+        None,
+        # Rounds to exactly 5.0 as a float, so checking whole numbers through
+        # binary floating point would let it through.
+        "5.0000000000000001",
+        "5.000000000000000000001",
+        # Integral as far as Decimal is concerned, and only falls over on the
+        # way to an int.
+        "inf",
+        "-inf",
+        "nan",
+    ],
+)
 async def test_a_limit_that_is_not_a_whole_count_is_refused(
     hass: HomeAssistant,
     limit: object,
@@ -146,14 +166,19 @@ async def test_a_whole_count_is_accepted_however_it_is_written(
     assert validated["options"]["limit"] == FIVE
 
 
+@pytest.mark.parametrize("limit", [MAX_RUNS_REMEMBERED + 1, 10**400])
 async def test_a_limit_beyond_what_is_remembered_is_refused(
     hass: HomeAssistant,
+    limit: int,
 ) -> None:
-    """The history is bounded, so a limit above it could never be answered."""
+    """The history is bounded, so a limit above it could never be answered.
+
+    Including one too large to become a float at all, which has to be turned
+    down for being out of range rather than blowing up on the way in.
+    """
     with pytest.raises(vol.Invalid):
         await SpookCondition.async_validate_config(
-            hass,
-            {"options": {"limit": MAX_RUNS_REMEMBERED + 1, "period": "01:00:00"}},
+            hass, {"options": {"limit": limit, "period": "01:00:00"}}
         )
 
 

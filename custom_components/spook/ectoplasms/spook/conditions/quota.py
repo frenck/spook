@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
@@ -42,15 +43,21 @@ def _limit(value: Any) -> int:
     if isinstance(value, bool):
         raise vol.Invalid(message)
 
+    # Decimal rather than float, and from the text rather than the value.
+    # `float("5.0000000000000001")` is exactly 5.0, so a fractional limit would
+    # round its way through, and a large enough integer raises OverflowError on
+    # the way in rather than being refused for being too large.
     try:
-        as_number = float(value)
-    except (TypeError, ValueError) as err:
+        as_decimal = Decimal(str(value))
+    except (ArithmeticError, TypeError, ValueError) as err:
         raise vol.Invalid(message) from err
 
-    if not as_number.is_integer():
+    # Infinity and not-a-number are both "integral" as far as Decimal is
+    # concerned, and only fall over on the way to an int.
+    if not as_decimal.is_finite() or as_decimal != as_decimal.to_integral_value():
         raise vol.Invalid(message)
 
-    return int(vol.Range(min=1, max=MAX_RUNS_REMEMBERED)(int(as_number)))
+    return int(vol.Range(min=1, max=MAX_RUNS_REMEMBERED)(int(as_decimal)))
 
 
 def _period(value: Any) -> timedelta:
