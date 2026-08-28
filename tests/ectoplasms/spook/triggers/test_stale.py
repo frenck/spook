@@ -5,7 +5,10 @@ from __future__ import annotations
 
 from datetime import timedelta
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
+from homeassistant.helpers import event as event_helpers
+from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
@@ -25,6 +28,7 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 AN_HOUR = timedelta(hours=1)
+STALE_MODULE = "custom_components.spook.ectoplasms.spook.triggers.stale"
 
 
 async def _automation(hass: HomeAssistant, target: dict, duration: str) -> list[dict]:
@@ -114,6 +118,78 @@ async def test_a_zero_duration_is_refused(
             hass,
             {"target": {"entity_id": "sensor.probe"}, "options": {"for": duration}},
         )
+
+
+@pytest.mark.parametrize(
+    "target",
+    [{}, {"entity_id": []}, {"area_id": None}, {"entity_id": [], "area_id": []}],
+)
+async def test_a_target_that_names_nothing_is_refused(
+    hass: HomeAssistant,
+    target: dict,
+) -> None:
+    """An empty target would load and then watch nothing at all.
+
+    Every one of these passes the field validation happily, which is why it
+    takes a check of its own. Core's target tracking helper raises on the
+    same thing.
+    """
+    with pytest.raises(vol.Invalid, match="must name at least one"):
+        await SpookTrigger.async_validate_config(
+            hass, {"target": target, "options": {"for": {"hours": 1}}}
+        )
+
+
+async def test_registry_churn_elsewhere_leaves_the_listeners_alone(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    area_registry,  # noqa: ANN001
+    entity_registry,  # noqa: ANN001
+) -> None:
+    """Registry traffic that does not move this target rebuilds nothing.
+
+    Core's tracker re-expands the target on every entity, device and area
+    registry event anywhere in the system. Rebuilding both write listeners on
+    each of those is work for nothing, and there is a lot of nothing.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-28 12:00:00")))
+
+    area = area_registry.async_create("Attic")
+    watched = entity_registry.async_get_or_create("sensor", "demo", "watched")
+    entity_registry.async_update_entity(watched.entity_id, area_id=area.id)
+    hass.states.async_set(watched.entity_id, "21.5")
+    await hass.async_block_till_done()
+
+    builds = 0
+    real_tracker = event_helpers.async_track_state_change_event
+
+    def _counting(*args, **kwargs):  # noqa: ANN002, ANN003, ANN202
+        nonlocal builds
+        builds += 1
+        return real_tracker(*args, **kwargs)
+
+    with patch(f"{STALE_MODULE}.async_track_state_change_event", _counting):
+        trigger = SpookTrigger(
+            hass,
+            TriggerConfig(
+                key="spook.stale",
+                target={"area_id": area.id},
+                options={"for": AN_HOUR},
+            ),
+        )
+        unattach = await trigger.async_attach_runner(lambda *_args: None)
+        at_attach = builds
+
+        for index in range(20):
+            entity_registry.async_get_or_create("sensor", "demo", f"unrelated-{index}")
+            await hass.async_block_till_done()
+
+        unattach()
+
+    assert at_attach == 1
+    assert builds == at_attach, (
+        f"rebuilt the listeners {builds - at_attach} times for nothing"
+    )
 
 
 async def test_it_fires_once_an_entity_falls_silent(

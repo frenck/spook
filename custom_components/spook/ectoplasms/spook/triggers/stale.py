@@ -47,9 +47,30 @@ def _quiet_period(value: Any) -> timedelta:
     return duration
 
 
+# `TARGET_FIELDS` is a plain mapping of schema fields, so it needs compiling
+# before it can validate anything.
+_TARGET_SCHEMA = vol.Schema(cv.TARGET_FIELDS)
+
+
+def _watchable_target(value: Any) -> ConfigType:
+    """Validate the target, and refuse one that names nothing.
+
+    An empty target passes the field validation happily and then watches
+    nothing at all: a trigger that loads and can never fire. Core's own
+    target tracking helper raises on this for the same reason.
+    """
+    target: ConfigType = _TARGET_SCHEMA(value)
+    if not TargetSelection(target).has_any_target:
+        message = (
+            "The target must name at least one entity, device, area, floor or label"
+        )
+        raise vol.Invalid(message)
+    return target
+
+
 _TRIGGER_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_TARGET): cv.TARGET_FIELDS,
+        vol.Required(CONF_TARGET): _watchable_target,
         vol.Required(CONF_OPTIONS): {
             vol.Required(CONF_FOR): _quiet_period,
         },
@@ -89,7 +110,16 @@ class _QuietEntityTracker(TargetEntityChangeTracker):
 
     @callback
     def _handle_entities_update(self, tracked_entities: set[str]) -> None:
-        """Re-aim at the entities the target now covers."""
+        """Re-aim at the entities the target now covers.
+
+        The base class re-expands the target on every entity, device and area
+        registry event anywhere in the system, and almost none of those move
+        this target. Tearing down and rebuilding the write listeners each time
+        would be work for nothing.
+        """
+        if tracked_entities == self._tracked:
+            return
+
         for entity_id in self._tracked - tracked_entities:
             self._cancel_timer(entity_id)
 

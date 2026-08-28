@@ -235,6 +235,7 @@ options:
 
 - Entities that were already silent when the trigger started watching are left alone. Only silence that falls while the automation is loaded counts. Without that, reloading your automations would replay everything that has gone quiet since, which is noise rather than news.
 - A duration of zero is refused. It would put the deadline on the moment the entity last spoke, which is always in the past, so the trigger would load and then do nothing at all.
+- A target that names nothing is refused for the same reason. An empty target is valid as far as the fields go, and would sit there watching no entities at all.
 - Repeating the same value counts as speaking. If you want to know about a sensor whose reading has not moved, that is a different question, and this trigger does not answer it.
 - An entity with no state yet has nothing to be silent about, so it is skipped until it reports for the first time.
 
