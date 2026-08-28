@@ -242,13 +242,31 @@ async def test_a_period_longer_than_a_year_is_refused(
 
 
 async def test_the_longest_period_on_offer_still_works(hass: HomeAssistant) -> None:
-    """And the boundary itself is usable, not just accepted."""
+    """And the boundary itself is usable, not just accepted.
+
+    It has to be checked against a real automation: without a `this` the
+    check answers before it ever looks at the period or the history, so it
+    would pass no matter what the longest period did.
+    """
+    async_setup_run_history(hass)
     condition = SpookCondition(
         hass, ConditionConfig(options={"limit": 1, "period": MAX_PERIOD})
     )
     await condition.async_setup()
 
-    assert condition.async_check(variables={}) is True
+    variables = {"this": {"entity_id": "automation.rationed"}}
+    assert condition.async_check(variables=variables) is True
+
+    hass.bus.async_fire(
+        EVENT_AUTOMATION_TRIGGERED,
+        {"entity_id": "automation.rationed"},
+        context=Context(id="a-run"),
+    )
+    await hass.async_block_till_done()
+
+    assert condition.async_check(variables=variables) is False, (
+        "a run inside the longest window on offer went uncounted"
+    )
 
 
 async def test_it_allows_the_limit_and_then_stops(
