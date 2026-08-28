@@ -218,8 +218,9 @@ async def test_exponent_notation_still_works_for_a_sensible_limit(
     "period",
     [
         {"days": MAX_PERIOD.days + 1},
-        # Long enough that subtracting it from now reaches past the start of
-        # the calendar, which used to crash the check rather than the config.
+        # Absurd rather than dangerous: the history compares ages, so nothing
+        # here overflows. It is refused because a window this long cannot be
+        # answered by a history a restart clears.
         {"days": 999999999},
         "9999999:00:00",
     ],
@@ -228,12 +229,11 @@ async def test_a_period_longer_than_a_year_is_refused(
     hass: HomeAssistant,
     period: object,
 ) -> None:
-    """A window nothing useful fits inside, and one that cannot be measured.
+    """A window nothing useful fits inside.
 
     The history lives in memory and a restart clears it, so an allowance over
-    more than a year could not be answered honestly. And a period long enough
-    to reach past the start of the calendar broke the subtraction it is used
-    for, which failed inside the condition rather than at load.
+    more than a year could not be answered honestly, and accepting one would
+    promise something this cannot keep.
     """
     with pytest.raises(vol.Invalid, match="days or shorter"):
         await SpookCondition.async_validate_config(

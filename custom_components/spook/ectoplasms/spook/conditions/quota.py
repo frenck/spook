@@ -74,10 +74,11 @@ def _limit(value: Any) -> int:
     return int(as_decimal)
 
 
-# The longest window on offer. The history lives in memory and is cleared by a
-# restart, so an allowance measured over more than a year could not be answered
-# honestly anyway, and a period long enough to reach past the start of the
-# calendar crashes the subtraction it is used for.
+# The longest window on offer, and a policy rather than a safeguard: the
+# history compares ages and has no trouble with a period of any size. The
+# reason is that it lives in memory and a restart clears it, so an allowance
+# measured over more than a year is not something this could answer honestly,
+# and accepting one would promise what it cannot keep.
 MAX_PERIOD = timedelta(days=366)
 
 
