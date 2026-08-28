@@ -1173,6 +1173,87 @@ options:
 - The automation's `trigger_variables` do not reach the arming and expected triggers, for the same reason they do not reach a sequence's steps: Home Assistant hands those to a trigger platform, not to a trigger like this one.
   :::
 
+### Entity will not settle
+
+Fires when an entity changes state more often than it should within a stretch of time.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Entity will not settle
+* - Trigger name
+  - `spook.flapping`
+* - Targets
+  - {term}`Entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `changes`
+  - {term}`integer <integer>`
+  - Yes
+  - Between 2 and 1000
+* - `within`
+  - {term}`string <string>`
+  - Yes
+  - `00:05:00`
+```
+
+A sensor that goes on and off and on again, a device that drops off the network and comes back, a binary sensor sitting right on its threshold. Each change on its own looks perfectly fine, and Home Assistant has no way to say "this one has changed five times in five minutes and something is wrong with it".
+
+Changes of state, not writes. An entity reporting the same value over and over is chatty, not unsettled, so attribute changes do not count. Going to `unavailable` and back does count, which is the case this exists for. An entity appearing or disappearing does not: that is not it going back and forth.
+
+The window slides, so this is always about the most recent changes rather than a fresh count every five minutes.
+
+It reports once per spell. Once it has said an entity will not settle it stays quiet until that entity does settle, because a storm of alerts about a storm helps nobody. Settling means the last few changes no longer fall inside the window, and the next time it starts up is news again. A change that still leaves the last few inside the window is the same spell carrying on, however long it has been since the one before it.
+
+When it fires, `trigger.entity_id` names the entity, `trigger.from_state` and `trigger.to_state` are the change that tipped it over, and `trigger.changes` and `trigger.within` are what was asked for.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Tell me about a door sensor that cannot make up its mind:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.flapping
+target:
+  entity_id: binary_sensor.back_door
+options:
+  changes: 5
+  within: "00:05:00"
+```
+
+Or watch everything with a label, and hear about whichever one starts misbehaving:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.flapping
+target:
+  label_id: battery_powered
+options:
+  changes: 10
+  within: "00:15:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Counting starts when the automation loads. Changes from before that are not known, so an entity that has been flapping all afternoon is reported the next time it changes enough, not immediately.
+- Each entity is counted on its own. Ten entities changing twice each is not one entity changing twenty times, which is the point, but it does mean a target full of entities that each flap a little goes unreported.
+- What is remembered is the last `changes` moments per entity, and no more, so a large target costs little. That is also why `changes` stops at a thousand: past that it is not describing a flapping entity any more. It is forgotten entirely when Home Assistant restarts or the entity leaves the target.
+  :::
+
 (condition-turned-true)=
 
 ### Condition turned true

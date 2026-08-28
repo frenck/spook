@@ -100,3 +100,20 @@ watchdog:
       example: "00:02:00"
       selector:
         duration:
+flapping:
+  target:
+    entity:
+  fields:
+    changes:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 2
+          max: 1000
+          mode: box
+    within:
+      required: true
+      example: "00:05:00"
+      selector:
+        duration:

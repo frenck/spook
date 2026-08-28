@@ -50,6 +50,20 @@
         }
       }
     },
+    "flapping": {
+      "name": "Entity will not settle",
+      "description": "Fires when an entity changes state more often than it should within a stretch of time.",
+      "fields": {
+        "changes": {
+          "name": "Changes",
+          "description": "How many changes of state it takes before this fires. Changes of attribute do not count, and neither does an entity appearing or disappearing."
+        },
+        "within": {
+          "name": "Within",
+          "description": "The stretch of time those changes have to fall inside. It slides along, so this is always about the most recent changes."
+        }
+      }
+    },
     "condition_met": {
       "name": "Condition turned true",
       "description": "Fires when a condition goes from false to true, using the same condition building blocks as anywhere else.",
