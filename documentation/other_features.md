@@ -1029,6 +1029,78 @@ options:
 - A later step that cannot be attached is a different matter, because the automation is already running by then. That run stalls where it stands and the log is the only place it says so. Same for a `reset` that cannot be attached: the steps keep working, so nothing else gives it away.
   :::
 
+### While a condition holds
+
+Fires when a condition turns true, and keeps firing on an interval for as long as it stays true.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - While a condition holds
+* - Trigger name
+  - `spook.while`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `condition`
+  - {term}`condition <condition>`
+  - Yes
+  - Any condition, built the ordinary way
+* - `every`
+  - {term}`string <string>`
+  - Yes
+  - `00:10:00`
+```
+
+The nagging trigger. The garage is open and you want to hear about it again in ten minutes, and ten minutes after that, until somebody closes it.
+
+Home Assistant can already do this inside a script, with a `repeat` holding a `while` and a `delay`. What that costs is a script run held open for as long as the garage is open: the automation's `mode` has to allow for it, a reload ends it, and core stops a loop that has gone round ten thousand times. As a trigger none of that applies, because nothing is being held open between one firing and the next.
+
+It fires the moment the condition arrives, not while it already holds, so loading an automation whose condition happens to be true does not set it off. Counting starts again at one each time the condition comes back.
+
+When it fires, `trigger.times` is how many times it has fired this spell, starting at one, and `trigger.every` is the interval. The first firing also carries the state change that made the condition turn, in the same way [Condition turned true](#condition-turned-true) does, so `spook.triggered_by_user` finds the person who caused it there. The firings after that carry nobody, because nobody makes a clock come round.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Remind me every ten minutes while the garage is open and nobody is home:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.while
+options:
+  every: "00:10:00"
+  condition:
+    - condition: state
+      entity_id: cover.garage
+      state: open
+      for: "00:10:00"
+    - condition: numeric_state
+      entity_id: zone.home
+      below: 1
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- The first firing happens the moment the condition turns true, and the interval starts from there. To wait before the first reminder, put a `for:` on the condition itself, as the example does.
+- A spell is abandoned when Home Assistant restarts, along with everything else in memory. A condition that is still true after the restart is not a new arrival, so it will not start nagging again until it goes false and true once more.
+- Everything [Condition turned true](#condition-turned-true) says about what can and cannot be watched applies here as well, including the 30-second polling pass and the conditions that are refused.
+  :::
+
+(condition-turned-true)=
+
 ### Condition turned true
 
 Fires when a condition goes from false to true.

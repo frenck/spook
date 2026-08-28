@@ -18,6 +18,20 @@
         }
       }
     },
+    "while": {
+      "name": "While a condition holds",
+      "description": "Fires when a condition turns true, and keeps firing on an interval for as long as it stays true.",
+      "fields": {
+        "condition": {
+          "name": "Condition",
+          "description": "The condition to watch. Firing starts when it turns true and stops when it stops being true."
+        },
+        "every": {
+          "name": "Every",
+          "description": "How long to wait between one firing and the next, for as long as the condition holds."
+        }
+      }
+    },
     "condition_met": {
       "name": "Condition turned true",
       "description": "Fires when a condition goes from false to true, using the same condition building blocks as anywhere else.",

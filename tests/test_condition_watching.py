@@ -30,8 +30,11 @@ import custom_components.spook
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
 
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import Event, HomeAssistant
+    from homeassistant.helpers.event import EventStateChangedData
     from homeassistant.helpers.typing import ConfigType
+
+    from custom_components.spook.condition_watching import ConditionTurned
 
 GATE = {"condition": "state", "entity_id": "input_boolean.gate", "state": "on"}
 GATE_TEMPLATE = {
@@ -43,6 +46,16 @@ TWICE = 2
 FIVE = 5.0
 
 
+def _record(turns: list[Context | None]) -> ConditionTurned:
+    """Return a callback that records the context of every turn to true."""
+
+    def _turned(*, met: bool, event: Event[EventStateChangedData] | None) -> None:
+        if met:
+            turns.append(event.context if event else None)
+
+    return _turned
+
+
 async def _watching(
     hass: HomeAssistant,
     config: ConfigType,
@@ -52,7 +65,7 @@ async def _watching(
     watcher = await async_condition_watcher(
         hass,
         await async_validate_condition(hass, config),
-        lambda event: turns.append(event.context if event else None),
+        _record(turns),
     )
     watcher.async_start()
     return watcher, turns

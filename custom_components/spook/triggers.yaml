@@ -74,3 +74,14 @@ sequence:
       required: false
       selector:
         trigger:
+while:
+  fields:
+    condition:
+      required: true
+      selector:
+        condition:
+    every:
+      required: true
+      example: "00:10:00"
+      selector:
+        duration:

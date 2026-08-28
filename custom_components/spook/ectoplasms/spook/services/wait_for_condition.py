@@ -89,15 +89,23 @@ class SpookService(AbstractSpookService):
 
         _reject_static_templates(condition_config)
 
-        met = self.hass.loop.create_future()
+        arrived = self.hass.loop.create_future()
 
-        def condition_met(_event: Event[EventStateChangedData] | None) -> None:
-            """Let the wait finish. What turned it does not matter here."""
-            if not met.done():
-                met.set_result(True)
+        def condition_turned(
+            *,
+            met: bool,
+            event: Event[EventStateChangedData] | None,  # noqa: ARG001  # pylint: disable=unused-argument
+        ) -> None:
+            """Let the wait finish. What turned it does not matter here.
+
+            Going back to false is not something to wake up for: the wait is
+            for the condition arriving, and it has not arrived yet.
+            """
+            if met and not arrived.done():
+                arrived.set_result(True)
 
         watcher = await async_condition_watcher(
-            self.hass, condition_config, condition_met
+            self.hass, condition_config, condition_turned
         )
         stop = watcher.async_start()
 
@@ -115,7 +123,7 @@ class SpookService(AbstractSpookService):
 
         try:
             async with asyncio.timeout(seconds):
-                await met
+                await arrived
         except TimeoutError:
             return {"completed": False}
         finally:

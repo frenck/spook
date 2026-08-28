@@ -50,3 +50,9 @@ Fires when a condition goes from false to true, using the same condition buildin
 Fires when several triggers happen one after another, in the order given, optionally within a time limit. _#sequence_ _#order_ _#timeout_
 
 `spook.sequence`, [documentation](other-features#triggers-in-order) 📚
+
+## While a condition holds
+
+Fires when a condition turns true and keeps firing on an interval for as long as it stays true, without holding a script run open. _#condition_ _#repeat_ _#reminder_
+
+`spook.while`, [documentation](other-features#while-a-condition-holds) 📚

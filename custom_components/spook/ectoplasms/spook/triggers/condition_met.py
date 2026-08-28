@@ -74,7 +74,11 @@ class SpookTrigger(Trigger):
     ) -> CALLBACK_TYPE:
         """Attach the trigger to an action runner."""
 
-        def condition_met(event: Event[EventStateChangedData] | None) -> None:
+        def condition_turned(
+            *,
+            met: bool,
+            event: Event[EventStateChangedData] | None,
+        ) -> None:
             """Run the action, now that the condition has turned true.
 
             Reports the state change that turned it, when the watcher can be
@@ -86,6 +90,11 @@ class SpookTrigger(Trigger):
             Empty when there is nothing it can be sure of, rather than naming
             a change that merely happened to be the one noticed.
             """
+            if not met:
+                # Going back to false is not a turn worth firing on, the same
+                # as the template trigger.
+                return
+
             to_state = event.data["new_state"] if event else None
             entity_id = event.data["entity_id"] if event else None
 
@@ -102,6 +111,6 @@ class SpookTrigger(Trigger):
             )
 
         watcher = await async_condition_watcher(
-            self._hass, self._condition, condition_met
+            self._hass, self._condition, condition_turned
         )
         return watcher.async_start()
