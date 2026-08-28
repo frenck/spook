@@ -167,6 +167,81 @@ options:
 
 :::
 
+### Entity fell silent
+
+Fires when nothing has written to an entity for a while.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Entity fell silent 👻
+* - Trigger name
+  - `spook.stale`
+* - Targets
+  - {term}`Entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `for`
+  - {term}`string <string>`
+  - Yes
+  - `01:00:00`
+```
+
+Home Assistant will tell you an entity went unavailable. Plenty of things die without ever saying so: an integration that quietly stopped polling, a battery device that dropped off the network, an MQTT topic nobody publishes to any more. The state sits there looking perfectly healthy, holding a reading from last Tuesday.
+
+This watches for silence rather than for a value. A sensor that keeps reporting the same 21.5 every minute is alive and is left alone; one that stops reporting altogether fires after the duration you set. Point it at whole areas, floors or labels and the entities underneath are watched one at a time, each firing separately when it falls silent.
+
+When it fires, `trigger.entity_id` names the entity that went quiet, `trigger.last_reported` is when it last spoke, and `trigger.for` is the duration you configured.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Any sensor in the attic that has said nothing for an hour:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.stale
+target:
+  area_id: attic
+options:
+  for: "01:00:00"
+```
+
+One specific sensor, with a shorter fuse:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.stale
+target:
+  entity_id: sensor.greenhouse_temperature
+options:
+  for: "00:15:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Entities that were already silent when the trigger started watching are left alone. Only silence that falls while the automation is loaded counts. Without that, reloading your automations would replay everything that has gone quiet since, which is noise rather than news.
+- A duration of zero is refused. It would put the deadline on the moment the entity last spoke, which is always in the past, so the trigger would load and then do nothing at all.
+- A target that names nothing is refused for the same reason. An empty target is valid as far as the fields go, and would sit there watching no entities at all.
+- Repeating the same value counts as speaking. If you want to know about a sensor whose reading has not moved, that is a different question, and this trigger does not answer it.
+- Expanding a device, area or floor covers its primary entities. Configuration and diagnostic entities are left out, the same as every other Home Assistant trigger that takes a target. Name one as an entity and it is always watched, whichever category it is in: `entity_id: sensor.back_door_battery` works even though the area it sits in would skip it.
+- An entity with no state yet has nothing to be silent about, so it is skipped until it reports for the first time.
+
+:::
+
 ## Conditions
 
 Spook offers the following conditions that are not tied to a specific integration:

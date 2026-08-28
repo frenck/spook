@@ -9,6 +9,16 @@
           "description": "A crontab expression with five fields: minute, hour, day of month, month, day of week. Supports ranges and steps, and the day-of-week extensions, so \"MON#2\" is the second Monday and \"5L\" the last Friday. Nicknames like \"@daily\" are not supported."
         }
       }
+    },
+    "stale": {
+      "name": "Entity fell silent",
+      "description": "Fires when nothing has written to an entity for a while, which catches a device that died quietly rather than going unavailable.",
+      "fields": {
+        "for": {
+          "name": "For",
+          "description": "How long an entity has to stay silent before this fires. An entity that keeps reporting the same value is not silent."
+        }
+      }
     }
   },
   "conditions": {

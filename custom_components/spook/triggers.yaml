@@ -5,3 +5,13 @@ cron:
       example: "0 7 * * 1-5"
       selector:
         text:
+
+stale:
+  target:
+    entity:
+  fields:
+    for:
+      required: true
+      example: "01:00:00"
+      selector:
+        duration:
