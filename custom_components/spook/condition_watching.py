@@ -110,8 +110,8 @@ def _condition_types(config: Any) -> Iterator[str]:
             yield from _condition_types(item.get(CONF_CONDITIONS, []))
 
 
-# Condition types whose every turn arrives as a state change of an entity they
-# name, so the change that arrives is the change that turned them.
+# Condition types whose every turn arrives as a state change of an entity that
+# gets watched, so the change that arrives is the change that turned them.
 #
 # Which is what makes attribution possible, and its absence is why nothing is
 # attributed otherwise. Say a condition is `and` of a state and a template: the
@@ -120,10 +120,14 @@ def _condition_types(config: Any) -> Iterator[str]:
 # turn would be wrong.
 _OBSERVABLE = frozenset({"numeric_state", "state", "zone"})
 
-# Keys that put a turn out of reach of the entities a condition names. A `for`
+# Keys that put a turn out of reach of the entities being watched. A `for`
 # turns true when a duration runs out and nothing moves; a `value_template`
 # reaches for entities that cannot be read off the config.
 _UNOBSERVABLE_KEYS = ("for", "value_template")
+
+# Where a `numeric_state` condition keeps the number it compares against, which
+# may name an entity instead of being one.
+_THRESHOLDS = ("above", "below")
 
 
 def _leaf_announces_every_turn(config: ConfigType) -> bool:
@@ -134,15 +138,35 @@ def _leaf_announces_every_turn(config: ConfigType) -> bool:
     # A `zone` condition keeps its configuration under `options`, so both
     # places have to be looked at.
     options = config.get(CONF_OPTIONS) or {}
-    if any(key in config or key in options for key in _UNOBSERVABLE_KEYS):
-        return False
+    return not any(key in config or key in options for key in _UNOBSERVABLE_KEYS)
 
-    # A `numeric_state` threshold can name an entity, and that entity is not
-    # part of what gets extracted, so a change to it goes unnoticed.
-    return not any(
-        isinstance(config.get(bound) or options.get(bound), str)
-        for bound in ("above", "below")
-    )
+
+def _threshold_entities(config: Any) -> Iterator[str]:
+    """Yield the entities a `numeric_state` threshold names.
+
+    Home Assistant leaves these out of `async_extract_entities`, so nothing
+    would watch them, and a condition can turn purely because a threshold
+    moved.
+
+    Any string here is an entity id. Validation coerces a numeric threshold to
+    a float and refuses anything that is neither, which is measured rather
+    than assumed, so there is nothing left to check for.
+    """
+    for item in config if isinstance(config, list) else [config]:
+        if not isinstance(item, dict) or not isinstance(
+            kind := item.get(CONF_CONDITION), str
+        ):
+            continue
+
+        if kind in _NESTING:
+            yield from _threshold_entities(item.get(CONF_CONDITIONS, []))
+            continue
+
+        options = item.get(CONF_OPTIONS) or {}
+        for bound in _THRESHOLDS:
+            value = item.get(bound, options.get(bound))
+            if isinstance(value, str):
+                yield value
 
 
 def _announces_every_turn(config: Any) -> bool:
@@ -365,7 +389,8 @@ async def async_condition_watcher(
     return ConditionWatcher(
         hass,
         checker,
-        condition.async_extract_entities(validated),
+        condition.async_extract_entities(validated)
+        | set(_threshold_entities(validated)),
         on_met,
         announces_every_turn=_announces_every_turn(validated),
     )

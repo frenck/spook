@@ -21,6 +21,7 @@ from custom_components.spook.condition_watching import (
     CONTEXT_DEPENDENT,
     _announces_every_turn,
     _condition_types,
+    _threshold_entities,
     async_condition_watcher,
     async_validate_condition,
 )
@@ -39,6 +40,7 @@ GATE_TEMPLATE = {
 }
 
 TWICE = 2
+FIVE = 5.0
 
 
 async def _watching(
@@ -522,14 +524,16 @@ def test_which_conditions_announce_their_own_turns() -> None:
     """The rule attribution hangs on, leaf by leaf.
 
     Measured what `async_extract_entities` really returns for each of these,
-    rather than assumed: a `for` turns true with nothing moving, a
-    `value_template` reaches for entities that are not extracted, and a
-    `numeric_state` threshold naming an entity does not extract that entity.
+    rather than assumed: a `for` turns true with nothing moving and a
+    `value_template` reaches for entities that are not extracted. A
+    `numeric_state` threshold naming an entity is not extracted either, but
+    that one is watched anyway, so it counts.
     """
     sure = [
         {"condition": "state", "entity_id": "a.b", "state": "on"},
         {"condition": "numeric_state", "entity_id": "s.t", "above": 5},
         {"condition": "zone", "entity_id": "device_tracker.me", "zone": "zone.home"},
+        {"condition": "numeric_state", "entity_id": "s.t", "above": "input_number.max"},
         {
             "condition": "and",
             "conditions": [
@@ -551,7 +555,6 @@ def test_which_conditions_announce_their_own_turns() -> None:
             "value_template": "{{ 1 }}",
             "above": 5,
         },
-        {"condition": "numeric_state", "entity_id": "s.t", "above": "input_number.max"},
         {"condition": "template", "value_template": "{{ true }}"},
         {"condition": "time", "after": "22:00:00"},
         {"condition": "sun", "after": "sunset"},
@@ -569,3 +572,92 @@ def test_which_conditions_announce_their_own_turns() -> None:
 
     for config in unsure:
         assert not _announces_every_turn(config), config
+
+
+async def test_a_threshold_moving_is_noticed_at_once(hass: HomeAssistant) -> None:
+    """A condition can turn because the line moved, not the measurement.
+
+    Home Assistant does not extract the entity behind a `numeric_state`
+    threshold, so nothing would watch it and the turn would wait for the
+    backstop. The clock is not touched here, so anything that arrives came
+    from the change itself.
+    """
+    hass.states.async_set("sensor.temp", "18")
+    hass.states.async_set("input_number.max", "20")
+    await hass.async_block_till_done()
+
+    watcher, turns = await _watching(
+        hass,
+        {
+            "condition": "numeric_state",
+            "entity_id": "sensor.temp",
+            "above": "input_number.max",
+        },
+    )
+    assert not turns
+
+    hass.states.async_set(
+        "input_number.max", "10", context=Context(user_id="line-mover")
+    )
+    await hass.async_block_till_done()
+    watcher.async_stop()
+
+    assert [turn.user_id for turn in turns if turn] == ["line-mover"], (
+        "the threshold entity was not watched"
+    )
+
+
+async def test_a_nested_threshold_is_watched_too(hass: HomeAssistant) -> None:
+    """Which is where a threshold usually sits: inside an `and`."""
+    hass.states.async_set("input_boolean.gate", "on")
+    hass.states.async_set("sensor.temp", "18")
+    hass.states.async_set("input_number.max", "20")
+    await hass.async_block_till_done()
+
+    watcher, turns = await _watching(
+        hass,
+        {
+            "condition": "and",
+            "conditions": [
+                GATE,
+                {
+                    "condition": "numeric_state",
+                    "entity_id": "sensor.temp",
+                    "above": "input_number.max",
+                },
+            ],
+        },
+    )
+    assert not turns
+
+    hass.states.async_set("input_number.max", "10")
+    await hass.async_block_till_done()
+    watcher.async_stop()
+
+    assert len(turns) == 1, "a nested threshold entity was not watched"
+
+
+async def test_a_number_is_not_mistaken_for_an_entity(hass: HomeAssistant) -> None:
+    """Which is why a plain string threshold is safe to treat as an entity.
+
+    Validation coerces a numeric threshold to a float, whichever way it was
+    written, so nothing that survives it and is still a string can be a
+    number. Measured, because the collector relies on it.
+    """
+    validated = await async_validate_condition(
+        hass,
+        {"condition": "numeric_state", "entity_id": "sensor.temp", "above": "5"},
+    )
+
+    assert validated["above"] == FIVE
+    assert not set(_threshold_entities(validated))
+
+    with pytest.raises(vol.Invalid):
+        await async_validate_condition(
+            hass,
+            {
+                "condition": "numeric_state",
+                "entity_id": "sensor.temp",
+                "above": "not a number and not an entity",
+            },
+        )

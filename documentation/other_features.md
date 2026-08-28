@@ -969,7 +969,7 @@ Only the turn counts. A condition that is already true when the automation loads
 
 When it can tell which change turned the condition, `trigger.entity_id` names that entity and `trigger.from_state` and `trigger.to_state` are what it moved between, the same three the template trigger hands over. Which is also what carries the user through: an automation starts a fresh context, so `spook.triggered_by_user` and friends read the person off `trigger.to_state`.
 
-It can tell only when every part of the condition announces its own turns, which means `state`, `numeric_state` and `zone` conditions without a `for:`, without a `value_template`, and without a threshold naming an entity, plus any `and`, `or` or `not` built out of those. Anything else and all three are empty, because a condition with a part that turns quietly gets discovered by the next unrelated change, and naming that change would be naming the wrong one.
+It can tell only when every part of the condition announces its own turns, which means `state`, `numeric_state` and `zone` conditions without a `for:` and without a `value_template`, plus any `and`, `or` or `not` built out of those. Anything else and all three are empty, because a condition with a part that turns quietly gets discovered by the next unrelated change, and naming that change would be naming the wrong one.
 
 :::{seealso} Example trigger in {term}`YAML`
 :class: dropdown
@@ -994,7 +994,7 @@ options:
 :::{attention} Known limitations
 :class: dropdown
 
-- A condition that names entities is noticed the moment one of them changes. That covers `state`, `numeric_state` and `zone` conditions, a `time` condition pointing at an `input_datetime`, and any `and`, `or` or `not` built out of those. A template condition names nothing that can be read off the config, and a plain time or sun condition has nothing to name, so those are asked again every 30 seconds.
+- A condition that names entities is noticed the moment one of them changes. That covers `state`, `numeric_state` and `zone` conditions, a `time` condition pointing at an `input_datetime`, and any `and`, `or` or `not` built out of those. A `numeric_state` threshold naming an entity counts as well, so a condition that turns because the line moved rather than the measurement is noticed just as quickly; Home Assistant leaves that entity out of what it reports a condition depends on, so Spook picks it up separately. A template condition names nothing that can be read off the config, and a plain time or sun condition has nothing to name, so those are asked again every 30 seconds.
 - Naming the entities is not the same as noticing every turn, because not every turn arrives as a state change. A `state` condition with a `for:` turns true when the duration runs out, and a `time` condition turns true when the clock passes the moment, and neither of those moves an entity. Those are picked up by the 30-second polling pass instead, so up to half a minute late.
 - A condition that turns true and false again within those 30 seconds is missed entirely rather than noticed late. If what you are watching flickers, trigger on the thing that flickers.
 - A condition that asks about the run it is in cannot be watched, so `trigger`, and Spook's own `cooldown`, `quota`, `triggered_by_user`, `not_triggered_by_user` and `triggered_by_automation`, are refused. Nothing has fired yet at the point this decides whether to fire, so their answer would not mean anything.
