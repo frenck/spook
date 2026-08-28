@@ -22,6 +22,7 @@ from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
 from .integration_linking import link_sub_integrations, unlink_sub_integrations
 from .listeners import async_listen_once_tracked
 from .repairs import SpookRepairManager
+from .run_history import async_setup_run_history
 from .services import SpookServiceManager
 from .setup_helpers import async_forward_setup_entry
 
@@ -115,6 +116,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # action sequence is only built once that sequence runs, by which point
     # the automation it wants to know about has already been and gone.
     entry.async_on_unload(async_setup_automation_runs(hass))
+
+    # And when they ran, for the conditions that count runs rather than
+    # contexts. Same reason it cannot wait to be asked.
+    entry.async_on_unload(async_setup_run_history(hass))
 
     # Yay, we didn't got spooked!
     return True

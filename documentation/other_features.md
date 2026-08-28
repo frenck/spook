@@ -423,6 +423,8 @@ condition: spook.not_triggered_by_user
 
 :::
 
+(cooldown)=
+
 ### Cooldown
 
 Passes when this automation or script has not run within a given time.
@@ -576,5 +578,78 @@ options:
 - Spook has to have been running when the other automation ran. It remembers the mapping while your automations are loaded, so a run from before a restart is no longer known.
 - It names the automation that started the chain, not the last thing in it. If your goodnight automation calls a script and that script turns off the lights, this reports the automation, which is almost always what you wanted to ask about.
 - Only the last few hundred automation runs are remembered. Not a practical limit for a condition being checked right after the run it is asking about, but it is a limit.
+
+:::
+
+### Run allowance left
+
+Passes while this automation or script has runs to spare.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Run allowance left 👻
+* - Condition name
+  - `spook.quota`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `limit`
+  - {term}`integer <integer>`
+  - Yes
+  - `5`
+* - `period`
+  - {term}`string <string>`
+  - Yes
+  - `24:00:00`
+```
+
+The counterpart to [Cooldown](#cooldown): that one spaces runs out, this one caps how many there are. Handy for something that is fine now and then but not fifty times a day, like a notification about a door that keeps being opened.
+
+The window rolls. A limit of five over a day means no more than five runs in any twenty-four hours, not five between midnights, so the allowance comes back gradually as the oldest run drops out of the window rather than all at once.
+
+Runs are counted from what actually ran. Home Assistant does not announce an automation whose conditions turned the run down, so an attempt something else held back costs nothing.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+At most five runs in any twenty-four hours:
+
+```{code-block} yaml
+:linenos:
+condition: spook.quota
+options:
+  limit: 5
+  period: "24:00:00"
+```
+
+Twice an hour, and no more:
+
+```{code-block} yaml
+:linenos:
+condition: spook.quota
+options:
+  limit: 2
+  period: "01:00:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- The count starts again after a restart. Spook remembers the runs while it is running, and nothing is written down, so a restart hands back a full allowance.
+- The limit cannot go above 64. Spook keeps the last 64 runs of each automation and script, and answering a larger limit would need a longer memory than that. Above 64 runs in a window it is not really an allowance any more.
+- Only automations and scripts have an allowance. Both are counted, but a condition checked outside either has nothing to count against and passes.
+- The run doing the asking does not count against itself. A script announces itself before its sequence starts, so without that a limit of one would turn down the very first run.
 
 :::

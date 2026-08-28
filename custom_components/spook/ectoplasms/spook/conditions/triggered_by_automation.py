@@ -12,7 +12,7 @@ from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.condition import Condition
 
 from ....automation_runs import async_get_automation_runs
-from ..context import source_contexts
+from ..context import own_entity_id, source_contexts
 
 if TYPE_CHECKING:
     from typing import Unpack
@@ -24,25 +24,6 @@ if TYPE_CHECKING:
     from ....automation_runs import AutomationRuns
 
 CONF_AUTOMATION = "automation"
-
-
-def _own_entity_id(variables: Any) -> str | None:
-    """Return the automation running right now, if this is inside one.
-
-    Wanted so it can be skipped. Inside an action sequence the run's own
-    context is in reach and the register knows it, so without this the
-    condition would report the automation asking the question as the one
-    that set it going, and would pass for a schedule or a person.
-    """
-    if not hasattr(variables, "get"):
-        return None
-
-    this = variables.get("this")
-    if not hasattr(this, "get"):
-        return None
-
-    entity_id = this.get("entity_id")
-    return entity_id if isinstance(entity_id, str) else None
 
 
 _CONDITION_SCHEMA = vol.Schema(
@@ -111,7 +92,7 @@ class SpookCondition(Condition):
     def _async_check(self, **kwargs: Unpack[ConditionCheckParams]) -> bool:
         """Return True when another automation started this run."""
         variables = kwargs.get("variables")
-        myself = _own_entity_id(variables)
+        myself = own_entity_id(variables)
 
         for context in source_contexts(variables):
             entity_id = self._runs.async_which(context.id)

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from pathlib import Path
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
@@ -18,12 +19,14 @@ from homeassistant.const import (
     RESTART_EXIT_CODE,
 )
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
+from homeassistant.components.script.const import EVENT_SCRIPT_STARTED
 from homeassistant.core import Context, CoreState
 from homeassistant.helpers import issue_registry as ir
 
 from custom_components import spook
 from custom_components.spook.automation_runs import async_get_automation_runs
 from custom_components.spook.const import DOMAIN
+from custom_components.spook.run_history import async_get_run_history
 from custom_components.spook.integration_linking import (
     link_sub_integrations,
     unlink_sub_integrations,
@@ -195,6 +198,51 @@ async def test_setup_entry_starts_and_stops_the_automation_run_register(
 
     assert EVENT_AUTOMATION_TRIGGERED not in hass.bus.async_listeners()
     assert runs.async_which("a-run") is None, "kept remembering after unloading"
+
+
+async def test_setup_entry_starts_and_stops_the_run_history(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the config entry owns the run history as well.
+
+    Same reason as the register above: a condition inside an action sequence
+    is only built once that sequence runs, and a history that started then
+    would have missed the runs it is being asked to count.
+    """
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup during the lifecycle smoke test."""
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_noop)
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+
+    assert EVENT_SCRIPT_STARTED not in hass.bus.async_listeners()
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert EVENT_SCRIPT_STARTED in hass.bus.async_listeners()
+
+    history = async_get_run_history(hass)
+    hass.bus.async_fire(EVENT_SCRIPT_STARTED, {"entity_id": "script.nightly"})
+    await hass.async_block_till_done()
+    assert history.async_runs_within("script.nightly", timedelta(hours=1)) == 1
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert EVENT_SCRIPT_STARTED not in hass.bus.async_listeners()
+    assert history.async_runs_within("script.nightly", timedelta(hours=1)) == 0
 
 
 async def test_unload_after_start_does_not_remove_fired_one_time_listeners(

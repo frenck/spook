@@ -36,3 +36,19 @@ triggered_by_automation:
         entity:
           domain: automation
           multiple: true
+quota:
+  fields:
+    limit:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 64
+          step: 1
+          mode: box
+    period:
+      required: true
+      example: "24:00:00"
+      selector:
+        duration:
