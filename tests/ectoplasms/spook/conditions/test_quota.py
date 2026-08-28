@@ -3,6 +3,7 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
@@ -521,6 +522,54 @@ async def test_a_run_exactly_a_period_old_has_served_its_time(
     assert history.async_runs_within("automation.rationed", period) == 0, (
         "held the allowance one instant past the period"
     )
+
+
+async def test_a_rejected_single_mode_trigger_costs_nothing(
+    hass: HomeAssistant,
+) -> None:
+    """Only admitted runs are counted, which is the whole basis of this.
+
+    `EVENT_AUTOMATION_TRIGGERED` is fired from a callback handed to
+    `action_script.async_run`, so the engine raises it once the run really
+    starts. A `mode: single` automation already running turns further
+    triggers away and they are never announced.
+
+    This is what separates automations from scripts here, so it is worth
+    holding: `EVENT_SCRIPT_STARTED` is fired before that decision and does
+    announce the rejected calls, which is why scripts have no allowance.
+
+    Runs on the real clock, since the run has to still be going when the next
+    trigger arrives.
+    """
+    async_setup_run_history(hass)
+    history = async_get_run_history(hass)
+
+    hass.services.async_register("test", "mark", lambda _call: None)
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "alias": "slow",
+                    "mode": "single",
+                    "trigger": {"platform": "event", "event_type": "kick"},
+                    "action": [
+                        {"action": "test.mark"},
+                        {"delay": {"seconds": 2}},
+                    ],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    for _ in range(THREE):
+        hass.bus.async_fire("kick")
+        await asyncio.sleep(0.02)
+
+    counted = history.async_runs_within("automation.slow", timedelta(hours=1))
+    assert counted == 1, f"counted {counted} runs where only one was admitted"
 
 
 async def test_only_the_newest_run_under_a_context_is_left_out(
