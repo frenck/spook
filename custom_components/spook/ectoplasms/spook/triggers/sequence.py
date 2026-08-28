@@ -91,6 +91,7 @@ class _Run:
     armed: int = 0
     collected: list[dict[str, Any]] = field(default_factory=list)
     started: datetime | None = None
+    unsub_step: CALLBACK_TYPE | None = None
     unsub_timeout: CALLBACK_TYPE | None = None
 
 
@@ -114,8 +115,11 @@ class _SequenceWatcher:
         self._on_complete = on_complete
 
         self._run = _Run()
-        self._unsub_step: CALLBACK_TYPE | None = None
         self._unsub_reset: CALLBACK_TYPE | None = None
+
+        # Stopping is synchronous, arming is not, so a re-arm can be suspended
+        # while this is set. See `async_stop`.
+        self._stopped = False
 
         # A step landing, a reset firing and a deadline passing all move the
         # same run, and all of them suspend while they re-arm. One at a time,
@@ -140,12 +144,31 @@ class _SequenceWatcher:
                 _log,
             )
 
+            if self._unsub_reset is None:
+                # Nothing attached, and it has already logged why. Worth
+                # repeating, because a sequence whose reset never arrives is
+                # one that quietly stops being interruptible.
+                LOGGER.warning(
+                    "Spook could not attach the reset triggers of a sequence "
+                    "trigger, so nothing will abandon a run under way"
+                )
+
         await self._async_arm(0)
         return self.async_stop
 
     @callback
     def async_stop(self) -> None:
-        """Detach everything."""
+        """Detach everything, and refuse to attach any more.
+
+        Stopping is synchronous while arming is not, so a re-arm can be
+        suspended inside `async_initialize_triggers` at this very moment.
+        Whatever that attaches afterwards would have nobody left to detach it,
+        so the flag tells it to let go of what it just took. Reproduced before
+        fixing: without it, a watcher belonging to an automation that had been
+        turned off still completed sequences.
+        """
+        self._stopped = True
+
         self._async_disarm_step()
         self._async_drop_timeout()
 
@@ -171,7 +194,7 @@ class _SequenceWatcher:
             """
             await self._async_step_fired(index, variables, context)
 
-        self._unsub_step = await trigger_helper.async_initialize_triggers(
+        unsub = await trigger_helper.async_initialize_triggers(
             self._hass,
             [self._sequence.steps[index]],
             _fired,
@@ -180,7 +203,16 @@ class _SequenceWatcher:
             _log,
         )
 
-        if self._unsub_step is None:
+        if self._stopped:
+            # Stopped while this was suspended. Nobody is holding the handle
+            # any more, so let go of it here.
+            if unsub is not None:
+                unsub()
+            return
+
+        self._run.unsub_step = unsub
+
+        if unsub is None:
             # `async_initialize_triggers` hands back nothing when it could not
             # attach anything, having logged why. Say so as well: a sequence
             # stuck on a step it cannot listen for is a trigger that never
@@ -194,9 +226,9 @@ class _SequenceWatcher:
     @callback
     def _async_disarm_step(self) -> None:
         """Stop waiting for the currently armed step."""
-        if self._unsub_step is not None:
-            self._unsub_step()
-            self._unsub_step = None
+        if self._run.unsub_step is not None:
+            self._run.unsub_step()
+            self._run.unsub_step = None
 
     @callback
     def _async_drop_timeout(self) -> None:
@@ -213,7 +245,7 @@ class _SequenceWatcher:
     ) -> None:
         """Take a step that landed, and either finish or move on."""
         async with self._lock:
-            if index != self._run.armed:
+            if self._stopped or index != self._run.armed:
                 # A firing of a step already left behind, which happens when
                 # this had to queue on the lock: a reset or a deadline holds it
                 # while it moves the run back to the start, and the step waiting
@@ -236,12 +268,16 @@ class _SequenceWatcher:
                 await self._async_arm(index + 1)
                 return
 
+            # Read before re-arming: arming suspends, and a duration that
+            # includes how long it took to start listening again is not how
+            # long the sequence took.
             collected = self._run.collected
-            started = self._run.started or dt_util.utcnow()
+            duration = dt_util.utcnow() - (self._run.started or dt_util.utcnow())
+
             self._async_abandon()
             await self._async_arm(0)
 
-            self._on_complete(collected, dt_util.utcnow() - started, context)
+            self._on_complete(collected, duration, context)
 
     async def _async_reset_fired(
         self,
@@ -250,7 +286,7 @@ class _SequenceWatcher:
     ) -> None:
         """Abandon a run in progress, because something said to."""
         async with self._lock:
-            if self._run.armed == 0 and not self._run.collected:
+            if self._stopped or (self._run.armed == 0 and not self._run.collected):
                 # Nothing under way, so nothing to abandon.
                 return
 
@@ -272,6 +308,9 @@ class _SequenceWatcher:
         """Give up on the run, the deadline passed."""
         self._run.unsub_timeout = None
         async with self._lock:
+            if self._stopped:
+                return
+
             self._async_disarm_step()
             self._async_abandon()
             await self._async_arm(0)

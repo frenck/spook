@@ -3,6 +3,7 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
@@ -508,3 +509,160 @@ async def test_a_step_answering_late_is_dropped(hass: HomeAssistant) -> None:
     finally:
         stop()
         await hass.async_block_till_done()
+
+
+async def test_stopping_while_re_arming_leaves_nothing_behind(
+    hass: HomeAssistant,
+) -> None:
+    """Turning the automation off mid-flight must not leak a listener.
+
+    Stopping is synchronous, arming is not. Reproduced before it was fixed: a
+    watcher belonging to an automation that had been turned off went on
+    completing sequences, because the arm that was suspended when it stopped
+    stored its handle afterwards and nobody was left to call it.
+    """
+    await _reset_entities(hass)
+    validated = await SpookTrigger.async_validate_config(
+        hass, {"options": {"steps": [DOOR, MOTION]}}
+    )
+    completed: list[list[dict]] = []
+
+    watcher = sequence_module._SequenceWatcher(  # noqa: SLF001
+        hass,
+        sequence_module._Sequence(  # noqa: SLF001
+            steps=validated["options"]["steps"], reset=[], timeout=None
+        ),
+        lambda collected, _duration, _context: completed.append(collected),
+    )
+    stop = await watcher.async_start()
+
+    real = trigger_helper.async_initialize_triggers
+    hold = asyncio.Event()
+    arming = asyncio.Event()
+
+    async def _suspending(*args: Any, **kwargs: Any):  # noqa: ANN202
+        if args[4].startswith("step 2"):
+            arming.set()
+            await hold.wait()
+        return await real(*args, **kwargs)
+
+    with patch.object(
+        sequence_module.trigger_helper,
+        "async_initialize_triggers",
+        _suspending,
+    ):
+        landing = hass.async_create_task(
+            watcher._async_step_fired(0, {"trigger": {}}, None)  # noqa: SLF001
+        )
+        async with asyncio.timeout(5):
+            await arming.wait()
+
+        # The automation is turned off while arming the second step waits.
+        stop()
+
+        hold.set()
+        async with asyncio.timeout(5):
+            await landing
+        await hass.async_block_till_done()
+
+    assert watcher._run.unsub_step is None, "a listener was left behind"  # noqa: SLF001
+
+    # And it really is deaf: the second step arriving does nothing.
+    await _move(hass, "binary_sensor.motion", "on")
+    assert not completed, "a stopped watcher completed a sequence"
+
+
+async def test_the_duration_ends_when_the_last_step_lands(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Not when it has finished listening again.
+
+    Arming the first step again suspends, so reading the clock after it would
+    fold however long that took into what the sequence is reported to have
+    taken.
+    """
+    await _reset_entities(hass)
+    reported: list[timedelta] = []
+
+    validated = await SpookTrigger.async_validate_config(
+        hass, {"options": {"steps": [DOOR, MOTION]}}
+    )
+
+    watcher = sequence_module._SequenceWatcher(  # noqa: SLF001
+        hass,
+        sequence_module._Sequence(  # noqa: SLF001
+            steps=validated["options"]["steps"], reset=[], timeout=None
+        ),
+        lambda _collected, duration, _context: reported.append(duration),
+    )
+    stop = await watcher.async_start()
+
+    try:
+        await watcher._async_step_fired(0, {"trigger": {}}, None)  # noqa: SLF001
+        freezer.tick(timedelta(seconds=5))
+
+        real = trigger_helper.async_initialize_triggers
+
+        async def _slow_re_arm(*args: Any, **kwargs: Any):  # noqa: ANN202
+            if args[4].startswith("step 1"):
+                # Time passes while listening starts again.
+                freezer.tick(timedelta(minutes=10))
+            return await real(*args, **kwargs)
+
+        with patch.object(
+            sequence_module.trigger_helper,
+            "async_initialize_triggers",
+            _slow_re_arm,
+        ):
+            await watcher._async_step_fired(1, {"trigger": {}}, None)  # noqa: SLF001
+    finally:
+        stop()
+        await hass.async_block_till_done()
+
+    assert len(reported) == 1
+    assert reported[0] == timedelta(seconds=5), (
+        f"reported {reported[0]}, so re-arming was counted as part of the run"
+    )
+
+
+async def test_a_reset_that_cannot_attach_is_reported(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A sequence that quietly stops being interruptible is worth a line.
+
+    The steps still attach, so the trigger works and reports itself as fine.
+    Only the reset is missing, and nothing else would say so.
+    """
+    await _reset_entities(hass)
+    validated = await SpookTrigger.async_validate_config(
+        hass, {"options": {"steps": [DOOR, MOTION], "reset": [DISARMED]}}
+    )
+
+    watcher = sequence_module._SequenceWatcher(  # noqa: SLF001
+        hass,
+        sequence_module._Sequence(  # noqa: SLF001
+            steps=validated["options"]["steps"],
+            reset=validated["options"]["reset"],
+            timeout=None,
+        ),
+        lambda *_args: None,
+    )
+
+    real = trigger_helper.async_initialize_triggers
+
+    async def _reset_fails(*args: Any, **kwargs: Any):  # noqa: ANN202
+        if args[4] == "sequence reset":
+            return None
+        return await real(*args, **kwargs)
+
+    with patch.object(
+        sequence_module.trigger_helper, "async_initialize_triggers", _reset_fails
+    ):
+        stop = await watcher.async_start()
+
+    stop()
+    await hass.async_block_till_done()
+
+    assert "nothing will abandon a run under way" in caplog.text
