@@ -177,6 +177,53 @@ async def test_it_fires_when_an_issue_goes_away(hass: HomeAssistant) -> None:
     assert ran == [{"domain": "demo", "issue_id": "boiler", "severity": "none"}]
 
 
+async def test_the_removed_trigger_stays_quiet_for_anything_else(
+    hass: HomeAssistant,
+) -> None:
+    """The registry announces creations and updates on the same event.
+
+    Without checking which it was, this would fire the moment an issue turned
+    up, which is the opposite of what it says on the tin.
+    """
+    ran = await _automation(hass, [{"platform": "spook.repair_issue_removed"}])
+
+    _raise(hass)
+    await hass.async_block_till_done()
+    assert not ran, "fired when an issue was created"
+
+    _raise(hass, severity=ir.IssueSeverity.CRITICAL)
+    await hass.async_block_till_done()
+    assert not ran, "fired when an issue was updated"
+
+    ir.async_ignore_issue(hass, "demo", "boiler", ignore=True)
+    await hass.async_block_till_done()
+    assert not ran, "fired when an issue was ignored"
+
+    ir.async_delete_issue(hass, "demo", "boiler")
+    await hass.async_block_till_done()
+    assert len(ran) == 1, "did not fire when the issue actually went away"
+
+
+async def test_the_removed_trigger_honours_the_domain_filter(
+    hass: HomeAssistant,
+) -> None:
+    """Naming integrations limits the removals it reports, too."""
+    _raise(hass, domain="zwave_js", issue_id="node_dead")
+    _raise(hass, domain="hue", issue_id="bridge_gone")
+    await hass.async_block_till_done()
+
+    ran = await _automation(
+        hass,
+        [{"platform": "spook.repair_issue_removed", "options": {"domain": ["hue"]}}],
+    )
+
+    ir.async_delete_issue(hass, "zwave_js", "node_dead")
+    ir.async_delete_issue(hass, "hue", "bridge_gone")
+    await hass.async_block_till_done()
+
+    assert [run["domain"] for run in ran] == ["hue"]
+
+
 async def test_the_domain_filter_turns_the_others_down(hass: HomeAssistant) -> None:
     """Naming integrations limits it to those."""
     ran = await _automation(
