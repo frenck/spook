@@ -314,6 +314,122 @@ options:
 
 :::
 
+### Repair issue created
+
+Fires when a new repair issue turns up.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Repair issue created 👻
+* - Trigger name
+  - `spook.repair_issue_created`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `domain`
+  - {term}`list of strings <list>`
+  - No
+  - Defaults to every integration
+* - `severity`
+  - {term}`list of strings <list>`
+  - No
+  - `critical`, `error`, `warning`
+```
+
+Home Assistant collects repair issues on the repairs page and waits to be visited. This is for the ones you would rather hear about: an integration reporting it needs attention, or Spook finding a reference to something that no longer exists.
+
+Only genuinely new issues fire it. An integration re-reporting an issue that is already there counts as an update rather than a creation, which is what keeps a repair checked on a schedule from firing on every pass.
+
+When it fires, `trigger.domain` is the integration that reported it, `trigger.issue_id` names the issue, and `trigger.severity`, `trigger.is_fixable`, `trigger.breaks_in_ha_version`, `trigger.learn_more_url` and `trigger.translation_key` carry the rest of what the registry knows.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Anything at all, as soon as it turns up:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.repair_issue_created
+```
+
+Only the serious ones, and only from two integrations:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.repair_issue_created
+options:
+  domain:
+    - hue
+    - zwave_js
+  severity:
+    - critical
+    - error
+```
+
+:::
+
+### Repair issue resolved
+
+Fires when a repair issue goes away.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Repair issue resolved 👻
+* - Trigger name
+  - `spook.repair_issue_removed`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `domain`
+  - {term}`list of strings <list>`
+  - No
+  - Defaults to every integration
+```
+
+Something got fixed, or whatever was complaining stopped complaining. Handy for closing a notification you opened when the issue turned up.
+
+When it fires, `trigger.domain` and `trigger.issue_id` say which issue it was.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+trigger: spook.repair_issue_removed
+options:
+  domain: hue
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- There is no severity to filter on, and none in the trigger variables. By the time Home Assistant announces a removal the issue is already out of the registry, so the only things left to say about it are which integration it belonged to and what it was called.
+- Ignoring an issue is not resolving it. It stays in the registry, so this does not fire for it.
+
+:::
+
 ## Conditions
 
 Spook offers the following conditions that are not tied to a specific integration:
@@ -576,5 +692,73 @@ options:
 - Spook has to have been running when the other automation ran. It remembers the mapping while your automations are loaded, so a run from before a restart is no longer known.
 - It names the automation that started the chain, not the last thing in it. If your goodnight automation calls a script and that script turns off the lights, this reports the automation, which is almost always what you wanted to ask about.
 - Only the last few hundred automation runs are remembered. Not a practical limit for a condition being checked right after the run it is asking about, but it is a limit.
+
+:::
+
+### Repair issue outstanding
+
+Passes while a repair issue is outstanding.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - Condition
+  - Repair issue outstanding 👻
+* - Condition name
+  - `spook.repair_issue_present`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `domain`
+  - {term}`list of strings <list>`
+  - No
+  - Defaults to every integration
+* - `severity`
+  - {term}`list of strings <list>`
+  - No
+  - `critical`, `error`, `warning`
+```
+
+For holding something back until the house is in order: not running a nightly job while an integration is complaining, or nagging once a day for as long as anything is wrong.
+
+Leave the options out and any outstanding issue passes it. Name integrations, severities, or both, and all the named parts have to match the same issue.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: spook.repair_issue_present
+```
+
+Only if something serious is wrong with one of these:
+
+```{code-block} yaml
+:linenos:
+condition: spook.repair_issue_present
+options:
+  domain:
+    - hue
+    - zwave_js
+  severity:
+    - critical
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Issues somebody has ignored do not count. Ignoring one is telling Home Assistant to stop bringing it up, and this is not the place to overrule that.
+- Nor do issues waiting to be confirmed. Home Assistant keeps issues across a restart so it can remember which were ignored, but marks them as awaiting confirmation until the integration reports them again. Counting those would pass on every startup for anything that has since been fixed.
+- An issue with no severity recorded cannot answer a question about severity, so naming severities leaves it out.
 
 :::

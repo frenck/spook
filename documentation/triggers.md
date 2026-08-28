@@ -26,3 +26,15 @@ Fires when nothing has written to an entity for a while, which catches the devic
 Fires when a configuration entry has been unable to set itself up for a while, past the point where Home Assistant's own retries would have sorted it out. _#integration_ _#broken_ _#config-entry_
 
 `spook.integration_failed`, [documentation](other-features#integration-failed-to-set-up) 📚
+
+## Repair issue created
+
+Fires when a new repair issue turns up, so you hear about one without visiting the repairs page. Can be narrowed by integration and severity. _#repairs_ _#issue_
+
+`spook.repair_issue_created`, [documentation](other-features#repair-issue-created) 📚
+
+## Repair issue resolved
+
+Fires when a repair issue goes away, either fixed or no longer reported. _#repairs_ _#issue_
+
+`spook.repair_issue_removed`, [documentation](other-features#repair-issue-resolved) 📚

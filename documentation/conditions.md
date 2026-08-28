@@ -38,3 +38,9 @@ Passes a set percentage of the time, chosen at random on every check. For when t
 Passes when another automation set this run going, directly or through a script. Can be narrowed to particular automations. _#automation_ _#context_
 
 `spook.triggered_by_automation`, [documentation](other-features#triggered-by-an-automation) 📚
+
+## Repair issue outstanding
+
+Passes while a repair issue is outstanding, for holding something back until the house is in order. Issues somebody has ignored do not count. _#repairs_ _#issue_
+
+`spook.repair_issue_present`, [documentation](other-features#repair-issue-outstanding) 📚
