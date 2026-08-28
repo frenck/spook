@@ -32,6 +32,7 @@ import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 ALLOWANCE = 2
 THREE = 3
 FIVE = 5
+TEN = 10
 
 
 if TYPE_CHECKING:
@@ -169,20 +170,48 @@ async def test_a_whole_count_is_accepted_however_it_is_written(
     assert validated["options"]["limit"] == FIVE
 
 
-@pytest.mark.parametrize("limit", [MAX_RUNS_REMEMBERED + 1, 10**400])
+@pytest.mark.parametrize(
+    "limit",
+    [
+        MAX_RUNS_REMEMBERED + 1,
+        # Too large to become a float at all.
+        10**400,
+        # Short to write and enormous to build. The exponent is kept modest so
+        # that a regression costs a slow test rather than a hung one: at
+        # `1e1000000` building the integer already takes 25 seconds, and the
+        # whole point is that it is never built.
+        "1e100000",
+    ],
+)
 async def test_a_limit_beyond_what_is_remembered_is_refused(
     hass: HomeAssistant,
-    limit: int,
+    limit: object,
 ) -> None:
     """The history is bounded, so a limit above it could never be answered.
 
-    Including one too large to become a float at all, which has to be turned
-    down for being out of range rather than blowing up on the way in.
+    Including ones that have to be turned down while still a decimal, rather
+    than converted to an integer first and refused afterwards.
+
+    The message is what pins that down. Turning it down as a decimal says so
+    in Spook's own words; converting first and leaning on `vol.Range` gives
+    that library's wording instead, so matching here catches the difference
+    without timing anything.
     """
-    with pytest.raises(vol.Invalid):
+    with pytest.raises(vol.Invalid, match="between 1 and 64 runs"):
         await SpookCondition.async_validate_config(
             hass, {"options": {"limit": limit, "period": "01:00:00"}}
         )
+
+
+async def test_exponent_notation_still_works_for_a_sensible_limit(
+    hass: HomeAssistant,
+) -> None:
+    """Refusing the enormous ones must not refuse the ordinary ones."""
+    validated = await SpookCondition.async_validate_config(
+        hass, {"options": {"limit": "1e1", "period": "01:00:00"}}
+    )
+
+    assert validated["options"]["limit"] == TEN
 
 
 @pytest.mark.parametrize(

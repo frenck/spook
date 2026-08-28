@@ -27,6 +27,9 @@ if TYPE_CHECKING:
 CONF_LIMIT = "limit"
 CONF_PERIOD = "period"
 
+# Fewer than one run is not an allowance, it is a way of switching something off.
+MIN_LIMIT = 1
+
 
 def _limit(value: Any) -> int:
     """Validate the limit, and refuse anything that is not a whole count.
@@ -57,7 +60,18 @@ def _limit(value: Any) -> int:
     if not as_decimal.is_finite() or as_decimal != as_decimal.to_integral_value():
         raise vol.Invalid(message)
 
-    return int(vol.Range(min=1, max=MAX_RUNS_REMEMBERED)(int(as_decimal)))
+    # Range checked while it is still a Decimal, before anything becomes an
+    # int. "1e1000000000" is twelve characters of config and a billion digits
+    # of integer, and building it just to find out it is too large is the
+    # whole cost: `int(Decimal("1e1000000"))` already takes 25 seconds, while
+    # comparing the Decimal takes microseconds whatever the exponent.
+    if not MIN_LIMIT <= as_decimal <= MAX_RUNS_REMEMBERED:
+        message = (
+            f"The limit must be between {MIN_LIMIT} and {MAX_RUNS_REMEMBERED} runs"
+        )
+        raise vol.Invalid(message)
+
+    return int(as_decimal)
 
 
 # The longest window on offer. The history lives in memory and is cleared by a
