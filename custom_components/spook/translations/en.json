@@ -10,6 +10,20 @@
         }
       }
     },
+    "integration_failed": {
+      "name": "Integration failed to set up",
+      "description": "Fires when a configuration entry has been unable to set itself up for a while, past the point where Home Assistant's own retries would have sorted it out.",
+      "fields": {
+        "for": {
+          "name": "For",
+          "description": "How long an entry has to keep failing before this fires. Home Assistant retries a failing entry every ten minutes at the slowest, so anything shorter than that reports trouble that may still fix itself."
+        },
+        "entry_id": {
+          "name": "Entries",
+          "description": "Limit this to particular configuration entries. Leave it empty to watch every one of them."
+        }
+      }
+    },
     "stale": {
       "name": "Entity fell silent",
       "description": "Fires when nothing has written to an entity for a while, which catches a device that died quietly rather than going unavailable.",

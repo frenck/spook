@@ -15,3 +15,16 @@ stale:
       example: "01:00:00"
       selector:
         duration:
+
+integration_failed:
+  fields:
+    for:
+      required: true
+      example: "00:15:00"
+      selector:
+        duration:
+    entry_id:
+      required: false
+      selector:
+        config_entry:
+      multiple: true

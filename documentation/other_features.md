@@ -242,6 +242,78 @@ options:
 
 :::
 
+### Integration failed to set up
+
+Fires when a configuration entry has been unable to set itself up for a while.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Integration failed to set up 👻
+* - Trigger name
+  - `spook.integration_failed`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `for`
+  - {term}`string <string>`
+  - Yes
+  - `00:15:00`
+* - `entry_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - Every configuration entry
+```
+
+An integration that cannot reach its hardware fails to set up, and Home Assistant keeps retrying it on a backoff that tops out at ten minutes. A device switched off overnight therefore fails dozens of times before morning, which is why this trigger waits rather than firing on each attempt. Set `for` to how long you are willing to let something be broken before you want to hear about it, and the ordinary hiccups at start-up sort themselves out well inside it.
+
+Every configuration entry is watched unless you name some in `entry_id`. Each one is reported on its own, and only once per spell of trouble: an entry has to come back before it can be reported again.
+
+When it fires, `trigger.domain` is the integration, `trigger.title` the name of the entry, `trigger.entry_id` its identifier, `trigger.state` the state it is stuck in, and `trigger.reason` whatever Home Assistant recorded about why.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Anything at all that has been broken for a quarter of an hour:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.integration_failed
+options:
+  for: "00:15:00"
+```
+
+One entry you care about more than the rest, with a shorter fuse:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.integration_failed
+options:
+  for: "00:05:00"
+  entry_id: 01JQ8XW3M4YPKZ7N2VRTGH6BDC
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- The states that count as failure are `setup_error`, `setup_retry`, `migration_error` and `failed_unload`. An entry you disabled yourself sits in `not_loaded` and is not a failure.
+- A duration of zero is refused. It would put the deadline in the past, so the trigger would load and never fire.
+- Reloading your automations starts the clock again for anything broken at that moment. That is on purpose: an entry stuck in `setup_error` never announces itself a second time, so waiting for a change would mean never hearing about whatever was already broken.
+- One report per spell of trouble. If you want to be nagged until somebody fixes it, repeat the action yourself.
+
+:::
+
 ## Conditions
 
 Spook offers the following conditions that are not tied to a specific integration:
