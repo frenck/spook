@@ -933,6 +933,100 @@ options:
 
 :::
 
+### Triggers in order
+
+Fires when several triggers happen one after another, in the order given.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Triggers in order
+* - Trigger name
+  - `spook.sequence`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `steps`
+  - {term}`trigger <trigger>`
+  - Yes
+  - Two or more triggers, in the order they have to happen
+* - `timeout`
+  - {term}`string <string>`
+  - No
+  - Waits indefinitely when left out
+* - `reset`
+  - {term}`trigger <trigger>`
+  - No
+  - Nothing abandons a run when left out
+```
+
+Home Assistant fires on one thing happening. It does not fire on one thing happening _after_ another, which is most of what a house actually does: the door opened and then somebody moved in the hall, the washing machine started and then went quiet, the alarm armed and then a window opened. Written by hand that needs a helper entity per step and an automation to set each one.
+
+Only the step being waited for is listening. So a later step firing before an earlier one is not a match, and neither is the same step firing twice. Two steps is the minimum, because one trigger in order is just a trigger.
+
+Once the last step lands the trigger fires and goes back to waiting for the first, so it works as many times as you like.
+
+When it fires, `trigger.steps` holds what each step reported, in order, and `trigger.duration` is how long the whole thing took. The step that completed the sequence is also lifted to the top, so `trigger.entity_id`, `trigger.from_state` and `trigger.to_state` describe the thing that finished it, and `spook.triggered_by_user` and friends find the person behind it there.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Somebody came in through the front door and walked into the hall, within two minutes:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.sequence
+options:
+  timeout: "00:02:00"
+  steps:
+    - trigger: state
+      entity_id: binary_sensor.front_door
+      to: "on"
+    - trigger: state
+      entity_id: binary_sensor.hallway_motion
+      to: "on"
+```
+
+Same again, but disarming the alarm halfway through means it no longer counts:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.sequence
+options:
+  timeout: "00:02:00"
+  steps:
+    - trigger: state
+      entity_id: binary_sensor.front_door
+      to: "on"
+    - trigger: state
+      entity_id: binary_sensor.hallway_motion
+      to: "on"
+  reset:
+    - trigger: state
+      entity_id: alarm_control_panel.home
+      to: disarmed
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- One step is one trigger. A step that should accept either of two things is written as one trigger that matches both, for example a state trigger naming several entities.
+- The `timeout` covers the whole run, counted from the first step. There is no per-step deadline.
+- A run under way is abandoned when Home Assistant restarts, along with everything else in memory. A sequence half finished before a restart starts again from the first step.
+- A step that cannot be attached at all disables that automation and says why in the log, rather than sitting there never firing.
+  :::
+
 ### Condition turned true
 
 Fires when a condition goes from false to true.
