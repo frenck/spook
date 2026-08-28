@@ -9,6 +9,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import selector
 from homeassistant.setup import async_setup_component
 import pytest
+import voluptuous as vol
 
 from custom_components.spook.ectoplasms.spook.triggers.condition_met import SpookTrigger
 from custom_components.spook.trigger import async_get_triggers
@@ -154,7 +155,7 @@ async def test_it_takes_the_ordinary_building_blocks(hass: HomeAssistant) -> Non
 
 async def test_a_condition_is_required(hass: HomeAssistant) -> None:
     """Without one there is nothing to watch."""
-    with pytest.raises(Exception, match="required key"):
+    with pytest.raises(vol.Invalid, match="required key"):
         await SpookTrigger.async_validate_config(hass, {"options": {}})
 
 
