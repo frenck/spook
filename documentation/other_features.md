@@ -199,7 +199,7 @@ Fires when nothing has written to an entity for a while.
 
 Home Assistant will tell you an entity went unavailable. Plenty of things die without ever saying so: an integration that quietly stopped polling, a battery device that dropped off the network, an MQTT topic nobody publishes to any more. The state sits there looking perfectly healthy, holding a reading from last Tuesday.
 
-This watches for silence rather than for a value. A sensor that keeps reporting the same 21.5 every minute is alive and is left alone; one that stops reporting altogether fires after the duration you set. Point it at whole areas, floors or labels and every entity underneath is watched, one at a time: each entity that falls silent fires separately.
+This watches for silence rather than for a value. A sensor that keeps reporting the same 21.5 every minute is alive and is left alone; one that stops reporting altogether fires after the duration you set. Point it at whole areas, floors or labels and the entities underneath are watched one at a time, each firing separately when it falls silent.
 
 When it fires, `trigger.entity_id` names the entity that went quiet, `trigger.last_reported` is when it last spoke, and `trigger.for` is the duration you configured.
 
@@ -237,6 +237,7 @@ options:
 - A duration of zero is refused. It would put the deadline on the moment the entity last spoke, which is always in the past, so the trigger would load and then do nothing at all.
 - A target that names nothing is refused for the same reason. An empty target is valid as far as the fields go, and would sit there watching no entities at all.
 - Repeating the same value counts as speaking. If you want to know about a sensor whose reading has not moved, that is a different question, and this trigger does not answer it.
+- Expanding a device, area or floor covers its primary entities. Configuration and diagnostic entities are left out, the same as every other Home Assistant trigger that takes a target. Name one as an entity and it is always watched, whichever category it is in: `entity_id: sensor.back_door_battery` works even though the area it sits in would skip it.
 - An entity with no state yet has nothing to be silent about, so it is skipped until it reports for the first time.
 
 :::

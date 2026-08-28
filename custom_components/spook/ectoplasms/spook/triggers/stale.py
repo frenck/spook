@@ -140,19 +140,30 @@ class _QuietEntityTracker(TargetEntityChangeTracker):
         A write that changes the state and a write that does not are two
         different events, and only the pair of them adds up to "something
         wrote to this entity".
+
+        The new listeners go on before the old ones come off. Home Assistant
+        keeps one shared tracker per event type: drop the last subscriber and
+        it is torn down, taking with it events that have fired but not been
+        dispatched yet. Core's own target tracker orders it this way for that
+        reason, and losing a write here would mean an entity reported as
+        silent when it had just spoken.
         """
-        for unsub in self._unsub_writes:
+        previous = self._unsub_writes
+        self._unsub_writes = []
+
+        if self._tracked:
+            entity_ids = list(self._tracked)
+            self._unsub_writes = [
+                async_track_state_change_event(
+                    self._hass, entity_ids, self._entity_wrote
+                ),
+                async_track_state_report_event(
+                    self._hass, entity_ids, self._entity_wrote
+                ),
+            ]
+
+        for unsub in previous:
             unsub()
-        self._unsub_writes.clear()
-
-        if not self._tracked:
-            return
-
-        entity_ids = list(self._tracked)
-        self._unsub_writes = [
-            async_track_state_change_event(self._hass, entity_ids, self._entity_wrote),
-            async_track_state_report_event(self._hass, entity_ids, self._entity_wrote),
-        ]
 
     @callback
     def _entity_wrote(self, event: Event) -> None:
@@ -167,25 +178,37 @@ class _QuietEntityTracker(TargetEntityChangeTracker):
         if (state := self._hass.states.get(entity_id)) is None:
             return
 
-        deadline = dt_util.as_local(state.last_reported) + self._duration
-        if deadline <= dt_util.now():
+        # Worked out in UTC on purpose. Adding an hour to a local time is
+        # wall-clock arithmetic, and on the night the clocks go back that
+        # hour is two hours of real waiting.
+        deadline = state.last_reported + self._duration
+        if deadline <= dt_util.utcnow():
             # Already past it, so this entity was quiet before we looked.
             return
 
         self._timers[entity_id] = async_track_point_in_time(
-            self._hass, partial(self._went_quiet, entity_id), deadline
+            self._hass,
+            partial(self._went_quiet, entity_id, state.last_reported),
+            deadline,
         )
 
     @callback
-    def _went_quiet(self, entity_id: str, deadline: datetime) -> None:
+    def _went_quiet(
+        self,
+        entity_id: str,
+        last_reported: datetime,
+        _fired_at: datetime,
+    ) -> None:
         """Report an entity that has now been quiet for the whole duration.
 
-        Core hands over the moment the wait was scheduled for, which here is
-        the deadline itself, and that is the moment worth reporting: when the
-        entity became quiet, not when the timer got round to noticing.
+        The moment it last spoke is carried through from when the wait was
+        set, rather than worked back out of the time the callback is handed.
+        That one arrives in local time, and subtracting a duration from a
+        local time is wall-clock arithmetic: wrong by an hour, twice a year.
+        Not doing the arithmetic beats doing it correctly.
         """
         self._timers.pop(entity_id, None)
-        self._on_quiet(entity_id, deadline)
+        self._on_quiet(entity_id, last_reported)
 
     @callback
     def _cancel_timer(self, entity_id: str) -> None:
@@ -246,13 +269,13 @@ class SpookTrigger(Trigger):
         """Attach the trigger to an action runner."""
 
         @callback
-        def entity_went_quiet(entity_id: str, deadline: datetime) -> None:
+        def entity_went_quiet(entity_id: str, last_reported: datetime) -> None:
             """Run the action for the entity that fell silent."""
             run_action(
                 {
                     "entity_id": entity_id,
                     "for": self._duration,
-                    "last_reported": dt_util.as_local(deadline) - self._duration,
+                    "last_reported": dt_util.as_local(last_reported),
                 },
                 f"{entity_id} reported nothing for {self._duration}",
             )

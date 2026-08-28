@@ -192,6 +192,98 @@ async def test_registry_churn_elsewhere_leaves_the_listeners_alone(
     )
 
 
+async def test_the_wait_is_real_time_across_a_clock_change(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An hour of silence is an hour, on the night the clocks go back too.
+
+    Worked out in local time, "02:30 plus an hour" on 2026-10-25 in Amsterdam
+    lands on 03:30 winter time, which is two real hours later: the entity
+    would have been silent for twice as long as asked before anybody heard
+    about it. Twice a year, and nobody would ever trace it.
+    """
+    await hass.config.async_set_time_zone("Europe/Amsterdam")
+
+    # 02:30 local, still summer time, half an hour before the clocks go back.
+    freezer.move_to(dt_util.parse_datetime("2026-10-25 00:30:00+00:00"))
+    hass.states.async_set("sensor.probe", "21.5")
+    await hass.async_block_till_done()
+
+    ran = await _automation(hass, {"entity_id": "sensor.probe"}, "01:00:00")
+
+    # One real hour later. In local time the clock reads 02:30 all over again.
+    freezer.move_to(dt_util.parse_datetime("2026-10-25 01:31:00+00:00"))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    assert len(ran) == 1, "still waiting an hour after the hour was up"
+
+    # And the reported moment is the one the entity actually last spoke at:
+    # 02:30 in summer time, not 01:30 in winter time. Subtracting the
+    # duration from a localized deadline gets both the hour and the offset
+    # wrong here.
+    assert ran[0]["last_reported"] == "2026-10-25 02:30:00+02:00"
+
+    await _detach(hass)
+
+
+async def test_the_new_listeners_go_on_before_the_old_come_off(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    area_registry,  # noqa: ANN001
+    entity_registry,  # noqa: ANN001
+) -> None:
+    """Order matters: Home Assistant shares one tracker per event type.
+
+    Drop the last subscriber and that shared tracker is torn down, taking
+    with it events that have fired but have not been dispatched yet. A lost
+    write means an entity called silent when it had just spoken. Core's own
+    target tracker carries a comment saying exactly this.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-28 12:00:00")))
+
+    area = area_registry.async_create("Attic")
+    first = entity_registry.async_get_or_create("sensor", "demo", "first")
+    entity_registry.async_update_entity(first.entity_id, area_id=area.id)
+    hass.states.async_set(first.entity_id, "21.5")
+    await hass.async_block_till_done()
+
+    order: list[str] = []
+    real_tracker = event_helpers.async_track_state_change_event
+
+    def _recording(*args, **kwargs):  # noqa: ANN002, ANN003, ANN202
+        order.append("subscribe")
+        unsub = real_tracker(*args, **kwargs)
+
+        def _unsub() -> None:
+            order.append("unsubscribe")
+            unsub()
+
+        return _unsub
+
+    with patch(f"{STALE_MODULE}.async_track_state_change_event", _recording):
+        trigger = SpookTrigger(
+            hass,
+            TriggerConfig(
+                key="spook.stale",
+                target={"area_id": area.id},
+                options={"for": AN_HOUR},
+            ),
+        )
+        unattach = await trigger.async_attach_runner(lambda *_args: None)
+        order.clear()
+
+        # A second entity joins, so the listeners are swapped for a wider set.
+        second = entity_registry.async_get_or_create("sensor", "demo", "second")
+        entity_registry.async_update_entity(second.entity_id, area_id=area.id)
+        await hass.async_block_till_done()
+
+        assert order == ["subscribe", "unsubscribe"], order
+
+        unattach()
+
+
 async def test_it_fires_once_an_entity_falls_silent(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
