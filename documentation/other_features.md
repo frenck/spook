@@ -337,11 +337,11 @@ Fires when a new repair issue turns up.
   - Required
   - Default / Example
 * - `domain`
-  - {term}`list of strings <list>`
+  - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - Defaults to every integration
 * - `severity`
-  - {term}`list of strings <list>`
+  - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - `critical`, `error`, `warning`
 ```
@@ -401,7 +401,7 @@ Fires when a repair issue goes away.
   - Required
   - Default / Example
 * - `domain`
-  - {term}`list of strings <list>`
+  - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - Defaults to every integration
 ```
@@ -718,11 +718,11 @@ Passes while a repair issue is outstanding.
   - Required
   - Default / Example
 * - `domain`
-  - {term}`list of strings <list>`
+  - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - Defaults to every integration
 * - `severity`
-  - {term}`list of strings <list>`
+  - {term}`string <string>` | {term}`list of strings <list>`
   - No
   - `critical`, `error`, `warning`
 ```
