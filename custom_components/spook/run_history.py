@@ -99,7 +99,10 @@ class RunHistory:
         chain, so several runs can share one, and dropping every match would
         leave an allowance unspent.
         """
-        since = dt_util.utcnow() - period
+        # Each run's age is compared with the period rather than working out
+        # the moment the window opens. Same boundary, and no datetime that a
+        # long enough period could push out of range.
+        now = dt_util.utcnow()
         within = 0
         own_run_skipped = False
 
@@ -107,7 +110,7 @@ class RunHistory:
             # A run exactly a period old has served its time, which is how
             # `spook.cooldown` reads its own boundary: expired at `elapsed >=
             # duration` rather than one instant later.
-            if when <= since:
+            if now - when >= period:
                 continue
 
             if not own_run_skipped and context_id == ignoring:

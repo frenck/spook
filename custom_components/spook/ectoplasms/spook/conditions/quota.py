@@ -145,9 +145,10 @@ class SpookCondition(Condition):
             # Nothing to count against, so nothing has been used up.
             return True
 
-        # The run this is part of does not count against the allowance. A
-        # script announces itself before its sequence starts, so without this
-        # a limit of one would turn down the very first run.
+        # The run this is part of does not count against the allowance. An
+        # automation is recorded before its actions start, so a condition
+        # sitting in an `if` finds its own run already there, and without this
+        # a limit of one would turn down every run.
         context = variables.get("context") if hasattr(variables, "get") else None
 
         used = self._history.async_runs_within(
