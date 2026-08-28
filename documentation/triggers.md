@@ -62,3 +62,9 @@ Fires when a condition turns true and keeps firing on an interval for as long as
 Fires when something that was expected to happen does not happen in time, without needing a helper entity and a timer to arrange it. _#absence_ _#timeout_ _#watchdog_
 
 `spook.watchdog`, [documentation](other-features#watchdog) 📚
+
+## Entity will not settle
+
+Fires when an entity changes state more often than it should within a stretch of time, which is how a failing device usually announces itself. _#flapping_ _#device-health_ _#unavailable_
+
+`spook.flapping`, [documentation](other-features#entity-will-not-settle) 📚
