@@ -83,6 +83,20 @@
         }
       }
     },
+    "quota": {
+      "name": "Run allowance left",
+      "description": "Passes while this automation has run fewer than a given number of times within a given period. Scripts are not counted.",
+      "fields": {
+        "limit": {
+          "name": "Limit",
+          "description": "How many runs are allowed within the period."
+        },
+        "period": {
+          "name": "Period",
+          "description": "The window the limit applies to. It rolls, so a day means any twenty-four hours rather than between midnights."
+        }
+      }
+    },
     "triggered_by_automation": {
       "name": "Triggered by an automation",
       "description": "Passes when another automation set this run going, whether it did so directly or through a script.",

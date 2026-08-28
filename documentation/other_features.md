@@ -539,6 +539,8 @@ condition: spook.not_triggered_by_user
 
 :::
 
+(cooldown)=
+
 ### Cooldown
 
 Passes when this automation or script has not run within a given time.
@@ -760,5 +762,80 @@ options:
 - Issues somebody has ignored do not count. Ignoring one is telling Home Assistant to stop bringing it up, and this is not the place to overrule that.
 - Nor do issues waiting to be confirmed. Home Assistant keeps issues across a restart so it can remember which were ignored, but marks them as awaiting confirmation until the integration reports them again. Counting those would pass on every startup for anything that has since been fixed.
 - An issue with no severity recorded cannot answer a question about severity, so naming severities leaves it out.
+
+:::
+
+### Run allowance left
+
+Passes while this automation has runs to spare.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Run allowance left 👻
+* - Condition name
+  - `spook.quota`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `limit`
+  - {term}`integer <integer>`
+  - Yes
+  - `5`
+* - `period`
+  - {term}`string <string>`
+  - Yes
+  - `24:00:00`
+```
+
+The counterpart to [Cooldown](#cooldown): that one spaces runs out, this one caps how many there are. Handy for something that is fine now and then but not fifty times a day, like a notification about a door that keeps being opened.
+
+The window rolls. A limit of five over a day means no more than five runs in any twenty-four hours, not five between midnights, so the allowance comes back gradually as the oldest run drops out of the window rather than all at once.
+
+Runs are counted from what actually ran. Home Assistant does not announce an automation whose conditions turned the run down, so an attempt something else held back costs nothing.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+At most five runs in any twenty-four hours:
+
+```{code-block} yaml
+:linenos:
+condition: spook.quota
+options:
+  limit: 5
+  period: "24:00:00"
+```
+
+Twice an hour, and no more:
+
+```{code-block} yaml
+:linenos:
+condition: spook.quota
+options:
+  limit: 2
+  period: "01:00:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- The count starts again after a restart. Spook remembers the runs while it is running, and nothing is written down, so a restart hands back a full allowance.
+- The limit cannot go above 64. Spook keeps the last 64 runs of each automation, and answering a larger limit would need a longer memory than that. Above 64 runs in a window it is not really an allowance any more.
+- The period cannot go above 366 days. Since a restart clears the count anyway, an allowance measured over more than a year is not something this could answer honestly.
+- Automations only. Scripts are left out on purpose: Home Assistant announces a script run before deciding whether it is allowed, so a call turned down for already running would spend an allowance on a run that never happened. A condition checked anywhere other than an automation has nothing to count against and passes.
+- Only the 256 most recently run automations are followed. Beyond that the least recently used one is forgotten, which hands its allowance back. Not something a normal house will reach, but it is a limit.
+- The run doing the asking does not count against itself. A condition sitting inside the actions is checked while the run is already under way, so without that a limit of one would turn down every run.
 
 :::

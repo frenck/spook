@@ -76,3 +76,20 @@ def run_context(variables: Any) -> Context | None:
             return context
 
     return None
+
+
+def own_entity_id(variables: Any) -> str | None:
+    """Return the automation or script being run right now, if there is one.
+
+    Home Assistant puts the running entity in ``this``, so this is how a
+    condition finds out what it is a part of.
+    """
+    if not hasattr(variables, "get"):
+        return None
+
+    this = variables.get("this")
+    if not hasattr(this, "get"):
+        return None
+
+    entity_id = this.get("entity_id")
+    return entity_id if isinstance(entity_id, str) else None
