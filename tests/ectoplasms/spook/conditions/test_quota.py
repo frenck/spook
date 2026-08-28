@@ -407,6 +407,35 @@ async def test_the_run_doing_the_asking_does_not_count_against_itself(
     assert len(ran) == 1, "let a second run through on an allowance of one"
 
 
+async def test_a_run_exactly_a_period_old_has_served_its_time(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The boundary reads the same way `spook.cooldown` reads its own.
+
+    That one is satisfied at `elapsed >= duration`, so a run exactly a period
+    old is spent rather than holding the allowance for one more instant.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-28 12:00:00")))
+    async_setup_run_history(hass)
+    history = async_get_run_history(hass)
+
+    hass.bus.async_fire(
+        EVENT_AUTOMATION_TRIGGERED,
+        {"entity_id": "automation.rationed"},
+        context=Context(id="a-run"),
+    )
+    await hass.async_block_till_done()
+
+    period = timedelta(hours=1)
+    assert history.async_runs_within("automation.rationed", period) == 1
+
+    freezer.tick(period)
+    assert history.async_runs_within("automation.rationed", period) == 0, (
+        "held the allowance one instant past the period"
+    )
+
+
 async def test_only_the_newest_run_under_a_context_is_left_out(
     hass: HomeAssistant,
 ) -> None:

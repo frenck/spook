@@ -104,7 +104,10 @@ class RunHistory:
         own_run_skipped = False
 
         for when, context_id in self._async_runs(entity_id):
-            if when < since:
+            # A run exactly a period old has served its time, which is how
+            # `spook.cooldown` reads its own boundary: expired at `elapsed >=
+            # duration` rather than one instant later.
+            if when <= since:
                 continue
 
             if not own_run_skipped and context_id == ignoring:
