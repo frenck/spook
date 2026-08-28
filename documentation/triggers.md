@@ -56,3 +56,9 @@ Fires when several triggers happen one after another, in the order given, option
 Fires when a condition turns true and keeps firing on an interval for as long as it stays true, without holding a script run open. _#condition_ _#repeat_ _#reminder_
 
 `spook.while`, [documentation](other-features#while-a-condition-holds) 📚
+
+## Watchdog
+
+Fires when something that was expected to happen does not happen in time, without needing a helper entity and a timer to arrange it. _#absence_ _#timeout_ _#watchdog_
+
+`spook.watchdog`, [documentation](other-features#watchdog) 📚

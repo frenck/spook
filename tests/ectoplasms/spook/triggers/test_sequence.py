@@ -12,7 +12,6 @@ from homeassistant.core import Context
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import selector, trigger as trigger_helper
 from homeassistant.setup import async_setup_component
-from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
 import voluptuous as vol
@@ -194,7 +193,7 @@ async def test_a_timeout_abandons_the_run(
     await _move(hass, "binary_sensor.door", "on")
 
     freezer.tick(timedelta(minutes=3))
-    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(minutes=3))
+    async_fire_time_changed(hass)
     await _settle(hass)
 
     await _move(hass, "binary_sensor.motion", "on")
@@ -654,7 +653,7 @@ async def test_a_reset_that_cannot_attach_is_reported(
     real = trigger_helper.async_initialize_triggers
 
     async def _reset_fails(*args: Any, **kwargs: Any):  # noqa: ANN202
-        if args[4] == "sequence reset":
+        if args[4].startswith("the reset triggers"):
             return None
         return await real(*args, **kwargs)
 
@@ -666,7 +665,7 @@ async def test_a_reset_that_cannot_attach_is_reported(
     stop()
     await hass.async_block_till_done()
 
-    assert "nothing will abandon a run under way" in caplog.text
+    assert "could not attach the reset triggers" in caplog.text
 
 
 async def test_a_deadline_only_ends_the_run_it_was_set_for(
@@ -725,7 +724,7 @@ async def test_a_deadline_only_ends_the_run_it_was_set_for(
         # And only then does the first run's deadline come due, joining the
         # back of the queue.
         freezer.tick(timedelta(seconds=31))
-        async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=31))
+        async_fire_time_changed(hass)
         await asyncio.sleep(0)
 
         watcher._lock.release()  # noqa: SLF001

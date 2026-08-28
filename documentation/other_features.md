@@ -1099,6 +1099,80 @@ options:
 - Everything [Condition turned true](#condition-turned-true) says about what can and cannot be watched applies here as well, including the 30-second polling pass and the conditions that are refused.
   :::
 
+### Watchdog
+
+Fires when something that was expected to happen does not happen in time.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Watchdog
+* - Trigger name
+  - `spook.watchdog`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `arm`
+  - {term}`trigger <trigger>`
+  - Yes
+  - What starts the watch
+* - `expect`
+  - {term}`trigger <trigger>`
+  - Yes
+  - What is expected to follow
+* - `within`
+  - {term}`string <string>`
+  - Yes
+  - `00:02:00`
+```
+
+Every trigger Home Assistant has fires because something happened. The interesting failures are the other kind: the back door opened and nobody walked into the hall, the washing machine started and never finished, the nightly backup began and never reported in. Written by hand that is a helper entity, a timer, and two automations to keep them in step.
+
+Arming starts a clock. The expected trigger arriving before it runs out calls the watch off and nothing fires. The clock running out is what fires it.
+
+Arming again while already waiting starts the wait over rather than running a second one, because the wait is measured from the arming and the latest one is the one that counts. The expected trigger arriving while nothing is being waited for does nothing at all.
+
+When it fires, `trigger.armed_by` is what the arming trigger reported and `trigger.within` is the wait it was given. Nothing else is carried, and no user: a watchdog fires because nothing happened, at a moment a clock came round, and nobody makes a clock come round. An automation that wants to name the person can read `trigger.armed_by`.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+The back door opened and nobody came into the hall within two minutes:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.watchdog
+options:
+  within: "00:02:00"
+  arm:
+    - trigger: state
+      entity_id: binary_sensor.back_door
+      to: "on"
+  expect:
+    - trigger: state
+      entity_id: binary_sensor.hallway_motion
+      to: "on"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A watch under way is abandoned when Home Assistant restarts, along with everything else in memory. Something armed before a restart is not waited for after it.
+- A watchdog that cannot attach either half is refused, which disables that automation and says why in the log. Half a watchdog would either never start or always fire, and neither is worth leaving running.
+- The automation's `trigger_variables` do not reach the arming and expected triggers, for the same reason they do not reach a sequence's steps: Home Assistant hands those to a trigger platform, not to a trigger like this one.
+  :::
+
 (condition-turned-true)=
 
 ### Condition turned true

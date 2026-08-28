@@ -438,7 +438,7 @@ async def test_the_backstop_has_nothing_to_carry(
 
     hass.states.async_set("input_boolean.gate", "on")
     freezer.tick(BACKSTOP)
-    async_fire_time_changed(hass, dt_util.utcnow() + BACKSTOP)
+    async_fire_time_changed(hass)
     await hass.async_block_till_done()
     watcher.async_stop()
 
