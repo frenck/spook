@@ -36,6 +36,16 @@
     }
   },
   "conditions": {
+    "triggered_by_automation": {
+      "name": "Triggered by an automation",
+      "description": "Passes when another automation set this run going, whether it did so directly or through a script.",
+      "fields": {
+        "automation": {
+          "name": "Automations",
+          "description": "Limit this to particular automations. Leave it empty to accept any of them."
+        }
+      }
+    },
     "triggered_by_user": {
       "name": "Triggered by a user",
       "description": "Passes when a person is behind what set this off: a state change or an event they caused, including one that made a template trigger become true. A schedule, the sun, or an integration acting on its own carries nobody, and neither does forcing a run with the Run button.",

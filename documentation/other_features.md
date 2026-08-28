@@ -512,3 +512,68 @@ options:
 ```
 
 :::
+
+### Triggered by an automation
+
+Passes when another automation set this run going.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - {term}`Condition`
+  - Triggered by an automation 👻
+* - Condition name
+  - `spook.triggered_by_automation`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `automation`
+  - {term}`list of strings <list>`
+  - No
+  - Defaults to any automation
+```
+
+Home Assistant gives every automation run its own context, and everything that run writes carries it along. So an automation reacting to a change another automation made can find out who did it, and it keeps working when there is a script in between, because the script runs under the automation's context rather than making one of its own.
+
+What Home Assistant does not do is turn a context back into the automation it belongs to, so Spook listens for automations announcing themselves and remembers the mapping for the last few hundred runs. That is far more than enough: the run being asked about happened a fraction of a second earlier.
+
+If the `automation` attribute is not provided, the condition passes for any automation. Name one or more to narrow it.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+condition: spook.triggered_by_automation
+```
+
+To only pass when specific automations did it:
+
+```{code-block} yaml
+:linenos:
+condition: spook.triggered_by_automation
+options:
+  automation:
+    - automation.goodnight
+    - automation.leaving_home
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Only automations are recognised. A script running on its own, without an automation having started it, is not an automation and this does not pass for it.
+- Spook has to have been running when the other automation ran. It remembers the mapping while your automations are loaded, so a run from before a restart is no longer known.
+- It names the automation that started the chain, not the last thing in it. If your goodnight automation calls a script and that script turns off the lights, this reports the automation, which is almost always what you wanted to ask about.
+- Only the last few hundred automation runs are remembered. Not a practical limit for a condition being checked right after the run it is asking about, but it is a limit.
+
+:::
