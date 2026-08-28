@@ -602,9 +602,11 @@ async def test_the_history_keeps_room_for_the_run_doing_the_asking(
 ) -> None:
     """The current run must not push the oldest run being counted out of reach.
 
-    A script's run is remembered before its condition is checked, so with only
-    as many slots as the largest allowance the oldest of them would be gone by
-    the time anybody counted. A limit of 64 could then never be reached.
+    An automation is recorded before its actions start, so a condition sitting
+    in an `if` asks about a history its own run is already in. With only as
+    many slots as the largest allowance the oldest of the runs being counted
+    would be gone by the time anybody counted them, and a limit of 64 could
+    never be reached.
     """
     async_setup_run_history(hass)
     history = async_get_run_history(hass)
@@ -636,7 +638,11 @@ async def test_the_history_keeps_room_for_the_run_doing_the_asking(
 async def test_it_passes_when_there_is_nothing_to_count_against(
     hass: HomeAssistant,
 ) -> None:
-    """Checked outside an automation or script, there is no allowance to spend."""
+    """With no `this` at all there is nothing to spend an allowance against.
+
+    A condition can be checked outside a run entirely, and then there is no
+    automation to count runs for.
+    """
     condition = SpookCondition(
         hass, ConditionConfig(options={"limit": 1, "period": timedelta(hours=1)})
     )
