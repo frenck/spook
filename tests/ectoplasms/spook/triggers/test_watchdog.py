@@ -373,8 +373,18 @@ async def test_stopping_while_attaching_leaves_nothing_behind(
     await hass.async_block_till_done()
 
 
-async def test_half_a_watchdog_is_refused(hass: HomeAssistant) -> None:
-    """Without one half it either never starts or always barks."""
+@pytest.mark.parametrize("failing", ["expected", "arming"])
+async def test_half_a_watchdog_is_refused(
+    hass: HomeAssistant,
+    failing: str,
+) -> None:
+    """Without one half it either never starts or always barks.
+
+    Both halves, because they are not the same path. The expected half is
+    attached first, so failing it leaves nothing to clean up; failing the
+    arming half means a listener has already been stored and stopping has to
+    let go of it. Covering only the first would let that leak back in.
+    """
     await _reset(hass)
     validated = await SpookTrigger.async_validate_config(
         hass,
@@ -392,20 +402,22 @@ async def test_half_a_watchdog_is_refused(hass: HomeAssistant) -> None:
 
     real = trigger_helper.async_initialize_triggers
 
-    async def _expect_fails(*args: Any, **kwargs: Any):  # noqa: ANN202
-        if "expected" in args[4]:
+    async def _one_half_fails(*args: Any, **kwargs: Any):  # noqa: ANN202
+        if failing in args[4]:
             return None
         return await real(*args, **kwargs)
 
     with (
         patch.object(
-            watchdog_module.trigger_helper,
+            trigger_nesting.trigger_helper,
             "async_initialize_triggers",
-            _expect_fails,
+            _one_half_fails,
         ),
-        pytest.raises(HomeAssistantError, match="expected triggers"),
+        pytest.raises(HomeAssistantError, match=f"{failing} triggers"),
     ):
         await watchdog.async_start()
+
+    assert not watchdog._unsubs, "the half that did attach was left behind"
 
     await hass.async_block_till_done()
 
