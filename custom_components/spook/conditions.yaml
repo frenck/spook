@@ -36,3 +36,21 @@ triggered_by_automation:
         entity:
           domain: automation
           multiple: true
+repair_issue_present:
+  fields:
+    domain:
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
+    severity:
+      required: false
+      selector:
+        select:
+          multiple: true
+          translation_key: repair_issue_severity
+          options:
+            - critical
+            - error
+            - warning

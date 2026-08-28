@@ -27,3 +27,29 @@ integration_failed:
       required: false
       selector:
         config_entry:
+repair_issue_created:
+  fields:
+    domain:
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
+    severity:
+      required: false
+      selector:
+        select:
+          multiple: true
+          translation_key: repair_issue_severity
+          options:
+            - critical
+            - error
+            - warning
+repair_issue_removed:
+  fields:
+    domain:
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
