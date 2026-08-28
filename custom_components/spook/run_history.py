@@ -32,6 +32,12 @@ TRACKED_ENTITIES = 256
 # most recent one to still be there.
 MAX_RUNS_REMEMBERED = 64
 
+# One more than that is actually kept. A script announces itself before its
+# sequence starts, so the run doing the asking is already in here, and without
+# the spare it would push the oldest of the runs it is asking about out of
+# reach: a limit of 64 could then only ever see 63 and would never be reached.
+_RUNS_KEPT = MAX_RUNS_REMEMBERED + 1
+
 
 class RunHistory:
     """Remembers when automations and scripts last ran.
@@ -79,19 +85,33 @@ class RunHistory:
     ) -> int:
         """Return how many times this one ran within the given period.
 
-        ``ignoring`` leaves out the run under that context, which is how a
-        caller excludes the run it is part of. A script announces itself
-        before its sequence starts, so a condition inside that sequence would
-        otherwise find its own run already counted. An automation announces
-        itself only once its conditions have passed, so for one of those this
-        changes nothing.
+        ``ignoring`` leaves out the most recent run under that context, which
+        is how a caller excludes the run it is part of. A script announces
+        itself before its sequence starts, so a condition inside that sequence
+        would otherwise find its own run already counted. An automation
+        announces itself only once its conditions have passed, so for one of
+        those this changes nothing.
+
+        The most recent one, and only that one. A script inherits its caller's
+        context, so an automation calling the same script three times over
+        gives all three runs the same one. Dropping every match would mean
+        such a script never spent anything at all.
         """
         since = dt_util.utcnow() - period
-        return sum(
-            1
-            for when, context_id in self._async_runs(entity_id)
-            if when >= since and context_id != ignoring
-        )
+        within = 0
+        own_run_skipped = False
+
+        for when, context_id in self._async_runs(entity_id):
+            if when < since:
+                continue
+
+            if not own_run_skipped and context_id == ignoring:
+                own_run_skipped = True
+                continue
+
+            within += 1
+
+        return within
 
     @callback
     def _async_runs(self, entity_id: str) -> Sequence[tuple[datetime, str]]:
@@ -105,7 +125,7 @@ class RunHistory:
             return
 
         if (runs := self._runs.get(entity_id)) is None:
-            runs = deque(maxlen=MAX_RUNS_REMEMBERED)
+            runs = deque(maxlen=_RUNS_KEPT)
             self._runs[entity_id] = runs
 
         # Newest first, so the oldest is the one a full deque drops.

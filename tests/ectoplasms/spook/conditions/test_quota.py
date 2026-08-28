@@ -7,6 +7,8 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from homeassistant.helpers.condition import ConditionConfig
+from homeassistant.components.script.const import EVENT_SCRIPT_STARTED
+from homeassistant.core import Context
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
 import pytest
@@ -16,6 +18,7 @@ from custom_components.spook.condition import async_get_conditions
 from custom_components.spook.ectoplasms.spook.conditions.quota import SpookCondition
 from custom_components.spook.run_history import (
     MAX_RUNS_REMEMBERED,
+    async_get_run_history,
     async_setup_run_history,
 )
 
@@ -288,6 +291,108 @@ async def test_it_counts_scripts_too(
         await hass.async_block_till_done()
 
     assert len(ran) == 1, f"let {len(ran)} through on an allowance of one"
+
+
+async def test_repeated_calls_sharing_a_context_still_spend_the_allowance(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A script inherits its caller's context, so runs can share one.
+
+    An automation calling the same script three times over gives all three
+    runs the same context. Leaving out every run under the current context
+    rather than only the current run would mean this script never spent
+    anything at all.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-28 12:00:00")))
+    async_setup_run_history(hass)
+
+    ran: list[int] = []
+    hass.services.async_register("test", "mark", lambda _call: ran.append(1))
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "rationed": {
+                    "sequence": [
+                        {
+                            "if": [
+                                {
+                                    "condition": "spook.quota",
+                                    "options": {"limit": 1, "period": "01:00:00"},
+                                }
+                            ],
+                            "then": [{"action": "test.mark"}],
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "alias": "caller",
+                    "trigger": {"platform": "event", "event_type": "kick"},
+                    "action": [
+                        {
+                            "repeat": {
+                                "count": 3,
+                                "sequence": [{"action": "script.rationed"}],
+                            }
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    hass.bus.async_fire("kick")
+    await hass.async_block_till_done()
+
+    assert len(ran) == 1, f"let {len(ran)} through on an allowance of one"
+
+
+async def test_the_history_keeps_room_for_the_run_doing_the_asking(
+    hass: HomeAssistant,
+) -> None:
+    """The current run must not push the oldest run being counted out of reach.
+
+    A script's run is remembered before its condition is checked, so with only
+    as many slots as the largest allowance the oldest of them would be gone by
+    the time anybody counted. A limit of 64 could then never be reached.
+    """
+    async_setup_run_history(hass)
+    history = async_get_run_history(hass)
+
+    for index in range(MAX_RUNS_REMEMBERED):
+        hass.bus.async_fire(
+            EVENT_SCRIPT_STARTED,
+            {"entity_id": "script.busy"},
+            context=Context(id=f"prior-{index}"),
+        )
+    await hass.async_block_till_done()
+
+    # And now the run that is about to ask, arriving before the check.
+    hass.bus.async_fire(
+        EVENT_SCRIPT_STARTED,
+        {"entity_id": "script.busy"},
+        context=Context(id="current"),
+    )
+    await hass.async_block_till_done()
+
+    prior = history.async_runs_within(
+        "script.busy", timedelta(hours=1), ignoring="current"
+    )
+    assert prior == MAX_RUNS_REMEMBERED, (
+        f"only {prior} of {MAX_RUNS_REMEMBERED} prior runs left countable"
+    )
 
 
 async def test_it_passes_when_there_is_nothing_to_count_against(
