@@ -50,6 +50,9 @@ class SpookCondition(Condition):
     """
 
     condition = "triggered_by_user"
+    # Asks about the run it is in, so it cannot be watched or checked
+    # outside one. `condition_watching` refuses these.
+    needs_run_context = True
 
     _person_entity_ids: list[str] | None
 

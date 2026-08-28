@@ -12,7 +12,8 @@ from homeassistant.helpers.trigger import Trigger
 from ....condition_watching import async_condition_watcher, async_validate_condition
 
 if TYPE_CHECKING:
-    from homeassistant.core import CALLBACK_TYPE, HomeAssistant
+    from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
+    from homeassistant.helpers.event import EventStateChangedData
     from homeassistant.helpers.trigger import (
         TriggerActionRunner,
         TriggerConfig,
@@ -71,9 +72,29 @@ class SpookTrigger(Trigger):
     ) -> CALLBACK_TYPE:
         """Attach the trigger to an action runner."""
 
-        def condition_met() -> None:
-            """Run the action, now that the condition has turned true."""
-            run_action({}, "condition turned true")
+        def condition_met(event: Event[EventStateChangedData] | None) -> None:
+            """Run the action, now that the condition has turned true.
+
+            Reports the state change that turned it, when a state change did,
+            the same shape Home Assistant's template trigger reports. Which is
+            what carries the user through: an automation starts a fresh
+            context, so a condition asking who is behind the run reads it off
+            `to_state`.
+            """
+            to_state = event.data["new_state"] if event else None
+            entity_id = event.data["entity_id"] if event else None
+
+            run_action(
+                {
+                    "entity_id": entity_id,
+                    "from_state": event.data["old_state"] if event else None,
+                    "to_state": to_state,
+                },
+                f"{entity_id} turned the condition true"
+                if entity_id
+                else "the condition turned true on its own",
+                to_state.context if to_state else None,
+            )
 
         watcher = await async_condition_watcher(
             self._hass, self._condition, condition_met

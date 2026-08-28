@@ -45,6 +45,9 @@ class SpookCondition(Condition):
     """
 
     condition = "not_triggered_by_user"
+    # Asks about the run it is in, so it cannot be watched or checked
+    # outside one. `condition_watching` refuses these.
+    needs_run_context = True
 
     @classmethod
     async def async_validate_config(

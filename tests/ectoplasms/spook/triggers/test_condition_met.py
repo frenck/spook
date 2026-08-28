@@ -193,11 +193,6 @@ async def test_a_bad_condition_takes_down_only_its_own_automation(
     assert hass.states.get("automation.broken").state == "unavailable"
     assert "not_a_condition" in caplog.text
 
-    await hass.services.async_call(
-        "automation", "turn_off", {"entity_id": "automation.fine"}, blocking=True
-    )
-    await hass.async_block_till_done()
-
 
 async def test_validation_refuses_a_condition_that_does_not_exist(
     hass: HomeAssistant,

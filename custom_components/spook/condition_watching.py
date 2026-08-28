@@ -25,6 +25,7 @@ if TYPE_CHECKING:
 
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
     from homeassistant.helpers.condition import ConditionChecker
+    from homeassistant.helpers.event import EventStateChangedData
     from homeassistant.helpers.typing import ConfigType
 
 # How often a condition is asked again regardless of anything happening.
@@ -134,6 +135,10 @@ class ConditionWatcher:
 
     Only the turn. A condition that is already true when watching starts is
     not a change, and callers that care about the current value ask for it.
+
+    Reports the state change that made it turn, when there was one, so
+    whoever flipped the switch stays attributable. The backstop has nothing to
+    hand over: nobody causes the clock to move.
     """
 
     def __init__(
@@ -141,7 +146,7 @@ class ConditionWatcher:
         hass: HomeAssistant,
         checker: ConditionChecker,
         entity_ids: set[str],
-        on_met: Callable[[], None],
+        on_met: Callable[[Event[EventStateChangedData] | None], None],
     ) -> None:
         """Initialize the watcher."""
         self._hass = hass
@@ -172,7 +177,15 @@ class ConditionWatcher:
         # `and` of a state and a template, and only half of that announces
         # itself.
         self._unsubs.append(
-            async_track_time_interval(self._hass, self._async_look_again, BACKSTOP)
+            async_track_time_interval(
+                self._hass,
+                self._async_look_again,
+                BACKSTOP,
+                # Nothing should still be polling while Home Assistant is
+                # shutting down, and a timer that outlives the run it belongs
+                # to is a leak whether anyone notices or not.
+                cancel_on_shutdown=True,
+            )
         )
 
         return self.async_stop
@@ -200,17 +213,21 @@ class ConditionWatcher:
             return False
 
     @callback
-    def _async_entity_changed(self, _event: Event) -> None:
-        """Ask again, because something the condition depends on moved."""
-        self._async_look()
+    def _async_entity_changed(self, event: Event[EventStateChangedData]) -> None:
+        """Ask again, because something the condition depends on moved.
+
+        Carries that change along, the way Home Assistant's own template
+        trigger does, so whoever is behind it can still be found.
+        """
+        self._async_look(event)
 
     @callback
     def _async_look_again(self, _now: datetime) -> None:
         """Ask again, because the backstop came round."""
-        self._async_look()
+        self._async_look(None)
 
     @callback
-    def _async_look(self) -> None:
+    def _async_look(self, event: Event[EventStateChangedData] | None) -> None:
         """Ask again, and report only a turn from false to true."""
         met = self._async_ask()
         if met == self._met:
@@ -218,7 +235,7 @@ class ConditionWatcher:
 
         self._met = met
         if met:
-            self._on_met()
+            self._on_met(event)
 
 
 async def async_validate_condition(
@@ -261,7 +278,7 @@ async def async_validate_condition(
 async def async_condition_watcher(
     hass: HomeAssistant,
     validated: ConfigType,
-    on_met: Callable[[], None],
+    on_met: Callable[[Event[EventStateChangedData] | None], None],
 ) -> ConditionWatcher:
     """Build a watcher for an already validated condition, ready to start."""
     checker = await condition.async_from_config(hass, validated)

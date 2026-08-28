@@ -26,7 +26,7 @@ import custom_components.spook
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
 
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import Context, HomeAssistant
     from homeassistant.helpers.typing import ConfigType
 
 GATE = {"condition": "state", "entity_id": "input_boolean.gate", "state": "on"}
@@ -41,11 +41,11 @@ TWICE = 2
 async def _watching(
     hass: HomeAssistant,
     config: ConfigType,
-) -> tuple[object, list[int]]:
-    """Start watching a condition and record every turn."""
-    turns: list[int] = []
+) -> tuple[object, list[Context | None]]:
+    """Start watching a condition and record the context of every turn."""
+    turns: list[Context | None] = []
     watcher = await async_condition_watcher(
-        hass, await async_validate_condition(hass, config), lambda: turns.append(1)
+        hass, await async_validate_condition(hass, config), turns.append
     )
     watcher.async_start()
     return watcher, turns
@@ -278,29 +278,50 @@ async def test_a_context_dependent_condition_is_found_when_nested(
         )
 
 
-def test_every_spook_condition_is_accounted_for() -> None:
-    """Keeps `CONTEXT_DEPENDENT` honest as Spook grows more conditions.
-
-    A condition that reaches for `variables` is asking about the run it is in,
-    so it cannot be watched. There is no way to ask a condition class whether
-    it does that, so the list is written out by hand, and this is what stops it
-    going stale: add a condition that reads `variables` and this fails until
-    the list says so.
-    """
+def _spook_condition_classes() -> list[type]:
+    """Return every condition class Spook ships."""
     conditions = (
         Path(custom_components.spook.__file__).parent / "ectoplasms/spook/conditions"
     )
 
-    for module_path in sorted(conditions.glob("[a-z]*.py")):
-        module = import_module(
+    return [
+        import_module(
             f"custom_components.spook.ectoplasms.spook.conditions.{module_path.stem}"
-        )
-        name = f"spook.{module.SpookCondition.condition}"
-        reads_variables = 'kwargs.get("variables")' in module_path.read_text()
+        ).SpookCondition
+        for module_path in sorted(conditions.glob("[a-z]*.py"))
+    ]
 
-        assert reads_variables == (name in CONTEXT_DEPENDENT), (
-            f"{name} reads variables but is not in CONTEXT_DEPENDENT, or the reverse"
+
+def test_every_spook_condition_says_whether_it_needs_a_run() -> None:
+    """No default, so a new condition has to make up its mind.
+
+    Inheriting a default would mean the answer for a condition nobody thought
+    about is whatever the base happens to say, which is how a list goes stale
+    quietly. Declaring it on the class is the whole point.
+    """
+    for condition_class in _spook_condition_classes():
+        assert "needs_run_context" in vars(condition_class), (
+            f"spook.{condition_class.condition} does not declare "
+            "needs_run_context. Say whether it asks about the run it is in: "
+            "reading `variables` for the trigger, the context or `this` means "
+            "it does, and it cannot then be watched."
         )
+
+
+def test_the_refusal_list_matches_what_the_conditions_declare() -> None:
+    """Keeps `CONTEXT_DEPENDENT` honest as Spook grows more conditions.
+
+    The list is written out by hand so the validator needs no registry, and
+    this is what stops it drifting from the classes it is meant to describe.
+    """
+    declared = {
+        f"spook.{condition_class.condition}"
+        for condition_class in _spook_condition_classes()
+        if condition_class.needs_run_context
+    }
+
+    # Home Assistant's own `trigger` condition is the one Spook does not own.
+    assert declared | {"trigger"} == CONTEXT_DEPENDENT
 
 
 async def test_a_template_reaching_into_the_run_is_refused(

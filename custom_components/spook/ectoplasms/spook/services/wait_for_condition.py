@@ -21,7 +21,8 @@ from ....const import DOMAIN
 from ....services import AbstractSpookService
 
 if TYPE_CHECKING:
-    from homeassistant.core import ServiceCall, ServiceResponse
+    from homeassistant.core import Event, ServiceCall, ServiceResponse
+    from homeassistant.helpers.event import EventStateChangedData
     from homeassistant.helpers.typing import ConfigType
 
 
@@ -83,8 +84,8 @@ class SpookService(AbstractSpookService):
 
         met = self.hass.loop.create_future()
 
-        def condition_met() -> None:
-            """Let the wait finish."""
+        def condition_met(_event: Event[EventStateChangedData] | None) -> None:
+            """Let the wait finish. What turned it does not matter here."""
             if not met.done():
                 met.set_result(True)
 

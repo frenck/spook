@@ -38,6 +38,7 @@ class SpookCondition(Condition):
     """
 
     condition = "repair_issue_present"
+    needs_run_context = False
 
     _domains: set[str] | None
     _severities: set[str] | None

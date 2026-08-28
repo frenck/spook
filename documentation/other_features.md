@@ -176,7 +176,7 @@ Give up after five minutes, and do something else about it:
 :::{attention} Known limitations
 :class: dropdown
 
-- Templates in the condition do not work here, and are refused rather than quietly waited on forever. A script renders every template in the action data before calling the action, so `{{ is_state(...) }}` arrives as the `true` or `false` it happened to be at that moment, and a constant never turns. Wait on a template with `wait_template`, which is what that is for.
+- A template only survives if nothing renders it first, which rules out the placement you would normally use. A script or automation renders every template in the action data before calling the action, so `{{ is_state(...) }}` arrives as the `true` or `false` it happened to be at that moment, and a constant never turns; that is refused rather than quietly waited on forever. Called straight, from the API or the developer tools, nothing renders the data and the template is watched like anything else. Inside a script, wait on a template with `wait_template`, which is what that is for.
 - A condition that asks about the run it is in cannot be watched either, and is refused for the same reason: `trigger`, and Spook's own `cooldown`, `quota`, `triggered_by_user`, `not_triggered_by_user` and `triggered_by_automation`. An action call is not a trigger, so their answer would not mean anything.
 - The condition is checked again every 30 seconds regardless of anything happening, so the wait can end up to half a minute late. That polling pass is what covers the turns that arrive without a state change: a plain time or sun condition, a `state` condition whose `for:` runs out, a `time` condition whose moment passes. A condition that turns true and false again inside those 30 seconds is missed entirely.
 - Without a `timeout` it waits for as long as the script runs. Stopping the automation or script stops the wait with it. A `timeout` of zero means look now and do not wait, so it answers `completed: false` unless the condition is already true.
@@ -962,6 +962,8 @@ Fires when a condition goes from false to true.
 A condition is true or false, and the moment it turns is worth reacting to. Home Assistant has a trigger for a template turning true and one for a state arriving, but nothing that takes the condition building blocks, so anything more involved than a single state has to be rewritten as a template.
 
 Only the turn counts. A condition that is already true when the automation loads is not a change, so this does not fire for it, the same as the template trigger. And going back to false is not a turn either.
+
+When it fires because an entity moved, `trigger.entity_id` names that entity and `trigger.from_state` and `trigger.to_state` are what it moved between, the same three the template trigger hands over. Which is also what carries the user through: an automation starts a fresh context, so `spook.triggered_by_user` and friends read the person off `trigger.to_state`. All three are empty when the condition turned true on its own account, because then nobody moved anything.
 
 :::{seealso} Example trigger in {term}`YAML`
 :class: dropdown

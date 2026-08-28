@@ -58,6 +58,9 @@ class SpookCondition(Condition):
     """
 
     condition = "triggered_by_automation"
+    # Asks about the run it is in, so it cannot be watched or checked
+    # outside one. `condition_watching` refuses these.
+    needs_run_context = True
 
     _automation_entity_ids: set[str] | None
 
