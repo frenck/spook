@@ -58,10 +58,11 @@ IN_BETWEEN_STATES = frozenset(
 
 
 def _broken_period(value: Any) -> timedelta:
-    """Validate the duration, and refuse one that can never elapse.
+    """Validate the duration, and refuse one that leaves nothing to settle.
 
-    Zero would put the deadline in the past, so the trigger would load and
-    then never fire, which is worse than saying no.
+    A deadline of now fires straight away, so zero would report every failure
+    the instant it happened. That is the flapping this trigger exists to sit
+    out: one device off overnight would report itself about fifty times.
     """
     duration = cv.positive_time_period(value)
     if duration <= timedelta(0):

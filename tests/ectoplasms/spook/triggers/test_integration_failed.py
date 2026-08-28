@@ -104,7 +104,12 @@ async def test_a_duration_is_required(hass: HomeAssistant) -> None:
 
 
 async def test_a_zero_duration_is_refused(hass: HomeAssistant) -> None:
-    """Zero would put the deadline in the past, so it would never fire."""
+    """Zero reports every failure the instant it happens.
+
+    A deadline of now fires straight away rather than being skipped, so this
+    is not a trigger that would sit there doing nothing: it is one that would
+    report an offline device about fifty times a night.
+    """
     with pytest.raises(vol.Invalid, match="longer than zero"):
         await SpookTrigger.async_validate_config(
             hass, {"options": {"for": {"minutes": 0}}}

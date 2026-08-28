@@ -278,7 +278,7 @@ An integration that cannot reach its hardware fails to set up, and Home Assistan
 
 Every configuration entry is watched unless you name some in `entry_id`. Each one is reported on its own, and only once per spell of trouble: an entry has to come back before it can be reported again.
 
-When it fires, `trigger.domain` is the integration, `trigger.title` the name of the entry, `trigger.entry_id` its identifier, `trigger.state` the state it is stuck in, and `trigger.reason` whatever Home Assistant recorded about why.
+When it fires, `trigger.domain` is the integration, `trigger.title` the name of the entry, `trigger.entry_id` its identifier, `trigger.state` the state it is stuck in, `trigger.reason` whatever Home Assistant recorded about why, and `trigger.for` the duration you configured.
 
 :::{seealso} Example trigger in {term}`YAML`
 :class: dropdown
@@ -308,7 +308,7 @@ options:
 :class: dropdown
 
 - The states that count as failure are `setup_error`, `setup_retry`, `migration_error` and `failed_unload`. An entry you disabled yourself sits in `not_loaded` and is not a failure.
-- A duration of zero is refused. It would put the deadline in the past, so the trigger would load and never fire.
+- A duration of zero is refused. A deadline of now fires straight away, so zero would report every failure the moment it happened, which is the flapping this trigger exists to sit out.
 - Reloading your automations starts the clock again for anything broken at that moment. That is on purpose: an entry stuck in `setup_error` never announces itself a second time, so waiting for a change would mean never hearing about whatever was already broken.
 - One report per spell of trouble. If you want to be nagged until somebody fixes it, repeat the action yourself.
 
