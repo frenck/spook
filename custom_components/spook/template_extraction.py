@@ -415,15 +415,23 @@ def extract_template_strings_from_config(
 
 
 async def async_extract_entities_from_config(
-    hass: HomeAssistant, config: Any
+    hass: HomeAssistant,
+    config: Any,
+    known_services: set[str] | None = None,
 ) -> set[str]:
-    """Extract entity IDs referenced in templates within a configuration structure."""
+    """Extract entity IDs referenced in templates within a configuration structure.
+
+    ``known_services`` is what tells an action name apart from an entity id.
+    Building it flattens every service Home Assistant has, so a caller walking
+    one configuration after another should build it once and pass it in.
+    """
     entities = set()
     if not config:
         return entities
 
     template_strings = extract_template_strings_from_config(config)
-    known_services = async_get_all_services(hass) if template_strings else set()
+    if known_services is None:
+        known_services = async_get_all_services(hass) if template_strings else set()
     extracted_templates: dict[str, set[str]] = {}
     for template_str in template_strings:
         try:

@@ -10,7 +10,11 @@ from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import async_extract_entities_from_action_config
 from ....const import LOGGER
-from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
+from ....entity_filtering import (
+    async_filter_known_entity_ids,
+    async_get_all_entity_ids,
+    async_get_all_services,
+)
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
 from ....template_extraction import async_extract_entities_from_config
@@ -67,12 +71,15 @@ class SpookRepair(AbstractSpookRepair):
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
         known_entity_ids = async_get_all_entity_ids(self.hass, include_all_none=True)
+        known_services = async_get_all_services(self.hass)
 
         for entry in self.hass.config_entries.async_entries(self.domain):
             self.possible_issue_ids.add(entry.entry_id)
 
             options = dict(entry.options)
-            referenced = await async_extract_entities_from_config(self.hass, options)
+            referenced = await async_extract_entities_from_config(
+                self.hass, options, known_services
+            )
 
             # Template helpers can also run action sequences: a button's press,
             # a switch's turn_on/turn_off, a cover's open/close, an alarm's
@@ -92,10 +99,13 @@ class SpookRepair(AbstractSpookRepair):
                     continue
 
                 referenced |= await async_extract_entities_from_action_config(
-                    self.hass, option
+                    self.hass, option, known_services=known_services
                 )
                 active |= await async_extract_entities_from_action_config(
-                    self.hass, option, include_disabled=False
+                    self.hass,
+                    option,
+                    include_disabled=False,
+                    known_services=known_services,
                 )
 
             if unknown_entities := async_filter_known_entity_ids(

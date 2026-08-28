@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.const import CONF_ENABLED
 
 from .const import LOGGER
+from .entity_filtering import async_get_all_services
 from .template_extraction import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_template_string,
@@ -27,6 +28,7 @@ async def async_extract_entities_from_action_config(
     config: dict[str, Any] | list,
     *,
     include_disabled: bool = True,
+    known_services: set[str] | None = None,
     _in_sequence: bool = False,
     _in_payload: bool = False,
 ) -> set[str]:
@@ -40,11 +42,21 @@ async def async_extract_entities_from_action_config(
     conditions live, and never below a ``data`` key. Service data is arbitrary
     payload: a dict or a list in there that happens to carry an ``enabled`` key
     of its own must not hide the entities around it.
+
+    ``known_services`` is what tells an action name apart from an entity id,
+    and building it flattens every service Home Assistant has. So it is built
+    once here and handed down, rather than rebuilt for every template string
+    this walks past. A caller that inspects one configuration after another
+    should build it once and pass it in, or it pays for a rebuild per
+    configuration.
     """
     entities = set()
 
     if not config:
         return entities
+
+    if known_services is None:
+        known_services = async_get_all_services(hass)
 
     if isinstance(config, list):
         for item in config:
@@ -53,6 +65,7 @@ async def async_extract_entities_from_action_config(
                     hass,
                     item,
                     include_disabled=include_disabled,
+                    known_services=known_services,
                     _in_sequence=True,
                     _in_payload=_in_payload,
                 )
@@ -71,18 +84,26 @@ async def async_extract_entities_from_action_config(
         return entities
 
     # Extract entity IDs from direct fields
-    entities.update(await _extract_entities_from_action_fields(hass, config))
+    entities.update(
+        await _extract_entities_from_action_fields(hass, config, known_services)
+    )
 
     # Extract entities from target configuration
-    entities.update(await _extract_entities_from_target(hass, config))
+    entities.update(await _extract_entities_from_target(hass, config, known_services))
 
     # Extract entities from service data
-    entities.update(await _extract_entities_from_service_data(hass, config))
+    entities.update(
+        await _extract_entities_from_service_data(hass, config, known_services)
+    )
 
     # Extract from nested configs (like if/then/else, repeat, etc.)
     entities.update(
         await _extract_entities_from_nested_configs(
-            hass, config, include_disabled=include_disabled, in_payload=_in_payload
+            hass,
+            config,
+            known_services,
+            include_disabled=include_disabled,
+            in_payload=_in_payload,
         )
     )
 
@@ -90,18 +111,22 @@ async def async_extract_entities_from_action_config(
 
 
 async def _extract_entities_from_action_fields(
-    hass: HomeAssistant, config: dict[str, Any]
+    hass: HomeAssistant, config: dict[str, Any], known_services: set[str]
 ) -> set[str]:
     """Extract entities from direct action fields."""
     entities = set()
     for key in ("entity_id", "device_id"):
         if key in config:
-            entities.update(await async_extract_entities_from_value(hass, config[key]))
+            entities.update(
+                await async_extract_entities_from_value(
+                    hass, config[key], known_services=known_services
+                )
+            )
     return entities
 
 
 async def _extract_entities_from_target(
-    hass: HomeAssistant, config: dict[str, Any]
+    hass: HomeAssistant, config: dict[str, Any], known_services: set[str]
 ) -> set[str]:
     """Extract entities from target configuration."""
     entities = set()
@@ -110,7 +135,9 @@ async def _extract_entities_from_target(
         for key in ("entity_id", "device_id", "area_id", "label_id"):
             if key in target:
                 entities.update(
-                    await async_extract_entities_from_value(hass, target[key])
+                    await async_extract_entities_from_value(
+                        hass, target[key], known_services=known_services
+                    )
                 )
     return entities
 
@@ -130,7 +157,7 @@ def _should_skip_service_data_value(
 
 
 async def _extract_entities_from_service_data(
-    hass: HomeAssistant, config: dict[str, Any]
+    hass: HomeAssistant, config: dict[str, Any], known_services: set[str]
 ) -> set[str]:
     """Extract entities from service data."""
     entities = set()
@@ -138,20 +165,29 @@ async def _extract_entities_from_service_data(
         data_value = config["data"]
         if isinstance(data_value, str):
             # data field is a template string itself
-            entities.update(await async_extract_entities_from_value(hass, data_value))
+            entities.update(
+                await async_extract_entities_from_value(
+                    hass, data_value, known_services=known_services
+                )
+            )
         elif isinstance(data_value, dict):
             service = _get_action_service(config)
             # data field is a dictionary, process all its values
             for key, value in data_value.items():
                 if _should_skip_service_data_value(service, key):
                     continue
-                entities.update(await async_extract_entities_from_value(hass, value))
+                entities.update(
+                    await async_extract_entities_from_value(
+                        hass, value, known_services=known_services
+                    )
+                )
     return entities
 
 
 async def _extract_entities_from_nested_configs(
     hass: HomeAssistant,
     config: dict[str, Any],
+    known_services: set[str],
     *,
     include_disabled: bool = True,
     in_payload: bool = False,
@@ -165,6 +201,7 @@ async def _extract_entities_from_nested_configs(
                     hass,
                     value,
                     include_disabled=include_disabled,
+                    known_services=known_services,
                     _in_payload=in_payload or key == "data",
                 )
             )
@@ -172,18 +209,27 @@ async def _extract_entities_from_nested_configs(
 
 
 async def async_extract_entities_from_value(
-    hass: HomeAssistant, value: Any
+    hass: HomeAssistant,
+    value: Any,
+    *,
+    known_services: set[str] | None = None,
 ) -> set[str]:
-    """Extract entity IDs from a configuration value."""
+    """Extract entity IDs from a configuration value.
+
+    See `async_extract_entities_from_action_config` for what
+    ``known_services`` is and why passing it in matters.
+    """
     entities = set()
 
     if isinstance(value, str):
         # Check if it's a template string using util.is_template_string
         if is_template_string(value):
             # Process as template to extract entity references
+            if known_services is None:
+                known_services = async_get_all_services(hass)
             try:
                 template_entities = await async_extract_entities_from_template_string(
-                    hass, value
+                    hass, value, known_services
                 )
                 entities.update(template_entities)
             # pylint: disable-next=broad-exception-caught
@@ -197,8 +243,14 @@ async def async_extract_entities_from_value(
             # Check if it matches the entity ID pattern with known domains
             entities.add(value)
     elif isinstance(value, list):
+        if known_services is None:
+            known_services = async_get_all_services(hass)
         for item in value:
-            entities.update(await async_extract_entities_from_value(hass, item))
+            entities.update(
+                await async_extract_entities_from_value(
+                    hass, item, known_services=known_services
+                )
+            )
     elif (
         isinstance(value, dict)
         and "entity" in value
