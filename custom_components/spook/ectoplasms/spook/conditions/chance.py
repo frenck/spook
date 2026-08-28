@@ -41,6 +41,7 @@ class SpookCondition(Condition):
     """Spook condition that passes a set percentage of the time, at random."""
 
     condition = "chance"
+    needs_run_context = False
 
     _percentage: float
 

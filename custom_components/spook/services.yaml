@@ -1428,3 +1428,23 @@ zone_delete:
           multiple: true
           filter:
             - domain: zone
+
+wait_for_condition:
+  name: Wait for a condition 👻
+  description: >-
+    Wait until a condition is true. Returns straight away if it already is.
+  fields:
+    condition:
+      name: Condition
+      description: The condition to wait for.
+      required: true
+      selector:
+        condition:
+    timeout:
+      name: Timeout
+      description: >-
+        How long to wait before giving up. Waits indefinitely when left out.
+      required: false
+      example: "00:05:00"
+      selector:
+        duration:

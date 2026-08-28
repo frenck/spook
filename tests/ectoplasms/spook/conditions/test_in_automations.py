@@ -343,3 +343,36 @@ async def test_a_template_trigger_inherits_the_change_behind_it(
     await hass.async_block_till_done()
 
     assert ran == ["not_triggered_by_user"]
+
+
+async def test_a_condition_trigger_inherits_the_change_behind_it(
+    hass: HomeAssistant,
+) -> None:
+    """Same for Spook's own condition trigger, for the same reason.
+
+    A condition that turned true because a person flipped a switch is that
+    person's doing, so the state change that made it turn has to come through.
+    """
+    user = await hass.auth.async_create_user("Ghost Hunter")
+    hass.states.async_set("input_boolean.spook_test", "off")
+    await hass.async_block_till_done()
+
+    ran = await _automations(
+        hass,
+        {
+            "platform": "spook.condition_met",
+            "options": {
+                "condition": {
+                    "condition": "state",
+                    "entity_id": "input_boolean.spook_test",
+                    "state": "on",
+                },
+            },
+        },
+    )
+
+    hass.states.async_set(
+        "input_boolean.spook_test", "on", context=Context(user_id=user.id)
+    )
+    await hass.async_block_till_done()
+    assert ran == ["triggered_by_user"]

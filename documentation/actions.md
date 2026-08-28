@@ -70,6 +70,12 @@ Downloads and imports an automation/script blueprint, directly from the URL you 
 
 `blueprint.import`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import), [documentation](integrations/blueprint#import-blueprint) 📚
 
+## Wait for a condition
+
+Waits until a condition is true, and carries on straight away if it already is. Takes the ordinary condition building blocks, so it needs no template. _#wait_ _#condition_
+
+`spook.wait_for_condition`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition), [documentation](other-features#wait-for-a-condition) 📚
+
 ## Boo!
 
 This action call will just always spook the hell out of Home Assistant. Home Assistant will shit its pants and abort the automation or script. _#spooked_

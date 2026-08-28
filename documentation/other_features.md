@@ -92,6 +92,99 @@ action: homeassistant.random_fail
 
 :::
 
+### Wait for a condition
+
+Waits until a condition is true, and carries on straight away if it already is.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Wait for a condition 👻
+* - {term}`Action name`
+  - `spook.wait_for_condition`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - Optional response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `condition`
+  - {term}`condition <condition>`
+  - Yes
+  - Any condition, built the ordinary way
+* - `timeout`
+  - {term}`string <string>`
+  - No
+  - Waits indefinitely when left out
+```
+
+Home Assistant can wait for a template to turn true, and it can wait for a trigger. It cannot wait for a condition, so anything you can express with the condition building blocks has to be rewritten as a template before you can wait on it.
+
+Takes one condition or a list of them, and a list means all of them, the same as anywhere else. Which is also what the visual editor sends, so both shapes have to work.
+
+The other half of what this fixes is that it looks first. `wait_for_trigger` always waits for something to happen, so if the thing you are waiting for has already happened you wait forever, which is why people wrap it in an `if`. This checks the condition before waiting, so an automation that arrives late still carries on.
+
+Returns `completed` when it is given a `response_variable`, which says whether the condition arrived or the timeout did.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+Hold the sequence until the back door is shut:
+
+```{code-block} yaml
+:linenos:
+action: spook.wait_for_condition
+data:
+  condition:
+    condition: state
+    entity_id: binary_sensor.back_door
+    state: "off"
+```
+
+Give up after five minutes, and do something else about it:
+
+```{code-block} yaml
+:linenos:
+- action: spook.wait_for_condition
+  data:
+    timeout: "00:05:00"
+    condition:
+      condition: state
+      entity_id: binary_sensor.back_door
+      state: "off"
+  response_variable: waited
+- if: "{{ not waited.completed }}"
+  then:
+    - action: notify.persistent_notification
+      data:
+        message: The back door is still open.
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A template has to still be a template, which rules out the placement you would normally use. A script or automation renders every template in the action data before calling the action, so `{{ is_state(...) }}` arrives as the `true` or `false` it happened to be at that moment, and a constant can never turn; that is refused rather than quietly waited on forever. What can be seen from here is whether any Jinja is left, not where the value came from, so a literal `value_template: true` in a direct call is refused too: by the time it arrives the two are the same thing. A template that still has its Jinja, from the API or the developer tools, is watched like any other condition. Inside a script, wait on a template with `wait_template`, which is what that is for.
+- A condition that asks about the run it is in cannot be watched either, and is refused for the same reason: `trigger`, and Spook's own `cooldown`, `quota`, `triggered_by_user`, `not_triggered_by_user` and `triggered_by_automation`. An action call is not a trigger, so their answer would not mean anything.
+- The condition is checked again every 30 seconds regardless of anything happening, so the wait can end up to half a minute late. That polling pass is what covers the turns that arrive without a state change: a plain time or sun condition, a `state` condition whose `for:` runs out, a `time` condition whose moment passes. A condition that turns true and false again inside those 30 seconds is missed entirely.
+- Without a `timeout` it waits for as long as the script runs. Stopping the automation or script stops the wait with it. A `timeout` of zero means look now and do not wait, so it answers `completed: false` unless the condition is already true.
+
+:::
+
 ## Triggers
 
 Spook offers the following triggers that are not tied to a specific integration:
@@ -839,3 +932,72 @@ options:
 - The run doing the asking does not count against itself. A condition sitting inside the actions is checked while the run is already under way, so without that a limit of one would turn down every run.
 
 :::
+
+### Condition turned true
+
+Fires when a condition goes from false to true.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Condition turned true 👻
+* - Trigger name
+  - `spook.condition_met`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `condition`
+  - {term}`condition <condition>`
+  - Yes
+  - Any condition, built the ordinary way
+```
+
+A condition is true or false, and the moment it turns is worth reacting to. Home Assistant has a trigger for a template turning true and one for a state arriving, but nothing that takes the condition building blocks, so anything more involved than a single state has to be rewritten as a template.
+
+Takes one condition or a list of them, and a list means all of them, the same as anywhere else. Which is also what the visual editor sends, so both shapes have to work.
+
+Only the turn counts. A condition that is already true when the automation loads is not a change, so this does not fire for it, the same as the template trigger. And going back to false is not a turn either.
+
+When it can tell which change turned the condition, `trigger.entity_id` names that entity and `trigger.from_state` and `trigger.to_state` are what it moved between, the same three the template trigger hands over. Which is also what carries the user through: an automation starts a fresh context, so `spook.triggered_by_user` and friends read the person off `trigger.to_state`.
+
+It can tell only when every part of the condition announces its own turns, which means `state`, `numeric_state` and `zone` conditions without a `for:` and without a `value_template`, plus any `and`, `or` or `not` built out of those. Anything else and all three are empty, because a condition with a part that turns quietly gets discovered by the next unrelated change, and naming that change would be naming the wrong one.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+trigger: spook.condition_met
+options:
+  condition:
+    condition: and
+    conditions:
+      - condition: state
+        entity_id: binary_sensor.back_door
+        state: "on"
+      - condition: numeric_state
+        entity_id: sensor.outside_temperature
+        below: 5
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A condition that names entities is noticed the moment one of them changes. That covers `state`, `numeric_state` and `zone` conditions, a `time` condition pointing at an `input_datetime`, and any `and`, `or` or `not` built out of those. A `numeric_state` threshold naming an entity counts as well, so a condition that turns because the line moved rather than the measurement is noticed just as quickly; Home Assistant leaves that entity out of what it reports a condition depends on, so Spook picks it up separately. A template condition names nothing that can be read off the config, and a plain time or sun condition has nothing to name, so those are asked again every 30 seconds.
+- Naming the entities is not the same as noticing every turn, because not every turn arrives as a state change. A `state` condition with a `for:` turns true when the duration runs out, and a `time` condition turns true when the clock passes the moment, and neither of those moves an entity. Those are picked up by the 30-second polling pass instead, so up to half a minute late.
+- A condition that turns true and false again within those 30 seconds is missed entirely rather than noticed late. If what you are watching flickers, trigger on the thing that flickers.
+- A condition that asks about the run it is in cannot be watched, so `trigger`, and Spook's own `cooldown`, `quota`, `triggered_by_user`, `not_triggered_by_user` and `triggered_by_automation`, are refused. Nothing has fired yet at the point this decides whether to fire, so their answer would not mean anything.
+- The same goes for a template that reaches for `trigger`, `this`, `repeat` or `wait`. Home Assistant hands those to a running automation or script, and there is no run here to take them from, so such a condition is refused rather than left never firing. A template that merely mentions the word is fine: `sensor.trigger_count` is an entity, not the trigger.
+- A condition that cannot be built at all disables that automation and says why in the log, rather than sitting there never firing.
+  :::
