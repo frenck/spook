@@ -11,7 +11,7 @@ from homeassistant.const import CONF_OPTIONS
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.condition import Condition
 
-from ..automation_runs import async_get_automation_runs
+from ....automation_runs import async_get_automation_runs
 from ..context import source_contexts
 
 if TYPE_CHECKING:
@@ -21,9 +21,29 @@ if TYPE_CHECKING:
     from homeassistant.helpers.condition import ConditionCheckParams, ConditionConfig
     from homeassistant.helpers.typing import ConfigType
 
-    from ..automation_runs import AutomationRuns
+    from ....automation_runs import AutomationRuns
 
 CONF_AUTOMATION = "automation"
+
+
+def _own_entity_id(variables: Any) -> str | None:
+    """Return the automation running right now, if this is inside one.
+
+    Wanted so it can be skipped. Inside an action sequence the run's own
+    context is in reach and the register knows it, so without this the
+    condition would report the automation asking the question as the one
+    that set it going, and would pass for a schedule or a person.
+    """
+    if not hasattr(variables, "get"):
+        return None
+
+    this = variables.get("this")
+    if not hasattr(this, "get"):
+        return None
+
+    entity_id = this.get("entity_id")
+    return entity_id if isinstance(entity_id, str) else None
+
 
 _CONDITION_SCHEMA = vol.Schema(
     {
@@ -43,10 +63,15 @@ class SpookCondition(Condition):
     script in between.
 
     What it cannot do is turn a context back into the automation that owns
-    it: nothing in Home Assistant keeps that. So this listens for automations
+    it: nothing in Home Assistant keeps that. So Spook listens for automations
     announcing themselves and remembers the mapping for the last few hundred
     runs, which is plenty, since the run being asked about happened a moment
     ago.
+
+    The automation doing the asking does not count as an answer. Put this
+    inside an action sequence and its own run is the nearest context in
+    reach, so without skipping it the condition would pass for a schedule or
+    a person just as readily.
 
     Can be narrowed to specific automations.
     """
@@ -80,26 +105,28 @@ class SpookCondition(Condition):
         self._automation_entity_ids = set(automation) if automation else None
 
     async def _async_setup(self) -> None:
-        """Start remembering which automation runs under which context."""
+        """Take hold of the register that knows which automation ran when."""
         self._runs = async_get_automation_runs(self._hass)
-        self._runs.async_acquire()
-
-    def _async_unload(self) -> None:
-        """Stop remembering, if nothing else still wants to know.
-
-        The register itself is left in place. Home Assistant does not stop
-        anybody checking a condition after unloading it, and a register that
-        has let go of its listener answers "no" rather than falling over.
-        """
-        self._runs.async_release()
 
     def _async_check(self, **kwargs: Unpack[ConditionCheckParams]) -> bool:
-        """Return True when an automation started this run."""
-        for context in source_contexts(kwargs.get("variables")):
-            if (entity_id := self._runs.async_which(context.id)) is None:
+        """Return True when another automation started this run."""
+        variables = kwargs.get("variables")
+        myself = _own_entity_id(variables)
+
+        for context in source_contexts(variables):
+            entity_id = self._runs.async_which(context.id)
+
+            # Keep looking rather than settling for the first answer. The
+            # nearest context inside an action sequence is this run's own, and
+            # a context that resolves to an automation nobody asked about says
+            # nothing about the ones further out.
+            if entity_id is None or entity_id == myself:
                 continue
-            if self._automation_entity_ids is None:
+
+            if (
+                self._automation_entity_ids is None
+                or entity_id in self._automation_entity_ids
+            ):
                 return True
-            return entity_id in self._automation_entity_ids
 
         return False

@@ -571,6 +571,7 @@ options:
 :::{attention} Known limitations
 :class: dropdown
 
+- The automation asking does not count. Put this inside an `if` or a `choose` in your actions and the run's own context is the nearest one in reach, so without skipping it this would pass for a schedule or a person just as readily. It looks past itself and reports whatever set the run going.
 - Only automations are recognised. A script running on its own, without an automation having started it, is not an automation and this does not pass for it.
 - Spook has to have been running when the other automation ran. It remembers the mapping while your automations are loaded, so a run from before a restart is no longer known.
 - It names the automation that started the chain, not the last thing in it. If your goodnight automation calls a script and that script turns off the lights, this reports the automation, which is almost always what you wanted to ask about.

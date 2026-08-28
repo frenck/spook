@@ -4,10 +4,10 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.core import Context
+
 if TYPE_CHECKING:
     from collections.abc import Iterator
-
-    from homeassistant.core import Context
 
 # Where a trigger keeps the context of the thing that set it off. A state
 # trigger carries the state it changed to; an event trigger carries the event.
@@ -47,12 +47,16 @@ def source_contexts(variables: Any) -> Iterator[Context]:
     all. What counts as an answer depends on the question: a user is named by
     ``user_id``, while which automation it was has to be looked up by
     ``id``, so the filtering is left to the caller.
+
+    Only real contexts come out. A rendered template hands over a state whose
+    context is a plain mapping rather than a ``Context``, and the callers here
+    read attributes off what they are given, so anything else is dropped.
     """
     if not hasattr(variables, "get"):
         return
 
     for context in _candidates(variables):
-        if context is not None:
+        if isinstance(context, Context):
             yield context
 
 

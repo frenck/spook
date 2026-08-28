@@ -12,10 +12,11 @@ from homeassistant.setup import async_setup_component
 import pytest
 import voluptuous as vol
 
-from custom_components.spook.ectoplasms.spook.automation_runs import (
+from custom_components.spook.automation_runs import (
     CACHE_SIZE,
     AutomationRuns,
     async_get_automation_runs,
+    async_setup_automation_runs,
 )
 from custom_components.spook.ectoplasms.spook.conditions.triggered_by_automation import (
     SpookCondition,
@@ -186,16 +187,46 @@ async def test_no_options_is_fine(hass: HomeAssistant) -> None:
     assert await SpookCondition.async_validate_config(hass, {}) == {"options": {}}
 
 
-async def test_checking_after_unloading_says_no_rather_than_falling_over(
+async def test_a_context_that_is_not_the_one_asked_about_is_not_the_end_of_it(
     hass: HomeAssistant,
 ) -> None:
-    """Home Assistant does not stop anybody checking an unloaded condition.
+    """A near context naming the wrong automation must not settle the answer.
 
-    So this has to answer rather than break. The register lets go of its
-    listener and its memory, which makes the answer no.
+    Several contexts can be in reach at once, and only one of them needs to
+    be the automation somebody asked about. Reading the nearest and returning
+    its verdict reports no whenever anything else got there first.
     """
-    condition = SpookCondition(hass, ConditionConfig(options={}))
+    runs = async_get_automation_runs(hass)
+    hass.bus.async_fire(
+        "automation_triggered",
+        {"entity_id": "automation.somebody_else"},
+        context=Context(id="near"),
+    )
+    hass.bus.async_fire(
+        "automation_triggered",
+        {"entity_id": "automation.wanted"},
+        context=Context(id="further"),
+    )
+    await hass.async_block_till_done()
+    assert runs.async_which("near") == "automation.somebody_else"
+
+    condition = SpookCondition(
+        hass, ConditionConfig(options={"automation": ["automation.wanted"]})
+    )
     await condition.async_setup()
+
+    variables = {
+        "context": Context(id="near"),
+        "trigger": {"to_state": Mock(context=Context(id="further"))},
+    }
+
+    assert condition.async_check(variables=variables) is True
+
+
+async def test_the_register_is_shared_and_listening(hass: HomeAssistant) -> None:
+    """One register for the whole integration, already listening."""
+    runs = async_get_automation_runs(hass)
+    assert async_get_automation_runs(hass) is runs, "made a second register"
 
     hass.bus.async_fire(
         "automation_triggered",
@@ -204,44 +235,36 @@ async def test_checking_after_unloading_says_no_rather_than_falling_over(
     )
     await hass.async_block_till_done()
 
-    variables = {"trigger": {"to_state": Mock(context=Context(id="a-run"))}}
-    assert condition.async_check(variables=variables) is True
-
-    condition.async_unload()
-
-    assert condition.async_check(variables=variables) is False
+    assert runs.async_which("a-run") == "automation.goodnight"
 
 
-async def test_the_register_stops_listening_when_the_last_user_leaves(
+async def test_stopping_the_register_lets_go_of_everything(
     hass: HomeAssistant,
 ) -> None:
-    """One shared listener, reference counted, and no listener left behind.
-
-    Every condition instance wants the same mapping, so they share it. The
-    listener has to survive one of them unloading and go away with the last.
-    """
+    """Setting it up hands back the way to stop, and stopping really stops."""
+    stop = async_setup_automation_runs(hass)
     runs = async_get_automation_runs(hass)
-    assert async_get_automation_runs(hass) is runs, "made a second register"
 
-    def _listeners() -> int:
-        return len(hass.bus.async_listeners().keys() & {"automation_triggered"})
+    hass.bus.async_fire(
+        "automation_triggered",
+        {"entity_id": "automation.goodnight"},
+        context=Context(id="a-run"),
+    )
+    await hass.async_block_till_done()
+    assert runs.async_which("a-run") == "automation.goodnight"
 
-    assert _listeners() == 0
+    stop()
 
-    runs.async_acquire()
-    runs.async_acquire()
-    assert _listeners() == 1, "one listener for however many askers"
+    assert runs.async_which("a-run") is None, "kept what it was told to forget"
+    assert "automation_triggered" not in hass.bus.async_listeners()
 
-    runs.async_release()
-    assert _listeners() == 1, "let go too early, with a user left"
-
-    runs.async_release()
-    assert _listeners() == 0, "left a listener behind"
-
-    # And it comes back for the next one.
-    runs.async_acquire()
-    assert _listeners() == 1
-    runs.async_release()
+    hass.bus.async_fire(
+        "automation_triggered",
+        {"entity_id": "automation.goodnight"},
+        context=Context(id="another-run"),
+    )
+    await hass.async_block_till_done()
+    assert runs.async_which("another-run") is None, "carried on listening"
 
 
 async def test_the_register_forgets_the_oldest_runs(hass: HomeAssistant) -> None:
@@ -251,7 +274,7 @@ async def test_the_register_forgets_the_oldest_runs(hass: HomeAssistant) -> None
     costs nothing and keeps a busy house from growing this forever.
     """
     runs = AutomationRuns(hass)
-    runs.async_acquire()
+    runs.async_start()
 
     overflow = 10
     for index in range(CACHE_SIZE + overflow):
@@ -270,4 +293,109 @@ async def test_the_register_forgets_the_oldest_runs(hass: HomeAssistant) -> None
     for index in range(overflow):
         assert runs.async_which(f"run-{index}") is None, f"run-{index} was kept"
 
-    runs.async_release()
+    runs.async_stop()
+
+
+async def _guarded_actions(
+    hass: HomeAssistant, options: dict | None = None
+) -> list[str]:
+    """Put the condition inside an action sequence, where the docs send people.
+
+    That placement is the one that matters for a forced run, and it is also
+    where the automation's own context is closest to hand.
+    """
+    ran: list[str] = []
+
+    # Spook starts this in its own setup, and it has to be running before the
+    # automations do: a condition inside an action sequence is only built once
+    # that sequence runs, which is after the automation announced itself.
+    async_setup_automation_runs(hass)
+
+    async def _mark(call) -> None:  # noqa: ANN001
+        ran.append(call.data["verdict"])
+
+    hass.services.async_register("test", "mark", _mark)
+
+    assert await async_setup_component(
+        hass, "input_boolean", {"input_boolean": {"switch": None}}
+    )
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "alias": "upstream",
+                    "trigger": {"platform": "event", "event_type": "flip"},
+                    "action": [
+                        {
+                            "action": "input_boolean.turn_on",
+                            "target": {"entity_id": "input_boolean.switch"},
+                        }
+                    ],
+                },
+                {
+                    "alias": "asker",
+                    "trigger": [
+                        {"platform": "event", "event_type": "ask"},
+                        {
+                            "platform": "state",
+                            "entity_id": "input_boolean.switch",
+                            "to": "on",
+                        },
+                    ],
+                    "action": [
+                        {
+                            "if": [
+                                {
+                                    "condition": "spook.triggered_by_automation",
+                                    **({"options": options} if options else {}),
+                                }
+                            ],
+                            "then": [
+                                {"action": "test.mark", "data": {"verdict": "passed"}}
+                            ],
+                            "else": [
+                                {"action": "test.mark", "data": {"verdict": "failed"}}
+                            ],
+                        }
+                    ],
+                },
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+    return ran
+
+
+async def test_it_does_not_count_the_automation_doing_the_asking(
+    hass: HomeAssistant,
+) -> None:
+    """Inside an action sequence the run's own context is the nearest one.
+
+    The register knows it, because the automation announced itself on the way
+    in. Counting it would make this pass for a bare event, a schedule or a
+    person, which is the opposite of what it is for.
+    """
+    ran = await _guarded_actions(hass)
+
+    hass.bus.async_fire("ask")
+    await hass.async_block_till_done()
+
+    assert ran == ["failed"], "counted itself as the automation that fired it"
+
+
+async def test_it_finds_the_upstream_automation_from_inside_the_actions(
+    hass: HomeAssistant,
+) -> None:
+    """Skipping itself must not stop the search at the first context.
+
+    Narrowed to the upstream automation, the nearest context is this run's own
+    and the next one out is the answer. Settling for the first would report no.
+    """
+    ran = await _guarded_actions(hass, {"automation": ["automation.upstream"]})
+
+    hass.bus.async_fire("flip")
+    await hass.async_block_till_done()
+
+    assert ran == ["passed"], "gave up before reaching the automation upstream"

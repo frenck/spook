@@ -16,6 +16,7 @@ from homeassistant.core import (
 )
 from homeassistant.helpers import issue_registry as ir
 
+from .automation_runs import async_setup_automation_runs
 from .const import DOMAIN, LOGGER, PLATFORMS
 from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
 from .integration_linking import link_sub_integrations, unlink_sub_integrations
@@ -108,6 +109,12 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Set up the all entity ids cache invalidation
     entry.async_on_unload(async_setup_all_entity_ids_cache_invalidation(hass))
+
+    # Start noting which automation runs under which context. It has to begin
+    # here rather than when a condition first asks: a condition inside an
+    # action sequence is only built once that sequence runs, by which point
+    # the automation it wants to know about has already been and gone.
+    entry.async_on_unload(async_setup_automation_runs(hass))
 
     # Yay, we didn't got spooked!
     return True

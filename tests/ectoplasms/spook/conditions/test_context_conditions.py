@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from unittest.mock import Mock
 
 from homeassistant.core import Context
 from homeassistant.helpers import config_validation as cv
@@ -21,6 +22,10 @@ from custom_components.spook.ectoplasms.spook.conditions.triggered_by_user impor
     SpookCondition,
 )
 from custom_components.spook.condition import async_get_conditions
+from custom_components.spook.ectoplasms.spook.context import (
+    run_context,
+    source_contexts,
+)
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -193,3 +198,21 @@ async def test_a_bare_person_id_is_not_read_as_letters(hass: HomeAssistant) -> N
     )
     assert condition._async_check(variables={"context": Context(user_id=user_id)})
     assert not condition._async_check(variables={"context": Context(user_id="p")})
+
+
+def test_a_context_shaped_like_a_mapping_is_ignored() -> None:
+    """A rendered template hands over a mapping, not a `Context`.
+
+    Both callers read attributes off whatever comes out, so anything that is
+    not a real context has to be dropped rather than reached into.
+    """
+    as_a_mapping = {"id": "an-id", "parent_id": None, "user_id": "somebody"}
+
+    assert not list(source_contexts({"context": as_a_mapping}))
+    assert run_context({"context": as_a_mapping}) is None
+
+    # And a real one alongside it still comes through.
+    real = Context(user_id="somebody")
+    variables = {"context": as_a_mapping, "trigger": {"event": Mock(context=real)}}
+    assert list(source_contexts(variables)) == [real]
+    assert run_context(variables) is real

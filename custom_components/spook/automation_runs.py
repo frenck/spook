@@ -31,6 +31,12 @@ class AutomationRuns:
     The context an automation runs under is the same one its actions write
     with, and it survives a script in between, so an automation reacting to
     that change finds it on `trigger.to_state.context`.
+
+    Listening starts when Spook does, not when a condition first asks. A
+    condition sitting inside an action sequence is only built once that
+    sequence runs, which is after the automation announced itself, so a
+    register that started then would have missed the very run being asked
+    about and would answer "no" to everything.
     """
 
     def __init__(self, hass: HomeAssistant) -> None:
@@ -38,26 +44,23 @@ class AutomationRuns:
         self._hass = hass
         self._by_context_id: LRU = LRU(CACHE_SIZE)
         self._unsub: CALLBACK_TYPE | None = None
-        self._users = 0
 
     @callback
-    def async_acquire(self) -> None:
-        """Start listening, if nobody was listening yet."""
-        self._users += 1
+    def async_start(self) -> CALLBACK_TYPE:
+        """Start listening, and return the way to stop."""
         if self._unsub is None:
             self._unsub = self._hass.bus.async_listen(
                 EVENT_AUTOMATION_TRIGGERED, self._async_automation_ran
             )
+        return self.async_stop
 
     @callback
-    def async_release(self) -> None:
-        """Stop listening once the last user is done."""
-        self._users = max(0, self._users - 1)
-        if self._users or self._unsub is None:
-            return
+    def async_stop(self) -> None:
+        """Stop listening and let go of what was remembered."""
+        if self._unsub is not None:
+            self._unsub()
+            self._unsub = None
 
-        self._unsub()
-        self._unsub = None
         self._by_context_id.clear()
 
     @callback
@@ -74,8 +77,15 @@ class AutomationRuns:
 
 @callback
 def async_get_automation_runs(hass: HomeAssistant) -> AutomationRuns:
-    """Return the shared register, making it if this is the first ask."""
+    """Return the shared register, starting it if this is the first ask."""
     if (runs := hass.data.get(DATA_AUTOMATION_RUNS)) is None:
         runs = AutomationRuns(hass)
         hass.data[DATA_AUTOMATION_RUNS] = runs
+        runs.async_start()
     return runs
+
+
+@callback
+def async_setup_automation_runs(hass: HomeAssistant) -> CALLBACK_TYPE:
+    """Start remembering automation runs, and return the way to stop."""
+    return async_get_automation_runs(hass).async_start()
