@@ -32,3 +32,9 @@ Passes when this automation or script has not run within a given time, so it doe
 Passes a set percentage of the time, chosen at random on every check. For when the same thing every evening gets boring. _#coinflip_
 
 `spook.chance`, [documentation](other-features#chance) 📚
+
+## Triggered by an automation
+
+Passes when another automation set this run going, directly or through a script. Can be narrowed to particular automations. _#automation_ _#context_
+
+`spook.triggered_by_automation`, [documentation](other-features#triggered-by-an-automation) 📚

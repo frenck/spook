@@ -27,3 +27,12 @@ cooldown:
       example: "00:05:00"
       selector:
         duration:
+triggered_by_automation:
+  fields:
+    automation:
+      required: false
+      example: automation.goodnight
+      selector:
+        entity:
+          domain: automation
+          multiple: true

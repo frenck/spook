@@ -17,10 +17,12 @@ from homeassistant.const import (
     EVENT_HOMEASSISTANT_STARTED,
     RESTART_EXIT_CODE,
 )
-from homeassistant.core import CoreState
+from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
+from homeassistant.core import Context, CoreState
 from homeassistant.helpers import issue_registry as ir
 
 from custom_components import spook
+from custom_components.spook.automation_runs import async_get_automation_runs
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.integration_linking import (
     link_sub_integrations,
@@ -141,6 +143,58 @@ async def test_setup_entry_loads_and_unloads(
     await hass.async_block_till_done()
 
     assert entry.state is ConfigEntryState.NOT_LOADED
+
+
+async def test_setup_entry_starts_and_stops_the_automation_run_register(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the config entry owns the automation run register.
+
+    A condition inside an action sequence is only built once that sequence
+    runs, which is after the automation announced itself, so the register has
+    to be listening before any of that. Nothing else in the suite proves the
+    entry is what starts it: the condition tests all have a register running
+    for their own reasons.
+    """
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup during the lifecycle smoke test."""
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_noop)
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+
+    assert EVENT_AUTOMATION_TRIGGERED not in hass.bus.async_listeners()
+
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert EVENT_AUTOMATION_TRIGGERED in hass.bus.async_listeners()
+
+    hass.bus.async_fire(
+        EVENT_AUTOMATION_TRIGGERED,
+        {"entity_id": "automation.goodnight"},
+        context=Context(id="a-run"),
+    )
+    await hass.async_block_till_done()
+
+    runs = async_get_automation_runs(hass)
+    assert runs.async_which("a-run") == "automation.goodnight"
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert EVENT_AUTOMATION_TRIGGERED not in hass.bus.async_listeners()
+    assert runs.async_which("a-run") is None, "kept remembering after unloading"
 
 
 async def test_unload_after_start_does_not_remove_fired_one_time_listeners(
