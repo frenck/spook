@@ -306,7 +306,7 @@ Template test function
 Trigger
 : A trigger is what sets an {term}`automation <automation>` going. Something happens, a state changes, a time comes round, an event is fired, and the automation runs. An automation can have several, and any one of them firing is enough.
 : A trigger is not a {term}`condition <condition>`. A trigger is a moment; a condition is a question asked at that moment.
-: {term}`Integrations <integration>` can provide their own triggers, which is how Spook adds some. Those are named after the integration providing them, like `sun.sunset` or `spook.sequence`, while the ones built into Home Assistant itself, `state` or `time`, carry no prefix at all.
+: {term}`Integrations <integration>` can provide their own triggers, which is how Spook adds some. Newer ones are named after the integration and the thing they fire on, like `sun.sunset` or `spook.sequence`. Older ones are named after the integration alone and take the detail as an option, like `mqtt` or `sun` with an `event`. Both spellings work.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/automation/trigger/)
 :::
 

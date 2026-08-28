@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from homeassistant.core import Context
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import selector, trigger as trigger_helper
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
@@ -666,3 +667,123 @@ async def test_a_reset_that_cannot_attach_is_reported(
     await hass.async_block_till_done()
 
     assert "nothing will abandon a run under way" in caplog.text
+
+
+async def test_a_deadline_only_ends_the_run_it_was_set_for(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A due deadline waits for the lock like everything else.
+
+    Built deliberately, because the interleaving is narrow and only the narrow
+    version shows anything. A deadline abandoning a run that has not started
+    yet leaves exactly what it found, so what has to be arranged is a deadline
+    from a finished run arriving after the next one has already got somewhere.
+
+    Waiters on a lock are served in order, so holding it and queueing three
+    things behind it puts them in that order every time: the step that
+    completes the first run, the first step of the second, and then the stale
+    deadline.
+    """
+    await _reset_entities(hass)
+    validated = await SpookTrigger.async_validate_config(
+        hass,
+        {"options": {"steps": [DOOR, MOTION], "timeout": {"seconds": 30}}},
+    )
+    completed: list[list[dict]] = []
+
+    watcher = sequence_module._SequenceWatcher(  # noqa: SLF001
+        hass,
+        sequence_module._Sequence(  # noqa: SLF001
+            steps=validated["options"]["steps"],
+            reset=[],
+            timeout=validated["options"]["timeout"],
+        ),
+        lambda collected, _duration, _context: completed.append(collected),
+    )
+    stop = await watcher.async_start()
+
+    try:
+        # A run starts, so a deadline is set for it.
+        await watcher._async_step_fired(0, {"trigger": {}}, None)  # noqa: SLF001
+        assert watcher._run.unsub_timeout is not None  # noqa: SLF001
+
+        await watcher._lock.acquire()  # noqa: SLF001
+
+        # The last step of that run lands, and waits for the lock.
+        landing = hass.async_create_task(
+            watcher._async_step_fired(1, {"trigger": {}}, None)  # noqa: SLF001
+        )
+        await asyncio.sleep(0)
+
+        # So does the first step of the run after it.
+        next_run = hass.async_create_task(
+            watcher._async_step_fired(0, {"trigger": {}}, None)  # noqa: SLF001
+        )
+        await asyncio.sleep(0)
+
+        # And only then does the first run's deadline come due, joining the
+        # back of the queue.
+        freezer.tick(timedelta(seconds=31))
+        async_fire_time_changed(hass, dt_util.utcnow() + timedelta(seconds=31))
+        await asyncio.sleep(0)
+
+        watcher._lock.release()  # noqa: SLF001
+        async with asyncio.timeout(5):
+            await landing
+            await next_run
+        await hass.async_block_till_done()
+
+        assert len(completed) == 1, "the first run did not complete"
+        assert watcher._run.armed == 1, (  # noqa: SLF001
+            "a finished run's deadline abandoned the run that followed it"
+        )
+        assert len(watcher._run.collected) == 1  # noqa: SLF001
+    finally:
+        stop()
+        await hass.async_block_till_done()
+
+
+async def test_a_first_step_that_cannot_attach_is_refused(
+    hass: HomeAssistant,
+) -> None:
+    """An automation that can never fire must not look healthy.
+
+    Refusing is what gets Home Assistant to mark it unavailable. A line in the
+    log alone would leave it enabled, silent, and indistinguishable from one
+    that is simply waiting.
+    """
+    await _reset_entities(hass)
+    validated = await SpookTrigger.async_validate_config(
+        hass, {"options": {"steps": [DOOR, MOTION], "reset": [DISARMED]}}
+    )
+
+    watcher = sequence_module._SequenceWatcher(  # noqa: SLF001
+        hass,
+        sequence_module._Sequence(  # noqa: SLF001
+            steps=validated["options"]["steps"],
+            reset=validated["options"]["reset"],
+            timeout=None,
+        ),
+        lambda *_args: None,
+    )
+
+    real = trigger_helper.async_initialize_triggers
+
+    async def _steps_fail(*args: Any, **kwargs: Any):  # noqa: ANN202
+        if args[4].startswith("step"):
+            return None
+        return await real(*args, **kwargs)
+
+    with (
+        patch.object(
+            sequence_module.trigger_helper, "async_initialize_triggers", _steps_fail
+        ),
+        pytest.raises(HomeAssistantError, match="first step"),
+    ):
+        await watcher.async_start()
+
+    # And it took the reset triggers back down on its way out, because nobody
+    # was handed a way to do it.
+    assert watcher._unsub_reset is None, "the reset triggers were left attached"  # noqa: SLF001
+    await hass.async_block_till_done()
