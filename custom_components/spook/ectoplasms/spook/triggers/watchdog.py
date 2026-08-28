@@ -94,9 +94,16 @@ class _Watchdog:
 
     async def async_start(self) -> CALLBACK_TYPE:
         """Listen for both halves, and hand back the way to stop."""
+        # The expected half goes on first, and the order is not arbitrary.
+        # Attaching suspends, so whichever goes on second leaves a window where
+        # the first is already listening. Arming in that window would start a
+        # watch with nothing listening for what it is waiting for, and the
+        # thing arriving would be missed and barked about. The other way round
+        # is harmless, because the expected trigger arriving while nothing is
+        # armed is inert by design.
         for configs, action, name in (
-            (self._watch.arm, self._async_armed, "the arming triggers"),
             (self._watch.expect, self._async_expected, "the expected triggers"),
+            (self._watch.arm, self._async_armed, "the arming triggers"),
         ):
             unsub = await async_attach_nested(
                 self._hass,

@@ -471,3 +471,60 @@ async def test_barking_ends_the_watch(
     finally:
         stop()
         await hass.async_block_till_done()
+
+
+async def test_nothing_is_missed_while_the_halves_are_attaching(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Attaching suspends, so one half listens before the other does.
+
+    Arming in that window would start a watch with nothing listening for what
+    it waits for, and the thing arriving would be missed and barked about. So
+    the expected half goes on first, and this drives both events through the
+    window to say so.
+    """
+    await _reset(hass)
+    validated = await SpookTrigger.async_validate_config(
+        hass,
+        {"options": {"arm": [DOOR], "expect": [MOTION], "within": {"minutes": 2}}},
+    )
+    options = validated["options"]
+    barks: list[dict] = []
+
+    watchdog = watchdog_module._Watchdog(
+        hass,
+        watchdog_module._Watch(
+            arm=options["arm"], expect=options["expect"], within=options["within"]
+        ),
+        barks.append,
+    )
+
+    real = trigger_helper.async_initialize_triggers
+    attached = 0
+
+    async def _busy_window(*args: Any, **kwargs: Any):  # noqa: ANN202
+        nonlocal attached
+        unsub = await real(*args, **kwargs)
+        attached += 1
+
+        if attached == 1:
+            # One half is listening and the other is not. Both halves of a
+            # perfectly ordinary run happen right now.
+            hass.states.async_set("binary_sensor.door", "on")
+            hass.states.async_set("binary_sensor.motion", "on")
+            await hass.async_block_till_done()
+
+        return unsub
+
+    with patch.object(
+        trigger_nesting.trigger_helper, "async_initialize_triggers", _busy_window
+    ):
+        stop = await watchdog.async_start()
+
+    try:
+        await _wait_out(hass, freezer)
+        assert not barks, "it barked about something it was not listening for"
+    finally:
+        stop()
+        await hass.async_block_till_done()
