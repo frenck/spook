@@ -17,6 +17,7 @@ import voluptuous as vol
 from custom_components.spook.condition_watching import (
     BACKSTOP,
     CONTEXT_DEPENDENT,
+    _condition_types,
     async_condition_watcher,
     async_validate_condition,
 )
@@ -232,8 +233,35 @@ async def test_a_context_dependent_condition_is_refused(hass: HomeAssistant) -> 
     accepting it would be a wait that never ends and a trigger that never
     fires, with nothing in the log about it.
     """
-    with pytest.raises(vol.Invalid, match="no run here to ask about"):
+    with pytest.raises(vol.Invalid, match="no run here"):
         await async_validate_condition(hass, {"condition": "trigger", "id": "abc"})
+
+
+def test_the_walk_only_descends_through_and_or_not() -> None:
+    """Only `and`, `or` and `not` hold conditions. The rest is payload.
+
+    Walked straight rather than through `async_validate_condition`, because no
+    condition that exists today carries a nested mapping this could trip over.
+    Which is the point: the walk mirrors how Home Assistant reads a condition
+    tree, so a payload that happens to hold a `condition` key stays payload if
+    one ever does.
+    """
+    types = set(
+        _condition_types(
+            {
+                "condition": "and",
+                "conditions": [
+                    GATE,
+                    {
+                        "condition": "made.up",
+                        "options": {"payload": {"condition": "trigger"}},
+                    },
+                ],
+            }
+        )
+    )
+
+    assert types == {"and", "state", "made.up"}
 
 
 async def test_a_context_dependent_condition_is_found_when_nested(
@@ -272,4 +300,67 @@ def test_every_spook_condition_is_accounted_for() -> None:
 
         assert reads_variables == (name in CONTEXT_DEPENDENT), (
             f"{name} reads variables but is not in CONTEXT_DEPENDENT, or the reverse"
+        )
+
+
+async def test_a_template_reaching_into_the_run_is_refused(
+    hass: HomeAssistant,
+) -> None:
+    """`trigger` inside a template is the same problem in a disguise.
+
+    Measured: checked without variables it raises, the watcher reads that as
+    false, and the whole thing sits there. So it is refused up front instead.
+    """
+    with pytest.raises(vol.Invalid, match="reaches for trigger"):
+        await async_validate_condition(
+            hass,
+            {"condition": "template", "value_template": "{{ trigger.id == 'abc' }}"},
+        )
+
+
+async def test_a_template_that_only_mentions_the_word_is_fine(
+    hass: HomeAssistant,
+) -> None:
+    """Which is why Jinja is asked rather than the text searched.
+
+    `sensor.trigger_count` has `trigger` in the name, and the template reaches
+    for `states`, not for anything a run provides.
+    """
+    config = await async_validate_condition(
+        hass,
+        {
+            "condition": "template",
+            "value_template": "{{ states('sensor.trigger_count') | int(0) > 3 }}",
+        },
+    )
+
+    assert config["condition"] == "template"
+
+
+async def test_the_other_run_scoped_names_are_refused_too(
+    hass: HomeAssistant,
+) -> None:
+    """A run hands out `this`, `repeat` and `wait` as well."""
+    for name in ("this", "repeat", "wait"):
+        with pytest.raises(vol.Invalid, match=f"reaches for {name}"):
+            await async_validate_condition(
+                hass,
+                {
+                    "condition": "template",
+                    "value_template": f"{{{{ {name}.whatever is not none }}}}",
+                },
+            )
+
+
+async def test_a_run_scoped_name_is_found_behind_an_assignment(
+    hass: HomeAssistant,
+) -> None:
+    """Jinja knows what the template reaches for, not just what it prints."""
+    with pytest.raises(vol.Invalid, match="reaches for trigger"):
+        await async_validate_condition(
+            hass,
+            {
+                "condition": "template",
+                "value_template": "{% set fired = trigger %}{{ fired is not none }}",
+            },
         )

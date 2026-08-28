@@ -296,7 +296,7 @@ async def test_a_context_dependent_condition_is_refused(hass: HomeAssistant) -> 
     """
     _register(hass)
 
-    with pytest.raises(HomeAssistantError, match="no run here to ask about"):
+    with pytest.raises(HomeAssistantError, match="no run here"):
         async with asyncio.timeout(5):
             await hass.services.async_call(
                 DOMAIN,

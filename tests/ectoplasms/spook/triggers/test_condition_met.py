@@ -239,4 +239,4 @@ async def test_a_context_dependent_condition_takes_down_its_automation(
     await hass.async_block_till_done()
 
     assert hass.states.get("automation.hopeful").state == "unavailable"
-    assert "no run here to ask about" in caplog.text
+    assert "no run here" in caplog.text

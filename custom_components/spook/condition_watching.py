@@ -5,9 +5,11 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+import jinja2
+from jinja2 import meta as jinja_meta
 import voluptuous as vol
 
-from homeassistant.const import CONF_CONDITION
+from homeassistant.const import CONF_CONDITION, CONF_CONDITIONS
 from homeassistant.core import callback
 from homeassistant.exceptions import ConditionError
 from homeassistant.helpers import condition, config_validation as cv
@@ -15,6 +17,7 @@ from homeassistant.helpers.event import (
     async_track_state_change_event,
     async_track_time_interval,
 )
+from homeassistant.helpers.template import Template
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterator
@@ -38,8 +41,11 @@ BACKSTOP = timedelta(seconds=30)
 
 # Conditions that answer about the run they are asked in: which trigger fired,
 # which automation is running, who pressed the button. Watching is asking over
-# and over outside any run at all, so there is nothing for them to answer and
-# they say no every time. Quietly, which is why they are refused instead.
+# and over outside any run at all, so the answer means nothing here. Measured
+# with no run: `trigger`, `spook.triggered_by_automation` and
+# `spook.triggered_by_user` say no every time, and `spook.cooldown`,
+# `spook.quota` and `spook.not_triggered_by_user` say yes every time. Both are
+# useless and both are quiet about it, which is why these are refused.
 CONTEXT_DEPENDENT = frozenset(
     {
         "trigger",
@@ -51,17 +57,76 @@ CONTEXT_DEPENDENT = frozenset(
     }
 )
 
+# The same trouble a level down. A template condition can be watched, but not
+# when it reaches for something only a run provides. Home Assistant fills these
+# in while an automation or script runs, and nowhere else.
+RUN_SCOPED_NAMES = frozenset({"repeat", "this", "trigger", "wait"})
 
-def _condition_types(config: Any) -> Iterator[str]:
-    """Yield the type of every condition in a config, however deeply nested."""
-    if isinstance(config, dict):
-        if isinstance(kind := config.get(CONF_CONDITION), str):
-            yield kind
+# The condition types that hold other conditions, as Home Assistant has them.
+_NESTING = ("and", "not", "or")
+
+# Bare Jinja, deliberately. Only the shape of a template matters here, not what
+# Home Assistant's filters and globals do, and asking Jinja which names a
+# template reaches for beats searching the text: `states('sensor.trigger_count')`
+# reaches for `states`, not for `trigger`. Verified that none of Home
+# Assistant's template extensions add syntax of their own, so this parses
+# everything they accept.
+_JINJA = jinja2.Environment(
+    extensions=("jinja2.ext.loopcontrols", "jinja2.ext.do"),
+    autoescape=True,
+)
+
+
+def iter_templates(config: Any) -> Iterator[Template]:
+    """Yield every template in a condition config, however deeply nested."""
+    if isinstance(config, Template):
+        yield config
+    elif isinstance(config, dict):
         for value in config.values():
-            yield from _condition_types(value)
+            yield from iter_templates(value)
     elif isinstance(config, list):
         for item in config:
-            yield from _condition_types(item)
+            yield from iter_templates(item)
+
+
+def _condition_types(config: Any) -> Iterator[str]:
+    """Yield the type of every condition in a config.
+
+    Walks the way Home Assistant walks a condition tree: into the `conditions`
+    of an `and`, `or` or `not`, and no further. What a condition carries beyond
+    that is its own payload, and a payload that happens to hold a `condition`
+    key is not a condition.
+    """
+    for item in config if isinstance(config, list) else [config]:
+        if not isinstance(item, dict) or not isinstance(
+            kind := item.get(CONF_CONDITION), str
+        ):
+            continue
+
+        yield kind
+
+        if kind in _NESTING:
+            yield from _condition_types(item.get(CONF_CONDITIONS, []))
+
+
+def _run_scoped_names(config: ConfigType) -> set[str]:
+    """Return the run-scoped names the templates in a condition reach for."""
+    found: set[str] = set()
+
+    for template in iter_templates(config):
+        try:
+            parsed = _JINJA.parse(template.template)
+        except jinja2.TemplateSyntaxError:
+            # Home Assistant has already accepted this template, so a bare
+            # Jinja that chokes on it is this check falling short rather than
+            # the config being wrong. Stay quiet instead of refusing.
+            continue
+
+        found |= RUN_SCOPED_NAMES.intersection(
+            jinja_meta.find_undeclared_variables(parsed)
+        )
+
+    return found
 
 
 class ConditionWatcher:
@@ -177,8 +242,16 @@ async def async_validate_condition(
     if unwatchable := CONTEXT_DEPENDENT.intersection(_condition_types(validated)):
         msg = (
             "Cannot watch a condition that asks about the run it is in: "
-            f"{', '.join(sorted(unwatchable))}. There is no run here to ask about, "
-            "so it would never be true."
+            f"{', '.join(sorted(unwatchable))}. There is no run here, so the "
+            "answer would not mean anything."
+        )
+        raise vol.Invalid(msg)
+
+    if run_scoped := _run_scoped_names(validated):
+        msg = (
+            "Cannot watch a condition whose template reaches for "
+            f"{', '.join(sorted(run_scoped))}, which only a running automation "
+            "or script provides. There is no run here to take it from."
         )
         raise vol.Invalid(msg)
 
