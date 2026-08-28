@@ -16,6 +16,7 @@ from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
 import voluptuous as vol
 
+from custom_components.spook import trigger_nesting
 from custom_components.spook.ectoplasms.spook.triggers import (
     sequence as sequence_module,
 )
@@ -788,4 +789,58 @@ async def test_a_first_step_that_cannot_attach_is_refused(
     # And it took the reset triggers back down on its way out, because nobody
     # was handed a way to do it.
     assert watcher._unsub_reset is None, "the reset triggers were left attached"  # noqa: SLF001
+    await hass.async_block_till_done()
+
+
+async def test_stopping_while_attaching_the_reset_leaves_nothing_behind(
+    hass: HomeAssistant,
+) -> None:
+    """The third attach in this codebase with the same window.
+
+    Two of them were found by review, one after the other, so this one is
+    covered by the same shape of test rather than waiting to be the third.
+    """
+    await _reset_entities(hass)
+    validated = await SpookTrigger.async_validate_config(
+        hass, {"options": {"steps": [DOOR, MOTION], "reset": [DISARMED]}}
+    )
+
+    watcher = sequence_module._SequenceWatcher(  # noqa: SLF001
+        hass,
+        sequence_module._Sequence(  # noqa: SLF001
+            steps=validated["options"]["steps"],
+            reset=validated["options"]["reset"],
+            timeout=None,
+        ),
+        lambda *_args: None,
+    )
+
+    real = trigger_helper.async_initialize_triggers
+    hold = asyncio.Event()
+    attaching = asyncio.Event()
+
+    async def _suspending(*args: Any, **kwargs: Any):  # noqa: ANN202
+        if "reset" in args[4]:
+            attaching.set()
+            await hold.wait()
+        return await real(*args, **kwargs)
+
+    with patch.object(
+        trigger_nesting.trigger_helper, "async_initialize_triggers", _suspending
+    ):
+        starting = hass.async_create_task(watcher.async_start())
+        async with asyncio.timeout(5):
+            await attaching.wait()
+
+        watcher.async_stop()
+
+        hold.set()
+        async with asyncio.timeout(5):
+            await starting
+        await hass.async_block_till_done()
+
+    assert watcher._unsub_reset is None, "a reset listener was left behind"  # noqa: SLF001
+    assert watcher._run.unsub_step is None, "a step listener was left behind"  # noqa: SLF001
+
+    watcher.async_stop()
     await hass.async_block_till_done()

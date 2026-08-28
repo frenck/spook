@@ -125,13 +125,22 @@ class _SequenceWatcher:
         early is missed, and ignoring them while idle costs nothing.
         """
         if self._sequence.reset:
-            self._unsub_reset = await async_attach_nested(
+            unsub_reset = await async_attach_nested(
                 self._hass,
                 self._sequence.reset,
                 self._async_reset_fired,
                 "the reset triggers of a sequence trigger",
                 "so nothing will abandon a run under way",
             )
+
+            if self._stopped:
+                # Stopped while this was suspended, the same window every
+                # attach in Spook has. Nobody is holding the handle any more.
+                if unsub_reset is not None:
+                    unsub_reset()
+                return self.async_stop
+
+            self._unsub_reset = unsub_reset
 
         await self._async_arm(0)
 
