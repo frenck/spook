@@ -11,16 +11,20 @@ silently.
 # pylint: disable=protected-access,too-few-public-methods,wrong-import-order
 from __future__ import annotations
 
+from contextlib import contextmanager
 from typing import TYPE_CHECKING
 from types import SimpleNamespace
+from unittest.mock import patch
 
 from homeassistant.const import EVENT_STATE_CHANGED
-from homeassistant.core import State
+from homeassistant.core import ServiceRegistry, State
+from homeassistant.setup import async_setup_component
 
 from custom_components.spook.action_extraction import (
     async_extract_entities_from_action_config,
     async_extract_entities_from_value,
 )
+from custom_components.spook.entity_filtering import async_get_all_services
 from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_references import (
     SpookRepair,
     extract_entities_from_automation_config,
@@ -30,7 +34,7 @@ from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_refere
 import pytest
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Iterator
 
     from homeassistant.core import HomeAssistant
 
@@ -250,6 +254,9 @@ async def test_event_trigger_type_reference_is_not_reported_unknown(
     )
     repair = SpookRepair(hass)
     repair._known_entity_ids = {"timer.hot_tub"}
+    # Standing in for `_async_setup_inspection`: the real service set, so
+    # action names are still told apart from entity ids.
+    repair._known_services = async_get_all_services(hass)
 
     assert await repair._async_compute_unknown_references(entity) == set()
 
@@ -499,6 +506,9 @@ async def test_plural_condition_entity_is_reported_unknown(
     )
     repair = SpookRepair(hass)
     repair._known_entity_ids = set()
+    # Standing in for `_async_setup_inspection`: the real service set, so
+    # action names are still told apart from entity ids.
+    repair._known_services = async_get_all_services(hass)
 
     assert await repair._async_compute_unknown_references(entity) == {
         "input_boolean.snooze_uptime_alerts"
@@ -597,3 +607,145 @@ async def test_state_only_entity_update_does_not_recheck_automation_repairs(
     assert calls == 0
 
     await repair.async_deactivate()
+
+
+def _templated_actions(count: int) -> list[dict]:
+    """Return an action list with `count` steps, each holding templates."""
+    return [
+        {
+            "action": "light.turn_on",
+            "target": {"entity_id": "{{ 'light.kitchen' }}"},
+            "data": {
+                "brightness": "{{ states('sensor.brightness') | int(0) }}",
+                "transition": "{{ states('sensor.transition') | int(0) }}",
+            },
+        }
+    ] * count
+
+
+@contextmanager
+def _counting_service_lookups() -> Iterator[list[int]]:
+    """Count how often the full service registry gets flattened.
+
+    Counted on `ServiceRegistry.async_services`, the expensive call inside
+    `async_get_all_services`, rather than on the helper: several modules import
+    that helper by name, so patching one of them would miss the others.
+    """
+    counted = [0]
+    real = ServiceRegistry.async_services
+
+    def counting(self: ServiceRegistry) -> dict:
+        counted[0] += 1
+        return real(self)
+
+    with patch.object(ServiceRegistry, "async_services", counting):
+        yield counted
+
+
+async def test_the_service_set_is_not_rebuilt_per_template(
+    hass: HomeAssistant,
+) -> None:
+    """Building it flattens every service, so it must not follow the config.
+
+    It used to be rebuilt once per template string, which put the cost of a
+    repair inspection in proportion to how many templates the automations
+    happened to contain. Twenty times for one automation, measured.
+    """
+    with _counting_service_lookups() as counted:
+        await extract_entities_from_automation_config(
+            hass, {"action": _templated_actions(1)}
+        )
+        for_one = counted[0]
+
+        counted[0] = 0
+        await extract_entities_from_automation_config(
+            hass, {"action": _templated_actions(20)}
+        )
+        for_twenty = counted[0]
+
+    assert for_twenty == for_one, (
+        f"{for_one} rebuild(s) for one action, {for_twenty} for twenty"
+    )
+
+
+async def test_one_inspection_builds_the_service_set_once(
+    hass: HomeAssistant,
+) -> None:
+    """It is the same answer for every automation in one pass.
+
+    Cached in `_async_setup_inspection` next to the known entity ids, so
+    adding automations does not add rebuilds.
+    """
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    entity = MockAutomationEntity(
+        raw_config={"action": _templated_actions(5)},
+        referenced_entities=set(),
+    )
+
+    with _counting_service_lookups() as counted:
+        for _ in range(10):
+            await repair._async_compute_unknown_references(entity)
+
+    assert counted[0] == 0, f"{counted[0]} rebuild(s) while inspecting ten automations"
+
+
+async def test_a_service_name_in_a_template_survives_the_hand_down(
+    hass: HomeAssistant,
+) -> None:
+    """The set is handed down to be used, not just to be built once.
+
+    A service name written in a template looks exactly like an entity id, and
+    the only thing that tells them apart is this set. Handing down an empty
+    one would go unnoticed by anything that only counts how often it is built.
+    """
+    assert await async_setup_component(hass, "input_boolean", {})
+    await hass.async_block_till_done()
+
+    entities = await extract_entities_from_automation_config(
+        hass,
+        {
+            "action": [
+                {
+                    "action": "input_boolean.toggle",
+                    "data": {
+                        "which": (
+                            "{{ states('input_boolean.gate') }}"
+                            "{{ 'input_boolean.toggle' }}"
+                        ),
+                    },
+                }
+            ],
+        },
+    )
+
+    assert entities == {"input_boolean.gate"}, "the service name was not filtered out"
+
+
+async def test_the_action_walker_filters_service_names_without_being_told(
+    hass: HomeAssistant,
+) -> None:
+    """A caller that hands down nothing still gets the filtering.
+
+    Which is the other half: the walker builds the set once itself when it is
+    not given one, so an empty set is never what the filtering runs against.
+    """
+    assert await async_setup_component(hass, "input_boolean", {})
+    await hass.async_block_till_done()
+
+    entities = await async_extract_entities_from_action_config(
+        hass,
+        [
+            {
+                "action": "input_boolean.toggle",
+                "data": {
+                    "which": (
+                        "{{ states('input_boolean.gate') }}{{ 'input_boolean.toggle' }}"
+                    ),
+                },
+            }
+        ],
+    )
+
+    assert entities == {"input_boolean.gate"}, "the service name was not filtered out"
