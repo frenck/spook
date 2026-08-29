@@ -14,6 +14,7 @@ never to replace it.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import re
 from typing import Any
 
 from homeassistant.const import ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
@@ -21,6 +22,11 @@ from homeassistant.const import ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
 from .template_extraction import is_template_string
 
 # Direct reference keys, mapped to their reference type.
+# What the device registry hands out: `random_uuid_hex`, so 32 hex characters.
+# Should that ever change, this errs towards reporting less rather than
+# reporting a good automation as broken.
+_DEVICE_REGISTRY_ID = re.compile(r"[0-9a-f]{32}")
+
 _REFERENCE_KEYS = (
     "area_id",
     "device_id",
@@ -85,8 +91,20 @@ def _walk(config: Any, targets: ExtractedTargets) -> None:
         return
 
     for key in _REFERENCE_KEYS:
-        if key in config:
-            getattr(targets, f"{key}s").update(_collect_ids(config[key]))
+        if key not in config:
+            continue
+
+        ids = _collect_ids(config[key])
+
+        if key == "device_id":
+            # Some integrations take a `device_id` of their own making as
+            # plain action data, RFLink's protocol IDs among them, and those
+            # are not registry IDs and never will be. Reporting one as a
+            # missing device would be a repair about a perfectly good
+            # automation, which is worse than missing a real one.
+            ids = {value for value in ids if _DEVICE_REGISTRY_ID.fullmatch(value)}
+
+        getattr(targets, f"{key}s").update(ids)
 
     for key, value in config.items():
         if key in _EXCLUDED_KEYS:
