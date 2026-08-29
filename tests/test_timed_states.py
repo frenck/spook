@@ -1937,3 +1937,199 @@ async def test_one_disabled_across_a_restart_keeps_its_record(
     assert timed_states.async_until(SLEEPER) == until
 
     timed_states.async_stop()
+
+
+async def test_a_failed_hold_the_other_way_leaves_the_first_one_standing(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Asking for the opposite direction writes over the record before it moves.
+
+    So a call that then fails has already replaced a hold that is still true:
+    the automation is exactly where the older one put it. Reading that as "it
+    never moved, so forget it" would take the older hold down with it and
+    leave the automation there for good.
+    """
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    snoozed_until = timed_states.async_until(SLEEPER)
+    assert hass.states.get(SLEEPER).state == "off"
+
+    with (
+        patch.object(
+            AutomationEntity,
+            "async_turn_on",
+            side_effect=HomeAssistantError("no"),
+        ),
+        pytest.raises(HomeAssistantError),
+    ):
+        await timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_ON)
+
+    assert timed_states.async_until(SLEEPER) == snoozed_until, (
+        "the failed call took the snooze it never replaced down with it"
+    )
+
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "on", "and nothing was waiting on it"
+
+    timed_states.async_stop()
+
+
+async def test_a_failed_hold_puts_back_a_wait_that_ran_out_meanwhile(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The older hold's wait can come due while the newer call is failing.
+
+    It finds a record that is not its own by then and stands down, so putting
+    the older record back is not enough on its own: nothing is waiting on it
+    any more, and the automation would sit there until a restart.
+    """
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    assert hass.states.get(SLEEPER).state == "off"
+
+    trying = asyncio.Event()
+    let_go = asyncio.Event()
+
+    async def _refuse(_self: AutomationEntity, **_kwargs: object) -> None:
+        trying.set()
+        await let_go.wait()
+
+        msg = "no"
+        raise HomeAssistantError(msg)
+
+    with patch.object(AutomationEntity, "async_turn_on", _refuse):
+        failing = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_ON)
+        )
+
+        async with asyncio.timeout(5):
+            await trying.wait()
+
+        # The snooze runs out while that call is stuck.
+        freezer.tick(AN_HOUR + timedelta(minutes=1))
+        async_fire_time_changed(hass)
+
+        let_go.set()
+
+        with contextlib.suppress(HomeAssistantError):
+            async with asyncio.timeout(5):
+                await failing
+
+    await hass.async_block_till_done()
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", (
+        "the snooze was put back with nothing left waiting on it"
+    )
+
+    timed_states.async_stop()
+
+
+async def test_a_move_landing_after_the_hold_that_replaced_it_gives_way(
+    hass: HomeAssistant,
+) -> None:
+    """The newer hold can be finished before the older move even lands.
+
+    Then there is nobody left to put the automation where the newer record
+    says it belongs, and it would sit the wrong way round until that record's
+    deadline. The call that landed late is the one that has to give way.
+    """
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    moving = asyncio.Event()
+    let_go = asyncio.Event()
+    real_turn_on = AutomationEntity.async_turn_on
+
+    async def _held_open(self: AutomationEntity, **kwargs: object) -> None:
+        moving.set()
+        await let_go.wait()
+
+        await real_turn_on(self, **kwargs)
+
+    with patch.object(AutomationEntity, "async_turn_on", _held_open):
+        running = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR, STATE_ON)
+        )
+
+        async with asyncio.timeout(5):
+            await moving.wait()
+
+        # Somebody wants it quiet instead, and gets all the way there while
+        # the first call is still stuck.
+        await timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_OFF)
+        asked_for = timed_states.async_until(SLEEPER)
+
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await running
+
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "off", (
+        "the older call left it running against the hold that replaced it"
+    )
+    assert timed_states.async_until(SLEEPER) == asked_for
+
+    timed_states.async_stop()
+
+
+async def test_a_failed_call_leaves_somebody_elses_record_alone(
+    hass: HomeAssistant,
+) -> None:
+    """A call that fails has to clean up after itself, and no further.
+
+    By the time it fails, its record may already have been replaced by
+    somebody else's, and tidying that away would take a hold that is
+    perfectly good with it.
+    """
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    trying = asyncio.Event()
+    let_go = asyncio.Event()
+
+    async def _refuse(_self: AutomationEntity, **_kwargs: object) -> None:
+        trying.set()
+        await let_go.wait()
+
+        msg = "no"
+        raise HomeAssistantError(msg)
+
+    with patch.object(AutomationEntity, "async_turn_on", _refuse):
+        failing = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR, STATE_ON)
+        )
+
+        async with asyncio.timeout(5):
+            await trying.wait()
+
+        # Somebody asks for the other direction and gets there first.
+        await timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_OFF)
+        asked_for = timed_states.async_until(SLEEPER)
+        assert asked_for is not None
+
+        let_go.set()
+
+        with contextlib.suppress(HomeAssistantError):
+            async with asyncio.timeout(5):
+                await failing
+
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) == asked_for, (
+        "the failed call tidied away a record that was not its own"
+    )
+
+    timed_states.async_stop()

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import asyncio
+import contextlib
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Any
 
@@ -32,6 +33,7 @@ from homeassistant.util.hass_dict import HassKey
 from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
+    from collections.abc import Iterator
     from datetime import datetime, timedelta
 
     from homeassistant.core import CALLBACK_TYPE, Context, Event, HomeAssistant
@@ -108,7 +110,7 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
         self._unsub_watching: CALLBACK_TYPE | None = None
         self._unsub_started: CALLBACK_TYPE | None = None
         self._unsub_registry: CALLBACK_TYPE | None = None
-        self._restoring: set[str] = set()
+        self._moving: dict[str, list[str]] = {}
         self._stopped = False
 
     async def async_start(self) -> CALLBACK_TYPE:
@@ -264,32 +266,11 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
         try:
             await self._async_set(entity_id, holding.state, context)
         except _MOVE_INTERRUPTED:
-            if self._held.get(entity_id) == holding:
-                if self._is_in(entity_id, holding.restore_to):
-                    # Never moved, so there is nothing to put back later.
-                    # Keeping the record would have Spook change an automation
-                    # somebody else changed in the meantime.
-                    self._async_forget(entity_id)
-                else:
-                    # Moved already, by the hold this one was extending. The
-                    # deadline is written down, and a record with nothing
-                    # waiting on it is an automation stuck until a restart: the
-                    # wait it had was let go to make room for this one.
-                    self._async_rearm(entity_id)
-
+            self._async_move_failed(entity_id, holding, held)
             raise
 
         if (current := self._held.get(entity_id)) != holding:
-            if current is None:
-                # Put back by hand between the check above and that call
-                # landing, which cancels the hold. The move went through
-                # anyway, so it is taken back here: leaving it would be an
-                # automation held with nothing left to put it back.
-                await self._async_set(entity_id, holding.restore_to, context)
-
-            # And a record that was replaced rather than dropped belongs to
-            # somebody else's call, which is seeing to the automation itself.
-            # Undoing this move would be undoing theirs.
+            await self._async_give_way(entity_id, holding, current, context)
             return
 
         # And only now the waiting, because a hold short enough to come due
@@ -305,14 +286,89 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
         state: str,
         context: Context | None = None,
     ) -> None:
-        """Put an automation in a state and wait for that to have happened."""
-        await self._hass.services.async_call(
-            AUTOMATION_DOMAIN,
-            SERVICE_TURN_ON if state == STATE_ON else SERVICE_TURN_OFF,
-            {ATTR_ENTITY_ID: entity_id},
-            blocking=True,
-            context=context,
-        )
+        """Put an automation in a state and wait for that to have happened.
+
+        Marked with where it is going while it happens, so the state that
+        comes of it is not read as somebody reaching for the switch. Marking
+        the entity alone would be too much: a person turning it the other way
+        during the call is exactly the thing that has to keep counting, and
+        that is the one an entity-wide mark would swallow.
+        """
+        with self._moving_to(entity_id, state):
+            await self._hass.services.async_call(
+                AUTOMATION_DOMAIN,
+                SERVICE_TURN_ON if state == STATE_ON else SERVICE_TURN_OFF,
+                {ATTR_ENTITY_ID: entity_id},
+                blocking=True,
+                context=context,
+            )
+
+    @contextlib.contextmanager
+    def _moving_to(self, entity_id: str, state: str) -> Iterator[None]:
+        """Note where Spook is putting an automation, for as long as it takes.
+
+        A list rather than one state per automation, because two calls can
+        have a move in flight for the same one and each has to take its own
+        mark back rather than the other's.
+        """
+        moves = self._moving.setdefault(entity_id, [])
+        moves.append(state)
+
+        try:
+            yield
+        finally:
+            moves.remove(state)
+
+            if not moves:
+                self._moving.pop(entity_id, None)
+
+    @callback
+    def _async_move_failed(
+        self,
+        entity_id: str,
+        holding: _Held,
+        before: _Held | None,
+    ) -> None:
+        """Sort out the record for a move that did not happen."""
+        if self._held.get(entity_id) != holding:
+            # Somebody else's record by now, and theirs to look after.
+            return
+
+        if self._is_in(entity_id, holding.restore_to):
+            # Never moved, so this call leaves no trace: the register goes
+            # back to whatever it said before, which is an older hold still
+            # standing or nothing at all. Keeping this one would have Spook
+            # change an automation it never touched.
+            self._async_put_back(entity_id, before)
+            return
+
+        # Moved already, by the hold this one was extending. The deadline is
+        # written down, and a record with nothing waiting on it is an
+        # automation stuck until a restart: the wait it had was let go to make
+        # room for this one.
+        self._async_rearm(entity_id)
+
+    async def _async_give_way(
+        self,
+        entity_id: str,
+        holding: _Held,
+        current: _Held | None,
+        context: Context | None,
+    ) -> None:
+        """Hand the automation over, this call's record having been replaced."""
+        if current is None:
+            # Put back by hand between the last check and the call landing,
+            # which cancels the hold. The move went through anyway, so it is
+            # taken back here: leaving it would be an automation held with
+            # nothing left to put it back.
+            await self._async_set(entity_id, holding.restore_to, context)
+            return
+
+        if not self._is_in(entity_id, current.state):
+            # A newer hold stands, and the automation is not where that one
+            # wants it: this move landed after theirs did and undid it.
+            # Whichever way round they asked for is the one that counts.
+            await self._async_set(entity_id, current.state, context)
 
     @callback
     def _is_in(self, entity_id: str, state: str) -> bool:
@@ -411,12 +467,12 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
     async def _async_restore(self, entity_id: str, held: _Held) -> None:
         """Put an automation back, its time being up.
 
-        The record stays put until the automation is actually back, and is
-        only marked as being seen to. Removing it first and putting it back on
-        failure reads the same most of the time, but not when the failure is
-        the process going away: a cancellation partway leaves nothing written
-        down, and an automation held with nothing written down is the
-        change-nobody-remembers this whole thing exists to prevent.
+        The record stays put until the automation is actually back. Removing
+        it first and putting it back on failure reads the same most of the
+        time, but not when the failure is the process going away: a
+        cancellation partway leaves nothing written down, and an automation
+        held with nothing written down is the change-nobody-remembers this
+        whole thing exists to prevent.
         """
         if self._stopped or self._held.get(entity_id) != held:
             # A second chance is handed to the loop, so both unloading and
@@ -425,10 +481,6 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
             return
 
         self._async_cancel_timer(entity_id)
-
-        # Marked rather than removed, so this call is not read as somebody
-        # putting the automation back by hand.
-        self._restoring.add(entity_id)
 
         try:
             await self._async_set(entity_id, held.restore_to)
@@ -439,8 +491,6 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
                 entity_id,
             )
             return
-        finally:
-            self._restoring.discard(entity_id)
 
         if not self._is_in(entity_id, held.restore_to):
             # Entity services quietly pass over whatever is unavailable and
@@ -501,6 +551,18 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
             self._hass.async_create_task(self._async_save())
 
     @callback
+    def _async_put_back(self, entity_id: str, held: _Held | None) -> None:
+        """Undo a record a call wrote, leaving whatever was there before it."""
+        if held is None:
+            self._async_forget(entity_id)
+            return
+
+        self._held[entity_id] = held
+        self._async_rearm(entity_id)
+        self._async_watch()
+        self._hass.async_create_task(self._async_save())
+
+    @callback
     def _async_forget(self, entity_id: str) -> None:
         """Drop a record, there being no automation left to put back."""
         if self._held.pop(entity_id, None) is None:
@@ -549,7 +611,7 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
 
             return
 
-        if entity_id in self._restoring:
+        if new_state.state in self._moving.get(entity_id, ()):
             # Spook's own doing, which is neither somebody changing their mind
             # nor an automation coming back.
             return
