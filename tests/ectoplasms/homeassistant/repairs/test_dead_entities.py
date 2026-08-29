@@ -4,6 +4,7 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
@@ -15,13 +16,15 @@ from homeassistant.core import State
 from homeassistant.data_entry_flow import FlowResultType
 
 from custom_components.spook.const import DOMAIN
-from custom_components.spook.repairs import DeadEntitiesFixFlow
+from custom_components.spook.repairs import DeadEntitiesFixFlow, async_create_fix_flow
 from custom_components.spook.ectoplasms.homeassistant.repairs.dead_entities import (
     SpookRepair,
 )
 from tests.repair_helpers import async_count_scheduled_inspections
 
 if TYPE_CHECKING:
+    from freezegun.api import FrozenDateTimeFactory
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
 
@@ -299,7 +302,14 @@ async def test_the_fix_clears_out_the_leftover_registrations(
     dead = _register_restored(hass, entity_registry, entry, "dead")
     other = _register_restored(hass, entity_registry, None, "not_this_one")
 
-    flow = DeadEntitiesFixFlow()
+    flow = await async_create_fix_flow(
+        hass,
+        f"dead_entities_{entry.entry_id}",
+        {"dead_entities_config_entry_id": entry.entry_id},
+    )
+    assert isinstance(flow, DeadEntitiesFixFlow), (
+        "the issue would fall back to a plain confirm dialog"
+    )
     flow.hass = hass
     flow.data = {"dead_entities_config_entry_id": entry.entry_id}
 
@@ -384,3 +394,58 @@ async def test_once_the_data_arrives_what_is_still_missing_is_reported(
     assert issue.translation_placeholders
     assert "temperature" in issue.translation_placeholders["entities"]
     assert "wind" not in issue.translation_placeholders["entities"]
+
+
+async def test_the_fix_stands_down_while_the_integration_is_reloading(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Everything of a reloading integration looks missing while that lasts.
+
+    The issue may have been sitting there since before the reload started, so
+    acting on it then would delete entities that are on their way back. The
+    inspection already refuses to look at entries that are not loaded; the fix
+    has to as well.
+    """
+    entry = _loaded_entry(hass)
+    dead = _register_restored(hass, entity_registry, entry, "dead")
+    entry.mock_state(hass, ConfigEntryState.SETUP_RETRY)
+
+    flow = DeadEntitiesFixFlow()
+    flow.hass = hass
+    flow.data = {"dead_entities_config_entry_id": entry.entry_id}
+
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "not_loaded"
+    assert entity_registry.async_get(dead) is not None
+
+
+async def test_an_integration_with_nothing_left_is_reported_in_the_end(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Waiting for a living sibling alone would never report some of these.
+
+    An integration with one entity, or an account whose every device was
+    removed, has nothing living to point at and never would. It gets an hour
+    to produce something, which is longer than any device that pushes on its
+    own schedule takes, and then the silence is taken at face value.
+    """
+    entry = _loaded_entry(hass)
+    _register_restored(hass, entity_registry, entry, "the_only_one")
+    repair = SpookRepair(hass)
+
+    await repair.async_inspect()
+    assert (
+        issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+        is None
+    ), "it gave up on the integration before it had a chance"
+
+    freezer.tick(timedelta(hours=1, minutes=1))
+    await repair.async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.config_entries import ConfigEntryState
@@ -15,14 +16,23 @@ from homeassistant.const import (
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.loader import Integration, async_get_integrations
+from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from datetime import datetime
 
-    from homeassistant.core import Event, State
+    from homeassistant.core import Event, HomeAssistant, State
+
+
+# How long an integration gets to produce its first entity before Spook takes
+# the silence at face value. Devices that push on their own schedule are the
+# slow ones here: a weather station reporting every fifteen minutes is normal,
+# and being wrong about this is worse than being late.
+_LONG_ENOUGH_TO_PUSH = timedelta(hours=1)
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -42,6 +52,16 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_config_entry_changed = True
     automatically_clean_up_issues = True
+
+    #: When each config entry was first seen loaded with nothing to show for
+    #: it. In memory on purpose: a restart is exactly when a push-fed
+    #: integration has not been pushed to yet, so the wait starts over.
+    _loaded_since: dict[str, datetime]
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the repair."""
+        super().__init__(hass)
+        self._loaded_since = {}
 
     async def async_activate(self) -> None:
         """Handle activating the repair."""
@@ -83,12 +103,12 @@ class SpookRepair(AbstractSpookRepair):
         )
 
     @callback
-    def _async_has_living_entities(
+    def _async_had_its_chance(
         self,
         entry_id: str,
         entity_registry: er.EntityRegistry,
     ) -> bool:
-        """Return whether anything of this config entry has actually turned up.
+        """Return whether this config entry has had time to produce anything.
 
         Being loaded is not the same as having data. An integration fed by a
         webhook, Ecowitt among them, sets up in a moment and then waits for
@@ -97,14 +117,20 @@ class SpookRepair(AbstractSpookRepair):
         that would be telling somebody their weather station is gone while it
         is simply between readings.
 
-        One entity that made it is enough to say the data arrived, and that
-        whatever else is still missing is missing for a different reason.
+        One entity that made it settles it at once: the data arrived, and
+        whatever is still missing is missing for another reason. Failing that,
+        the wait below, because an integration whose every entity is genuinely
+        gone would otherwise never be reported at all.
         """
-        return any(
+        if any(
             (state := self.hass.states.get(entry.entity_id)) is not None
             and not state.attributes.get(ATTR_RESTORED)
             for entry in er.async_entries_for_config_entry(entity_registry, entry_id)
-        )
+        ):
+            return True
+
+        first_seen = self._loaded_since.setdefault(entry_id, dt_util.utcnow())
+        return dt_util.utcnow() - first_seen >= _LONG_ENOUGH_TO_PUSH
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
@@ -130,7 +156,7 @@ class SpookRepair(AbstractSpookRepair):
             for entry_id in dead_by_entry
             if (entry := self.hass.config_entries.async_get_entry(entry_id)) is not None
             and entry.state is ConfigEntryState.LOADED
-            and self._async_has_living_entities(entry_id, entity_registry)
+            and self._async_had_its_chance(entry_id, entity_registry)
         }
 
         # The name people know an integration by lives in its manifest. A

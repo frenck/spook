@@ -19,6 +19,7 @@ from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntry,
     ConfigEntryChange,
+    ConfigEntryState,
 )
 from homeassistant.const import ATTR_RESTORED, CONF_ENTITIES
 from homeassistant.core import Event, HomeAssistant, callback
@@ -986,6 +987,15 @@ class DeadEntitiesFixFlow(_RemoveOrIgnoreFixFlow):
         returned is not one to delete.
         """
         entry_id = str((self.data or {}).get(self._id_key, ""))
+
+        config_entry = self.hass.config_entries.async_get_entry(entry_id)
+        if config_entry is None or config_entry.state is not ConfigEntryState.LOADED:
+            # Everything of an integration that is reloading or retrying looks
+            # restored while that lasts, and the issue may have been sitting
+            # here since before it started. Deleting then would take entities
+            # that are on their way back.
+            return self.async_abort(reason="not_loaded")
+
         entity_registry = er.async_get(self.hass)
 
         for entry in er.async_entries_for_config_entry(entity_registry, entry_id):
