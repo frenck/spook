@@ -186,12 +186,21 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
                 context=context,
             )
         except HomeAssistantError:
-            # The deadline is written down either way, and a record with
-            # nothing waiting on it is an automation that stays as it is until
-            # a restart. Extending a snooze is where that bites: it is already
-            # off, and the wait it had was let go to make room for this one.
             if self._until.get(entity_id) == deadline:
-                self._async_rearm(entity_id)
+                state = self._hass.states.get(entity_id)
+
+                if state is not None and state.state == STATE_ON:
+                    # Still running, so nothing was snoozed and there is
+                    # nothing to wake later. Keeping the record would have
+                    # Spook turn on an automation that somebody else turned
+                    # off in the meantime.
+                    self._async_forget(entity_id)
+                else:
+                    # Off already, from the snooze this one was extending. The
+                    # deadline is written down, and a record with nothing
+                    # waiting on it is an automation off until a restart: the
+                    # wait it had was let go to make room for this one.
+                    self._async_rearm(entity_id)
 
             raise
 
@@ -306,6 +315,11 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         down, and an automation off with nothing written down is the
         disable-nobody-remembers this whole thing exists to prevent.
         """
+        if self._stopped:
+            # A second chance is handed to a task, and unloading can happen
+            # between that task being made and it getting to run.
+            return
+
         self._async_cancel_timer(entity_id)
 
         # Marked rather than removed, so this wake-up call is not read as
@@ -464,7 +478,12 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         if (until := self._until.get(entity_id)) is None or until > dt_util.utcnow():
             return
 
-        self._hass.async_create_task(self._async_wake(entity_id, until))
+        # Handed to the loop rather than started here and now, so that
+        # unloading in this same breath is seen before anything is turned on.
+        self._hass.async_create_task(
+            self._async_wake(entity_id, until),
+            eager_start=False,
+        )
 
     @callback
     def _async_cancel_timer(self, entity_id: str) -> None:

@@ -404,6 +404,47 @@ async def test_the_caller_is_carried_into_the_turning_off(
     snoozing.async_stop()
 
 
+async def test_a_fresh_snooze_whose_turning_off_fails_leaves_no_record(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Nothing was snoozed, so there is nothing to wake later.
+
+    Keeping the record would have Spook turn on an automation that somebody
+    else turned off in the meantime, which is the one thing it promises not
+    to do.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    with (
+        patch.object(
+            AutomationEntity,
+            "async_turn_off",
+            side_effect=HomeAssistantError("no"),
+        ),
+        pytest.raises(HomeAssistantError),
+    ):
+        await snoozing.async_snooze(SLEEPER, AN_HOUR)
+
+    assert hass.states.get(SLEEPER).state == "on"
+    assert snoozing.async_until(SLEEPER) is None, (
+        "it wrote down a snooze for an automation it never turned off"
+    )
+
+    # Somebody turns it off themselves, and it is not Spook's to turn back on.
+    await hass.services.async_call(
+        "automation", "turn_off", {"entity_id": SLEEPER}, blocking=True
+    )
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "off", (
+        "it woke an automation it had not put to sleep"
+    )
+
+    snoozing.async_stop()
+
+
 async def test_an_extension_whose_turning_off_fails_still_wakes(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
@@ -1012,6 +1053,43 @@ async def test_a_wake_that_finds_nothing_there_tries_again_later(
     assert snoozing.async_until(SLEEPER) is None
 
     snoozing.async_stop()
+
+
+async def test_a_second_chance_queued_at_the_unload_does_nothing(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The second chance is handed to a task, which runs a moment later.
+
+    Unloading in between has to leave that task with nothing to do, or an
+    automation gets turned on by a register nobody is running.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    until = snoozing.async_until(SLEEPER)
+
+    async def _skipped(_self: AutomationEntity, **_kwargs: object) -> None:
+        return
+
+    with patch.object(AutomationEntity, "async_turn_on", _skipped):
+        await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert snoozing.async_until(SLEEPER) == until
+
+    # Back again, which queues the second chance, and gone before it runs.
+    hass.states.async_set(SLEEPER, STATE_UNAVAILABLE)
+    await hass.async_block_till_done()
+    hass.states.async_set(SLEEPER, "off")
+    snoozing.async_stop()
+
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "off", (
+        "it woke an automation after Spook was unloaded"
+    )
+    assert snoozing.async_until(SLEEPER) == until, "and forgot the snooze doing it"
 
 
 async def test_one_that_is_away_is_left_alone_until_it_is_back(
