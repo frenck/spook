@@ -25,6 +25,7 @@ from .repairs import SpookRepairManager
 from .run_history import async_setup_run_history
 from .services import SpookServiceManager
 from .setup_helpers import async_forward_setup_entry
+from .snoozing import async_setup_snoozing
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -78,6 +79,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Forward async_setup_entry to ectoplasms
     await async_forward_setup_entry(hass, entry)
+
+    # Before the services, because `automation.snooze` reaches for this the
+    # moment it is called, and registering the action first leaves a window
+    # where calling it finds nothing there.
+    #
+    # This also picks up automations snoozed before the last restart. An
+    # automation that is off stays off, so without it a snooze that spanned a
+    # restart would be a disable nobody remembers making.
+    entry.async_on_unload(await async_setup_snoozing(hass))
 
     # Set up services
     services = SpookServiceManager(hass)

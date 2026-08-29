@@ -64,6 +64,12 @@ Dynamically remove an entity from an area. _#AaaaandItIsGone_
 
 `homeassistant.remove_entity_from_area`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area), [documentation](areas#remove-an-entity-from-an-area)
 
+## Automation: Snooze
+
+Turns an automation off for a while, and turns it back on when the time is up. It survives a restart, so a snooze does not quietly become a disable. _#automation_ _#quiet_ _#temporary_
+
+`automation.snooze`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze), [documentation](integrations/automation#snooze) 📚
+
 ## Blueprint: Import Blueprint
 
 Downloads and imports an automation/script blueprint, directly from the URL you pass into this action. _#noquestionsasked_

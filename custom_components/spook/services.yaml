@@ -20,6 +20,24 @@ blueprint_import:
       selector:
         text:
 
+automation_snooze:
+  name: Snooze 👻
+  description: >-
+    Turns an automation off for a while, and turns it back on when the time is
+    up. It survives a restart of Home Assistant, so a snooze does not quietly
+    become a disable.
+  target:
+    entity:
+      domain: automation
+  fields:
+    duration:
+      name: Duration
+      description: How long the automation stays off.
+      required: true
+      example: "01:00:00"
+      selector:
+        duration:
+
 homeassistant_create_area:
   name: Create an area 👻
   description: >-
