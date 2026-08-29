@@ -160,6 +160,12 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         self._until[entity_id] = deadline
         await self._async_save()
 
+        if not asleep and not self._is_on(entity_id):
+            # Turned off by somebody else while that was saving, and Spook
+            # does not wake what it did not put to sleep.
+            self._async_forget(entity_id)
+            return
+
         if self._until.get(entity_id) != deadline:
             # Somebody turned the automation on while that was saving, which
             # cancels a snooze. Extending one already asleep is where that can
@@ -187,9 +193,7 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
             )
         except HomeAssistantError:
             if self._until.get(entity_id) == deadline:
-                state = self._hass.states.get(entity_id)
-
-                if state is not None and state.state == STATE_ON:
+                if self._is_on(entity_id):
                     # Still running, so nothing was snoozed and there is
                     # nothing to wake later. Keeping the record would have
                     # Spook turn on an automation that somebody else turned
@@ -223,6 +227,12 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         # this turned it off, leaving it off with nothing to wake it. A
         # deadline that has already passed by this point simply fires at once.
         self._async_rearm(entity_id)
+
+    @callback
+    def _is_on(self, entity_id: str) -> bool:
+        """Return whether an automation is running right now."""
+        state = self._hass.states.get(entity_id)
+        return state is not None and state.state == STATE_ON
 
     @callback
     def async_until(self, entity_id: str) -> datetime | None:
@@ -315,9 +325,10 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         down, and an automation off with nothing written down is the
         disable-nobody-remembers this whole thing exists to prevent.
         """
-        if self._stopped:
-            # A second chance is handed to a task, and unloading can happen
-            # between that task being made and it getting to run.
+        if self._stopped or self._until.get(entity_id) != until:
+            # A second chance is handed to the loop, so both unloading and
+            # somebody turning the automation on can happen between that being
+            # arranged and this getting to run.
             return
 
         self._async_cancel_timer(entity_id)
@@ -343,8 +354,7 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         finally:
             self._waking.discard(entity_id)
 
-        state = self._hass.states.get(entity_id)
-        if state is None or state.state != STATE_ON:
+        if not self._is_on(entity_id):
             # Entity services quietly pass over whatever is unavailable and
             # come back as though all was well, so a wake landing in the
             # middle of a reload turns nothing on. The record stays, and the

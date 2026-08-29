@@ -404,6 +404,93 @@ async def test_the_caller_is_carried_into_the_turning_off(
     snoozing.async_stop()
 
 
+async def test_turning_it_off_while_a_fresh_snooze_saves_gives_it_up(
+    hass: HomeAssistant,
+) -> None:
+    """Spook does not wake what it did not put to sleep.
+
+    A fresh snooze checks the automation is running before it writes anything
+    down, and somebody can turn it off during that write. The turning-off
+    below then changes nothing, and keeping the deadline would have Spook turn
+    on an automation that a person deliberately disabled.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    saving = asyncio.Event()
+    let_go = asyncio.Event()
+    real_save = Store.async_save
+
+    async def _held_open(self: Store, data: dict) -> None:
+        saving.set()
+        await let_go.wait()
+
+        await real_save(self, data)
+
+    with patch.object(Store, "async_save", _held_open):
+        snoozed = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR))
+
+        async with asyncio.timeout(5):
+            await saving.wait()
+
+        await hass.services.async_call(
+            "automation", "turn_off", {"entity_id": SLEEPER}, blocking=True
+        )
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await snoozed
+
+    await hass.async_block_till_done()
+
+    assert snoozing.async_until(SLEEPER) is None, (
+        "it claimed an automation somebody else turned off"
+    )
+
+    snoozing.async_stop()
+
+
+async def test_a_second_chance_overtaken_by_a_person_does_nothing(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The second chance waits its turn, and things happen while it waits.
+
+    Somebody turning the automation on cancels the snooze, and the wake that
+    was queued before that must not go on to hand it back off.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+
+    async def _skipped(_self: AutomationEntity, **_kwargs: object) -> None:
+        return
+
+    with patch.object(AutomationEntity, "async_turn_on", _skipped):
+        await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert snoozing.async_until(SLEEPER) is not None
+
+    # Back again, which queues the second chance, and a person gets there
+    # first.
+    hass.states.async_set(SLEEPER, STATE_UNAVAILABLE)
+    await hass.async_block_till_done()
+    hass.states.async_set(SLEEPER, "off")
+    await hass.services.async_call(
+        "automation", "turn_on", {"entity_id": SLEEPER}, blocking=True
+    )
+
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", (
+        "the queued wake handed it back off against the person who wanted it on"
+    )
+    assert snoozing.async_until(SLEEPER) is None
+
+    snoozing.async_stop()
+
+
 async def test_a_fresh_snooze_whose_turning_off_fails_leaves_no_record(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
@@ -667,6 +754,9 @@ async def test_a_stale_wake_up_call_leaves_the_new_wait_alone(
 
     assert snoozing.async_until(SLEEPER) == later, "it dropped the newer wait"
     assert hass.states.get(SLEEPER).state == "off", "it woke at the old time"
+    assert SLEEPER in snoozing._timers, (
+        "it dropped the newer wait's timer, leaving nothing able to cancel it"
+    )
 
     snoozing.async_stop()
 
