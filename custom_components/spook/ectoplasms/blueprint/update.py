@@ -453,9 +453,15 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         self._attr_name = said.name
         self._attr_title = said.name
-        self._attr_release_url = said.source_url
         self._attr_installed_version = said.fingerprint
         self._attr_latest_version = said.fingerprint
+
+        # Deliberately no `release_url`. Home Assistant would put it in the
+        # state attributes, which every signed-in person can read, and it lets
+        # a blueprint be imported from an address carrying a token or a
+        # username and password. Every one of its own blueprint commands is
+        # admin only, so the address belongs with the release notes, which are
+        # admin only too, and not in the states.
 
     @callback
     def async_seen(self, said: _OnDisk) -> None:
@@ -470,7 +476,6 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._said = said
         self._attr_name = said.name
         self._attr_title = said.name
-        self._attr_release_url = said.source_url
         self._attr_installed_version = said.fingerprint
         self.async_write_ha_state()
 

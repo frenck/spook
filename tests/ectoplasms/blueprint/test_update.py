@@ -98,7 +98,7 @@ async def test_a_blueprint_that_came_from_a_url_gets_an_entity(
 
     state = hass.states.get(_ENTITY)
     assert state is not None
-    assert state.attributes["release_url"] == SOURCE
+    assert state.attributes["title"] == "Spooky motion light"
 
 
 async def test_a_blueprint_written_by_hand_is_left_out(
@@ -1205,3 +1205,28 @@ async def test_installing_clears_what_the_last_look_could_not_do(
 
     assert hass.states.get(_ENTITY).state == "off"
     assert "Could not reach" not in await _entity(hass).async_release_notes()
+
+
+async def test_where_a_blueprint_came_from_is_not_told_to_everybody(
+    hass: HomeAssistant,
+) -> None:
+    """Home Assistant keeps blueprints to admins.
+
+    Every one of its blueprint commands is admin only, and so is asking an
+    update entity for its notes. State attributes are not: anything put there
+    is readable by everybody signed in, and a blueprint can be imported from
+    an address carrying a token or a username and password.
+    """
+    async_write_blueprint(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT,
+        source="https://someone:hunter2@example.com/blueprints/motion.yaml",
+    )
+    await async_set_up(hass)
+
+    assert "hunter2" not in str(hass.states.get(_ENTITY).attributes)
+
+    # Still in front of the people allowed to see it, though.
+    assert "hunter2" in await _entity(hass).async_release_notes()
