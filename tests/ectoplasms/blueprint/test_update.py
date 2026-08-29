@@ -3,6 +3,7 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -18,7 +19,12 @@ import pytest
 import voluptuous as vol
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
-from custom_components.spook.ectoplasms.blueprint.update import _CHECK_INTERVAL
+from custom_components.spook.ectoplasms.blueprint import update as update_module
+from custom_components.spook.ectoplasms.blueprint.update import (
+    _CHECK_INTERVAL,
+    _SPREAD,
+    BlueprintUpdateEntity,
+)
 
 from .conftest import (
     A_SCRIPT_BLUEPRINT,
@@ -27,6 +33,7 @@ from .conftest import (
     ANOTHER_AUTOMATION_BLUEPRINT,
     MOTION_LIGHT,
     MOTION_LIGHT_CHANGED,
+    MOTION_LIGHT_CHANGED_AGAIN,
     MOTION_LIGHT_FROM_THE_FUTURE,
     MOTION_LIGHT_WITH_NEW_INPUT,
     NO_INPUTS,
@@ -41,6 +48,8 @@ from .conftest import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from freezegun.api import FrozenDateTimeFactory
     from pytest_homeassistant_custom_component.typing import (
         MockHAClientWebSocket,
@@ -53,6 +62,8 @@ if TYPE_CHECKING:
 _ENTITY = "update.blueprints_spooky_motion_light"
 _FETCH = "custom_components.spook.ectoplasms.blueprint.update.fetch_blueprint_from_url"
 _BOTH_OF_THEM = 2
+_NOBODY_SAW_IT_COMING = "something nobody saw coming"
+_ENOUGH_ROUNDS_TO_JUDGE = 8
 
 
 def _source_says(raw: str, *, source: str = SOURCE):  # noqa: ANN202
@@ -66,12 +77,13 @@ async def _check(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
     Nothing else brings one on. Blueprints raise no events, so the timer is
     the only thing that ever looks.
     """
-    freezer.tick(_CHECK_INTERVAL + timedelta(minutes=1))
+    # Past the far end of the window a round picks its next moment from, so
+    # this fires whichever moment it happened to choose.
+    freezer.tick(_CHECK_INTERVAL + _SPREAD + timedelta(minutes=1))
     async_fire_time_changed(hass)
 
-    # `async_track_time_interval` runs its job as a background task, which a
-    # plain `async_block_till_done` walks straight past. Without this the
-    # round is still going when the test moves on.
+    # Waiting on background tasks too, so nothing of the round is still going
+    # when the test moves on.
     await hass.async_block_till_done(wait_background_tasks=True)
 
 
@@ -450,6 +462,11 @@ async def test_a_blueprint_that_cannot_be_read_says_nothing_new(
     assert hass.states.get(_ENTITY).state == "on"
 
 
+def _entity(hass: HomeAssistant) -> BlueprintUpdateEntity:
+    """Return the update entity itself, for what the dialog cannot reach."""
+    return hass.data[DATA_INSTANCES]["update"].get_entity(_ENTITY)
+
+
 async def _release_notes(client: MockHAClientWebSocket) -> str:
     """Ask for the release notes the way the dialog does."""
     await client.send_json_auto_id(
@@ -810,3 +827,222 @@ async def test_a_consumer_that_cannot_be_read_stops_the_install(
             )
 
     assert file.read_text(encoding="utf-8") == before
+
+
+async def test_nothing_is_looked_at_while_home_assistant_is_still_starting(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Starting up can take longer than the wait before the first round.
+
+    A round landing in the middle of it reads blueprint domains that have not
+    finished arriving, and goes out to the internet while the house is still
+    getting dressed.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    hass.set_state(CoreState.not_running)
+    await async_set_up(hass)
+
+    with patch(_FETCH) as fetch:
+        await _check(hass, freezer)
+        assert not fetch.called, "it went looking before Home Assistant was up"
+
+    hass.set_state(CoreState.running)
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
+    await hass.async_block_till_done()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+
+async def test_each_round_picks_its_own_moment_for_the_next(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Otherwise every instance that restarted together lines up.
+
+    On the same hour, every day after, which is the stampede the wait before
+    the first round exists to avoid, put back a day later.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    seen: list[float] = []
+    schedule = update_module.async_call_later
+
+    def _note_the_delay(
+        hass: HomeAssistant,
+        delay: float,
+        action: object,
+    ) -> Callable[[], None]:
+        """Write down what the scheduler was asked for, then let it get on."""
+        seen.append(delay)
+        return schedule(hass, delay, action)
+
+    with (
+        patch.object(update_module, "async_call_later", _note_the_delay),
+        _source_says(MOTION_LIGHT),
+    ):
+        # Enough rounds that them all landing on the same moment would not be
+        # chance.
+        for _ in range(_ENOUGH_ROUNDS_TO_JUDGE):
+            await _check(hass, freezer)
+
+    assert seen, "no next round was arranged"
+    assert all(
+        _CHECK_INTERVAL.total_seconds()
+        <= delay
+        <= (_CHECK_INTERVAL + _SPREAD).total_seconds()
+        for delay in seen
+    ), seen
+    assert len(set(seen)) > 1, f"every round asked for the same moment: {seen}"
+
+
+async def test_a_source_answering_with_something_else_entirely(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Home Assistant asserts the YAML it parsed is a mapping.
+
+    A source answering with a list, or a bare string, arrives as an
+    `AssertionError`, which is not a `HomeAssistantError` and would otherwise
+    take the whole round down with it.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=AssertionError):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    # Named as such, rather than swept up by the round's catch-all, so the
+    # dialog can say what happened.
+    assert (
+        "did not answer with a blueprint"
+        in await _entity(
+            hass,
+        ).async_release_notes()
+    )
+
+
+async def test_one_bad_blueprint_does_not_end_the_round(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The round works through them one at a time.
+
+    So the first to fall over would take everything after it with it.
+    Everything expected is dealt with inside the entity; this is for whatever
+    is not.
+    """
+    async_write_blueprint(hass, "automation", "one.yaml", MOTION_LIGHT)
+    async_write_blueprint(
+        hass,
+        "automation",
+        "two.yaml",
+        MOTION_LIGHT.replace("Spooky motion light", "Spooky hallway light"),
+    )
+    await async_set_up(hass)
+
+    reached: list[str] = []
+
+    async def _first_one_explodes(_hass: HomeAssistant, url: str):  # noqa: ANN202
+        reached.append(url)
+        if len(reached) == 1:
+            raise RuntimeError(_NOBODY_SAW_IT_COMING)
+        return imported_from(MOTION_LIGHT)
+
+    with patch(_FETCH, side_effect=_first_one_explodes):
+        await _check(hass, freezer)
+
+    assert len(reached) == _BOTH_OF_THEM, "the round stopped at the first one"
+
+
+async def test_the_notes_say_when_the_news_has_gone_stale(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An update found last week and a source that has stopped answering since.
+
+    Showing the one without the other reads as though the news is current.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=TimeoutError):
+        await _check(hass, freezer)
+
+    # Read off the entity rather than through the dialog: two rounds is two
+    # days of clock, and a websocket does not survive being left that long.
+    notes = await _entity(hass).async_release_notes()
+    assert "alert-type='info'" in notes
+    assert "Could not reach" in notes
+    assert "alert-type='warning'" in notes, "it dropped the update it had found"
+
+
+async def test_a_check_and_an_install_do_not_tread_on_each_other(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Both fetch before they write, so whichever finished last used to win.
+
+    A check that started first and landed last would put its own answer back
+    over the version that had just been installed, leaving this saying an
+    update is waiting for something already here.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    started = asyncio.Event()
+    let_go = asyncio.Event()
+    calls: list[str] = []
+
+    async def _the_first_one_dawdles(_hass: HomeAssistant, _url: str):  # noqa: ANN202
+        calls.append(_url)
+        if len(calls) == 1:
+            started.set()
+            await let_go.wait()
+            return imported_from(MOTION_LIGHT_CHANGED)
+
+        # By the time anybody asks again, the source has moved on once more.
+        return imported_from(MOTION_LIGHT_CHANGED_AGAIN)
+
+    with patch(_FETCH, side_effect=_the_first_one_dawdles):
+        checking = hass.async_create_task(_entity(hass).async_check())
+        await started.wait()
+
+        # The check is mid-fetch. Install now, and let the check land after.
+        installing = hass.async_create_task(
+            hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY},
+                blocking=True,
+            ),
+        )
+        await asyncio.sleep(0)
+
+        let_go.set()
+        await checking
+        await installing
+
+    await hass.async_block_till_done()
+
+    # What was written is what this now has. A check that landed afterwards
+    # with an older answer would leave this offering an update backwards.
+    assert hass.states.get(_ENTITY).state == "off", "the check undid the install"

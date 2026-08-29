@@ -60,6 +60,7 @@ mode: restart
 
 # The same blueprint, with something changed that matters.
 MOTION_LIGHT_CHANGED = MOTION_LIGHT.replace('to: "on"', 'to: "off"')
+MOTION_LIGHT_CHANGED_AGAIN = MOTION_LIGHT.replace("mode: restart", "mode: queued")
 
 # And the same again, asking for something nobody has set yet.
 MOTION_LIGHT_WITH_NEW_INPUT = MOTION_LIGHT.replace(

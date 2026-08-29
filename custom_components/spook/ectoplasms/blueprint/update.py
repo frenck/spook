@@ -30,7 +30,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_component import DATA_INSTANCES
-from homeassistant.helpers.event import async_call_later, async_track_time_interval
+from homeassistant.helpers.event import async_call_later
 from homeassistant.util import yaml as yaml_util
 from homeassistant.util.yaml import UndefinedSubstitution
 
@@ -44,7 +44,7 @@ if TYPE_CHECKING:
     from pathlib import Path
 
     from homeassistant.config_entries import ConfigEntry
-    from homeassistant.core import Event, HomeAssistant
+    from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 # Only the domains whose blueprint users can be listed. Without that list there
@@ -62,13 +62,14 @@ _CONSUMERS: dict[str, Callable[[HomeAssistant, str], list[str]]] = {
 # out of a branch that is not the one they are running.
 _HOME_ASSISTANTS_OWN = f"homeassistant{os.sep}"
 
-_CHECK_INTERVAL = timedelta(hours=24)
-
 # Every one of these is a request to somebody else's server, and the community
 # forum and GitHub between them host nearly all of it. Restarts cluster after a
 # release, so the first round waits a random while rather than joining the
-# stampede.
+# stampede, and every round after it picks its own moment a day or so on rather
+# than keeping to the hour the first one happened to land on.
 _FIRST_CHECK_WINDOW = (timedelta(minutes=5), timedelta(minutes=30))
+_CHECK_INTERVAL = timedelta(hours=24)
+_SPREAD = timedelta(hours=4)
 
 _FETCH_TIMEOUT = 30
 
@@ -208,48 +209,61 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         self._async_add_entities = async_add_entities
         self._entities: dict[tuple[str, str], BlueprintUpdateEntity] = {}
         self._stopped = False
+        self._cancel: CALLBACK_TYPE | None = None
 
     async def async_start(self, entry: ConfigEntry) -> None:
-        """Take stock now or once Home Assistant is up, then keep checking."""
+        """Begin now, or once Home Assistant is up.
 
-        @callback
-        def _stop() -> None:
-            self._stopped = True
-
-        entry.async_on_unload(_stop)
+        Nothing is scheduled before then either. Starting up can take longer
+        than the wait before the first round, and a round that lands in the
+        middle of it looks at blueprint domains that have not finished
+        arriving, and goes out to the internet while the house is still
+        getting dressed.
+        """
+        entry.async_on_unload(self._stop)
 
         if self.hass.state is CoreState.running:
-            await self._async_take_stock()
-        else:
-            entry.async_on_unload(
-                async_listen_once_tracked(
-                    self.hass,
-                    EVENT_HOMEASSISTANT_STARTED,
-                    self._async_started,
-                ),
-            )
+            await self._async_begin()
+            return
 
         entry.async_on_unload(
-            async_call_later(
+            async_listen_once_tracked(
                 self.hass,
-                random.uniform(  # noqa: S311
-                    _FIRST_CHECK_WINDOW[0].total_seconds(),
-                    _FIRST_CHECK_WINDOW[1].total_seconds(),
-                ),
-                self._async_check_all,
+                EVENT_HOMEASSISTANT_STARTED,
+                self._async_started,
             ),
         )
-        entry.async_on_unload(
-            async_track_time_interval(
-                self.hass,
-                self._async_check_all,
-                _CHECK_INTERVAL,
-            ),
-        )
+
+    @callback
+    def _stop(self) -> None:
+        """Stop looking, and take the round that was coming with it."""
+        self._stopped = True
+
+        if self._cancel is not None:
+            self._cancel()
+            self._cancel = None
 
     async def _async_started(self, _event: Event[Any]) -> None:
-        """Take stock once the blueprint domains have registered themselves."""
+        """Begin once the blueprint domains have registered themselves."""
+        await self._async_begin()
+
+    async def _async_begin(self) -> None:
+        """Take stock, then arrange to keep looking."""
         await self._async_take_stock()
+        self._async_schedule(
+            random.uniform(  # noqa: S311
+                _FIRST_CHECK_WINDOW[0].total_seconds(),
+                _FIRST_CHECK_WINDOW[1].total_seconds(),
+            ),
+        )
+
+    @callback
+    def _async_schedule(self, delay: float) -> None:
+        """Arrange the next round, unless there are to be no more."""
+        if self._stopped:
+            return
+
+        self._cancel = async_call_later(self.hass, delay, self._async_check_all)
 
     async def _async_take_stock(self) -> None:
         """Match the entities to the blueprints that are on disk."""
@@ -326,18 +340,38 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
 
     async def _async_check_all(self, _now: datetime | None = None) -> None:
         """Ask every source whether it has moved on since."""
+        self._cancel = None
+
         if self._stopped:
             return
 
-        await self._async_take_stock()
+        try:
+            await self._async_take_stock()
 
-        # One at a time on purpose. These nearly all go to two hosts, and
-        # nothing here is in a hurry.
-        for entity in list(self._entities.values()):
-            if self._stopped:
-                return
+            # One at a time on purpose. These nearly all go to two hosts, and
+            # nothing here is in a hurry.
+            for entity in list(self._entities.values()):
+                if self._stopped:
+                    return
 
-            await entity.async_check()
+                try:
+                    await entity.async_check()
+                # One blueprint pointing somewhere strange must not take the
+                # rest of the round with it. Everything expected is already
+                # dealt with inside; this is for whatever is not.
+                # pylint: disable-next=broad-exception-caught
+                except Exception:  # noqa: BLE001
+                    LOGGER.exception(
+                        "Spook fell over checking blueprint %s; "
+                        "please report this at "
+                        "https://github.com/frenck/spook/issues",
+                        entity.blueprint_path,
+                    )
+        finally:
+            self._async_schedule(
+                _CHECK_INTERVAL.total_seconds()
+                + random.uniform(0, _SPREAD.total_seconds()),  # noqa: S311
+            )
 
 
 class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
@@ -378,6 +412,13 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._fetched: blueprint.Blueprint | None = None
         self._set_aside: str | None = None
 
+        # A round of checks and somebody pressing install can land on the same
+        # blueprint at the same moment, and both of them fetch before they
+        # write. Whichever finished last used to win, which could leave this
+        # saying an update is waiting for a version that had just been
+        # installed.
+        self._one_at_a_time = asyncio.Lock()
+
         self._attr_name = said.name
         self._attr_title = said.name
         self._attr_release_url = said.source_url
@@ -412,6 +453,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
     async def async_check(self) -> None:
         """See whether the source still says what this blueprint says."""
+        async with self._one_at_a_time:
+            await self._async_check()
+
+    async def _async_check(self) -> None:
+        """Fetch and compare, with the blueprint to ourselves."""
         try:
             fetched = await self._async_fetch()
         except HomeAssistantError as err:
@@ -439,6 +485,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         **kwargs: Any,  # noqa: ARG002
     ) -> None:
         """Fetch the blueprint again and write it over the one that is here."""
+        async with self._one_at_a_time:
+            await self._async_install()
+
+    async def _async_install(self) -> None:
+        """Write the source over what is here, with the blueprint to ourselves."""
         fetched = await self._async_fetch()
 
         # The blueprint saying for itself that it needs a newer Home Assistant.
@@ -496,20 +547,28 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         """
         came_from = f"Imported from [{self._said.source_url}]({self._said.source_url})."
 
-        if self.state != STATE_ON or self._fetched is None:
-            if self._set_aside is None:
-                return came_from
+        nothing_on_offer = self.state != STATE_ON or self._fetched is None
 
-            # Nothing on offer, and a reason for it. Better said here than
-            # left to look like a source that simply never changes.
-            return "\n\n".join(
-                [
-                    f"<ha-alert alert-type='info'>{self._set_aside}</ha-alert>",
-                    came_from,
-                ],
+        # Whatever went wrong last time round goes first either way. Left out
+        # of the branch below, it would sit behind news from an older look
+        # while the source itself had stopped answering.
+        aside: list[str] = []
+        if self._set_aside is not None:
+            aside.append(
+                "<ha-alert alert-type='info'>"
+                + self._set_aside
+                + (
+                    ""
+                    if nothing_on_offer
+                    else " What follows is from the last look that worked."
+                )
+                + "</ha-alert>",
             )
 
-        notes = [_NO_PROMISES, came_from]
+        if nothing_on_offer:
+            return "\n\n".join([*aside, came_from])
+
+        notes = [*aside, _NO_PROMISES, came_from]
 
         if errors := self._fetched.validate():
             notes.append(_WOULD_NOT_RUN)
@@ -535,10 +594,17 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             async with asyncio.timeout(_FETCH_TIMEOUT):
                 imported = await fetch_blueprint_from_url(self.hass, source_url)
         except (TimeoutError, aiohttp.ClientError) as err:
-            msg = f"Could not reach {source_url}"
+            msg = f"Could not reach {source_url}."
             raise HomeAssistantError(msg) from err
         except vol.Invalid as err:
-            msg = f"{source_url} no longer holds a valid blueprint"
+            msg = f"{source_url} no longer holds a valid blueprint."
+            raise HomeAssistantError(msg) from err
+        except AssertionError as err:
+            # Home Assistant's own fetchers assert that the YAML they parsed
+            # is a mapping. A source answering with a list, or a bare string,
+            # arrives as an AssertionError, which is nothing this would catch
+            # by type and would take the whole round down with it.
+            msg = f"{source_url} did not answer with a blueprint."
             raise HomeAssistantError(msg) from err
 
         fetched = imported.blueprint

@@ -37,7 +37,7 @@ _Default {term}`entity ID <Entity ID>`: `update.blueprints_<blueprint name>`_
 
 When you import a {term}`blueprint <blueprint>`, Home Assistant writes down where it came from. Nothing ever looks at that address again. The blueprint's author can fix a bug in it a week later and you would have no way of knowing, short of opening the forum topic and reading the YAML yourself.
 
-Spook gives every one of those blueprints an update entity. It follows the address the blueprint came in with, once a day, and tells you when what is there no longer matches what you have. Pressing install fetches it again and writes it over the copy you have, exactly as Home Assistant's own re-import button does, and reloads every {term}`automation <automation>` and {term}`script <script>` using it.
+Spook gives every one of those blueprints an update entity. It follows the address the blueprint came in with, roughly once a day, and tells you when what is there no longer matches what you have. Roughly, because each round picks its own moment for the next one somewhere in the following few hours: a fixed hour would have every installation that restarted after the same release knocking on the community forum together, every day, for ever. Pressing install fetches it again and writes it over the copy you have, exactly as Home Assistant's own re-import button does, and reloads every {term}`automation <automation>` and {term}`script <script>` using it.
 
 Only blueprints that came from a URL get one. A blueprint you wrote yourself has no source to check against, and the three example blueprints Home Assistant lays down for you are left alone as well: they point at Home Assistant's development branch, which is not the version you are running.
 
@@ -51,13 +51,13 @@ So the dialog carries the next best thing. The address the blueprint came from, 
 
 If Spook already knows something is wrong, it says so there too. Automations the update would leave short, named. A blueprint that says it needs a newer Home Assistant than the one you are running. Or a source that has stopped leading to this blueprint at all, which is the answer to "why does this one never have an update".
 
-Whatever it finds, the install button will not go through with anything the dialog warned you about.
+The warning is advice, and an update that is otherwise fine still installs. The other two are refusals: Spook will not write a blueprint that would leave an automation short, or one that says it needs a Home Assistant you are not running.
 
 Matter and ZHA put much the same warning in front of a firmware update, for much the same reason.
 
 #### About those version numbers
 
-They look like `a1b2c3d`, and that is not Spook being clever. Blueprints have no version. There is nowhere in a blueprint to put one, because the format turns away anything it does not recognise, so no author can add one even if they wanted to.
+They look like `a1b2c3d4`, and that is not Spook being clever. Blueprints have no version. There is nowhere in a blueprint to put one, because the format turns away anything it does not recognise, so no author can add one even if they wanted to.
 
 So Spook uses a fingerprint of the contents instead. Same fingerprint, same blueprint. A different one means something in it changed. It cannot tell you whether that change is newer or better, only that it is not what you have.
 
