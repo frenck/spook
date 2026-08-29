@@ -271,3 +271,33 @@ def test_device_extraction_ignores_non_device_templates() -> None:
     config = {"value_template": "{{ states('sensor.x') }}"}
 
     assert extract_device_ids_from_config(config) == set()
+
+
+def test_a_device_id_that_is_not_a_registry_id_is_not_a_reference() -> None:
+    """Some integrations take a `device_id` of their own making.
+
+    RFLink's `send_command` wants a protocol ID like `newkaku_0000c6c2_1`,
+    which is action data rather than a reference to anything in the device
+    registry. Collecting it means telling somebody their working automation
+    points at a device that does not exist.
+    """
+    targets = extract_targets_from_config(
+        {
+            "action": "rflink.send_command",
+            "data": {"device_id": "newkaku_0000c6c2_1", "command": "on"},
+        }
+    )
+
+    assert targets.device_ids == set()
+
+
+def test_a_real_device_id_in_action_data_is_still_a_reference() -> None:
+    """Actions that target devices write them there too, and those count."""
+    targets = extract_targets_from_config(
+        {
+            "action": "light.turn_on",
+            "data": {"device_id": "abcdef0123456789abcdef0123456789"},
+        }
+    )
+
+    assert targets.device_ids == {"abcdef0123456789abcdef0123456789"}

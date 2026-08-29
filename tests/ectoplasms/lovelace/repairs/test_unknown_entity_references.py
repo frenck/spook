@@ -13,6 +13,9 @@ from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 
+from homeassistant.exceptions import HomeAssistantError
+
+from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.unknown_entity_references import (
     SpookRepair,
 )
@@ -20,6 +23,7 @@ import pytest
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers import issue_registry as ir
 
 
 @pytest.fixture(name="repair")
@@ -195,3 +199,46 @@ def test_dashboard_covers_custom_card_structures(repair: SpookRepair) -> None:
         ]
     }
     assert _extract(repair, config) == {"sensor.custom": "home"}
+
+
+async def test_one_unreadable_dashboard_does_not_stop_the_rest(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """A dashboard that will not load must not take the inspection down.
+
+    Home Assistant turns a missing file into `ConfigNotFound`, but a dashboard
+    whose YAML does not parse raises straight out of the loader. Letting that
+    out left every dashboard after it unchecked, and the repair erroring on
+    every pass from then on.
+    """
+    hass.states.async_set("light.known", "on")
+
+    async def _will_not_load(**_kwargs: Any) -> dict[str, Any]:
+        msg = "mapping values are not allowed here"
+        raise HomeAssistantError(msg)
+
+    async def _loads_fine(**_kwargs: Any) -> dict[str, Any]:
+        return {
+            "views": [
+                {"path": "home", "cards": [{"type": "entity", "entity": "light.gone"}]}
+            ]
+        }
+
+    repair = SpookRepair(hass)
+    repair._dashboards = {  # noqa: SLF001
+        "broken": SimpleNamespace(
+            url_path="broken", config=None, async_load=_will_not_load
+        ),
+        "fine": SimpleNamespace(
+            url_path="fine", config={"title": "Fine"}, async_load=_loads_fine
+        ),
+    }
+
+    await repair.async_inspect()
+
+    assert issue_registry.async_get_issue(
+        DOMAIN, "lovelace_unknown_entity_references_fine"
+    ), "the dashboard after the broken one was never checked"
+    assert "could not read dashboard broken" in caplog.text

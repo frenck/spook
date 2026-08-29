@@ -5,7 +5,6 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.lovelace import DOMAIN
-from homeassistant.components.lovelace.const import ConfigNotFound
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_LOVELACE_UPDATED,
@@ -19,6 +18,7 @@ from ....dashboard_extraction import extract_entities_from_dashboard_node
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
+from ..dashboards import async_dashboard_configs
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -79,13 +79,11 @@ class SpookRepair(AbstractSpookRepair):
 
         # Loop over all dashboards and check if there are unknown entities
         # referenced in the dashboards.
-        for dashboard in self._dashboards.values():
-            url_path = dashboard.url_path or "lovelace"
+        async for dashboard, url_path, config in async_dashboard_configs(
+            self._dashboards
+        ):
             self.possible_issue_ids.add(url_path)
-            try:
-                config = await dashboard.async_load(force=False)
-            except ConfigNotFound:
-                LOGGER.debug("Config for dashboard %s not found, skipping", url_path)
+            if config is None:
                 continue
 
             extracted_entities = self.__async_extract_entities(config)
