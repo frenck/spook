@@ -13,7 +13,7 @@ from homeassistant.const import (
     STATE_ON,
 )
 from homeassistant.core import CoreState, callback
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import (
     async_track_point_in_utc_time,
@@ -58,6 +58,7 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         self._unsub_watching: CALLBACK_TYPE | None = None
         self._unsub_started: CALLBACK_TYPE | None = None
         self._unsub_registry: CALLBACK_TYPE | None = None
+        self._waking: set[str] = set()
         self._stopped = False
 
     async def async_start(self) -> CALLBACK_TYPE:
@@ -145,7 +146,16 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
             )
             return
 
-        deadline = dt_util.utcnow() + duration
+        try:
+            deadline = dt_util.utcnow() + duration
+        except OverflowError as err:
+            # Time periods run further than datetimes do, so a big enough
+            # number of days lands past the end of the calendar. Worked out
+            # here rather than at the door, because the answer depends on what
+            # time it is by the time the snooze actually happens.
+            msg = f"Cannot snooze {entity_id} until a time that does not exist"
+            raise ServiceValidationError(msg) from err
+
         self._until[entity_id] = deadline
         await self._async_save()
 
@@ -174,12 +184,25 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
             context=context,
         )
 
+        if self._until.get(entity_id) != deadline:
+            # Turned on by hand between the check above and that call landing,
+            # which cancels the snooze. The turning-off went through anyway,
+            # so it is taken back here: leaving it would be an automation off
+            # with nothing left to wake it.
+            await self._hass.services.async_call(
+                AUTOMATION_DOMAIN,
+                SERVICE_TURN_ON,
+                {ATTR_ENTITY_ID: entity_id},
+                blocking=True,
+                context=context,
+            )
+            return
+
         # And only now the waiting, because a snooze short enough to come due
         # while that was happening would otherwise wake the automation before
         # this turned it off, leaving it off with nothing to wake it. A
         # deadline that has already passed by this point simply fires at once.
-        if self._until.get(entity_id) == deadline:
-            self._async_rearm(entity_id)
+        self._async_rearm(entity_id)
 
     @callback
     def async_until(self, entity_id: str) -> datetime | None:
@@ -265,14 +288,18 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
     async def _async_wake(self, entity_id: str, until: datetime) -> None:
         """Put an automation back on, its time being up.
 
-        The record goes first, so this wake-up call is not read as somebody
-        turning the automation on by hand, and comes back if turning it on
-        fails. An automation left off with nothing written down is the
+        The record stays put until the automation is actually on, and is only
+        marked as being seen to. Removing it first and putting it back on
+        failure reads the same most of the time, but not when the failure is
+        the process going away: a cancellation partway leaves nothing written
+        down, and an automation off with nothing written down is the
         disable-nobody-remembers this whole thing exists to prevent.
         """
-        self._until.pop(entity_id, None)
         self._async_cancel_timer(entity_id)
-        self._async_watch()
+
+        # Marked rather than removed, so this wake-up call is not read as
+        # somebody turning the automation on by hand.
+        self._waking.add(entity_id)
 
         try:
             await self._hass.services.async_call(
@@ -287,21 +314,18 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
                 "to try again after a restart",
                 entity_id,
             )
+            return
+        finally:
+            self._waking.discard(entity_id)
 
-            # Unless somebody asked for a fresh one while that was failing,
-            # in which case theirs is the newer word on it.
-            if entity_id not in self._until:
-                self._until[entity_id] = until
-                self._async_watch()
-
-                # Written down again as well: a save for some other automation
-                # may have gone by while this one was failing, and that one
-                # wrote out a register this record had already left.
-                await self._async_save()
-
+        if self._until.get(entity_id) != until:
+            # Asked for again while that was happening, so the wait this woke
+            # belongs to nobody and the new one stands.
             return
 
+        del self._until[entity_id]
         await self._async_save()
+        self._async_watch()
 
     @callback
     def _async_registry_changed(
@@ -373,6 +397,11 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
             return
 
         entity_id = event.data[ATTR_ENTITY_ID]
+        if entity_id in self._waking:
+            # Spook's own wake-up call, which is not somebody changing
+            # their mind about it.
+            return
+
         if self._until.pop(entity_id, None) is None:
             return
 

@@ -7,6 +7,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from homeassistant.core import Context, CoreState
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
@@ -156,7 +157,7 @@ async def test_a_duration_past_the_end_of_the_calendar_is_refused(
     """
     await _setup(hass)
 
-    with pytest.raises(vol.Invalid):
+    with pytest.raises(ServiceValidationError):
         await hass.services.async_call(
             "automation",
             "snooze",
