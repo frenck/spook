@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.config_entries import ConfigEntryState
@@ -14,14 +15,24 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
+from homeassistant.loader import Integration, async_get_integrations
+from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
+    from datetime import datetime
 
     from homeassistant.core import Event, State
+
+
+# How long an integration gets to produce its first entity before Spook takes
+# the silence at face value. Devices that push on their own schedule are the
+# slow ones here: a weather station reporting every fifteen minutes is normal,
+# and being wrong about this is worse than being late.
+_LONG_ENOUGH_TO_PUSH = timedelta(hours=1)
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -41,6 +52,11 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_config_entry_changed = True
     automatically_clean_up_issues = True
+
+    # Nothing happens when the wait below runs out: that is the whole point of
+    # it, an integration that has gone quiet. So the passage of time has to be
+    # what brings this back round.
+    inspect_interval = _LONG_ENOUGH_TO_PUSH
 
     async def async_activate(self) -> None:
         """Handle activating the repair."""
@@ -81,6 +97,44 @@ class SpookRepair(AbstractSpookRepair):
             ),
         )
 
+    @callback
+    def _async_had_its_chance(
+        self,
+        entry_id: str,
+        entity_registry: er.EntityRegistry,
+    ) -> bool:
+        """Return whether this config entry has had time to produce anything.
+
+        Being loaded is not the same as having data. An integration fed by a
+        webhook, Ecowitt among them, sets up in a moment and then waits for
+        the device to push, which can be minutes. Everything it registered
+        sits there restored and unavailable in the meantime, and reporting
+        that would be telling somebody their weather station is gone while it
+        is simply between readings.
+
+        One entity that made it settles it at once: the data arrived, and
+        whatever is still missing is missing for another reason. Failing that,
+        the wait below, because an integration whose every entity is genuinely
+        gone would otherwise never be reported at all.
+        """
+        newest: datetime | None = None
+
+        for entry in er.async_entries_for_config_entry(entity_registry, entry_id):
+            if (state := self.hass.states.get(entry.entity_id)) is None:
+                continue
+
+            if not state.attributes.get(ATTR_RESTORED):
+                return True
+
+            if newest is None or state.last_changed > newest:
+                newest = state.last_changed
+
+        # Read off the placeholders themselves rather than kept in the repair,
+        # because a reload takes them away and writes them again, so this
+        # starts over exactly when the integration does. Which is the point:
+        # after a reload a push-fed integration has not been pushed to yet.
+        return newest is not None and dt_util.utcnow() - newest >= _LONG_ENOUGH_TO_PUSH
+
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
@@ -100,24 +154,48 @@ class SpookRepair(AbstractSpookRepair):
                 continue
             dead_by_entry[entry.config_entry_id].append(state.entity_id)
 
-        for entry_id, entity_ids in dead_by_entry.items():
-            config_entry = self.hass.config_entries.async_get_entry(entry_id)
-            if (
-                config_entry is None
-                or config_entry.state is not ConfigEntryState.LOADED
-            ):
-                # The integration is gone or still (re)loading; its entities
-                # may still appear, so this is not a dead-entity signal.
-                continue
+        entries = {
+            entry_id: entry
+            for entry_id in dead_by_entry
+            if (entry := self.hass.config_entries.async_get_entry(entry_id)) is not None
+            and entry.state is ConfigEntryState.LOADED
+            and self._async_had_its_chance(entry_id, entity_registry)
+        }
+
+        # The name people know an integration by lives in its manifest. A
+        # config entry's title is whatever it was set up as, which for an
+        # account-based integration is the name of the account holder: being
+        # told that "Franck Nijhof" registered dead entities is not helpful.
+        names = await async_get_integrations(
+            self.hass, {entry.domain for entry in entries.values()}
+        )
+
+        for entry_id, config_entry in entries.items():
+            integration = names.get(config_entry.domain)
+            name = (
+                integration.name
+                if isinstance(integration, Integration)
+                else config_entry.domain
+            )
 
             self.possible_issue_ids.add(entry_id)
             self.async_create_issue(
                 issue_id=entry_id,
                 issue_domain=config_entry.domain,
-                translation_placeholders={
-                    "integration": config_entry.title,
+                is_fixable=True,
+                data={
+                    "dead_entities_config_entry_id": entry_id,
+                    "integration": name,
                     "entities": "\n".join(
-                        f"- `{entity_id}`" for entity_id in sorted(entity_ids)
+                        f"- `{entity_id}`"
+                        for entity_id in sorted(dead_by_entry[entry_id])
+                    ),
+                },
+                translation_placeholders={
+                    "integration": name,
+                    "entities": "\n".join(
+                        f"- `{entity_id}`"
+                        for entity_id in sorted(dead_by_entry[entry_id])
                     ),
                 },
             )

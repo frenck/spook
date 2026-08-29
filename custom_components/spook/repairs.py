@@ -19,8 +19,9 @@ from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntry,
     ConfigEntryChange,
+    ConfigEntryState,
 )
-from homeassistant.const import CONF_ENTITIES
+from homeassistant.const import ATTR_RESTORED, CONF_ENTITIES
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
@@ -956,6 +957,56 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         return self.async_create_entry(data={})
 
 
+class DeadEntitiesFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for registry entries whose entities never came back.
+
+    Removes the registry entries themselves, which is the only place these
+    still exist. Telling somebody to go and do that by hand was the old
+    advice, and it asked them to know what an entity registry is.
+    """
+
+    _key = "integration"
+    _id_key = "dead_entities_config_entry_id"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the integration and its dead entities in the menu step."""
+        data = self.data or {}
+        return {
+            "integration": str(data.get("integration", "")),
+            "entities": str(data.get("entities", "")),
+        }
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Remove the registry entries of entities that never came back.
+
+        Read afresh rather than taken from the issue: the issue may have been
+        sitting in front of somebody for a while, and an entity that has since
+        returned is not one to delete.
+        """
+        entry_id = str((self.data or {}).get(self._id_key, ""))
+
+        config_entry = self.hass.config_entries.async_get_entry(entry_id)
+        if config_entry is None or config_entry.state is not ConfigEntryState.LOADED:
+            # Everything of an integration that is reloading or retrying looks
+            # restored while that lasts, and the issue may have been sitting
+            # here since before it started. Deleting then would take entities
+            # that are on their way back.
+            return self.async_abort(reason="not_loaded")
+
+        entity_registry = er.async_get(self.hass)
+
+        for entry in er.async_entries_for_config_entry(entity_registry, entry_id):
+            state = self.hass.states.get(entry.entity_id)
+
+            if state is not None and state.attributes.get(ATTR_RESTORED):
+                entity_registry.async_remove(entry.entity_id)
+
+        return self.async_create_entry(data={})
+
+
 # Remove-or-ignore fix flows, keyed by the data field that identifies their
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
@@ -968,6 +1019,7 @@ _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "group_entity_id": GroupUnknownMembersFixFlow,
     "min_max_config_entry_id": MinMaxUnknownSourcesFixFlow,
     "helper_config_entry_id": HelperUnknownSourcesFixFlow,
+    "dead_entities_config_entry_id": DeadEntitiesFixFlow,
 }
 
 
