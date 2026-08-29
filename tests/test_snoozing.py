@@ -864,6 +864,76 @@ async def test_an_automation_woken_once_can_still_be_woken_by_hand(
     snoozing.async_stop()
 
 
+async def test_a_wake_that_finds_nothing_there_tries_again_later(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Entity services pass over what is unavailable and say nothing about it.
+
+    So a wake-up call landing in the middle of a reload turns nothing on, and
+    dropping the record there would leave the automation off for good. It
+    keeps the record and has another go when the automation is back.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+
+    # What a skipped entity looks like: the call comes back, nothing happened.
+    async def _skipped(_self: AutomationEntity, **_kwargs: object) -> None:
+        return
+
+    with patch.object(AutomationEntity, "async_turn_on", _skipped):
+        await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "off"
+    assert snoozing.async_until(SLEEPER) is not None, (
+        "it dropped the record for an automation it never woke"
+    )
+
+    # Away, and then back.
+    hass.states.async_set(SLEEPER, STATE_UNAVAILABLE)
+    await hass.async_block_till_done()
+    hass.states.async_set(SLEEPER, "off")
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", "it never had another go"
+    assert snoozing.async_until(SLEEPER) is None
+
+    snoozing.async_stop()
+
+
+async def test_one_that_is_away_is_left_alone_until_it_is_back(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Going unavailable is not the automation coming back.
+
+    Trying to wake it there would be the same call failing the same way, and
+    it is exactly the moment the state watch hears from most.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+
+    async def _skipped(_self: AutomationEntity, **_kwargs: object) -> None:
+        return
+
+    with patch.object(AutomationEntity, "async_turn_on", _skipped):
+        await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+        hass.states.async_set(SLEEPER, STATE_UNAVAILABLE)
+        await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == STATE_UNAVAILABLE, (
+        "it tried to wake one that was still away"
+    )
+    assert snoozing.async_until(SLEEPER) is not None
+
+    snoozing.async_stop()
+
+
 async def test_a_wake_cancelled_partway_keeps_the_record(
     hass: HomeAssistant,
     hass_storage: dict,

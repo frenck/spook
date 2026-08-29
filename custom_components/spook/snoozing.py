@@ -11,6 +11,7 @@ from homeassistant.const import (
     SERVICE_TURN_OFF,
     SERVICE_TURN_ON,
     STATE_ON,
+    STATE_UNAVAILABLE,
 )
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
@@ -318,6 +319,18 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         finally:
             self._waking.discard(entity_id)
 
+        state = self._hass.states.get(entity_id)
+        if state is None or state.state != STATE_ON:
+            # Entity services quietly pass over whatever is unavailable and
+            # come back as though all was well, so a wake landing in the
+            # middle of a reload turns nothing on. The record stays, and the
+            # watch below has another go once the automation is back.
+            LOGGER.debug(
+                "Spook could not wake %s, which is not there at the moment",
+                entity_id,
+            )
+            return
+
         if self._until.get(entity_id) != until:
             # Asked for again while that was happening, so the wait this woke
             # belongs to nobody and the new one stands.
@@ -364,42 +377,44 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
 
     @callback
     def _async_watch(self) -> None:
-        """Listen for anything asleep being turned on by somebody else.
+        """Listen to everything that is asleep.
 
-        Which cancels the snooze: turning it on is a clearer statement of what
-        somebody wants than a wake-up time they set earlier.
-
-        The record is dropped before this trigger's own wake-up call, so the
-        entity is no longer being watched by the time that arrives and it does
-        not cancel itself.
+        For two things. Somebody turning one on, which cancels the snooze: it
+        is a clearer statement of what they want than a wake-up time set
+        earlier. And one coming back from wherever it was, which is the second
+        chance for a wake-up call that arrived while it was away.
         """
         previous = self._unsub_watching
         self._unsub_watching = None
 
         if self._until and not self._stopped:
             self._unsub_watching = async_track_state_change_event(
-                self._hass, list(self._until), self._async_woken_by_hand
+                self._hass, list(self._until), self._async_state_changed
             )
 
         if previous is not None:
             previous()
 
     @callback
-    def _async_woken_by_hand(self, event: Event[EventStateChangedData]) -> None:
-        """Forget a snooze for an automation somebody has turned back on.
+    def _async_state_changed(self, event: Event[EventStateChangedData]) -> None:
+        """Deal with something asleep changing state.
 
         A state that is gone says nothing here: a rename takes the old one
         away as surely as a delete does, and telling those apart is what the
         registry is for.
         """
         new_state = event.data["new_state"]
-        if new_state is None or new_state.state != STATE_ON:
+        if new_state is None:
             return
 
         entity_id = event.data[ATTR_ENTITY_ID]
         if entity_id in self._waking:
-            # Spook's own wake-up call, which is not somebody changing
-            # their mind about it.
+            # Spook's own wake-up call, which is neither somebody changing
+            # their mind nor an automation coming back.
+            return
+
+        if new_state.state != STATE_ON:
+            self._async_try_again(entity_id, new_state.state)
             return
 
         if self._until.pop(entity_id, None) is None:
@@ -408,6 +423,22 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         self._async_cancel_timer(entity_id)
         self._async_watch()
         self._hass.async_create_task(self._async_save())
+
+    @callback
+    def _async_try_again(self, entity_id: str, state: str) -> None:
+        """Wake an automation that was away when its time came.
+
+        Its wake-up call found nothing to turn on and left the record alone,
+        so this is where it gets its second chance: the automation is back,
+        and it is still owed a waking.
+        """
+        if state == STATE_UNAVAILABLE:
+            return
+
+        if (until := self._until.get(entity_id)) is None or until > dt_util.utcnow():
+            return
+
+        self._hass.async_create_task(self._async_wake(entity_id, until))
 
     @callback
     def _async_cancel_timer(self, entity_id: str) -> None:
