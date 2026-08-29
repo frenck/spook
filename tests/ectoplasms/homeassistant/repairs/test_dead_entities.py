@@ -57,6 +57,28 @@ def _register_restored(
     return reg.entity_id
 
 
+def _register_living(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    entry: MockConfigEntry,
+    object_id: str = "living",
+) -> str:
+    """Register an entity of this entry that actually turned up.
+
+    Most tests want one. The repair only speaks up once something of a config
+    entry has real data, since an integration that is loaded but still waiting
+    for its first push has everything restored and nothing wrong with it.
+    """
+    reg = entity_registry.async_get_or_create(
+        "sensor",
+        "hue",
+        object_id,
+        config_entry=entry,
+    )
+    hass.states.async_set(reg.entity_id, "21.5")
+    return reg.entity_id
+
+
 async def test_dead_entity_of_loaded_entry_is_reported(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
@@ -64,6 +86,7 @@ async def test_dead_entity_of_loaded_entry_is_reported(
 ) -> None:
     """Test a restored entity of a loaded entry is reported."""
     entry = _loaded_entry(hass)
+    _register_living(hass, entity_registry, entry)
     dead = _register_restored(hass, entity_registry, entry, "dead")
 
     await SpookRepair(hass).async_inspect()
@@ -154,6 +177,7 @@ async def test_entity_dying_mid_session_is_reported(
     the config entry stays loaded, so nothing else marks the moment.
     """
     entry = _loaded_entry(hass)
+    _register_living(hass, entity_registry, entry)
     reg = entity_registry.async_get_or_create(
         "sensor", "hue", "dies", config_entry=entry
     )
@@ -179,6 +203,7 @@ async def test_issue_clears_when_the_entity_finally_appears(
 ) -> None:
     """Test the issue goes away once the entity shows up for real."""
     entry = _loaded_entry(hass)
+    _register_living(hass, entity_registry, entry)
     dead = _register_restored(hass, entity_registry, entry, "late")
     repair = SpookRepair(hass)
 
@@ -270,6 +295,7 @@ async def test_the_fix_clears_out_the_leftover_registrations(
     asks somebody to know what an entity registry is and where to find it.
     """
     entry = _loaded_entry(hass)
+    _register_living(hass, entity_registry, entry)
     dead = _register_restored(hass, entity_registry, entry, "dead")
     other = _register_restored(hass, entity_registry, None, "not_this_one")
 
@@ -294,6 +320,7 @@ async def test_the_fix_leaves_an_entity_that_came_back(
     deleting its registration would take its history and settings with it.
     """
     entry = _loaded_entry(hass)
+    _register_living(hass, entity_registry, entry)
     dead = _register_restored(hass, entity_registry, entry, "dead")
     returned = _register_restored(hass, entity_registry, entry, "returned")
 
@@ -307,3 +334,53 @@ async def test_the_fix_leaves_an_entity_that_came_back(
 
     assert entity_registry.async_get(dead) is None
     assert entity_registry.async_get(returned) is not None
+
+
+async def test_an_integration_still_waiting_for_its_first_data_is_not_reported(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Loaded is not the same as having data.
+
+    An integration fed by a webhook, Ecowitt among them, sets up in a moment
+    and then waits for the device to push, which can be minutes. Everything it
+    registered sits restored and unavailable in the meantime. Reporting that
+    tells somebody their weather station is gone while it is between
+    readings, and with a fix button attached they can throw the lot away.
+    """
+    entry = _loaded_entry(hass)
+    for name in ("temperature", "humidity", "wind"):
+        _register_restored(hass, entity_registry, entry, name)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert (
+        issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+        is None
+    ), "it reported an integration that had simply not been pushed to yet"
+
+
+async def test_once_the_data_arrives_what_is_still_missing_is_reported(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """One entity through the door says the rest are not coming.
+
+    A sensor removed at the station is a real leftover, and by then there is
+    something to tell it apart from an integration that has not started
+    talking yet.
+    """
+    entry = _loaded_entry(hass)
+    for name in ("temperature", "humidity"):
+        _register_restored(hass, entity_registry, entry, name)
+    _register_living(hass, entity_registry, entry, "wind")
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+    assert issue
+    assert issue.translation_placeholders
+    assert "temperature" in issue.translation_placeholders["entities"]
+    assert "wind" not in issue.translation_placeholders["entities"]

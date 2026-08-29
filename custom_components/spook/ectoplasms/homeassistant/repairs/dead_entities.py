@@ -82,6 +82,30 @@ class SpookRepair(AbstractSpookRepair):
             ),
         )
 
+    @callback
+    def _async_has_living_entities(
+        self,
+        entry_id: str,
+        entity_registry: er.EntityRegistry,
+    ) -> bool:
+        """Return whether anything of this config entry has actually turned up.
+
+        Being loaded is not the same as having data. An integration fed by a
+        webhook, Ecowitt among them, sets up in a moment and then waits for
+        the device to push, which can be minutes. Everything it registered
+        sits there restored and unavailable in the meantime, and reporting
+        that would be telling somebody their weather station is gone while it
+        is simply between readings.
+
+        One entity that made it is enough to say the data arrived, and that
+        whatever else is still missing is missing for a different reason.
+        """
+        return any(
+            (state := self.hass.states.get(entry.entity_id)) is not None
+            and not state.attributes.get(ATTR_RESTORED)
+            for entry in er.async_entries_for_config_entry(entity_registry, entry_id)
+        )
+
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
@@ -106,6 +130,7 @@ class SpookRepair(AbstractSpookRepair):
             for entry_id in dead_by_entry
             if (entry := self.hass.config_entries.async_get_entry(entry_id)) is not None
             and entry.state is ConfigEntryState.LOADED
+            and self._async_has_living_entities(entry_id, entity_registry)
         }
 
         # The name people know an integration by lives in its manifest. A
