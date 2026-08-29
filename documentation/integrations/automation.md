@@ -34,7 +34,83 @@ Spook does not provide any new devices or entities for this integration.
 
 ## Actions
 
-Spook does not provide action enhancements for this integration.
+Spook adds the following new actions to your Home Assistant instance:
+
+### Snooze
+
+Turns an automation off for a while, and turns it back on when the time is up.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Automation: Snooze 👻
+* - {term}`Action name`
+  - `automation.snooze`
+* - {term}`Action targets`
+  - Yes, `automation` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `duration`
+  - {term}`string <string>`
+  - Yes
+  - `01:00:00`
+```
+
+Turning an automation off is the only way to make it stop for an hour, and an automation turned off stays off: past the restart, past the weekend, until somebody notices. The usual way around that is a helper entity and a second automation to turn the first one back on, which is two moving parts for something that should be one.
+
+This is that, in one action. It survives a restart of Home Assistant, because the time it is due back is written down rather than left in a timer that dies with the process.
+
+Turning the automation back on yourself cancels the snooze. Saying so is a clearer statement of what you want than a wake-up time set earlier, so Spook takes it that way and forgets the rest.
+
+:::{seealso} Example actions in {term}`YAML`
+:class: dropdown
+
+Quiet the doorbell for an hour:
+
+```{code-block} yaml
+:linenos:
+action: automation.snooze
+target:
+  entity_id: automation.doorbell_announce
+data:
+  duration: "01:00:00"
+```
+
+Everything in the bedroom, until the morning:
+
+```{code-block} yaml
+:linenos:
+action: automation.snooze
+target:
+  area_id: bedroom
+data:
+  duration: "08:00:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- An automation that is already off is left alone, and Spook says so in the log. Waking it would turn on something you turned off, which is not what snoozing asks for.
+- Snoozing one that is already asleep moves its wake-up time rather than starting a second one.
+- The automation is off while it sleeps, so anything reading its state sees exactly that. There is no third state between on and off.
+  :::
 
 ## Repairs
 
