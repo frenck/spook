@@ -56,6 +56,13 @@ class SpookRepair(AbstractSpookRepair):
         if (resources := self.hass.data[DOMAIN].resources) is None:
             return
 
+        # Storage-mode resources are loaded the first time somebody asks for
+        # them, which is normally the dashboard, and Spook inspects long
+        # before that. Reading them straight would see an empty collection and
+        # report nothing at all. In YAML mode this is already loaded and the
+        # call costs nothing.
+        await resources.async_get_info()
+
         to_check: dict[str, Path] = {}
         for item in resources.async_items() or []:
             if (url := item.get("url")) and (
