@@ -10,6 +10,7 @@ import pytest
 from custom_components.spook.services import (
     AbstractSpookEntityComponentService,
     AbstractSpookEntityService,
+    AbstractSpookService,
 )
 
 if TYPE_CHECKING:
@@ -71,3 +72,27 @@ def test_missing_component_says_so_in_one_sentence(hass: HomeAssistant) -> None:
         " not_loaded.do_something"
     )
     assert str(caught.value).startswith("Could not find entity component")
+
+
+async def test_a_service_for_an_unloaded_domain_is_not_registered(
+    hass: HomeAssistant,
+) -> None:
+    """Spook does not put an action on somebody else's domain until it is there.
+
+    Registering it anyway would offer an action whose handler reaches for an
+    integration that was never set up, and it would fail there instead of
+    simply not existing.
+    """
+
+    class _Elsewhere(AbstractSpookService):
+        """A service on a domain nobody has loaded."""
+
+        domain = "not_a_loaded_integration"
+        service = "do_something"
+
+        async def async_handle_service(self, call: ServiceCall) -> None:
+            """Handle the service call."""
+
+    _Elsewhere(hass).async_register()
+
+    assert not hass.services.has_service("not_a_loaded_integration", "do_something")

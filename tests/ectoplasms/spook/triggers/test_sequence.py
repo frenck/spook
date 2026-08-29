@@ -844,3 +844,18 @@ async def test_stopping_while_attaching_the_reset_leaves_nothing_behind(
 
     watcher.async_stop()
     await hass.async_block_till_done()
+
+
+async def test_a_sequence_with_no_time_to_finish_is_refused(
+    hass: HomeAssistant,
+) -> None:
+    """It would run out the moment it starts, never getting past step one.
+
+    `positive_time_period` counts zero as positive, and the sibling triggers
+    that take a duration already say no to it.
+    """
+    with pytest.raises(vol.Invalid, match="no time to finish"):
+        await SpookTrigger.async_validate_config(
+            hass,
+            {"options": {"steps": [DOOR, MOTION], "timeout": {"seconds": 0}}},
+        )

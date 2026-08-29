@@ -7,10 +7,15 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.helpers import config_validation as cv, device_registry as dr
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import (
+    config_validation as cv,
+    device_registry as dr,
+)
 
 from ....core_compat import async_update_any_device
 from ....services import AbstractSpookAdminService
+from ..labels import async_check_labels_exist
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -28,9 +33,14 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
+        async_check_labels_exist(self.hass, call.data["label_id"])
+
         device_registry = dr.async_get(self.hass)
         for device_id in call.data["device_id"]:
-            if device_entry := device_registry.async_get(device_id):
-                labels = device_entry.labels.copy()
-                labels.difference_update(call.data["label_id"])
-                async_update_any_device(device_registry, device_id, labels=labels)
+            if (device_entry := device_registry.async_get(device_id)) is None:
+                msg = f"Device {device_id} not found"
+                raise HomeAssistantError(msg)
+
+            labels = device_entry.labels.copy()
+            labels.difference_update(call.data["label_id"])
+            async_update_any_device(device_registry, device_id, labels=labels)

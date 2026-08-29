@@ -749,3 +749,38 @@ async def test_the_action_walker_filters_service_names_without_being_told(
     )
 
     assert entities == {"input_boolean.gate"}, "the service name was not filtered out"
+
+
+async def test_a_custom_event_payload_is_not_a_reference(
+    hass: HomeAssistant,
+) -> None:
+    """An `entity_id` in somebody's own event is data, not a dependency.
+
+    Home Assistant's own `async_extract_entities` takes nothing from a generic
+    event trigger either. Reporting it would be a repair about an automation
+    that works, which is the worst thing to get wrong.
+    """
+    config = {
+        "platform": "event",
+        "event_type": "my_external_event",
+        "event_data": {"entity_id": "light.whatever_the_sender_calls_it"},
+    }
+
+    assert await extract_entities_from_trigger_config(hass, config) == set()
+
+
+async def test_an_integration_event_payload_still_is_one(
+    hass: HomeAssistant,
+) -> None:
+    """`timer.finished` names a domain, so its payload means an entity.
+
+    That is the line between the two: an event named after an integration
+    comes from it and says what it means.
+    """
+    config = {
+        "platform": "event",
+        "event_type": "timer.finished",
+        "event_data": {"entity_id": "timer.hot_tub"},
+    }
+
+    assert await extract_entities_from_trigger_config(hass, config) == {"timer.hot_tub"}
