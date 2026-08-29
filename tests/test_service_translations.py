@@ -11,8 +11,8 @@ from typing import TYPE_CHECKING
 import yaml
 
 from homeassistant.helpers.translation import (
+    _async_get_translations_cache,
     async_get_cached_translations,
-    async_get_translations,
 )
 
 from custom_components.spook import services as spook_services
@@ -28,6 +28,21 @@ if TYPE_CHECKING:
 SPOOK_ROOT = Path(__file__).parents[1] / "custom_components" / "spook"
 
 
+def _given_a_cached_translation(hass: HomeAssistant, key: str, value: str) -> None:
+    """Put a Home Assistant translation string in the cache.
+
+    Written by hand rather than loaded, because a Home Assistant installed
+    from git has no built translations: those are generated when a release is
+    built, so only `strings.json` ships in the repository. Reading core's own
+    translations here would tie these tests to how Home Assistant was
+    installed rather than to what Spook does with them.
+    """
+    cache = _async_get_translations_cache(hass).cache_data.cache
+    cache.setdefault("en", {}).setdefault("services", {}).setdefault(
+        "homeassistant", {}
+    )[key] = value
+
+
 class MockSpookService(AbstractSpookService):
     """Mock Spook service."""
 
@@ -40,16 +55,6 @@ class MockSpookService(AbstractSpookService):
 
 async def test_service_translations_are_injected(hass: HomeAssistant) -> None:
     """Test service translation strings are injected for overridden services."""
-    await async_get_translations(hass, "en", "services", {"homeassistant"})
-    translations = async_get_cached_translations(
-        hass,
-        "en",
-        "services",
-        "homeassistant",
-    )
-    original_name = translations["component.homeassistant.services.restart.name"]
-    assert "👻" not in original_name
-
     service = MockSpookService(hass)
     manager = SpookServiceManager(hass)
     manager._services.add(service)
@@ -96,13 +101,12 @@ async def test_service_translation_overrides_are_restored(
     manager._services.add(service)
     manager._service_schemas = {"homeassistant_restart": {}}
 
-    await async_get_translations(hass, "en", "services", {"homeassistant"})
-    original_name = async_get_cached_translations(
+    original_name = "Restart"
+    _given_a_cached_translation(
         hass,
-        "en",
-        "services",
-        "homeassistant",
-    )["component.homeassistant.services.restart.name"]
+        "component.homeassistant.services.restart.name",
+        original_name,
+    )
 
     await manager.async_inject_service_translations()
     translations = async_get_cached_translations(
