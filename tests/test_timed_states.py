@@ -1841,3 +1841,99 @@ async def test_unloading_partway_through_catching_up_touches_nothing_after(
     )
 
     timed_states.async_stop()
+
+
+async def test_a_second_hold_during_the_first_is_not_undone_by_it(
+    hass: HomeAssistant,
+) -> None:
+    """A record that was replaced is not a record that was cancelled.
+
+    Only one of those wants the first call to undo its own move. Asking again
+    while a hold is still moving the automation leaves two calls looking at
+    one record, and the older one taking the newer one's word for a
+    cancellation would put the automation back against what was just asked.
+    """
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    moving = asyncio.Event()
+    let_go = asyncio.Event()
+    real_turn_on = AutomationEntity.async_turn_on
+
+    async def _held_open(self: AutomationEntity, **kwargs: object) -> None:
+        moving.set()
+        await let_go.wait()
+
+        await real_turn_on(self, **kwargs)
+
+    with patch.object(AutomationEntity, "async_turn_on", _held_open):
+        first = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR, STATE_ON)
+        )
+
+        async with asyncio.timeout(5):
+            await moving.wait()
+
+        # Somebody wants longer, which replaces the record the first call is
+        # working on.
+        second = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_ON)
+        )
+        await asyncio.sleep(0)
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await first
+            await second
+
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", (
+        "the first call put it back against the hold that replaced it"
+    )
+    assert timed_states.async_until(SLEEPER) is not None, "and lost the record too"
+
+    timed_states.async_stop()
+
+
+async def test_one_disabled_across_a_restart_keeps_its_record(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    entity_registry: er.EntityRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A disabled automation has no state, and is not gone.
+
+    The watch already tells those apart at runtime; catching up has to read a
+    missing state the same way, or a snooze that spans a restart while the
+    automation is disabled is dropped and it stays off for good.
+    """
+    await _automations(hass)
+    entity_registry.async_update_entity(
+        SLEEPER, disabled_by=er.RegistryEntryDisabler.USER
+    )
+    await hass.async_block_till_done()
+    assert hass.states.get(SLEEPER) is None
+
+    until = dt_util.utcnow() + AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": STORAGE_VERSION,
+        "data": {SLEEPER: _record(until)},
+    }
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) == until, (
+        "it read a disabled automation as one that no longer exists"
+    )
+
+    # And its time passing while it is away does not lose it either. Actually
+    # putting it back waits for the automation to come back, which is what the
+    # second-chance tests cover.
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert timed_states.async_until(SLEEPER) == until
+
+    timed_states.async_stop()

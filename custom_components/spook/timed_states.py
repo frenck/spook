@@ -279,12 +279,17 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
 
             raise
 
-        if self._held.get(entity_id) != holding:
-            # Put back by hand between the check above and that call landing,
-            # which cancels the hold. The move went through anyway, so it is
-            # taken back here: leaving it would be an automation held with
-            # nothing left to put it back.
-            await self._async_set(entity_id, holding.restore_to, context)
+        if (current := self._held.get(entity_id)) != holding:
+            if current is None:
+                # Put back by hand between the check above and that call
+                # landing, which cancels the hold. The move went through
+                # anyway, so it is taken back here: leaving it would be an
+                # automation held with nothing left to put it back.
+                await self._async_set(entity_id, holding.restore_to, context)
+
+            # And a record that was replaced rather than dropped belongs to
+            # somebody else's call, which is seeing to the automation itself.
+            # Undoing this move would be undoing theirs.
             return
 
         # And only now the waiting, because a hold short enough to come due
@@ -343,10 +348,16 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
 
             state = self._hass.states.get(entity_id)
 
-            if state is None:
+            if state is None and er.async_get(self._hass).async_get(entity_id) is None:
                 # Gone while Home Assistant was down. Nothing to put back.
                 LOGGER.debug("Spook forgot a timed state for missing %s", entity_id)
                 self._held.pop(entity_id, None)
+            elif state is None:
+                # No state but still in the registry, so disabled rather than
+                # gone. The record waits, and the watch sees to it if it comes
+                # back; the wait below is armed either way so a deadline that
+                # passes while it is away is not lost.
+                self._async_rearm(entity_id)
             elif state.state == held.restore_to:
                 # Somebody put it back in the meantime, which says more about
                 # what they want than the record does.
