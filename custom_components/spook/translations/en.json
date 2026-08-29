@@ -845,6 +845,48 @@
         }
       }
     },
+    "light_set_brightness": {
+      "name": "Set brightness",
+      "description": "Sets the brightness of lights that are already on, and leaves the ones that are off alone.",
+      "fields": {
+        "brightness_pct": {
+          "name": "Brightness",
+          "description": "The brightness to set, as a percentage. Groups are adjusted light by light, so a light that is off stays off."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "How long the change should take, in seconds."
+        }
+      }
+    },
+    "light_increase_brightness": {
+      "name": "Increase brightness",
+      "description": "Turns up the lights that are already on, and leaves the ones that are off alone.",
+      "fields": {
+        "step_pct": {
+          "name": "Step",
+          "description": "How much brighter to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "How long the change should take, in seconds."
+        }
+      }
+    },
+    "light_decrease_brightness": {
+      "name": "Decrease brightness",
+      "description": "Turns down the lights that are already on, stopping at the dimmest they go rather than switching them off.",
+      "fields": {
+        "step_pct": {
+          "name": "Step",
+          "description": "How much dimmer to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "How long the change should take, in seconds."
+        }
+      }
+    },
     "homeassistant_create_area": {
       "name": "Create an area",
       "description": "Creates a new area on the fly.",

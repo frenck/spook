@@ -56,6 +56,95 @@ automation_turn_on_for:
       selector:
         duration:
 
+light_set_brightness:
+  name: Set brightness 👻
+  description: >-
+    Sets the brightness of lights that are already on, and leaves the ones
+    that are off alone. Groups are adjusted light by light rather than by
+    their average.
+  target:
+    entity:
+      domain: light
+  fields:
+    brightness_pct:
+      name: Brightness
+      description: The brightness to set, as a percentage.
+      required: true
+      example: 50
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_increase_brightness:
+  name: Increase brightness 👻
+  description: >-
+    Turns up the lights that are already on, and leaves the ones that are off
+    alone. Each light steps from its own level, so a group keeps its shape
+    instead of levelling out.
+  target:
+    entity:
+      domain: light
+  fields:
+    step_pct:
+      name: Step
+      description: How much brighter to go, as a percentage.
+      required: true
+      example: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_decrease_brightness:
+  name: Decrease brightness 👻
+  description: >-
+    Turns down the lights that are already on, stopping at the dimmest they go
+    rather than switching them off. Each light steps from its own level.
+  target:
+    entity:
+      domain: light
+  fields:
+    step_pct:
+      name: Step
+      description: How much dimmer to go, as a percentage.
+      required: true
+      example: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          unit_of_measurement: "%"
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
 homeassistant_create_area:
   name: Create an area 👻
   description: >-
