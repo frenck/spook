@@ -561,6 +561,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             msg = f"Could not write {self.blueprint_path}"
             raise HomeAssistantError(msg) from err
 
+        # A fetch that worked, so whatever the last one could not do is no
+        # longer the news. Left standing, the dialog would go on saying the
+        # source was unreachable until tomorrow's round.
+        self._set_aside = None
         self._fetched = fetched
         self._attr_installed_version = _fingerprint(fetched)
         self._attr_latest_version = self._attr_installed_version

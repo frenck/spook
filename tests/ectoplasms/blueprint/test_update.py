@@ -1167,3 +1167,36 @@ async def test_the_notes_say_an_update_would_not_load(
         "</ha-alert>",
     )[0]
     assert "input" not in heading, heading
+
+
+async def test_installing_clears_what_the_last_look_could_not_do(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An install is a fetch that worked, so the old complaint is stale news.
+
+    A source that went quiet for a round and was back by the time somebody
+    pressed the button would otherwise leave the dialog saying it could not be
+    reached, until tomorrow.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    with patch(_FETCH, side_effect=TimeoutError):
+        await _check(hass, freezer)
+    assert "Could not reach" in await _entity(hass).async_release_notes()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert hass.states.get(_ENTITY).state == "off"
+    assert "Could not reach" not in await _entity(hass).async_release_notes()

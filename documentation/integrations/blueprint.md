@@ -51,7 +51,7 @@ So the dialog carries the next best thing. The address the blueprint came from, 
 
 If Spook already knows something is wrong, it says so there too. Automations the update would leave short, named. A blueprint that says it needs a newer Home Assistant than the one you are running. Or a source that has stopped leading to this blueprint at all, which is the answer to "why does this one never have an update".
 
-The warning is advice, and an update that is otherwise fine still installs. The other two are refusals: Spook will not write a blueprint that would leave an automation short, or one that says it needs a Home Assistant you are not running.
+The warning is advice, and an update that is otherwise fine still installs. The rest are refusals: Spook will not write a blueprint that would leave an automation or script short of an input, one that would not load once it has been built, or one that says it needs a Home Assistant you are not running.
 
 Matter and ZHA put much the same warning in front of a firmware update, for much the same reason.
 
@@ -71,7 +71,7 @@ Spook checks before it writes anything, using Home Assistant's own reckoning of 
 
 A blueprint that says it needs a newer Home Assistant than the one you are running is refused for the same reason: writing it would break every automation on it, on a version that was never going to work.
 
-And so is one that would simply not run. A blueprint can be perfectly valid as a blueprint while what comes out of it is not something Home Assistant will take, because the blueprint format has nothing whatever to say about triggers, actions or a script's sequence. Spook builds each of your automations against the new version first and puts it through the same validation a reload would, so a blueprint that would take them all out never reaches the disk.
+And so is one that would simply not run. A blueprint can be perfectly valid as a blueprint while what comes out of it is not something Home Assistant will take, because the blueprint format has nothing whatever to say about triggers, actions or a script's sequence. Spook builds every automation and script that uses the blueprint against the new version first and puts each one through the same validation a reload would, so a blueprint that would take them all out never reaches the disk.
 
 :::{warning}
 If you edited an imported blueprint by hand, Spook has no way of telling your changes apart from the author's. It will report an update, because what you have really is no longer what is at the address, and installing it will write over your work.
