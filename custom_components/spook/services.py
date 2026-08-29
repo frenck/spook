@@ -103,6 +103,7 @@ class AbstractSpookService(AbstractSpookServiceBase):
                 self.service,
                 self.domain,
             )
+            return
 
         LOGGER.debug(
             "Registering Spook service: %s.%s",

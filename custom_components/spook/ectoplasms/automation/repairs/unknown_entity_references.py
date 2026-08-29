@@ -16,6 +16,7 @@ from ....action_extraction import (
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import (
+    KNOWN_DOMAINS,
     async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
 )
@@ -118,6 +119,10 @@ async def _entities_from_reference_fields(
     return entities
 
 
+# Where an event trigger keeps what it matches on, rather than what it needs.
+_EVENT_PAYLOAD_KEYS = frozenset({"event_data", "event_data_template"})
+
+
 async def extract_entities_from_trigger_config(
     hass: HomeAssistant,
     config: dict[str, Any] | list,
@@ -144,14 +149,49 @@ async def extract_entities_from_trigger_config(
 
     entities.update(await _entities_from_reference_fields(hass, config, known_services))
 
+    payload_keys = _payload_keys_to_leave_alone(config)
+
     # Extract from nested configs
-    for value in config.values():
+    for key, value in config.items():
+        if key in payload_keys:
+            continue
+
         if isinstance(value, (dict, list)):
             entities.update(
                 await extract_entities_from_trigger_config(hass, value, known_services)
             )
 
     return entities
+
+
+def _payload_keys_to_leave_alone(config: dict[str, Any]) -> frozenset[str]:
+    """Return the event payload keys that hold data rather than references.
+
+    An `entity_id` inside `event_data` is a reference when the event comes
+    from an integration that means it that way, `timer.finished` being the
+    usual one. On somebody's own event it is whatever the sender put there,
+    and reporting that as a missing entity is a repair about an automation
+    that works perfectly well.
+
+    Told apart by the event type: one named after a domain comes from that
+    integration, anything else is somebody's own.
+    """
+    event_types = config.get("event_type")
+    if event_types is None:
+        return frozenset()
+
+    if isinstance(event_types, str):
+        event_types = [event_types]
+
+    for event_type in event_types:
+        if not isinstance(event_type, str):
+            continue
+
+        domain, dot, _ = event_type.partition(".")
+        if dot and domain in KNOWN_DOMAINS:
+            return frozenset()
+
+    return _EVENT_PAYLOAD_KEYS
 
 
 def extract_event_types_from_trigger_config(config: dict[str, Any] | list) -> set[str]:

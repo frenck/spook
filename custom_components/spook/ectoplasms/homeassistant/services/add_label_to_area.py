@@ -11,10 +11,10 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     area_registry as ar,
     config_validation as cv,
-    label_registry as lr,
 )
 
 from ....services import AbstractSpookAdminService
+from ..labels import async_check_labels_exist
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -32,15 +32,14 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
-        label_registry = lr.async_get(self.hass)
-        for label_id in call.data["label_id"]:
-            if not label_registry.async_get_label(label_id):
-                msg = f"Label {label_id} not found"
-                raise HomeAssistantError(msg)
+        async_check_labels_exist(self.hass, call.data["label_id"])
 
         area_registry = ar.async_get(self.hass)
         for area_id in call.data["area_id"]:
-            if area_entry := area_registry.async_get_area(area_id):
-                labels = area_entry.labels.copy()
-                labels.update(call.data["label_id"])
-                area_registry.async_update(area_id, labels=labels)
+            if (area_entry := area_registry.async_get_area(area_id)) is None:
+                msg = f"Area {area_id} not found"
+                raise HomeAssistantError(msg)
+
+            labels = area_entry.labels.copy()
+            labels.update(call.data["label_id"])
+            area_registry.async_update(area_id, labels=labels)

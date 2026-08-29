@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.core import SupportsResponse
 from homeassistant.helpers.recorder import DATA_INSTANCE
+from homeassistant.setup import async_setup_component
 
 from custom_components.spook.ectoplasms.homeassistant.services.list_orphaned_database_entities import (
     SpookService,
@@ -44,6 +45,10 @@ async def test_it_lists_what_the_database_kept_and_the_house_forgot(
     """Recorded entity IDs with no state left are the orphans."""
     ran = _install_fake_recorder(hass)
     hass.states.async_set("sensor.still_here", "1")
+
+    # Set up for real, because Spook does not register a service on somebody
+    # else's domain until that integration is loaded.
+    assert await async_setup_component(hass, "homeassistant", {})
 
     service = SpookService(hass)
     service.async_register()

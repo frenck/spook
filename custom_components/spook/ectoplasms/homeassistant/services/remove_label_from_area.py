@@ -7,9 +7,14 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.helpers import area_registry as ar, config_validation as cv
+from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import (
+    area_registry as ar,
+    config_validation as cv,
+)
 
 from ....services import AbstractSpookAdminService
+from ..labels import async_check_labels_exist
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -27,9 +32,14 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
+        async_check_labels_exist(self.hass, call.data["label_id"])
+
         area_registry = ar.async_get(self.hass)
         for area_id in call.data["area_id"]:
-            if area_entry := area_registry.async_get_area(area_id):
-                labels = area_entry.labels.copy()
-                labels.difference_update(call.data["label_id"])
-                area_registry.async_update(area_id, labels=labels)
+            if (area_entry := area_registry.async_get_area(area_id)) is None:
+                msg = f"Area {area_id} not found"
+                raise HomeAssistantError(msg)
+
+            labels = area_entry.labels.copy()
+            labels.difference_update(call.data["label_id"])
+            area_registry.async_update(area_id, labels=labels)

@@ -363,6 +363,14 @@ class SpookTrigger(Trigger):
         shaped: ConfigType = _TRIGGER_SCHEMA(config)
         options = shaped[CONF_OPTIONS]
 
+        timeout = options.get(CONF_TIMEOUT)
+        if timeout is not None and timeout.total_seconds() <= 0:
+            msg = (
+                "A sequence with no time to finish in runs out the moment it "
+                "starts, so it never gets past its first step."
+            )
+            raise vol.Invalid(msg)
+
         if len(options[CONF_STEPS]) < _MINIMUM_STEPS:
             msg = (
                 f"A sequence needs at least {_MINIMUM_STEPS} steps to be a "
