@@ -830,6 +830,9 @@ async def test_snoozing_again_during_a_wake_survives_that_wake(
     assert snoozing.async_until(SLEEPER) == asked_for, (
         "the wake-up call was read as somebody cancelling the new snooze"
     )
+    assert hass.states.get(SLEEPER).state == "off", (
+        "the wake-up call left it running against the snooze that replaced it"
+    )
 
     snoozing.async_stop()
 

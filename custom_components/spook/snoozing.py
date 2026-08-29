@@ -332,8 +332,19 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
             return
 
         if self._until.get(entity_id) != until:
-            # Asked for again while that was happening, so the wait this woke
-            # belongs to nobody and the new one stands.
+            # Asked for again while this was waking it, so theirs is the newer
+            # word on it and the automation belongs off. It was just turned
+            # on, so that has to be put back.
+            #
+            # There being a record at all is not in doubt here: the only way
+            # to lose one mid-wake is for the automation to go, and the check
+            # above has already turned back for that.
+            await self._hass.services.async_call(
+                AUTOMATION_DOMAIN,
+                SERVICE_TURN_OFF,
+                {ATTR_ENTITY_ID: entity_id},
+                blocking=True,
+            )
             return
 
         del self._until[entity_id]
