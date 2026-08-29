@@ -14,11 +14,17 @@ import aiohttp
 import voluptuous as vol
 
 from homeassistant.components import blueprint
-from homeassistant.components.automation import automations_with_blueprint
+from homeassistant.components.automation import (
+    automations_with_blueprint,
+    config as automation_config,
+)
 from homeassistant.components.blueprint import BLUEPRINT_SCHEMA
 from homeassistant.components.blueprint.const import CONF_SOURCE_URL
 from homeassistant.components.blueprint.importer import fetch_blueprint_from_url
-from homeassistant.components.script import scripts_with_blueprint
+from homeassistant.components.script import (
+    config as script_config,
+    scripts_with_blueprint,
+)
 from homeassistant.components.update import (
     UpdateEntity,
     UpdateEntityDescription,
@@ -38,7 +44,7 @@ from ...entity import SpookEntity, SpookEntityDescription
 from ...listeners import async_listen_once_tracked
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Awaitable, Callable
     from datetime import datetime
     from pathlib import Path
 
@@ -46,13 +52,36 @@ if TYPE_CHECKING:
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-# Only the domains whose blueprint users can be listed. Without that list there
-# is no telling whether an update would leave an automation short of an input,
-# and an install button that cannot promise that is worse than no button at
-# all. Template blueprints are the ones missing out for now.
-_CONSUMERS: dict[str, Callable[[HomeAssistant, str], list[str]]] = {
-    "automation": automations_with_blueprint,
-    "script": scripts_with_blueprint,
+
+@dataclass(frozen=True, kw_only=True)
+class _UsesBlueprints:
+    """What has to be to hand before Spook will follow a domain's blueprints.
+
+    Its users, so they can be asked what they supply, and the same validation
+    a reload puts them through, so an update can be tried on them before
+    anything is written.
+    """
+
+    users: Callable[[HomeAssistant, str], list[str]]
+    validate: Callable[
+        [HomeAssistant, str, dict[str, Any]],
+        Awaitable[Any],
+    ]
+
+
+# Which is why it is these two and not template blueprints as well. Without
+# both halves there is no telling whether an update would leave something
+# unable to load, and an install button that cannot promise that is worse than
+# no button at all.
+_USES_BLUEPRINTS: dict[str, _UsesBlueprints] = {
+    "automation": _UsesBlueprints(
+        users=automations_with_blueprint,
+        validate=automation_config.async_validate_config_item,
+    ),
+    "script": _UsesBlueprints(
+        users=scripts_with_blueprint,
+        validate=script_config.async_validate_config_item,
+    ),
 }
 
 # The folder Home Assistant fills with its own example blueprints. All three of
@@ -308,7 +337,7 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         )
 
         for domain, domain_blueprint in sorted(domain_blueprints.items()):
-            if domain not in _CONSUMERS:
+            if domain not in _USES_BLUEPRINTS:
                 continue
 
             for path, item in (await domain_blueprint.async_get_blueprints()).items():
@@ -501,7 +530,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             )
             raise HomeAssistantError(msg)
 
-        if short := self._async_consumers_left_short(fetched):
+        if short := await self._async_consumers_left_short(fetched):
             msg = (
                 f"Updating {self._said.name} would stop {_listed(short)} from "
                 f"loading, because the new version asks for something they do "
@@ -573,14 +602,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             notes.append(_WOULD_NOT_RUN)
             notes.extend(f"- {error}" for error in errors)
 
-        if short := self._async_consumers_left_short(self._fetched):
+        if short := await self._async_consumers_left_short(self._fetched):
             notes.append(_WOULD_BE_REFUSED)
             notes.extend(
-                f"- `{entity_id}` never sets "
-                + ", ".join(f"`{name}`" for name in sorted(inputs))
-                if inputs
-                else f"- `{entity_id}` cannot be checked"
-                for entity_id, inputs in sorted(short.items())
+                f"- `{entity_id}` {reason}"
+                for entity_id, reason in sorted(short.items())
             )
 
         return "\n\n".join(notes)
@@ -625,30 +651,33 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         return fetched
 
-    @callback
-    def _async_consumers_left_short(
+    async def _async_consumers_left_short(
         self,
         fetched: blueprint.Blueprint,
-    ) -> dict[str, set[str]]:
+    ) -> dict[str, str]:
         """Return which users of this blueprint the new version would strand.
 
-        An input without a default has to be supplied by whoever uses the
-        blueprint. If a new version asks for one that an automation never set,
-        that automation stops loading the moment this is written, and there is
-        no going back to the version it did work with.
+        Two ways it can. An input without a default has to be supplied by
+        whoever uses the blueprint, so a new one that nobody sets leaves them
+        with nothing to put there. And a blueprint can be perfectly good as a
+        blueprint while what comes out of it is not something Home Assistant
+        will run: the blueprint schema has nothing whatever to say about
+        triggers, actions or a script's sequence.
 
-        Put to Home Assistant's own reckoning of what an input needs rather
-        than worked out again here, so the two cannot drift apart.
+        Either way they stop loading the moment this is written, and the
+        version they did work with has been written over by then.
+
+        Both questions are put to Home Assistant rather than answered again
+        here, so the two cannot drift apart.
         """
         component = self.hass.data.get(DATA_INSTANCES, {}).get(self.blueprint_domain)
         if component is None:
             return {}
 
-        short: dict[str, set[str]] = {}
-        for entity_id in _CONSUMERS[self.blueprint_domain](
-            self.hass,
-            self.blueprint_path,
-        ):
+        uses = _USES_BLUEPRINTS[self.blueprint_domain]
+        short: dict[str, str] = {}
+
+        for entity_id in uses.users(self.hass, self.blueprint_path):
             if (entity := component.get_entity(entity_id)) is None:
                 continue
 
@@ -659,24 +688,32 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             # than going ahead on a guess.
             supplied = getattr(entity, "_blueprint_inputs", None)
             if supplied is None:
-                short[entity_id] = set()
+                short[entity_id] = "cannot be checked"
                 continue
 
             candidate = blueprint.BlueprintInputs(fetched, supplied)
 
-            # Enough on its own. A blueprint whose body reaches for an input
-            # it never declares is turned away when it is built, so once every
-            # declared input has a value there is nothing left for the
-            # substitution to trip over.
             if missing := set(fetched.inputs) - set(candidate.inputs_with_default):
-                short[entity_id] = missing
+                short[entity_id] = f"never sets {', '.join(sorted(missing))}"
+                continue
+
+            # Substituting cannot fail here: a blueprint whose body reaches for
+            # an input it never declares is turned away when it is built, so by
+            # now every one of them has a value.
+            try:
+                await uses.validate(
+                    self.hass,
+                    entity_id.partition(".")[2],
+                    candidate.async_substitute(),
+                )
+            except (vol.Invalid, HomeAssistantError) as err:
+                short[entity_id] = f"would not load: {err}"
 
         return short
 
 
-def _listed(short: dict[str, set[str]]) -> str:
+def _listed(short: dict[str, str]) -> str:
     """Return the stranded consumers as something to put in a sentence."""
     return ", ".join(
-        f"{entity_id} ({', '.join(sorted(inputs))})" if inputs else entity_id
-        for entity_id, inputs in sorted(short.items())
+        f"{entity_id} ({reason})" for entity_id, reason in sorted(short.items())
     )

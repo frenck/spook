@@ -29,12 +29,14 @@ from custom_components.spook.ectoplasms.blueprint.update import (
 from .conftest import (
     A_SCRIPT_BLUEPRINT,
     A_SCRIPT_BLUEPRINT_CHANGED,
+    A_SCRIPT_BLUEPRINT_WITH_A_BAD_STEP,
     A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT,
     ANOTHER_AUTOMATION_BLUEPRINT,
     MOTION_LIGHT,
     MOTION_LIGHT_CHANGED,
     MOTION_LIGHT_CHANGED_AGAIN,
     MOTION_LIGHT_FROM_THE_FUTURE,
+    MOTION_LIGHT_WITH_A_BAD_TRIGGER,
     MOTION_LIGHT_WITH_NEW_INPUT,
     NO_INPUTS,
     SOURCE,
@@ -723,6 +725,16 @@ async def test_a_script_blueprint_gets_one_too(
     file = async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
     await async_set_up(hass)
 
+    # With a script actually on it, so the update is tried on that script the
+    # way a reload would try it, through the script validator rather than the
+    # automation one.
+    await async_add_script(
+        hass,
+        "shout",
+        "notify.yaml",
+        {"notify_target": "mobile_app_phone"},
+    )
+
     entity_id = "update.blueprints_spooky_confirmable_notification"
     assert hass.states.get(entity_id) is not None
 
@@ -740,6 +752,7 @@ async def test_a_script_blueprint_gets_one_too(
 
     assert "Boo!" in file.read_text(encoding="utf-8")
     assert hass.states.get(entity_id).state == "off"
+    assert hass.states.get("script.shout") is not None
 
 
 async def test_a_script_that_would_be_left_short_stops_the_install(
@@ -1046,3 +1059,96 @@ async def test_a_check_and_an_install_do_not_tread_on_each_other(
     # What was written is what this now has. A check that landed afterwards
     # with an older answer would leave this offering an update backwards.
     assert hass.states.get(_ENTITY).state == "off", "the check undid the install"
+
+
+async def test_an_update_that_would_not_load_is_refused(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A blueprint can be perfectly good and still produce a broken automation.
+
+    The blueprint schema has nothing whatever to say about triggers, actions
+    or a script's sequence, and Home Assistant writes the file before it
+    reloads anybody. So a blueprint that passes on the way in takes out every
+    automation on it, and the working version it replaced is gone.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    with _source_says(MOTION_LIGHT_WITH_A_BAD_TRIGGER):
+        await _check(hass, freezer)
+
+        with pytest.raises(HomeAssistantError, match="would not load"):
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY},
+                blocking=True,
+            )
+
+    assert file.read_text(encoding="utf-8") == before
+    assert hass.states.get("automation.landing_light") is not None
+
+
+async def test_a_script_update_that_would_not_load_is_refused(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Scripts go through a validator of their own, so it needs its own go."""
+    file = async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    await async_set_up(hass)
+    await async_add_script(
+        hass,
+        "shout",
+        "notify.yaml",
+        {"notify_target": "mobile_app_phone"},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    entity_id = "update.blueprints_spooky_confirmable_notification"
+    with _source_says(A_SCRIPT_BLUEPRINT_WITH_A_BAD_STEP):
+        await _check(hass, freezer)
+
+        with pytest.raises(HomeAssistantError, match="would not load"):
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": entity_id},
+                blocking=True,
+            )
+
+    assert file.read_text(encoding="utf-8") == before
+    assert hass.states.get("script.shout") is not None
+
+
+async def test_the_notes_say_an_update_would_not_load(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    hass_ws_client: WebSocketGenerator,
+) -> None:
+    """Before the button, not after it."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_WITH_A_BAD_TRIGGER):
+        await _check(hass, freezer)
+
+        notes = await _release_notes(client)
+
+    assert "alert-type='error'" in notes
+    assert "automation.landing_light" in notes
+    assert "would not load" in notes

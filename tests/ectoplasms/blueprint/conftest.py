@@ -62,6 +62,14 @@ mode: restart
 MOTION_LIGHT_CHANGED = MOTION_LIGHT.replace('to: "on"', 'to: "off"')
 MOTION_LIGHT_CHANGED_AGAIN = MOTION_LIGHT.replace("mode: restart", "mode: queued")
 
+# Perfectly good as a blueprint. The blueprint schema has nothing to say about
+# triggers, so this only falls over once something tries to run it.
+MOTION_LIGHT_WITH_A_BAD_TRIGGER = MOTION_LIGHT.replace(
+    "  - platform: state",
+    "  - platform: no_such_trigger_platform",
+)
+
+
 # And the same again, asking for something nobody has set yet.
 MOTION_LIGHT_WITH_NEW_INPUT = MOTION_LIGHT.replace(
     "    light_target:\n      name: Light\n",
@@ -99,6 +107,11 @@ sequence:
 """
 
 A_SCRIPT_BLUEPRINT_CHANGED = A_SCRIPT_BLUEPRINT.replace("Boo", "Boo!")
+
+A_SCRIPT_BLUEPRINT_WITH_A_BAD_STEP = A_SCRIPT_BLUEPRINT.replace(
+    "  - service: notify.notify",
+    "  - not_a_step_anybody_knows: true\n  - service: notify.notify",
+)
 
 A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT = A_SCRIPT_BLUEPRINT.replace(
     "    notify_target:\n      name: Where to send it\n",
