@@ -53,10 +53,20 @@ class Snoozing:
         self._timers: dict[str, CALLBACK_TYPE] = {}
         self._unsub_watching: CALLBACK_TYPE | None = None
         self._unsub_started: CALLBACK_TYPE | None = None
+        self._stopped = False
 
     async def async_start(self) -> CALLBACK_TYPE:
         """Read back what was asleep, and take it from there."""
         stored = await self._store.async_load() or {}
+
+        if self._stopped:
+            # Unloaded while the store was being read. Stopping cannot reach
+            # into a coroutine that is waiting, so anything arming something
+            # after an `await` has to look for itself. Here that is the
+            # listener below; the timers and the state watch refuse on their
+            # own.
+            return self.async_stop
+
         self._until = {
             entity_id: parsed
             for entity_id, until in stored.items()
@@ -82,6 +92,8 @@ class Snoozing:
         What is asleep stays written down, so it is picked up again next time
         rather than left off for good.
         """
+        self._stopped = True
+
         for entity_id in list(self._timers):
             self._async_cancel_timer(entity_id)
 
@@ -121,6 +133,9 @@ class Snoozing:
         self._until[entity_id] = dt_util.utcnow() + duration
         await self._async_save()
 
+        # Unloaded while that was saving leaves both of these refusing, and
+        # the automation is still turned off below: it is written down, so the
+        # next start picks it up. Only the waiting goes.
         self._async_rearm(entity_id)
         self._async_watch()
 
@@ -152,6 +167,10 @@ class Snoozing:
         now = dt_util.utcnow()
 
         for entity_id, until in list(self._until.items()):
+            if self._stopped:
+                # Unloaded partway through, waking one of them.
+                return
+
             state = self._hass.states.get(entity_id)
 
             if state is None:
@@ -179,7 +198,7 @@ class Snoozing:
         """
         self._async_cancel_timer(entity_id)
 
-        if (until := self._until.get(entity_id)) is None:
+        if self._stopped or (until := self._until.get(entity_id)) is None:
             return
 
         self._timers[entity_id] = async_track_point_in_utc_time(
@@ -255,7 +274,7 @@ class Snoozing:
         previous = self._unsub_watching
         self._unsub_watching = None
 
-        if self._until:
+        if self._until and not self._stopped:
             self._unsub_watching = async_track_state_change_event(
                 self._hass, list(self._until), self._async_woken_by_hand
             )

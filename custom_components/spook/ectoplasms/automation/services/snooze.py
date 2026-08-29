@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 
@@ -13,9 +13,27 @@ from ....services import AbstractSpookEntityComponentService
 from ....snoozing import async_get_snoozing
 
 if TYPE_CHECKING:
+    from datetime import timedelta
+
     from homeassistant.core import ServiceCall
 
 CONF_DURATION = "duration"
+
+
+def _a_stretch_of_time(value: Any) -> timedelta:
+    """Validate a duration that is actually a duration.
+
+    `cv.positive_time_period` counts nothing at all as positive, and a snooze
+    of nothing is an automation turned off and straight back on: a pulse
+    through everything watching it, in exchange for no quiet whatsoever.
+    """
+    period = cv.positive_time_period(value)
+
+    if not period:
+        msg = "duration must be longer than nothing"
+        raise vol.Invalid(msg)
+
+    return period
 
 
 class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
@@ -30,7 +48,7 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
 
     domain = DOMAIN
     service = "snooze"
-    schema = {vol.Required(CONF_DURATION): cv.positive_time_period}
+    schema = {vol.Required(CONF_DURATION): _a_stretch_of_time}
 
     async def async_handle_service(
         self,

@@ -123,6 +123,28 @@ async def test_the_caller_travels_with_the_switching_off(
     hass.data["spook_snoozing"].async_stop()
 
 
+async def test_a_snooze_of_nothing_is_refused(hass: HomeAssistant) -> None:
+    """It would turn an automation off and straight back on, for nothing.
+
+    Anything watching that automation would see the pulse, so this is a
+    mistake worth saying out loud rather than carrying out.
+    """
+    await _setup(hass)
+
+    with pytest.raises(vol.Invalid):
+        await hass.services.async_call(
+            "automation",
+            "snooze",
+            {"entity_id": SLEEPER, "duration": {"seconds": 0}},
+            blocking=True,
+        )
+
+    assert hass.states.get(SLEEPER).state == "on"
+    assert hass.data["spook_snoozing"].async_until(SLEEPER) is None
+
+    hass.data["spook_snoozing"].async_stop()
+
+
 async def test_a_duration_is_required(hass: HomeAssistant) -> None:
     """Without one there is no snooze, only an off switch."""
     await _setup(hass)

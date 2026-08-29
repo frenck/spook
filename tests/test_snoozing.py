@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 from datetime import timedelta
+import asyncio
 from typing import TYPE_CHECKING
 from unittest.mock import patch
 
@@ -14,6 +15,7 @@ from homeassistant.components.automation import AutomationEntity
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_UNAVAILABLE
 from homeassistant.core import Context, CoreState, State
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.storage import Store
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import (
@@ -486,3 +488,194 @@ async def test_a_stale_wake_up_call_leaves_the_new_wait_alone(
     assert hass.states.get(SLEEPER).state == "off", "it woke at the old time"
 
     snoozing.async_stop()
+
+
+async def test_unloading_while_the_store_is_read_leaves_nothing_behind(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Stopping cannot reach into a coroutine that is waiting on something.
+
+    So the two are made to genuinely overlap here: the read is held open, the
+    register is stopped, and only then is the read let go. A test that awaits
+    the start first would pass against exactly the leak it is named for.
+    """
+    until = dt_util.utcnow() - AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": STORAGE_VERSION,
+        "data": {SLEEPER: until.isoformat()},
+    }
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    hass.set_state(CoreState.running)
+    snoozing = Snoozing(hass)
+
+    reading = asyncio.Event()
+    let_go = asyncio.Event()
+    real_load = Store.async_load
+
+    async def _held_open(self: Store) -> dict | None:
+        reading.set()
+        await let_go.wait()
+        return await real_load(self)
+
+    with patch.object(Store, "async_load", _held_open):
+        starting = hass.async_create_task(snoozing.async_start())
+
+        async with asyncio.timeout(5):
+            await reading.wait()
+
+        snoozing.async_stop()
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await starting
+
+    await hass.async_block_till_done()
+
+    assert not snoozing._timers, "it armed a timer on a stopped register"
+    assert snoozing._unsub_watching is None, "it left a listener behind"
+    assert hass.states.get(SLEEPER).state == "off", (
+        "it woke an automation after Spook was unloaded"
+    )
+
+
+async def test_unloading_partway_through_catching_up_stops_there(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Two overdue snoozes, and Spook goes while the first is being woken.
+
+    The second must stay asleep rather than be turned on by a register that
+    is no longer running. It keeps its record, so the next start sees to it.
+    """
+    until = dt_util.utcnow() - AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": STORAGE_VERSION,
+        "data": {SLEEPER: until.isoformat(), OTHER: until.isoformat()},
+    }
+    mock_restore_cache(hass, (State(SLEEPER, "off"), State(OTHER, "off")))
+    await _automations(hass)
+
+    hass.set_state(CoreState.running)
+    snoozing = Snoozing(hass)
+
+    waking = asyncio.Event()
+    let_go = asyncio.Event()
+    real_turn_on = AutomationEntity.async_turn_on
+
+    async def _held_open(self: AutomationEntity, **kwargs: object) -> None:
+        if self.entity_id == SLEEPER:
+            waking.set()
+            await let_go.wait()
+
+        await real_turn_on(self, **kwargs)
+
+    with patch.object(AutomationEntity, "async_turn_on", _held_open):
+        starting = hass.async_create_task(snoozing.async_start())
+
+        async with asyncio.timeout(5):
+            await waking.wait()
+
+        snoozing.async_stop()
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await starting
+
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", "the one it was on never woke"
+    assert hass.states.get(OTHER).state == "off", (
+        "it kept waking automations after Spook was unloaded"
+    )
+    assert snoozing.async_until(OTHER) is not None, "and forgot the one it skipped"
+
+
+async def test_unloading_while_the_store_is_read_before_the_start(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Same overlap, with Home Assistant not up yet.
+
+    A register that is still reading its store when Spook goes would otherwise
+    sit down to wait for a start event nobody is going to unsubscribe it from.
+    """
+    until = dt_util.utcnow() + AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": STORAGE_VERSION,
+        "data": {SLEEPER: until.isoformat()},
+    }
+    await _automations(hass)
+
+    hass.set_state(CoreState.not_running)
+    snoozing = Snoozing(hass)
+
+    reading = asyncio.Event()
+    let_go = asyncio.Event()
+    real_load = Store.async_load
+
+    async def _held_open(self: Store) -> dict | None:
+        reading.set()
+        await let_go.wait()
+        return await real_load(self)
+
+    with patch.object(Store, "async_load", _held_open):
+        starting = hass.async_create_task(snoozing.async_start())
+
+        async with asyncio.timeout(5):
+            await reading.wait()
+
+        snoozing.async_stop()
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await starting
+
+    assert snoozing._unsub_started is None, "it waited for a start after unloading"
+
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
+    await hass.async_block_till_done()
+
+    assert not snoozing._timers, "the start it waited for armed a timer"
+
+
+async def test_unloading_while_a_snooze_is_saved_still_leaves_nothing_behind(
+    hass: HomeAssistant,
+) -> None:
+    """The other side of the same thing: a call in flight when the entry goes.
+
+    The automation is still turned off, because the snooze is written down by
+    then and the next start picks it up. Only the waiting is dropped, there
+    being nobody left to do it.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    saving = asyncio.Event()
+    let_go = asyncio.Event()
+    real_save = Store.async_save
+
+    async def _held_open(self: Store, data: dict) -> None:
+        saving.set()
+        await let_go.wait()
+        await real_save(self, data)
+
+    with patch.object(Store, "async_save", _held_open):
+        snoozed = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR))
+
+        async with asyncio.timeout(5):
+            await saving.wait()
+
+        snoozing.async_stop()
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await snoozed
+
+    await hass.async_block_till_done()
+
+    assert not snoozing._timers, "it armed a timer on a stopped register"
+    assert snoozing._unsub_watching is None, "it left a listener behind"
+    assert hass.states.get(SLEEPER).state == "off", "it did not turn it off at all"
