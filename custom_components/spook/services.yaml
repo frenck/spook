@@ -38,6 +38,24 @@ automation_snooze:
       selector:
         duration:
 
+automation_turn_on_for:
+  name: Turn on for 👻
+  description: >-
+    Turns an automation on for a while, and turns it back off when the time is
+    up. It survives a restart of Home Assistant, so "just for tonight" does not
+    quietly become forever.
+  target:
+    entity:
+      domain: automation
+  fields:
+    duration:
+      name: Duration
+      description: How long the automation stays on.
+      required: true
+      example: "01:00:00"
+      selector:
+        duration:
+
 homeassistant_create_area:
   name: Create an area 👻
   description: >-

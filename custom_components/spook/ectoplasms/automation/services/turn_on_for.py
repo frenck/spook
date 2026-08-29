@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.automation import DOMAIN, BaseAutomationEntity
-from homeassistant.const import STATE_OFF
+from homeassistant.const import STATE_ON
 
 from ....services import AbstractSpookEntityComponentService
 from ....timed_states import a_stretch_of_time, async_get_timed_states
@@ -19,17 +19,17 @@ CONF_DURATION = "duration"
 
 
 class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
-    """Automation service that turns one off for a while, not for good.
+    """Automation service that turns one on for a while, not for good.
 
-    Turning an automation off is the only way to make it stop for an hour,
-    and an automation turned off stays off: past the restart, past the
-    weekend, until somebody notices. The usual way round it is a helper
-    entity and a second automation to turn the first one back on, which is
-    two moving parts for something that should be one.
+    The other way round from a snooze, and the same trap: an automation
+    turned on stays on, so "just for tonight" needs somebody to remember. The
+    usual way round it is a helper entity and a second automation to turn the
+    first one back off, which is two moving parts for something that should
+    be one.
     """
 
     domain = DOMAIN
-    service = "snooze"
+    service = "turn_on_for"
     schema = {vol.Required(CONF_DURATION): a_stretch_of_time}
 
     async def async_handle_service(
@@ -41,8 +41,8 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
         await async_get_timed_states(self.hass).async_hold(
             entity.entity_id,
             call.data[CONF_DURATION],
-            STATE_OFF,
-            # Carried through, so an automation watching this one switch off
+            STATE_ON,
+            # Carried through, so an automation watching this one switch on
             # can still tell who asked for it. Spook's own context conditions
             # read the person off exactly that.
             context=call.context,

@@ -70,6 +70,12 @@ Turns an automation off for a while, and turns it back on when the time is up. I
 
 `automation.snooze`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze), [documentation](integrations/automation#snooze) 📚
 
+## Automation: Turn on for
+
+Turns an automation on for a while, and turns it back off when the time is up. It survives a restart, so "just for tonight" does not quietly become forever. _#automation_ _#temporary_
+
+`automation.turn_on_for`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.turn_on_for), [documentation](integrations/automation#turn-on-for) 📚
+
 ## Blueprint: Import Blueprint
 
 Downloads and imports an automation/script blueprint, directly from the URL you pass into this action. _#noquestionsasked_

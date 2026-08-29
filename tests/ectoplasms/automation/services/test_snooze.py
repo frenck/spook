@@ -14,7 +14,7 @@ import pytest
 import voluptuous as vol
 
 from custom_components.spook.ectoplasms.automation.services.snooze import SpookService
-from custom_components.spook.snoozing import async_setup_snoozing
+from custom_components.spook.timed_states import async_setup_timed_states
 
 # Importing Spook puts it in `sys.modules`, which is what lets Home Assistant's
 # loader resolve the integration.
@@ -48,7 +48,7 @@ async def _setup(hass: HomeAssistant) -> None:
     await hass.async_block_till_done()
 
     hass.set_state(CoreState.running)
-    await async_setup_snoozing(hass)
+    await async_setup_timed_states(hass)
     SpookService(hass).async_register()
     await hass.async_block_till_done()
 
@@ -68,7 +68,7 @@ async def test_it_snoozes_the_targeted_automation(hass: HomeAssistant) -> None:
     assert hass.states.get(SLEEPER).state == "off"
     assert hass.states.get(OTHER).state == "on", "it snoozed something else too"
 
-    hass.data["spook_snoozing"].async_stop()
+    hass.data["spook_timed_states"].async_stop()
 
 
 async def test_it_snoozes_several_at_once(
@@ -96,7 +96,7 @@ async def test_it_snoozes_several_at_once(
     assert hass.states.get(SLEEPER).state == "on"
     assert hass.states.get(OTHER).state == "on"
 
-    hass.data["spook_snoozing"].async_stop()
+    hass.data["spook_timed_states"].async_stop()
 
 
 async def test_the_caller_travels_with_the_switching_off(
@@ -121,7 +121,7 @@ async def test_the_caller_travels_with_the_switching_off(
 
     assert hass.states.get(SLEEPER).context.id == asked.id
 
-    hass.data["spook_snoozing"].async_stop()
+    hass.data["spook_timed_states"].async_stop()
 
 
 async def test_a_snooze_of_nothing_is_refused(hass: HomeAssistant) -> None:
@@ -141,9 +141,9 @@ async def test_a_snooze_of_nothing_is_refused(hass: HomeAssistant) -> None:
         )
 
     assert hass.states.get(SLEEPER).state == "on"
-    assert hass.data["spook_snoozing"].async_until(SLEEPER) is None
+    assert hass.data["spook_timed_states"].async_until(SLEEPER) is None
 
-    hass.data["spook_snoozing"].async_stop()
+    hass.data["spook_timed_states"].async_stop()
 
 
 async def test_a_duration_past_the_end_of_the_calendar_is_refused(
@@ -167,7 +167,7 @@ async def test_a_duration_past_the_end_of_the_calendar_is_refused(
 
     assert hass.states.get(SLEEPER).state == "on"
 
-    hass.data["spook_snoozing"].async_stop()
+    hass.data["spook_timed_states"].async_stop()
 
 
 async def test_a_duration_is_required(hass: HomeAssistant) -> None:
@@ -181,4 +181,4 @@ async def test_a_duration_is_required(hass: HomeAssistant) -> None:
 
     assert hass.states.get(SLEEPER).state == "on"
 
-    hass.data["spook_snoozing"].async_stop()
+    hass.data["spook_timed_states"].async_stop()
