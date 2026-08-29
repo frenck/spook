@@ -3,6 +3,9 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
+import asyncio
+from functools import partial
+
 from typing import TYPE_CHECKING
 
 from homeassistant.setup import async_setup_component
@@ -19,8 +22,10 @@ from custom_components.spook.ectoplasms.light.services.increase_brightness impor
 from .conftest import (
     BRIGHT,
     DIM,
+    EMPTY_GROUP,
     GROUP,
     OFF,
+    OWNED_GROUP,
     PLAIN,
     async_set_up_group,
     async_set_up_lights,
@@ -182,3 +187,111 @@ async def test_a_light_that_is_off_but_still_reports_a_level_is_left_alone(
     await hass.async_block_till_done()
 
     assert hass.states.get(OFF).state == "off", "it turned on a light that was off"
+
+
+async def test_a_transition_is_passed_along(hass: HomeAssistant) -> None:
+    """Because a jump to a new level is not what anybody wants to watch."""
+    await _setup(hass)
+
+    await hass.services.async_call(
+        "light",
+        "increase_brightness",
+        {"entity_id": DIM, "step_pct": 10, "transition": 2},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    light = hass.data["entity_components"]["light"].get_entity(DIM)
+    assert light.transitions == [2.0]
+
+
+async def test_lights_are_stepped_together_rather_than_one_after_another(
+    hass: HomeAssistant,
+) -> None:
+    """A room full of lights should not take as long as all of them added up.
+
+    Every light lands on its own level, so this cannot be a single call, but
+    it does not have to wait for each one either. Slow lights are exactly the
+    ones somebody notices while dimming.
+    """
+    await _setup(hass)
+    await async_set_up_group(hass, [DIM, BRIGHT])
+
+    started = asyncio.Event()
+    both_in_flight = asyncio.Event()
+    in_flight = 0
+
+    lights = hass.data["entity_components"]["light"]
+    originals = {
+        entity_id: lights.get_entity(entity_id).async_turn_on
+        for entity_id in (DIM, BRIGHT)
+    }
+
+    async def _slow(entity_id: str, **kwargs: object) -> None:
+        nonlocal in_flight
+        in_flight += 1
+        started.set()
+
+        if in_flight == 2:  # noqa: PLR2004
+            both_in_flight.set()
+
+        await both_in_flight.wait()
+        await originals[entity_id](**kwargs)
+
+    for entity_id in (DIM, BRIGHT):
+        entity = lights.get_entity(entity_id)
+        entity.async_turn_on = partial(_slow, entity_id)  # type: ignore[method-assign]
+
+    async with asyncio.timeout(5):
+        await hass.services.async_call(
+            "light",
+            "increase_brightness",
+            {"entity_id": GROUP, "step_pct": 10},
+            blocking=True,
+        )
+
+    assert both_in_flight.is_set(), "the second light waited for the first to finish"
+
+
+async def test_a_group_an_integration_owns_is_worked_through_too(
+    hass: HomeAssistant,
+) -> None:
+    """Not every light group keeps its members under the same attribute.
+
+    A helper group lists entity IDs under `entity_id`. A group belonging to
+    one integration, like the ones MQTT builds, gets `group_entities` from
+    Home Assistant itself. Reading only the first sort means stepping the
+    second sort's group entity, which is the averaging this exists to avoid.
+    """
+    await _setup(hass)
+
+    await hass.services.async_call(
+        "light",
+        "increase_brightness",
+        {"entity_id": OWNED_GROUP, "step_pct": 10},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    assert _brightness(hass, DIM) == _DIM + _ONE_STEP
+    assert _brightness(hass, BRIGHT) == _FULL
+
+
+async def test_a_group_with_no_members_is_not_a_light(hass: HomeAssistant) -> None:
+    """An empty group is still a group, and has no level worth setting.
+
+    Reading its members as "does it hold anything" rather than "does it say
+    what it holds" would drop it through to the plain-light case, and step the
+    group entity itself.
+    """
+    await _setup(hass)
+
+    await hass.services.async_call(
+        "light",
+        "increase_brightness",
+        {"entity_id": EMPTY_GROUP, "step_pct": 10},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    assert _brightness(hass, EMPTY_GROUP) == _DIM, "it stepped the group itself"

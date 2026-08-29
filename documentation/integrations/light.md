@@ -16,7 +16,7 @@ date: 2026-08-29T14:00:00+02:00
 
 The light {term}`integration <integration>` is how {term}`Home Assistant` controls anything that lights up a room.
 
-Spook adds actions for adjusting lights, rather than switching them. `light.turn_on` does two things at once: it sets a level and it turns the light on. Most of the time somebody adjusting a room means the first without the second, and there is no way to ask for that.
+Spook adds actions for adjusting lights, rather than switching them: brightness, color, color temperature and effects. `light.turn_on` does two things at once: it sets a level and it turns the light on. Most of the time somebody adjusting a room means the first without the second, and there is no way to ask for that.
 
 There is a second half to it. A light group is a light like any other, so asking one for a little more brightness has Home Assistant average its members, apply the step to that average, and then set every member to the result. A room with a lamp at 10% and one at 100% ends up with both at 65%: not brighter, just flatter. Spook's actions work through to the members and step each from its own level.
 
@@ -192,12 +192,172 @@ data:
 
 :::
 
+### Set color
+
+Set the color of the lights that are already on. Lights that cannot do color are passed over, rather than being turned white the way `light.turn_on` does to them.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Light: Set color 👻
+* - {term}`Action name`
+  - `light.set_color`
+* - {term}`Action targets`
+  - Yes, `light` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `rgb_color`
+  - {term}`list <list>`
+  - One of the two
+  - [255, 127, 80]
+* - `color_name`
+  - {term}`string <string>`
+  - One of the two
+  - coral
+* - `transition`
+  - {term}`number <number>`
+  - No
+  - 2
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: light.set_color
+target:
+  area_id: living_room
+data:
+  color_name: coral
+```
+
+:::
+
+### Set color temperature
+
+Set the color temperature of the lights that are already on, each within the range it can actually reach. Warm white on one lamp is a number another one cannot manage, and a room is rarely all the same model.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Light: Set color temperature 👻
+* - {term}`Action name`
+  - `light.set_color_temperature`
+* - {term}`Action targets`
+  - Yes, `light` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color_temperature)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color_temperature)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `kelvin`
+  - {term}`number <number>`
+  - Yes
+  - 2700
+* - `transition`
+  - {term}`number <number>`
+  - No
+  - 2
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: light.set_color_temperature
+target:
+  area_id: living_room
+data:
+  kelvin: 2700
+  transition: 2
+```
+
+:::
+
+### Set effect
+
+Set an effect on the lights that are already on and actually have it. Effect names are per manufacturer and rarely agree, so a room is usually a mix of lights that know this one and lights that have never heard of it.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Light: Set effect 👻
+* - {term}`Action name`
+  - `light.set_effect`
+* - {term}`Action targets`
+  - Yes, `light` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `effect`
+  - {term}`string <string>`
+  - Yes
+  - Colorloop
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: light.set_effect
+target:
+  entity_id: light.kitchen
+data:
+  effect: Colorloop
+```
+
+:::
+
 :::{attention} Known limitations
 :class: dropdown
 
 - Lights that are off are left alone. These actions adjust, they do not switch: turning the room up should not light up whatever somebody deliberately turned off.
 - Decreasing stops at the dimmest a light goes rather than switching it off, so holding a dim-down button leaves the room lit rather than dark.
-- A light that reports no brightness at all, an on-or-off light, is skipped. There is nothing to adjust.
+- A light that cannot do what is being asked is skipped rather than turned on regardless: an on-or-off light has no brightness to set, a white-only light has no color, and a light without a given effect has never heard of it.
   :::
 
 ## Repairs

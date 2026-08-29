@@ -100,6 +100,24 @@ Turns down the lights that are already on, stopping at the dimmest they go rathe
 
 `light.decrease_brightness`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.decrease_brightness), [documentation](integrations/light#decrease-brightness) 📚
 
+## Light: Set color
+
+Sets the color of lights that are already on, and passes over the ones that cannot do color. _#light_ _#adjust_
+
+`light.set_color`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color), [documentation](integrations/light#set-color) 📚
+
+## Light: Set color temperature
+
+Sets the color temperature of lights that are already on, each within the range it can actually reach. _#light_ _#adjust_
+
+`light.set_color_temperature`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color_temperature), [documentation](integrations/light#set-color-temperature) 📚
+
+## Light: Set effect
+
+Sets an effect on the lights that are already on and actually have it. _#light_ _#adjust_
+
+`light.set_effect`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect), [documentation](integrations/light#set-effect) 📚
+
 ## Wait for a condition
 
 Waits until a condition is true, and carries on straight away if it already is. Takes the ordinary condition building blocks, so it needs no template. _#wait_ _#condition_

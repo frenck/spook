@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import asyncio
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 
@@ -19,7 +20,9 @@ from ...services import AbstractSpookEntityComponentService
 from . import async_lights_that_are_on
 
 if TYPE_CHECKING:
-    from homeassistant.core import ServiceCall
+    from collections.abc import Coroutine
+
+    from homeassistant.core import ServiceCall, State
 
 CONF_STEP_PCT = "step_pct"
 
@@ -57,17 +60,33 @@ class AbstractStepBrightnessService(AbstractSpookEntityComponentService[LightEnt
     ) -> None:
         """Handle the service call."""
         step = round(_FULL * call.data[CONF_STEP_PCT] / 100) * self.direction
+        transition = call.data.get(ATTR_TRANSITION)
 
-        for light in async_lights_that_are_on(self.hass, entity.entity_id):
+        def _call(light: State) -> Coroutine[Any, Any, Any]:
+            """Return the call that steps one light from where it is."""
             brightness = light.attributes[ATTR_BRIGHTNESS] + step
-            data = {
+            data: dict[str, Any] = {
                 ATTR_ENTITY_ID: light.entity_id,
                 ATTR_BRIGHTNESS: min(max(brightness, _DIMMEST), _FULL),
             }
 
-            if (transition := call.data.get(ATTR_TRANSITION)) is not None:
+            if transition is not None:
                 data[ATTR_TRANSITION] = transition
 
-            await self.hass.services.async_call(
+            return self.hass.services.async_call(
                 DOMAIN, SERVICE_TURN_ON, data, blocking=True, context=call.context
             )
+
+        # Every light lands on a different level, so this cannot be one call.
+        # Waiting for each in turn can, though: a room full of lights would
+        # take as long as all of them added together, and slow ones are
+        # exactly what somebody is dimming.
+        # A light with no dimmer has no level to step, and it is still a
+        # light: it lands in a group and in an area target like any other.
+        await asyncio.gather(
+            *(
+                _call(light)
+                for light in async_lights_that_are_on(self.hass, entity.entity_id)
+                if light.attributes.get(ATTR_BRIGHTNESS) is not None
+            )
+        )

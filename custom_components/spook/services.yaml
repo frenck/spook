@@ -145,6 +145,83 @@ light_decrease_brightness:
           max: 300
           unit_of_measurement: seconds
 
+light_set_color:
+  name: Set color 👻
+  description: >-
+    Sets the color of lights that are already on, and leaves alone the ones
+    that are off or cannot do color.
+  target:
+    entity:
+      domain: light
+  fields:
+    rgb_color:
+      name: Color
+      description: The color to set.
+      example: "[255, 100, 100]"
+      selector:
+        color_rgb:
+    color_name:
+      name: Color name
+      description: A named color, such as "coral" or "midnightblue".
+      example: coral
+      selector:
+        text:
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_set_color_temperature:
+  name: Set color temperature 👻
+  description: >-
+    Sets the color temperature of lights that are already on, each within the
+    range it can actually reach.
+  target:
+    entity:
+      domain: light
+  fields:
+    kelvin:
+      name: Color temperature
+      description: The color temperature to set.
+      required: true
+      example: 2700
+      selector:
+        color_temp:
+          unit: kelvin
+          min: 2000
+          max: 6500
+    transition:
+      name: Transition
+      description: How long the change should take.
+      example: 2
+      selector:
+        number:
+          min: 0
+          max: 300
+          unit_of_measurement: seconds
+
+light_set_effect:
+  name: Set effect 👻
+  description: >-
+    Sets an effect on the lights that are already on and actually have it.
+    Effect names differ per manufacturer, so a room is usually a mix.
+  target:
+    entity:
+      domain: light
+  fields:
+    effect:
+      name: Effect
+      description: The name of the effect to set.
+      required: true
+      example: Colorloop
+      selector:
+        text:
+
 homeassistant_create_area:
   name: Create an area 👻
   description: >-

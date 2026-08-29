@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.light import (
+    ATTR_BRIGHTNESS,
     ATTR_BRIGHTNESS_PCT,
     ATTR_TRANSITION,
     DOMAIN,
@@ -48,15 +49,27 @@ class SpookService(AbstractSpookEntityComponentService[LightEntity]):
         call: ServiceCall,
     ) -> None:
         """Handle the service call."""
-        for light in async_lights_that_are_on(self.hass, entity.entity_id):
-            data = {
-                ATTR_ENTITY_ID: light.entity_id,
-                ATTR_BRIGHTNESS_PCT: call.data[CONF_BRIGHTNESS_PCT],
-            }
+        # A light with no dimmer has no level to set, and it is still a light:
+        # it lands in a group and in an area target like any other.
+        lights = [
+            light
+            for light in async_lights_that_are_on(self.hass, entity.entity_id)
+            if light.attributes.get(ATTR_BRIGHTNESS) is not None
+        ]
+        if not lights:
+            return
 
-            if (transition := call.data.get(ATTR_TRANSITION)) is not None:
-                data[ATTR_TRANSITION] = transition
+        # One call for all of them, rather than one call each: they are all
+        # going to the same level, and this way Home Assistant fans it out
+        # with the concurrency and per-platform limits it already has.
+        data = {
+            ATTR_ENTITY_ID: [light.entity_id for light in lights],
+            ATTR_BRIGHTNESS_PCT: call.data[CONF_BRIGHTNESS_PCT],
+        }
 
-            await self.hass.services.async_call(
-                DOMAIN, SERVICE_TURN_ON, data, blocking=True, context=call.context
-            )
+        if (transition := call.data.get(ATTR_TRANSITION)) is not None:
+            data[ATTR_TRANSITION] = transition
+
+        await self.hass.services.async_call(
+            DOMAIN, SERVICE_TURN_ON, data, blocking=True, context=call.context
+        )

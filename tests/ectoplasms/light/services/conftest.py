@@ -8,6 +8,7 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.light import ColorMode, LightEntity, LightEntityFeature
 from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import Platform
+from homeassistant.helpers.group import IntegrationSpecificGroup
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     MockModule,
@@ -28,6 +29,10 @@ BRIGHT = "light.bright"
 OFF = "light.off"
 PLAIN = "light.plain"
 GROUP = "light.kitchen"
+OWNED_GROUP = "light.theset"
+EMPTY_GROUP = "light.nobody"
+COLOUR = "light.colour"
+WHITES = "light.whites"
 
 
 class OnOffLight(LightEntity):
@@ -86,6 +91,72 @@ class FakeLight(LightEntity):
         self.async_write_ha_state()
 
 
+class ColourLight(FakeLight):
+    """A light that can do colour and effects."""
+
+    _attr_supported_color_modes = {ColorMode.RGB}
+    _attr_color_mode = ColorMode.RGB
+    _attr_supported_features = LightEntityFeature.TRANSITION | LightEntityFeature.EFFECT
+    _attr_effect_list = ["Colorloop", "Random"]
+
+    def __init__(self, name: str) -> None:
+        """Initialize the light."""
+        super().__init__(name, 255, on=True)
+        self._attr_rgb_color = (255, 255, 255)
+        self.calls: list[dict[str, Any]] = []
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn on, remembering everything it was asked for."""
+        self.calls.append(dict(kwargs))
+
+        if "rgb_color" in kwargs:
+            self._attr_rgb_color = kwargs["rgb_color"]
+
+        if "effect" in kwargs:
+            self._attr_effect = kwargs["effect"]
+
+        await super().async_turn_on(**kwargs)
+
+
+class ColourTemperatureLight(FakeLight):
+    """A light that only does whites, with a range of its own."""
+
+    _attr_supported_color_modes = {ColorMode.COLOR_TEMP}
+    _attr_color_mode = ColorMode.COLOR_TEMP
+    _attr_supported_features = LightEntityFeature.TRANSITION
+    _attr_min_color_temp_kelvin = 2202
+    _attr_max_color_temp_kelvin = 4000
+
+    def __init__(self, name: str) -> None:
+        """Initialize the light."""
+        super().__init__(name, 255, on=True)
+        self._attr_color_temp_kelvin = 3000
+        self.calls: list[dict[str, Any]] = []
+
+    async def async_turn_on(self, **kwargs: Any) -> None:
+        """Turn on, remembering everything it was asked for."""
+        self.calls.append(dict(kwargs))
+
+        if "color_temp_kelvin" in kwargs:
+            self._attr_color_temp_kelvin = kwargs["color_temp_kelvin"]
+
+        await super().async_turn_on(**kwargs)
+
+
+class IntegrationGroupLight(FakeLight):
+    """A group an integration owns, like the ones MQTT builds.
+
+    Home Assistant gives these members under `group_entities` rather than
+    `entity_id`, and it does so from `helpers/entity.py` for any entity with
+    a group at all.
+    """
+
+    def __init__(self, name: str, member_unique_ids: list[str]) -> None:
+        """Initialize the group."""
+        super().__init__(name, 26, on=True)
+        self.group = IntegrationSpecificGroup(self, member_unique_ids)
+
+
 async def async_set_up_lights(hass: HomeAssistant) -> None:
     """Set up three lights: one dim, one bright, one off."""
 
@@ -104,6 +175,10 @@ async def async_set_up_lights(hass: HomeAssistant) -> None:
                 FakeLight("bright", 255, on=True),
                 FakeLight("off", 128, on=False),
                 OnOffLight("plain", on=True),
+                IntegrationGroupLight("theset", ["dim", "bright"]),
+                IntegrationGroupLight("nobody", []),
+                ColourLight("colour"),
+                ColourTemperatureLight("whites"),
             ]
         )
 

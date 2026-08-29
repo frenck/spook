@@ -887,6 +887,48 @@
         }
       }
     },
+    "light_set_color": {
+      "name": "Set color",
+      "description": "Sets the color of lights that are already on, and leaves alone the ones that are off or cannot do color.",
+      "fields": {
+        "rgb_color": {
+          "name": "Color",
+          "description": "The color to set. Lights that cannot do color are passed over rather than turned white."
+        },
+        "color_name": {
+          "name": "Color name",
+          "description": "A named color, such as \"coral\" or \"midnightblue\"."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "How long the change should take, in seconds."
+        }
+      }
+    },
+    "light_set_color_temperature": {
+      "name": "Set color temperature",
+      "description": "Sets the color temperature of lights that are already on, each within the range it can actually reach.",
+      "fields": {
+        "kelvin": {
+          "name": "Color temperature",
+          "description": "The color temperature to set. Every light is held to its own range, since warm white on one lamp is a number another cannot reach."
+        },
+        "transition": {
+          "name": "Transition",
+          "description": "How long the change should take, in seconds."
+        }
+      }
+    },
+    "light_set_effect": {
+      "name": "Set effect",
+      "description": "Sets an effect on the lights that are already on and actually have it.",
+      "fields": {
+        "effect": {
+          "name": "Effect",
+          "description": "The name of the effect to set. Effect names differ per manufacturer, so lights that do not have this one are left as they are."
+        }
+      }
+    },
     "homeassistant_create_area": {
       "name": "Create an area",
       "description": "Creates a new area on the fly.",
