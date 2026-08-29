@@ -762,6 +762,63 @@ async def test_a_wake_up_call_that_came_due_at_the_unload_does_nothing(
     assert snoozing.async_until(SLEEPER) == until, "and forgot the snooze on the way"
 
 
+async def test_turning_one_on_while_catching_up_cancels_its_snooze(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Catching up ends in a store write, and somebody may act during it.
+
+    Nothing here is overdue, so no wake sets up the watch along the way, and
+    the write at the end is the whole window. Turning an automation on cancels
+    its snooze, and a start still tidying up must not be the moment that
+    stops being true.
+    """
+    later = dt_util.utcnow() + AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": STORAGE_VERSION,
+        "data": {SLEEPER: later.isoformat()},
+    }
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    hass.set_state(CoreState.running)
+    snoozing = Snoozing(hass)
+
+    saving = asyncio.Event()
+    let_go = asyncio.Event()
+    real_save = Store.async_save
+
+    async def _held_open(self: Store, data: dict) -> None:
+        saving.set()
+        await let_go.wait()
+
+        await real_save(self, data)
+
+    with patch.object(Store, "async_save", _held_open):
+        starting = hass.async_create_task(snoozing.async_start())
+
+        async with asyncio.timeout(5):
+            await saving.wait()
+
+        # Somebody decides they want it running again.
+        await hass.services.async_call(
+            "automation", "turn_on", {"entity_id": SLEEPER}, blocking=True
+        )
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await starting
+
+    await hass.async_block_till_done()
+
+    assert snoozing.async_until(SLEEPER) is None, (
+        "it kept counting down for one somebody had turned back on"
+    )
+    assert SLEEPER not in snoozing._timers, "and left its wake-up call armed"
+
+    snoozing.async_stop()
+
+
 async def test_unloading_partway_through_catching_up_stops_there(
     hass: HomeAssistant,
     hass_storage: dict,

@@ -195,6 +195,12 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         """Sort out everything that was asleep when the lights went out."""
         now = dt_util.utcnow()
 
+        # Watched from the outset rather than only at the end, because the
+        # end is a store write and somebody turning an automation on during it
+        # would go unseen, leaving a record counting down for something that
+        # is already running.
+        self._async_watch()
+
         for entity_id, until in list(self._until.items()):
             if self._stopped:
                 # Unloaded partway through, waking one of them.
