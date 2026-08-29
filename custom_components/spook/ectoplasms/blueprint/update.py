@@ -32,7 +32,6 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_call_later
 from homeassistant.util import yaml as yaml_util
-from homeassistant.util.yaml import UndefinedSubstitution
 
 from ...const import DOMAIN, LOGGER
 from ...entity import SpookEntity, SpookEntityDescription
@@ -665,16 +664,12 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
             candidate = blueprint.BlueprintInputs(fetched, supplied)
 
+            # Enough on its own. A blueprint whose body reaches for an input
+            # it never declares is turned away when it is built, so once every
+            # declared input has a value there is nothing left for the
+            # substitution to trip over.
             if missing := set(fetched.inputs) - set(candidate.inputs_with_default):
                 short[entity_id] = missing
-                continue
-
-            # And that the thing actually renders, which is the other half of
-            # what a reload would do with it.
-            try:
-                candidate.async_substitute()
-            except UndefinedSubstitution, HomeAssistantError:
-                short[entity_id] = set()
 
         return short
 
