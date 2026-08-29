@@ -392,6 +392,13 @@ async def test_unloading_stops_a_round_that_is_under_way(
 
     assert len(reached) == 1, "it carried on after being unloaded"
 
+    # And the one that was mid-fetch when the rug went does not put a live
+    # state back over the unavailable one that unloading left.
+    assert all(
+        hass.states.get(entity_id).state == "unavailable"
+        for entity_id in hass.states.async_entity_ids("update")
+    ), "something wrote a state back after being taken away"
+
 
 async def test_a_blueprint_nobody_dumped_back_out_still_matches(
     hass: HomeAssistant,
@@ -1152,3 +1159,11 @@ async def test_the_notes_say_an_update_would_not_load(
     assert "alert-type='error'" in notes
     assert "automation.landing_light" in notes
     assert "would not load" in notes
+
+    # And the heading over that list says nothing about inputs. There are
+    # three ways onto it, and blaming the commonest of them sends somebody off
+    # setting inputs that were never the trouble.
+    heading = notes.partition("<ha-alert alert-type='error'>")[2].partition(
+        "</ha-alert>",
+    )[0]
+    assert "input" not in heading, heading

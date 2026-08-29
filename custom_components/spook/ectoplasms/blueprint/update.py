@@ -120,11 +120,15 @@ _WOULD_NOT_RUN = (
     "</ha-alert>"
 )
 
+# Deliberately says nothing about why. There are three reasons a thing can end
+# up on that list and the line next to each one gives its own; a heading that
+# names only the commonest of them sends people off fixing the wrong thing.
 _WOULD_BE_REFUSED = (
     "<ha-alert alert-type='error'>"
-    "This one asks for inputs that nothing has set, so Spook will not install "
-    "it. Set them first, or import it yourself from the blueprint page if you "
-    "are happy to go round the automations below afterwards."
+    "Spook will not install this one. What is listed below would stop loading "
+    "the moment it is written, and the version it does work with is gone by "
+    "then. Put those right first, or import it yourself from the blueprint "
+    "page if you would rather sort them out afterwards."
     "</ha-alert>"
 )
 
@@ -533,11 +537,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         if short := await self._async_consumers_left_short(fetched):
             msg = (
                 f"Updating {self._said.name} would stop {_listed(short)} from "
-                f"loading, because the new version asks for something they do "
-                f"not set. Nothing has been written. Set those inputs first, "
-                f"or import {self._said.source_url} yourself from the "
-                f"blueprint page if you are happy to reconfigure them "
-                f"afterwards."
+                f"loading. Nothing has been written. Put that right first, or "
+                f"import {self._said.source_url} yourself from the blueprint "
+                f"page if you would rather sort them out afterwards."
             )
             raise HomeAssistantError(msg)
 
