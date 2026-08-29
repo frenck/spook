@@ -12,7 +12,10 @@ from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import ATTR_RESTORED, STATE_UNAVAILABLE
 from homeassistant.core import State
 
+from homeassistant.data_entry_flow import FlowResultType
+
 from custom_components.spook.const import DOMAIN
+from custom_components.spook.repairs import DeadEntitiesFixFlow
 from custom_components.spook.ectoplasms.homeassistant.repairs.dead_entities import (
     SpookRepair,
 )
@@ -23,8 +26,14 @@ if TYPE_CHECKING:
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
 
 
-def _loaded_entry(hass: HomeAssistant, title: str = "Hue") -> MockConfigEntry:
-    """Add a loaded config entry to hass."""
+def _loaded_entry(
+    hass: HomeAssistant, title: str = "Somebody's account"
+) -> MockConfigEntry:
+    """Add a loaded config entry to hass.
+
+    The title is deliberately not the integration's name, because for an
+    account-based integration it never is.
+    """
     entry = MockConfigEntry(domain="derivative", title=title)
     entry.add_to_hass(hass)
     entry.mock_state(hass, ConfigEntryState.LOADED)
@@ -63,7 +72,10 @@ async def test_dead_entity_of_loaded_entry_is_reported(
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["entities"] == f"- `{dead}`"
-    assert issue.translation_placeholders["integration"] == "Hue"
+    assert issue.translation_placeholders["integration"] == "Derivative", (
+        "it named the config entry rather than the integration"
+    )
+    assert issue.is_fixable, "there is nothing a person can do with this by hand"
 
 
 async def test_live_entity_is_not_reported(
@@ -246,3 +258,52 @@ async def test_entity_removed_outright_does_not_recheck(hass: HomeAssistant) -> 
     repair to find.
     """
     assert await _count_scheduled_inspections(hass, _live(), None) == 0
+
+
+async def test_the_fix_clears_out_the_leftover_registrations(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Which is the only place these entities still exist.
+
+    The old advice was to go and remove them from the entity registry, which
+    asks somebody to know what an entity registry is and where to find it.
+    """
+    entry = _loaded_entry(hass)
+    dead = _register_restored(hass, entity_registry, entry, "dead")
+    other = _register_restored(hass, entity_registry, None, "not_this_one")
+
+    flow = DeadEntitiesFixFlow()
+    flow.hass = hass
+    flow.data = {"dead_entities_config_entry_id": entry.entry_id}
+
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert entity_registry.async_get(dead) is None
+    assert entity_registry.async_get(other) is not None, "it took one that was not its"
+
+
+async def test_the_fix_leaves_an_entity_that_came_back(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """An issue can sit in front of somebody for a while.
+
+    An entity that turned up again in the meantime is a working entity, and
+    deleting its registration would take its history and settings with it.
+    """
+    entry = _loaded_entry(hass)
+    dead = _register_restored(hass, entity_registry, entry, "dead")
+    returned = _register_restored(hass, entity_registry, entry, "returned")
+
+    hass.states.async_set(returned, "21.5")
+
+    flow = DeadEntitiesFixFlow()
+    flow.hass = hass
+    flow.data = {"dead_entities_config_entry_id": entry.entry_id}
+
+    await flow.async_step_remove()
+
+    assert entity_registry.async_get(dead) is None
+    assert entity_registry.async_get(returned) is not None

@@ -14,6 +14,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
+from homeassistant.loader import Integration, async_get_integrations
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
@@ -100,24 +101,47 @@ class SpookRepair(AbstractSpookRepair):
                 continue
             dead_by_entry[entry.config_entry_id].append(state.entity_id)
 
-        for entry_id, entity_ids in dead_by_entry.items():
-            config_entry = self.hass.config_entries.async_get_entry(entry_id)
-            if (
-                config_entry is None
-                or config_entry.state is not ConfigEntryState.LOADED
-            ):
-                # The integration is gone or still (re)loading; its entities
-                # may still appear, so this is not a dead-entity signal.
-                continue
+        entries = {
+            entry_id: entry
+            for entry_id in dead_by_entry
+            if (entry := self.hass.config_entries.async_get_entry(entry_id)) is not None
+            and entry.state is ConfigEntryState.LOADED
+        }
+
+        # The name people know an integration by lives in its manifest. A
+        # config entry's title is whatever it was set up as, which for an
+        # account-based integration is the name of the account holder: being
+        # told that "Franck Nijhof" registered dead entities is not helpful.
+        names = await async_get_integrations(
+            self.hass, {entry.domain for entry in entries.values()}
+        )
+
+        for entry_id, config_entry in entries.items():
+            integration = names.get(config_entry.domain)
+            name = (
+                integration.name
+                if isinstance(integration, Integration)
+                else config_entry.domain
+            )
 
             self.possible_issue_ids.add(entry_id)
             self.async_create_issue(
                 issue_id=entry_id,
                 issue_domain=config_entry.domain,
-                translation_placeholders={
-                    "integration": config_entry.title,
+                is_fixable=True,
+                data={
+                    "dead_entities_config_entry_id": entry_id,
+                    "integration": name,
                     "entities": "\n".join(
-                        f"- `{entity_id}`" for entity_id in sorted(entity_ids)
+                        f"- `{entity_id}`"
+                        for entity_id in sorted(dead_by_entry[entry_id])
+                    ),
+                },
+                translation_placeholders={
+                    "integration": name,
+                    "entities": "\n".join(
+                        f"- `{entity_id}`"
+                        for entity_id in sorted(dead_by_entry[entry_id])
                     ),
                 },
             )
