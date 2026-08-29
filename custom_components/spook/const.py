@@ -17,4 +17,5 @@ PLATFORMS: Final = [
     Platform.SENSOR,
     Platform.SWITCH,
     Platform.TIME,
+    Platform.UPDATE,
 ]
