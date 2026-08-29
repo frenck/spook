@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
+from homeassistant.components.update import UpdateEntityFeature
 from homeassistant.core import CoreState
 from homeassistant.exceptions import HomeAssistantError
 import aiohttp
@@ -35,6 +36,10 @@ from .conftest import (
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
+    from pytest_homeassistant_custom_component.typing import (
+        MockHAClientWebSocket,
+        WebSocketGenerator,
+    )
 
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import entity_registry as er
@@ -437,3 +442,102 @@ async def test_a_blueprint_that_cannot_be_read_says_nothing_new(
         await _check(hass, freezer)
 
     assert hass.states.get(_ENTITY).state == "on"
+
+
+async def _release_notes(client: MockHAClientWebSocket) -> str:
+    """Ask for the release notes the way the dialog does."""
+    await client.send_json_auto_id(
+        {"type": "update/release_notes", "entity_id": _ENTITY},
+    )
+
+    result = await client.receive_json()
+    assert result["success"], result
+
+    return result["result"]
+
+
+async def test_the_notes_always_say_where_the_blueprint_came_from(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+) -> None:
+    """Even with nothing to install.
+
+    The source is the only thing that can tell somebody what a blueprint
+    actually does, so it belongs in front of them rather than a click away.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    assert SOURCE in await _release_notes(client)
+    assert (
+        UpdateEntityFeature.RELEASE_NOTES
+        in hass.states.get(_ENTITY).attributes["supported_features"]
+    )
+
+
+async def test_the_notes_warn_that_an_update_need_not_still_fit(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """There is no changelog, so this is the only warning anybody gets.
+
+    Matter and ZHA put the same sort of thing in front of a firmware update,
+    for the same reason: the dialog looks like every other update dialog, and
+    this one is not that.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    # Before the clock moves. An access token is good for half an hour, and
+    # a round of checks is a day further on than that.
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "alert-type='warning'" in notes
+    assert SOURCE in notes
+
+
+async def test_the_notes_name_the_automations_that_would_be_left_short(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Better than finding out by pressing install and being turned down."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "alert-type='error'" in notes
+    assert "automation.landing_light" in notes
+    assert "wait_time" in notes
+
+
+async def test_the_notes_do_not_warn_when_there_is_nothing_to_install(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A warning nobody needs is a warning nobody reads."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert "ha-alert" not in await _release_notes(client)

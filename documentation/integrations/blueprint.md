@@ -41,6 +41,16 @@ Spook gives every one of those blueprints an update entity. It follows the addre
 
 Only blueprints that came from a URL get one. A blueprint you wrote yourself has no source to check against, and the three example blueprints Home Assistant lays down for you are left alone as well: they point at Home Assistant's development branch, which is not the version you are running.
 
+#### What the update dialog tells you
+
+Every other update dialog in Home Assistant shows you release notes. This one cannot, because there are none: a blueprint has no changelog, and the author is under no obligation to say anything anywhere.
+
+So the dialog carries the next best thing. The address the blueprint came from, as a link, always, so you can go and read what actually changed before deciding. And a warning, because an update dialog looks the same whatever is behind it, and this one deserves a second thought: an author improving their blueprint and it still suiting the {term}`automations <automation>` you built on it are two different things. Inputs get renamed. Behaviour gets rethought.
+
+If Spook already knows the update would leave your automations short, it says so there too, and names them, so you find out before pressing install rather than after.
+
+Matter and ZHA put much the same warning in front of a firmware update, for much the same reason.
+
 #### About those version numbers
 
 They look like `a1b2c3d`, and that is not Spook being clever. Blueprints have no version. There is nowhere in a blueprint to put one, because the format turns away anything it does not recognise, so no author can add one even if they wanted to.

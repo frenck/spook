@@ -28,7 +28,7 @@ from homeassistant.components.update import (
     UpdateEntityDescription,
     UpdateEntityFeature,
 )
-from homeassistant.const import CONF_DEFAULT, EVENT_HOMEASSISTANT_STARTED
+from homeassistant.const import CONF_DEFAULT, EVENT_HOMEASSISTANT_STARTED, STATE_ON
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
@@ -74,6 +74,26 @@ _CHECK_INTERVAL = timedelta(hours=24)
 _FIRST_CHECK_WINDOW = (timedelta(minutes=5), timedelta(minutes=30))
 
 _FETCH_TIMEOUT = 30
+
+# What goes in the dialog before somebody presses install. Home Assistant
+# renders `ha-alert` in release notes, which Matter and ZHA both lean on to
+# put a warning in front of a firmware update. Same idea here.
+_NO_PROMISES = (
+    "<ha-alert alert-type='warning'>"
+    "Blueprints carry no changelog, so there is nothing here that says what "
+    "changed. An update is whatever the author decided to do, and nothing "
+    "promises it still fits the automations you built on it: inputs get "
+    "renamed, behaviour gets rethought. Read the source before you install it."
+    "</ha-alert>"
+)
+
+_WOULD_BE_REFUSED = (
+    "<ha-alert alert-type='error'>"
+    "This one asks for inputs that nothing has set, so Spook will not install "
+    "it. Set them first, or import it yourself from the blueprint page if you "
+    "are happy to go round the automations below afterwards."
+    "</ha-alert>"
+)
 
 
 async def async_setup_entry(
@@ -301,7 +321,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
     """Spook update entity for a single imported blueprint."""
 
     _attr_should_poll = False
-    _attr_supported_features = UpdateEntityFeature.INSTALL
+    _attr_supported_features = (
+        UpdateEntityFeature.INSTALL | UpdateEntityFeature.RELEASE_NOTES
+    )
 
     def __init__(
         self,
@@ -328,6 +350,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         )
 
         self._source_url: str = item.metadata[CONF_SOURCE_URL]
+        self._fetched: blueprint.Blueprint | None = None
         self._attr_title = item.name
         self._attr_release_url = self._source_url
         self._attr_installed_version = fingerprint
@@ -376,6 +399,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         if (fingerprint := _fingerprint(fetched.yaml())) is None:
             return
 
+        self._fetched = fetched
         self._attr_latest_version = fingerprint
         self.async_write_ha_state()
 
@@ -420,9 +444,36 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             msg = f"Could not write {self.blueprint_path}"
             raise HomeAssistantError(msg) from err
 
+        self._fetched = fetched
         self._attr_installed_version = _fingerprint(fetched.yaml())
         self._attr_latest_version = self._attr_installed_version
         self.async_write_ha_state()
+
+    async def async_release_notes(self) -> str | None:
+        """Return what can honestly be said before somebody presses install.
+
+        Which is not much, and that is the whole of it. A blueprint has no
+        changelog and no version, so there is nothing to show you that says
+        what changed. What is left is where it came from, so you can go and
+        read it, and a plain warning that an author improving their blueprint
+        and it still suiting what you built on it are two different things.
+        """
+        came_from = f"Imported from [{self._source_url}]({self._source_url})."
+
+        if self.state != STATE_ON or self._fetched is None:
+            return came_from
+
+        notes = [_NO_PROMISES, came_from]
+
+        if short := self._async_consumers_left_short(self._fetched):
+            notes.append(_WOULD_BE_REFUSED)
+            notes.extend(
+                f"- `{entity_id}` never sets "
+                + ", ".join(f"`{name}`" for name in sorted(inputs))
+                for entity_id, inputs in sorted(short.items())
+            )
+
+        return "\n\n".join(notes)
 
     async def _async_fetch(self) -> blueprint.Blueprint:
         """Fetch whatever the source URL points at now."""
