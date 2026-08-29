@@ -75,6 +75,8 @@ Turning an automation off is the only way to make it stop for an hour, and an au
 
 This is that, in one action. It survives a restart of Home Assistant, because the time it is due back is written down rather than left in a timer that dies with the process.
 
+The other way round, holding one on for a while, is [Turn on for](#turn-on-for).
+
 Turning the automation back on yourself cancels the snooze. Saying so is a clearer statement of what you want than a wake-up time set earlier, so Spook takes it that way and forgets the rest.
 
 :::{seealso} Example actions in {term}`YAML`
@@ -110,6 +112,82 @@ data:
 - An automation that is already off is left alone, and Spook says so in the log. Waking it would turn on something you turned off, which is not what snoozing asks for.
 - Snoozing one that is already asleep moves its wake-up time rather than starting a second one.
 - The automation is off while it sleeps, so anything reading its state sees exactly that. There is no third state between on and off.
+  :::
+
+### Turn on for
+
+Turns an automation on for a while, and turns it back off when the time is up.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Automation: Turn on for 👻
+* - {term}`Action name`
+  - `automation.turn_on_for`
+* - {term}`Action targets`
+  - Yes, `automation` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Developer tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.turn_on_for)
+    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.turn_on_for)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `duration`
+  - {term}`string <string>`
+  - Yes
+  - `01:00:00`
+```
+
+The other way round from [Snooze](#snooze), and the same trap in reverse: an automation turned on stays on, so "just for tonight" needs somebody to remember. Guest mode you switch on in December and find again in March, holiday lighting that outlives the holiday, a debug automation left running.
+
+This is that, in one action, and it survives a restart of Home Assistant for the same reason: the time it is due back off is written down rather than left in a timer that dies with the process.
+
+Turning the automation off yourself cancels the run, the same way turning one on cancels a snooze.
+
+:::{seealso} Example actions in {term}`YAML`
+:class: dropdown
+
+Guest mode, for the weekend:
+
+```{code-block} yaml
+:linenos:
+action: automation.turn_on_for
+target:
+  entity_id: automation.guest_mode
+data:
+  duration: "48:00:00"
+```
+
+The party lighting, until the party is over:
+
+```{code-block} yaml
+:linenos:
+action: automation.turn_on_for
+target:
+  entity_id: automation.disco_floor
+data:
+  duration: "04:00:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- An automation that is already on is left alone, and Spook says so in the log. Turning it off later would switch off something you switched on, which is not what this asks for.
+- Asking again for one already running moves the time it goes off rather than starting a second one.
+- The automation is on while it runs, so anything reading its state sees exactly that. There is no third state between on and off.
   :::
 
 ## Repairs

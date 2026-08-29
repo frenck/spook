@@ -1,4 +1,4 @@
-"""Tests for snoozing automations."""
+"""Tests for holding automations in a state for a while."""
 
 # The register's own bookkeeping is what one of these is about, and there is no
 # public way at it.
@@ -13,9 +13,15 @@ from typing import TYPE_CHECKING
 from unittest.mock import patch
 
 from homeassistant.components.automation import AutomationEntity
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_UNAVAILABLE
+from homeassistant.const import (
+    EVENT_HOMEASSISTANT_STARTED,
+    STATE_OFF,
+    STATE_ON,
+    STATE_UNAVAILABLE,
+)
 from homeassistant.core import Context, CoreState, State, callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.storage import Store
 from homeassistant.setup import async_setup_component
@@ -26,11 +32,12 @@ from pytest_homeassistant_custom_component.common import (
     mock_restore_cache,
 )
 
-from custom_components.spook.snoozing import (
+from custom_components.spook.timed_states import (
     STORAGE_KEY,
     STORAGE_VERSION,
-    Snoozing,
-    async_setup_snoozing,
+    TimedStates,
+    _Held,
+    async_setup_timed_states,
 )
 
 # Importing Spook puts it in `sys.modules`, which is what lets Home Assistant's
@@ -38,8 +45,9 @@ from custom_components.spook.snoozing import (
 import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from freezegun.api import FrozenDateTimeFactory
-    from homeassistant.helpers import entity_registry as er
 
     from homeassistant.core import Event, HomeAssistant
     from homeassistant.helpers.event import EventStateChangedData
@@ -79,17 +87,22 @@ def _without_the_nameless_one() -> dict:
     return {"automation": NAMELESS["automation"][1:]}
 
 
+def _record(until: datetime, state: str = STATE_OFF) -> dict[str, str]:
+    """Return one stored record, in the shape the store keeps them."""
+    return {"until": until.isoformat(), "state": state}
+
+
 async def _automations(hass: HomeAssistant) -> None:
     """Set up the automations these tests snooze."""
     assert await async_setup_component(hass, "automation", CONFIG)
     await hass.async_block_till_done()
 
 
-async def _register(hass: HomeAssistant) -> Snoozing:
+async def _register(hass: HomeAssistant) -> TimedStates:
     """Start a register, the way the config entry does."""
     hass.set_state(CoreState.running)
-    await async_setup_snoozing(hass)
-    return hass.data["spook_snoozing"]
+    await async_setup_timed_states(hass)
+    return hass.data["spook_timed_states"]
 
 
 async def _pass(
@@ -108,14 +121,14 @@ async def _pass(
 async def test_it_turns_the_automation_off(hass: HomeAssistant) -> None:
     """Which is the only way to make an automation stop for a while."""
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     assert hass.states.get(SLEEPER).state == "off"
-    assert snoozing.async_until(SLEEPER) is not None
+    assert timed_states.async_until(SLEEPER) is not None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_it_turns_the_automation_back_on(
@@ -124,35 +137,35 @@ async def test_it_turns_the_automation_back_on(
 ) -> None:
     """And that is the half an automation cannot do for itself."""
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
     assert hass.states.get(SLEEPER).state == "off"
 
     await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
 
     assert hass.states.get(SLEEPER).state == "on"
-    assert snoozing.async_until(SLEEPER) is None
+    assert timed_states.async_until(SLEEPER) is None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_it_leaves_others_alone(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
 ) -> None:
-    """Snoozing one automation is not snoozing the house."""
+    """Holding one automation is not holding the house."""
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     assert hass.states.get(OTHER).state == "on"
 
     await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
     assert hass.states.get(OTHER).state == "on"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_an_automation_already_off_is_not_snoozed(
@@ -167,16 +180,18 @@ async def test_an_automation_already_off_is_not_snoozed(
     )
     await hass.async_block_till_done()
 
-    snoozing = await _register(hass)
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    timed_states = await _register(hass)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
-    assert snoozing.async_until(SLEEPER) is None
-    assert "did not snooze" in caplog.text, "it went quiet about doing nothing"
+    assert timed_states.async_until(SLEEPER) is None
+    assert "left automation.sleeper alone" in caplog.text, (
+        "it went quiet about doing nothing"
+    )
 
     await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
     assert hass.states.get(SLEEPER).state == "off", "it turned on anyway"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_turning_it_on_by_hand_cancels_the_snooze(
@@ -185,16 +200,16 @@ async def test_turning_it_on_by_hand_cancels_the_snooze(
 ) -> None:
     """Somebody turning it on says more than a wake-up time set earlier."""
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     await hass.services.async_call(
         "automation", "turn_on", {"entity_id": SLEEPER}, blocking=True
     )
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) is None, "it is still counting down"
+    assert timed_states.async_until(SLEEPER) is None, "it is still counting down"
 
     # And it is not turned off again, nor woken a second time.
     await hass.services.async_call(
@@ -205,22 +220,22 @@ async def test_turning_it_on_by_hand_cancels_the_snooze(
 
     assert hass.states.get(SLEEPER).state == "off", "the cancelled snooze woke it"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
-async def test_snoozing_again_replaces_the_time(
+async def test_holding_again_replaces_the_time(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
 ) -> None:
     """Asking for longer means longer, not two answers."""
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    first = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    first = timed_states.async_until(SLEEPER)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR * 3)
-    second = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_OFF)
+    second = timed_states.async_until(SLEEPER)
     assert second > first
 
     await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
@@ -229,21 +244,21 @@ async def test_snoozing_again_replaces_the_time(
     await _pass(hass, freezer, AN_HOUR * 2)
     assert hass.states.get(SLEEPER).state == "on"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_it_is_written_down(hass: HomeAssistant, hass_storage: dict) -> None:
     """Because the automation stays off across a restart and this must not."""
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     stored = hass_storage[STORAGE_KEY]
     assert stored["version"] == STORAGE_VERSION
     assert SLEEPER in stored["data"]
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_snooze_that_outlived_the_restart_is_picked_up(
@@ -255,18 +270,18 @@ async def test_a_snooze_that_outlived_the_restart_is_picked_up(
     until = dt_util.utcnow() + AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {SLEEPER: until.isoformat()},
+        "data": {SLEEPER: _record(until)},
     }
     mock_restore_cache(hass, (State(SLEEPER, "off"),))
     await _automations(hass)
 
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
     assert hass.states.get(SLEEPER).state == "off"
 
     await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
     assert hass.states.get(SLEEPER).state == "on", "it never woke up"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_snooze_that_expired_while_down_wakes_at_once(
@@ -277,18 +292,18 @@ async def test_a_snooze_that_expired_while_down_wakes_at_once(
     until = dt_util.utcnow() - AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {SLEEPER: until.isoformat()},
+        "data": {SLEEPER: _record(until)},
     }
     mock_restore_cache(hass, (State(SLEEPER, "off"),))
     await _automations(hass)
 
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
     await hass.async_block_till_done()
 
     assert hass.states.get(SLEEPER).state == "on", "it slept through its alarm"
-    assert snoozing.async_until(SLEEPER) is None
+    assert timed_states.async_until(SLEEPER) is None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_snooze_for_something_turned_on_while_down_is_dropped(
@@ -299,18 +314,18 @@ async def test_a_snooze_for_something_turned_on_while_down_is_dropped(
     until = dt_util.utcnow() + AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {SLEEPER: until.isoformat()},
+        "data": {SLEEPER: _record(until)},
     }
     await _automations(hass)
     assert hass.states.get(SLEEPER).state == "on"
 
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) is None, "it is still counting down"
+    assert timed_states.async_until(SLEEPER) is None, "it is still counting down"
     assert hass.states.get(SLEEPER).state == "on"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_snooze_for_something_that_is_gone_is_dropped(
@@ -321,16 +336,16 @@ async def test_a_snooze_for_something_that_is_gone_is_dropped(
     until = dt_util.utcnow() + AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {"automation.deleted": until.isoformat()},
+        "data": {"automation.deleted": _record(until)},
     }
     await _automations(hass)
 
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
     await hass.async_block_till_done()
 
-    assert snoozing.async_until("automation.deleted") is None
+    assert timed_states.async_until("automation.deleted") is None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_it_waits_for_home_assistant_to_finish_starting(
@@ -346,16 +361,16 @@ async def test_it_waits_for_home_assistant_to_finish_starting(
     until = dt_util.utcnow() - AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {SLEEPER: until.isoformat()},
+        "data": {SLEEPER: _record(until)},
     }
     mock_restore_cache(hass, (State(SLEEPER, "off"),))
 
     hass.set_state(CoreState.starting)
-    await async_setup_snoozing(hass)
-    snoozing = hass.data["spook_snoozing"]
+    await async_setup_timed_states(hass)
+    timed_states = hass.data["spook_timed_states"]
 
     # Nothing has happened yet: the automations are not up.
-    assert snoozing.async_until(SLEEPER) is not None
+    assert timed_states.async_until(SLEEPER) is not None
 
     await _automations(hass)
     hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
@@ -363,7 +378,7 @@ async def test_it_waits_for_home_assistant_to_finish_starting(
 
     assert hass.states.get(SLEEPER).state == "on", "it never caught up"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_stopping_leaves_the_snooze_written_down(
@@ -376,10 +391,10 @@ async def test_stopping_leaves_the_snooze_written_down(
     record is what brings it back next time.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    snoozing.async_stop()
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    timed_states.async_stop()
 
     assert hass.states.get(SLEEPER).state == "off"
     assert SLEEPER in hass_storage[STORAGE_KEY]["data"]
@@ -394,14 +409,14 @@ async def test_the_caller_is_carried_into_the_turning_off(
     is the half underneath it.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
     asked = Context()
-    await snoozing.async_snooze(SLEEPER, AN_HOUR, context=asked)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF, context=asked)
 
     assert hass.states.get(SLEEPER).context.id == asked.id
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_turning_it_off_while_a_fresh_snooze_saves_gives_it_up(
@@ -415,7 +430,7 @@ async def test_turning_it_off_while_a_fresh_snooze_saves_gives_it_up(
     on an automation that a person deliberately disabled.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
     saving = asyncio.Event()
     let_go = asyncio.Event()
@@ -428,7 +443,9 @@ async def test_turning_it_off_while_a_fresh_snooze_saves_gives_it_up(
         await real_save(self, data)
 
     with patch.object(Store, "async_save", _held_open):
-        snoozed = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR))
+        snoozed = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+        )
 
         async with asyncio.timeout(5):
             await saving.wait()
@@ -443,11 +460,11 @@ async def test_turning_it_off_while_a_fresh_snooze_saves_gives_it_up(
 
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) is None, (
+    assert timed_states.async_until(SLEEPER) is None, (
         "it claimed an automation somebody else turned off"
     )
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_second_chance_overtaken_by_a_person_does_nothing(
@@ -460,9 +477,9 @@ async def test_a_second_chance_overtaken_by_a_person_does_nothing(
     was queued before that must not go on to hand it back off.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     async def _skipped(_self: AutomationEntity, **_kwargs: object) -> None:
         return
@@ -470,7 +487,7 @@ async def test_a_second_chance_overtaken_by_a_person_does_nothing(
     with patch.object(AutomationEntity, "async_turn_on", _skipped):
         await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
 
-    assert snoozing.async_until(SLEEPER) is not None
+    assert timed_states.async_until(SLEEPER) is not None
 
     # Back again, which queues the second chance, and a person gets there
     # first.
@@ -486,9 +503,9 @@ async def test_a_second_chance_overtaken_by_a_person_does_nothing(
     assert hass.states.get(SLEEPER).state == "on", (
         "the queued wake handed it back off against the person who wanted it on"
     )
-    assert snoozing.async_until(SLEEPER) is None
+    assert timed_states.async_until(SLEEPER) is None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_snooze_cancelled_after_it_took_still_wakes(
@@ -502,7 +519,7 @@ async def test_a_snooze_cancelled_after_it_took_still_wakes(
     restart if nothing were waiting on its deadline.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
     turned_off = asyncio.Event()
     real_turn_off = AutomationEntity.async_turn_off
@@ -514,7 +531,9 @@ async def test_a_snooze_cancelled_after_it_took_still_wakes(
         await asyncio.Event().wait()
 
     with patch.object(AutomationEntity, "async_turn_off", _then_hang):
-        snoozed = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR))
+        snoozed = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+        )
 
         async with asyncio.timeout(5):
             await turned_off.wait()
@@ -525,13 +544,13 @@ async def test_a_snooze_cancelled_after_it_took_still_wakes(
             await snoozed
 
     assert hass.states.get(SLEEPER).state == "off"
-    assert snoozing.async_until(SLEEPER) is not None
+    assert timed_states.async_until(SLEEPER) is not None
 
     await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
 
     assert hass.states.get(SLEEPER).state == "on", "nothing was waiting on it"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_fresh_snooze_whose_turning_off_fails_leaves_no_record(
@@ -545,7 +564,7 @@ async def test_a_fresh_snooze_whose_turning_off_fails_leaves_no_record(
     to do.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
     with (
         patch.object(
@@ -555,10 +574,10 @@ async def test_a_fresh_snooze_whose_turning_off_fails_leaves_no_record(
         ),
         pytest.raises(HomeAssistantError),
     ):
-        await snoozing.async_snooze(SLEEPER, AN_HOUR)
+        await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     assert hass.states.get(SLEEPER).state == "on"
-    assert snoozing.async_until(SLEEPER) is None, (
+    assert timed_states.async_until(SLEEPER) is None, (
         "it wrote down a snooze for an automation it never turned off"
     )
 
@@ -572,7 +591,7 @@ async def test_a_fresh_snooze_whose_turning_off_fails_leaves_no_record(
         "it woke an automation it had not put to sleep"
     )
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_an_extension_whose_turning_off_fails_still_wakes(
@@ -587,9 +606,9 @@ async def test_an_extension_whose_turning_off_fails_still_wakes(
     automation off until somebody restarts Home Assistant.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     with (
         patch.object(
@@ -599,16 +618,16 @@ async def test_an_extension_whose_turning_off_fails_still_wakes(
         ),
         pytest.raises(HomeAssistantError),
     ):
-        await snoozing.async_snooze(SLEEPER, AN_HOUR * 2)
+        await timed_states.async_hold(SLEEPER, AN_HOUR * 2, STATE_OFF)
 
-    assert snoozing.async_until(SLEEPER) is not None
+    assert timed_states.async_until(SLEEPER) is not None
 
     await _pass(hass, freezer, AN_HOUR * 2 + timedelta(minutes=1))
 
     assert hass.states.get(SLEEPER).state == "on", "nothing was waiting on it"
-    assert snoozing.async_until(SLEEPER) is None
+    assert timed_states.async_until(SLEEPER) is None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_wake_that_fails_keeps_the_record(
@@ -623,9 +642,9 @@ async def test_a_wake_that_fails_keeps_the_record(
     it on has actually worked.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     with patch.object(
         AutomationEntity,
@@ -634,13 +653,13 @@ async def test_a_wake_that_fails_keeps_the_record(
     ):
         await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
 
-    assert snoozing.async_until(SLEEPER) is not None, (
+    assert timed_states.async_until(SLEEPER) is not None, (
         "the record went even though it never woke"
     )
     assert hass.states.get(SLEEPER).state == "off"
-    assert "could not wake" in caplog.text, "it failed quietly"
+    assert "could not put" in caplog.text, "it failed quietly"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_an_automation_that_is_deleted_takes_its_snooze_with_it(
@@ -653,17 +672,19 @@ async def test_an_automation_that_is_deleted_takes_its_snooze_with_it(
     rename does just as thoroughly as a delete.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    assert snoozing.async_until(SLEEPER) is not None
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    assert timed_states.async_until(SLEEPER) is not None
 
     entity_registry.async_remove(SLEEPER)
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) is None, "the snooze outlived its automation"
+    assert timed_states.async_until(SLEEPER) is None, (
+        "the snooze outlived its automation"
+    )
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_an_automation_without_an_id_takes_its_snooze_with_it(
@@ -679,11 +700,11 @@ async def test_an_automation_without_an_id_takes_its_snooze_with_it(
     assert await async_setup_component(hass, "automation", NAMELESS)
     await hass.async_block_till_done()
 
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
     nameless = "automation.nameless"
-    await snoozing.async_snooze(nameless, AN_HOUR)
-    assert snoozing.async_until(nameless) is not None
+    await timed_states.async_hold(nameless, AN_HOUR, STATE_OFF)
+    assert timed_states.async_until(nameless) is not None
 
     with patch(
         "homeassistant.config.async_hass_config_yaml",
@@ -693,11 +714,11 @@ async def test_an_automation_without_an_id_takes_its_snooze_with_it(
         await hass.async_block_till_done()
 
     assert hass.states.get(nameless) is None
-    assert snoozing.async_until(nameless) is None, (
+    assert timed_states.async_until(nameless) is None, (
         "the snooze outlived the automation it was for"
     )
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_state_that_goes_while_the_entity_stays_keeps_the_snooze(
@@ -710,20 +731,20 @@ async def test_a_state_that_goes_while_the_entity_stays_keeps_the_snooze(
     its snooze outlives whatever took the state away.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    until = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    until = timed_states.async_until(SLEEPER)
 
     assert entity_registry.async_get(SLEEPER) is not None
     hass.states.async_remove(SLEEPER)
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) == until, (
+    assert timed_states.async_until(SLEEPER) == until, (
         "it read a missing state as an automation that no longer exists"
     )
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_renaming_an_automation_leaves_no_record_under_either_name(
@@ -739,20 +760,20 @@ async def test_renaming_an_automation_leaves_no_record_under_either_name(
     down towards an entity nobody uses.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    assert snoozing.async_until(SLEEPER) is not None
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    assert timed_states.async_until(SLEEPER) is not None
 
     renamed = "automation.now_called_this"
     entity_registry.async_update_entity(SLEEPER, new_entity_id=renamed)
     await hass.async_block_till_done()
 
     assert hass.states.get(renamed).state == "on"
-    assert snoozing.async_until(SLEEPER) is None, "a record left under the old name"
-    assert snoozing.async_until(renamed) is None
+    assert timed_states.async_until(SLEEPER) is None, "a record left under the old name"
+    assert timed_states.async_until(renamed) is None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_an_automation_that_is_merely_away_keeps_its_snooze(
@@ -760,17 +781,17 @@ async def test_an_automation_that_is_merely_away_keeps_its_snooze(
 ) -> None:
     """A reload passes through unavailable, and must not read as a delete."""
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    until = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    until = timed_states.async_until(SLEEPER)
 
     hass.states.async_set(SLEEPER, STATE_UNAVAILABLE)
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) == until, "a reload cancelled the snooze"
+    assert timed_states.async_until(SLEEPER) == until, "a reload cancelled the snooze"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_stale_wake_up_call_leaves_the_new_wait_alone(
@@ -783,25 +804,25 @@ async def test_a_stale_wake_up_call_leaves_the_new_wait_alone(
     wait is moved, which is what asking for longer does.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    first = snoozing.async_until(SLEEPER)
-    stale = snoozing._async_due(SLEEPER, first)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    first = timed_states.async_until(SLEEPER)
+    stale = timed_states._async_due(SLEEPER, first)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR * 3)
-    later = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_OFF)
+    later = timed_states.async_until(SLEEPER)
 
     # The wait it belonged to is gone, so it has nothing to say.
     await stale(dt_util.utcnow())
 
-    assert snoozing.async_until(SLEEPER) == later, "it dropped the newer wait"
+    assert timed_states.async_until(SLEEPER) == later, "it dropped the newer wait"
     assert hass.states.get(SLEEPER).state == "off", "it woke at the old time"
-    assert SLEEPER in snoozing._timers, (
+    assert SLEEPER in timed_states._timers, (
         "it dropped the newer wait's timer, leaving nothing able to cancel it"
     )
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_unloading_while_the_store_is_read_leaves_nothing_behind(
@@ -817,13 +838,13 @@ async def test_unloading_while_the_store_is_read_leaves_nothing_behind(
     until = dt_util.utcnow() - AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {SLEEPER: until.isoformat()},
+        "data": {SLEEPER: _record(until)},
     }
     mock_restore_cache(hass, (State(SLEEPER, "off"),))
     await _automations(hass)
 
     hass.set_state(CoreState.running)
-    snoozing = Snoozing(hass)
+    timed_states = TimedStates(hass)
 
     reading = asyncio.Event()
     let_go = asyncio.Event()
@@ -835,12 +856,12 @@ async def test_unloading_while_the_store_is_read_leaves_nothing_behind(
         return await real_load(self)
 
     with patch.object(Store, "async_load", _held_open):
-        starting = hass.async_create_task(snoozing.async_start())
+        starting = hass.async_create_task(timed_states.async_start())
 
         async with asyncio.timeout(5):
             await reading.wait()
 
-        snoozing.async_stop()
+        timed_states.async_stop()
         let_go.set()
 
         async with asyncio.timeout(5):
@@ -848,8 +869,8 @@ async def test_unloading_while_the_store_is_read_leaves_nothing_behind(
 
     await hass.async_block_till_done()
 
-    assert not snoozing._timers, "it armed a timer on a stopped register"
-    assert snoozing._unsub_watching is None, "it left a listener behind"
+    assert not timed_states._timers, "it armed a timer on a stopped register"
+    assert timed_states._unsub_watching is None, "it left a listener behind"
     assert hass.states.get(SLEEPER).state == "off", (
         "it woke an automation after Spook was unloaded"
     )
@@ -867,9 +888,9 @@ async def test_turning_it_on_while_the_snooze_turns_it_off_takes_it_back(
     whole failure this prevents.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     turning_off = asyncio.Event()
     let_go = asyncio.Event()
@@ -882,7 +903,9 @@ async def test_turning_it_on_while_the_snooze_turns_it_off_takes_it_back(
         await real_turn_off(self, **kwargs)
 
     with patch.object(AutomationEntity, "async_turn_off", _held_open):
-        extending = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR * 3))
+        extending = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_OFF)
+        )
 
         async with asyncio.timeout(5):
             await turning_off.wait()
@@ -900,9 +923,9 @@ async def test_turning_it_on_while_the_snooze_turns_it_off_takes_it_back(
     assert hass.states.get(SLEEPER).state == "on", (
         "the disable went through against a snooze that had been cancelled"
     )
-    assert snoozing.async_until(SLEEPER) is None
+    assert timed_states.async_until(SLEEPER) is None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_snooze_shorter_than_its_own_turning_off_still_ends_on(
@@ -916,7 +939,7 @@ async def test_a_snooze_shorter_than_its_own_turning_off_still_ends_on(
     second: off, with nothing written down.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
     turning_off = asyncio.Event()
     let_go = asyncio.Event()
@@ -939,7 +962,7 @@ async def test_a_snooze_shorter_than_its_own_turning_off_still_ends_on(
 
     with patch.object(AutomationEntity, "async_turn_off", _held_open):
         snoozed = hass.async_create_task(
-            snoozing.async_snooze(SLEEPER, timedelta(milliseconds=1))
+            timed_states.async_hold(SLEEPER, timedelta(milliseconds=1), STATE_OFF)
         )
 
         async with asyncio.timeout(5):
@@ -958,9 +981,9 @@ async def test_a_snooze_shorter_than_its_own_turning_off_still_ends_on(
 
     unsub()
 
-    assert snoozing.async_until(SLEEPER) is None, "it left a wake-up time behind"
+    assert timed_states.async_until(SLEEPER) is None, "it left a wake-up time behind"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_turning_it_on_while_a_longer_snooze_saves_wins(
@@ -973,9 +996,9 @@ async def test_turning_it_on_while_a_longer_snooze_saves_wins(
     down to wake it, which is the whole failure this exists to prevent.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
     assert hass.states.get(SLEEPER).state == "off"
 
     saving = asyncio.Event()
@@ -988,7 +1011,9 @@ async def test_turning_it_on_while_a_longer_snooze_saves_wins(
         await real_save(self, data)
 
     with patch.object(Store, "async_save", _held_open):
-        extending = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR * 3))
+        extending = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_OFF)
+        )
 
         async with asyncio.timeout(5):
             await saving.wait()
@@ -1009,9 +1034,9 @@ async def test_turning_it_on_while_a_longer_snooze_saves_wins(
     assert hass.states.get(SLEEPER).state == "on", (
         "the extension turned it off again after being cancelled"
     )
-    assert snoozing.async_until(SLEEPER) is None, "and left a wake-up time behind"
+    assert timed_states.async_until(SLEEPER) is None, "and left a wake-up time behind"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_wake_in_progress_stays_in_the_register(
@@ -1025,10 +1050,10 @@ async def test_a_wake_in_progress_stays_in_the_register(
     removed for exactly this.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    until = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    until = timed_states.async_until(SLEEPER)
 
     waking = asyncio.Event()
     let_go = asyncio.Event()
@@ -1043,12 +1068,14 @@ async def test_a_wake_in_progress_stays_in_the_register(
     with patch.object(AutomationEntity, "async_turn_on", _refuse):
         # Driven straight rather than through the clock, so the failing wake
         # and the snooze below genuinely overlap.
-        failing = hass.async_create_task(snoozing._async_wake(SLEEPER, until))
+        failing = hass.async_create_task(
+            timed_states._async_restore(SLEEPER, _Held(until, STATE_OFF))
+        )
 
         async with asyncio.timeout(5):
             await waking.wait()
 
-        await snoozing.async_snooze(OTHER, AN_HOUR)
+        await timed_states.async_hold(OTHER, AN_HOUR, STATE_OFF)
 
         assert SLEEPER in hass_storage[STORAGE_KEY]["data"], (
             "somebody else's save wrote out a register without it"
@@ -1061,12 +1088,12 @@ async def test_a_wake_in_progress_stays_in_the_register(
 
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) is not None
+    assert timed_states.async_until(SLEEPER) is not None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
-async def test_snoozing_again_during_a_wake_survives_that_wake(
+async def test_holding_again_during_a_restore_survives_it(
     hass: HomeAssistant,
 ) -> None:
     """Spook's own wake-up call is not somebody changing their mind.
@@ -1076,10 +1103,10 @@ async def test_snoozing_again_during_a_wake_survives_that_wake(
     it. The mark on the entity is what tells those two apart.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    until = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    until = timed_states.async_until(SLEEPER)
 
     waking = asyncio.Event()
     let_go = asyncio.Event()
@@ -1092,14 +1119,16 @@ async def test_snoozing_again_during_a_wake_survives_that_wake(
         await real_turn_on(self, **kwargs)
 
     with patch.object(AutomationEntity, "async_turn_on", _held_open):
-        woken = hass.async_create_task(snoozing._async_wake(SLEEPER, until))
+        woken = hass.async_create_task(
+            timed_states._async_restore(SLEEPER, _Held(until, STATE_OFF))
+        )
 
         async with asyncio.timeout(5):
             await waking.wait()
 
         # Somebody wants longer, while it is being woken.
-        await snoozing.async_snooze(SLEEPER, AN_HOUR * 3)
-        asked_for = snoozing.async_until(SLEEPER)
+        await timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_OFF)
+        asked_for = timed_states.async_until(SLEEPER)
         assert asked_for is not None
 
         let_go.set()
@@ -1109,14 +1138,14 @@ async def test_snoozing_again_during_a_wake_survives_that_wake(
 
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) == asked_for, (
+    assert timed_states.async_until(SLEEPER) == asked_for, (
         "the wake-up call was read as somebody cancelling the new snooze"
     )
     assert hass.states.get(SLEEPER).state == "off", (
         "the wake-up call left it running against the snooze that replaced it"
     )
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_an_automation_woken_once_can_still_be_woken_by_hand(
@@ -1129,24 +1158,24 @@ async def test_an_automation_woken_once_can_still_be_woken_by_hand(
     rest of the run, and a person cancelling a later snooze would be ignored.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
     await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
     assert hass.states.get(SLEEPER).state == "on"
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     await hass.services.async_call(
         "automation", "turn_on", {"entity_id": SLEEPER}, blocking=True
     )
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) is None, (
+    assert timed_states.async_until(SLEEPER) is None, (
         "it went on treating a person as itself"
     )
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_wake_that_finds_nothing_there_tries_again_later(
@@ -1160,9 +1189,9 @@ async def test_a_wake_that_finds_nothing_there_tries_again_later(
     keeps the record and has another go when the automation is back.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     # What a skipped entity looks like: the call comes back, nothing happened.
     async def _skipped(_self: AutomationEntity, **_kwargs: object) -> None:
@@ -1172,7 +1201,7 @@ async def test_a_wake_that_finds_nothing_there_tries_again_later(
         await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
 
     assert hass.states.get(SLEEPER).state == "off"
-    assert snoozing.async_until(SLEEPER) is not None, (
+    assert timed_states.async_until(SLEEPER) is not None, (
         "it dropped the record for an automation it never woke"
     )
 
@@ -1183,9 +1212,9 @@ async def test_a_wake_that_finds_nothing_there_tries_again_later(
     await hass.async_block_till_done()
 
     assert hass.states.get(SLEEPER).state == "on", "it never had another go"
-    assert snoozing.async_until(SLEEPER) is None
+    assert timed_states.async_until(SLEEPER) is None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_second_chance_queued_at_the_unload_does_nothing(
@@ -1198,10 +1227,10 @@ async def test_a_second_chance_queued_at_the_unload_does_nothing(
     automation gets turned on by a register nobody is running.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    until = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    until = timed_states.async_until(SLEEPER)
 
     async def _skipped(_self: AutomationEntity, **_kwargs: object) -> None:
         return
@@ -1209,20 +1238,20 @@ async def test_a_second_chance_queued_at_the_unload_does_nothing(
     with patch.object(AutomationEntity, "async_turn_on", _skipped):
         await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
 
-    assert snoozing.async_until(SLEEPER) == until
+    assert timed_states.async_until(SLEEPER) == until
 
     # Back again, which queues the second chance, and gone before it runs.
     hass.states.async_set(SLEEPER, STATE_UNAVAILABLE)
     await hass.async_block_till_done()
     hass.states.async_set(SLEEPER, "off")
-    snoozing.async_stop()
+    timed_states.async_stop()
 
     await hass.async_block_till_done()
 
     assert hass.states.get(SLEEPER).state == "off", (
         "it woke an automation after Spook was unloaded"
     )
-    assert snoozing.async_until(SLEEPER) == until, "and forgot the snooze doing it"
+    assert timed_states.async_until(SLEEPER) == until, "and forgot the snooze doing it"
 
 
 async def test_one_that_is_away_is_left_alone_until_it_is_back(
@@ -1235,9 +1264,9 @@ async def test_one_that_is_away_is_left_alone_until_it_is_back(
     it is exactly the moment the state watch hears from most.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
 
     async def _skipped(_self: AutomationEntity, **_kwargs: object) -> None:
         return
@@ -1251,9 +1280,9 @@ async def test_one_that_is_away_is_left_alone_until_it_is_back(
     assert hass.states.get(SLEEPER).state == STATE_UNAVAILABLE, (
         "it tried to wake one that was still away"
     )
-    assert snoozing.async_until(SLEEPER) is not None
+    assert timed_states.async_until(SLEEPER) is not None
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_wake_cancelled_partway_keeps_the_record(
@@ -1267,10 +1296,10 @@ async def test_a_wake_cancelled_partway_keeps_the_record(
     memory. The next start sees to it.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    until = snoozing.async_until(SLEEPER)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    until = timed_states.async_until(SLEEPER)
 
     waking = asyncio.Event()
 
@@ -1279,7 +1308,9 @@ async def test_a_wake_cancelled_partway_keeps_the_record(
         await asyncio.Event().wait()
 
     with patch.object(AutomationEntity, "async_turn_on", _never_finishes):
-        cancelled = hass.async_create_task(snoozing._async_wake(SLEEPER, until))
+        cancelled = hass.async_create_task(
+            timed_states._async_restore(SLEEPER, _Held(until, STATE_OFF))
+        )
 
         async with asyncio.timeout(5):
             await waking.wait()
@@ -1289,11 +1320,11 @@ async def test_a_wake_cancelled_partway_keeps_the_record(
         with contextlib.suppress(asyncio.CancelledError):
             await cancelled
 
-    assert snoozing.async_until(SLEEPER) == until, "the record went with the wake"
+    assert timed_states.async_until(SLEEPER) == until, "the record went with the wake"
     assert SLEEPER in hass_storage[STORAGE_KEY]["data"]
     assert hass.states.get(SLEEPER).state == "off"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_a_wake_up_call_that_came_due_at_the_unload_does_nothing(
@@ -1307,20 +1338,22 @@ async def test_a_wake_up_call_that_came_due_at_the_unload_does_nothing(
     the next start sees to it.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
-    await snoozing.async_snooze(SLEEPER, AN_HOUR)
-    until = snoozing.async_until(SLEEPER)
-    already_going = snoozing._async_due(SLEEPER, until)
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    until = timed_states.async_until(SLEEPER)
+    already_going = timed_states._async_due(SLEEPER, until)
 
-    snoozing.async_stop()
+    timed_states.async_stop()
     await already_going(dt_util.utcnow())
     await hass.async_block_till_done()
 
     assert hass.states.get(SLEEPER).state == "off", (
         "it woke an automation after Spook was unloaded"
     )
-    assert snoozing.async_until(SLEEPER) == until, "and forgot the snooze on the way"
+    assert timed_states.async_until(SLEEPER) == until, (
+        "and forgot the snooze on the way"
+    )
 
 
 async def test_turning_one_on_while_catching_up_cancels_its_snooze(
@@ -1337,13 +1370,13 @@ async def test_turning_one_on_while_catching_up_cancels_its_snooze(
     later = dt_util.utcnow() + AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {SLEEPER: later.isoformat()},
+        "data": {SLEEPER: _record(later)},
     }
     mock_restore_cache(hass, (State(SLEEPER, "off"),))
     await _automations(hass)
 
     hass.set_state(CoreState.running)
-    snoozing = Snoozing(hass)
+    timed_states = TimedStates(hass)
 
     saving = asyncio.Event()
     let_go = asyncio.Event()
@@ -1356,7 +1389,7 @@ async def test_turning_one_on_while_catching_up_cancels_its_snooze(
         await real_save(self, data)
 
     with patch.object(Store, "async_save", _held_open):
-        starting = hass.async_create_task(snoozing.async_start())
+        starting = hass.async_create_task(timed_states.async_start())
 
         async with asyncio.timeout(5):
             await saving.wait()
@@ -1372,12 +1405,12 @@ async def test_turning_one_on_while_catching_up_cancels_its_snooze(
 
     await hass.async_block_till_done()
 
-    assert snoozing.async_until(SLEEPER) is None, (
+    assert timed_states.async_until(SLEEPER) is None, (
         "it kept counting down for one somebody had turned back on"
     )
-    assert SLEEPER not in snoozing._timers, "and left its wake-up call armed"
+    assert SLEEPER not in timed_states._timers, "and left its wake-up call armed"
 
-    snoozing.async_stop()
+    timed_states.async_stop()
 
 
 async def test_unloading_partway_through_catching_up_stops_there(
@@ -1392,13 +1425,13 @@ async def test_unloading_partway_through_catching_up_stops_there(
     until = dt_util.utcnow() - AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {SLEEPER: until.isoformat(), OTHER: until.isoformat()},
+        "data": {SLEEPER: _record(until), OTHER: _record(until)},
     }
     mock_restore_cache(hass, (State(SLEEPER, "off"), State(OTHER, "off")))
     await _automations(hass)
 
     hass.set_state(CoreState.running)
-    snoozing = Snoozing(hass)
+    timed_states = TimedStates(hass)
 
     waking = asyncio.Event()
     let_go = asyncio.Event()
@@ -1412,12 +1445,12 @@ async def test_unloading_partway_through_catching_up_stops_there(
         await real_turn_on(self, **kwargs)
 
     with patch.object(AutomationEntity, "async_turn_on", _held_open):
-        starting = hass.async_create_task(snoozing.async_start())
+        starting = hass.async_create_task(timed_states.async_start())
 
         async with asyncio.timeout(5):
             await waking.wait()
 
-        snoozing.async_stop()
+        timed_states.async_stop()
         let_go.set()
 
         async with asyncio.timeout(5):
@@ -1429,7 +1462,7 @@ async def test_unloading_partway_through_catching_up_stops_there(
     assert hass.states.get(OTHER).state == "off", (
         "it kept waking automations after Spook was unloaded"
     )
-    assert snoozing.async_until(OTHER) is not None, "and forgot the one it skipped"
+    assert timed_states.async_until(OTHER) is not None, "and forgot the one it skipped"
 
 
 async def test_unloading_while_the_store_is_read_before_the_start(
@@ -1444,12 +1477,12 @@ async def test_unloading_while_the_store_is_read_before_the_start(
     until = dt_util.utcnow() + AN_HOUR
     hass_storage[STORAGE_KEY] = {
         "version": STORAGE_VERSION,
-        "data": {SLEEPER: until.isoformat()},
+        "data": {SLEEPER: _record(until)},
     }
     await _automations(hass)
 
     hass.set_state(CoreState.not_running)
-    snoozing = Snoozing(hass)
+    timed_states = TimedStates(hass)
 
     reading = asyncio.Event()
     let_go = asyncio.Event()
@@ -1461,23 +1494,23 @@ async def test_unloading_while_the_store_is_read_before_the_start(
         return await real_load(self)
 
     with patch.object(Store, "async_load", _held_open):
-        starting = hass.async_create_task(snoozing.async_start())
+        starting = hass.async_create_task(timed_states.async_start())
 
         async with asyncio.timeout(5):
             await reading.wait()
 
-        snoozing.async_stop()
+        timed_states.async_stop()
         let_go.set()
 
         async with asyncio.timeout(5):
             await starting
 
-    assert snoozing._unsub_started is None, "it waited for a start after unloading"
+    assert timed_states._unsub_started is None, "it waited for a start after unloading"
 
     hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
     await hass.async_block_till_done()
 
-    assert not snoozing._timers, "the start it waited for armed a timer"
+    assert not timed_states._timers, "the start it waited for armed a timer"
 
 
 async def test_unloading_while_a_snooze_is_saved_still_leaves_nothing_behind(
@@ -1490,7 +1523,7 @@ async def test_unloading_while_a_snooze_is_saved_still_leaves_nothing_behind(
     being nobody left to do it.
     """
     await _automations(hass)
-    snoozing = await _register(hass)
+    timed_states = await _register(hass)
 
     saving = asyncio.Event()
     let_go = asyncio.Event()
@@ -1502,12 +1535,14 @@ async def test_unloading_while_a_snooze_is_saved_still_leaves_nothing_behind(
         await real_save(self, data)
 
     with patch.object(Store, "async_save", _held_open):
-        snoozed = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR))
+        snoozed = hass.async_create_task(
+            timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+        )
 
         async with asyncio.timeout(5):
             await saving.wait()
 
-        snoozing.async_stop()
+        timed_states.async_stop()
         let_go.set()
 
         async with asyncio.timeout(5):
@@ -1515,7 +1550,258 @@ async def test_unloading_while_a_snooze_is_saved_still_leaves_nothing_behind(
 
     await hass.async_block_till_done()
 
-    assert not snoozing._timers, "it armed a timer on a stopped register"
-    assert snoozing._unsub_watching is None, "it left a listener behind"
-    assert snoozing._unsub_registry is None, "it kept watching the registry"
+    assert not timed_states._timers, "it armed a timer on a stopped register"
+    assert timed_states._unsub_watching is None, "it left a listener behind"
+    assert timed_states._unsub_registry is None, "it kept watching the registry"
     assert hass.states.get(SLEEPER).state == "off", "it did not turn it off at all"
+
+
+async def test_it_holds_an_automation_on_and_puts_it_back_off(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The other direction, which is the same machinery mirrored.
+
+    Everything the snooze tests pin applies here too, since there is one
+    register doing both; what this checks is that the mirroring holds.
+    """
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_ON)
+
+    assert hass.states.get(SLEEPER).state == "on"
+    assert timed_states.async_until(SLEEPER) is not None
+
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "off"
+    assert timed_states.async_until(SLEEPER) is None
+
+    timed_states.async_stop()
+
+
+async def test_one_that_is_already_on_is_left_alone(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Turning it off later would be a change nobody asked for.
+
+    The mirror of refusing to snooze one that is already off, and the reason
+    both refusals exist: Spook only puts back what it moved itself.
+    """
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    assert hass.states.get(SLEEPER).state == "on"
+
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_ON)
+
+    assert timed_states.async_until(SLEEPER) is None
+    assert "left automation.sleeper alone" in caplog.text
+
+    timed_states.async_stop()
+
+
+async def test_turning_one_off_by_hand_cancels_its_run(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Mirrored again: doing it yourself is the clearer statement."""
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_ON)
+
+    await hass.services.async_call(
+        "automation", "turn_off", {"entity_id": SLEEPER}, blocking=True
+    )
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) is None, "it kept counting down"
+
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "off"
+
+    timed_states.async_stop()
+
+
+async def test_a_run_survives_a_restart(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An automation left on would stay on, which is the whole point again."""
+    until = dt_util.utcnow() + AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": STORAGE_VERSION,
+        "data": {SLEEPER: _record(until, STATE_ON)},
+    }
+    await _automations(hass)
+    assert hass.states.get(SLEEPER).state == "on"
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) == until
+
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "off", "it ran on past its time"
+
+    timed_states.async_stop()
+
+
+async def test_records_written_before_the_other_direction_existed_still_read(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """Version 1 held nothing but snoozes, so every record was an automation off.
+
+    Anybody running Spook from the default branch has records in that shape,
+    and they have to keep meaning what they meant.
+    """
+    until = dt_util.utcnow() + AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": 1,
+        "data": {SLEEPER: until.isoformat()},
+    }
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+
+    timed_states = await _register(hass)
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) == until
+
+    # And it still means "off until then", not "on until then".
+    await hass.services.async_call(
+        "automation", "turn_on", {"entity_id": SLEEPER}, blocking=True
+    )
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) is None, (
+        "turning it on did not read as cancelling, so the record came back wrong"
+    )
+
+    timed_states.async_stop()
+
+
+async def test_a_renamed_automation_that_is_running_still_stops_on_time(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Renaming files the record under a name nobody uses any more.
+
+    Invisible for a snooze, because a renamed automation comes back on by
+    itself and that ends a snooze anyway. Not invisible here: one held on
+    comes back on as well, which is the state it is being held in, so a
+    record left behind means it runs forever.
+    """
+    mock_restore_cache(hass, (State(SLEEPER, "off"),))
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_ON)
+    until = timed_states.async_until(SLEEPER)
+
+    renamed = "automation.now_called_this"
+    entity_registry.async_update_entity(SLEEPER, new_entity_id=renamed)
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(renamed) == until, "the record kept the old name"
+    assert timed_states.async_until(SLEEPER) is None
+
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(renamed).state == "off", "it ran on under its new name"
+
+    timed_states.async_stop()
+
+
+async def test_an_automation_removed_while_it_has_no_state_is_forgotten(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A disabled automation has no state to go missing.
+
+    So the state watch has nothing to hear, and the registry is the only place
+    the removal shows up at all.
+    """
+    await _automations(hass)
+    timed_states = await _register(hass)
+
+    await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+    assert timed_states.async_until(SLEEPER) is not None
+
+    entity_registry.async_update_entity(
+        SLEEPER, disabled_by=er.RegistryEntryDisabler.USER
+    )
+    await hass.async_block_till_done()
+    assert hass.states.get(SLEEPER) is None
+    assert timed_states.async_until(SLEEPER) is not None, "disabling is not deleting"
+
+    entity_registry.async_remove(SLEEPER)
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(SLEEPER) is None, (
+        "the record outlived the automation"
+    )
+
+    timed_states.async_stop()
+
+
+async def test_unloading_partway_through_catching_up_touches_nothing_after(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """The loop reads and drops records as it goes, and that has to stop too.
+
+    Not just the putting-back: a register nobody is running must not be
+    rewriting the store either, or a record it had not reached yet is lost.
+    """
+    overdue = dt_util.utcnow() - AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": STORAGE_VERSION,
+        "data": {SLEEPER: _record(overdue), OTHER: _record(overdue)},
+    }
+    mock_restore_cache(hass, (State(SLEEPER, "off"), State(OTHER, "on")))
+    await _automations(hass)
+
+    hass.set_state(CoreState.running)
+    timed_states = TimedStates(hass)
+
+    restoring = asyncio.Event()
+    let_go = asyncio.Event()
+    real_turn_on = AutomationEntity.async_turn_on
+
+    async def _held_open(self: AutomationEntity, **kwargs: object) -> None:
+        if self.entity_id == SLEEPER:
+            restoring.set()
+            await let_go.wait()
+
+        await real_turn_on(self, **kwargs)
+
+    with patch.object(AutomationEntity, "async_turn_on", _held_open):
+        starting = hass.async_create_task(timed_states.async_start())
+
+        async with asyncio.timeout(5):
+            await restoring.wait()
+
+        timed_states.async_stop()
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await starting
+
+    await hass.async_block_till_done()
+
+    assert timed_states.async_until(OTHER) is not None, (
+        "it dropped a record it had not reached before it was unloaded"
+    )
+
+    timed_states.async_stop()
