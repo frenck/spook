@@ -25,7 +25,7 @@ if TYPE_CHECKING:
     from collections.abc import Mapping
     from datetime import datetime
 
-    from homeassistant.core import Event, HomeAssistant, State
+    from homeassistant.core import Event, State
 
 
 # How long an integration gets to produce its first entity before Spook takes
@@ -53,15 +53,10 @@ class SpookRepair(AbstractSpookRepair):
     inspect_config_entry_changed = True
     automatically_clean_up_issues = True
 
-    #: When each config entry was first seen loaded with nothing to show for
-    #: it. In memory on purpose: a restart is exactly when a push-fed
-    #: integration has not been pushed to yet, so the wait starts over.
-    _loaded_since: dict[str, datetime]
-
-    def __init__(self, hass: HomeAssistant) -> None:
-        """Initialize the repair."""
-        super().__init__(hass)
-        self._loaded_since = {}
+    # Nothing happens when the wait below runs out: that is the whole point of
+    # it, an integration that has gone quiet. So the passage of time has to be
+    # what brings this back round.
+    inspect_interval = _LONG_ENOUGH_TO_PUSH
 
     async def async_activate(self) -> None:
         """Handle activating the repair."""
@@ -122,15 +117,23 @@ class SpookRepair(AbstractSpookRepair):
         the wait below, because an integration whose every entity is genuinely
         gone would otherwise never be reported at all.
         """
-        if any(
-            (state := self.hass.states.get(entry.entity_id)) is not None
-            and not state.attributes.get(ATTR_RESTORED)
-            for entry in er.async_entries_for_config_entry(entity_registry, entry_id)
-        ):
-            return True
+        newest: datetime | None = None
 
-        first_seen = self._loaded_since.setdefault(entry_id, dt_util.utcnow())
-        return dt_util.utcnow() - first_seen >= _LONG_ENOUGH_TO_PUSH
+        for entry in er.async_entries_for_config_entry(entity_registry, entry_id):
+            if (state := self.hass.states.get(entry.entity_id)) is None:
+                continue
+
+            if not state.attributes.get(ATTR_RESTORED):
+                return True
+
+            if newest is None or state.last_changed > newest:
+                newest = state.last_changed
+
+        # Read off the placeholders themselves rather than kept in the repair,
+        # because a reload takes them away and writes them again, so this
+        # starts over exactly when the integration does. Which is the point:
+        # after a reload a push-fed integration has not been pushed to yet.
+        return newest is not None and dt_util.utcnow() - newest >= _LONG_ENOUGH_TO_PUSH
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""

@@ -449,3 +449,77 @@ async def test_an_integration_with_nothing_left_is_reported_in_the_end(
     await repair.async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+
+
+async def test_a_reload_starts_the_wait_over(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A reloaded integration has not been pushed to yet either.
+
+    The wait is read off the placeholder states, and a reload takes those
+    away and writes them again, so it begins afresh without anything having
+    to remember that it should.
+    """
+    entry = _loaded_entry(hass)
+    dead = _register_restored(hass, entity_registry, entry, "the_only_one")
+    repair = SpookRepair(hass)
+
+    freezer.tick(timedelta(hours=1, minutes=1))
+
+    # What a reload does to a placeholder: gone, and written again.
+    hass.states.async_remove(dead)
+    hass.states.async_set(dead, STATE_UNAVAILABLE, {ATTR_RESTORED: True})
+
+    await repair.async_inspect()
+
+    assert (
+        issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+        is None
+    ), "it counted the wait from before the reload"
+
+
+def test_the_wait_brings_the_inspection_back_by_itself() -> None:
+    """Nothing happens when the wait runs out, which is the point of it.
+
+    An integration that has gone quiet raises no events, so without the
+    passage of time bringing this round again the wait would only expire on
+    paper.
+    """
+    assert SpookRepair.inspect_interval is not None
+    assert SpookRepair.inspect_interval <= timedelta(hours=1), (
+        "the wait would expire long before anything looked again"
+    )
+
+
+async def test_the_wait_runs_from_the_most_recent_placeholder(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """One placeholder written just now means the integration is doing things.
+
+    Reading the oldest instead would report the lot on the strength of an
+    entity that has been sitting there since before the integration last
+    stirred.
+    """
+    entry = _loaded_entry(hass)
+    old = _register_restored(hass, entity_registry, entry, "sitting_there")
+
+    freezer.tick(timedelta(hours=1, minutes=1))
+    _register_restored(hass, entity_registry, entry, "just_now")
+
+    assert (
+        hass.states.get(old).last_changed
+        < hass.states.get("sensor.hue_just_now").last_changed
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert (
+        issue_registry.async_get_issue(DOMAIN, f"dead_entities_{entry.entry_id}")
+        is None
+    ), "it went by the oldest placeholder rather than the newest"
