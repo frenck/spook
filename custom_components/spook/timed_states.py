@@ -40,7 +40,16 @@ if TYPE_CHECKING:
 DATA_TIMED_STATES: HassKey[TimedStates] = HassKey("spook_timed_states")
 
 STORAGE_KEY = f"{DOMAIN}.timed_states"
-STORAGE_VERSION = 2
+STORAGE_VERSION = 1
+
+# What this register was called when it only knew how to snooze. Records under
+# that name are taken over once and the file is dropped.
+LEGACY_STORAGE_KEY = f"{DOMAIN}.snoozing"
+
+# Both mean the same thing to a move: it did not happen. A script calling one
+# of these actions can be stopped mid-call, and that is not a shutdown, so the
+# record has to be sorted out either way before the caller hears about it.
+_MOVE_INTERRUPTED = (HomeAssistantError, asyncio.CancelledError)
 
 
 def a_stretch_of_time(value: Any) -> timedelta:
@@ -76,27 +85,6 @@ class _Held:
         return STATE_OFF if self.state == STATE_ON else STATE_ON
 
 
-class _TimedStatesStore(Store[dict[str, dict[str, str]]]):
-    """The store, with a way back from the shape that only knew snoozes."""
-
-    async def _async_migrate_func(
-        self,
-        old_major_version: int,
-        _old_minor_version: int,
-        old_data: dict[str, Any],
-    ) -> dict[str, dict[str, str]]:
-        """Migrate stored records to the current shape."""
-        if old_major_version == 1:
-            # Version 1 was snoozes and nothing else, so every record was an
-            # automation being held off.
-            return {
-                entity_id: {"until": until, "state": STATE_OFF}
-                for entity_id, until in old_data.items()
-            }
-
-        return old_data
-
-
 # Three of the attributes below are subscriptions, each cancelled in its own
 # way and at its own moment, so folding them into one bag would cost more than
 # the count saves.
@@ -112,7 +100,9 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
     def __init__(self, hass: HomeAssistant) -> None:
         """Initialize the register."""
         self._hass = hass
-        self._store = _TimedStatesStore(hass, STORAGE_VERSION, STORAGE_KEY)
+        self._store: Store[dict[str, dict[str, str]]] = Store(
+            hass, STORAGE_VERSION, STORAGE_KEY
+        )
         self._held: dict[str, _Held] = {}
         self._timers: dict[str, CALLBACK_TYPE] = {}
         self._unsub_watching: CALLBACK_TYPE | None = None
@@ -123,7 +113,7 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
 
     async def async_start(self) -> CALLBACK_TYPE:
         """Read back what was being held, and take it from there."""
-        stored = await self._store.async_load() or {}
+        stored = await self._async_load()
 
         if self._stopped:
             # Unloaded while the store was being read. Stopping cannot reach
@@ -156,6 +146,33 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
             )
 
         return self.async_stop
+
+    async def _async_load(self) -> dict[str, dict[str, str]]:
+        """Read the records, taking over from the snooze-only store if need be.
+
+        A store migration only runs for the file being loaded, and this one is
+        under its own name, so the old file has to be picked up by hand or
+        every snooze made before the upgrade is silently dropped: automations
+        left off with nothing to turn them back on.
+        """
+        if (stored := await self._store.async_load()) is not None:
+            return stored
+
+        legacy: Store[dict[str, str]] = Store(self._hass, 1, LEGACY_STORAGE_KEY)
+        if (snoozes := await legacy.async_load()) is None:
+            return {}
+
+        LOGGER.debug("Spook took over %s snoozes written down before", len(snoozes))
+
+        # Everything in there was a snooze, so an automation being held off.
+        taken_over = {
+            entity_id: {"until": until, "state": STATE_OFF}
+            for entity_id, until in snoozes.items()
+        }
+        await self._store.async_save(taken_over)
+        await legacy.async_remove()
+
+        return taken_over
 
     @callback
     def async_stop(self) -> None:
@@ -246,10 +263,7 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
         # held and leave it where it is with a time to come back.
         try:
             await self._async_set(entity_id, holding.state, context)
-        except HomeAssistantError, asyncio.CancelledError:
-            # Cancelled counts here too. A script calling this can be stopped
-            # mid-call, and that is not a shutdown: Home Assistant carries on
-            # without ever coming back to pick the record up.
+        except _MOVE_INTERRUPTED:
             if self._held.get(entity_id) == holding:
                 if self._is_in(entity_id, holding.restore_to):
                     # Never moved, so there is nothing to put back later.

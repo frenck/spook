@@ -33,6 +33,7 @@ from pytest_homeassistant_custom_component.common import (
 )
 
 from custom_components.spook.timed_states import (
+    LEGACY_STORAGE_KEY,
     STORAGE_KEY,
     STORAGE_VERSION,
     TimedStates,
@@ -808,7 +809,7 @@ async def test_a_stale_wake_up_call_leaves_the_new_wait_alone(
 
     await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
     first = timed_states.async_until(SLEEPER)
-    stale = timed_states._async_due(SLEEPER, first)
+    stale = timed_states._async_due(SLEEPER, _Held(first, STATE_OFF))
 
     await timed_states.async_hold(SLEEPER, AN_HOUR * 3, STATE_OFF)
     later = timed_states.async_until(SLEEPER)
@@ -1342,7 +1343,7 @@ async def test_a_wake_up_call_that_came_due_at_the_unload_does_nothing(
 
     await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
     until = timed_states.async_until(SLEEPER)
-    already_going = timed_states._async_due(SLEEPER, until)
+    already_going = timed_states._async_due(SLEEPER, _Held(until, STATE_OFF))
 
     timed_states.async_stop()
     await already_going(dt_util.utcnow())
@@ -1655,17 +1656,47 @@ async def test_a_run_survives_a_restart(
     timed_states.async_stop()
 
 
+async def test_taking_over_the_old_store_writes_before_it_deletes(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """The old file goes only once the records are somewhere else.
+
+    Taking over happens at setup, which is before Home Assistant has finished
+    starting and therefore before anything else writes the records out. A
+    delete first and a crash after would take every snooze with it.
+    """
+    until = dt_util.utcnow() + AN_HOUR
+    hass_storage[LEGACY_STORAGE_KEY] = {
+        "version": 1,
+        "data": {SLEEPER: until.isoformat()},
+    }
+    await _automations(hass)
+
+    hass.set_state(CoreState.not_running)
+    timed_states = TimedStates(hass)
+    await timed_states.async_start()
+
+    assert hass_storage[STORAGE_KEY]["data"] == {SLEEPER: _record(until)}, (
+        "the old file was dropped before the records were written anywhere"
+    )
+    assert LEGACY_STORAGE_KEY not in hass_storage
+
+    timed_states.async_stop()
+
+
 async def test_records_written_before_the_other_direction_existed_still_read(
     hass: HomeAssistant,
     hass_storage: dict,
 ) -> None:
-    """Version 1 held nothing but snoozes, so every record was an automation off.
+    """The snooze-only store had its own name, and its records still count.
 
-    Anybody running Spook from the default branch has records in that shape,
-    and they have to keep meaning what they meant.
+    A store migration only runs for the file being loaded, so nothing would
+    have picked these up on its own: every snooze made before the upgrade
+    would be dropped, and the automation left off for good.
     """
     until = dt_util.utcnow() + AN_HOUR
-    hass_storage[STORAGE_KEY] = {
+    hass_storage[LEGACY_STORAGE_KEY] = {
         "version": 1,
         "data": {SLEEPER: until.isoformat()},
     }
@@ -1676,6 +1707,11 @@ async def test_records_written_before_the_other_direction_existed_still_read(
     await hass.async_block_till_done()
 
     assert timed_states.async_until(SLEEPER) == until
+
+    assert hass_storage[STORAGE_KEY]["data"] == {SLEEPER: _record(until)}, (
+        "it did not write the records out under the name it reads from"
+    )
+    assert LEGACY_STORAGE_KEY not in hass_storage, "it left the old file behind"
 
     # And it still means "off until then", not "on until then".
     await hass.services.async_call(
