@@ -36,21 +36,21 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger a inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
-        coordinators: list[ProximityDataUpdateCoordinator] | None
-        if not (coordinators := self.hass.data.get(self.domain)):
-            return  # Nothing to do, proximity is not loaded
-
         known_entity_ids = async_get_all_entity_ids(self.hass)
 
-        for entry_id, coordinator in coordinators.items():
-            self.possible_issue_ids.add(entry_id)
+        # Read off the config entries rather than `hass.data`. Proximity has
+        # kept its coordinator on the entry since it became a config entry
+        # integration, and only a loaded entry has one at all.
+        for entry in self.hass.config_entries.async_loaded_entries(self.domain):
+            coordinator: ProximityDataUpdateCoordinator = entry.runtime_data
+            self.possible_issue_ids.add(entry.entry_id)
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass,
                 entity_ids=coordinator.ignored_zone_ids,
                 known_entity_ids=known_entity_ids,
             ):
                 self.async_create_issue(
-                    issue_id=entry_id,
+                    issue_id=entry.entry_id,
                     translation_placeholders={
                         "name": coordinator.name,
                         "zones": async_describe_unknown_entities(

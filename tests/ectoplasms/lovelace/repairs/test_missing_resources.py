@@ -7,6 +7,9 @@ from pathlib import Path
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
+from homeassistant.components.lovelace.resources import RESOURCE_STORAGE_KEY
+from homeassistant.setup import async_setup_component
+
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.missing_resources import (
     SpookRepair,
@@ -26,11 +29,17 @@ def _make_www_file(hass: HomeAssistant, name: str) -> None:
     (www / name).write_text("// here", encoding="utf-8")
 
 
+async def _no_loading_needed() -> dict[str, int]:
+    """Stand in for the loading the real collection does on first use."""
+    return {"resources": 0}
+
+
 def _set_resources(hass: HomeAssistant, urls: list[str]) -> None:
     """Install a fake resource collection with the given URLs."""
     hass.data["lovelace"] = SimpleNamespace(
         resources=SimpleNamespace(
             async_items=lambda: [{"url": url, "type": "module"} for url in urls],
+            async_get_info=_no_loading_needed,
         ),
     )
 
@@ -88,3 +97,33 @@ async def test_no_resource_collection_is_a_no_op(
     await SpookRepair(hass).async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+
+
+async def test_storage_resources_are_loaded_before_they_are_read(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the real resource collection is loaded rather than read empty.
+
+    Storage-mode resources load the first time somebody asks for them, which
+    is normally the dashboard, and Spook inspects long before that. Read
+    straight, the collection is empty and a missing resource goes unreported.
+    """
+    hass_storage[RESOURCE_STORAGE_KEY] = {
+        "version": 1,
+        "key": RESOURCE_STORAGE_KEY,
+        "data": {"items": [{"id": "1", "type": "module", "url": "/local/gone.js"}]},
+    }
+    assert await async_setup_component(hass, "lovelace", {})
+    await hass.async_block_till_done()
+
+    resources = hass.data["lovelace"].resources
+    assert not resources.loaded, "core changed when it loads these"
+    assert resources.async_items() == [], "and what an unloaded one holds"
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert issue
+    assert "/local/gone.js" in issue.translation_placeholders["resources"]
