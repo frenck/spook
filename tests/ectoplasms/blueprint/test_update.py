@@ -378,7 +378,8 @@ async def test_unloading_stops_a_round_that_is_under_way(
         MOTION_LIGHT.replace("Spooky motion light", "Spooky hallway light"),
     )
     entry = await async_set_up(hass)
-    assert len(hass.states.async_entity_ids("update")) == _BOTH_OF_THEM
+    both = hass.states.async_entity_ids("update")
+    assert len(both) == _BOTH_OF_THEM
 
     reached: list[str] = []
 
@@ -393,11 +394,15 @@ async def test_unloading_stops_a_round_that_is_under_way(
     assert len(reached) == 1, "it carried on after being unloaded"
 
     # And the one that was mid-fetch when the rug went does not put a live
-    # state back over the unavailable one that unloading left.
-    assert all(
-        hass.states.get(entity_id).state == "unavailable"
-        for entity_id in hass.states.async_entity_ids("update")
-    ), "something wrote a state back after being taken away"
+    # state back over the unavailable one that unloading left. Gone through by
+    # the names taken before the unload, so an empty list cannot pass this by
+    # having nothing to disagree with.
+    for entity_id in both:
+        left_behind = hass.states.get(entity_id)
+        assert left_behind is not None, f"{entity_id} went altogether"
+        assert left_behind.state == "unavailable", (
+            f"{entity_id} had a state written back after being taken away"
+        )
 
 
 async def test_a_blueprint_nobody_dumped_back_out_still_matches(
