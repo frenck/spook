@@ -5,9 +5,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.exceptions import ServiceValidationError
 from homeassistant.setup import async_setup_component
 import pytest
+import voluptuous as vol
 
 from custom_components.spook.ectoplasms.light.services.set_color import (
     SpookService as ColourService,
@@ -76,7 +76,7 @@ async def test_colour_leaves_a_light_that_is_off_alone(hass: HomeAssistant) -> N
     await hass.services.async_call(
         "light",
         "set_color",
-        {"entity_id": "light.kitchen", "color_name": "coral"},
+        {"entity_id": "light.kitchen", "rgb_color": _CORAL},
         blocking=True,
     )
     await hass.async_block_till_done()
@@ -85,10 +85,10 @@ async def test_colour_leaves_a_light_that_is_off_alone(hass: HomeAssistant) -> N
 
 
 async def test_a_colour_is_required(hass: HomeAssistant) -> None:
-    """One of the two ways of naming one, at least."""
+    """Without one there is nothing to set."""
     await _setup(hass)
 
-    with pytest.raises(ServiceValidationError):
+    with pytest.raises(vol.Invalid):
         await hass.services.async_call(
             "light", "set_color", {"entity_id": COLOUR}, blocking=True
         )

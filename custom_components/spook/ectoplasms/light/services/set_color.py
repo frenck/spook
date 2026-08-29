@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.light import (
-    ATTR_COLOR_NAME,
     ATTR_RGB_COLOR,
     ATTR_SUPPORTED_COLOR_MODES,
     ATTR_TRANSITION,
@@ -16,7 +15,6 @@ from homeassistant.components.light import (
     color_supported,
 )
 from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_ON
-from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
 from ....services import AbstractSpookEntityComponentService
@@ -36,10 +34,9 @@ class SpookService(AbstractSpookEntityComponentService[LightEntity]):
     domain = DOMAIN
     service = "set_color"
     schema = {
-        vol.Exclusive(ATTR_RGB_COLOR, "colour"): vol.All(
+        vol.Required(ATTR_RGB_COLOR): vol.All(
             vol.Length(min=3, max=3), [vol.All(vol.Coerce(int), vol.Range(0, 255))]
         ),
-        vol.Exclusive(ATTR_COLOR_NAME, "colour"): cv.string,
         vol.Optional(ATTR_TRANSITION): cv.positive_float,
     }
 
@@ -49,13 +46,6 @@ class SpookService(AbstractSpookEntityComponentService[LightEntity]):
         call: ServiceCall,
     ) -> None:
         """Handle the service call."""
-        if not (call.data.keys() & {ATTR_RGB_COLOR, ATTR_COLOR_NAME}):
-            # Checked here rather than in the schema: an entity service takes
-            # a plain field mapping, so there is nowhere in it to say that one
-            # of two optional keys has to be there.
-            msg = f"Set what colour, {ATTR_RGB_COLOR} or {ATTR_COLOR_NAME}?"
-            raise ServiceValidationError(msg)
-
         lights = [
             light
             for light in async_lights_that_are_on(self.hass, entity.entity_id)
@@ -68,7 +58,7 @@ class SpookService(AbstractSpookEntityComponentService[LightEntity]):
             ATTR_ENTITY_ID: [light.entity_id for light in lights]
         }
 
-        for key in (ATTR_RGB_COLOR, ATTR_COLOR_NAME, ATTR_TRANSITION):
+        for key in (ATTR_RGB_COLOR, ATTR_TRANSITION):
             if key in call.data:
                 data[key] = call.data[key]
 

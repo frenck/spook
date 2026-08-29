@@ -223,12 +223,8 @@ Set the color of the lights that are already on. Lights that cannot do color are
   - Default / Example
 * - `rgb_color`
   - {term}`list <list>`
-  - One of the two
+  - Yes
   - [255, 127, 80]
-* - `color_name`
-  - {term}`string <string>`
-  - One of the two
-  - coral
 * - `transition`
   - {term}`number <number>`
   - No
@@ -244,7 +240,7 @@ action: light.set_color
 target:
   area_id: living_room
 data:
-  color_name: coral
+  rgb_color: [255, 127, 80]
 ```
 
 :::

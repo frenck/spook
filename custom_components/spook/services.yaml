@@ -157,15 +157,10 @@ light_set_color:
     rgb_color:
       name: Color
       description: The color to set.
+      required: true
       example: "[255, 100, 100]"
       selector:
         color_rgb:
-    color_name:
-      name: Color name
-      description: A named color, such as "coral" or "midnightblue".
-      example: coral
-      selector:
-        text:
     transition:
       name: Transition
       description: How long the change should take.
