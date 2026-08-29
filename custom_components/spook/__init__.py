@@ -80,6 +80,15 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Forward async_setup_entry to ectoplasms
     await async_forward_setup_entry(hass, entry)
 
+    # Before the services, because `automation.snooze` reaches for this the
+    # moment it is called, and registering the action first leaves a window
+    # where calling it finds nothing there.
+    #
+    # This also picks up automations snoozed before the last restart. An
+    # automation that is off stays off, so without it a snooze that spanned a
+    # restart would be a disable nobody remembers making.
+    entry.async_on_unload(await async_setup_snoozing(hass))
+
     # Set up services
     services = SpookServiceManager(hass)
     await services.async_setup()
@@ -121,11 +130,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # And when they ran, for the conditions that count runs rather than
     # contexts. Same reason it cannot wait to be asked.
     entry.async_on_unload(async_setup_run_history(hass))
-
-    # Pick up any automations that were snoozed before the last restart. An
-    # automation that is off stays off, so without this a snooze that spanned
-    # a restart would be a disable nobody remembers making.
-    entry.async_on_unload(await async_setup_snoozing(hass))
 
     # Yay, we didn't got spooked!
     return True

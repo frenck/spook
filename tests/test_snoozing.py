@@ -1,13 +1,19 @@
 """Tests for snoozing automations."""
 
-# pylint: disable=wrong-import-order
+# The register's own bookkeeping is what one of these is about, and there is no
+# public way at it.
+# ruff: noqa: SLF001
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 from datetime import timedelta
 from typing import TYPE_CHECKING
+from unittest.mock import patch
 
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
-from homeassistant.core import CoreState, State
+from homeassistant.components.automation import AutomationEntity
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_UNAVAILABLE
+from homeassistant.core import Context, CoreState, State
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
 from pytest_homeassistant_custom_component.common import (
@@ -29,6 +35,8 @@ import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
     import pytest
+
+    from homeassistant.helpers import entity_registry as er
 
     from homeassistant.core import HomeAssistant
 
@@ -358,3 +366,123 @@ async def test_stopping_leaves_the_snooze_written_down(
 
     assert hass.states.get(SLEEPER).state == "off"
     assert SLEEPER in hass_storage[STORAGE_KEY]["data"]
+
+
+async def test_the_caller_is_carried_into_the_turning_off(
+    hass: HomeAssistant,
+) -> None:
+    """Whoever asked for the snooze is who turned the automation off.
+
+    The action passing its caller down is pinned where the action lives; this
+    is the half underneath it.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    asked = Context()
+    await snoozing.async_snooze(SLEEPER, AN_HOUR, context=asked)
+
+    assert hass.states.get(SLEEPER).context.id == asked.id
+
+    snoozing.async_stop()
+
+
+async def test_a_wake_that_fails_keeps_the_record(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Because forgetting it is what turns a snooze into a disable.
+
+    An automation left off with nothing written down is exactly the failure
+    this whole thing exists to prevent, so the record only goes once turning
+    it on has actually worked.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+
+    with patch.object(
+        AutomationEntity,
+        "async_turn_on",
+        side_effect=HomeAssistantError("no"),
+    ):
+        await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert snoozing.async_until(SLEEPER) is not None, (
+        "the record went even though it never woke"
+    )
+    assert hass.states.get(SLEEPER).state == "off"
+    assert "could not wake" in caplog.text, "it failed quietly"
+
+    snoozing.async_stop()
+
+
+async def test_an_automation_that_is_deleted_takes_its_snooze_with_it(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Because a record for something that no longer exists is dead weight.
+
+    A reload only makes an automation unavailable for a moment, which is why
+    this waits for the state to be gone for good rather than merely away.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    assert snoozing.async_until(SLEEPER) is not None
+
+    entity_registry.async_remove(SLEEPER)
+    await hass.async_block_till_done()
+
+    assert snoozing.async_until(SLEEPER) is None, "the snooze outlived its automation"
+
+    snoozing.async_stop()
+
+
+async def test_an_automation_that_is_merely_away_keeps_its_snooze(
+    hass: HomeAssistant,
+) -> None:
+    """A reload passes through unavailable, and must not read as a delete."""
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    until = snoozing.async_until(SLEEPER)
+
+    hass.states.async_set(SLEEPER, STATE_UNAVAILABLE)
+    await hass.async_block_till_done()
+
+    assert snoozing.async_until(SLEEPER) == until, "a reload cancelled the snooze"
+
+    snoozing.async_stop()
+
+
+async def test_a_stale_wake_up_call_leaves_the_new_wait_alone(
+    hass: HomeAssistant,
+) -> None:
+    """Cancelling a wait does not recall a callback already on its way.
+
+    Driven straight, because arranging for a timer to fire after it was
+    cancelled is a race. The callback is asked for at one time and then the
+    wait is moved, which is what asking for longer does.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    first = snoozing.async_until(SLEEPER)
+    stale = snoozing._async_due(SLEEPER, first)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR * 3)
+    later = snoozing.async_until(SLEEPER)
+
+    # The wait it belonged to is gone, so it has nothing to say.
+    await stale(dt_util.utcnow())
+
+    assert snoozing.async_until(SLEEPER) == later, "it dropped the newer wait"
+    assert hass.states.get(SLEEPER).state == "off", "it woke at the old time"
+
+    snoozing.async_stop()

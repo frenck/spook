@@ -6,7 +6,7 @@ from __future__ import annotations
 from datetime import timedelta
 from typing import TYPE_CHECKING
 
-from homeassistant.core import CoreState
+from homeassistant.core import Context, CoreState
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
@@ -94,6 +94,31 @@ async def test_it_snoozes_several_at_once(
 
     assert hass.states.get(SLEEPER).state == "on"
     assert hass.states.get(OTHER).state == "on"
+
+    hass.data["spook_snoozing"].async_stop()
+
+
+async def test_the_caller_travels_with_the_switching_off(
+    hass: HomeAssistant,
+) -> None:
+    """An automation watching this one switch off can still tell who asked.
+
+    Which is the business Spook's own context conditions are in, so the action
+    dropping the caller here would be an odd thing for it to do.
+    """
+    await _setup(hass)
+
+    asked = Context()
+    await hass.services.async_call(
+        "automation",
+        "snooze",
+        {"entity_id": SLEEPER, "duration": {"hours": 1}},
+        blocking=True,
+        context=asked,
+    )
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).context.id == asked.id
 
     hass.data["spook_snoozing"].async_stop()
 

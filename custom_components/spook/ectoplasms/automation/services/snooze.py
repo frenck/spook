@@ -39,5 +39,10 @@ class SpookService(AbstractSpookEntityComponentService[BaseAutomationEntity]):
     ) -> None:
         """Handle the service call."""
         await async_get_snoozing(self.hass).async_snooze(
-            entity.entity_id, call.data[CONF_DURATION]
+            entity.entity_id,
+            call.data[CONF_DURATION],
+            # Carried through, so an automation watching this one switch off
+            # can still tell who asked for it. Spook's own context conditions
+            # read the person off exactly that.
+            context=call.context,
         )

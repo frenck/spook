@@ -66,7 +66,7 @@ Dynamically remove an entity from an area. _#AaaaandItIsGone_
 
 ## Automation: Snooze
 
-Turns an automation off for a while, and turns it back on when the time is up. Surviving a restart, so a snooze does not quietly become a disable. _#automation_ _#quiet_ _#temporary_
+Turns an automation off for a while, and turns it back on when the time is up. It survives a restart, so a snooze does not quietly become a disable. _#automation_ _#quiet_ _#temporary_
 
 `automation.snooze`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze), [documentation](integrations/automation#snooze) 📚
 

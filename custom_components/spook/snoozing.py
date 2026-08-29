@@ -13,6 +13,7 @@ from homeassistant.const import (
     STATE_ON,
 )
 from homeassistant.core import CoreState, callback
+from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers.event import (
     async_track_point_in_utc_time,
     async_track_state_change_event,
@@ -26,7 +27,7 @@ from .const import DOMAIN, LOGGER
 if TYPE_CHECKING:
     from datetime import datetime, timedelta
 
-    from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
+    from homeassistant.core import CALLBACK_TYPE, Context, Event, HomeAssistant
     from homeassistant.helpers.event import EventStateChangedData
 
 DATA_SNOOZING: HassKey[Snoozing] = HassKey("spook_snoozing")
@@ -92,7 +93,12 @@ class Snoozing:
             self._unsub_started()
             self._unsub_started = None
 
-    async def async_snooze(self, entity_id: str, duration: timedelta) -> None:
+    async def async_snooze(
+        self,
+        entity_id: str,
+        duration: timedelta,
+        context: Context | None = None,
+    ) -> None:
         """Turn an automation off, and arrange for it to come back on.
 
         Asking again for one already asleep moves its wake-up time, rather
@@ -128,6 +134,7 @@ class Snoozing:
             SERVICE_TURN_OFF,
             {ATTR_ENTITY_ID: entity_id},
             blocking=True,
+            context=context,
         )
 
     @callback
@@ -156,7 +163,7 @@ class Snoozing:
                 # what they want than the snooze does.
                 self._until.pop(entity_id, None)
             elif until <= now:
-                await self._async_wake(entity_id)
+                await self._async_wake(entity_id, until)
             else:
                 self._async_rearm(entity_id)
 
@@ -176,36 +183,63 @@ class Snoozing:
             return
 
         self._timers[entity_id] = async_track_point_in_utc_time(
-            self._hass, self._async_due(entity_id), until
+            self._hass, self._async_due(entity_id, until), until
         )
 
     @callback
-    def _async_due(self, entity_id: str) -> CALLBACK_TYPE:
-        """Return the callback that wakes one automation.
+    def _async_due(self, entity_id: str, until: datetime) -> CALLBACK_TYPE:
+        """Return the callback that wakes one automation at this time.
 
-        A closure rather than a `partial` on a method, so the entity it
-        belongs to is not something the caller can get wrong.
+        Carrying the time it was set for, because cancelling a wait does not
+        recall a callback already on its way. One that arrives after somebody
+        asked for longer would otherwise drop the new wait and wake the
+        automation at the old time.
         """
 
         async def _wake(_now: datetime) -> None:
+            if self._until.get(entity_id) != until:
+                return
+
             self._timers.pop(entity_id, None)
-            await self._async_wake(entity_id)
+            await self._async_wake(entity_id, until)
 
         return _wake
 
-    async def _async_wake(self, entity_id: str) -> None:
-        """Put an automation back on, its time being up."""
+    async def _async_wake(self, entity_id: str, until: datetime) -> None:
+        """Put an automation back on, its time being up.
+
+        The record goes first, so this wake-up call is not read as somebody
+        turning the automation on by hand, and comes back if turning it on
+        fails. An automation left off with nothing written down is the
+        disable-nobody-remembers this whole thing exists to prevent.
+        """
         self._until.pop(entity_id, None)
         self._async_cancel_timer(entity_id)
-        await self._async_save()
         self._async_watch()
 
-        await self._hass.services.async_call(
-            AUTOMATION_DOMAIN,
-            SERVICE_TURN_ON,
-            {ATTR_ENTITY_ID: entity_id},
-            blocking=True,
-        )
+        try:
+            await self._hass.services.async_call(
+                AUTOMATION_DOMAIN,
+                SERVICE_TURN_ON,
+                {ATTR_ENTITY_ID: entity_id},
+                blocking=True,
+            )
+        except HomeAssistantError:
+            LOGGER.exception(
+                "Spook could not wake %s and left the snooze on the books, "
+                "to try again after a restart",
+                entity_id,
+            )
+
+            # Unless somebody asked for a fresh one while that was failing,
+            # in which case theirs is the newer word on it.
+            if entity_id not in self._until:
+                self._until[entity_id] = until
+                self._async_watch()
+
+            return
+
+        await self._async_save()
 
     @callback
     def _async_watch(self) -> None:
@@ -231,9 +265,15 @@ class Snoozing:
 
     @callback
     def _async_woken_by_hand(self, event: Event[EventStateChangedData]) -> None:
-        """Forget a snooze for an automation somebody has turned back on."""
+        """Forget a snooze for an automation somebody has turned back on.
+
+        Or removed entirely. A reload only makes an automation unavailable for
+        a moment, so a state that is gone for good means the automation is, and
+        a record for something that no longer exists is dead weight in the
+        store.
+        """
         new_state = event.data["new_state"]
-        if new_state is None or new_state.state != STATE_ON:
+        if new_state is not None and new_state.state != STATE_ON:
             return
 
         entity_id = event.data[ATTR_ENTITY_ID]
@@ -266,4 +306,16 @@ def async_get_snoozing(hass: HomeAssistant) -> Snoozing:
 async def async_setup_snoozing(hass: HomeAssistant) -> CALLBACK_TYPE:
     """Start keeping track of what is asleep, and return the way to stop."""
     snoozing = hass.data[DATA_SNOOZING] = Snoozing(hass)
-    return await snoozing.async_start()
+    stop = await snoozing.async_start()
+
+    @callback
+    def _unload() -> None:
+        """Stop, and take the register with it.
+
+        Leaving a stopped register behind would hand the next thing that asks
+        one that no longer keeps time.
+        """
+        stop()
+        hass.data.pop(DATA_SNOOZING, None)
+
+    return _unload
