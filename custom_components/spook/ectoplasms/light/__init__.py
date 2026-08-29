@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from homeassistant.components.light import DOMAIN
@@ -81,7 +82,11 @@ def _async_members(state: State) -> list[str] | None:
             continue
 
         members = state.attributes[key]
-        if not isinstance(members, (list, tuple)):
+
+        # Whatever container the integration reached for: a list from the
+        # group helper, a set from Hue. A string is iterable as well and would
+        # come apart into single characters, so it is turned away by name.
+        if isinstance(members, str) or not isinstance(members, Iterable):
             continue
 
         return [

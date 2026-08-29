@@ -169,3 +169,31 @@ async def test_an_effect_nothing_knows_changes_nothing(hass: HomeAssistant) -> N
     await hass.async_block_till_done()
 
     assert not _light(hass, COLOUR).calls
+
+
+async def test_a_transition_reaches_the_colour_actions_too(
+    hass: HomeAssistant,
+) -> None:
+    """Both of these advertise it, so both of them have to forward it.
+
+    Not `set_effect`: an effect runs on the light's own terms, and there is
+    nothing for a fade to fade between.
+    """
+    await _setup(hass)
+
+    await hass.services.async_call(
+        "light",
+        "set_color",
+        {"entity_id": COLOUR, "rgb_color": _CORAL, "transition": 3},
+        blocking=True,
+    )
+    await hass.services.async_call(
+        "light",
+        "set_color_temperature",
+        {"entity_id": WHITES, "kelvin": _WARM, "transition": 3},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    assert _light(hass, COLOUR).transitions == [3]
+    assert _light(hass, WHITES).transitions == [3]
