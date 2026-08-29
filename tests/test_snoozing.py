@@ -20,6 +20,7 @@ from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.storage import Store
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
+import pytest
 from pytest_homeassistant_custom_component.common import (
     async_fire_time_changed,
     mock_restore_cache,
@@ -38,8 +39,6 @@ import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
-    import pytest
-
     from homeassistant.helpers import entity_registry as er
 
     from homeassistant.core import Event, HomeAssistant
@@ -65,6 +64,19 @@ CONFIG = {
         },
     ]
 }
+
+
+NAMELESS = {
+    "automation": [
+        {"alias": "Nameless", "triggers": [], "actions": [{"delay": 1}]},
+        {"alias": "Also nameless", "triggers": [], "actions": [{"delay": 1}]},
+    ]
+}
+
+
+def _without_the_nameless_one() -> dict:
+    """Return the same config with the first one taken out."""
+    return {"automation": NAMELESS["automation"][1:]}
 
 
 async def _automations(hass: HomeAssistant) -> None:
@@ -392,6 +404,42 @@ async def test_the_caller_is_carried_into_the_turning_off(
     snoozing.async_stop()
 
 
+async def test_an_extension_whose_turning_off_fails_still_wakes(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The deadline is written down, so something has to be waiting on it.
+
+    Extending a snooze lets go of the wait it had to make room for the new
+    one, and that new wait is only set up once the automation is off. A
+    failure in between used to leave a record with nothing waiting on it: an
+    automation off until somebody restarts Home Assistant.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+
+    with (
+        patch.object(
+            AutomationEntity,
+            "async_turn_off",
+            side_effect=HomeAssistantError("no"),
+        ),
+        pytest.raises(HomeAssistantError),
+    ):
+        await snoozing.async_snooze(SLEEPER, AN_HOUR * 2)
+
+    assert snoozing.async_until(SLEEPER) is not None
+
+    await _pass(hass, freezer, AN_HOUR * 2 + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "on", "nothing was waiting on it"
+    assert snoozing.async_until(SLEEPER) is None
+
+    snoozing.async_stop()
+
+
 async def test_a_wake_that_fails_keeps_the_record(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
@@ -443,6 +491,66 @@ async def test_an_automation_that_is_deleted_takes_its_snooze_with_it(
     await hass.async_block_till_done()
 
     assert snoozing.async_until(SLEEPER) is None, "the snooze outlived its automation"
+
+    snoozing.async_stop()
+
+
+async def test_an_automation_without_an_id_takes_its_snooze_with_it(
+    hass: HomeAssistant,
+) -> None:
+    """A YAML automation written without an `id` has no registry entry.
+
+    So there is no removal event to read, and a state gone for good is the
+    only word there is. Measured: deleting one of these takes its state
+    straight to nothing, where an automation with an `id` would linger as
+    unavailable.
+    """
+    assert await async_setup_component(hass, "automation", NAMELESS)
+    await hass.async_block_till_done()
+
+    snoozing = await _register(hass)
+
+    nameless = "automation.nameless"
+    await snoozing.async_snooze(nameless, AN_HOUR)
+    assert snoozing.async_until(nameless) is not None
+
+    with patch(
+        "homeassistant.config.async_hass_config_yaml",
+        return_value=_without_the_nameless_one(),
+    ):
+        await hass.services.async_call("automation", "reload", blocking=True)
+        await hass.async_block_till_done()
+
+    assert hass.states.get(nameless) is None
+    assert snoozing.async_until(nameless) is None, (
+        "the snooze outlived the automation it was for"
+    )
+
+    snoozing.async_stop()
+
+
+async def test_a_state_that_goes_while_the_entity_stays_keeps_the_snooze(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A missing state is not proof on its own that an automation is gone.
+
+    An entity that still has its registry entry is still an automation, and
+    its snooze outlives whatever took the state away.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    until = snoozing.async_until(SLEEPER)
+
+    assert entity_registry.async_get(SLEEPER) is not None
+    hass.states.async_remove(SLEEPER)
+    await hass.async_block_till_done()
+
+    assert snoozing.async_until(SLEEPER) == until, (
+        "it read a missing state as an automation that no longer exists"
+    )
 
     snoozing.async_stop()
 

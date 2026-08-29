@@ -177,13 +177,23 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
         # automation on by hand cancels the snooze through a state event, and
         # a fresh snooze arriving before that event lands would find it still
         # written down as asleep and leave it running with a wake-up time.
-        await self._hass.services.async_call(
-            AUTOMATION_DOMAIN,
-            SERVICE_TURN_OFF,
-            {ATTR_ENTITY_ID: entity_id},
-            blocking=True,
-            context=context,
-        )
+        try:
+            await self._hass.services.async_call(
+                AUTOMATION_DOMAIN,
+                SERVICE_TURN_OFF,
+                {ATTR_ENTITY_ID: entity_id},
+                blocking=True,
+                context=context,
+            )
+        except HomeAssistantError:
+            # The deadline is written down either way, and a record with
+            # nothing waiting on it is an automation that stays as it is until
+            # a restart. Extending a snooze is where that bites: it is already
+            # off, and the wait it had was let go to make room for this one.
+            if self._until.get(entity_id) == deadline:
+                self._async_rearm(entity_id)
+
+            raise
 
         if self._until.get(entity_id) != deadline:
             # Turned on by hand between the check above and that call landing,
@@ -367,22 +377,26 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
 
         if data["action"] == "remove":
             # Nothing left to wake, so the record is dead weight in the store.
-            if self._until.pop(entity_id, None) is None:
-                return
+            self._async_forget(entity_id)
+            return
 
-            self._async_cancel_timer(entity_id)
-
-        elif old_entity_id := data.get("old_entity_id"):
+        if old_entity_id := data.get("old_entity_id"):
             if (until := self._until.pop(old_entity_id, None)) is None:
                 return
 
             self._async_cancel_timer(old_entity_id)
             self._until[entity_id] = until
             self._async_rearm(entity_id)
+            self._async_watch()
+            self._hass.async_create_task(self._async_save())
 
-        else:
+    @callback
+    def _async_forget(self, entity_id: str) -> None:
+        """Drop a record, there being no automation left to wake."""
+        if self._until.pop(entity_id, None) is None:
             return
 
+        self._async_cancel_timer(entity_id)
         self._async_watch()
         self._hass.async_create_task(self._async_save())
 
@@ -410,15 +424,21 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
     def _async_state_changed(self, event: Event[EventStateChangedData]) -> None:
         """Deal with something asleep changing state.
 
-        A state that is gone says nothing here: a rename takes the old one
-        away as surely as a delete does, and telling those apart is what the
-        registry is for.
+        A state that is gone usually says nothing here: a rename takes the old
+        one away as surely as a delete does, and telling those apart is what
+        the registry is for. Usually, because a YAML automation written
+        without an `id` has no registry entry to be renamed in, and for those
+        a state gone for good is the only word there is.
         """
+        entity_id = event.data[ATTR_ENTITY_ID]
+
         new_state = event.data["new_state"]
         if new_state is None:
+            if er.async_get(self._hass).async_get(entity_id) is None:
+                self._async_forget(entity_id)
+
             return
 
-        entity_id = event.data[ATTR_ENTITY_ID]
         if entity_id in self._waking:
             # Spook's own wake-up call, which is neither somebody changing
             # their mind nor an automation coming back.
@@ -428,12 +448,7 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
             self._async_try_again(entity_id, new_state.state)
             return
 
-        if self._until.pop(entity_id, None) is None:
-            return
-
-        self._async_cancel_timer(entity_id)
-        self._async_watch()
-        self._hass.async_create_task(self._async_save())
+        self._async_forget(entity_id)
 
     @callback
     def _async_try_again(self, entity_id: str, state: str) -> None:
