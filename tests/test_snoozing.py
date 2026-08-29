@@ -541,6 +541,138 @@ async def test_unloading_while_the_store_is_read_leaves_nothing_behind(
     )
 
 
+async def test_turning_it_on_while_a_longer_snooze_saves_wins(
+    hass: HomeAssistant,
+) -> None:
+    """Extending a snooze is the one moment the automation is off and watched.
+
+    Turning it on there cancels the snooze, and the extension must not then
+    turn it off again: that is an automation left off with nothing written
+    down to wake it, which is the whole failure this exists to prevent.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    assert hass.states.get(SLEEPER).state == "off"
+
+    saving = asyncio.Event()
+    let_go = asyncio.Event()
+    real_save = Store.async_save
+
+    async def _held_open(self: Store, data: dict) -> None:
+        saving.set()
+        await let_go.wait()
+        await real_save(self, data)
+
+    with patch.object(Store, "async_save", _held_open):
+        extending = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR * 3))
+
+        async with asyncio.timeout(5):
+            await saving.wait()
+
+        # Not waited on any further than the call itself: the listener that
+        # cancels the snooze is a callback, so it has already run, and its own
+        # save is queued behind the one being held open here.
+        await hass.services.async_call(
+            "automation", "turn_on", {"entity_id": SLEEPER}, blocking=True
+        )
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await extending
+
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "on", (
+        "the extension turned it off again after being cancelled"
+    )
+    assert snoozing.async_until(SLEEPER) is None, "and left a wake-up time behind"
+
+    snoozing.async_stop()
+
+
+async def test_a_wake_that_fails_writes_the_record_back_down(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """In memory is not enough, because somebody else may save in between.
+
+    A snooze for another automation writes out the whole register, and by then
+    this record has already left it. Putting it back only in memory means a
+    restart loses it, and the automation is off for good: the exact thing this
+    is here to prevent.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    until = snoozing.async_until(SLEEPER)
+
+    waking = asyncio.Event()
+    let_go = asyncio.Event()
+
+    async def _refuse(_self: AutomationEntity, **_kwargs: object) -> None:
+        waking.set()
+        await let_go.wait()
+
+        msg = "no"
+        raise HomeAssistantError(msg)
+
+    with patch.object(AutomationEntity, "async_turn_on", _refuse):
+        # Driven straight rather than through the clock, so the failing wake
+        # and the snooze below genuinely overlap.
+        failing = hass.async_create_task(snoozing._async_wake(SLEEPER, until))
+
+        async with asyncio.timeout(5):
+            await waking.wait()
+
+        # Writes out a register that no longer has the one being woken in it.
+        await snoozing.async_snooze(OTHER, AN_HOUR)
+        assert SLEEPER not in hass_storage[STORAGE_KEY]["data"]
+
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await failing
+
+    await hass.async_block_till_done()
+
+    assert snoozing.async_until(SLEEPER) is not None
+    assert SLEEPER in hass_storage[STORAGE_KEY]["data"], (
+        "the record lives only in memory, so a restart would lose it"
+    )
+
+    snoozing.async_stop()
+
+
+async def test_a_wake_up_call_that_came_due_at_the_unload_does_nothing(
+    hass: HomeAssistant,
+) -> None:
+    """Cancelling a timer does not recall a callback that already fired.
+
+    Driven straight, because a callback firing in the same breath as the
+    unload is a race, and a test that lets the two miss each other would pass
+    against exactly the leak it is named for. The snooze keeps its record, so
+    the next start sees to it.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    until = snoozing.async_until(SLEEPER)
+    already_going = snoozing._async_due(SLEEPER, until)
+
+    snoozing.async_stop()
+    await already_going(dt_util.utcnow())
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == "off", (
+        "it woke an automation after Spook was unloaded"
+    )
+    assert snoozing.async_until(SLEEPER) == until, "and forgot the snooze on the way"
+
+
 async def test_unloading_partway_through_catching_up_stops_there(
     hass: HomeAssistant,
     hass_storage: dict,

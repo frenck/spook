@@ -130,8 +130,16 @@ class Snoozing:
             )
             return
 
-        self._until[entity_id] = dt_util.utcnow() + duration
+        deadline = dt_util.utcnow() + duration
+        self._until[entity_id] = deadline
         await self._async_save()
+
+        if self._until.get(entity_id) != deadline:
+            # Somebody turned the automation on while that was saving, which
+            # cancels a snooze. Extending one already asleep is where that can
+            # happen, the automation being off and watched at the time.
+            # Turning it off now would leave it off with nothing to wake it.
+            return
 
         # Unloaded while that was saving leaves both of these refusing, and
         # the automation is still turned off below: it is written down, so the
@@ -213,10 +221,13 @@ class Snoozing:
         recall a callback already on its way. One that arrives after somebody
         asked for longer would otherwise drop the new wait and wake the
         automation at the old time.
+
+        Nor does cancelling recall one that came due in the same breath as the
+        unload, which is why the flag is worth another look here.
         """
 
         async def _wake(_now: datetime) -> None:
-            if self._until.get(entity_id) != until:
+            if self._stopped or self._until.get(entity_id) != until:
                 return
 
             self._timers.pop(entity_id, None)
@@ -255,6 +266,11 @@ class Snoozing:
             if entity_id not in self._until:
                 self._until[entity_id] = until
                 self._async_watch()
+
+                # Written down again as well: a save for some other automation
+                # may have gone by while this one was failing, and that one
+                # wrote out a register this record had already left.
+                await self._async_save()
 
             return
 
