@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import asyncio
 from typing import TYPE_CHECKING
 
 from homeassistant.components.automation import DOMAIN as AUTOMATION_DOMAIN
@@ -191,7 +192,10 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
                 blocking=True,
                 context=context,
             )
-        except HomeAssistantError:
+        except HomeAssistantError, asyncio.CancelledError:
+            # Cancelled counts here too. A script calling this can be stopped
+            # mid-call, and that is not a shutdown: Home Assistant carries on
+            # without ever coming back to pick the record up.
             if self._until.get(entity_id) == deadline:
                 if self._is_on(entity_id):
                     # Still running, so nothing was snoozed and there is

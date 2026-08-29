@@ -491,6 +491,49 @@ async def test_a_second_chance_overtaken_by_a_person_does_nothing(
     snoozing.async_stop()
 
 
+async def test_a_snooze_cancelled_after_it_took_still_wakes(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A script calling this can be stopped mid-call, which is not a shutdown.
+
+    Home Assistant carries on and never comes back to pick the record up, so
+    an automation turned off by a cancelled snooze would stay off until a
+    restart if nothing were waiting on its deadline.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    turned_off = asyncio.Event()
+    real_turn_off = AutomationEntity.async_turn_off
+
+    async def _then_hang(self: AutomationEntity, **kwargs: object) -> None:
+        await real_turn_off(self, **kwargs)
+        turned_off.set()
+
+        await asyncio.Event().wait()
+
+    with patch.object(AutomationEntity, "async_turn_off", _then_hang):
+        snoozed = hass.async_create_task(snoozing.async_snooze(SLEEPER, AN_HOUR))
+
+        async with asyncio.timeout(5):
+            await turned_off.wait()
+
+        snoozed.cancel()
+
+        with contextlib.suppress(asyncio.CancelledError):
+            await snoozed
+
+    assert hass.states.get(SLEEPER).state == "off"
+    assert snoozing.async_until(SLEEPER) is not None
+
+    await _pass(hass, freezer, AN_HOUR + timedelta(minutes=1))
+
+    assert hass.states.get(SLEEPER).state == "on", "nothing was waiting on it"
+
+    snoozing.async_stop()
+
+
 async def test_a_fresh_snooze_whose_turning_off_fails_leaves_no_record(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
