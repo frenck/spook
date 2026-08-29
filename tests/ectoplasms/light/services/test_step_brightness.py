@@ -26,6 +26,7 @@ from .conftest import (
     GROUP,
     OFF,
     OWNED_GROUP,
+    SET_GROUP,
     PLAIN,
     async_set_up_group,
     async_set_up_lights,
@@ -295,3 +296,26 @@ async def test_a_group_with_no_members_is_not_a_light(hass: HomeAssistant) -> No
     await hass.async_block_till_done()
 
     assert _brightness(hass, EMPTY_GROUP) == _DIM, "it stepped the group itself"
+
+
+async def test_a_group_that_hands_its_members_out_as_a_set(
+    hass: HomeAssistant,
+) -> None:
+    """Hue keeps its members under `entity_id`, but in a set rather than a list.
+
+    Insisting on a list means a Hue room falls through to the plain-light path
+    and gets stepped from its own averaged level, which is core#118009 all over
+    again.
+    """
+    await _setup(hass)
+
+    await hass.services.async_call(
+        "light",
+        "increase_brightness",
+        {"entity_id": SET_GROUP, "step_pct": 10},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    assert _brightness(hass, DIM) == _DIM + _ONE_STEP
+    assert _brightness(hass, BRIGHT) == _FULL

@@ -31,6 +31,7 @@ PLAIN = "light.plain"
 GROUP = "light.kitchen"
 OWNED_GROUP = "light.theset"
 EMPTY_GROUP = "light.nobody"
+SET_GROUP = "light.hallway"
 COLOUR = "light.colour"
 WHITES = "light.whites"
 
@@ -157,6 +158,24 @@ class IntegrationGroupLight(FakeLight):
         self.group = IntegrationSpecificGroup(self, member_unique_ids)
 
 
+class SetGroupLight(FakeLight):
+    """A group that hands its members out as a set, the way Hue does.
+
+    Under the same `entity_id` attribute the group helper uses, so the only
+    thing telling them apart is the container.
+    """
+
+    def __init__(self, name: str, members: set[str]) -> None:
+        """Initialize the group."""
+        super().__init__(name, 26, on=True)
+        self._members = members
+
+    @property
+    def extra_state_attributes(self) -> dict[str, Any]:
+        """Return the members, in the container Hue hands them out in."""
+        return {"entity_id": self._members}
+
+
 async def async_set_up_lights(hass: HomeAssistant) -> None:
     """Set up three lights: one dim, one bright, one off."""
 
@@ -177,6 +196,7 @@ async def async_set_up_lights(hass: HomeAssistant) -> None:
                 OnOffLight("plain", on=True),
                 IntegrationGroupLight("theset", ["dim", "bright"]),
                 IntegrationGroupLight("nobody", []),
+                SetGroupLight("hallway", {DIM, BRIGHT}),
                 ColourLight("colour"),
                 ColourTemperatureLight("whites"),
             ]
