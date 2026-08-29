@@ -14,6 +14,7 @@ from homeassistant.const import (
 )
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import (
     async_track_point_in_utc_time,
     async_track_state_change_event,
@@ -36,7 +37,10 @@ STORAGE_KEY = f"{DOMAIN}.snoozing"
 STORAGE_VERSION = 1
 
 
-class Snoozing:
+# Three of the attributes below are subscriptions, each cancelled in its own
+# way and at its own moment, so folding them into one bag would cost more than
+# the count saves.
+class Snoozing:  # pylint: disable=too-many-instance-attributes
     """Keeps automations off until their time is up, restarts included.
 
     An automation that is off stays off across a restart, which is the whole
@@ -53,6 +57,7 @@ class Snoozing:
         self._timers: dict[str, CALLBACK_TYPE] = {}
         self._unsub_watching: CALLBACK_TYPE | None = None
         self._unsub_started: CALLBACK_TYPE | None = None
+        self._unsub_registry: CALLBACK_TYPE | None = None
         self._stopped = False
 
     async def async_start(self) -> CALLBACK_TYPE:
@@ -72,6 +77,12 @@ class Snoozing:
             for entity_id, until in stored.items()
             if (parsed := dt_util.parse_datetime(until)) is not None
         }
+
+        # Records are filed under an entity ID, so the register has to hear
+        # about the ones that change or go away.
+        self._unsub_registry = self._hass.bus.async_listen(
+            er.EVENT_ENTITY_REGISTRY_UPDATED, self._async_registry_changed
+        )
 
         # Waking things up needs the automations to exist, and at setup they
         # may not yet. Anything already asleep waits for Home Assistant to say
@@ -104,6 +115,10 @@ class Snoozing:
         if self._unsub_started is not None:
             self._unsub_started()
             self._unsub_started = None
+
+        if self._unsub_registry is not None:
+            self._unsub_registry()
+            self._unsub_registry = None
 
     async def async_snooze(
         self,
@@ -277,6 +292,41 @@ class Snoozing:
         await self._async_save()
 
     @callback
+    def _async_registry_changed(
+        self,
+        event: Event[er.EventEntityRegistryUpdatedData],
+    ) -> None:
+        """Follow a renamed automation, and let go of a removed one.
+
+        The record is filed under an entity ID, and an entity ID is something
+        people change. Following it here keeps the snooze on the automation
+        rather than on the name it happened to have.
+        """
+        data = event.data
+        entity_id = data["entity_id"]
+
+        if data["action"] == "remove":
+            # Nothing left to wake, so the record is dead weight in the store.
+            if self._until.pop(entity_id, None) is None:
+                return
+
+            self._async_cancel_timer(entity_id)
+
+        elif old_entity_id := data.get("old_entity_id"):
+            if (until := self._until.pop(old_entity_id, None)) is None:
+                return
+
+            self._async_cancel_timer(old_entity_id)
+            self._until[entity_id] = until
+            self._async_rearm(entity_id)
+
+        else:
+            return
+
+        self._async_watch()
+        self._hass.async_create_task(self._async_save())
+
+    @callback
     def _async_watch(self) -> None:
         """Listen for anything asleep being turned on by somebody else.
 
@@ -302,13 +352,12 @@ class Snoozing:
     def _async_woken_by_hand(self, event: Event[EventStateChangedData]) -> None:
         """Forget a snooze for an automation somebody has turned back on.
 
-        Or removed entirely. A reload only makes an automation unavailable for
-        a moment, so a state that is gone for good means the automation is, and
-        a record for something that no longer exists is dead weight in the
-        store.
+        A state that is gone says nothing here: a rename takes the old one
+        away as surely as a delete does, and telling those apart is what the
+        registry is for.
         """
         new_state = event.data["new_state"]
-        if new_state is not None and new_state.state != STATE_ON:
+        if new_state is None or new_state.state != STATE_ON:
             return
 
         entity_id = event.data[ATTR_ENTITY_ID]

@@ -427,8 +427,8 @@ async def test_an_automation_that_is_deleted_takes_its_snooze_with_it(
 ) -> None:
     """Because a record for something that no longer exists is dead weight.
 
-    A reload only makes an automation unavailable for a moment, which is why
-    this waits for the state to be gone for good rather than merely away.
+    Read off the registry rather than off a state going missing, which a
+    rename does just as thoroughly as a delete.
     """
     await _automations(hass)
     snoozing = await _register(hass)
@@ -440,6 +440,35 @@ async def test_an_automation_that_is_deleted_takes_its_snooze_with_it(
     await hass.async_block_till_done()
 
     assert snoozing.async_until(SLEEPER) is None, "the snooze outlived its automation"
+
+    snoozing.async_stop()
+
+
+async def test_renaming_an_automation_leaves_no_record_under_either_name(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A snooze follows the automation, not the name it had that day.
+
+    Measured rather than assumed: Home Assistant brings a renamed automation
+    back on, because the new entity ID has nothing to restore from. So the
+    snooze ends there anyway, the way any other turning-on ends one. What the
+    registry buys is that nothing stays filed under the old name, counting
+    down towards an entity nobody uses.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    await snoozing.async_snooze(SLEEPER, AN_HOUR)
+    assert snoozing.async_until(SLEEPER) is not None
+
+    renamed = "automation.now_called_this"
+    entity_registry.async_update_entity(SLEEPER, new_entity_id=renamed)
+    await hass.async_block_till_done()
+
+    assert hass.states.get(renamed).state == "on"
+    assert snoozing.async_until(SLEEPER) is None, "a record left under the old name"
+    assert snoozing.async_until(renamed) is None
 
     snoozing.async_stop()
 
@@ -810,4 +839,5 @@ async def test_unloading_while_a_snooze_is_saved_still_leaves_nothing_behind(
 
     assert not snoozing._timers, "it armed a timer on a stopped register"
     assert snoozing._unsub_watching is None, "it left a listener behind"
+    assert snoozing._unsub_registry is None, "it kept watching the registry"
     assert hass.states.get(SLEEPER).state == "off", "it did not turn it off at all"
