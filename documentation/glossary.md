@@ -313,7 +313,7 @@ Trigger
 :::{glossary}
 YAML
 : The complex definition would be: <wiki:YAML> is a human-readable data-serialization language. But a more simplified explanation would be: It is a structure in which we can write configuration files that are readable for both humans and machines.
-: It is the format {term}`Home Assistant` uses to store its configuration and data. Opinions are divided on whether YAML is a good or bad format or hard or easy to use. The fact remains, is that Home Assistant uses it a lot, and it definitly worth while learning it. YAML itself really isn't that complex, but it does have some quirks that you need to be aware of. The most complex part of using YAML with Home Assistant is not YAML itself but all the things you can do with it in Home Assistant.
+: It is the format {term}`Home Assistant` uses to store its configuration and data. Opinions are divided on whether YAML is a good or bad format or hard or easy to use. The fact remains, is that Home Assistant uses it a lot, and it definitely worth while learning it. YAML itself really isn't that complex, but it does have some quirks that you need to be aware of. The most complex part of using YAML with Home Assistant is not YAML itself but all the things you can do with it in Home Assistant.
 : Don't let it scare you. You'll get the hang of it quickly.
 : [Read a tutorial on YAML](https://spacelift.io/blog/yaml)
 :::
