@@ -145,6 +145,30 @@ async def test_a_snooze_of_nothing_is_refused(hass: HomeAssistant) -> None:
     hass.data["spook_snoozing"].async_stop()
 
 
+async def test_a_duration_past_the_end_of_the_calendar_is_refused(
+    hass: HomeAssistant,
+) -> None:
+    """Time periods run further than datetimes do.
+
+    So a big enough number of days lands past the end of the calendar, and
+    that is a validation error rather than an overflow thrown halfway through
+    turning an automation off.
+    """
+    await _setup(hass)
+
+    with pytest.raises(vol.Invalid):
+        await hass.services.async_call(
+            "automation",
+            "snooze",
+            {"entity_id": SLEEPER, "duration": {"days": 999999999}},
+            blocking=True,
+        )
+
+    assert hass.states.get(SLEEPER).state == "on"
+
+    hass.data["spook_snoozing"].async_stop()
+
+
 async def test_a_duration_is_required(hass: HomeAssistant) -> None:
     """Without one there is no snooze, only an off switch."""
     await _setup(hass)

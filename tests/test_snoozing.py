@@ -13,8 +13,9 @@ from unittest.mock import patch
 
 from homeassistant.components.automation import AutomationEntity
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_UNAVAILABLE
-from homeassistant.core import Context, CoreState, State
+from homeassistant.core import Context, CoreState, State, callback
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.storage import Store
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
@@ -40,7 +41,8 @@ if TYPE_CHECKING:
 
     from homeassistant.helpers import entity_registry as er
 
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import Event, HomeAssistant
+    from homeassistant.helpers.event import EventStateChangedData
 
 SLEEPER = "automation.sleeper"
 OTHER = "automation.other"
@@ -568,6 +570,64 @@ async def test_unloading_while_the_store_is_read_leaves_nothing_behind(
     assert hass.states.get(SLEEPER).state == "off", (
         "it woke an automation after Spook was unloaded"
     )
+
+
+async def test_a_snooze_shorter_than_its_own_turning_off_still_ends_on(
+    hass: HomeAssistant,
+) -> None:
+    """A wake must not overtake the disable it belongs to.
+
+    The turning-off is held open here and the snooze made shorter than it, so
+    the deadline is certain to pass while the automation is still being turned
+    off. Arming the timer before that would wake it first and disable it
+    second: off, with nothing written down.
+    """
+    await _automations(hass)
+    snoozing = await _register(hass)
+
+    turning_off = asyncio.Event()
+    let_go = asyncio.Event()
+    back_on = asyncio.Event()
+    real_turn_off = AutomationEntity.async_turn_off
+
+    @callback
+    def _woken(event: Event[EventStateChangedData]) -> None:
+        new_state = event.data["new_state"]
+        if new_state is not None and new_state.state == "on":
+            back_on.set()
+
+    unsub = async_track_state_change_event(hass, [SLEEPER], _woken)
+
+    async def _held_open(self: AutomationEntity, **kwargs: object) -> None:
+        turning_off.set()
+        await let_go.wait()
+
+        await real_turn_off(self, **kwargs)
+
+    with patch.object(AutomationEntity, "async_turn_off", _held_open):
+        snoozed = hass.async_create_task(
+            snoozing.async_snooze(SLEEPER, timedelta(milliseconds=1))
+        )
+
+        async with asyncio.timeout(5):
+            await turning_off.wait()
+
+        # Well past a millisecond, so the deadline is behind us by the time
+        # the automation is actually off.
+        await asyncio.sleep(0.05)
+        let_go.set()
+
+        async with asyncio.timeout(5):
+            await snoozed
+
+    async with asyncio.timeout(5):
+        await back_on.wait()
+
+    unsub()
+
+    assert snoozing.async_until(SLEEPER) is None, "it left a wake-up time behind"
+
+    snoozing.async_stop()
 
 
 async def test_turning_it_on_while_a_longer_snooze_saves_wins(

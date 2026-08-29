@@ -8,6 +8,7 @@ import voluptuous as vol
 
 from homeassistant.components.automation import DOMAIN, BaseAutomationEntity
 from homeassistant.helpers import config_validation as cv
+from homeassistant.util import dt as dt_util
 
 from ....services import AbstractSpookEntityComponentService
 from ....snoozing import async_get_snoozing
@@ -32,6 +33,15 @@ def _a_stretch_of_time(value: Any) -> timedelta:
     if not period:
         msg = "duration must be longer than nothing"
         raise vol.Invalid(msg)
+
+    try:
+        dt_util.utcnow() + period
+    except OverflowError as err:
+        # Time periods run further than datetimes do, so a big enough number
+        # of days lands past the end of the calendar. Better said here than
+        # thrown halfway through turning an automation off.
+        msg = "duration must end at a time that exists"
+        raise vol.Invalid(msg) from err
 
     return period
 

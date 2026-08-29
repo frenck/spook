@@ -156,10 +156,9 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
             # Turning it off now would leave it off with nothing to wake it.
             return
 
-        # Unloaded while that was saving leaves both of these refusing, and
-        # the automation is still turned off below: it is written down, so the
+        # Unloaded while that was saving leaves this refusing, and the
+        # automation is still turned off below: it is written down, so the
         # next start picks it up. Only the waiting goes.
-        self._async_rearm(entity_id)
         self._async_watch()
 
         # Turned off every time, including one already asleep. Skipping it
@@ -174,6 +173,13 @@ class Snoozing:  # pylint: disable=too-many-instance-attributes
             blocking=True,
             context=context,
         )
+
+        # And only now the waiting, because a snooze short enough to come due
+        # while that was happening would otherwise wake the automation before
+        # this turned it off, leaving it off with nothing to wake it. A
+        # deadline that has already passed by this point simply fires at once.
+        if self._until.get(entity_id) == deadline:
+            self._async_rearm(entity_id)
 
     @callback
     def async_until(self, entity_id: str) -> datetime | None:
