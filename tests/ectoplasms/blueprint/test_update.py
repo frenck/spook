@@ -5,13 +5,14 @@ from __future__ import annotations
 
 from datetime import timedelta
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, ClassVar
 from unittest.mock import patch
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.components.update import UpdateEntityFeature
 from homeassistant.core import CoreState
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers.entity_component import DATA_INSTANCES
 import aiohttp
 import pytest
 import voluptuous as vol
@@ -21,12 +22,17 @@ from custom_components.spook.ectoplasms.blueprint.update import _CHECK_INTERVAL
 
 from .conftest import (
     A_SCRIPT_BLUEPRINT,
+    A_SCRIPT_BLUEPRINT_CHANGED,
+    A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT,
+    ANOTHER_AUTOMATION_BLUEPRINT,
     MOTION_LIGHT,
     MOTION_LIGHT_CHANGED,
+    MOTION_LIGHT_FROM_THE_FUTURE,
     MOTION_LIGHT_WITH_NEW_INPUT,
     NO_INPUTS,
     SOURCE,
     async_add_automation,
+    async_add_script,
     async_set_up,
     async_write_blueprint,
     examples_are_on_disk,
@@ -541,3 +547,266 @@ async def test_the_notes_do_not_warn_when_there_is_nothing_to_install(
         await _check(hass, freezer)
 
     assert "ha-alert" not in await _release_notes(client)
+
+
+async def test_taking_the_source_url_out_of_a_file_is_enough(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """The documented way to be left alone, so it had better work.
+
+    Home Assistant loads a blueprint once and then keeps it, so the copy in
+    memory still names a source long after the file stopped doing so. Reading
+    the metadata off that copy would leave this entity sitting there checking
+    an address the file no longer mentions, until something reloaded.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    assert entity_registry.async_get(_ENTITY) is not None
+
+    write_by_hand(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT.replace("  source_url: {source}\n", ""),
+    )
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY) is None
+    assert entity_registry.async_get(_ENTITY) is None
+
+
+async def test_a_renamed_blueprint_follows_its_new_name(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Same reason: the name comes off the file, not off the loaded copy."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    write_by_hand(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT.replace("Spooky motion light", "Spooky landing light"),
+    )
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).attributes["title"] == "Spooky landing light"
+
+
+async def test_another_blueprint_at_the_same_address_is_not_this_one(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A forum topic can hold two automation blueprints.
+
+    Both were imported carrying the address of the topic, and the importer
+    hands back the first it finds. Matching on the domain alone lets the other
+    one through, and installing would write somebody else's blueprint into
+    this file.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    before = file.read_text(encoding="utf-8")
+    await async_set_up(hass)
+
+    # Nothing on offer, because what came back is not this blueprint.
+    with _source_says(ANOTHER_AUTOMATION_BLUEPRINT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
+
+    # And again for the gap in between: an update found honestly, and the
+    # topic having moved on by the time somebody presses the button.
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with (
+        _source_says(ANOTHER_AUTOMATION_BLUEPRINT),
+        pytest.raises(HomeAssistantError, match="Spooky doorbell chime"),
+    ):
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+
+    assert file.read_text(encoding="utf-8") == before
+
+
+async def test_a_blueprint_needing_a_newer_home_assistant_is_refused(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    hass_ws_client: WebSocketGenerator,
+) -> None:
+    """A blueprint can say for itself what it needs.
+
+    Writing one that says it needs more than is running breaks every
+    automation on it, on a version that was never going to work.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    before = file.read_text(encoding="utf-8")
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+        assert hass.states.get(_ENTITY).state == "on"
+        assert "9999.1.0" in await _release_notes(client)
+
+        with pytest.raises(HomeAssistantError, match=r"9999\.1\.0"):
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY},
+                blocking=True,
+            )
+
+    assert file.read_text(encoding="utf-8") == before
+
+
+async def test_the_notes_say_why_there_is_never_anything_to_install(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    hass_ws_client: WebSocketGenerator,
+) -> None:
+    """An entity that never has news looks the same as one with nothing to say.
+
+    So when Spook set the answer aside, for a source it could not reach or one
+    that leads somewhere else entirely, the dialog says so.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(ANOTHER_AUTOMATION_BLUEPRINT):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "alert-type='info'" in notes
+    assert "Spooky doorbell chime" in notes
+
+
+async def test_a_script_blueprint_gets_one_too(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Scripts keep their blueprint users in a different place from automations.
+
+    Same shape, different integration, and nothing had been through it.
+    """
+    file = async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    await async_set_up(hass)
+
+    entity_id = "update.blueprints_spooky_confirmable_notification"
+    assert hass.states.get(entity_id) is not None
+
+    with _source_says(A_SCRIPT_BLUEPRINT_CHANGED):
+        await _check(hass, freezer)
+        assert hass.states.get(entity_id).state == "on"
+
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": entity_id},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert "Boo!" in file.read_text(encoding="utf-8")
+    assert hass.states.get(entity_id).state == "off"
+
+
+async def test_a_script_that_would_be_left_short_stops_the_install(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Scripts hold their supplied inputs in their own entities.
+
+    Reading them wrong would let an update through that leaves every script on
+    the blueprint unable to load.
+    """
+    file = async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    await async_set_up(hass)
+    await async_add_script(
+        hass,
+        "shout",
+        "notify.yaml",
+        {"notify_target": "mobile_app_phone"},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    entity_id = "update.blueprints_spooky_confirmable_notification"
+    with _source_says(A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+
+        with pytest.raises(HomeAssistantError, match="title"):
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": entity_id},
+                blocking=True,
+            )
+
+    assert file.read_text(encoding="utf-8") == before
+
+
+async def test_a_consumer_that_cannot_be_read_stops_the_install(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The inputs an automation supplies are reached for by name.
+
+    Home Assistant offers no public way to them: `raw_config` is the automation
+    after the blueprint has already been substituted into it. So if that name
+    ever changes, or there is simply nothing behind it, Spook stops being able
+    to tell whether an update is safe. Not knowing is not a reason to write.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    await async_add_automation(
+        hass,
+        "Landing light",
+        "motion.yaml",
+        {"motion_entity": "binary_sensor.landing", "light_target": {}},
+    )
+    before = file.read_text(encoding="utf-8")
+
+    class _AfterARename:  # pylint: disable=too-few-public-methods
+        """The automation as it would look had that name changed upstream.
+
+        Still listed as a user of the blueprint, because the public property
+        that answers for that would have been renamed along with it, and still
+        carrying `raw_config`, which never says which inputs went in.
+        """
+
+        entity_id = "automation.landing_light"
+        raw_config: ClassVar[dict[str, object]] = {}
+
+    monkeypatch.setattr(
+        hass.data[DATA_INSTANCES]["automation"],
+        "get_entity",
+        lambda _entity_id: _AfterARename(),
+    )
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+        with pytest.raises(HomeAssistantError, match="landing_light"):
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY},
+                blocking=True,
+            )
+
+    assert file.read_text(encoding="utf-8") == before

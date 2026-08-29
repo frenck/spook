@@ -16,11 +16,7 @@ import voluptuous as vol
 from homeassistant.components import blueprint
 from homeassistant.components.automation import automations_with_blueprint
 from homeassistant.components.blueprint import BLUEPRINT_SCHEMA
-from homeassistant.components.blueprint.const import (
-    CONF_INPUT,
-    CONF_SOURCE_URL,
-    CONF_USE_BLUEPRINT,
-)
+from homeassistant.components.blueprint.const import CONF_SOURCE_URL
 from homeassistant.components.blueprint.importer import fetch_blueprint_from_url
 from homeassistant.components.script import scripts_with_blueprint
 from homeassistant.components.update import (
@@ -28,7 +24,7 @@ from homeassistant.components.update import (
     UpdateEntityDescription,
     UpdateEntityFeature,
 )
-from homeassistant.const import CONF_DEFAULT, EVENT_HOMEASSISTANT_STARTED, STATE_ON
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
@@ -36,6 +32,7 @@ from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_call_later, async_track_time_interval
 from homeassistant.util import yaml as yaml_util
+from homeassistant.util.yaml import UndefinedSubstitution
 
 from ...const import DOMAIN, LOGGER
 from ...entity import SpookEntity, SpookEntityDescription
@@ -50,40 +47,47 @@ if TYPE_CHECKING:
     from homeassistant.core import Event, HomeAssistant
     from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-# Only the domains whose blueprint users can be listed. Without that list
-# there is no telling whether an update would leave an automation short of an
-# input, and an install button that cannot promise that is worse than no
-# button at all. Template blueprints are the ones missing out for now.
+# Only the domains whose blueprint users can be listed. Without that list there
+# is no telling whether an update would leave an automation short of an input,
+# and an install button that cannot promise that is worse than no button at
+# all. Template blueprints are the ones missing out for now.
 _CONSUMERS: dict[str, Callable[[HomeAssistant, str], list[str]]] = {
     "automation": automations_with_blueprint,
     "script": scripts_with_blueprint,
 }
 
-# The folder Home Assistant fills with its own example blueprints. All three
-# of them carry a source URL pointing at core's dev branch, so following them
-# would put an update on every installation there is, for something nobody
-# imported, out of a branch that is not the one they are running.
+# The folder Home Assistant fills with its own example blueprints. All three of
+# them carry a source URL pointing at core's dev branch, so following them would
+# put an update on every installation there is, for something nobody imported,
+# out of a branch that is not the one they are running.
 _HOME_ASSISTANTS_OWN = f"homeassistant{os.sep}"
 
 _CHECK_INTERVAL = timedelta(hours=24)
 
 # Every one of these is a request to somebody else's server, and the community
-# forum and GitHub between them host nearly all of it. Restarts cluster after
-# a release, so the first round waits a random while rather than joining the
+# forum and GitHub between them host nearly all of it. Restarts cluster after a
+# release, so the first round waits a random while rather than joining the
 # stampede.
 _FIRST_CHECK_WINDOW = (timedelta(minutes=5), timedelta(minutes=30))
 
 _FETCH_TIMEOUT = 30
 
 # What goes in the dialog before somebody presses install. Home Assistant
-# renders `ha-alert` in release notes, which Matter and ZHA both lean on to
-# put a warning in front of a firmware update. Same idea here.
+# renders `ha-alert` in release notes, which Matter and ZHA both lean on to put
+# a warning in front of a firmware update. Same idea here.
 _NO_PROMISES = (
     "<ha-alert alert-type='warning'>"
     "Blueprints carry no changelog, so there is nothing here that says what "
     "changed. An update is whatever the author decided to do, and nothing "
     "promises it still fits the automations you built on it: inputs get "
     "renamed, behaviour gets rethought. Read the source before you install it."
+    "</ha-alert>"
+)
+
+_WOULD_NOT_RUN = (
+    "<ha-alert alert-type='error'>"
+    "This version says it needs a newer Home Assistant than the one you are "
+    "running, so Spook will not install it."
     "</ha-alert>"
 )
 
@@ -105,42 +109,77 @@ async def async_setup_entry(
     await _BlueprintUpdates(hass, async_add_entities).async_start(entry)
 
 
-def _fingerprint(raw: str) -> str | None:
-    """Return a short hash of what a blueprint says, or None if unreadable.
+@dataclass(frozen=True, kw_only=True)
+class _OnDisk:
+    """What a blueprint file says, as of just now.
+
+    No source URL means it was read perfectly well and is not being followed,
+    which is a different answer from not having been able to read it at all.
+    """
+
+    name: str
+    source_url: str | None
+    fingerprint: str
+
+
+def _normalize(raw: str) -> blueprint.Blueprint | None:
+    """Return a blueprint parsed the same way on both sides of a comparison.
+
+    Deliberately not through the domain's own schema. That one rewrites the
+    older spellings, `trigger` into `triggers` and the rest of it, and only the
+    copy Home Assistant has loaded ever goes through it. Measuring that against
+    a freshly fetched one would call every blueprint written before those names
+    changed out of date, for ever.
+    """
+    try:
+        return blueprint.Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    except HomeAssistantError:
+        return None
+
+
+def _fingerprint(item: blueprint.Blueprint) -> str:
+    """Return a short hash of what a blueprint says.
 
     Blueprints carry no version and cannot be given one: the schema for the
     `blueprint:` block turns away keys it does not know, so an author has
     nowhere to put one. That leaves the content itself as the version.
-
-    Both sides go through the same parse and re-dump, and deliberately not
-    through the domain's own schema. That one rewrites the older spellings,
-    `trigger` into `triggers` and the rest of it, and only the copy Home
-    Assistant has loaded ever goes through it. Measuring that against a
-    freshly fetched one would call every blueprint written before those names
-    changed out of date, for ever.
     """
-    try:
-        parsed = yaml_util.parse_yaml(raw)
-        normalized = blueprint.Blueprint(parsed, schema=BLUEPRINT_SCHEMA).yaml()
-    except HomeAssistantError:
-        return None
-
-    return hashlib.sha256(normalized.encode()).hexdigest()[:8]
+    return hashlib.sha256(item.yaml().encode()).hexdigest()[:8]
 
 
-def _fingerprint_files(files: list[Path]) -> list[str | None]:
-    """Return the fingerprint of each blueprint file, in the order given."""
-    fingerprints: list[str | None] = []
+def _read_files(files: list[Path]) -> list[_OnDisk | None]:
+    """Return what each blueprint file says, in the order given.
+
+    Read off the file rather than taken from the copy Home Assistant has in
+    memory, because that one is loaded once and then kept. Editing a file does
+    not disturb it, so the name and the source URL it holds can be months out
+    of date, and taking that URL back out of a file is the way somebody says
+    they would rather be left alone.
+
+    `None` for a file that could not be read or made sense of at all, which is
+    not the same as one that was read and names no source.
+    """
+    on_disk: list[_OnDisk | None] = []
     for file in files:
         try:
             raw = file.read_text(encoding="utf-8")
         except OSError:
-            fingerprints.append(None)
+            on_disk.append(None)
             continue
 
-        fingerprints.append(_fingerprint(raw))
+        if (item := _normalize(raw)) is None:
+            on_disk.append(None)
+            continue
 
-    return fingerprints
+        on_disk.append(
+            _OnDisk(
+                name=item.name,
+                source_url=item.metadata.get(CONF_SOURCE_URL) or None,
+                fingerprint=_fingerprint(item),
+            ),
+        )
+
+    return on_disk
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -149,14 +188,6 @@ class BlueprintSpookUpdateEntityDescription(
     UpdateEntityDescription,
 ):
     """Class describing Spook blueprint update entities."""
-
-
-@dataclass(frozen=True, kw_only=True)
-class _OnDisk:
-    """A blueprint that is here, and where it came from."""
-
-    item: blueprint.Blueprint
-    file: Path
 
 
 class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
@@ -222,40 +253,42 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
 
     async def _async_take_stock(self) -> None:
         """Match the entities to the blueprints that are on disk."""
-        found = await self._async_look()
-
-        fingerprints = await self.hass.async_add_executor_job(
-            _fingerprint_files,
-            [on_disk.file for on_disk in found.values()],
+        files = await self._async_look()
+        on_disk = await self.hass.async_add_executor_job(
+            _read_files,
+            list(files.values()),
         )
 
-        await self._async_forget(set(self._entities) - set(found))
+        followed: dict[tuple[str, str], _OnDisk] = {}
+        unreadable: set[tuple[str, str]] = set()
+        for key, said in zip(files, on_disk, strict=True):
+            if said is None:
+                unreadable.add(key)
+            elif said.source_url is not None:
+                followed[key] = said
+
+        # A file that could not be read this time round says nothing either
+        # way, so whatever is already here stays. A file that was read and no
+        # longer names a source is somebody asking to be left alone, and that
+        # one goes.
+        await self._async_forget(set(self._entities) - set(followed) - unreadable)
 
         added: list[BlueprintUpdateEntity] = []
-        for (key, on_disk), fingerprint in zip(
-            found.items(),
-            fingerprints,
-            strict=True,
-        ):
-            if fingerprint is None:
-                # Gone or unreadable between the listing and the reading.
-                # Nothing to compare against, so nothing to say.
-                continue
-
+        for key in sorted(followed):
             if (entity := self._entities.get(key)) is not None:
-                entity.async_seen(on_disk.item, fingerprint)
+                entity.async_seen(followed[key])
                 continue
 
-            entity = BlueprintUpdateEntity(*key, on_disk.item, fingerprint)
+            entity = BlueprintUpdateEntity(*key, followed[key])
             self._entities[key] = entity
             added.append(entity)
 
         if added:
             self._async_add_entities(added)
 
-    async def _async_look(self) -> dict[tuple[str, str], _OnDisk]:
-        """Return every blueprint that came from a URL."""
-        found: dict[tuple[str, str], _OnDisk] = {}
+    async def _async_look(self) -> dict[tuple[str, str], Path]:
+        """Return the file behind every blueprint Home Assistant can load."""
+        files: dict[tuple[str, str], Path] = {}
         domain_blueprints: dict[str, blueprint.DomainBlueprints] = self.hass.data.get(
             blueprint.DOMAIN,
             {},
@@ -266,25 +299,18 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
                 continue
 
             for path, item in (await domain_blueprint.async_get_blueprints()).items():
-                # Failed to load, or written by hand rather than imported.
-                # Without a source there is nothing to check against, which
-                # is also how somebody opts out: take the URL back out.
+                # Failed to load, or Home Assistant's own examples.
                 if not isinstance(item, blueprint.Blueprint):
-                    continue
-                if not item.metadata.get(CONF_SOURCE_URL):
                     continue
                 if path.startswith(_HOME_ASSISTANTS_OWN):
                     continue
 
-                found[(domain, path)] = _OnDisk(
-                    item=item,
-                    file=domain_blueprint.blueprint_folder / path,
-                )
+                files[(domain, path)] = domain_blueprint.blueprint_folder / path
 
-        return found
+        return files
 
     async def _async_forget(self, keys: set[tuple[str, str]]) -> None:
-        """Drop the entities of blueprints that are no longer there."""
+        """Drop the entities of blueprints that are no longer being followed."""
         if not keys:
             return
 
@@ -293,8 +319,8 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
             entity = self._entities.pop(key)
             await entity.async_remove(force_remove=True)
 
-            # The blueprint is gone for good, so the registration goes with
-            # it rather than lingering as something restorable.
+            # Gone for good, so the registration goes with it rather than
+            # lingering as something restorable.
             if registry.async_get(entity.entity_id):
                 registry.async_remove(entity.entity_id)
 
@@ -329,14 +355,13 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self,
         blueprint_domain: str,
         blueprint_path: str,
-        item: blueprint.Blueprint,
-        fingerprint: str,
+        said: _OnDisk,
     ) -> None:
         """Initialize the entity."""
         super().__init__(
             description=BlueprintSpookUpdateEntityDescription(
                 key=f"{blueprint_domain}_{blueprint_path}",
-                name=item.name,
+                name=said.name,
             ),
         )
         self.blueprint_domain = blueprint_domain
@@ -349,28 +374,31 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             name="Blueprints",
         )
 
-        self._source_url: str = item.metadata[CONF_SOURCE_URL]
+        self._said = said
         self._fetched: blueprint.Blueprint | None = None
-        self._attr_title = item.name
-        self._attr_release_url = self._source_url
-        self._attr_installed_version = fingerprint
-        self._attr_latest_version = fingerprint
+        self._set_aside: str | None = None
+
+        self._attr_name = said.name
+        self._attr_title = said.name
+        self._attr_release_url = said.source_url
+        self._attr_installed_version = said.fingerprint
+        self._attr_latest_version = said.fingerprint
 
     @callback
-    def async_seen(self, item: blueprint.Blueprint, fingerprint: str) -> None:
-        """Take in a blueprint that has been read from disk again.
+    def async_seen(self, said: _OnDisk) -> None:
+        """Take in a blueprint file that has been read again.
 
-        Somebody can re-import through Home Assistant's own button, or rename
-        the thing, without Spook having any part in it.
+        Somebody can re-import through Home Assistant's own button, rename the
+        thing, or edit it by hand, without Spook having any part in it.
         """
-        self._source_url = item.metadata[CONF_SOURCE_URL]
-        self._attr_title = item.name
-        self._attr_release_url = self._source_url
-
-        if fingerprint == self._attr_installed_version:
+        if said == self._said:
             return
 
-        self._attr_installed_version = fingerprint
+        self._said = said
+        self._attr_name = said.name
+        self._attr_title = said.name
+        self._attr_release_url = said.source_url
+        self._attr_installed_version = said.fingerprint
         self.async_write_ha_state()
 
     def version_is_newer(self, latest_version: str, installed_version: str) -> bool:
@@ -389,6 +417,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         except HomeAssistantError as err:
             # Leave the last answer standing. A source that is down for an
             # afternoon should not take the update it was offering with it.
+            # The reason is kept so the dialog can say why nothing happens
+            # here, rather than looking simply idle.
+            self._set_aside = str(err)
             LOGGER.debug(
                 "Spook could not check blueprint %s: %s",
                 self.blueprint_path,
@@ -396,11 +427,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             )
             return
 
-        if (fingerprint := _fingerprint(fetched.yaml())) is None:
-            return
-
+        self._set_aside = None
         self._fetched = fetched
-        self._attr_latest_version = fingerprint
+        self._attr_latest_version = _fingerprint(fetched)
         self.async_write_ha_state()
 
     async def async_install(
@@ -412,17 +441,24 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         """Fetch the blueprint again and write it over the one that is here."""
         fetched = await self._async_fetch()
 
-        if short := self._async_consumers_left_short(fetched):
-            listed = ", ".join(
-                f"{entity_id} ({', '.join(sorted(inputs))})"
-                for entity_id, inputs in sorted(short.items())
-            )
+        # The blueprint saying for itself that it needs a newer Home Assistant.
+        # Writing it anyway would break every consumer on a version that is
+        # never going to work.
+        if errors := fetched.validate():
             msg = (
-                f"Updating {self._attr_title} would stop {listed} from loading, "
-                f"because the new version asks for something they do not set. "
-                f"Nothing has been written. Set those inputs first, or import "
-                f"{self._source_url} yourself from the blueprint page if you are "
-                f"happy to reconfigure them afterwards."
+                f"{self._said.name} cannot run here: {'; '.join(errors)}. "
+                f"Nothing has been written."
+            )
+            raise HomeAssistantError(msg)
+
+        if short := self._async_consumers_left_short(fetched):
+            msg = (
+                f"Updating {self._said.name} would stop {_listed(short)} from "
+                f"loading, because the new version asks for something they do "
+                f"not set. Nothing has been written. Set those inputs first, "
+                f"or import {self._said.source_url} yourself from the "
+                f"blueprint page if you are happy to reconfigure them "
+                f"afterwards."
             )
             raise HomeAssistantError(msg)
 
@@ -445,7 +481,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             raise HomeAssistantError(msg) from err
 
         self._fetched = fetched
-        self._attr_installed_version = _fingerprint(fetched.yaml())
+        self._attr_installed_version = _fingerprint(fetched)
         self._attr_latest_version = self._attr_installed_version
         self.async_write_ha_state()
 
@@ -458,18 +494,34 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         read it, and a plain warning that an author improving their blueprint
         and it still suiting what you built on it are two different things.
         """
-        came_from = f"Imported from [{self._source_url}]({self._source_url})."
+        came_from = f"Imported from [{self._said.source_url}]({self._said.source_url})."
 
         if self.state != STATE_ON or self._fetched is None:
-            return came_from
+            if self._set_aside is None:
+                return came_from
+
+            # Nothing on offer, and a reason for it. Better said here than
+            # left to look like a source that simply never changes.
+            return "\n\n".join(
+                [
+                    f"<ha-alert alert-type='info'>{self._set_aside}</ha-alert>",
+                    came_from,
+                ],
+            )
 
         notes = [_NO_PROMISES, came_from]
+
+        if errors := self._fetched.validate():
+            notes.append(_WOULD_NOT_RUN)
+            notes.extend(f"- {error}" for error in errors)
 
         if short := self._async_consumers_left_short(self._fetched):
             notes.append(_WOULD_BE_REFUSED)
             notes.extend(
                 f"- `{entity_id}` never sets "
                 + ", ".join(f"`{name}`" for name in sorted(inputs))
+                if inputs
+                else f"- `{entity_id}` cannot be checked"
                 for entity_id, inputs in sorted(short.items())
             )
 
@@ -477,29 +529,36 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
     async def _async_fetch(self) -> blueprint.Blueprint:
         """Fetch whatever the source URL points at now."""
+        source_url = self._said.source_url
+
         try:
             async with asyncio.timeout(_FETCH_TIMEOUT):
-                imported = await fetch_blueprint_from_url(self.hass, self._source_url)
+                imported = await fetch_blueprint_from_url(self.hass, source_url)
         except (TimeoutError, aiohttp.ClientError) as err:
-            msg = f"Could not reach {self._source_url}"
+            msg = f"Could not reach {source_url}"
             raise HomeAssistantError(msg) from err
         except vol.Invalid as err:
-            msg = f"{self._source_url} no longer holds a valid blueprint"
+            msg = f"{source_url} no longer holds a valid blueprint"
             raise HomeAssistantError(msg) from err
 
-        if imported.blueprint.domain != self.blueprint_domain:
-            # A community topic can hold more than one blueprint, and the
-            # importer takes the first it comes across. Both of them were
-            # given the same source URL on the way in, so following it can
-            # land on the other one entirely.
+        fetched = imported.blueprint
+
+        # A community topic can hold more than one blueprint, and the importer
+        # takes the first it comes across. Every blueprint in a topic was given
+        # the same source URL on the way in, so following one can land on
+        # another. The domain and the name together are the most that can be
+        # asked of a format that carries no identity of its own: an author
+        # renaming their blueprint costs an update, writing somebody else's
+        # blueprint into this file costs a lot more.
+        if fetched.domain != self.blueprint_domain or fetched.name != self._said.name:
             msg = (
-                f"{self._source_url} leads to a {imported.blueprint.domain} "
-                f"blueprint rather than {self.blueprint_domain}, so it is not "
-                f"this one"
+                f"{source_url} leads to '{fetched.name}', a {fetched.domain} "
+                f"blueprint, and not to '{self._said.name}'. Spook will not "
+                f"put one over the other."
             )
             raise HomeAssistantError(msg)
 
-        return imported.blueprint
+        return fetched
 
     @callback
     def _async_consumers_left_short(
@@ -512,15 +571,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         blueprint. If a new version asks for one that an automation never set,
         that automation stops loading the moment this is written, and there is
         no going back to the version it did work with.
-        """
-        required = {
-            name
-            for name, spec in fetched.inputs.items()
-            if not isinstance(spec, dict) or CONF_DEFAULT not in spec
-        }
-        if not required:
-            return {}
 
+        Put to Home Assistant's own reckoning of what an input needs rather
+        than worked out again here, so the two cannot drift apart.
+        """
         component = self.hass.data.get(DATA_INSTANCES, {}).get(self.blueprint_domain)
         if component is None:
             return {}
@@ -533,15 +587,35 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             if (entity := component.get_entity(entity_id)) is None:
                 continue
 
-            # Not `raw_config`, which is the automation after the blueprint
-            # has been substituted into it and no longer says which inputs
-            # went in. Reached for by name rather than as an attribute so
-            # that a rename upstream reads as "supplies nothing", which
-            # blocks the install rather than going ahead on a guess.
-            inputs = getattr(entity, "_blueprint_inputs", None) or {}
-            used = inputs.get(CONF_USE_BLUEPRINT) or {}
+            # Not `raw_config`, which is the automation after the blueprint has
+            # been substituted into it and no longer says which inputs went in.
+            # Reached for by name rather than as an attribute so that a rename
+            # upstream reads as "cannot tell", which blocks the install rather
+            # than going ahead on a guess.
+            supplied = getattr(entity, "_blueprint_inputs", None)
+            if supplied is None:
+                short[entity_id] = set()
+                continue
 
-            if missing := required - set(used.get(CONF_INPUT) or ()):
+            candidate = blueprint.BlueprintInputs(fetched, supplied)
+
+            if missing := set(fetched.inputs) - set(candidate.inputs_with_default):
                 short[entity_id] = missing
+                continue
+
+            # And that the thing actually renders, which is the other half of
+            # what a reload would do with it.
+            try:
+                candidate.async_substitute()
+            except UndefinedSubstitution, HomeAssistantError:
+                short[entity_id] = set()
 
         return short
+
+
+def _listed(short: dict[str, set[str]]) -> str:
+    """Return the stranded consumers as something to put in a sentence."""
+    return ", ".join(
+        f"{entity_id} ({', '.join(sorted(inputs))})" if inputs else entity_id
+        for entity_id, inputs in sorted(short.items())
+    )

@@ -88,13 +88,34 @@ blueprint:
   domain: script
   source_url: {source}
   input:
-    notify_device:
-      name: Device
+    notify_target:
+      name: Where to send it
 sequence:
-  - action: notify.notify
+  - service: notify.notify
     data:
       message: Boo
+      target: !input notify_target
 """
+
+A_SCRIPT_BLUEPRINT_CHANGED = A_SCRIPT_BLUEPRINT.replace("Boo", "Boo!")
+
+A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT = A_SCRIPT_BLUEPRINT.replace(
+    "    notify_target:\n      name: Where to send it\n",
+    "    notify_target:\n      name: Where to send it\n    title:\n      name: Title\n",
+)
+
+# Says it needs a Home Assistant nobody is running yet.
+MOTION_LIGHT_FROM_THE_FUTURE = MOTION_LIGHT.replace(
+    "  source_url: {source}\n",
+    "  source_url: {source}\n  homeassistant:\n    min_version: 9999.1.0\n",
+)
+
+# Same domain, different blueprint. What a forum topic holding two of them
+# hands back, since both were imported carrying the address of the topic.
+ANOTHER_AUTOMATION_BLUEPRINT = MOTION_LIGHT.replace(
+    "Spooky motion light",
+    "Spooky doorbell chime",
+)
 
 
 @pytest.fixture(autouse=True)
@@ -217,6 +238,32 @@ async def async_set_up(hass: HomeAssistant) -> ConfigEntry:
         await hass.async_block_till_done()
 
     return entry
+
+
+def async_write_script_config(
+    hass: HomeAssistant,
+    scripts: dict[str, Any] | None = None,
+) -> None:
+    """Write the configuration.yaml a script reload will read back."""
+    Path(hass.config.path("configuration.yaml")).write_text(
+        yaml_util.dump({"automation": [], "script": scripts or {}}),
+        encoding="utf-8",
+    )
+
+
+async def async_add_script(
+    hass: HomeAssistant,
+    key: str,
+    path: str,
+    inputs: dict[str, Any],
+) -> None:
+    """Add a script that runs on a blueprint, through a real reload."""
+    async_write_script_config(
+        hass,
+        {key: {"use_blueprint": {"path": path, "input": inputs}}},
+    )
+    await hass.services.async_call("script", "reload", blocking=True)
+    await hass.async_block_till_done()
 
 
 async def async_add_automation(

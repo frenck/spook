@@ -29,7 +29,7 @@ Spook adds an action to import Blueprints directly from an URL.
 
 ## Devices & entities
 
-Spook adds a Blueprints {term}`device <device>`, holding one update {term}`entity <entity>` for every blueprint you imported from a URL.
+Spook adds a Blueprints {term}`device <device>`, holding one update {term}`entity <entity>` for every {term}`automation <automation>` or {term}`script <script>` blueprint you imported from a URL.
 
 ### Updates
 
@@ -41,13 +41,17 @@ Spook gives every one of those blueprints an update entity. It follows the addre
 
 Only blueprints that came from a URL get one. A blueprint you wrote yourself has no source to check against, and the three example blueprints Home Assistant lays down for you are left alone as well: they point at Home Assistant's development branch, which is not the version you are running.
 
+Only automation and script blueprints, too. Those are the only two kinds whose users Home Assistant can list, and without that list there is no way to tell whether an update would leave one of them unable to load. An install button that cannot promise that is worse than no button at all, so template blueprints are left out until there is a way to check them.
+
 #### What the update dialog tells you
 
 Every other update dialog in Home Assistant shows you release notes. This one cannot, because there are none: a blueprint has no changelog, and the author is under no obligation to say anything anywhere.
 
 So the dialog carries the next best thing. The address the blueprint came from, as a link, always, so you can go and read what actually changed before deciding. And a warning, because an update dialog looks the same whatever is behind it, and this one deserves a second thought: an author improving their blueprint and it still suiting the {term}`automations <automation>` you built on it are two different things. Inputs get renamed. Behaviour gets rethought.
 
-If Spook already knows the update would leave your automations short, it says so there too, and names them, so you find out before pressing install rather than after.
+If Spook already knows something is wrong, it says so there too. Automations the update would leave short, named. A blueprint that says it needs a newer Home Assistant than the one you are running. Or a source that has stopped leading to this blueprint at all, which is the answer to "why does this one never have an update".
+
+Whatever it finds, the install button will not go through with anything the dialog warned you about.
 
 Matter and ZHA put much the same warning in front of a firmware update, for much the same reason.
 
@@ -63,7 +67,9 @@ Comments and indentation are not part of it. Somebody tidying up their YAML does
 
 An input without a default has to be filled in by whoever uses the blueprint. If a new version asks for one your automations do not set, every automation on that blueprint stops loading the moment the file is written, and the version they did work with is gone.
 
-Spook checks before it writes anything. If an update would leave your automations short, it refuses, names the ones affected and the inputs they are missing, and leaves the blueprint alone. You can then either set those inputs first, or import the blueprint yourself from the blueprint page if you are happy to reconfigure things afterwards.
+Spook checks before it writes anything, using Home Assistant's own reckoning of what an input needs rather than a second opinion that could drift from it. If an update would leave your automations short, it refuses, names the ones affected and the inputs they are missing, and leaves the blueprint alone. You can then either set those inputs first, or import the blueprint yourself from the blueprint page if you are happy to reconfigure things afterwards.
+
+A blueprint that says it needs a newer Home Assistant than the one you are running is refused for the same reason: writing it would break every automation on it, on a version that was never going to work.
 
 :::{warning}
 If you edited an imported blueprint by hand, Spook has no way of telling your changes apart from the author's. It will report an update, because what you have really is no longer what is at the address, and installing it will write over your work.
@@ -72,9 +78,11 @@ If you have made a blueprint your own, take the `source_url:` line out of the fi
 :::
 
 :::{note}
-Community forum topics sometimes hold more than one blueprint, and both of them are imported carrying the address of the topic rather than of the blueprint itself. Following that address can land on the wrong one.
+Community forum topics sometimes hold more than one blueprint, and every one of them is imported carrying the address of the topic rather than of the blueprint itself. Home Assistant takes the first it finds at that address, so following it can land on a different blueprint entirely.
 
-Spook checks that what it finds is at least the same kind of blueprint, an automation for an automation, before offering anything. If it is not, the entity stays quiet rather than offering to replace your blueprint with somebody else's.
+Blueprints carry no identity of their own, so the most that can be asked is that what comes back is the same kind of blueprint and still goes by the same name. If it does not, Spook leaves it alone and says why in the dialog, rather than offering to write somebody else's blueprint over yours.
+
+The cost of that is an author who renames their blueprint: Spook stops following it, and the dialog will tell you what the address leads to now. Re-import it from the blueprint page and it picks up again.
 :::
 
 ## Actions
