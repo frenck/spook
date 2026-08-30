@@ -396,26 +396,6 @@
                 }
             }
         },
-        "stale_access_tokens": {
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "ignore": "Behåll och sluta att meddela mig",
-                            "manage": "Låt mig fixa det själv",
-                            "remove": "Återkalla denna token"
-                        },
-                        "title": "Långlivad åtkomsttoken verkar bortglömd: {token}",
-                        "description": "Din långlivade åtkomsttoken `{token}` (ägare: {owner}) har inte använts sedan {last_active}.\n\nÅterkalla den, eller behåll den och be Spook att sluta påpeka problemet. Om du återkallar den så kommer allt som fortfarande använder den att sluta fungera tills dess att de får en ny token.\n\nSpook 👻 Din polare."
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook kommer att hålla tyst om denna token från och med nu.",
-                    "manage": "Du kan själv hantera långlivade åtkomsttokens under [din profils säkerhetsinställningar](/profile/security)."
-                }
-            },
-            "title": "Långlivad åtkomsttoken verkar bortglömd: {token}"
-        },
         "unknown_helper_source_references": {
             "fix_flow": {
                 "step": {

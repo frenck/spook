@@ -400,26 +400,6 @@
                 }
             }
         },
-        "stale_access_tokens": {
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "ignore": "Garde le et arrête de me le demander",
-                            "manage": "Laisse-moi le corriger",
-                            "remove": "Révoquer ce jeton"
-                        },
-                        "title": "Jeton d'accès longue durée semble oublié : {token}",
-                        "description": "Le jeton d'accès longue durée « {token} » (propriétaire : {owner}) n'à pas été utilisé depuis {last_active}.\n\n\n\nRévoquez-le ou gardez-le and Spook cessera de le signaler. Le révorquer cessera le fonctionnement de ce qui l'utilise jusqu'a ce qu'il en obtienne un nouveau.\n\n\n\nSpook 👻 Votre pote."
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook ne mentionnera plus ce jeton à partir de maintenant.",
-                    "manage": "Vous pouvez gérer le jeton d'accès longue durée vous-même sous [vos paramètres de sécurités](/profile/security)."
-                }
-            },
-            "title": "Jeton d'accès longue durée semble oublié : {token}"
-        },
         "unknown_helper_source_references": {
             "fix_flow": {
                 "step": {

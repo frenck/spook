@@ -470,26 +470,6 @@
             "description": "Spook 在您的腳本中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇見了以下腳本：\n\n[{script}]({edit}) (`{entity_id}`)\n\n此腳本使用了以下觸發條件，但 Home Assistant 中沒有任何可用的整合能提供這些觸發條件：\n\n{triggers}\n\n\n\n這通常發生在提供觸發條件的整合被移除時。要修正此錯誤，請 [編輯腳本]({edit}) 並移除這些不可用的觸發條件，或者還原提供這些條件的整合。\n\nSpook 👻 您的好夥伴。",
             "title": "在以下腳本中使用了未知觸發條件：{script}"
         },
-        "stale_access_tokens": {
-            "title": "長期存取權杖似乎已被遺忘：{token}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "長期存取權杖似乎已被遺忘：{token}",
-                        "description": "長期存取權杖 `{token}`（擁有者：{owner}）自 {last_active} 以來就未曾被使用過。\n\n撤銷它，或者保留它（Spook 將不再提示）。撤銷權杖將導致任何仍在使用此權杖的裝置或服務停止運作，直到取得新的權杖為止。\n\nSpook 👻 您的好夥伴。",
-                        "menu_options": {
-                            "remove": "撤銷此權杖",
-                            "ignore": "保留，不要再提示我",
-                            "manage": "讓我自己處理"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "從現在起，Spook 將不再就此權杖發聲。",
-                    "manage": "您可以在 [個人資料的安全設定](/profile/security) 中自行管理長期存取權杖。"
-                }
-            }
-        },
         "template_unknown_entity_references": {
             "description": "Spook 在您的模板輔助項目中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇見了以下模板輔助項目：\n\n[{helper}]({edit})\n\n其模板引用了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\n這通常發生在實體被重新命名或移除時。要修正此錯誤，請重新配置該模板輔助項目以引用現有的實體。\n\nSpook 👻 您的好夥伴。",
             "title": "模板輔助項目 {helper} 中使用了未知實體"

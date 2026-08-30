@@ -470,26 +470,6 @@
             "description": "Spook on löytänyt kummituksen skripteistäsi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan skriptiin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkripti käyttää laukaisimia, joita yksikään Home Assistantin tuntema integraatio ei tarjoa:\n\n{triggers}\n\n\n\nTämä tapahtuu usein kun laukaisimet tarjoava integraatio on poistettu. Korjataksesi ongelman, [muokkaa skriptiä]({edit}) ja lopeta näiden olemattomien laukaisimien käyttö, tai palauta integraatio joka ne tarjoaa.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia laukaisimia käytetty: {script}"
         },
-        "stale_access_tokens": {
-            "title": "Käyttöoikeustunnus vaikuttaa hylätyltä: {token}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Käyttöoikeustunnus vaikuttaa hylätyltä: {token}",
-                        "description": "Käyttöoikeustunnusta `{token}` (omistaja: {owner}) ei ole käytetty sitten {last_active}.\n\nPoista se, tai säilytä se ja Spook lopettaa asiasta ilmoittelun. Tunnuksen poistaminen estää kaikkia sitä käyttäviä toimimasta, kunnes niille myönnetään uusi.\n\nSpook 👻 Kamusi.",
-                        "menu_options": {
-                            "remove": "Poista tunnus",
-                            "ignore": "Säilytä se, lopeta asiasta ilmoittelu",
-                            "manage": "Korjaan asian itse"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook pysyy hiljaa tästä tunnuksesta tästä eteenpäin.",
-                    "manage": "Voit hallita käyttöoikeustunnuksia itse [oman profiilisi turvallisuusasetuksista](/profile/security)."
-                }
-            }
-        },
         "template_unknown_entity_references": {
             "description": "Spook on löytänyt kummituksen templaateistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan templaattiin:\n\n[{helper}]({edit})\n\nTemplaatti viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nTämä tapahtuu usein kun entiteetti on uudelleennimetty tai poistettu. Korjataksesi ongelman, muokkaa templaattia ja korjaa viittaukset\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia entiteettejä templaatissa: {helper}"

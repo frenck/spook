@@ -494,26 +494,6 @@
             },
             "title": "Rastreadores de dispositivo desconhecidos seguidos por: {person}"
         },
-        "stale_access_tokens": {
-            "fix_flow": {
-                "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este token a partir de agora.",
-                    "manage": "Podes gerir os tokens de acesso de longa duração tu próprio nas [definições de segurança do teu perfil](/profile/security)."
-                },
-                "step": {
-                    "init": {
-                        "description": "O token de acesso de longa duração `{token}` (proprietário: {owner}) não é usado desde {last_active}.\n\nRevoga-o, ou fica com ele e o Spook não volta a falar dele. Se o revogares, tudo o que ainda use este token deixa de funcionar até receber um novo.\n\nSpook 👻 O teu amigo.",
-                        "menu_options": {
-                            "ignore": "Fica com ele e não me digas mais nada",
-                            "manage": "Eu próprio resolvo",
-                            "remove": "Revogar este token"
-                        },
-                        "title": "Um token de acesso de longa duração parece esquecido: {token}"
-                    }
-                }
-            },
-            "title": "Um token de acesso de longa duração parece esquecido: {token}"
-        },
         "automation_unknown_condition_references": {
             "description": "O Spook encontrou um fantasma nas tuas automações 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte automação:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automação utiliza as seguintes condições, que não podem ser fornecidas por nenhuma integração disponível no Home Assistant:\n\n{conditions}\n\n\n\nIsto geralmente acontece quando a integração que fornecia uma condição foi removida. Para corrigir esse erro, [edita a automação]({edit}) e remove o uso dessas condições indisponíveis ou restaura a integração que as fornecia.\n\nSpook 👻 O teu amigo.",
             "title": "Condições desconhecidas usadas em: {automation}"
