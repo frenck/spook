@@ -10,7 +10,7 @@ date: 2023-08-09T21:29:00+02:00
 Spook provides {term}`actions <action>` that allows you to manage and {term}`automate <automation>` the areas in Home Assistant programatically. Great for creating "dynamic" areas, or for creating areas on the fly.
 
 ```{figure} ./images/areas/example.png
-:alt: Screenshot of the developer actions tools, listing the new actions to manage areas.
+:alt: Screenshot of the Actions tool, listing the new actions to manage areas.
 :align: center
 ```
 
@@ -23,7 +23,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Adds a new area to your Home Assistant instance.
 
 ```{figure} ./images/areas/create.png
-:alt: Screenshot of the create area action in the developer tools.
+:alt: Screenshot of the create area action on the Tools page.
 :align: center
 ```
 
@@ -40,9 +40,9 @@ Adds a new area to your Home Assistant instance.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_area)
 ```
 
 ```{list-table}
@@ -89,7 +89,7 @@ data:
 Adds a new area to your Home Assistant instance.
 
 ```{figure} ./images/areas/delete.png
-:alt: Screenshot of the delete area action in the developer tools.
+:alt: Screenshot of the delete area action on the Tools page.
 :align: center
 ```
 
@@ -106,9 +106,9 @@ Adds a new area to your Home Assistant instance.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_area)
 ```
 
 ```{list-table}
@@ -164,7 +164,7 @@ Adds one or more aliases to an existing area. This action does not remove existi
 As area aliases are used by voice assistants, you could add (and also remove) aliases to an area using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/areas/add_alias.png
-:alt: Screenshot of the add an alias to an area action in the developer tools.
+:alt: Screenshot of the add an alias to an area action on the Tools page.
 :align: center
 ```
 
@@ -181,9 +181,9 @@ As area aliases are used by voice assistants, you could add (and also remove) al
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_area)
 ```
 
 ```{list-table}
@@ -249,7 +249,7 @@ Removes one or more aliases from an existing area. This action will leave the ot
 As area aliases are used by voice assistants, you could remove (and also add) aliases to an area using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/areas/remove_alias.png
-:alt: Screenshot of the remove an alias to an area action in the developer tools.
+:alt: Screenshot of the remove an alias from an area action on the Tools page.
 :align: center
 ```
 
@@ -266,9 +266,9 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_area)
 ```
 
 ```{list-table}
@@ -334,7 +334,7 @@ Sets the aliases for an area. This action will overwrite/remove all existing ali
 As area aliases are used by voice assistants, you could remove (and also add) aliases to an area using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/areas/set_aliases.png
-:alt: Screenshot of the set aliases to for an area action in the developer tools.
+:alt: Screenshot of the set aliases for an area action on the Tools page.
 :align: center
 ```
 
@@ -351,9 +351,9 @@ As area aliases are used by voice assistants, you could remove (and also add) al
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_area_aliases)
 ```
 
 ```{list-table}
@@ -417,7 +417,7 @@ data:
 Adds one or more device(s) to an area. This action will leave the other devices in the area untouched.
 
 ```{figure} ./images/areas/add_device.png
-:alt: Screenshot of the add a device to an area action in the developer tools.
+:alt: Screenshot of the add a device to an area action on the Tools page.
 :align: center
 ```
 
@@ -434,9 +434,9 @@ Adds one or more device(s) to an area. This action will leave the other devices 
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_device_to_area)
 ```
 
 ```{list-table}
@@ -471,9 +471,9 @@ That template will find the area ID of the area with the name "Living room".
 :::{tip} Finding a device ID
 :class: dropdown
 
-Not sure what the `device_id` of an your device is? There are a few ways to find it:
+Not sure what the `device_id` of your device is? There are a few ways to find it:
 
-Use this action in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
@@ -518,7 +518,7 @@ data:
 Removes one or more device(s) from an area. This action will leave the other devices in the area untouched.
 
 ```{figure} ./images/areas/remove_device.png
-:alt: Screenshot of the add a device to an area action in the developer tools.
+:alt: Screenshot of the remove a device from an area action on the Tools page.
 :align: center
 ```
 
@@ -535,9 +535,9 @@ Removes one or more device(s) from an area. This action will leave the other dev
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_device_from_area)
 ```
 
 ```{list-table}
@@ -562,9 +562,9 @@ While this action is area related, it does not need to know the area ID. A devic
 :::{tip} Finding a device ID
 :class: dropdown
 
-Not sure what the `device_id` of an your device is? There are a few ways to find it:
+Not sure what the `device_id` of your device is? There are a few ways to find it:
 
-Use this action in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to remove from the area and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
@@ -597,7 +597,7 @@ data:
 Adds one or more entities to an area. This action will leave the other entities in the area untouched.
 
 ```{figure} ./images/areas/add_entity.png
-:alt: Screenshot of the add an entity to an area action in the developer tools.
+:alt: Screenshot of the add an entity to an area action on the Tools page.
 :align: center
 ```
 
@@ -614,9 +614,9 @@ Adds one or more entities to an area. This action will leave the other entities 
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_entity_to_area)
 ```
 
 ```{list-table}
@@ -688,7 +688,7 @@ data:
 Removes one or more device(s) from an area. This action will leave the other devices in the area untouched.
 
 ```{figure} ./images/areas/remove_entity.png
-:alt: Screenshot of the add a device to an area action in the developer tools.
+:alt: Screenshot of the remove an entity from an area action on the Tools page.
 :align: center
 ```
 
@@ -705,9 +705,9 @@ Removes one or more device(s) from an area. This action will leave the other dev
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_entity_from_area)
 ```
 
 ```{list-table}

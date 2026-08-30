@@ -23,7 +23,7 @@ Spook enhances the integration by providing actions that allow you to raise and 
 
 ```{figure} ../images/integrations/repairs/example.png
 :name: example
-:alt: Screenshot of the repairs actions Spook adds to Home Assistant, taken from the developer tools.
+:alt: Screenshot of the repairs actions Spook adds to Home Assistant, taken from the Tools page.
 :align: center
 
 Spook adds many new actions to the repairs integration so that you can create your own.
@@ -97,7 +97,7 @@ to raise low battery reports for your devices or to raise an issue when
 a device becomes unreachable.
 
 ```{figure} ../images/integrations/repairs/create.png
-:alt: Screenshot of the repairs create issue action in the developer tools.
+:alt: Screenshot of the repairs create issue action on the Tools page.
 :align: center
 ```
 
@@ -119,9 +119,9 @@ a device becomes unreachable.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.create)
 ```
 
 ```{list-table}
@@ -183,7 +183,7 @@ data:
 Adds a single action to ignore all issues currently raised in the repairs dashboard.
 
 ```{figure} ../images/integrations/repairs/ignore_all.png
-:alt: Screenshot of the repairs ignore all issues action in the developer tools.
+:alt: Screenshot of the repairs ignore all issues action on the Tools page.
 :align: center
 ```
 
@@ -200,9 +200,9 @@ Adds a single action to ignore all issues currently raised in the repairs dashbo
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
 ```
 
 :::{tip}
@@ -226,7 +226,7 @@ action: repairs.ignore_all
 Remove an issue from the repairs integration.
 
 ```{figure} ../images/integrations/repairs/remove.png
-:alt: Screenshot of the repairs remove issue action in the developer tools.
+:alt: Screenshot of the repairs remove issue action on the Tools page.
 :align: center
 ```
 
@@ -243,9 +243,9 @@ Remove an issue from the repairs integration.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.remove)
 ```
 
 ```{list-table}
@@ -283,7 +283,7 @@ data:
 Adds a single action to unignore all repair issues currently still active (but previously ignored).
 
 ```{figure} ../images/integrations/repairs/unignore_all.png
-:alt: Screenshot of the repairs unignore all issues action in the developer tools.
+:alt: Screenshot of the repairs unignore all issues action on the Tools page.
 :align: center
 ```
 
@@ -300,9 +300,9 @@ Adds a single action to unignore all repair issues currently still active (but p
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`

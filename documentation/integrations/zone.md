@@ -21,7 +21,7 @@ Spook adds new actions to the zone integrations that allow you to manage and mod
 
 ```{figure} ../images/integrations/zone/example.png
 :name: example
-:alt: Screenshot of the recorder import statistics action in the developer tools.
+:alt: Screenshot of the recorder import statistics action on the Tools page.
 :align: center
 
 Spook adds an action that allows importing data into the recorder.
@@ -40,7 +40,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Adds a new zone to your Home Assistant instance.
 
 ```{figure} ../images/integrations/zone/create.png
-:alt: Screenshot of the zone create action in the developer tools.
+:alt: Screenshot of the zone create action on the Tools page.
 :align: center
 ```
 
@@ -57,9 +57,9 @@ Adds a new zone to your Home Assistant instance.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.create)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.create)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.create)
 ```
 
 ```{list-table}
@@ -118,7 +118,7 @@ Zones that are created and managed using manual YAML configuration cannot be upd
 :::
 
 ```{figure} ../images/integrations/zone/update.png
-:alt: Screenshot of the zone update action in the developer tools.
+:alt: Screenshot of the zone update action on the Tools page.
 :align: center
 ```
 
@@ -135,9 +135,9 @@ Zones that are created and managed using manual YAML configuration cannot be upd
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.update)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.update)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.update)
 ```
 
 ```{list-table}
@@ -198,7 +198,7 @@ Zones that are created and managed using manual YAML configuration cannot be del
 :::
 
 ```{figure} ../images/integrations/zone/delete.png
-:alt: Screenshot of the zone delete action in the developer tools.
+:alt: Screenshot of the zone delete action on the Tools page.
 :align: center
 ```
 
@@ -215,9 +215,9 @@ Zones that are created and managed using manual YAML configuration cannot be del
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.delete)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.delete)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.delete)
 ```
 
 ```{list-table}

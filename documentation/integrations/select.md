@@ -21,7 +21,7 @@ Spook extends the select integration with an option to select a random option fr
 
 ```{figure} ../images/integrations/select/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, showing the new random actions for select.
+:alt: Screenshot of the Actions tool, showing the new random actions for select.
 :align: center
 
 Spook adds a new random select action to the select integration.
@@ -40,7 +40,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Select a random option from the list of options in the input select.
 
 ```{figure} ../images/integrations/select/example.png
-:alt: Screenshot of the select random action in the developer tools.
+:alt: Screenshot of the select random action on the Tools page.
 :align: center
 ```
 
@@ -57,9 +57,9 @@ Select a random option from the list of options in the input select.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random)
 ```
 
 ```{list-table}

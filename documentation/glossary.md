@@ -87,12 +87,6 @@ Dashboard
 :::
 
 :::{glossary}
-Developer tools
-: The developer tools in {term}`Home Assistant` are a set of tools that can be used to inspect, debug and play with your Home Assistant instance. It may sound very technical, but don't let that scare you. The developer tools can be used to, for example, inspect the state of {term}`entities <entity>`, experiment with {term}`performing action <performing actions>`, or test and debug your {term}`templates <template>`.
-: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/tools/dev-tools/)
-:::
-
-:::{glossary}
 Device
 : A device in {term}`Home Assistant` represents a physical device in your home, but a device can also represent a web service, like one that provides weather information. Devices are a logical grouping for {term}`entities <entity>`. For example, a device that can measure temperature, humidity, and pressure will have three entities: a temperature sensor, a humidity sensor, and a pressure sensor. All three entities belong to the same device.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/getting-started/concepts-terminology/#devices--entities)
@@ -300,6 +294,13 @@ Template test function
 : Test functions are a special type of {term}`template function <template function>` that can be used to check if a condition is true or false. Inside a template they use the `is` operator. For example `3 is odd` will return `True` and `3 is even` will return `False`.
 : [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/configuration/templating/)
 : [Learn more in the Jinja2 documentation](https://jinja.palletsprojects.com/en/3.0.x/templates/#tests)
+:::
+
+:::{glossary}
+Tools
+: The tools in {term}`Home Assistant` are a set of tools that can be used to inspect, debug and play with your Home Assistant instance. You will find them under **Settings** > **Tools**. It may sound very technical, but don't let that scare you. They can be used to, for example, inspect the state of {term}`entities <entity>`, experiment with {term}`performing action <performing actions>`, or test and debug your {term}`templates <template>`.
+: These were called the "developer tools" and lived in their own place in the sidebar until Home Assistant moved and renamed them in 2026. Plenty of guides out there still call them that.
+: [Learn more in the official Home Assistant documentation](https://www.home-assistant.io/docs/tools/dev-tools/)
 :::
 
 :::{glossary}

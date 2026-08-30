@@ -21,7 +21,7 @@ Spook adds some new actions to the number {term}`integration <integration>`, whi
 
 ```{figure} ../images/integrations/number/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for number.
+:alt: Screenshot of the Actions tool, listing the new actions for number.
 :align: center
 
 Spook adds a bunch of new actions to the number helper integrations.
@@ -40,7 +40,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Decrease a number entity value by a certain amount.
 
 ```{figure} ../images/integrations/number/decrease.png
-:alt: Screenshot of the number decrease value action in the developer tools.
+:alt: Screenshot of the number decrease value action on the Tools page.
 :align: center
 ```
 
@@ -57,9 +57,9 @@ Decrease a number entity value by a certain amount.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.decrement)
 ```
 
 ```{list-table}
@@ -96,7 +96,7 @@ data:
 Increase a number entity value by a certain amount.
 
 ```{figure} ../images/integrations/number/increase.png
-:alt: Screenshot of the number increase value action in the developer tools.
+:alt: Screenshot of the number increase value action on the Tools page.
 :align: center
 ```
 
@@ -113,9 +113,9 @@ Increase a number entity value by a certain amount.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.increment)
 ```
 
 ```{list-table}
@@ -152,7 +152,7 @@ data:
 Set an number entity to its maximum value.
 
 ```{figure} ../images/integrations/number/maximum.png
-:alt: Screenshot of the number maximum value action in the developer tools.
+:alt: Screenshot of the number maximum value action on the Tools page.
 :align: center
 ```
 
@@ -169,9 +169,9 @@ Set an number entity to its maximum value.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.max)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -191,7 +191,7 @@ target:
 Set an number entity to its minimum value.
 
 ```{figure} ../images/integrations/number/minimum.png
-:alt: Screenshot of the number minimum value action in the developer tools.
+:alt: Screenshot of the number minimum value action on the Tools page.
 :align: center
 ```
 
@@ -208,9 +208,9 @@ Set an number entity to its minimum value.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=number.min)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`

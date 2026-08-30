@@ -21,7 +21,7 @@ Spook adds some new actions to the input select {term}`integration <integration>
 
 ```{figure} ../images/integrations/input_select/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for input select.
+:alt: Screenshot of the Actions tool, listing the new actions for input select.
 :align: center
 
 Spook adds a bunch of new actions to the input select helper integrations.
@@ -40,7 +40,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Select a random option from the list of options in the input select.
 
 ```{figure} ../images/integrations/input_select/random.png
-:alt: Screenshot of the input select random action in the developer tools.
+:alt: Screenshot of the input select random action on the Tools page.
 :align: center
 ```
 
@@ -57,9 +57,9 @@ Select a random option from the list of options in the input select.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random)
 ```
 
 ```{list-table}
@@ -107,7 +107,7 @@ Shuffles the list of available options in the input select and keeps the current
 select options selected.
 
 ```{figure} ../images/integrations/input_select/shuffle.png
-:alt: Screenshot of the input select shuffle action in the developer tools.
+:alt: Screenshot of the input select shuffle action on the Tools page.
 :align: center
 ```
 
@@ -124,9 +124,9 @@ select options selected.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.shuffle)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -151,7 +151,7 @@ Sorts the list of available options in the input select and keeps the current
 select options selected.
 
 ```{figure} ../images/integrations/input_select/sort.png
-:alt: Screenshot of the input select sort action in the developer tools.
+:alt: Screenshot of the input select sort action on the Tools page.
 :align: center
 ```
 
@@ -168,9 +168,9 @@ select options selected.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.sort)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`

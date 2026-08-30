@@ -21,7 +21,7 @@ Spook adds some new actions to the person {term}`integration <integration>`, tha
 
 ```{figure} ../images/integrations/person/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for persons.
+:alt: Screenshot of the Actions tool, listing the new actions for persons.
 :align: center
 
 Spook adds some new actions to the person integration.
@@ -40,7 +40,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Adds a device tracker to a person.
 
 ```{figure} ../images/integrations/person/add_device_tracker.png
-:alt: Screenshot of the person add device tracker action in the developer tools.
+:alt: Screenshot of the person add device tracker action on the Tools page.
 :align: center
 ```
 
@@ -57,9 +57,9 @@ Adds a device tracker to a person.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=person.add_device_tracker)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=person.add_device_tracker)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=person.add_device_tracker)
 ```
 
 ```{list-table}
@@ -109,7 +109,7 @@ data:
 Removes a device tracker from a person.
 
 ```{figure} ../images/integrations/person/remove_device_tracker.png
-:alt: Screenshot of the person remove device tracker action in the developer tools.
+:alt: Screenshot of the person remove device tracker action on the Tools page.
 :align: center
 ```
 
@@ -126,9 +126,9 @@ Removes a device tracker from a person.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker)
 ```
 
 ```{list-table}
