@@ -148,7 +148,7 @@ This action can be used to disable a device on the fly. _#whatever_
 
 Guess what... this action does the reverse of [](#device-disable). _#noway_
 
-`homeassistant.disable_device`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device), [documentation](devices#disable-a-device) 📚
+`homeassistant.enable_device`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device), [documentation](devices#enable-a-device) 📚
 
 (entity-disable)=
 
@@ -184,11 +184,25 @@ This action can be used to rename an entity on the fly. _#LookMaNewName_
 
 `homeassistant.rename_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.rename_entity), [documentation](entities#rename-an-entity) 📚
 
+(entity-expose-to-assistants)=
+
+## Entity: Expose to assistants
+
+Lets your voice assistants see an entity that was hidden from them. _#saymyname_
+
+`homeassistant.expose_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.expose_entity), [documentation](entities#expose-an-entity-to-assistants) 📚
+
+## Entity: Stop exposing to assistants
+
+Takes an entity back out of a voice assistant's reach. This action does the reverse of [](#entity-expose-to-assistants). _#neverheardofher_
+
+`homeassistant.unexpose_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unexpose_entity), [documentation](entities#stop-exposing-an-entity-to-assistants) 📚
+
 ## Entity: Update ID
 
 This action can be used to update the ID of an entity on the fly. _#secret_
 
-`homeassistant.update_entity_id`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys_id) 📚
+`homeassistant.update_entity_id`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys-id) 📚
 
 ## Floors: Create a floor
 
@@ -232,11 +246,29 @@ Dynamically remove an area from a floor. _#poef_
 
 `homeassistant.remove_area_from_floor`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor), [documentation](floors#remove-an-area-from-a-floor) 📚
 
+## List all orphaned database entities
+
+Hands back every entity your recorder still has rows for but which no longer exists, so you can look before you delete. _#showmethebodies_
+
+`homeassistant.list_orphaned_database_entities`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities), [documentation](entities#list-all-orphaned-database-entities) 📚
+
 ## Ignore all discovered devices & services
 
 Click ignore on all discovered items on the integration dashboard; optionally only for specific integration (like, `bluetooth`). _#talktothehand_
 
 `homeassistant.ignore_all_discovered`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered), [documentation](integrations#ignore-all-discovered-devices-services) 📚
+
+## Input number: Create
+
+Creates an input number helper without going anywhere near the helpers page. _#outofthinair_
+
+`input_number.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.create), [documentation](integrations/input_number#create-an-input-number) 📚
+
+## Input number: Delete
+
+Removes an input number helper you created earlier. _#nevermind_
+
+`input_number.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.delete), [documentation](integrations/input_number#delete-an-input-number) 📚
 
 ## Input number: Decrease value
 
@@ -465,3 +497,23 @@ This action can be used to disable a user account on the fly, preventing them fr
 Guess what... this action does the reverse of [](#user-disable). _#welcome_
 
 `homeassistant.enable_user`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_user), [documentation](users#enable-a-user) 📚
+
+(zone-create)=
+
+## Zone: Create
+
+Creates a zone on the fly, wherever you like. _#roomforonemore_
+
+`zone.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.create), [documentation](integrations/zone#create-a-zone) 📚
+
+## Zone: Update
+
+Moves a zone, or resizes it, without touching the map yourself. This action changes a zone made by [](#zone-create), or any other zone you created in the UI. _#movingday_
+
+`zone.update`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.update), [documentation](integrations/zone#update-a-zone) 📚
+
+## Zone: Delete
+
+Makes a zone disappear. _#offthemap_
+
+`zone.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=zone.delete), [documentation](integrations/zone#delete-a-zone) 📚

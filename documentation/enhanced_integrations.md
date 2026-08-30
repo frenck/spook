@@ -11,6 +11,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 
 ::::{grid} 1 2 2 3
 
+:::{card} Alert
+:footer: 📚 [Learn more](integrations/alert)
+[![](https://brands.home-assistant.io/alert/icon.png)](integrations/alert)
+:::
+
 :::{card} Automations
 :footer: 📚 [Learn more](integrations/automation)
 
@@ -28,6 +33,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/lovelace/icon.png)](integrations/lovelace)
 :::
 
+:::{card} Energy
+:footer: 📚 [Learn more](integrations/energy)
+[![](https://brands.home-assistant.io/energy/icon.png)](integrations/energy)
+:::
+
 :::{card} Groups
 :footer: 📚 [Learn more](integrations/group)
 
@@ -40,6 +50,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/cloud/icon.png)](integrations/cloud)
 :::
 
+:::{card} Home Assistant Core
+:footer: 📚 [Learn more](integrations/homeassistant)
+[![](https://brands.home-assistant.io/homeassistant/icon.png)](integrations/homeassistant)
+:::
+
 :::{card} Input number
 :footer: 📚 [Learn more](integrations/input_number)
 [![](https://brands.home-assistant.io/input_number/icon.png)](integrations/input_number)
@@ -48,6 +63,16 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 :::{card} Input select
 :footer: 📚 [Learn more](integrations/input_select)
 [![](https://brands.home-assistant.io/input_select/icon.png)](integrations/input_select)
+:::
+
+:::{card} Light
+:footer: 📚 [Learn more](integrations/light)
+[![](https://brands.home-assistant.io/light/icon.png)](integrations/light)
+:::
+
+:::{card} Notify
+:footer: 📚 [Learn more](integrations/notify)
+[![](https://brands.home-assistant.io/notify/icon.png)](integrations/notify)
 :::
 
 :::{card} Number
@@ -103,6 +128,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 :::{card} Switch as X
 :footer: 📚 [Learn more](integrations/switch_as_x)
 [![](https://brands.home-assistant.io/switch_as_x/icon.png)](integrations/switch_as_x)
+:::
+
+:::{card} Template
+:footer: 📚 [Learn more](integrations/template)
+[![](https://brands.home-assistant.io/template/icon.png)](integrations/template)
 :::
 
 :::{card} Timer
