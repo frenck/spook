@@ -44,7 +44,7 @@ Spook reveals himself on each of the action he added or enriched, so you can eas
 On each action Spook added or enriched, he reveals himself 👻.
 ```
 
-If you like to explore all available actions Spook provides and play with them from the comfort of your Home Assistant instance, you can use the {term}`My Home Assistant` button below to open your Home Assistant instance and show your actions {term}`tools <tools>`. Scroll through the list of actions available and you will notice Spook being there.
+If you like to explore all available actions Spook provides and play with them from the comfort of your Home Assistant instance, you can use the {term}`My Home Assistant` button below to open your Home Assistant instance and show the actions on the {term}`Tools <tools>` page. Scroll through the list of actions available and you will notice Spook being there.
 
 [![Open your Home Assistant instance and show the Actions tool.](https://my.home-assistant.io/badges/developer_services.svg)](https://my.home-assistant.io/redirect/developer_services/)
 

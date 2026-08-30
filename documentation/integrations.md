@@ -56,7 +56,7 @@ Disable a single instance of an integration by its {term}`integration entry <int
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`tools <tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -127,7 +127,7 @@ Enable a single instance of an integration by its {term}`integration entry <inte
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`tools <tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -200,7 +200,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`tools <tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -262,7 +262,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`tools <tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`

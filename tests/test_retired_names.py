@@ -54,12 +54,15 @@ def _lines_naming_it() -> list[str]:
         if "_build" in str(path):
             continue
         for number, line in enumerate(path.read_text().splitlines(), start=1):
+            # Cut the allowed phrases out rather than passing over the whole
+            # line that carries one. A line is allowed to explain the rename
+            # once, not to become somewhere the old name can be hidden.
             stripped = _NOT_OURS.sub("", line)
-            if not _RETIRED.search(stripped):
-                continue
-            if any(allowed in line for allowed in _DELIBERATE):
-                continue
-            found.append(f"{path.relative_to(ROOT)}:{number}")
+            for allowed in _DELIBERATE:
+                stripped = stripped.replace(allowed, "")
+
+            if _RETIRED.search(stripped):
+                found.append(f"{path.relative_to(ROOT)}:{number}")
     return found
 
 
