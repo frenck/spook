@@ -34,6 +34,10 @@ from custom_components.spook.action_extraction import (
 from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_references import (
     extract_entities_from_automation_config,
 )
+from custom_components.spook.dashboard_extraction import (
+    extract_entities_from_dashboard_node,
+)
+from custom_components.spook.entity_filtering import async_filter_known_entity_ids
 from custom_components.spook.template_extraction import (
     async_filter_known_entity_ids_with_templates,
 )
@@ -232,3 +236,52 @@ async def test_they_stay_out_even_if_the_domains_ever_let_them_in(
         assert not _named(found), f"{written!r} got through: {sorted(found)}"
 
     template_extraction._extract_entity_candidates_from_template.cache_clear()  # noqa: SLF001
+
+
+async def test_a_dashboard_does_not_report_them_either(
+    hass: HomeAssistant,
+) -> None:
+    """The card from #1468's second report, an `auto-entities` filter.
+
+    Dashboards go through a filter of their own, `async_filter_known_entity_ids`,
+    which is a separate function from the one automations use. Guarding only
+    the automation side left this reported, and I had it fixed on paper for a
+    while on the strength of them looking alike.
+    """
+    card = yaml.safe_load(
+        """
+        type: custom:auto-entities
+        filter:
+          include:
+            - entity_id: sensor.some_prefix*
+              state: "> 0"
+              options:
+                entity: this.entity_id
+        """,
+    )
+
+    extracted = extract_entities_from_dashboard_node(card)
+    assert "this.entity_id" in extracted, (
+        "the walk stopped collecting it, so this no longer tests the filter"
+    )
+
+    unknown = async_filter_known_entity_ids(
+        hass,
+        entity_ids=extracted,
+        known_entity_ids={"sensor.real_one"},
+    )
+
+    assert not _named(unknown), f"a dashboard reported {sorted(unknown)}"
+
+
+async def test_a_dashboard_still_reports_an_entity_that_really_is_gone(
+    hass: HomeAssistant,
+) -> None:
+    """So the check above cannot pass by the dashboard filter reporting nothing."""
+    unknown = async_filter_known_entity_ids(
+        hass,
+        entity_ids={"this.entity_id", "sensor.long_gone"},
+        known_entity_ids={"sensor.real_one"},
+    )
+
+    assert unknown == {"sensor.long_gone"}
