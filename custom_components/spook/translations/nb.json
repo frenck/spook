@@ -314,5 +314,70 @@
                 }
             }
         }
+    },
+    "services": {
+        "homeassistant_add_device_to_area": {
+            "name": "Legg en enhet til et område",
+            "description": "Legger til en enhet til et område. NB, hvis enheten allerede er tilknyttet et område vil dette overskrides."
+        },
+        "person_add_device_tracker": {
+            "name": "Legg til sporing av en enhet",
+            "description": "Legg til en enhets sporer til en person"
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Legg til en merkelapp til en enhet",
+            "description": "Legger til en merkelapp til en enhet. Hvis flere merkelapper eller flere enheter er listet vil alle kombinasjoner bli lagt til."
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Legg til en merkelapp til et område"
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Legg til en merkelapp til en entitet"
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Legg til et alias til en etasje"
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Legg til et alias til et område",
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Legg til et område til en etasje"
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Legg til en entitet til et område"
+        },
+        "homeassistant_remove_alias_from_area": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliaser"
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliaser"
+                }
+            }
+        }
     }
 }
