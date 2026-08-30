@@ -434,23 +434,32 @@ def async_drop_existing_action_names(
     }
 
 
-# Automation and template variables that read exactly like an entity ID and are
-# not one. `trigger` is what a triggered automation is handed, `this` is what a
-# template entity is handed. Reported as unknown entities twice, #823 and #1468.
+# Placeholders that read exactly like an entity ID and are not one. `trigger`
+# is what a triggered automation is handed and `this` is what a template entity
+# is handed, both from Home Assistant itself. Reported as unknown entities
+# twice, #823 and #1468.
 #
-# Home Assistant is where they arrive from. Written without the braces, as
-# `entity_id: trigger.entity_id` rather than `{{ trigger.entity_id }}`, they
-# come back in an automation's own `referenced_entities`, so they turn up having
-# already passed everything here that reads configuration. And the last gate
-# before an issue is raised asks `valid_entity_id`, which answers whether a
-# string is shaped like an entity ID rather than whether anything answers to it.
+# `config.entity` is not Home Assistant's at all: custom dashboard cards such
+# as `template-entity-row` and the Mushroom templates hand it to whatever they
+# render, standing for the row's own entity. It reaches here the same way, by
+# being written into an `entity:` field rather than into a template, which is
+# how a card says "use whichever entity this row turned out to be".
 #
-# Which is why both reports went nowhere for so long: everybody was looking at
-# the templates, and the templates were never it. Nothing here picks these out
-# of a template either, but only because neither `trigger` nor `this` is a
-# domain Home Assistant knows, off a list that grows every release and was never
-# chosen with these in mind. Named here so that it is a decision.
-NEVER_AN_ENTITY = frozenset({"trigger.entity_id", "this.entity_id"})
+# What all three share is how they get this far. Written without the braces, as
+# `entity_id: trigger.entity_id` rather than `{{ trigger.entity_id }}`, they are
+# plain configuration values, so they pass everything here that reads
+# configuration. The last gate before an issue is raised asks `valid_entity_id`,
+# which answers whether a string is shaped like an entity ID rather than whether
+# anything answers to it, and all three are shaped exactly right.
+#
+# Which is why these reports went nowhere for so long: everybody was looking at
+# the templates, and the templates were never it. Written *inside* a template
+# they are safe already, since `states(config.entity)` is a variable and not a
+# quoted string, and nothing here reads one. Safe, that is, only because none of
+# `trigger`, `this` or `config` is a domain Home Assistant knows, off a list
+# that grows every release and was never chosen with these in mind. Named here
+# so that it is a decision.
+NEVER_AN_ENTITY = frozenset({"config.entity", "trigger.entity_id", "this.entity_id"})
 
 
 @callback
