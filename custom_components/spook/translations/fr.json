@@ -503,8 +503,7 @@
             "title": "Dispositifs de suivi inconnus suivis par : {person}"
         },
         "orphaned_statistics": {
-            "title": "Statistiques long terme orpheline trouvée",
-            "description": "Spook a trouvé un fantôme dans votre recorder 👻\n\n\n\nHome Assistant garde ces statistiques longue durée, mais ils ne correspondent à aucune entité qui existe :\n\n\n\n{statistics}\n\n\n\n\n\n\n\nCeci arrive habituellement lorsqu'un capteur est supprimé et que ses statistiques sont conservées. Pour corriger cette erreur, ouvrez Outils de développement > Statistiques et corrigez le problème, ou supprimez les en utilisant l'action `recorder.clear_statistics`.\n\n\n\nSpook 👻 Votre pote."
+            "title": "Statistiques long terme orpheline trouvée"
         },
         "automation_unknown_condition_references": {
             "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation utilise ces conditions qui ne peuvent être fournies par aucune intégration disponible à Home Assistant :\n\n\n\n{conditions}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces conditions ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Votre pote.",
