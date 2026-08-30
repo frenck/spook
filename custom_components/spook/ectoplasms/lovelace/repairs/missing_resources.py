@@ -9,6 +9,7 @@ from homeassistant.components.lovelace import DOMAIN
 from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
 
 from ....const import LOGGER
+from ....dashboard_resources import async_watch_resources
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
@@ -46,6 +47,29 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_LOVELACE_UPDATED,
     }
     automatically_clean_up_issues = True
+
+    async def async_activate(self) -> None:
+        """Activate, and also watch the resource list itself.
+
+        `inspect_events` covers component loads and dashboard saves. Neither
+        fires when somebody adds or removes a resource, so without this the
+        next look at them is a restart away.
+        """
+        await super().async_activate()
+
+        if (
+            unsub := async_watch_resources(self.hass, self._async_resources_changed)
+        ) is not None:
+            self._event_subs.add(unsub)
+
+    async def _async_resources_changed(  # pylint: disable=unused-argument
+        self,
+        change_type: str,  # noqa: ARG002
+        item_id: str,  # noqa: ARG002
+        config: dict,  # noqa: ARG002
+    ) -> None:
+        """Look again, once the changes stop arriving."""
+        await self.inspect_debouncer.async_call()
 
     async def async_inspect(self) -> None:
         """Trigger an inspection."""

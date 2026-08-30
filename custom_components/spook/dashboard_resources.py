@@ -9,8 +9,13 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from homeassistant.components.lovelace import DOMAIN as LOVELACE_DOMAIN
+
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Callable, Iterable
+
+    from homeassistant.core import HomeAssistant
+    from homeassistant.helpers.collection import ChangeListener
 
 # Resources served out of the configuration directory, where the path is the
 # file. Anything else is somebody else's server, and a query string there can
@@ -89,3 +94,33 @@ def redundant_item_ids(items: Iterable[dict], key: str) -> list[str]:
     """
     matching = [item for item in items if item.get("url") and group_key(item) == key]
     return [item["id"] for item in matching[:-1] if item.get("id")]
+
+
+def async_watch_resources(
+    hass: HomeAssistant,
+    on_change: ChangeListener,
+) -> Callable[[], None] | None:
+    """Call `on_change` whenever a dashboard resource is added or removed.
+
+    `EVENT_LOVELACE_UPDATED` does not cover this. Home Assistant fires that
+    when a dashboard configuration is saved, while the resource collection
+    tells its own listeners and nobody else. Without this a resource added
+    from Settings goes unnoticed until something unrelated loads or the house
+    restarts.
+
+    Returns nothing when there is nothing to watch. Resources listed in YAML
+    are a plain list rather than an observable collection, and they cannot
+    change without a reload anyway.
+    """
+    if (lovelace := hass.data.get(LOVELACE_DOMAIN)) is None:
+        return None
+
+    # Reached by attribute rather than assumed: this is another integration's
+    # data, and Spook is a guest in it.
+    if (resources := getattr(lovelace, "resources", None)) is None:
+        return None
+
+    if not hasattr(resources, "async_add_listener"):
+        return None
+
+    return resources.async_add_listener(on_change)
