@@ -14,10 +14,13 @@ so a benign string under a recognized key is dropped rather than reported.
 
 from __future__ import annotations
 
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from .entity_filtering import split_comma_separated_entity_ids
 from .reference_extraction import is_pattern_reference
+
+if TYPE_CHECKING:
+    from collections.abc import Iterator
 
 # Keys whose value holds one or more entity references, anywhere in a
 # dashboard configuration. Values may be a single entity ID, a
@@ -37,6 +40,26 @@ _ENTITY_REFERENCE_KEYS = frozenset(
         "include_entities",
     },
 )
+
+
+# Keys whose subtree says which entities to pick rather than naming any.
+# `filter` is what auto-entities and the cards that copy it use: everything
+# under it is a matcher, and an `options` block inside it is card configuration
+# handed to whatever matched. Neither one names a particular entity, so reading
+# them as references produces repairs about dashboards that work perfectly well.
+#
+# Reported twice from inside the same block. #1468 was `entity: this.entity_id`
+# under `options`, a placeholder for whichever entity matched. #1514 was
+# `area: KG/*`, every area under KG. Both were read as things that had gone
+# missing.
+_MATCHER_KEYS = frozenset({"filter"})
+
+
+def _worth_descending_into(node: dict[str, Any]) -> Iterator[Any]:
+    """Yield the subtrees of a node that can hold references."""
+    for key, value in node.items():
+        if key not in _MATCHER_KEYS and isinstance(value, (dict, list)):
+            yield value
 
 
 def _collect_strings(value: Any, entities: set[str]) -> None:
@@ -63,9 +86,8 @@ def _walk(node: Any, entities: set[str]) -> None:
         if key in node:
             _collect_strings(node[key], entities)
 
-    for value in node.values():
-        if isinstance(value, (dict, list)):
-            _walk(value, entities)
+    for child in _worth_descending_into(node):
+        _walk(child, entities)
 
 
 def extract_entities_from_dashboard_node(node: Any) -> set[str]:
@@ -119,9 +141,8 @@ def _walk_areas(node: Any, areas: set[str]) -> None:
         for sub_key in ("hidden", "order"):
             _collect_plain(areas_display.get(sub_key), areas)
 
-    for value in node.values():
-        if isinstance(value, (dict, list)):
-            _walk_areas(value, areas)
+    for child in _worth_descending_into(node):
+        _walk_areas(child, areas)
 
 
 def extract_areas_from_dashboard_node(node: Any) -> set[str]:

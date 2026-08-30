@@ -86,3 +86,26 @@ def test_an_automation_ignores_patterns_for_all_three() -> None:
     assert targets.area_ids == {"kitchen"}
     assert targets.floor_ids == {"ground_floor"}
     assert targets.label_ids == {"holiday"}
+
+
+def test_a_pattern_outside_a_filter_is_still_left_alone() -> None:
+    """Which is the only place the wildcard rule does any work now.
+
+    Not descending into `filter:` covers both cards that were reported, so what
+    is left for this is somebody writing a pattern where patterns are not read:
+    a native area card, say. Their card shows nothing and they see that at once.
+    Spook saying so as well is not worth a repair, and that was the call made on
+    #1517.
+    """
+    config = {
+        "views": [
+            {
+                "cards": [
+                    {"type": "area", "area": "KG/*"},
+                    {"type": "area", "area": "kitchen"},
+                ],
+            },
+        ],
+    }
+
+    assert extract_areas_from_dashboard_node(config) == {"kitchen"}
