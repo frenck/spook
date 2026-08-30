@@ -14,6 +14,7 @@ from homeassistant.helpers import (
 from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
+from ....reference_extraction import async_collect_mentioned_strings
 from ....repairs import AbstractSpookRepair
 
 # Give a freshly created floor time to get areas assigned before nagging.
@@ -42,6 +43,8 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
+        mentioned = async_collect_mentioned_strings(self.hass)
+
         floor_registry = fr.async_get(self.hass)
         area_registry = ar.async_get(self.hass)
 
@@ -57,6 +60,13 @@ class SpookRepair(AbstractSpookRepair):
             if automations_with_floor(self.hass, floor.floor_id):
                 continue
             if scripts_with_floor(self.hass, floor.floor_id):
+                continue
+            if floor.floor_id in mentioned:
+                # Named somewhere in an automation or script without
+                # being a target of it. That is not proof it is in use: the
+                # collector takes every string it finds and a coincidence
+                # counts the same as a reference. It is enough to stop
+                # offering to delete it, which is all this decides.
                 continue
 
             self.async_create_issue(
