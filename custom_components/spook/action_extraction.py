@@ -8,10 +8,9 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.const import CONF_ENABLED
 
 from .const import LOGGER
-from .entity_filtering import async_get_all_services
+from .entity_filtering import NEVER_AN_ENTITY, async_get_all_services
 from .template_extraction import (
     ENTITY_ID_PATTERN,
-    NEVER_AN_ENTITY,
     async_extract_entities_from_template_string,
     is_template_string,
 )

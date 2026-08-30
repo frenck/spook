@@ -434,6 +434,25 @@ def async_drop_existing_action_names(
     }
 
 
+# Automation and template variables that read exactly like an entity ID and are
+# not one. `trigger` is what a triggered automation is handed, `this` is what a
+# template entity is handed. Reported as unknown entities twice, #823 and #1468.
+#
+# Home Assistant is where they arrive from. Written without the braces, as
+# `entity_id: trigger.entity_id` rather than `{{ trigger.entity_id }}`, they
+# come back in an automation's own `referenced_entities`, so they turn up having
+# already passed everything here that reads configuration. And the last gate
+# before an issue is raised asks `valid_entity_id`, which answers whether a
+# string is shaped like an entity ID rather than whether anything answers to it.
+#
+# Which is why both reports went nowhere for so long: everybody was looking at
+# the templates, and the templates were never it. Nothing here picks these out
+# of a template either, but only because neither `trigger` nor `this` is a
+# domain Home Assistant knows, off a list that grows every release and was never
+# chosen with these in mind. Named here so that it is a decision.
+NEVER_AN_ENTITY = frozenset({"trigger.entity_id", "this.entity_id"})
+
+
 @callback
 def async_filter_known_entity_ids(
     hass: HomeAssistant,
@@ -456,7 +475,8 @@ def async_filter_known_entity_ids(
         # Process any comma-separated entity lists
         for entity_id in split_comma_separated_entity_ids(entity_id_raw):
             if (
-                not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
+                entity_id not in NEVER_AN_ENTITY
+                and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
                 and entity_id not in known_entity_ids
                 and valid_entity_id(entity_id)
             ):
