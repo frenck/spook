@@ -568,8 +568,24 @@
       "title": "Dashboard resources point at missing files"
     },
     "lovelace_duplicate_resources": {
-      "description": "Spook has found a ghost in your dashboards \ud83d\udc7b\n\nThe following dashboard resources are listed more than once:\n\n{resources}\n\n\n\nThis usually happens when a custom card was updated by adding a resource for the new version instead of editing the one already there. The browser loads both, the card tries to register itself twice, and the second attempt fails, which looks like a broken card rather than a duplicated resource. To fix this error, open Settings > Dashboards > Resources and remove the copies you no longer need.\n\nSpook \ud83d\udc7b Your homie.",
-      "title": "Dashboard resources listed more than once"
+      "title": "Dashboard resource listed more than once: {resource}",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Dashboard resource listed more than once: {resource}",
+            "description": "Spook has found a ghost in your dashboards \ud83d\udc7b\n\nThis dashboard resource is listed {count} times:\n\n{resources}\n\nThis usually happens when a custom card was updated by adding a resource for the new version instead of editing the one already there. The browser loads both, the card tries to register itself twice, and the second attempt fails, which looks like a broken card rather than a duplicated resource.\n\nSpook can clear the extra copies and keep the most recently added one.\n\nSpook \ud83d\udc7b Your homie.",
+            "menu_options": {
+              "remove": "Clear the extra copies, keep the most recent",
+              "ignore": "Leave them, stop telling me",
+              "manage": "Let me fix it myself"
+            }
+          }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about this resource from now on.",
+          "manage": "You can manage your dashboard resources yourself on the [Resources page](/config/lovelace/resources)."
+        }
+      }
     },
     "lovelace_unknown_area_references": {
       "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n{dashboard}\n\nThis dashboard references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nThis often happens when an area was renamed or removed. To fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",

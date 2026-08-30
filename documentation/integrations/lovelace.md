@@ -87,7 +87,15 @@ For a resource served from `/local/` or `/hacsfiles/` the path is a file on disk
 
 For any other resource, only an exact repeat counts. A query string on somebody else's server can be the difference between two genuinely different files, and Spook is not going to guess that it is not.
 
-To resolve the raised issue, open **Settings** > **Dashboards** > **Resources** and remove the copies you no longer need. Spook will automatically remove the repair issue once the issue is fixed.
+Spook raises one repair issue per duplicated resource, so they can be dealt with one at a time. Each one offers three ways out:
+
+- **Clear the extra copies, keep the most recent.** Spook removes every copy but the last one added, which for a card updated by adding a resource instead of editing one is the version you meant to end up with.
+- **Let me fix it myself.** Points you at **Settings** > **Dashboards** > **Resources**, and leaves the issue in place until you have.
+- **Leave them, stop telling me.** Keeps the resources as they are and stops Spook mentioning that one again.
+
+Resources listed in YAML are static, so there is nothing Spook can delete for you there. Those issues are still raised, without the offer to fix them, because the change has to happen in the file.
+
+Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Feature requests, ideas, and support
 

@@ -18,7 +18,10 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import issue_registry as ir
 
-_ISSUE_ID = "lovelace_duplicate_resources_lovelace_duplicate_resources"
+
+def _issue_id(key: str) -> str:
+    """Return the registry issue ID for one duplicated resource."""
+    return f"lovelace_duplicate_resources_{key}"
 
 
 async def _no_loading_needed() -> dict[str, int]:
@@ -26,20 +29,60 @@ async def _no_loading_needed() -> dict[str, int]:
     return {"resources": 0}
 
 
-def _set_resources(hass: HomeAssistant, urls: list[str]) -> None:
-    """Install a fake resource collection with the given URLs."""
-    hass.data["lovelace"] = SimpleNamespace(
-        resources=SimpleNamespace(
-            async_items=lambda: [{"url": url, "type": "module"} for url in urls],
-            async_get_info=_no_loading_needed,
-        ),
-    )
+class _FakeStorageResources:
+    """Stand-in for the storage-mode collection, which can delete.
+
+    The YAML collection cannot, and the repair tells them apart by exactly
+    that, so this one has to carry `async_delete_item` for the issues it
+    produces to be fixable.
+    """
+
+    def __init__(self, urls: list[str]) -> None:
+        """Hold one item per URL, in the order they were added."""
+        self.items = [
+            {"id": str(index), "url": url, "type": "module"}
+            for index, url in enumerate(urls)
+        ]
+
+    def async_items(self) -> list[dict]:
+        """Return the items, the way the real collection does."""
+        return self.items
+
+    async def async_get_info(self) -> dict[str, int]:
+        """Stand in for the loading the real collection does on first use."""
+        return {"resources": len(self.items)}
+
+    async def async_delete_item(self, item_id: str) -> None:
+        """Drop one item, raising like the real one when it is not there."""
+        before = len(self.items)
+        self.items = [item for item in self.items if item["id"] != item_id]
+        if len(self.items) == before:
+            raise KeyError(item_id)
 
 
-def _reported(issue_registry: ir.IssueRegistry) -> str | None:
-    """Return the resource list the repair reported, if it raised one."""
-    if (issue := issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)) is None:
+def _set_resources(hass: HomeAssistant, urls: list[str]) -> _FakeStorageResources:
+    """Install a fake storage resource collection with the given URLs."""
+    resources = _FakeStorageResources(urls)
+    hass.data["lovelace"] = SimpleNamespace(resources=resources)
+    return resources
+
+
+def _reported(issue_registry: ir.IssueRegistry, key: str = "") -> str | None:
+    """Return what the repair reported for one resource, if it raised it."""
+    if key:
+        issue = issue_registry.async_get_issue(DOMAIN, _issue_id(key))
+    else:
+        issues = [
+            entry
+            for entry in issue_registry.issues.values()
+            if entry.translation_key == "lovelace_duplicate_resources"
+        ]
+        assert len(issues) <= 1, f"expected at most one issue, got {len(issues)}"
+        issue = issues[0] if issues else None
+
+    if issue is None:
         return None
+
     assert issue.translation_placeholders
     return issue.translation_placeholders["resources"]
 
@@ -229,3 +272,70 @@ async def test_running_before_lovelace_exists_is_a_no_op(
     await SpookRepair(hass).async_inspect()
 
     assert _reported(issue_registry) is None
+
+
+async def test_each_duplicated_resource_gets_its_own_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """One issue per resource, so they can be dealt with one at a time."""
+    _set_resources(
+        hass,
+        [
+            "/local/one.js?v=1",
+            "/local/one.js?v=2",
+            "/local/two.js",
+            "/local/two.js",
+            "/local/fine.js",
+        ],
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _reported(issue_registry, "/local/one.js")
+    assert _reported(issue_registry, "/local/two.js")
+    assert _reported(issue_registry, "/local/fine.js") is None
+
+
+async def test_the_issue_is_fixable_and_carries_what_the_flow_needs(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """The flow is dispatched on this data key, so it has to be there."""
+    _set_resources(hass, ["/local/card.js?v=1", "/local/card.js?v=2"])
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _issue_id("/local/card.js"))
+    assert issue
+    assert issue.is_fixable
+    assert issue.data == {
+        "duplicate_resource_url": "/local/card.js",
+        "resource": "/local/card.js",
+    }
+
+
+async def test_yaml_resources_are_reported_but_not_offered_a_fix(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Resources listed in YAML are static and cannot be deleted from here.
+
+    Offering to clear them would be a button that does nothing, so the issue
+    is raised without one and the text points at the file instead.
+    """
+    hass.data["lovelace"] = SimpleNamespace(
+        resources=SimpleNamespace(
+            async_items=lambda: [
+                {"url": "/local/card.js?v=1", "type": "module"},
+                {"url": "/local/card.js?v=2", "type": "module"},
+            ],
+            async_get_info=_no_loading_needed,
+        ),
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _issue_id("/local/card.js"))
+    assert issue
+    assert not issue.is_fixable
