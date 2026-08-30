@@ -202,7 +202,7 @@ Takes an entity back out of a voice assistant's reach. This action does the reve
 
 This action can be used to update the ID of an entity on the fly. _#secret_
 
-`homeassistant.update_entity_id`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys_id) 📚
+`homeassistant.update_entity_id`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id), [documentation](entities#update-an-entitys-id) 📚
 
 ## Floors: Create a floor
 
