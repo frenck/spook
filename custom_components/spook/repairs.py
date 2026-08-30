@@ -788,9 +788,27 @@ class DuplicateResourceFixFlow(_RemoveOrIgnoreFixFlow):
         # loaded it. Reading it cold would clear nothing and still say it did.
         await resources.async_get_info()
 
-        for item_id in redundant_item_ids(resources.async_items() or [], key):
-            # Somebody may have cleared it themselves between the snapshot
-            # above and here, which is a fine way for this to end too.
+        # Worked out again after every deletion rather than once up front.
+        # Each delete awaits, and somebody editing the same resource in that
+        # window can take away the copy this was going to keep. Against a
+        # stale list that ends with every copy gone, which is not what anybody
+        # asked for.
+        tried: set[str] = set()
+        while True:
+            redundant = [
+                item_id
+                for item_id in redundant_item_ids(resources.async_items() or [], key)
+                if item_id not in tried
+            ]
+            if not redundant:
+                break
+
+            item_id = redundant[0]
+            # Remembered whatever happens, so a copy that cannot be deleted
+            # cannot spin this loop forever either.
+            tried.add(item_id)
+
+            # Somebody clearing it themselves first is a fine ending too.
             with suppress(collection.ItemNotFound):
                 await resources.async_delete_item(item_id)
 

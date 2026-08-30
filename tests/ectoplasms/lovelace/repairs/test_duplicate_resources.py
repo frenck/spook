@@ -22,9 +22,14 @@ if TYPE_CHECKING:
     from homeassistant.helpers import issue_registry as ir
 
 
-def _issue_id(key: str) -> str:
+def _key(target: str, resource_type: str = "module") -> str:
+    """Return the grouping key for a resource, which carries its type."""
+    return f"{resource_type}|{target}"
+
+
+def _issue_id(target: str, resource_type: str = "module") -> str:
     """Return the registry issue ID for one duplicated resource."""
-    return f"lovelace_duplicate_resources_{key}"
+    return f"lovelace_duplicate_resources_{_key(target, resource_type)}"
 
 
 async def _no_loading_needed() -> dict[str, int]:
@@ -77,10 +82,14 @@ def _set_resources(hass: HomeAssistant, urls: list[str]) -> _FakeStorageResource
     return resources
 
 
-def _reported(issue_registry: ir.IssueRegistry, key: str = "") -> str | None:
+def _reported(
+    issue_registry: ir.IssueRegistry,
+    target: str = "",
+    resource_type: str = "module",
+) -> str | None:
     """Return what the repair reported for one resource, if it raised it."""
-    if key:
-        issue = issue_registry.async_get_issue(DOMAIN, _issue_id(key))
+    if target:
+        issue = issue_registry.async_get_issue(DOMAIN, _issue_id(target, resource_type))
     else:
         issues = [
             entry
@@ -302,7 +311,7 @@ async def test_the_issue_is_fixable_and_carries_what_the_flow_needs(
     assert issue
     assert issue.is_fixable
     assert issue.data == {
-        "duplicate_resource_url": "/local/card.js",
+        "duplicate_resource_url": _key("/local/card.js"),
         "resource": "/local/card.js",
         "resources": (
             "- `/local/card.js`, listed 2 times: `/local/card.js?v=1`, "
@@ -376,3 +385,46 @@ def test_the_issue_has_a_fix_flow_and_not_a_description() -> None:
     assert "fix_flow" in block
     assert "description" not in block
     assert "yaml" in block["fix_flow"]["abort"]
+
+
+async def test_the_same_url_under_two_types_is_not_a_repeat(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Home Assistant loads a `module` differently from a `css`.
+
+    So the same URL under two types is two instructions, not one repeated.
+    Reporting it would be bad enough on its own; the fix flow clears all but
+    one, so it would take away something that was meant to be there.
+    """
+    hass.data["lovelace"] = SimpleNamespace(
+        resources=_FakeStorageResources([]),
+    )
+    hass.data["lovelace"].resources.items = [
+        {"id": "1", "url": "/local/thing", "type": "module"},
+        {"id": "2", "url": "/local/thing", "type": "css"},
+    ]
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _reported(issue_registry) is None
+
+
+async def test_a_repeat_within_one_type_is_still_caught(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """The type being part of the identity must not lose the real case."""
+    hass.data["lovelace"] = SimpleNamespace(
+        resources=_FakeStorageResources([]),
+    )
+    hass.data["lovelace"].resources.items = [
+        {"id": "1", "url": "/local/thing", "type": "module"},
+        {"id": "2", "url": "/local/thing", "type": "css"},
+        {"id": "3", "url": "/local/thing", "type": "css"},
+    ]
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _reported(issue_registry, "/local/thing", "css")
+    assert _reported(issue_registry, "/local/thing", "module") is None

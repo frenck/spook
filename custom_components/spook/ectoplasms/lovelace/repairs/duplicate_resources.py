@@ -6,7 +6,7 @@ from homeassistant.components.lovelace import DOMAIN
 from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
 
 from ....const import LOGGER
-from ....dashboard_resources import describe, find_duplicates
+from ....dashboard_resources import describe, find_duplicates, target_of
 from ....repairs import AbstractSpookRepair
 
 
@@ -53,12 +53,12 @@ class SpookRepair(AbstractSpookRepair):
                 is_fixable=True,
                 data={
                     "duplicate_resource_url": key,
-                    "resource": key,
+                    "resource": target_of(key),
                     "resources": describe(key, urls),
                     "count": str(len(urls)),
                 },
                 translation_placeholders={
-                    "resource": key,
+                    "resource": target_of(key),
                     "resources": describe(key, urls),
                     "count": str(len(urls)),
                 },

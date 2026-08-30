@@ -14,7 +14,7 @@ from custom_components.spook.repairs import (
     async_create_fix_flow,
 )
 
-from .test_duplicate_resources import _FakeStorageResources
+from .test_duplicate_resources import _FakeStorageResources, _key
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -25,7 +25,7 @@ def _flow(hass: HomeAssistant, key: str) -> DuplicateResourceFixFlow:
     flow = DuplicateResourceFixFlow()
     flow.hass = hass
     flow.issue_id = f"lovelace_duplicate_resources_{key}"
-    flow.data = {"duplicate_resource_url": key, "resource": key}
+    flow.data = {"duplicate_resource_url": key, "resource": key.split("|", 1)[-1]}
     return flow
 
 
@@ -38,8 +38,8 @@ async def test_the_flow_is_chosen_for_this_issue(hass: HomeAssistant) -> None:
     """Dispatch is on the data key, so this is what wires the two together."""
     flow = await async_create_fix_flow(
         hass,
-        "lovelace_duplicate_resources_/local/card.js",
-        {"duplicate_resource_url": "/local/card.js"},
+        f"lovelace_duplicate_resources_{_key('/local/card.js')}",
+        {"duplicate_resource_url": _key("/local/card.js")},
     )
 
     assert isinstance(flow, DuplicateResourceFixFlow)
@@ -56,7 +56,7 @@ async def test_removing_keeps_the_most_recently_added(hass: HomeAssistant) -> No
     )
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 
-    await _flow(hass, "/local/card.js").async_step_remove()
+    await _flow(hass, _key("/local/card.js")).async_step_remove()
 
     assert _urls(resources) == ["/local/card.js?v=2", "/local/other.js"]
 
@@ -68,7 +68,7 @@ async def test_removing_clears_every_extra_copy(hass: HomeAssistant) -> None:
     )
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 
-    await _flow(hass, "/local/card.js").async_step_remove()
+    await _flow(hass, _key("/local/card.js")).async_step_remove()
 
     assert _urls(resources) == ["/local/card.js?v=3"]
 
@@ -85,7 +85,7 @@ async def test_removing_leaves_other_resources_alone(hass: HomeAssistant) -> Non
     )
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 
-    await _flow(hass, "/local/card.js").async_step_remove()
+    await _flow(hass, _key("/local/card.js")).async_step_remove()
 
     assert _urls(resources) == [
         "/local/card.js?v=2",
@@ -124,7 +124,7 @@ async def test_a_copy_removed_underneath_the_flow_does_not_stop_it(
     )
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 
-    result = await _flow(hass, "/local/card.js").async_step_remove()
+    result = await _flow(hass, _key("/local/card.js")).async_step_remove()
 
     assert result["type"] == "create_entry"
     # The one that vanished is still listed here, because this fake only
@@ -139,7 +139,7 @@ async def test_removing_when_there_is_nothing_left_to_remove_still_finishes(
     resources = _FakeStorageResources(["/local/card.js?v=2"])
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 
-    result = await _flow(hass, "/local/card.js").async_step_remove()
+    result = await _flow(hass, _key("/local/card.js")).async_step_remove()
 
     assert result["type"] == "create_entry"
     assert _urls(resources) == ["/local/card.js?v=2"]
@@ -149,7 +149,7 @@ async def test_removing_without_lovelace_still_finishes(hass: HomeAssistant) -> 
     """The flow can be opened long after the resources went away."""
     assert "lovelace" not in hass.data
 
-    result = await _flow(hass, "/local/card.js").async_step_remove()
+    result = await _flow(hass, _key("/local/card.js")).async_step_remove()
 
     assert result["type"] == "create_entry"
 
@@ -164,18 +164,18 @@ async def test_ignoring_keeps_the_issue_so_the_ignore_sticks(
 
     issue_registry.async_get_or_create(
         DOMAIN,
-        "lovelace_duplicate_resources_/local/card.js",
+        f"lovelace_duplicate_resources_{_key('/local/card.js')}",
         is_fixable=True,
         is_persistent=False,
         severity=ir.IssueSeverity.WARNING,
         translation_key="lovelace_duplicate_resources",
     )
 
-    result = await _flow(hass, "/local/card.js").async_step_ignore()
+    result = await _flow(hass, _key("/local/card.js")).async_step_ignore()
 
     assert result["type"] == "abort"
     issue = issue_registry.async_get_issue(
-        DOMAIN, "lovelace_duplicate_resources_/local/card.js"
+        DOMAIN, f"lovelace_duplicate_resources_{_key('/local/card.js')}"
     )
     assert issue
     assert issue.dismissed_version is not None
@@ -188,7 +188,7 @@ async def test_managing_it_yourself_leaves_everything(hass: HomeAssistant) -> No
     resources = _FakeStorageResources(["/local/card.js?v=1", "/local/card.js?v=2"])
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 
-    result = await _flow(hass, "/local/card.js").async_step_manage()
+    result = await _flow(hass, _key("/local/card.js")).async_step_manage()
 
     assert result["type"] == "abort"
     assert result["reason"] == "manage"
@@ -208,7 +208,7 @@ async def test_removing_from_a_cold_collection_still_clears(
     )
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 
-    await _flow(hass, "/local/card.js").async_step_remove()
+    await _flow(hass, _key("/local/card.js")).async_step_remove()
 
     assert _urls(resources) == ["/local/card.js?v=2"]
 
@@ -230,7 +230,7 @@ async def test_a_yaml_collection_is_told_where_the_file_is(
         ),
     )
 
-    result = await _flow(hass, "/local/card.js").async_step_init()
+    result = await _flow(hass, _key("/local/card.js")).async_step_init()
 
     assert result["type"] == "abort"
     assert result["reason"] == "yaml"
@@ -244,7 +244,44 @@ async def test_a_storage_collection_still_gets_the_menu(
     resources = _FakeStorageResources(["/local/card.js?v=1", "/local/card.js?v=2"])
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 
-    result = await _flow(hass, "/local/card.js").async_step_init()
+    result = await _flow(hass, _key("/local/card.js")).async_step_init()
 
     assert result["type"] == "menu"
     assert set(result["menu_options"]) == {"remove", "manage", "ignore"}
+
+
+class _VanishingNewest(_FakeStorageResources):
+    """Somebody removes the copy this was going to keep, mid-clear."""
+
+    def __init__(self, urls: list[str]) -> None:
+        """Start out with nobody having interfered yet."""
+        super().__init__(urls)
+        self._interfered = False
+
+    async def async_delete_item(self, item_id: str) -> None:
+        """Delete as asked, then take the newest away the first time."""
+        await super().async_delete_item(item_id)
+        if not self._interfered:
+            self._interfered = True
+            self.items = self.items[:-1]
+
+
+async def test_it_stops_when_somebody_takes_the_kept_copy_away(
+    hass: HomeAssistant,
+) -> None:
+    """Deleting awaits, so the list can change underneath this.
+
+    Against a snapshot taken once, losing the copy meant to be kept means
+    every copy gets cleared and the card stops loading at all. Working it out
+    again after each deletion leaves whatever is still there.
+    """
+    resources = _VanishingNewest(
+        ["/local/card.js?v=1", "/local/card.js?v=2", "/local/card.js?v=3"]
+    )
+    hass.data["lovelace"] = SimpleNamespace(resources=resources)
+
+    await _flow(hass, _key("/local/card.js")).async_step_remove()
+
+    # v=1 cleared, v=3 taken by the other client, and v=2 left alone rather
+    # than cleared on the strength of a list that no longer described anything.
+    assert _urls(resources) == ["/local/card.js?v=2"]

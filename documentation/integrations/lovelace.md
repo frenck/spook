@@ -87,6 +87,8 @@ For a resource served from `/local/` or `/hacsfiles/` the path is a file on disk
 
 For any other resource, only an exact repeat counts. A query string on somebody else's server can be the difference between two genuinely different files, and Spook is not going to guess that it is not.
 
+The resource type is part of the comparison either way. Home Assistant loads a `module` differently from a `css`, so the same URL listed under two types is two instructions rather than one repeated, and Spook leaves those alone.
+
 Spook raises one repair issue per duplicated resource, so they can be dealt with one at a time. Each one offers three ways out:
 
 - **Clear the extra copies, keep the most recent.** Spook removes every copy but the last one added, which for a card updated by adding a resource instead of editing one is the version you meant to end up with.
