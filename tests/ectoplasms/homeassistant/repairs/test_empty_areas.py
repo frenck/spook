@@ -299,3 +299,45 @@ async def test_an_area_nobody_mentions_at_all_is_still_reported(
     await SpookRepair(hass).async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, _issue_id(forgotten.id))
+
+
+async def test_an_automation_naming_it_counts_the_same_as_a_script(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The collector reads both, and only one of them was being tested.
+
+    Automations and scripts hold their configuration in different components,
+    so a wrong domain name or a missing `raw_config` on one of them would go
+    unnoticed while every other test here stayed green.
+    """
+    area = area_registry.async_create("Vacuum Only")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "alias": "Clean upstairs",
+                    "trigger": [],
+                    "action": [
+                        {
+                            "repeat": {
+                                "for_each": [area.id],
+                                "sequence": [{"action": "vacuum.start", "target": {}}],
+                            }
+                        }
+                    ],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
