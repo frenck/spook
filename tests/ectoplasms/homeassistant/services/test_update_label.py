@@ -101,3 +101,44 @@ async def test_a_call_that_changes_nothing_is_refused(
 
     with pytest.raises(HomeAssistantError, match="Nothing to update"):
         await _update(hass, label_id=label.label_id)
+
+
+async def test_null_clears_a_field_where_leaving_it_out_would_keep_it(
+    hass: HomeAssistant,
+    label_registry: lr.LabelRegistry,
+) -> None:
+    """The registry takes `None` to mean "no icon", and so does this.
+
+    Which is the other half of leaving a field out: without it there is no way
+    to take an icon back off a label once it has one.
+    """
+    label = label_registry.async_create(
+        "Ghosts", color="red", description="Old", icon="mdi:ghost"
+    )
+    await _setup(hass)
+
+    await _update(hass, label_id=label.label_id, icon=None)
+
+    updated = label_registry.async_get_label(label.label_id)
+    assert updated.icon is None
+    assert updated.description == "Old"
+    assert updated.color == "red"
+
+
+async def test_renaming_onto_another_label_says_so(
+    hass: HomeAssistant,
+    label_registry: lr.LabelRegistry,
+) -> None:
+    """Core raises a bare ValueError here, which surfaces as an unknown error.
+
+    The registry's own wording says which name is taken, so it is worth
+    keeping, just as something an automation can actually catch.
+    """
+    label_registry.async_create("Ghosts")
+    spooks = label_registry.async_create("Spooks")
+    await _setup(hass)
+
+    with pytest.raises(HomeAssistantError, match="already in use"):
+        await _update(hass, label_id=spooks.label_id, name="Ghosts")
+
+    assert label_registry.async_get_label(spooks.label_id).name == "Spooks"

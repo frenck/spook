@@ -23,10 +23,11 @@ _UPDATABLE = ("name", "description", "icon", "color")
 class SpookService(AbstractSpookAdminService):
     """Home Assistant service to update a label on the fly.
 
-    Creating a label with a name that already exists makes a second label
-    rather than changing the first, so the only way to edit one used to be
-    deleting it and starting over. That takes the label off everything it was
-    on, which is rarely what somebody wanting a new description had in mind.
+    Home Assistant can edit a label in the UI, but nothing could do it from an
+    automation. Creating one with a name that is already taken is refused, so
+    the only way through was to delete the label and make it again. Deleting
+    takes it off everything it was on, which is a lot to lose over a
+    description.
     """
 
     domain = DOMAIN
@@ -34,11 +35,12 @@ class SpookService(AbstractSpookAdminService):
     schema = {
         vol.Required("label_id"): cv.string,
         vol.Optional("name"): cv.string,
+        # `None` clears these, which is why they are not plain validators.
         vol.Optional("color"): vol.Any(
-            cv.color_hex, vol.In(SUPPORTED_LABEL_THEME_COLORS)
+            None, cv.color_hex, vol.In(SUPPORTED_LABEL_THEME_COLORS)
         ),
-        vol.Optional("description"): cv.string,
-        vol.Optional("icon"): cv.icon,
+        vol.Optional("description"): vol.Any(None, cv.string),
+        vol.Optional("icon"): vol.Any(None, cv.icon),
     }
 
     async def async_handle_service(self, call: ServiceCall) -> None:
@@ -46,8 +48,8 @@ class SpookService(AbstractSpookAdminService):
         label_id = call.data["label_id"]
         async_check_labels_exist(self.hass, [label_id])
 
-        # Everything left out keeps the value it has. Without this an
-        # unmentioned icon would be read as "remove the icon".
+        # Left out means keep, `None` means clear. Passing everything through
+        # would turn an unmentioned icon into "remove the icon".
         changes = {
             field: call.data[field] for field in _UPDATABLE if field in call.data
         }
@@ -59,7 +61,12 @@ class SpookService(AbstractSpookAdminService):
             )
             raise HomeAssistantError(msg)
 
-        lr.async_get(self.hass).async_update(
-            label_id,
-            **{field: changes.get(field, UNDEFINED) for field in _UPDATABLE},
-        )
+        try:
+            lr.async_get(self.hass).async_update(
+                label_id,
+                **{field: changes.get(field, UNDEFINED) for field in _UPDATABLE},
+            )
+        except ValueError as err:
+            # Renaming onto a name another label already has. Left alone this
+            # comes back as an unknown error with the registry's own wording.
+            raise HomeAssistantError(str(err)) from err

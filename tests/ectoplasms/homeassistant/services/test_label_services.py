@@ -13,6 +13,7 @@ from custom_components.spook.ectoplasms.homeassistant.services import (
     add_label_to_area,
     add_label_to_device,
     add_label_to_entity,
+    create_label,
     remove_label_from_area,
     remove_label_from_device,
     remove_label_from_entity,
@@ -104,4 +105,22 @@ async def test_a_label_that_does_not_exist_is_refused_on_removal_too(
             service.service,
             {"label_id": "no_such_label", field: targets[field]},
             blocking=True,
+        )
+
+
+async def test_creating_a_label_whose_name_is_taken_says_so(
+    hass: HomeAssistant,
+    label_registry: lr.LabelRegistry,
+) -> None:
+    """Core refuses this with a bare ValueError, not a second label.
+
+    Unconverted it reaches the caller as an unknown error, which is a poor
+    description of a name collision.
+    """
+    label_registry.async_create("Ghosts")
+    await _setup(hass, create_label)
+
+    with pytest.raises(HomeAssistantError, match="already in use"):
+        await hass.services.async_call(
+            "homeassistant", "create_label", {"name": "Ghosts"}, blocking=True
         )

@@ -88,7 +88,12 @@ data:
 ### Update a label
 
 Updates an existing label in your Home Assistant instance. Anything you leave
-out keeps the value it already has.
+out keeps the value it already has. Setting `description`, `icon` or `color` to
+`null` clears it.
+
+Note that leaving a field out is not the same as giving it an empty string: a
+`description: ""` sets the description to nothing at all, which is a change
+like any other.
 
 ```{list-table}
 :header-rows: 1
@@ -141,6 +146,9 @@ out keeps the value it already has.
 You need to give at least one thing to change. A call with only a `label_id`
 is refused, so a misspelled parameter cannot pass for a successful update that
 quietly did nothing.
+
+Renaming a label to a name another label already carries is refused too, since
+Home Assistant keeps label names unique.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
