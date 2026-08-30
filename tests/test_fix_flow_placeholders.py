@@ -21,6 +21,10 @@ from custom_components.spook.repairs import _REMOVE_OR_IGNORE_FLOWS
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
+# Spook ships dozens of issue types; anything near this means the file was
+# read wrong rather than that they went away.
+EXPECTED_ISSUES = 20
+
 ROOT = Path(__file__).parents[1]
 STRINGS = json.loads(
     (ROOT / "custom_components" / "spook" / "translations" / "en.json").read_text()
@@ -81,3 +85,28 @@ async def test_the_flow_supplies_what_its_dialog_asks_for(
             f"{repair}: dialog names {sorted(needed - supplied)}, "
             f"{flow.__name__} supplies {sorted(supplied)}"
         )
+
+
+def test_no_issue_carries_both_a_description_and_a_fix_flow() -> None:
+    """Home Assistant treats those as mutually exclusive, and hassfest says so.
+
+    An issue is either fixable, and its text lives in the fix flow, or it is
+    not, and its text is the description. Carrying both fails validation with
+    "two or more values in the same group of exclusion 'fixable'".
+
+    Hassfest lives in the Home Assistant repository and cannot run here, so
+    this stands in for it. Finding this in CI costs a round trip; finding it
+    here costs a second.
+    """
+    both = sorted(
+        key
+        for key, block in STRINGS["issues"].items()
+        if "description" in block and "fix_flow" in block
+    )
+
+    assert not both, f"these carry both, and hassfest will refuse them: {both}"
+
+
+def test_there_are_issues_to_check() -> None:
+    """Guard the check above, which passes happily against an empty file."""
+    assert len(STRINGS["issues"]) > EXPECTED_ISSUES

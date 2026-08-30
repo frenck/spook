@@ -45,16 +45,12 @@ class SpookRepair(AbstractSpookRepair):
         # which is normally the dashboard, long after Spook looks.
         await resources.async_get_info()
 
-        # Resources listed in YAML are static, so there is nothing to offer
-        # beyond pointing at them: the fix has to happen in the file.
-        can_remove = hasattr(resources, "async_delete_item")
-
         items = list(resources.async_items() or [])
         for key, urls in find_duplicates(items).items():
             self.possible_issue_ids.add(key)
             self.async_create_issue(
                 issue_id=key,
-                is_fixable=can_remove,
+                is_fixable=True,
                 data={
                     "duplicate_resource_url": key,
                     "resource": key,

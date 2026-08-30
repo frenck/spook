@@ -568,7 +568,6 @@
       "title": "Dashboard resources point at missing files"
     },
     "lovelace_duplicate_resources": {
-      "description": "Spook has found a ghost in your dashboards \ud83d\udc7b\n\nThis dashboard resource is listed {count} times:\n\n{resources}\n\nThis usually happens when a custom card was updated by adding a resource for the new version instead of editing the one already there. The browser loads both, the card tries to register itself twice, and the second attempt fails, which looks like a broken card rather than a duplicated resource.\n\nThese resources are listed in your YAML configuration, so Spook cannot change them for you. Edit the `resources:` section of your Lovelace configuration and remove the copies you no longer need.\n\nSpook \ud83d\udc7b Your homie.",
       "title": "Dashboard resource listed more than once: {resource}",
       "fix_flow": {
         "step": {
@@ -584,7 +583,8 @@
         },
         "abort": {
           "issue_ignored": "Spook will keep quiet about this resource from now on.",
-          "manage": "You can manage your dashboard resources yourself on the [Resources page](/config/lovelace/resources)."
+          "manage": "You can manage your dashboard resources yourself on the [Resources page](/config/lovelace/resources).",
+          "yaml": "These resources are listed in your YAML configuration, so Spook cannot change them for you. Edit the `resources:` section of your Lovelace configuration and remove the copies of `{resource}` you no longer need."
         }
       }
     },

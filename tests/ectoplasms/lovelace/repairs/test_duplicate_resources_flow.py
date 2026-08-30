@@ -211,3 +211,40 @@ async def test_removing_from_a_cold_collection_still_clears(
     await _flow(hass, "/local/card.js").async_step_remove()
 
     assert _urls(resources) == ["/local/card.js?v=2"]
+
+
+async def test_a_yaml_collection_is_told_where_the_file_is(
+    hass: HomeAssistant,
+) -> None:
+    """Nothing can delete a YAML resource, so the menu would be a lie.
+
+    Offering "clear the extra copies" against a static list is a button that
+    quietly does nothing, so this aborts with the file to edit instead.
+    """
+    hass.data["lovelace"] = SimpleNamespace(
+        resources=SimpleNamespace(
+            async_items=lambda: [
+                {"url": "/local/card.js?v=1", "type": "module"},
+                {"url": "/local/card.js?v=2", "type": "module"},
+            ],
+        ),
+    )
+
+    result = await _flow(hass, "/local/card.js").async_step_init()
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "yaml"
+    assert result["description_placeholders"]["resource"] == "/local/card.js"
+
+
+async def test_a_storage_collection_still_gets_the_menu(
+    hass: HomeAssistant,
+) -> None:
+    """The abort above must not swallow the case it was added beside."""
+    resources = _FakeStorageResources(["/local/card.js?v=1", "/local/card.js?v=2"])
+    hass.data["lovelace"] = SimpleNamespace(resources=resources)
+
+    result = await _flow(hass, "/local/card.js").async_step_init()
+
+    assert result["type"] == "menu"
+    assert set(result["menu_options"]) == {"remove", "manage", "ignore"}

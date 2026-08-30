@@ -750,6 +750,27 @@ class DuplicateResourceFixFlow(_RemoveOrIgnoreFixFlow):
             "count": str(data.get("count", "")),
         }
 
+    async def async_step_init(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Offer the usual menu, unless there is nothing here that can fix it.
+
+        Resources listed in YAML are static: nothing in Home Assistant can
+        delete one, so offering to would be a button that quietly does
+        nothing. Those get told where the file is instead.
+        """
+        lovelace = self.hass.data.get(lovelace_const.DOMAIN)
+        resources = lovelace.resources if lovelace is not None else None
+
+        if resources is not None and not hasattr(resources, "async_delete_item"):
+            return self.async_abort(
+                reason="yaml",
+                description_placeholders=self._menu_placeholders(),
+            )
+
+        return await super().async_step_init()
+
     async def async_step_remove(
         self,
         _: dict[str, str] | None = None,

@@ -5,7 +5,6 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-import re
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
@@ -313,32 +312,6 @@ async def test_the_issue_is_fixable_and_carries_what_the_flow_needs(
     }
 
 
-async def test_yaml_resources_are_reported_but_not_offered_a_fix(
-    hass: HomeAssistant,
-    issue_registry: ir.IssueRegistry,
-) -> None:
-    """Resources listed in YAML are static and cannot be deleted from here.
-
-    Offering to clear them would be a button that does nothing, so the issue
-    is raised without one and the text points at the file instead.
-    """
-    hass.data["lovelace"] = SimpleNamespace(
-        resources=SimpleNamespace(
-            async_items=lambda: [
-                {"url": "/local/card.js?v=1", "type": "module"},
-                {"url": "/local/card.js?v=2", "type": "module"},
-            ],
-            async_get_info=_no_loading_needed,
-        ),
-    )
-
-    await SpookRepair(hass).async_inspect()
-
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id("/local/card.js"))
-    assert issue
-    assert not issue.is_fixable
-
-
 def test_lovelace_is_a_hard_dependency() -> None:
     """Both resource repairs read `hass.data["lovelace"]` without a guard.
 
@@ -356,15 +329,14 @@ def test_lovelace_is_a_hard_dependency() -> None:
     assert "lovelace" in manifest["dependencies"]
 
 
-async def test_the_non_fixable_issue_says_something(
+async def test_a_yaml_resource_is_still_reported(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
 ) -> None:
-    """A YAML issue has no fix flow, so its text is the top-level description.
+    """A duplicate is a duplicate wherever the resources are configured.
 
-    Without one the repairs list shows a title and nothing else: no URLs, no
-    hint that the file is where to go. The fix flow's own text is unreachable
-    for these, since there is no button to open it.
+    The fix flow is what works out that it cannot delete these; the repair
+    reports them either way, so nobody is left without the finding.
     """
     hass.data["lovelace"] = SimpleNamespace(
         resources=SimpleNamespace(
@@ -380,8 +352,16 @@ async def test_the_non_fixable_issue_says_something(
 
     issue = issue_registry.async_get_issue(DOMAIN, _issue_id("/local/card.js"))
     assert issue
-    assert not issue.is_fixable
+    assert issue.is_fixable
 
+
+def test_the_issue_has_a_fix_flow_and_not_a_description() -> None:
+    """Home Assistant treats those two as mutually exclusive.
+
+    Carrying both fails hassfest with "two or more values in the same group of
+    exclusion 'fixable'", which is how the YAML case ended up handled inside
+    the flow rather than by a second block of text.
+    """
     strings = json.loads(
         (
             Path(__file__).parents[4]
@@ -392,9 +372,7 @@ async def test_the_non_fixable_issue_says_something(
         ).read_text()
     )
     block = strings["issues"]["lovelace_duplicate_resources"]
-    assert block.get("description"), "a non-fixable issue shows this or nothing"
 
-    # Everything that text interpolates has to be on the issue.
-    needed = set(re.findall(r"\{(\w+)\}", block["description"]))
-    assert issue.translation_placeholders
-    assert not needed - set(issue.translation_placeholders)
+    assert "fix_flow" in block
+    assert "description" not in block
+    assert "yaml" in block["fix_flow"]["abort"]

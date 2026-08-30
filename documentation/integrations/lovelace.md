@@ -93,7 +93,7 @@ Spook raises one repair issue per duplicated resource, so they can be dealt with
 - **Let me fix it myself.** Points you at **Settings** > **Dashboards** > **Resources**, and leaves the issue in place until you have.
 - **Leave them, stop telling me.** Keeps the resources as they are and stops Spook mentioning that one again.
 
-Resources listed in YAML are static, so there is nothing Spook can delete for you there. Those issues are still raised, without the offer to fix them, because the change has to happen in the file.
+Resources listed in YAML are static, so there is nothing Spook can delete for you there. Those duplicates are still reported, and choosing to fix one tells you which file to edit rather than offering a button that would quietly do nothing.
 
 Spook will automatically remove the repair issue once the issue is fixed.
 
