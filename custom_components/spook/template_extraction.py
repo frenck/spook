@@ -60,6 +60,12 @@ KNOWN_DOMAINS = [platform.value for platform in Platform] + ADDITIONAL_DOMAINS
 # Which is the trouble. They are excluded by accident, as a side effect of a
 # list of domains that grows every release, rather than because anybody decided
 # they should be. Said out loud here so it stays decided.
+# Home Assistant hands these over itself. Written without the braces, as
+# `entity_id: trigger.entity_id` rather than `{{ trigger.entity_id }}`, they
+# come back in an automation's own `referenced_entities`, and `valid_entity_id`
+# is happy with them because it asks whether a string is shaped like an entity
+# ID and not whether anything answers to it. Which is how this was reported
+# twice by people whose templates were fine.
 NEVER_AN_ENTITY = frozenset({"trigger.entity_id", "this.entity_id"})
 
 # Home Assistant core entity ID validation patterns (from homeassistant/core.py)
@@ -399,7 +405,8 @@ async def async_filter_known_entity_ids_with_templates(
             # Process as regular entity ID(s), handling comma-separated lists
             for entity_id in split_comma_separated_entity_ids(entity_id_raw):
                 if (
-                    not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
+                    entity_id not in NEVER_AN_ENTITY
+                    and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
                     and entity_id not in known_entity_ids
                     and valid_entity_id(entity_id)
                 ):

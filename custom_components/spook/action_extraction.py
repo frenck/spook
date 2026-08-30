@@ -254,8 +254,8 @@ async def async_extract_entities_from_value(
             )
     elif (
         isinstance(value, dict)
-        and "entity" in value
-        and isinstance(value["entity"], str)
+        and isinstance(value.get("entity"), str)
+        and value["entity"] not in NEVER_AN_ENTITY
     ):
         # Handle entity dict format like {"entity": "light.living_room"}
         entities.add(value["entity"])

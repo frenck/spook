@@ -19,6 +19,8 @@ import re
 from typing import TYPE_CHECKING
 
 import yaml
+from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.setup import async_setup_component
 
 from custom_components.spook import action_extraction, template_extraction
 from custom_components.spook.action_extraction import (
@@ -26,6 +28,9 @@ from custom_components.spook.action_extraction import (
 )
 from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_references import (
     extract_entities_from_automation_config,
+)
+from custom_components.spook.template_extraction import (
+    async_filter_known_entity_ids_with_templates,
 )
 
 if TYPE_CHECKING:
@@ -97,6 +102,92 @@ async def test_the_automation_from_the_issue_reports_only_its_sensors(
     )
 
     assert found == {"binary_sensor.room1_smoke", "binary_sensor.room2_smoke"}
+
+
+async def test_home_assistant_handing_them_over_does_not_count_either(
+    hass: HomeAssistant,
+) -> None:
+    """Which is how this actually happens, and why neither report reproduced.
+
+    Written without the braces, `entity_id: trigger.entity_id` rather than
+    `{{ trigger.entity_id }}`, Home Assistant puts them in the automation's own
+    `referenced_entities`. Spook seeds from that set, so they arrive already
+    past everything that reads configuration, and `valid_entity_id` waves them
+    through because it asks whether a string is shaped like an entity ID, not
+    whether anything answers to it.
+    """
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "alias": "Literal trigger variable",
+                    "id": "literal_trigger",
+                    "triggers": [
+                        {"trigger": "state", "entity_id": "binary_sensor.smoke"},
+                    ],
+                    "actions": [
+                        {
+                            "action": "light.turn_on",
+                            "target": {"entity_id": "trigger.entity_id"},
+                        },
+                    ],
+                },
+                {
+                    "alias": "Literal this variable",
+                    "id": "literal_this",
+                    "triggers": [
+                        {"trigger": "state", "entity_id": "binary_sensor.smoke"},
+                    ],
+                    "conditions": [
+                        {
+                            "condition": "state",
+                            "entity_id": "this.entity_id",
+                            "state": "on",
+                        },
+                    ],
+                    "actions": [{"action": "light.turn_on"}],
+                },
+            ],
+        },
+    )
+    await hass.async_block_till_done()
+
+    component = hass.data[DATA_INSTANCES]["automation"]
+    entities = list(component.entities)
+    assert entities, "no automations were set up, so this proves nothing"
+
+    # Home Assistant really does hand them over. Without this the test could
+    # pass by the pseudo-IDs never turning up in the first place.
+    handed_over = set()
+    for entity in entities:
+        handed_over |= {str(e) for e in entity.referenced_entities}
+    assert handed_over & set(template_extraction.NEVER_AN_ENTITY), (
+        f"Home Assistant stopped reporting these, so this test is now testing "
+        f"nothing: {sorted(handed_over)}"
+    )
+
+    for entity in entities:
+        unknown = await async_filter_known_entity_ids_with_templates(
+            hass,
+            entity_ids=set(entity.referenced_entities),
+            known_entity_ids={"binary_sensor.smoke"},
+        )
+        assert not _named(unknown), f"{entity.name} reported {sorted(unknown)}"
+
+
+async def test_the_entity_dict_form_does_not_smuggle_them_in(
+    hass: HomeAssistant,
+) -> None:
+    """`{"entity": "..."}` is a shape a target can take, and it went straight in."""
+    found = await async_extract_entities_from_value(
+        hass,
+        [{"entity": "trigger.entity_id"}, {"entity": "light.real_one"}],
+    )
+
+    assert not _named(found)
+    assert "light.real_one" in found, "the dict form stopped working altogether"
 
 
 async def test_they_stay_out_even_if_the_domains_ever_let_them_in(
