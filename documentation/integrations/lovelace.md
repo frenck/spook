@@ -75,6 +75,20 @@ A missing local resource usually means a custom card was removed but its resourc
 
 To resolve the raised issue, go to Settings > Dashboards > Resources and remove or correct these resources. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Duplicate dashboard resources
+
+The same resource can be listed more than once, and nothing in Home Assistant stops it: every resource you add is handed a fresh ID without anybody checking what it points at.
+
+The usual way in is updating a custom card. The new version wants a new cache-busting URL, so `/local/some-card.js?v=1` gains a neighbour at `?v=2` instead of being edited. Both stay. The browser treats two URLs as two files and loads both, the card tries to register itself twice, and the second attempt throws. What you see is a broken card, which sends you looking at the card rather than at the resource list.
+
+Spook raises a repair issue naming each resource that appears more than once, and the URLs involved where they differ.
+
+For a resource served from `/local/` or `/hacsfiles/` the path is a file on disk, so two URLs differing only in their query string are the same file and are reported as duplicates.
+
+For any other resource, only an exact repeat counts. A query string on somebody else's server can be the difference between two genuinely different files, and Spook is not going to guess that it is not.
+
+To resolve the raised issue, open **Settings** > **Dashboards** > **Resources** and remove the copies you no longer need. Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
