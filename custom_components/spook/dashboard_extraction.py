@@ -17,6 +17,7 @@ from __future__ import annotations
 from typing import Any
 
 from .entity_filtering import split_comma_separated_entity_ids
+from .reference_extraction import is_pattern_reference
 
 # Keys whose value holds one or more entity references, anywhere in a
 # dashboard configuration. Values may be a single entity ID, a
@@ -84,11 +85,19 @@ _AREA_REFERENCE_KEYS = frozenset({"area", "area_id"})
 
 
 def _collect_plain(value: Any, out: set[str]) -> None:
-    """Collect plain string IDs from a key's string or list value."""
+    """Collect plain string IDs from a key's string or list value.
+
+    A pattern is not a name, so `area: KG/*` is left where it is.
+    """
     if isinstance(value, str):
-        out.add(value)
+        if not is_pattern_reference(value):
+            out.add(value)
     elif isinstance(value, list):
-        out.update(item for item in value if isinstance(item, str))
+        out.update(
+            item
+            for item in value
+            if isinstance(item, str) and not is_pattern_reference(item)
+        )
 
 
 def _walk_areas(node: Any, areas: set[str]) -> None:
