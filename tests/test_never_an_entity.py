@@ -80,9 +80,25 @@ mode: restart
 """
 
 
+# Written out here rather than read from the code under test. Reading the very
+# set these tests are about means that taking an entry out of it takes it out
+# of the yardstick too, and every assertion below keeps passing while the thing
+# it guards is broken.
+_THE_TWO = frozenset({"trigger.entity_id", "this.entity_id"})
+
+
 def _named(found: set[str]) -> set[str]:
     """Return anything reported that is one of the two variables."""
-    return {e for e in found if e in template_extraction.NEVER_AN_ENTITY}
+    return {e for e in found if e in _THE_TWO}
+
+
+def test_the_yardstick_still_matches_the_code() -> None:
+    """The copy above is deliberate, so say when it stops describing reality.
+
+    A third placeholder worth excluding should be added to both. This failing
+    is the reminder, not a bug in itself.
+    """
+    assert set(template_extraction.NEVER_AN_ENTITY) == _THE_TWO
 
 
 async def test_no_way_of_writing_them_reads_as_an_entity(
@@ -272,6 +288,50 @@ async def test_a_dashboard_does_not_report_them_either(
     )
 
     assert not _named(unknown), f"a dashboard reported {sorted(unknown)}"
+
+
+async def test_the_card_from_the_auto_entities_report_stays_quiet(
+    hass: HomeAssistant,
+) -> None:
+    """The exact card from #1538, reported after the fix had already shipped.
+
+    It was already quiet, but only by luck of the last gate: the walk does
+    descend into `options:` inside a `filter:`, because that block is real
+    card configuration rather than a matcher. So the placeholder is collected
+    here and the filter is the only thing stopping it, which is worth pinning
+    against the shape somebody actually wrote.
+    """
+    card = yaml.safe_load(
+        """
+        type: custom:auto-entities
+        card:
+          card:
+            type: grid
+            columns: 1
+          card_param: cards
+        filter:
+          include:
+            - options:
+                type: custom:bubble-card
+                card_type: button
+                tap_action: toggle
+                entity_id: this.entity_id
+              entity_id: scene.szenen*
+        """,
+    )
+
+    extracted = extract_entities_from_dashboard_node(card)
+    assert "this.entity_id" in extracted, (
+        "the walk stopped collecting it, so this no longer tests the filter"
+    )
+
+    unknown = async_filter_known_entity_ids(
+        hass,
+        entity_ids=extracted,
+        known_entity_ids=set(),
+    )
+
+    assert "this.entity_id" not in unknown, f"a dashboard reported {sorted(unknown)}"
 
 
 async def test_a_dashboard_still_reports_an_entity_that_really_is_gone(
