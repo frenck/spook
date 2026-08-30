@@ -129,15 +129,15 @@ like any other.
   - No
   - `Battery powered`
 * - `description`
-  - {term}`string <string>`
+  - {term}`string <string>` or `null`
   - No
   - `Label to tag all battery powered devices`
 * - `icon`
-  - {term}`string <string>`
+  - {term}`string <string>` or `null`
   - No
   - `mdi:battery`
 * - `color`
-  - {term}`string <string>`
+  - {term}`string <string>` or `null`
   - No
   - `indigo`
 ```
