@@ -43,22 +43,48 @@ _ENTITY_REFERENCE_KEYS = frozenset(
 
 
 # Keys whose subtree says which entities to pick rather than naming any.
-# `filter` is what auto-entities and the cards that copy it use: everything
-# under it is a matcher, and an `options` block inside it is card configuration
-# handed to whatever matched. Neither one names a particular entity, so reading
-# them as references produces repairs about dashboards that work perfectly well.
-#
-# Reported twice from inside the same block. #1468 was `entity: this.entity_id`
-# under `options`, a placeholder for whichever entity matched. #1514 was
-# `area: KG/*`, every area under KG. Both were read as things that had gone
-# missing.
+# `filter` is what auto-entities and the cards that copy it use, and what is
+# under one describes a selection: a domain, an area, a state, a pattern. None
+# of it names a particular entity, so reading it as a reference produces
+# repairs about dashboards that work perfectly well. #1514 was `area: KG/*`,
+# meaning every area under KG, reported as an area that had gone missing.
 _MATCHER_KEYS = frozenset({"filter"})
+
+# Except for this one. `options` is not a matcher: it is card configuration
+# handed to whatever matched, and it can name entities of its own, a nested
+# card with fixed rows among them. Those are on the dashboard and worth
+# checking, so the walk goes back in there.
+#
+# It is also where #1468 was found, `entity: this.entity_id` standing for
+# whichever entity matched. That one is turned away at the gate rather than
+# here, by not being an entity anybody could have.
+_NOT_A_MATCHER = "options"
+
+
+def _options_within(node: Any) -> Iterator[Any]:
+    """Yield the `options` blocks inside a matcher subtree."""
+    if isinstance(node, list):
+        for item in node:
+            yield from _options_within(item)
+        return
+
+    if not isinstance(node, dict):
+        return
+
+    for key, value in node.items():
+        if key == _NOT_A_MATCHER:
+            if isinstance(value, (dict, list)):
+                yield value
+        else:
+            yield from _options_within(value)
 
 
 def _worth_descending_into(node: dict[str, Any]) -> Iterator[Any]:
     """Yield the subtrees of a node that can hold references."""
     for key, value in node.items():
-        if key not in _MATCHER_KEYS and isinstance(value, (dict, list)):
+        if key in _MATCHER_KEYS:
+            yield from _options_within(value)
+        elif isinstance(value, (dict, list)):
             yield value
 
 
