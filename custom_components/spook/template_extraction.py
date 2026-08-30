@@ -52,20 +52,20 @@ KNOWN_DOMAINS = [platform.value for platform in Platform] + ADDITIONAL_DOMAINS
 
 # Automation and template variables that read exactly like an entity ID and are
 # not one. `trigger` is what a triggered automation is handed, `this` is what a
-# template entity is handed, and `{{ device_name(trigger.entity_id) }}` is the
-# ordinary way to write both. Reported twice, #823 and #1468, and neither time
-# was it reproducible: nothing here has ever picked them up, because neither
-# `trigger` nor `this` is a domain Home Assistant knows.
+# template entity is handed. Reported as unknown entities twice, #823 and #1468.
 #
-# Which is the trouble. They are excluded by accident, as a side effect of a
-# list of domains that grows every release, rather than because anybody decided
-# they should be. Said out loud here so it stays decided.
-# Home Assistant hands these over itself. Written without the braces, as
+# Home Assistant is where they arrive from. Written without the braces, as
 # `entity_id: trigger.entity_id` rather than `{{ trigger.entity_id }}`, they
-# come back in an automation's own `referenced_entities`, and `valid_entity_id`
-# is happy with them because it asks whether a string is shaped like an entity
-# ID and not whether anything answers to it. Which is how this was reported
-# twice by people whose templates were fine.
+# come back in an automation's own `referenced_entities`, so they turn up having
+# already passed everything here that reads configuration. And the last gate
+# before an issue is raised asks `valid_entity_id`, which answers whether a
+# string is shaped like an entity ID rather than whether anything answers to it.
+#
+# Which is why both reports went nowhere for so long: everybody was looking at
+# the templates, and the templates were never it. Nothing here picks these out
+# of a template either, but only because neither `trigger` nor `this` is a
+# domain Home Assistant knows, off a list that grows every release and was never
+# chosen with these in mind. Named here so that it is a decision.
 NEVER_AN_ENTITY = frozenset({"trigger.entity_id", "this.entity_id"})
 
 # Home Assistant core entity ID validation patterns (from homeassistant/core.py)

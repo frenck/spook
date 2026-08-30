@@ -1,14 +1,19 @@
 """`trigger.entity_id` and `this.entity_id` are variables, not entities.
 
-A triggered automation is handed `trigger`, a template entity is handed `this`,
-and `{{ device_name(trigger.entity_id) }}` is the ordinary way to write either.
-Reported as an unknown entity twice, #823 and #1468, and neither time was it
-reproducible.
+A triggered automation is handed `trigger`, a template entity is handed `this`.
+Reported as unknown entities twice, #823 and #1468, and both times it was put
+down to templates, which is why neither went anywhere.
 
-Nothing here has ever picked them up, because neither `trigger` nor `this` is a
-domain Home Assistant knows. Which is the trouble: that list grows every release
-and nobody chose it as the thing keeping these out. These tests pin the answer
-rather than the accident.
+Templates were never it. Written without the braces, as
+`entity_id: trigger.entity_id`, Home Assistant puts them in the automation's own
+`referenced_entities` and hands them straight over, past everything here that
+reads configuration.
+
+So these pin two separate things. That they are turned away at the last gate,
+which is where the reported bug lives and where anything Home Assistant supplies
+turns up. And that nothing picks them out of a template either, which holds
+today only because neither is a domain Home Assistant knows, off a list that
+grows every release and was never chosen with these in mind.
 """
 
 # pylint: disable=wrong-import-order
@@ -107,7 +112,7 @@ async def test_the_automation_from_the_issue_reports_only_its_sensors(
 async def test_home_assistant_handing_them_over_does_not_count_either(
     hass: HomeAssistant,
 ) -> None:
-    """Which is how this actually happens, and why neither report reproduced.
+    """Which is how this actually happens, and what both reports were.
 
     Written without the braces, `entity_id: trigger.entity_id` rather than
     `{{ trigger.entity_id }}`, Home Assistant puts them in the automation's own
