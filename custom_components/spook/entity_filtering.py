@@ -435,31 +435,29 @@ def async_drop_existing_action_names(
 
 
 # Placeholders that read exactly like an entity ID and are not one. `trigger`
-# is what a triggered automation is handed and `this` is what a template entity
-# is handed, both from Home Assistant itself. Reported as unknown entities
-# twice, #823 and #1468.
+# is what a triggered automation is handed, `this` is what a template entity is
+# handed. Reported as unknown entities twice, #823 and #1468.
 #
-# `config.entity` is not Home Assistant's at all: custom dashboard cards such
-# as `template-entity-row` and the Mushroom templates hand it to whatever they
-# render, standing for the row's own entity. It reaches here the same way, by
-# being written into an `entity:` field rather than into a template, which is
-# how a card says "use whichever entity this row turned out to be".
+# Everything Home Assistant hands out goes here. A placeholder belonging to one
+# kind of configuration does not: this set is read by nine repairs, and what is
+# meaningless in a dashboard can be a real dangling reference in a scene. Those
+# live next to the extraction that knows about them.
 #
-# What all three share is how they get this far. Written without the braces, as
+# What they share is how they get this far. Written without the braces, as
 # `entity_id: trigger.entity_id` rather than `{{ trigger.entity_id }}`, they are
 # plain configuration values, so they pass everything here that reads
 # configuration. The last gate before an issue is raised asks `valid_entity_id`,
 # which answers whether a string is shaped like an entity ID rather than whether
-# anything answers to it, and all three are shaped exactly right.
+# anything answers to it, and both are shaped exactly right.
 #
 # Which is why these reports went nowhere for so long: everybody was looking at
 # the templates, and the templates were never it. Written *inside* a template
-# they are safe already, since `states(config.entity)` is a variable and not a
-# quoted string, and nothing here reads one. Safe, that is, only because none of
-# `trigger`, `this` or `config` is a domain Home Assistant knows, off a list
-# that grows every release and was never chosen with these in mind. Named here
-# so that it is a decision.
-NEVER_AN_ENTITY = frozenset({"config.entity", "trigger.entity_id", "this.entity_id"})
+# they are safe already, since `states(trigger.entity_id)` is a variable and
+# not a quoted string, and nothing here reads one. Safe, that is, only because
+# neither `trigger` nor `this` is a domain Home Assistant knows, off a list that
+# grows every release and was never chosen with these in mind. Named here so
+# that it is a decision.
+NEVER_AN_ENTITY = frozenset({"trigger.entity_id", "this.entity_id"})
 
 
 @callback

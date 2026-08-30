@@ -84,7 +84,7 @@ mode: restart
 # set these tests are about means that taking an entry out of it takes it out
 # of the yardstick too, and every assertion below keeps passing while the thing
 # it guards is broken.
-_THE_PLACEHOLDERS = frozenset({"config.entity", "trigger.entity_id", "this.entity_id"})
+_THE_PLACEHOLDERS = frozenset({"trigger.entity_id", "this.entity_id"})
 
 
 def _named(found: set[str]) -> set[str]:
@@ -370,9 +370,7 @@ async def test_the_card_placeholder_from_the_discord_report_stays_quiet(
     )
 
     extracted = extract_entities_from_dashboard_node(card)
-    assert "config.entity" in extracted, (
-        "the walk stopped collecting it, so this no longer tests the filter"
-    )
+    assert "config.entity" not in extracted, "the dashboard walk collected it"
 
     unknown = async_filter_known_entity_ids(
         hass,
@@ -410,3 +408,29 @@ async def test_a_template_using_the_card_placeholder_was_never_the_problem(
     )
 
     assert not unknown
+
+
+async def test_the_card_placeholder_is_only_exempt_in_dashboards(
+    hass: HomeAssistant,
+) -> None:
+    """`config.entity` means something to a card and nothing anywhere else.
+
+    Nine repairs read `NEVER_AN_ENTITY`, so putting it there would have made a
+    literal `config.entity` in a scene or a customization go unreported, and
+    there it is a dangling reference like any other. The exemption belongs to
+    the walk that knows it is looking at a dashboard.
+    """
+    assert "config.entity" not in async_filter_known_entity_ids(
+        hass,
+        entity_ids=extract_entities_from_dashboard_node(
+            {"type": "custom:template-entity-row", "entity": "config.entity"}
+        ),
+        known_entity_ids=set(),
+    )
+
+    # Anywhere else it is still an entity nobody has.
+    assert "config.entity" in async_filter_known_entity_ids(
+        hass,
+        entity_ids={"config.entity"},
+        known_entity_ids=set(),
+    )

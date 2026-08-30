@@ -88,6 +88,18 @@ def _worth_descending_into(node: dict[str, Any]) -> Iterator[Any]:
             yield value
 
 
+# Placeholders a custom card hands to whatever it renders, standing for the
+# row's own entity. `template-entity-row` and the Mushroom templates both use
+# `config.entity`. Shaped exactly like an entity ID, so everything downstream
+# takes it for one.
+#
+# Kept here rather than in the shared `NEVER_AN_ENTITY`, which nine repairs
+# read. This is meaningless in a dashboard and could be a real dangling
+# reference in a scene or a customization, and only this walk knows which it
+# is looking at.
+_CARD_PLACEHOLDERS = frozenset({"config.entity"})
+
+
 def _collect_strings(value: Any, entities: set[str]) -> None:
     """Collect entity IDs from a recognized key's string or list value."""
     if isinstance(value, str):
@@ -96,6 +108,8 @@ def _collect_strings(value: Any, entities: set[str]) -> None:
         for item in value:
             if isinstance(item, str):
                 entities.update(split_comma_separated_entity_ids(item))
+
+    entities.difference_update(_CARD_PLACEHOLDERS)
 
 
 def _walk(node: Any, entities: set[str]) -> None:
