@@ -158,7 +158,7 @@ The recorder keeps long-term statistics separately from the states it records, a
 
 These are not harmful, but they are not free either: they take up database space, and they keep showing up in pickers and graphs long after the sensor they belonged to is gone.
 
-To resolve the raised issue, open {term}`Developer tools` > Statistics and fix them there, or remove them with the `recorder.clear_statistics` action. Spook will automatically remove the repair issue once the issue is fixed.
+To resolve the raised issue, open {term}`Developer tools` > Statistics and fix them there. Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Use cases
 
