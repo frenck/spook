@@ -518,10 +518,6 @@
             "description": "O Spook encontrou um fantasma no teu dashboard de energia 👻\n\nEste dashboard contém as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nIsto geralmente acontece quando uma entidade usada na configuração da energia foi renomeada ou removida. Para corrigir este erro, vai a Configurações > Painéis > Energia e atualiza ou remove as entidades.\n\nSpook 👻 O teu amigo.",
             "title": "Entidades desconhecidas usadas no painel de energia"
         },
-        "dead_entities": {
-            "description": "O Spook encontrou um fantasma nas tuas entidades 👻\n\nA integração {integration} foi configurada, mas as seguinte entidades que ela registou não estão disponíveis ou já não existem:\n\n{entities}\n\n\n\nIsto geralmente acontece quando um dispositivo ou a sua entidade foi removida na origem mas os seus registos ficaram para trás. Para corrigir este erro, remove essas entidades do registo se já as utilizares.\n\nSpook 👻 O teu amigo.",
-            "title": "Entidades inexistentes registadas por: {integration}"
-        },
         "script_unknown_condition_references": {
             "title": "Condições desconhecidas usadas em: {script}",
             "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa as seguintes condições, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{conditions}\n\nIsto acontece muitas vezes quando a integração que fornecia uma condição foi removida. Para corrigir este erro, [edita o script]({edit}) e remove o uso destas condições indisponíveis, ou restaura a integração que as fornece.\n\nSpook 👻 O teu amigo."

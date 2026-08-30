@@ -368,10 +368,6 @@
             "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following triggers, which cannot be provided by any integration available to Home Assistant:\n\n{triggers}\n\n\n\nThis often happens when the integration providing a trigger was removed. To fix this error, [edit the automation]({edit}) and remove the use of these unavailable triggers, or restore the integration providing them.\n\nSpook 👻 Your homie.",
             "title": "Unknown triggers used in: {automation}"
         },
-        "dead_entities": {
-            "description": "Spook has found a ghost in your entities 👻\n\nThe {integration} integration finished setting up, but the following entities it registered never appeared, so they no longer exist:\n\n{entities}\n\n\n\nThis usually happens when a device or its entities were removed at the source but their registry entries stayed behind. To fix this error, remove these entities from the entity registry if you no longer need them.\n\nSpook 👻 Your homie.",
-            "title": "Non-existing entities registered by: {integration}"
-        },
         "empty_areas": {
             "fix_flow": {
                 "abort": {

@@ -498,27 +498,6 @@
       "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation uses the following triggers, which cannot be provided by any integration available to Home Assistant:\n\n{triggers}\n\n\n\nThis often happens when the integration providing a trigger was removed. To fix this error, [edit the automation]({edit}) and remove the use of these unavailable triggers, or restore the integration providing them.\n\nSpook 👻 Your homie.",
       "title": "Unknown triggers used in: {automation}"
     },
-    "dead_entities": {
-      "title": "Non-existing entities registered by: {integration}",
-      "fix_flow": {
-        "step": {
-          "init": {
-            "title": "Entities that {integration} never brought back",
-            "description": "The {integration} integration is running, but these entities of its own never turned up:\n\n{entities}\n\nThey are gone at the source and only their leftover registrations remain, which is why they show as unavailable and why nothing can be done with them.\n\nSpook \ud83d\udc7b Your homie.",
-            "menu_options": {
-              "remove": "Clear out these entities",
-              "ignore": "Keep them, stop telling me",
-              "manage": "Let me do it myself"
-            }
-          }
-        },
-        "abort": {
-          "issue_ignored": "Spook will keep quiet about these entities from now on.",
-          "not_loaded": "That integration is reloading right now, and everything of it looks missing while that lasts. Try again once it has settled.",
-          "manage": "You can find them on the [entities page](/config/entities), where filtering by status Unavailable brings them together. Select them and use Remove selected."
-        }
-      }
-    },
     "empty_areas": {
       "title": "Empty area: {area}",
       "fix_flow": {

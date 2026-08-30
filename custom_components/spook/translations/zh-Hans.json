@@ -360,10 +360,6 @@
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化使用了以下触发器，但 Home Assistant 中没有任何可用的集成能提供这些触发器：\n\n{triggers}\n\n\n\n这通常发生在提供触发器的集成被移除时。要修复此错误，请[编辑此自动化]({edit})并移除这些不可用的触发器，或者恢复提供它们的集成。\n\nSpook 👻 你的好哥们。",
             "title": "在以下项中使用了未知触发器：{automation}"
         },
-        "dead_entities": {
-            "description": "Spook 在你的实体中发现了一个幽灵 👻\n\n{integration} 集成已完成设置，但它注册的以下实体从未出现，因此它们已不再存在：\n\n{entities}\n\n\n\n这通常发生在设备或其实体在源端被移除，但它们的注册条目仍保留在系统中的情况。要修复此错误，如果你不再需要这些实体，请将其从实体注册表中移除。\n\nSpook 👻 你的好哥们。",
-            "title": "由 {integration} 注册的实体不存在"
-        },
         "empty_areas": {
             "title": "空区域：{area}",
             "fix_flow": {

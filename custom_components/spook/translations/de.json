@@ -408,10 +408,6 @@
             "description": "Spook hat einen Geist in deinen Dashboards entdeckt 👻\n\nBeim Herumschwebe kam Spook auf das folgende Dashboard:\n\n{dashboard}\n\nDieses Dashboard verweist auf die folgenden Bereiche, die Home Assistant nicht kennt:\n\n{areas}\n\n\n\nDies passiert häufig, wenn ein Bereich umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und entferne die Verweise auf diese nicht mehr existierenden Bereiche.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Bereiche werden im Dashboard verwendet : {dashboard}"
         },
-        "dead_entities": {
-            "description": "Spook hat einen Geist in Ihren Entitäten gefunden 👻\n\nDie Einrichtung der {integration}-Integration wurde abgeschlossen, aber die folgenden Entitäten, die dabei registriert wurden, sind nie aufgetaucht und existieren daher nicht mehr:\n\n{entities}\n\n\n\nDies passiert in der Regel, wenn ein Gerät oder dessen Entitäten an der Quelle entfernt wurden, ihre Registrierungseinträge jedoch zurückblieben. Um diesen Fehler zu beheben, entferne diese Entitäten aus dem Entitätenregister, falls du sie nicht mehr benötigst.\n\nSpook 👻 Dein Kumpel.",
-            "title": "Nicht existierende Entität registriert von: {integration}"
-        },
         "template_unknown_entity_references": {
             "description": "Spook hat einen Geist in deinen Template-Helfern entdeckt 👻\n\nBeim Herumschwebe traf Spook auf den folgenden Template-Helper:\n\n[{helper}]({edit})\n\nSeine Templates verweisen auf die folgenden Entitäten, die Home Assistant nicht kennt:\n\n{entities}\n\nDies passiert häufig, wenn eine Entität umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, konfiguriere den Template-Helper neu, sodass er auf vorhandene Entitäten verweist.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Entitäten im Template-Helfer: {helper}"
