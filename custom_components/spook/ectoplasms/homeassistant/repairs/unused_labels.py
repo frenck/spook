@@ -73,8 +73,10 @@ class SpookRepair(AbstractSpookRepair):
                 continue
             if label.label_id in mentioned:
                 # Named somewhere in an automation or script without
-                # being a target of it, so removing it would break
-                # something. Not ours to offer up.
+                # being a target of it. That is not proof it is in use: the
+                # collector takes every string it finds and a coincidence
+                # counts the same as a reference. It is enough to stop
+                # offering to delete it, which is all this decides.
                 continue
 
             self.async_create_issue(

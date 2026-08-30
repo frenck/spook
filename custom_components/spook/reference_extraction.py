@@ -256,10 +256,14 @@ def async_collect_mentioned_strings(hass: HomeAssistant) -> set[str]:
     reference is.
 
     This is for the other question, the one asked before offering to delete
-    something. An area listed in a `repeat` `for_each` is a target of nothing,
-    and neither extraction reports it, but it is plainly in use and removing
-    it would break the script. Anything named anywhere is enough to leave it
-    alone.
+    something: might this be in use? An area listed in a `repeat` `for_each`
+    is a target of nothing and neither extraction reports it, yet the script
+    plainly needs it.
+
+    The answer is deliberately loose. A string that happens to match counts
+    the same as a real reference, so this proves nothing about what is in use.
+    It only decides whether Spook keeps quiet, and on something that offers to
+    delete, a coincidence is a fine reason to.
     """
     found: set[str] = set()
 
