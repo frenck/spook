@@ -53,7 +53,12 @@ class SpookRepair(AbstractSpookRepair):
 
         self.possible_issue_ids.add(self.repair)
 
-        if (resources := self.hass.data[DOMAIN].resources) is None:
+        # Every component that loads pokes this repair, and Lovelace is not
+        # necessarily one of the ones already up when that happens.
+        if (lovelace := self.hass.data.get(DOMAIN)) is None:
+            return
+
+        if (resources := lovelace.resources) is None:
             return
 
         # Storage-mode resources are loaded the first time somebody asks for

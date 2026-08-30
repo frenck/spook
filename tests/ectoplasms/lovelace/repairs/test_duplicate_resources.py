@@ -211,3 +211,21 @@ async def test_an_exact_repeat_is_named_the_way_it_is_listed(
     await SpookRepair(hass).async_inspect()
 
     assert _reported(issue_registry) == "- `/local/card.js?v=1`, listed 2 times"
+
+
+async def test_running_before_lovelace_exists_is_a_no_op(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Lovelace is not always up when this runs.
+
+    Repairs inspect the moment they activate, and again on every component
+    that loads, with nobody checking which component it was. So this runs with
+    no Lovelace in `hass.data` at all, where reaching straight for the key
+    raises.
+    """
+    assert "lovelace" not in hass.data
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _reported(issue_registry) is None
