@@ -390,7 +390,7 @@ Adds a device tracker to a person. _#bigbrother_
 
 Removes a device tracker from a person. _#privacy_
 
-`person.add_device_tracker`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker), [documentation](integrations/person#remove-a-device-tracker) 📚
+`person.remove_device_tracker`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=person.remove_device_tracker), [documentation](integrations/person#remove-a-device-tracker) 📚
 
 ## Random fail
 
@@ -439,6 +439,12 @@ Extends the existing restart action with a "force" option. Because forcing is al
 This action selects a random option from the list of options of a select entity. Optionally this can be limited to a set of given options. _#random_
 
 `select.random`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=select.random), [documentation](integrations/select#select-random-option) 📚
+
+## Sensor: Set display precision
+
+Sets how many decimals a sensor shows, on as many sensors as you like at once. _#decimated_
+
+`sensor.set_display_precision`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=sensor.set_display_precision), [documentation](integrations/sensor#set-display-precision) 📚
 
 ## Timer: Set duration
 
