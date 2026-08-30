@@ -11,6 +11,7 @@ from .const import LOGGER
 from .entity_filtering import async_get_all_services
 from .template_extraction import (
     ENTITY_ID_PATTERN,
+    NEVER_AN_ENTITY,
     async_extract_entities_from_template_string,
     is_template_string,
 )
@@ -239,7 +240,7 @@ async def async_extract_entities_from_value(
                     value,
                     exc,
                 )
-        elif _ENTITY_ID_RE.match(value):
+        elif value not in NEVER_AN_ENTITY and _ENTITY_ID_RE.match(value):
             # Check if it matches the entity ID pattern with known domains
             entities.add(value)
     elif isinstance(value, list):
