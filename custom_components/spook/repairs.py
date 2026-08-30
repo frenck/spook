@@ -10,7 +10,7 @@ import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, final
 
-from homeassistant.components import blueprint
+from homeassistant.components import blueprint, lovelace as lovelace_const
 from homeassistant.components.automation import automations_with_entity
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
@@ -25,6 +25,7 @@ from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     area_registry as ar,
+    collection,
     device_registry as dr,
     entity_registry as er,
     floor_registry as fr,
@@ -38,6 +39,7 @@ from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
+from .dashboard_resources import redundant_item_ids
 from .entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from .entity_suggestions import async_describe_unknown_entities
 
@@ -723,6 +725,96 @@ class UnusedBlueprintFixFlow(_RemoveOrIgnoreFixFlow):
         return self.async_create_entry(data={})
 
 
+class DuplicateResourceFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for a dashboard resource listed more than once.
+
+    Clearing the copies is async and needs the resource collection, so this
+    overrides ``async_step_remove`` rather than the synchronous ``_remove``
+    hook. One copy is kept: the most recently added, which for a card updated
+    by adding a resource instead of editing one is the version wanted.
+    """
+
+    _key = "resource"
+    _id_key = "duplicate_resource_url"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the resource, how many copies, and which URLs.
+
+        The inherited version supplies only the name, and this dialog's text
+        interpolates all three.
+        """
+        data = self.data or {}
+        return {
+            "resource": str(data.get("resource", "")),
+            "resources": str(data.get("resources", "")),
+            "count": str(data.get("count", "")),
+        }
+
+    async def async_step_init(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Offer the usual menu, unless there is nothing here that can fix it.
+
+        Resources listed in YAML are static: nothing in Home Assistant can
+        delete one, so offering to would be a button that quietly does
+        nothing. Those get told where the file is instead.
+        """
+        lovelace = self.hass.data.get(lovelace_const.DOMAIN)
+        resources = lovelace.resources if lovelace is not None else None
+
+        if resources is not None and not hasattr(resources, "async_delete_item"):
+            return self.async_abort(
+                reason="yaml",
+                description_placeholders=self._menu_placeholders(),
+            )
+
+        return await super().async_step_init()
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Clear the redundant copies, keeping the most recent."""
+        key = str((self.data or {}).get(self._id_key, ""))
+
+        if (lovelace := self.hass.data.get(lovelace_const.DOMAIN)) is None or (
+            resources := lovelace.resources
+        ) is None:
+            return self.async_create_entry(data={})
+
+        # A storage collection hands out nothing until it has been loaded, and
+        # this flow cannot assume the inspection that raised the issue is what
+        # loaded it. Reading it cold would clear nothing and still say it did.
+        await resources.async_get_info()
+
+        # Worked out again after every deletion rather than once up front.
+        # Each delete awaits, and somebody editing the same resource in that
+        # window can take away the copy this was going to keep. Against a
+        # stale list that ends with every copy gone, which is not what anybody
+        # asked for.
+        tried: set[str] = set()
+        while True:
+            redundant = [
+                item_id
+                for item_id in redundant_item_ids(resources.async_items() or [], key)
+                if item_id not in tried
+            ]
+            if not redundant:
+                break
+
+            item_id = redundant[0]
+            # Remembered whatever happens, so a copy that cannot be deleted
+            # cannot spin this loop forever either.
+            tried.add(item_id)
+
+            # Somebody clearing it themselves first is a fine ending too.
+            with suppress(collection.ItemNotFound):
+                await resources.async_delete_item(item_id)
+
+        return self.async_create_entry(data={})
+
+
 class PersonUnknownDeviceTrackerFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for a person's unknown device trackers.
 
@@ -938,6 +1030,7 @@ _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "empty_floor_id": EmptyFloorFixFlow,
     "unused_label_id": UnusedLabelFixFlow,
     "unused_blueprint_path": UnusedBlueprintFixFlow,
+    "duplicate_resource_url": DuplicateResourceFixFlow,
     "person_entity_id": PersonUnknownDeviceTrackerFixFlow,
     "group_entity_id": GroupUnknownMembersFixFlow,
     "min_max_config_entry_id": MinMaxUnknownSourcesFixFlow,

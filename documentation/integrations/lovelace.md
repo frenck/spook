@@ -75,6 +75,30 @@ A missing local resource usually means a custom card was removed but its resourc
 
 To resolve the raised issue, go to Settings > Dashboards > Resources and remove or correct these resources. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Duplicate dashboard resources
+
+The same resource can be listed more than once, and nothing in Home Assistant stops it: every resource you add is handed a fresh ID without anybody checking what it points at.
+
+The usual way in is updating a custom card. The new version wants a new cache-busting URL, so `/local/some-card.js?v=1` gains a neighbour at `?v=2` instead of being edited. Both stay. The browser treats two URLs as two files and loads both, the card tries to register itself twice, and the second attempt throws. What you see is a broken card, which sends you looking at the card rather than at the resource list.
+
+Spook raises a repair issue naming each resource that appears more than once, and the URLs involved where they differ.
+
+For a resource served from `/local/` or `/hacsfiles/` the path is a file on disk, so two URLs differing only in their query string are the same file and are reported as duplicates.
+
+For any other resource, only an exact repeat counts. A query string on somebody else's server can be the difference between two genuinely different files, and Spook is not going to guess that it is not.
+
+The resource type is part of the comparison either way. Home Assistant loads a `module` differently from a `css`, so the same URL listed under two types is two instructions rather than one repeated, and Spook leaves those alone.
+
+Spook raises one repair issue per duplicated resource, so they can be dealt with one at a time. Each one offers three ways out:
+
+- **Clear the extra copies, keep the most recent.** Spook removes every copy but the last one added, which for a card updated by adding a resource instead of editing one is the version you meant to end up with.
+- **Let me fix it myself.** Points you at **Settings** > **Dashboards** > **Resources**, and leaves the issue in place until you have.
+- **Leave them, stop telling me.** Keeps the resources as they are and stops Spook mentioning that one again.
+
+Resources listed in YAML are static, so there is nothing Spook can delete for you there. Those duplicates are still reported, and choosing to fix one tells you which file to edit rather than offering a button that would quietly do nothing.
+
+Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).
