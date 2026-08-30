@@ -84,12 +84,12 @@ mode: restart
 # set these tests are about means that taking an entry out of it takes it out
 # of the yardstick too, and every assertion below keeps passing while the thing
 # it guards is broken.
-_THE_TWO = frozenset({"trigger.entity_id", "this.entity_id"})
+_THE_PLACEHOLDERS = frozenset({"trigger.entity_id", "this.entity_id"})
 
 
 def _named(found: set[str]) -> set[str]:
-    """Return anything reported that is one of the two variables."""
-    return {e for e in found if e in _THE_TWO}
+    """Return anything reported that is one of the placeholders."""
+    return {e for e in found if e in _THE_PLACEHOLDERS}
 
 
 def test_the_yardstick_still_matches_the_code() -> None:
@@ -98,7 +98,7 @@ def test_the_yardstick_still_matches_the_code() -> None:
     A third placeholder worth excluding should be added to both. This failing
     is the reminder, not a bug in itself.
     """
-    assert set(template_extraction.NEVER_AN_ENTITY) == _THE_TWO
+    assert set(template_extraction.NEVER_AN_ENTITY) == _THE_PLACEHOLDERS
 
 
 async def test_no_way_of_writing_them_reads_as_an_entity(
@@ -345,3 +345,92 @@ async def test_a_dashboard_still_reports_an_entity_that_really_is_gone(
     )
 
     assert unknown == {"sensor.long_gone"}
+
+
+async def test_the_card_placeholder_from_the_discord_report_stays_quiet(
+    hass: HomeAssistant,
+) -> None:
+    """`config.entity` is what a custom row calls its own entity.
+
+    Reported on Discord against 5.2.0. Not from a template: inside one it was
+    always safe, because `states(config.entity)` is a variable rather than a
+    quoted string. It reaches the repair by being written into an `entity:`
+    field, which is how these cards say "whichever entity this row is".
+    """
+    card = yaml.safe_load(
+        """
+        type: custom:auto-entities
+        filter:
+          include:
+            - options:
+                type: custom:template-entity-row
+                entity: config.entity
+              entity_id: sensor.afval*
+        """,
+    )
+
+    extracted = extract_entities_from_dashboard_node(card)
+    assert "config.entity" not in extracted, "the dashboard walk collected it"
+
+    unknown = async_filter_known_entity_ids(
+        hass,
+        entity_ids=extracted,
+        known_entity_ids=set(),
+    )
+
+    assert "config.entity" not in unknown, f"a dashboard reported {sorted(unknown)}"
+
+
+async def test_a_template_using_the_card_placeholder_was_never_the_problem(
+    hass: HomeAssistant,
+) -> None:
+    """Written inside a template it is a variable, and nothing here reads one.
+
+    Worth pinning, because both people who reported this were looking at their
+    templates, and that is not where it came from.
+    """
+    card = yaml.safe_load(
+        """
+        type: custom:template-entity-row
+        entity: sensor.real_one
+        state: "{{ states(config.entity) }}"
+        secondary: "{% if is_state(config.entity, 'on') %}on{% endif %}"
+        """,
+    )
+
+    extracted = extract_entities_from_dashboard_node(card)
+    assert "config.entity" not in extracted
+
+    unknown = async_filter_known_entity_ids(
+        hass,
+        entity_ids=extracted,
+        known_entity_ids={"sensor.real_one"},
+    )
+
+    assert not unknown
+
+
+async def test_the_card_placeholder_is_only_exempt_in_dashboards(
+    hass: HomeAssistant,
+) -> None:
+    """`config.entity` means something to a card and nothing anywhere else.
+
+    Nine repairs read `NEVER_AN_ENTITY`, so putting it there would have made a
+    literal `config.entity` in a scene or a customization go unreported, and
+    there it is a dangling reference like any other. The exemption belongs to
+    the walk that knows it is looking at a dashboard.
+    """
+    assert "config.entity" not in async_filter_known_entity_ids(
+        hass,
+        entity_ids=extract_entities_from_dashboard_node(
+            {"type": "custom:template-entity-row", "entity": "config.entity"}
+        ),
+        known_entity_ids=set(),
+    )
+
+    # Anywhere else it is still an entity nobody has.
+    assert "config.entity" in async_filter_known_entity_ids(
+        hass,
+        entity_ids={"config.entity"},
+        known_entity_ids=set(),
+    )
