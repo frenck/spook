@@ -1295,6 +1295,32 @@
         }
       }
     },
+    "homeassistant_update_label": {
+      "name": "Update a label",
+      "description": "Updates an existing label on the fly. Anything left empty keeps the value it already has.",
+      "fields": {
+        "label_id": {
+          "name": "Label ID",
+          "description": "The ID of the label to update."
+        },
+        "name": {
+          "name": "Name",
+          "description": "New name for the label."
+        },
+        "description": {
+          "name": "Description",
+          "description": "New description for the label."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "New icon to use for the label."
+        },
+        "color": {
+          "name": "Color",
+          "description": "Color to use for the label. Can be a color name from the list, or a hex color code (like #FF0000)."
+        }
+      }
+    },
     "homeassistant_add_label_to_area": {
       "name": "Add a label to an area",
       "description": "Adds a label to an area. If multiple labels or multiple areas are provided, all combinations will be added.",
