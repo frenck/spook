@@ -155,3 +155,21 @@ async def test_managing_it_yourself_leaves_everything(hass: HomeAssistant) -> No
     assert result["type"] == "abort"
     assert result["reason"] == "manage"
     assert _urls(resources) == ["/local/card.js?v=1", "/local/card.js?v=2"]
+
+
+async def test_removing_from_a_cold_collection_still_clears(
+    hass: HomeAssistant,
+) -> None:
+    """A storage collection hands out nothing until it has been loaded.
+
+    Read cold it looks empty, so the flow would clear nothing and still report
+    that it had, which is the worst of the available outcomes.
+    """
+    resources = _FakeStorageResources(
+        ["/local/card.js?v=1", "/local/card.js?v=2"], loaded=False
+    )
+    hass.data["lovelace"] = SimpleNamespace(resources=resources)
+
+    await _flow(hass, "/local/card.js").async_step_remove()
+
+    assert _urls(resources) == ["/local/card.js?v=2"]

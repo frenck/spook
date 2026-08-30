@@ -127,21 +127,3 @@ async def test_storage_resources_are_loaded_before_they_are_read(
     issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
     assert issue
     assert "/local/gone.js" in issue.translation_placeholders["resources"]
-
-
-async def test_running_before_lovelace_exists_is_a_no_op(
-    hass: HomeAssistant,
-    issue_registry: ir.IssueRegistry,
-) -> None:
-    """Lovelace is not always up when this runs.
-
-    Repairs inspect the moment they activate, and again on every component
-    that loads, with nobody checking which component it was. So this runs with
-    no Lovelace in `hass.data` at all, where reaching straight for the key
-    raises.
-    """
-    assert "lovelace" not in hass.data
-
-    await SpookRepair(hass).async_inspect()
-
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None

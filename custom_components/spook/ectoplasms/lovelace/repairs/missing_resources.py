@@ -53,12 +53,13 @@ class SpookRepair(AbstractSpookRepair):
 
         self.possible_issue_ids.add(self.repair)
 
-        # Every component that loads pokes this repair, and Lovelace is not
-        # necessarily one of the ones already up when that happens.
-        if (lovelace := self.hass.data.get(DOMAIN)) is None:
-            return
-
-        if (resources := lovelace.resources) is None:
+        # Reached straight rather than guarded: Lovelace is a hard dependency
+        # in the manifest, so Home Assistant has set it up before Spook. A
+        # guard here would be worse than none, because returning early counts
+        # as a clean inspection and cleanup would then delete every issue this
+        # repair has, ignored ones included. If that invariant ever breaks, a
+        # KeyError is what should happen: it leaves the bookkeeping intact.
+        if (resources := self.hass.data[DOMAIN].resources) is None:
             return
 
         # Storage-mode resources are loaded the first time somebody asks for

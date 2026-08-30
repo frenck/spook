@@ -736,6 +736,19 @@ class DuplicateResourceFixFlow(_RemoveOrIgnoreFixFlow):
     _key = "resource"
     _id_key = "duplicate_resource_url"
 
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the resource, how many copies, and which URLs.
+
+        The inherited version supplies only the name, and this dialog's text
+        interpolates all three.
+        """
+        data = self.data or {}
+        return {
+            "resource": str(data.get("resource", "")),
+            "resources": str(data.get("resources", "")),
+            "count": str(data.get("count", "")),
+        }
+
     async def async_step_remove(
         self,
         _: dict[str, str] | None = None,
@@ -747,6 +760,11 @@ class DuplicateResourceFixFlow(_RemoveOrIgnoreFixFlow):
             resources := lovelace.resources
         ) is None:
             return self.async_create_entry(data={})
+
+        # A storage collection hands out nothing until it has been loaded, and
+        # this flow cannot assume the inspection that raised the issue is what
+        # loaded it. Reading it cold would clear nothing and still say it did.
+        await resources.async_get_info()
 
         for item_id in redundant_item_ids(resources.async_items() or [], key):
             # Somebody may have cleared it themselves since the issue was

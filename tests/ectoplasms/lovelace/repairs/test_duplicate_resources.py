@@ -3,6 +3,8 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
+import json
+from pathlib import Path
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
@@ -37,19 +39,21 @@ class _FakeStorageResources:
     produces to be fixable.
     """
 
-    def __init__(self, urls: list[str]) -> None:
+    def __init__(self, urls: list[str], *, loaded: bool = True) -> None:
         """Hold one item per URL, in the order they were added."""
         self.items = [
             {"id": str(index), "url": url, "type": "module"}
             for index, url in enumerate(urls)
         ]
+        self.loaded = loaded
 
     def async_items(self) -> list[dict]:
-        """Return the items, the way the real collection does."""
-        return self.items
+        """Return the items, empty until loaded, as the real one does."""
+        return self.items if self.loaded else []
 
     async def async_get_info(self) -> dict[str, int]:
-        """Stand in for the loading the real collection does on first use."""
+        """Load on first use, the way the real storage collection does."""
+        self.loaded = True
         return {"resources": len(self.items)}
 
     async def async_delete_item(self, item_id: str) -> None:
@@ -256,24 +260,6 @@ async def test_an_exact_repeat_is_named_the_way_it_is_listed(
     assert _reported(issue_registry) == "- `/local/card.js?v=1`, listed 2 times"
 
 
-async def test_running_before_lovelace_exists_is_a_no_op(
-    hass: HomeAssistant,
-    issue_registry: ir.IssueRegistry,
-) -> None:
-    """Lovelace is not always up when this runs.
-
-    Repairs inspect the moment they activate, and again on every component
-    that loads, with nobody checking which component it was. So this runs with
-    no Lovelace in `hass.data` at all, where reaching straight for the key
-    raises.
-    """
-    assert "lovelace" not in hass.data
-
-    await SpookRepair(hass).async_inspect()
-
-    assert _reported(issue_registry) is None
-
-
 async def test_each_duplicated_resource_gets_its_own_issue(
     hass: HomeAssistant,
     issue_registry: ir.IssueRegistry,
@@ -312,6 +298,11 @@ async def test_the_issue_is_fixable_and_carries_what_the_flow_needs(
     assert issue.data == {
         "duplicate_resource_url": "/local/card.js",
         "resource": "/local/card.js",
+        "resources": (
+            "- `/local/card.js`, listed 2 times: `/local/card.js?v=1`, "
+            "`/local/card.js?v=2`"
+        ),
+        "count": "2",
     }
 
 
@@ -339,3 +330,20 @@ async def test_yaml_resources_are_reported_but_not_offered_a_fix(
     issue = issue_registry.async_get_issue(DOMAIN, _issue_id("/local/card.js"))
     assert issue
     assert not issue.is_fixable
+
+
+def test_lovelace_is_a_hard_dependency() -> None:
+    """Both resource repairs read `hass.data["lovelace"]` without a guard.
+
+    That is only safe because Home Assistant sets up a hard dependency before
+    the integration that declares it. Moving Lovelace to `after_dependencies`,
+    or dropping it, makes those reads a crash, so this is the thing holding
+    them up.
+    """
+    manifest = json.loads(
+        (
+            Path(__file__).parents[4] / "custom_components" / "spook" / "manifest.json"
+        ).read_text()
+    )
+
+    assert "lovelace" in manifest["dependencies"]
