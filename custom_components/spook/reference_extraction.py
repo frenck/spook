@@ -58,11 +58,26 @@ class ExtractedTargets:
     label_ids: set[str] = field(default_factory=set)
 
 
+def is_pattern_reference(value: str) -> bool:
+    """Return whether a reference is a pattern rather than a name.
+
+    Cards and helpers that take a filter read ``KG/*`` as every area under
+    ``KG``. Home Assistant has no area, floor or label called ``KG/*`` and
+    never will, so looking one up and finding nothing says nothing about
+    whether the dashboard works. Reported as #1514.
+
+    Only for areas, floors and labels. An entity ID has a shape, and
+    ``light.*`` is already turned away for not having it.
+    """
+    return "*" in value
+
+
 def _collect_ids(value: Any) -> set[str]:
     """Return the plain string IDs in a config value.
 
-    Templated values cannot be resolved statically and the ``all``/``none``
-    match constants are not references; both are skipped.
+    Templated values cannot be resolved statically, the ``all``/``none``
+    match constants are not references, and a pattern is not a name; all
+    three are skipped.
     """
     if isinstance(value, str):
         values = [value]
@@ -77,6 +92,7 @@ def _collect_ids(value: Any) -> set[str]:
         if item
         and item not in (ENTITY_MATCH_ALL, ENTITY_MATCH_NONE)
         and not is_template_string(item)
+        and not is_pattern_reference(item)
     }
 
 
