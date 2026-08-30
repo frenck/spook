@@ -31,7 +31,7 @@ Adds a new label to your Home Assistant instance.
 :header-rows: 1
 * - Action properties
 * - {term}`Action`
-  - Create an label 👻
+  - Create a label 👻
 * - {term}`Action name`
   - `homeassistant.create_label`
 * - {term}`Action targets`
@@ -85,9 +85,88 @@ data:
 
 :::
 
+### Update a label
+
+Updates an existing label in your Home Assistant instance. Anything you leave
+out keeps the value it already has. Setting `description`, `icon` or `color` to
+`null` clears it.
+
+Note that leaving a field out is not the same as giving it an empty string: a
+`description: ""` sets the description to nothing at all, which is a change
+like any other.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Update a label 👻
+* - {term}`Action name`
+  - `homeassistant.update_label`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_label)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_label)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `label_id`
+  - {term}`string <string>`
+  - Yes
+  - `battery_powered`
+* - `name`
+  - {term}`string <string>`
+  - No
+  - `Battery powered`
+* - `description`
+  - {term}`string <string>` or `null`
+  - No
+  - `Label to tag all battery powered devices`
+* - `icon`
+  - {term}`string <string>` or `null`
+  - No
+  - `mdi:battery`
+* - `color`
+  - {term}`string <string>` or `null`
+  - No
+  - `indigo`
+```
+
+:::{note}
+You need to give at least one thing to change. A call with only a `label_id`
+is refused, so a misspelled parameter cannot pass for a successful update that
+quietly did nothing.
+
+Renaming a label to a name another label already carries is refused too, since
+Home Assistant keeps label names unique.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.update_label
+data:
+  label_id: "battery_powered"
+  description: "Label to tag all battery powered devices"
+```
+
+:::
+
 ### Delete a label
 
-Delete a new label to your Home Assistant instance.
+Deletes a label from your Home Assistant instance.
 
 ```{figure} ./images/labels/delete.png
 :alt: Screenshot of the delete label action on the Tools page.
