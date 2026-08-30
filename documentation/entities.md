@@ -216,7 +216,7 @@ This action allows you to unhide an entity on the fly.
 :header-rows: 1
 * - Action properties
 * - {term}`Action`
-  - Unide an entity 👻
+  - Unhide an entity 👻
 * - {term}`Action name`
   - `homeassistant.unhide_entity`
 * - {term}`Action targets`
@@ -262,6 +262,158 @@ data:
   entity_id:
     - light.living_room
     - light.kitchen_ceiling
+```
+
+:::
+
+### Expose an entity to assistants
+
+This action allows you to expose an entity to your voice assistants on the fly.
+
+Home Assistant keeps a separate list per assistant of what it is allowed to see. This is the same setting you find under **Settings** > **Voice assistants** > **Expose**, applied to as many entities as you like at once.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Expose an entity to assistants 👻
+* - {term}`Action name`
+  - `homeassistant.expose_entity`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.expose_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.expose_entity)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `"light.living_room"`
+* - `assistants`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `cloud.alexa`, `cloud.google_assistant`, `conversation`
+```
+
+:::{note}
+The assistants are named the way Home Assistant names them internally:
+`cloud.alexa` for Alexa, `cloud.google_assistant` for Google Assistant, and
+`conversation` for Assist. Anything else is refused.
+
+Every entity is checked before any of them change, so naming one that does not
+exist fails the whole call instead of leaving the ones before it done.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.expose_entity
+data:
+  entity_id: light.living_room
+  assistants: conversation
+```
+
+Or several entities and several assistants at once:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.expose_entity
+data:
+  entity_id:
+    - light.living_room
+    - light.kitchen_ceiling
+  assistants:
+    - cloud.alexa
+    - conversation
+```
+
+:::
+
+### Stop exposing an entity to assistants
+
+This action does the reverse of [](#expose-an-entity-to-assistants), taking an entity back out of a voice assistant's reach.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Stop exposing an entity to assistants 👻
+* - {term}`Action name`
+  - `homeassistant.unexpose_entity`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unexpose_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unexpose_entity)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `"light.living_room"`
+* - `assistants`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `cloud.alexa`, `cloud.google_assistant`, `conversation`
+```
+
+:::{note}
+The assistants are named the way Home Assistant names them internally:
+`cloud.alexa` for Alexa, `cloud.google_assistant` for Google Assistant, and
+`conversation` for Assist. Anything else is refused.
+
+Every entity is checked before any of them change, so naming one that does not
+exist fails the whole call instead of leaving the ones before it done.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.unexpose_entity
+data:
+  entity_id: light.living_room
+  assistants: conversation
+```
+
+Or several entities and several assistants at once:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.unexpose_entity
+data:
+  entity_id:
+    - light.living_room
+    - light.kitchen_ceiling
+  assistants:
+    - cloud.alexa
+    - conversation
 ```
 
 :::
