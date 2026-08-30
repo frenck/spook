@@ -7,6 +7,8 @@ from typing import TYPE_CHECKING
 
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.setup import async_setup_component
+import voluptuous as vol
+
 import pytest
 
 from custom_components.spook.ectoplasms.homeassistant.services import update_label
@@ -142,3 +144,25 @@ async def test_renaming_onto_another_label_says_so(
         await _update(hass, label_id=spooks.label_id, name="Ghosts")
 
     assert label_registry.async_get_label(spooks.label_id).name == "Spooks"
+
+
+async def test_a_label_cannot_be_left_without_a_name(
+    hass: HomeAssistant,
+    label_registry: lr.LabelRegistry,
+) -> None:
+    """A label without a name is not a thing the registry has.
+
+    Three of the four fields are nullable and the action description names
+    them, so this pins which side of that line `name` sits on.
+    """
+    label = label_registry.async_create("Ghosts", icon="mdi:ghost")
+    await _setup(hass)
+
+    with pytest.raises(vol.Invalid):
+        await _update(hass, label_id=label.label_id, name=None)
+
+    assert label_registry.async_get_label(label.label_id).name == "Ghosts"
+
+    # The other three take it, which is the distinction being drawn.
+    await _update(hass, label_id=label.label_id, icon=None)
+    assert label_registry.async_get_label(label.label_id).icon is None
