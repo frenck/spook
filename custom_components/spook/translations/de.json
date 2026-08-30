@@ -518,26 +518,6 @@
             "description": "Spook hat einen Fehler in deinen Skripten gefunden 👻\n\nBeim Herumschwirren ist Spook auf das folgende Skript gestoßen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDieses Skript verwendet die folgenden Trigger, die von keiner für Home Assistant verfügbaren Integration bereitgestellt werden können:\n\n{triggers}\n\nDies passiert häufig, wenn die Integration, die einen Trigger bereitstellt, entfernt wurde. Um diesen Fehler zu beheben, [bearbeite das Skript]({edit}) und entferne die Verwendung dieser nicht verfügbaren Trigger oder stelle die Integration wieder her, die sie bereitstellt.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Auslöser in: {script}"
         },
-        "stale_access_tokens": {
-            "title": "Der langlebige Zugriffstoken scheint in Vergessenheit geraten zu sein: {token}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Der langlebige Zugriffstoken scheint in Vergessenheit geraten zu sein: {token}",
-                        "menu_options": {
-                            "remove": "Ziehe diesen Token zurück",
-                            "ignore": "Behalten und nicht mehr darauf hinweisen",
-                            "manage": "Lass es mich selbst beheben"
-                        },
-                        "description": "Das langlebige Zugriffstoken `{token}` (Eigentümer: {owner}) wurde seit {last_active} nicht mehr verwendet.\n\nWiderrufe es oder behalte es – Spook wird dann nicht mehr darauf hinweisen. Durch den Widerruf funktionieren alle Dienste, die dieses Token noch verwenden, nicht mehr, bis sie ein neues erhalten.\n\nSpook 👻 Dein Kumpel."
-                    }
-                },
-                "abort": {
-                    "manage": "Du kannst das langlebige Zugriffstoken selbst unter [den Sicherheitseinstellungen Ihres Profils](/profile/security) verwalten.",
-                    "issue_ignored": "Spook wird sich von nun an nicht mehr zu diesem Token äußern."
-                }
-            }
-        },
         "unknown_helper_source_references": {
             "fix_flow": {
                 "step": {

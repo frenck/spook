@@ -478,26 +478,6 @@
             "description": "Spook heeft een geest gevonden in je scripts 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende script tegen:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script gebruikt de volgende triggers, die geen enkele voor Home Assistant beschikbare integratie kan leveren:\n\n{triggers}\n\nDit gebeurt vaak wanneer de integratie die een trigger levert is verwijderd. Om deze fout te verhelpen, [bewerk je het script]({edit}) en verwijder je het gebruik van deze niet-beschikbare triggers, of zet je de integratie die ze levert terug.\n\nSpook 👻 Je homie.",
             "title": "Onbekende triggers gebruikt in: {script}"
         },
-        "stale_access_tokens": {
-            "fix_flow": {
-                "abort": {
-                    "issue_ignored": "Spook houdt vanaf nu zijn mond over dit token.",
-                    "manage": "Je beheert langlevende toegangstokens zelf bij [de beveiligingsinstellingen van je profiel](/profile/security)."
-                },
-                "step": {
-                    "init": {
-                        "description": "Het langlevende toegangstoken `{token}` (eigenaar: {owner}) is niet meer gebruikt sinds {last_active}.\n\nTrek het in, of laat het staan en Spook zwijgt er verder over. Als je het intrekt, werkt alles wat dit token nog gebruikt niet meer tot het een nieuw token krijgt.\n\nSpook 👻 Je homie.",
-                        "menu_options": {
-                            "ignore": "Houden, zeg er niets meer over",
-                            "manage": "Ik los het zelf op",
-                            "remove": "Trek dit token in"
-                        },
-                        "title": "Langlevend toegangstoken lijkt vergeten: {token}"
-                    }
-                }
-            },
-            "title": "Langlevend toegangstoken lijkt vergeten: {token}"
-        },
         "template_unknown_entity_references": {
             "description": "Spook heeft een geest gevonden in je template-helpers 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-helper tegen:\n\n[{helper}]({edit})\n\nDe configuratie verwijst naar de volgende entiteiten, die Home Assistant niet kent:\n\n{entities}\n\nDit gebeurt vaak wanneer een entiteit is hernoemd of verwijderd. Om deze fout te verhelpen, stel je de template-helper opnieuw in zodat hij naar bestaande entiteiten verwijst.\n\nSpook 👻 Je homie.",
             "title": "Onbekende entiteiten gebruikt in template-helper: {helper}"

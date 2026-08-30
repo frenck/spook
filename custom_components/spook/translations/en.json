@@ -705,26 +705,6 @@
       "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script uses the following triggers, which cannot be provided by any integration available to Home Assistant:\n\n{triggers}\n\n\n\nThis often happens when the integration providing a trigger was removed. To fix this error, [edit the script]({edit}) and remove the use of these unavailable triggers, or restore the integration providing them.\n\nSpook 👻 Your homie.",
       "title": "Unknown triggers used in: {script}"
     },
-    "stale_access_tokens": {
-      "title": "Long-lived access token looks forgotten: {token}",
-      "fix_flow": {
-        "step": {
-          "init": {
-            "title": "Long-lived access token looks forgotten: {token}",
-            "description": "The long-lived access token `{token}` (owner: {owner}) has not been used since {last_active}.\n\nRevoke it, or keep it and Spook will stop pointing it out. Revoking it stops anything still using this token from working until it gets a new one.\n\nSpook 👻 Your homie.",
-            "menu_options": {
-              "remove": "Revoke this token",
-              "ignore": "Keep it, stop telling me",
-              "manage": "Let me fix it myself"
-            }
-          }
-        },
-        "abort": {
-          "issue_ignored": "Spook will keep quiet about this token from now on.",
-          "manage": "You can manage long-lived access tokens yourself under [your profile's security settings](/profile/security)."
-        }
-      }
-    },
     "template_unknown_entity_references": {
       "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n[{helper}]({edit})\n\nIts configuration references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed. To fix this error, reconfigure the template helper to reference existing entities.\n\nSpook 👻 Your homie.",
       "title": "Unknown entities used in template helper: {helper}"

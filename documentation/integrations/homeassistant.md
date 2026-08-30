@@ -2,7 +2,7 @@
 subject: Enhanced integrations
 title: Home Assistant
 subtitle: The tidying up nobody volunteers for.
-description: Spook enhances the Home Assistant core integration by reporting dead entity registrations, dangling customizations, forgotten access tokens, helpers whose sources are gone, and areas, floors, labels and blueprints that are not doing anything.
+description: Spook enhances the Home Assistant core integration by reporting dead entity registrations, dangling customizations, helpers whose sources are gone, and areas, floors, labels and blueprints that are not doing anything.
 date: 2026-08-21T16:20:00+02:00
 ---
 
@@ -70,14 +70,6 @@ A min/max helper combines several entities into one number. Spook reads its conf
 
 This one is fixable by pruning rather than removing: Spook can drop the missing members so the helper carries on with the ones that remain. A min/max helper needs at least two members, though, so if removing the missing ones would leave fewer than that, Spook says so and sends you to the Helpers page instead of quietly breaking the helper a different way.
 
-### Forgotten long-lived access tokens
-
-A long-lived access token does not expire. That is the point of it, and it is also the problem: a token issued for a script you stopped running three years ago is still a working key to your instance.
-
-Spook raises a repair issue for every token that has not been used in 180 days, one issue per token, and checks once a day.
-
-The raised issue is fixable: Spook can revoke the token for you. Be deliberate about it. Revoking a token stops anything still using it from working until it gets a new one, and "not used in 180 days" is evidence, not proof.
-
 ### Empty areas
 
 An {term}`area` with no devices, no entities, and no automation or script targeting it is not doing anything.
@@ -107,7 +99,6 @@ The raised issue is fixable: Spook can remove the blueprint for you.
 Some use cases for the enhancements Spook provides for this integration:
 
 - Replacing a batch of devices. The new ones set themselves up, the old registry entries stay behind as permanently unavailable entities, and grouping them per integration turns a wall of unavailable entities into one issue you can act on.
-- Auditing who still has a key to your instance. Long-lived tokens are easy to create and easy to forget, and nothing else in Home Assistant will bring one up unprompted.
 - Cleaning up after a reorganisation. Renaming and regrouping leaves empty areas, empty floors and unused labels behind, and none of them are visible unless you go looking.
 - Finding helpers that broke months ago. A helper without its source is not merely wrong, it is quietly wrong: depending on the helper it may sit on a stale value, go unavailable, or never have set up at all. None of those announce themselves.
 

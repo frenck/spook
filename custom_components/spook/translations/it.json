@@ -478,26 +478,6 @@
             "description": "👻 Spook ha trovato un fantasma nei tuoi script\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nQuesto script usa i seguenti trigger, che nessuna integrazione disponibile per Home Assistant può fornire:\n\n{triggers}\n\nSuccede spesso quando l'integrazione che forniva un trigger è stata rimossa. Per risolvere questo errore, [modifica lo script]({edit}) ed elimina l'utilizzo di questi trigger non disponibili, oppure ripristina l'integrazione che li fornisce.\n\nSpook 👻 Il tuo compare.",
             "title": "Trigger sconosciuti usati in: {script}"
         },
-        "stale_access_tokens": {
-            "fix_flow": {
-                "abort": {
-                    "issue_ignored": "Spook non dirà più nulla su questo token.",
-                    "manage": "Puoi gestire i token di accesso di lunga durata da solo nelle [impostazioni di sicurezza del tuo profilo](/profile/security)."
-                },
-                "step": {
-                    "init": {
-                        "description": "Il token di accesso di lunga durata `{token}` (proprietario: {owner}) non viene usato da {last_active}.\n\nRevocalo, oppure tienilo e Spook non lo menzionerà più. Se lo revochi, tutto quello che usa ancora questo token smetterà di funzionare fino a quando non ne riceverà uno nuovo.\n\nSpook 👻 Il tuo compare.",
-                        "menu_options": {
-                            "ignore": "Tienilo e non dirmelo più",
-                            "manage": "Lo sistemo da solo",
-                            "remove": "Revoca questo token"
-                        },
-                        "title": "Un token di accesso di lunga durata sembra dimenticato: {token}"
-                    }
-                }
-            },
-            "title": "Un token di accesso di lunga durata sembra dimenticato: {token}"
-        },
         "template_unknown_entity_references": {
             "description": "👻 Spook ha trovato un fantasma nei tuoi helper template\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente helper template:\n\n[{helper}]({edit})\n\nLa sua configurazione fa riferimento alle seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nSuccede spesso quando un'entità è stata rinominata o rimossa. Per risolvere questo errore, riconfigura l'helper template perché punti a entità esistenti.\n\nSpook 👻 Il tuo compare.",
             "title": "Entità sconosciute usate nell'helper template: {helper}"

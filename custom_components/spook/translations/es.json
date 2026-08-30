@@ -478,26 +478,6 @@
             "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa los siguientes disparadores, que ninguna integración disponible para Home Assistant puede proporcionar:\n\n{triggers}\n\nEsto suele pasar cuando se ha quitado la integración que proporcionaba un disparador. Para solucionar este error, [edita el script]({edit}) y elimina el uso de estos disparadores no disponibles, o restaura la integración que los proporciona.\n\nSpook 👻 Tu colega.",
             "title": "Disparadores desconocidos usados en: {script}"
         },
-        "stale_access_tokens": {
-            "fix_flow": {
-                "abort": {
-                    "issue_ignored": "Spook no volverá a decir nada sobre este token.",
-                    "manage": "Puedes gestionar los tokens de acceso de larga duración tú mismo en los [ajustes de seguridad de tu perfil](/profile/security)."
-                },
-                "step": {
-                    "init": {
-                        "description": "El token de acceso de larga duración `{token}` (propietario: {owner}) no se ha usado desde {last_active}.\n\nRevócalo, o quédatelo y Spook no volverá a mencionarlo. Si lo revocas, todo lo que siga usando este token dejará de funcionar hasta que reciba uno nuevo.\n\nSpook 👻 Tu colega.",
-                        "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
-                            "manage": "Lo arreglo yo mismo",
-                            "remove": "Revocar este token"
-                        },
-                        "title": "Un token de acceso de larga duración parece olvidado: {token}"
-                    }
-                }
-            },
-            "title": "Un token de acceso de larga duración parece olvidado: {token}"
-        },
         "template_unknown_entity_references": {
             "description": "Spook ha encontrado un fantasma en tus asistentes de plantilla 👻\n\nMientras flotaba, Spook se cruzó con el siguiente asistente de plantilla:\n\n[{helper}]({edit})\n\nSu configuración hace referencia a las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\nEsto suele pasar cuando se ha renombrado o quitado una entidad. Para solucionar este error, reconfigura el asistente de plantilla para que apunte a entidades que existan.\n\nSpook 👻 Tu colega.",
             "title": "Entidades desconocidas usadas en el asistente de plantilla: {helper}"
