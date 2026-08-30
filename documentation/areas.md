@@ -249,7 +249,7 @@ Removes one or more aliases from an existing area. This action will leave the ot
 As area aliases are used by voice assistants, you could remove (and also add) aliases to an area using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/areas/remove_alias.png
-:alt: Screenshot of the remove an alias to an area action on the Tools page.
+:alt: Screenshot of the remove an alias from an area action on the Tools page.
 :align: center
 ```
 
@@ -334,7 +334,7 @@ Sets the aliases for an area. This action will overwrite/remove all existing ali
 As area aliases are used by voice assistants, you could remove (and also add) aliases to an area using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/areas/set_aliases.png
-:alt: Screenshot of the set aliases to for an area action on the Tools page.
+:alt: Screenshot of the set aliases for an area action on the Tools page.
 :align: center
 ```
 
@@ -471,7 +471,7 @@ That template will find the area ID of the area with the name "Living room".
 :::{tip} Finding a device ID
 :class: dropdown
 
-Not sure what the `device_id` of an your device is? There are a few ways to find it:
+Not sure what the `device_id` of your device is? There are a few ways to find it:
 
 Use this action in the Actions tool, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
@@ -518,7 +518,7 @@ data:
 Removes one or more device(s) from an area. This action will leave the other devices in the area untouched.
 
 ```{figure} ./images/areas/remove_device.png
-:alt: Screenshot of the add a device to an area action on the Tools page.
+:alt: Screenshot of the remove a device from an area action on the Tools page.
 :align: center
 ```
 
@@ -562,9 +562,9 @@ While this action is area related, it does not need to know the area ID. A devic
 :::{tip} Finding a device ID
 :class: dropdown
 
-Not sure what the `device_id` of an your device is? There are a few ways to find it:
+Not sure what the `device_id` of your device is? There are a few ways to find it:
 
-Use this action in the Actions tool, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to remove from the area and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
@@ -688,7 +688,7 @@ data:
 Removes one or more device(s) from an area. This action will leave the other devices in the area untouched.
 
 ```{figure} ./images/areas/remove_entity.png
-:alt: Screenshot of the add a device to an area action on the Tools page.
+:alt: Screenshot of the remove an entity from an area action on the Tools page.
 :align: center
 ```
 

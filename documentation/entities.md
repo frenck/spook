@@ -334,7 +334,7 @@ Entities might have been marked orphaned because an integration is offline or no
 :::
 
 ```{figure} ./images/entities/delete_all_orphaned_entities.png
-:alt: Screenshot of the Home Assistant unhide entity action on the Tools page.
+:alt: Screenshot of the Home Assistant delete all orphaned entities action on the Tools page.
 :align: center
 ```
 

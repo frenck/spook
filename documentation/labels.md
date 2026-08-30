@@ -429,7 +429,7 @@ That template will find the label ID of the label with the name "Battery powered
 :::{tip} Finding a device ID
 :class: dropdown
 
-Not sure what the `device_id` of an your device is? There are a few ways to find it:
+Not sure what the `device_id` of your device is? There are a few ways to find it:
 
 Use this action in the Actions tool, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
@@ -533,9 +533,9 @@ That template will find the label ID of the label with the name "Battery powered
 :::{tip} Finding a device ID
 :class: dropdown
 
-Not sure what the `device_id` of an your device is? There are a few ways to find it:
+Not sure what the `device_id` of your device is? There are a few ways to find it:
 
-Use this action in the Actions tool, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to remove the label from and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::

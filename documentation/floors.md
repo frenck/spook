@@ -94,7 +94,7 @@ data:
 Delete a floor from your Home Assistant instance.
 
 ```{figure} ./images/floors/delete.png
-:alt: Screenshot of the delete flor action on the Tools page.
+:alt: Screenshot of the delete a floor action on the Tools page.
 :align: center
 ```
 
@@ -525,7 +525,7 @@ data:
 Removes one or more area(s) from a floor. This action will leave the other area on the floor untouched.
 
 ```{figure} ./images/floors/remove_area.png
-:alt: Screenshot of the add a device to an area action on the Tools page.
+:alt: Screenshot of the remove an area from a floor action on the Tools page.
 :align: center
 ```
 
