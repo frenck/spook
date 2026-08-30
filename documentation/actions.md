@@ -346,6 +346,12 @@ Instantly create a new label in your home. _#LabelMaker_
 
 `homeassistant.create_label`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_label), [documentation](labels#create-a-label) 📚
 
+## Labels: Update a label
+
+Changes a label without deleting it first, so it stays on everything it was on. _#facelift_
+
+`homeassistant.update_label`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_label), [documentation](labels#update-a-label) 📚
+
 ## Labels: Delete a label
 
 Just like that, a whole label is gone. _#RipItOff_

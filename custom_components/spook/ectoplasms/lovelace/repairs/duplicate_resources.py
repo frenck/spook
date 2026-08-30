@@ -42,7 +42,10 @@ def _describe(key: str, urls: list[str]) -> str:
     """Return one line naming a duplicated resource."""
     unique = sorted(set(urls))
     if len(unique) == 1:
-        return f"- `{key}`, listed {len(urls)} times"
+        # Name it as it appears in the list. For a local resource the key is
+        # the path with the query taken off, so reporting that would send
+        # somebody looking for a URL that is not in there.
+        return f"- `{unique[0]}`, listed {len(urls)} times"
     listed = ", ".join(f"`{url}`" for url in unique)
     return f"- `{key}`, listed {len(urls)} times: {listed}"
 

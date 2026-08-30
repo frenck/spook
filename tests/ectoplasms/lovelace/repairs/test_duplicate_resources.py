@@ -194,3 +194,20 @@ async def test_storage_resources_are_loaded_before_they_are_read(
     await SpookRepair(hass).async_inspect()
 
     assert "/local/card.js" in (_reported(issue_registry) or "")
+
+
+async def test_an_exact_repeat_is_named_the_way_it_is_listed(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """A local resource is grouped by its path, with the query taken off.
+
+    That key is not what is in the resource list when the URL carries a query,
+    so reporting the key would send somebody looking for a URL that is not
+    there.
+    """
+    _set_resources(hass, ["/local/card.js?v=1", "/local/card.js?v=1"])
+
+    await SpookRepair(hass).async_inspect()
+
+    assert _reported(issue_registry) == "- `/local/card.js?v=1`, listed 2 times"
