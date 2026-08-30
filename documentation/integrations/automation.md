@@ -212,6 +212,8 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 Automations are inspected for the use of devices. If an automation is using a device that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the device that is referenced but not found.
 
+Only values shaped like a device ID are considered. Home Assistant hands those out itself and they are always thirty-two hexadecimal characters. Integrations are free to take a field called `device_id` meaning their own hardware, and some do: RFLink's `device_id` is a protocol address. Those are not devices Home Assistant knows about and never will be, so Spook leaves them alone. A real device that was removed still leaves an ID of the right shape behind, so nothing worth finding is given up.
+
 ```{figure} ../images/integrations/automation/unknown_device.png
 :name: Spook found an issue with an automation that is using a non-existing device.
 :alt: Screenshot showing a repair raised by Spook for an automation.
