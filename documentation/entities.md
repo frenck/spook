@@ -16,7 +16,7 @@ The following entity management actions are added to your Home Assistant instanc
 This action allows you to disable an entity on the fly.
 
 ```{figure} ./images/entities/disable_entity.png
-:alt: Screenshot of the Home Assistant disable entity action in the developer tools.
+:alt: Screenshot of the Home Assistant disable entity action on the Tools page.
 :align: center
 ```
 
@@ -33,9 +33,9 @@ This action allows you to disable an entity on the fly.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_entity)
 ```
 
 ```{list-table}
@@ -79,7 +79,7 @@ data:
 This action allows you to enable an entity on the fly.
 
 ```{figure} ./images/entities/enable_entity.png
-:alt: Screenshot of the Home Assistant enable entity action in the developer tools.
+:alt: Screenshot of the Home Assistant enable entity action on the Tools page.
 :align: center
 ```
 
@@ -96,9 +96,9 @@ This action allows you to enable an entity on the fly.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_entity)
 ```
 
 ```{list-table}
@@ -145,7 +145,7 @@ It can be particularly useful when you have a lot of entities, and you want to h
 Hidden entities are not exposed to external voice assistants, like Google Assistant or Alexa, by default. They can still be exposed explicitly in the voice assistant settings.
 
 ```{figure} ./images/entities/hide_entity.png
-:alt: Screenshot of the Home Assistant hide entity action in the developer tools.
+:alt: Screenshot of the Home Assistant hide entity action on the Tools page.
 :align: center
 ```
 
@@ -162,9 +162,9 @@ Hidden entities are not exposed to external voice assistants, like Google Assist
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.hide_entity)
 ```
 
 ```{list-table}
@@ -208,7 +208,7 @@ data:
 This action allows you to unhide an entity on the fly.
 
 ```{figure} ./images/entities/unhide_entity.png
-:alt: Screenshot of the Home Assistant unhide entity action in the developer tools.
+:alt: Screenshot of the Home Assistant unhide entity action on the Tools page.
 :align: center
 ```
 
@@ -225,9 +225,9 @@ This action allows you to unhide an entity on the fly.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.unhide_entity)
 ```
 
 ```{list-table}
@@ -271,7 +271,7 @@ data:
 This action allows you to update an entity's ID on the fly.
 
 ```{figure} ./images/entities/update_entity_id.png
-:alt: Screenshot of the Home Assistant update entity ID action in the developer tools.
+:alt: Screenshot of the Home Assistant update entity ID action on the Tools page.
 :align: center
 ```
 
@@ -288,9 +288,9 @@ This action allows you to update an entity's ID on the fly.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_entity_id)
 ```
 
 ```{list-table}
@@ -334,7 +334,7 @@ Entities might have been marked orphaned because an integration is offline or no
 :::
 
 ```{figure} ./images/entities/delete_all_orphaned_entities.png
-:alt: Screenshot of the Home Assistant unhide entity action in the developer tools.
+:alt: Screenshot of the Home Assistant unhide entity action on the Tools page.
 :align: center
 ```
 
@@ -351,9 +351,9 @@ Entities might have been marked orphaned because an integration is offline or no
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_all_orphaned_entities)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -373,7 +373,7 @@ Mass clean up your database with the help of Spook by listing all orphaned datab
 Orphaned database entities are entities that are no longer claimed by integration but still exist in the database. This can happen when an integration is removed or when an entity is disabled.
 
 ```{figure} ./images/entities/list_orphaned_database_entities.png
-:alt: Screenshot of the Home Assistant list orphaned database entities action in the developer tools.
+:alt: Screenshot of the Home Assistant list orphaned database entities action on the Tools page.
 :align: center
 ```
 
@@ -390,9 +390,9 @@ Orphaned database entities are entities that are no longer claimed by integratio
   - Action response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.list_orphaned_database_entities)
 ```
 
 ```{list-table}
@@ -441,7 +441,7 @@ That template will find the area ID of the area with the name "Living room".
 This action allows you to update an entity friendly_name on the fly.
 
 ```{figure} ./images/entities/rename_entity.png
-:alt: Screenshot of the Home Assistant rename entity action in the developer tools.
+:alt: Screenshot of the Home Assistant rename entity action on the Tools page.
 :align: center
 ```
 
@@ -458,9 +458,9 @@ This action allows you to update an entity friendly_name on the fly.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.rename_entity)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.rename_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.rename_entity)
 ```
 
 ```{list-table}

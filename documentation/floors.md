@@ -23,7 +23,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Adds a new floor to your Home Assistant instance.
 
 ```{figure} ./images/floors/create.png
-:alt: Screenshot of the create floor action in the developer tools.
+:alt: Screenshot of the create floor action on the Tools page.
 :align: center
 ```
 
@@ -40,9 +40,9 @@ Adds a new floor to your Home Assistant instance.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_floor)
 ```
 
 ```{list-table}
@@ -94,7 +94,7 @@ data:
 Delete a floor from your Home Assistant instance.
 
 ```{figure} ./images/floors/delete.png
-:alt: Screenshot of the delete flor action in the developer tools.
+:alt: Screenshot of the delete flor action on the Tools page.
 :align: center
 ```
 
@@ -111,9 +111,9 @@ Delete a floor from your Home Assistant instance.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_floor)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_floor)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_floor)
 ```
 
 ```{list-table}
@@ -169,7 +169,7 @@ Adds one or more aliases to an existing floor. This action does not remove exist
 As floor aliases are used by voice assistants, you could add (and also remove) aliases to a floor using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/floors/add_alias.png
-:alt: Screenshot of the add an alias to a floor action in the developer tools.
+:alt: Screenshot of the add an alias to a floor action on the Tools page.
 :align: center
 ```
 
@@ -186,9 +186,9 @@ As floor aliases are used by voice assistants, you could add (and also remove) a
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_floor)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_floor)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_floor)
 ```
 
 ```{list-table}
@@ -254,7 +254,7 @@ Removes one or more aliases from an existing floor. This action will leave the o
 As floor aliases are used by voice assistants, you could remove (and also add) aliases to a floor using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/floors/remove_alias.png
-:alt: Screenshot of the remove an alias to a floor action in the developer tools.
+:alt: Screenshot of the remove an alias to a floor action on the Tools page.
 :align: center
 ```
 
@@ -271,9 +271,9 @@ As floor aliases are used by voice assistants, you could remove (and also add) a
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_floor)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_floor)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_floor)
 ```
 
 ```{list-table}
@@ -339,7 +339,7 @@ Sets the aliases for a floor. This action will overwrite/remove all existing ali
 As floor aliases are used by voice assistants, you could remove (and also add) aliases to a floor using {term}`automations <automation>`, which allows you to make them available/unavailable programatically.
 
 ```{figure} ./images/floors/set_aliases.png
-:alt: Screenshot of the set aliases to for a floor action in the developer tools.
+:alt: Screenshot of the set aliases to for a floor action on the Tools page.
 :align: center
 ```
 
@@ -356,9 +356,9 @@ As floor aliases are used by voice assistants, you could remove (and also add) a
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_floor_aliases)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_floor_aliases)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_floor_aliases)
 ```
 
 ```{list-table}
@@ -422,7 +422,7 @@ data:
 Adds one or more area(s) to a floor. This action will leave the other areas on the floor untouched.
 
 ```{figure} ./images/floors/add_area.png
-:alt: Screenshot of the add an area to a floor action in the developer tools.
+:alt: Screenshot of the add an area to a floor action on the Tools page.
 :align: center
 ```
 
@@ -439,9 +439,9 @@ Adds one or more area(s) to a floor. This action will leave the other areas on t
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_area_to_floor)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_area_to_floor)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_area_to_floor)
 ```
 
 ```{list-table}
@@ -525,7 +525,7 @@ data:
 Removes one or more area(s) from a floor. This action will leave the other area on the floor untouched.
 
 ```{figure} ./images/floors/remove_area.png
-:alt: Screenshot of the add a device to an area action in the developer tools.
+:alt: Screenshot of the add a device to an area action on the Tools page.
 :align: center
 ```
 
@@ -542,9 +542,9 @@ Removes one or more area(s) from a floor. This action will leave the other area 
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_area_from_floor)
 ```
 
 ```{list-table}

@@ -19,7 +19,7 @@ The recorder {term}`integration <integration>` in {term}`Home Assistant` is resp
 
 ```{figure} ../images/integrations/recorder/example.png
 :name: example
-:alt: Screenshot of the recorder import statistics action in the developer tools.
+:alt: Screenshot of the recorder import statistics action on the Tools page.
 :align: center
 
 Spook adds an action that allows importing data into the recorder.
@@ -38,7 +38,7 @@ Spook adds the following new actions to your Home Assistant instance:
 Manually import long-term statistics into the recorder database of Home Assistant.
 
 ```{figure} ../images/integrations/recorder/import.png
-:alt: Screenshot of the recorder import statistics action in the developer tools.
+:alt: Screenshot of the recorder import statistics action on the Tools page.
 :align: center
 ```
 
@@ -55,9 +55,9 @@ Manually import long-term statistics into the recorder database of Home Assistan
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=recorder.import_statistics)
 ```
 
 ```{list-table}
@@ -158,7 +158,7 @@ The recorder keeps long-term statistics separately from the states it records, a
 
 These are not harmful, but they are not free either: they take up database space, and they keep showing up in pickers and graphs long after the sensor they belonged to is gone.
 
-To resolve the raised issue, open {term}`Developer tools` > Statistics and fix them there. Spook will automatically remove the repair issue once the issue is fixed.
+To resolve the raised issue, open {term}`Tools` > Statistics and fix them there. Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Use cases
 

@@ -16,7 +16,7 @@ The following device management actions are added to your Home Assistant instanc
 This action allows you to disable a device on the fly.
 
 ```{figure} ./images/devices/disable_device.png
-:alt: Screenshot of the Home Assistant disable device action in the developer tools.
+:alt: Screenshot of the Home Assistant disable device action on the Tools page.
 :align: center
 ```
 
@@ -33,9 +33,9 @@ This action allows you to disable a device on the fly.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_device)
 ```
 
 ```{list-table}
@@ -56,7 +56,7 @@ This action allows you to disable a device on the fly.
 
 Not sure what the `device_id` of an your device is? There are a few ways to find it:
 
-Use this action in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::
@@ -89,7 +89,7 @@ data:
 This action allows you to enable a device on the fly.
 
 ```{figure} ./images/devices/enable_device.png
-:alt: Screenshot of the Home Assistant enable device action in the developer tools.
+:alt: Screenshot of the Home Assistant enable device action on the Tools page.
 :align: center
 ```
 
@@ -106,9 +106,9 @@ This action allows you to enable a device on the fly.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_device)
 ```
 
 ```{list-table}
@@ -129,7 +129,7 @@ This action allows you to enable a device on the fly.
 
 Not sure what the `device_id` of an your device is? There are a few ways to find it:
 
-Use this action in the developer tools, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
+Use this action in the Actions tool, in the UI select the device you want to add and select the **Go to YAML mode** button. This will show you the device ID in the YAML code.
 
 Alternatively, you can visit the device page in the UI and look at the URL. The device ID is the last part of the URL, and will look something like this: `dc23e666e6100f184e642a0ac345d3eb`.
 :::

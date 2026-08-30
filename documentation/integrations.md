@@ -16,7 +16,7 @@ The following integration management actions are added to your Home Assistant in
 Disable a single instance of an integration by its {term}`integration entry <integration entry>`.
 
 ```{figure} ./images/integration/disable_config_entry.png
-:alt: Screenshot of the Home Assistant disable config entry action in the developer tools.
+:alt: Screenshot of the Home Assistant disable config entry action on the Tools page.
 :align: center
 ```
 
@@ -33,9 +33,9 @@ Disable a single instance of an integration by its {term}`integration entry <int
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_config_entry)
 ```
 
 ```{list-table}
@@ -56,7 +56,7 @@ Disable a single instance of an integration by its {term}`integration entry <int
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`developer tools <developer tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the {term}`tools <tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -87,7 +87,7 @@ data:
 Enable a single instance of an integration by its {term}`integration entry <integration entry>`.
 
 ```{figure} ./images/integration/enable_config_entry.png
-:alt: Screenshot of the Home Assistant enable config entry action in the developer tools.
+:alt: Screenshot of the Home Assistant enable config entry action on the Tools page.
 :align: center
 ```
 
@@ -104,9 +104,9 @@ Enable a single instance of an integration by its {term}`integration entry <inte
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_config_entry)
 ```
 
 ```{list-table}
@@ -127,7 +127,7 @@ Enable a single instance of an integration by its {term}`integration entry <inte
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`developer tools <developer tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the {term}`tools <tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -160,7 +160,7 @@ Disable integration polling of a single integration instance by its {term}`integ
 Some integrations frequently poll for updates. In some cases, it can be helpful to disable this temporarily. For example, in case you are not at home and want to stop polling on an integration that consumes a paid API.
 
 ```{figure} ./images/integration/disable_polling.png
-:alt: Screenshot of the Home Assistant disable polling action in the developer tools.
+:alt: Screenshot of the Home Assistant disable polling action on the Tools page.
 :align: center
 ```
 
@@ -177,9 +177,9 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_polling)
 ```
 
 ```{list-table}
@@ -200,7 +200,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`developer tools <developer tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the {term}`tools <tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -222,7 +222,7 @@ Enable integration polling of a single integration instance by its {term}`integr
 Some integrations frequently poll for updates. In some cases, it can be helpful to enable this just temporarily. For example, in case you are not at home and want to stop polling on an integration that consumes a paid API and want to turn it back on again when you are back.
 
 ```{figure} ./images/integration/enable_polling.png
-:alt: Screenshot of the Home Assistant enable polling action in the developer tools.
+:alt: Screenshot of the Home Assistant enable polling action on the Tools page.
 :align: center
 ```
 
@@ -239,9 +239,9 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling)
 ```
 
 ```{list-table}
@@ -262,7 +262,7 @@ Some integrations frequently poll for updates. In some cases, it can be helpful 
 
 Not sure what the `config_entry_id` of your integration is?
 
-Use this action in the {term}`developer tools <developer tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
+Use this action in the {term}`tools <tools>`, in the UI select the device you want to use and select the **Go to YAML mode** button. This will show you the config entry ID in the YAML code.
 :::
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -284,7 +284,7 @@ When Home Assistant discovers new devices or services, it will show up on the in
 It also supports ignoring all discovered devices from a specific {term}`integration <integration>`. For example, if you want to ignore all discovered devices from the `bluetooth` integration, you could do that periodically with an automation.
 
 ```{figure} ./images/integration/ignore_all_discovered.png
-:alt: Screenshot of the Home Assistant enable polling action in the developer tools.
+:alt: Screenshot of the Home Assistant enable polling action on the Tools page.
 :align: center
 ```
 
@@ -301,9 +301,9 @@ It also supports ignoring all discovered devices from a specific {term}`integrat
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered)
 ```
 
 ```{list-table}

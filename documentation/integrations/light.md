@@ -45,9 +45,9 @@ Set the brightness of the lights that are already on.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_brightness)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_brightness)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_brightness)
 ```
 
 ```{list-table}
@@ -101,9 +101,9 @@ Turn up the lights that are already on.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.increase_brightness)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.increase_brightness)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.increase_brightness)
 ```
 
 ```{list-table}
@@ -156,9 +156,9 @@ Turn down the lights that are already on, stopping at the dimmest they go.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.decrease_brightness)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.decrease_brightness)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.decrease_brightness)
 ```
 
 ```{list-table}
@@ -209,9 +209,9 @@ Set the color of the lights that are already on. Lights that cannot do color are
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color)
 ```
 
 ```{list-table}
@@ -262,9 +262,9 @@ Set the color temperature of the lights that are already on, each within the ran
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color_temperature)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color_temperature)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_color_temperature)
 ```
 
 ```{list-table}
@@ -316,9 +316,9 @@ Set an effect on the lights that are already on and actually have it. Effect nam
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect)
 ```
 
 ```{list-table}

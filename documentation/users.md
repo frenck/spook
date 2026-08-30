@@ -28,9 +28,9 @@ This action allows you to disable a user account on the fly, preventing them fro
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_user)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_user)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.disable_user)
 ```
 
 ```{list-table}
@@ -51,7 +51,7 @@ This action allows you to disable a user account on the fly, preventing them fro
 
 Not sure what the `user_id` of a user is? You can find it in the Home Assistant UI by going to **Settings** → **People** → selecting the person → clicking on the **User** tab. The user ID is displayed on that page.
 
-Alternatively, you can use the **Developer Tools** → **Template** tab and use the following template to list all user IDs:
+Alternatively, you can use **Settings** > **Tools** > **Template** and use the following template to list all user IDs:
 
 ```{code-block} yaml
 {% for state in states.person %}
@@ -103,9 +103,9 @@ This action allows you to enable a user account on the fly, allowing them to log
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_user)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_user)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_user)
 ```
 
 ```{list-table}

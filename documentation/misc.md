@@ -23,7 +23,7 @@ integrations. It is recommended to use this action only when necessary.
 :::
 
 ```{figure} ./images/misc/restart.png
-:alt: Screenshot of the Home Assistant restart action in the developer tools.
+:alt: Screenshot of the Home Assistant restart action on the Tools page.
 :align: center
 ```
 
@@ -40,9 +40,9 @@ integrations. It is recommended to use this action only when necessary.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Extends the existing restart action with a "force" option.
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.restart)
 ```
 
 ```{list-table}

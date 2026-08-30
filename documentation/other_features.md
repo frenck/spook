@@ -19,7 +19,7 @@ Spook offers the following useless actions:
 This acti will just always scare Home Assistant, causing this action call to fail. Calling this action in any of your automations will thus cause your automation to stop and error.
 
 ```{figure} ./images/spook/boo.png
-:alt: Screenshot of the Spook Boo! action in the developer tools.
+:alt: Screenshot of the Spook Boo! action on the Tools page.
 :align: center
 ```
 
@@ -36,9 +36,9 @@ This acti will just always scare Home Assistant, causing this action call to fai
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.boo)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -58,7 +58,7 @@ action: homeassistant.boo
 This action call will randomly fail (and thus randomly stop your automation or script).
 
 ```{figure} ./images/spook/random_fail.png
-:alt: Screenshot of the Spook random fail action in the developer tools.
+:alt: Screenshot of the Spook random fail action on the Tools page.
 :align: center
 ```
 
@@ -75,9 +75,9 @@ This action call will randomly fail (and thus randomly stop your automation or s
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.random_fail)
 ```
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
@@ -109,9 +109,9 @@ Waits until a condition is true, and carries on straight away if it already is.
   - Optional response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=spook.wait_for_condition)
 ```
 
 ```{list-table}
@@ -178,7 +178,7 @@ Give up after five minutes, and do something else about it:
 :::{attention} Known limitations
 :class: dropdown
 
-- A template has to still be a template, which rules out the placement you would normally use. A script or automation renders every template in the action data before calling the action, so `{{ is_state(...) }}` arrives as the `true` or `false` it happened to be at that moment, and a constant can never turn; that is refused rather than quietly waited on forever. What can be seen from here is whether any Jinja is left, not where the value came from, so a literal `value_template: true` in a direct call is refused too: by the time it arrives the two are the same thing. A template that still has its Jinja, from the API or the developer tools, is watched like any other condition. Inside a script, wait on a template with `wait_template`, which is what that is for.
+- A template has to still be a template, which rules out the placement you would normally use. A script or automation renders every template in the action data before calling the action, so `{{ is_state(...) }}` arrives as the `true` or `false` it happened to be at that moment, and a constant can never turn; that is refused rather than quietly waited on forever. What can be seen from here is whether any Jinja is left, not where the value came from, so a literal `value_template: true` in a direct call is refused too: by the time it arrives the two are the same thing. A template that still has its Jinja, from the API or the Actions tool, is watched like any other condition. Inside a script, wait on a template with `wait_template`, which is what that is for.
 - A condition that asks about the run it is in cannot be watched either, and is refused for the same reason: `trigger`, and Spook's own `cooldown`, `quota`, `triggered_by_user`, `not_triggered_by_user` and `triggered_by_automation`. An action call is not a trigger, so their answer would not mean anything.
 - The condition is checked again every 30 seconds regardless of anything happening, so the wait can end up to half a minute late. That polling pass is what covers the turns that arrive without a state change: a plain time or sun condition, a `state` condition whose `for:` runs out, a `time` condition whose moment passes. A condition that turns true and false again inside those 30 seconds is missed entirely.
 - Without a `timeout` it waits for as long as the script runs. Stopping the automation or script stops the wait with it. A `timeout` of zero means look now and do not wait, so it answers `completed: false` unless the condition is already true.

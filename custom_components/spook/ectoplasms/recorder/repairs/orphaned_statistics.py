@@ -22,10 +22,11 @@ class SpookRepair(AbstractSpookRepair):
 
     Removing a sensor leaves its recorded statistics behind; Home
     Assistant keeps them but never points them out. This surfaces them so
-    they can be cleaned up on the Developer Tools > Statistics page, which
+    they can be cleaned up on the Settings > Tools > Statistics page, which
     is the only place Home Assistant offers to do it: `clear_statistics` is
-    a websocket command that page calls, and not an action anybody can
-    reach from Developer Tools > Actions.
+    a websocket command that page calls, and not an action anybody can reach
+    from the Actions tool. That page was called Developer Tools and sat in
+    the sidebar until Home Assistant moved it in 2026.
     """
 
     domain = "recorder"

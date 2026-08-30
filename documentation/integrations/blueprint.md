@@ -21,7 +21,7 @@ They are a great way to learn how to automate your home and an inspiration for n
 
 ```{figure} ../images/integrations/blueprint/example.png
 :name: example
-:alt: Screenshot of the Blueprint import action in the developer tools.
+:alt: Screenshot of the Blueprint import action on the Tools page.
 :align: center
 
 Spook adds an action to import Blueprints directly from an URL.
@@ -108,9 +108,9 @@ Downloads and imports an automation/script blueprint, directly from the URL you 
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import)
 ```
 
 ```{list-table}

@@ -53,9 +53,9 @@ Turns an automation off for a while, and turns it back on when the time is up.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.snooze)
 ```
 
 ```{list-table}
@@ -131,9 +131,9 @@ Turns an automation on for a while, and turns it back off when the time is up.
   - No response
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
-* - {term}`Developer tools`
+* - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.turn_on_for)
-    [![Open your Home Assistant instance and show your actions developer tools with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.turn_on_for)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=automation.turn_on_for)
 ```
 
 ```{list-table}
