@@ -241,22 +241,22 @@ async def test_they_stay_out_even_if_the_domains_ever_let_them_in(
 async def test_a_dashboard_does_not_report_them_either(
     hass: HomeAssistant,
 ) -> None:
-    """The card from #1468's second report, an `auto-entities` filter.
+    """Dashboards go through a filter of their own.
 
-    Dashboards go through a filter of their own, `async_filter_known_entity_ids`,
-    which is a separate function from the one automations use. Guarding only
-    the automation side left this reported, and I had it fixed on paper for a
-    while on the strength of them looking alike.
+    `async_filter_known_entity_ids` is a separate function from the one
+    automations use. Guarding only the automation side left this reported, and
+    I had it fixed on paper for a while on the strength of them looking alike.
+
+    Written outside a `filter:` here on purpose. The card it was reported from
+    is no longer walked into at all, so a placeholder written anywhere else is
+    what still reaches this gate, and this gate is what is being tested.
     """
     card = yaml.safe_load(
         """
-        type: custom:auto-entities
-        filter:
-          include:
-            - entity_id: sensor.some_prefix*
-              state: "> 0"
-              options:
-                entity: this.entity_id
+        type: entities
+        entities:
+          - entity: this.entity_id
+          - entity: sensor.real_one
         """,
     )
 
