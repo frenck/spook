@@ -217,14 +217,26 @@ def extract_platform_keys_from_config(config: Any) -> ExtractedPlatformKeys:
 _CONFIGURED_DOMAINS = ("automation", "script")
 
 
+# Quoted literals inside a template, as in `{{ ['study', 'loft'] }}`.
+_QUOTED = re.compile(r"""['"]([^'"]+)['"]""")
+
+
 def _collect_every_string(node: Any, found: set[str]) -> None:
     """Collect every string anywhere in a configuration, keys included.
 
     Deliberately indiscriminate. This is not working out what a configuration
     means; it is answering whether something is mentioned in it at all.
+
+    A template counts as one string and also as the literals inside it, since
+    `for_each: "{{ ['study'] }}"` names `study` as plainly as a list would.
+    Matching on substrings instead would be far too eager: an area called
+    `kitchen` would be found in `sensor.kitchen_temperature` and nothing would
+    ever be reported again.
     """
     if isinstance(node, str):
         found.add(node)
+        if is_template_string(node):
+            found.update(_QUOTED.findall(node))
     elif isinstance(node, Mapping):
         for key, value in node.items():
             if isinstance(key, str):

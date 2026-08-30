@@ -341,3 +341,76 @@ async def test_an_automation_naming_it_counts_the_same_as_a_script(
     await SpookRepair(hass).async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
+
+
+async def test_an_area_named_only_inside_a_template_is_not_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A template is one string, and the ID is buried inside it.
+
+    `for_each: "{{ ['study'] }}"` names the area as plainly as a list would,
+    but an exact match against the whole template never finds it.
+    """
+    area = area_registry.async_create("Study")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "clean": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": "{{ ['" + area.id + "'] }}",
+                                "sequence": [{"action": "vacuum.start", "target": {}}],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
+
+
+async def test_quotes_in_ordinary_text_are_not_a_mention(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Only templates get taken apart, and this is what that costs otherwise.
+
+    Prising literals out of every string would let a quoted word in an alias
+    keep an area alive. Being over-careful is the right way to be wrong here,
+    but not so careless that prose counts as a reference.
+    """
+    area = area_registry.async_create("Study")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "notes": {
+                    "alias": f"Somebody once mentioned '{area.id}' in passing",
+                    "sequence": [{"action": "vacuum.start", "target": {}}],
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id))
