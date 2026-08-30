@@ -16,6 +16,7 @@ from typing import TYPE_CHECKING
 
 from homeassistant.helpers import config_validation as cv
 from homeassistant.setup import async_setup_component
+import pytest
 import yaml
 
 from custom_components.spook.platform_validation import (
@@ -44,9 +45,33 @@ actions:
 """
 
 
-def test_home_assistant_really_does_take_this() -> None:
-    """The premise. If core stops accepting it, the rest of this is moot."""
-    assert cv.CONDITION_SCHEMA({"condition": "{{ 1 > 0 }}"})
+@pytest.mark.parametrize(
+    "shorthand",
+    [
+        "{{ 1 > 0 }}",
+        "{% if true %}yes{% endif %}",
+        # A comment on its own is a template too, and core takes it.
+        "{# nothing to see here #}",
+    ],
+)
+def test_home_assistant_really_does_take_these(shorthand: str) -> None:
+    """The premise. If core stops accepting them, the rest of this is moot."""
+    assert cv.CONDITION_SCHEMA({"condition": shorthand})
+
+
+@pytest.mark.parametrize(
+    "shorthand",
+    [
+        "{{ 1 > 0 }}",
+        "{% if true %}yes{% endif %}",
+        "{# nothing to see here #}",
+    ],
+)
+def test_no_flavour_of_template_is_read_as_a_platform(shorthand: str) -> None:
+    """All three of Jinja's delimiters, comments included."""
+    keys = extract_platform_keys_from_config({"conditions": [{"condition": shorthand}]})
+
+    assert keys.condition_keys == set()
 
 
 def test_a_template_condition_is_not_read_as_a_platform() -> None:
