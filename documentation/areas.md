@@ -10,7 +10,7 @@ date: 2023-08-09T21:29:00+02:00
 Spook provides {term}`actions <action>` that allows you to manage and {term}`automate <automation>` the areas in Home Assistant programatically. Great for creating "dynamic" areas, or for creating areas on the fly.
 
 ```{figure} ./images/areas/example.png
-:alt: Screenshot of the developer actions tools, listing the new actions to manage areas.
+:alt: Screenshot of the Actions tool, listing the new actions to manage areas.
 :align: center
 ```
 

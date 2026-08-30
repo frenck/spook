@@ -10,7 +10,7 @@ date: 2024-04-04T08:50:07+02:00
 Spook provides that allows you to manage and {term}`automate <automation>` the areas in Home Assistant programatically. Great for creating "dynamic" labels, or for creating labels on the fly.
 
 ```{figure} ./images/labels/example.png
-:alt: Screenshot of the developer actions tools, listing the new actions to manage labels.
+:alt: Screenshot of the Actions tool, listing the new actions to manage labels.
 :align: center
 ```
 

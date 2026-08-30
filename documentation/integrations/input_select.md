@@ -21,7 +21,7 @@ Spook adds some new actions to the input select {term}`integration <integration>
 
 ```{figure} ../images/integrations/input_select/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for input select.
+:alt: Screenshot of the Actions tool, listing the new actions for input select.
 :align: center
 
 Spook adds a bunch of new actions to the input select helper integrations.

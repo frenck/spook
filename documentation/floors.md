@@ -10,7 +10,7 @@ date: 2024-04-04T08:44:57+02:00
 Spook provides that allows you to manage and {term}`automate <automation>` the floors in Home Assistant programatically. Great for creating "dynamic" floors, or for creating floors on the fly.
 
 ```{figure} ./images/floors/example.png
-:alt: Screenshot of the developer action tools, listing the new actions to manage floors.
+:alt: Screenshot of the Actions tool, listing the new actions to manage floors.
 :align: center
 ```
 

@@ -21,7 +21,7 @@ Spook adds some new actions to the number {term}`integration <integration>`, whi
 
 ```{figure} ../images/integrations/number/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for number.
+:alt: Screenshot of the Actions tool, listing the new actions for number.
 :align: center
 
 Spook adds a bunch of new actions to the number helper integrations.

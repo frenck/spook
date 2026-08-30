@@ -21,7 +21,7 @@ Spook extends the select integration with an option to select a random option fr
 
 ```{figure} ../images/integrations/select/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, showing the new random actions for select.
+:alt: Screenshot of the Actions tool, showing the new random actions for select.
 :align: center
 
 Spook adds a new random select action to the select integration.

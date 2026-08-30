@@ -21,7 +21,7 @@ Spook adds some new actions to the person {term}`integration <integration>`, tha
 
 ```{figure} ../images/integrations/person/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for persons.
+:alt: Screenshot of the Actions tool, listing the new actions for persons.
 :align: center
 
 Spook adds some new actions to the person integration.

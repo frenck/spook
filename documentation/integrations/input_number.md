@@ -21,7 +21,7 @@ Spook adds some new actions to the input number {term}`integration <integration>
 
 ```{figure} ../images/integrations/input_number/example.png
 :name: example
-:alt: Screenshot of the developer actions tools, listing the new actions for input number.
+:alt: Screenshot of the Actions tool, listing the new actions for input number.
 :align: center
 
 Spook adds many new actions to the input number helper integrations.

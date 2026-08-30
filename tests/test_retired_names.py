@@ -21,7 +21,9 @@ ROOT = pathlib.Path(__file__).parents[1]
 SPOOK = ROOT / "custom_components" / "spook"
 DOCUMENTATION = ROOT / "documentation"
 
-_RETIRED = re.compile(r"developer[ _-]?tools", re.IGNORECASE)
+# Deliberately loose about what sits between the two words. Eight captions
+# said "developer actions tools", which a tighter matcher walked past.
+_RETIRED = re.compile(r"developer(?:[ _-]\w+)?[ _-]?tools", re.IGNORECASE)
 
 # What people will still find in older guides, said once in each place so that
 # the rename is explained rather than silently applied.
@@ -33,9 +35,9 @@ _DELIBERATE = (
     "That page was called Developer Tools and sat in",
 )
 
-# My Home Assistant redirect names. These are identifiers in somebody else's
-# API, not prose, and they have not been renamed.
-_NOT_OURS = re.compile(r"my\.home-assistant\.io/redirect/[a-z_]+")
+# My Home Assistant redirect and badge names. These are identifiers in
+# somebody else's API, not prose, and they have not been renamed.
+_NOT_OURS = re.compile(r"my\.home-assistant\.io/(?:redirect|badges)/[a-z_]+")
 
 
 def _lines_naming_it() -> list[str]:
@@ -45,6 +47,9 @@ def _lines_naming_it() -> list[str]:
         *DOCUMENTATION.rglob("*.md"),
         *SPOOK.rglob("*.py"),
         *SPOOK.rglob("*.json"),
+        # The action, trigger and condition descriptors are read by people in
+        # the UI as much as anything else here is.
+        *SPOOK.rglob("*.yaml"),
     ]:
         if "_build" in str(path):
             continue
