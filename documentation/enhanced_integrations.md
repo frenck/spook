@@ -95,6 +95,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/select/icon.png)](integrations/select)
 :::
 
+:::{card} Sensor
+:footer: 📚 [Learn more](integrations/sensor)
+[![](https://brands.home-assistant.io/sensor/icon.png)](integrations/sensor)
+:::
+
 :::{card} Switch as X
 :footer: 📚 [Learn more](integrations/switch_as_x)
 [![](https://brands.home-assistant.io/switch_as_x/icon.png)](integrations/switch_as_x)
