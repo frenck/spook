@@ -116,10 +116,25 @@ _DEVICE_ENTITIES_PATTERN = re.compile(
 
 
 def is_template_string(value: str) -> bool:
-    """Check if a string looks like a Jinja2 template."""
+    """Check if a string looks like a Jinja2 template.
+
+    All three of Jinja's delimiters, comments included. A comment on its own
+    is a template as far as Home Assistant is concerned, and it will take one
+    as a shorthand condition, so anything that does not know that reads it as
+    the name of an integration instead. #1520.
+
+    Stricter than `homeassistant.helpers.template.is_template_string`, which
+    is happy with an opening delimiter and no closing one. That is deliberate
+    and tested: a half-written template is not something to go extracting
+    references out of.
+    """
     if not isinstance(value, str):
         return False
-    return ("{{" in value and "}}" in value) or ("{%" in value and "%}" in value)
+    return (
+        ("{{" in value and "}}" in value)
+        or ("{%" in value and "%}" in value)
+        or ("{#" in value and "#}" in value)
+    )
 
 
 async def async_extract_entities_from_template_string(

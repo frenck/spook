@@ -35,6 +35,10 @@ if TYPE_CHECKING:
         "{% if true %}on{% endif %}",
         "prefix {{ x }} suffix",
         "{% set x = 1 %}{{ x }}",
+        # A comment on its own is still a template, and Home Assistant will
+        # take one as a shorthand condition. #1520.
+        "{# just a comment #}",
+        "{# leading comment #}{{ x }}",
     ],
 )
 def test_is_template_string_recognizes_jinja(value: str) -> None:
@@ -49,6 +53,7 @@ def test_is_template_string_recognizes_jinja(value: str) -> None:
         "light.kitchen",
         "{{ unmatched",
         "{% unmatched",
+        "{# unmatched",
         "{ not jinja }",
     ],
 )

@@ -173,7 +173,13 @@ def _walk_platform_keys(config: Any, found: ExtractedPlatformKeys) -> None:
         return
 
     if isinstance(condition := config.get("condition"), str):
-        found.condition_keys.add(condition)
+        # `condition: "{{ ... }}"` is Home Assistant's own shorthand for a
+        # template condition, and `cv.CONDITION_SCHEMA` takes it. The string
+        # is the condition itself, not the name of something that provides
+        # one, so reading it as a platform key reports the whole template
+        # back at somebody as an integration they do not have. #1520.
+        if not is_template_string(condition):
+            found.condition_keys.add(condition)
     else:
         # Only collect trigger keys outside condition configurations: the
         # trigger condition carries trigger IDs (not platform keys) in its
