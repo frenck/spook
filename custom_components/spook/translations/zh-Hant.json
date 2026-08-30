@@ -360,10 +360,6 @@
             "description": "Spook 在您的自動化中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇見了以下自動化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自動化使用了以下觸發條件，但 Home Assistant 中沒有任何可用的整合能提供這些觸發條件：\n\n{triggers}\n\n\n\n這通常發生在提供觸發條件的整合被移除時。要修正此錯誤，請 [編輯自動化]({edit}) 並移除這些不可用的觸發條件，或者還原提供這些條件的整合。\n\nSpook 👻 您的好夥伴。",
             "title": "在以下項目中使用了未知觸發條件：{automation}"
         },
-        "dead_entities": {
-            "description": "Spook 在您的實體中發現了一個幽靈 👻\n\n{integration} 整合已完成設定，但它註冊的以下實體從未出現，因此它們已不存在：\n\n{entities}\n\n\n\n這通常發生在裝置或其實體在來源端已被移除，但其註冊項目仍保留在系統中。要修正此錯誤，若您不再需要這些實體，請從實體註冊表中將其移除。\n\nSpook 👻 您的好夥伴。",
-            "title": "由 {integration} 註冊的實體不存在"
-        },
         "empty_areas": {
             "title": "空區域：{area}",
             "fix_flow": {

@@ -2,7 +2,7 @@
 subject: Enhanced integrations
 title: Home Assistant
 subtitle: The tidying up nobody volunteers for.
-description: Spook enhances the Home Assistant core integration by reporting dead entity registrations, dangling customizations, helpers whose sources are gone, and areas, floors, labels and blueprints that are not doing anything.
+description: Spook enhances the Home Assistant core integration by reporting dangling customizations, helpers whose sources are gone, and areas, floors, labels and blueprints that are not doing anything.
 date: 2026-08-21T16:20:00+02:00
 ---
 
@@ -35,16 +35,6 @@ While Spook is floating around in your Home Assistant instance, it will raise re
 Some of these are broken things, and some are only untidy ones. The untidy ones are all fixable from the issue itself, and every one of them offers to stop mentioning it, because an empty area you keep on purpose is nobody's business but yours.
 
 The tidiness repairs also hold off for a day, so setting something up and filling it in after lunch does not earn you a repair issue in between. A new area, floor or label is left alone for its first twenty-four hours. A blueprint is judged by when its file was last touched rather than when it first appeared, which also spares one you edited yesterday.
-
-### Non-existing registered entities
-
-An {term}`entity <entity>` is registered by its integration, and the registry entry survives across restarts so the entity keeps its ID, its name and its settings. When the thing behind it is gone, the entry stays.
-
-Spook watches for integrations that finished setting up and then never provided entities they have registry entries for. Those entities do not exist any more: they show as unavailable, forever, and they are grouped per integration entry so one removed device does not produce twenty separate issues.
-
-Only integrations that finished loading are considered, so an integration that is slow to start or retrying is never mistaken for a dead one.
-
-To resolve the raised issue, remove these entities from the entity registry if you no longer need them. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Unknown customized entities
 

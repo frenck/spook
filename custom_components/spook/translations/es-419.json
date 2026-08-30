@@ -368,10 +368,6 @@
             "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización usa los siguientes disparadores, que ninguna integración disponible para Home Assistant puede proporcionar:\n\n{triggers}\n\nEsto suele pasar cuando se ha quitado la integración que proporcionaba un disparador. Para solucionar este error, [edita la automatización]({edit}) y elimina el uso de estos disparadores no disponibles, o restaura la integración que los proporciona.\n\nSpook 👻 Tu colega.",
             "title": "Disparadores desconocidos usados en: {automation}"
         },
-        "dead_entities": {
-            "description": "Spook ha encontrado un fantasma en tus entidades 👻\n\nLa integración {integration} ha terminado de configurarse, pero las siguientes entidades que registró no han aparecido nunca, así que ya no existen:\n\n{entities}\n\nEsto suele pasar cuando se ha quitado un dispositivo o sus entidades en el origen, pero sus registros se han quedado. Para solucionar este error, quita estas entidades del registro de entidades si ya no las necesitas.\n\nSpook 👻 Tu colega.",
-            "title": "Entidades inexistentes registradas por: {integration}"
-        },
         "empty_areas": {
             "fix_flow": {
                 "abort": {

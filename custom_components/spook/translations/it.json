@@ -368,10 +368,6 @@
             "description": "👻 Spook ha trovato un fantasma nelle tue automazioni\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente automazione:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nQuesta automazione usa i seguenti trigger, che nessuna integrazione disponibile per Home Assistant può fornire:\n\n{triggers}\n\nSuccede spesso quando l'integrazione che forniva un trigger è stata rimossa. Per risolvere questo errore, [modifica l'automazione]({edit}) ed elimina l'utilizzo di questi trigger non disponibili, oppure ripristina l'integrazione che li fornisce.\n\nSpook 👻 Il tuo compare.",
             "title": "Trigger sconosciuti usati in: {automation}"
         },
-        "dead_entities": {
-            "description": "👻 Spook ha trovato un fantasma nelle tue entità\n\nL'integrazione {integration} ha finito di configurarsi, ma le seguenti entità che aveva registrato non sono mai comparse, quindi non esistono più:\n\n{entities}\n\nSuccede di solito quando un dispositivo o le sue entità sono stati rimossi all'origine ma le loro voci nel registro sono rimaste. Per risolvere questo errore, rimuovi queste entità dal registro delle entità se non ti servono più.\n\nSpook 👻 Il tuo compare.",
-            "title": "Entità inesistenti registrate da: {integration}"
-        },
         "empty_areas": {
             "fix_flow": {
                 "abort": {
