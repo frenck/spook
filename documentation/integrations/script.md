@@ -57,6 +57,8 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 Scripts are inspected for the use of devices. If a script is using a device that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the device that is referenced but not found.
 
+As with automations, only values shaped like a device ID are considered: thirty-two hexadecimal characters, which is what Home Assistant hands out. An integration taking a `device_id` that means its own hardware, such as RFLink's protocol address, is left alone.
+
 ```{figure} ../images/integrations/script/unknown_device.png
 :name: Spook found an issue with a script that is using a non-existing device.
 :alt: Screenshot showing a repair raised by Spook for a script.

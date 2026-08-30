@@ -112,8 +112,8 @@ def test_registered_device_ids_are_known(
     assert device.id in async_get_all_device_ids(hass)
     assert async_filter_known_device_ids(
         hass,
-        device_ids={device.id, "not-a-device"},
-    ) == {"not-a-device"}
+        device_ids={device.id, "052b668647129b431b1f10448e96e8ec"},
+    ) == {"052b668647129b431b1f10448e96e8ec"}
 
 
 def test_composite_device_ids_are_known(

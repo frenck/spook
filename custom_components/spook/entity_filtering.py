@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass
+import re
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import automation, script
@@ -382,6 +383,29 @@ def async_get_all_device_ids(hass: HomeAssistant) -> set[str]:
     return device_ids | async_get_child_device_ids(device_registry)
 
 
+# A device ID is a `uuid4().hex`, which the registry hands out itself: nothing
+# else can set one. Home Assistant has no equivalent of `valid_entity_id` for
+# these, so the shape is written out here.
+#
+# Worth checking because `device_id` is not always a Home Assistant device.
+# Integrations take a field of that name meaning their own hardware, and RFLink
+# is one: `device_id: ev1527_0ddf80_0e` is a protocol address. Home Assistant's
+# own reference extraction reads `device_id` out of every action's data and
+# hands it over regardless, so without this the address comes back as a device
+# that has gone missing. #1536.
+#
+# A real device that was removed still leaves a `uuid4().hex` behind, so this
+# gives up nothing that matters: the references worth reporting are all shaped
+# like one.
+_DEVICE_ID_SHAPE = re.compile(r"\A[0-9a-f]{32}\Z")
+
+
+@callback
+def is_device_id_shaped(value: str) -> bool:
+    """Return whether this could be a device ID Home Assistant handed out."""
+    return bool(_DEVICE_ID_SHAPE.match(value))
+
+
 @callback
 def async_filter_known_device_ids(
     hass: HomeAssistant,
@@ -395,7 +419,7 @@ def async_filter_known_device_ids(
     return {
         device_id
         for device_id in device_ids - known_device_ids
-        if device_id and isinstance(device_id, str)
+        if device_id and isinstance(device_id, str) and is_device_id_shaped(device_id)
     }
 
 

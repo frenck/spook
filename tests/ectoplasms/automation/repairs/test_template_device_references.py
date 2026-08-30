@@ -18,11 +18,17 @@ import pytest
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
+# Written out as the registry would hand them over, a `uuid4().hex`. A
+# placeholder like `ghost_device` is not shaped like a device ID and is
+# skipped before it can be reported, which is the point of that check.
+_KNOWN_DEVICE = "1d2fc0cc8c2d37b91a80aba97ed69adc"
+_GHOST_DEVICE = "052b668647129b431b1f10448e96e8ec"
+
 _RAW_CONFIG = {
     "actions": [
         {
             "action": "light.turn_on",
-            "target": {"entity_id": "{{ device_entities('ghost_device') }}"},
+            "target": {"entity_id": f"{{{{ device_entities('{_GHOST_DEVICE}') }}}}"},
         },
     ],
 }
@@ -50,8 +56,8 @@ async def test_template_device_entities_reference_is_detected(
 ) -> None:
     """Test a stale device_entities() device ID in a template is reported."""
     repair = repair_class(hass)
-    repair._known_device_ids = {"known_device"}
+    repair._known_device_ids = {_KNOWN_DEVICE}
 
     entity = SimpleNamespace(raw_config=_RAW_CONFIG, **entity_kwargs)
 
-    assert await repair._async_compute_unknown_references(entity) == {"ghost_device"}
+    assert await repair._async_compute_unknown_references(entity) == {_GHOST_DEVICE}
