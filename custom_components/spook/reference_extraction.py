@@ -13,13 +13,19 @@ never to replace it.
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 import re
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.const import ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
+from homeassistant.core import callback
+from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .template_extraction import is_template_string
+
+if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
 
 # Direct reference keys, mapped to their reference type.
 # What the device registry hands out: `random_uuid_hex`, so 32 hex characters.
@@ -204,4 +210,53 @@ def extract_platform_keys_from_config(config: Any) -> ExtractedPlatformKeys:
     """
     found = ExtractedPlatformKeys()
     _walk_platform_keys(config, found)
+    return found
+
+
+# Only automations and scripts carry a raw configuration worth reading here.
+_CONFIGURED_DOMAINS = ("automation", "script")
+
+
+def _collect_every_string(node: Any, found: set[str]) -> None:
+    """Collect every string anywhere in a configuration, keys included.
+
+    Deliberately indiscriminate. This is not working out what a configuration
+    means; it is answering whether something is mentioned in it at all.
+    """
+    if isinstance(node, str):
+        found.add(node)
+    elif isinstance(node, Mapping):
+        for key, value in node.items():
+            if isinstance(key, str):
+                found.add(key)
+            _collect_every_string(value, found)
+    elif isinstance(node, (list, tuple, set)):
+        for item in node:
+            _collect_every_string(item, found)
+
+
+@callback
+def async_collect_mentioned_strings(hass: HomeAssistant) -> set[str]:
+    """Return every string appearing in any automation or script.
+
+    For deciding whether something is referenced, `referenced_areas` and
+    Spook's own target extraction are the right tools: they know what a
+    reference is.
+
+    This is for the other question, the one asked before offering to delete
+    something. An area listed in a `repeat` `for_each` is a target of nothing,
+    and neither extraction reports it, but it is plainly in use and removing
+    it would break the script. Anything named anywhere is enough to leave it
+    alone.
+    """
+    found: set[str] = set()
+
+    for domain in _CONFIGURED_DOMAINS:
+        if not (component := hass.data.get(DATA_INSTANCES, {}).get(domain)):
+            continue
+
+        for entity in component.entities:
+            if raw_config := getattr(entity, "raw_config", None):
+                _collect_every_string(raw_config, found)
+
     return found

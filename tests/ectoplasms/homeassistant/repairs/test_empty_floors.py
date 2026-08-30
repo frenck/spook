@@ -7,6 +7,7 @@ from datetime import timedelta
 from typing import TYPE_CHECKING
 
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.setup import async_setup_component
 from homeassistant.helpers import area_registry as ar, floor_registry as fr
 
 from custom_components.spook.const import DOMAIN
@@ -149,3 +150,78 @@ async def test_fix_flow_ignore_option_dismisses_issue(
     issue = issue_registry.async_get_issue(DOMAIN, _issue_id(floor.floor_id))
     assert issue is not None
     assert issue.dismissed_version is not None
+
+
+async def test_a_floor_only_named_in_a_repeat_is_not_reported(
+    hass: HomeAssistant,
+    floor_registry: fr.FloorRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A `repeat` `for_each` list is a target of nothing.
+
+    Neither Home Assistant's own extraction nor Spook's sees it, and this
+    repair offers to delete what it finds, so being named anywhere is enough
+    to leave it alone.
+    """
+    floor = floor_registry.async_create("Attic")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "walk": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": [floor.floor_id],
+                                "sequence": [{"action": "light.turn_on", "target": {}}],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(floor.floor_id)) is None
+
+
+async def test_a_floor_nobody_mentions_at_all_is_still_reported(
+    hass: HomeAssistant,
+    floor_registry: fr.FloorRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """So the check above cannot pass by never reporting anything again."""
+    forgotten = floor_registry.async_create("Forgotten")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "walk": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": ["something_else"],
+                                "sequence": [{"action": "light.turn_on", "target": {}}],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(forgotten.floor_id))

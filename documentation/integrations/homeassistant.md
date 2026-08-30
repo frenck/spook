@@ -66,17 +66,23 @@ An {term}`area` with no devices, no entities, and no automation or script target
 
 Spook checks references as well as contents, so an area that is deliberately empty because an automation targets it is left alone. The raised issue is fixable: Spook can remove the area for you.
 
+Being named anywhere in an automation or script counts, not only being targeted by one. An area listed in a `repeat` block's `for_each` is the target of nothing, and Home Assistant does not report it as a reference, but a script plainly needs it. Since this issue offers to delete the area, a mention anywhere is enough for Spook to leave it be.
+
 ### Empty floors
 
 A {term}`floor` exists to group areas. One with no areas at all, and no automation or script targeting it, is not doing that.
 
 The raised issue is fixable: Spook can remove the floor for you.
 
+Being named anywhere in an automation or script counts, not only being targeted by one. A floor listed in a `repeat` block's `for_each` is the target of nothing, and Home Assistant does not report it as a reference, but a script plainly needs it. Since this issue offers to delete the floor, a mention anywhere is enough for Spook to leave it be.
+
 ### Unused labels
 
 A {term}`label` that is applied to no entity, device or area, and that no automation or script targets, is not doing anything either.
 
 The raised issue is fixable: Spook can remove the label for you.
+
+Being named anywhere in an automation or script counts, not only being targeted by one. A label listed in a `repeat` block's `for_each` is the target of nothing, and Home Assistant does not report it as a reference, but a script plainly needs it. Since this issue offers to delete the label, a mention anywhere is enough for Spook to leave it be.
 
 ### Unused blueprints
 

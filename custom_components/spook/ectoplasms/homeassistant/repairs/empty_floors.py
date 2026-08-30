@@ -14,6 +14,7 @@ from homeassistant.helpers import (
 from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
+from ....reference_extraction import async_collect_mentioned_strings
 from ....repairs import AbstractSpookRepair
 
 # Give a freshly created floor time to get areas assigned before nagging.
@@ -42,6 +43,8 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
+        mentioned = async_collect_mentioned_strings(self.hass)
+
         floor_registry = fr.async_get(self.hass)
         area_registry = ar.async_get(self.hass)
 
@@ -57,6 +60,11 @@ class SpookRepair(AbstractSpookRepair):
             if automations_with_floor(self.hass, floor.floor_id):
                 continue
             if scripts_with_floor(self.hass, floor.floor_id):
+                continue
+            if floor.floor_id in mentioned:
+                # Named somewhere in an automation or script without
+                # being a target of it, so removing it would break
+                # something. Not ours to offer up.
                 continue
 
             self.async_create_issue(

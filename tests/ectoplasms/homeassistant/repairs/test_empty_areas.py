@@ -9,6 +9,7 @@ from typing import TYPE_CHECKING
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.data_entry_flow import FlowResultType
+from homeassistant.setup import async_setup_component
 
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.homeassistant.repairs import empty_areas
@@ -216,3 +217,85 @@ async def test_fix_flow_remove_survives_already_removed_area(
     result = await flow.async_step_remove()
     assert result["type"] == FlowResultType.CREATE_ENTRY
     assert area_registry.async_get_area("gone") is None
+
+
+async def test_an_area_only_named_in_a_repeat_is_not_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The shape from the report: areas that exist so a script can list them.
+
+    A `repeat` `for_each` list is not a target of anything. Home Assistant's
+    `referenced_areas` reports the template rather than the list it walks, and
+    Spook's own target extraction skips templates, so neither sees the area at
+    all. It is plainly in use, and this repair offers to delete it.
+    """
+    area = area_registry.async_create("Vacuum Only")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "clean_upstairs": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": [area.id],
+                                "sequence": [
+                                    {
+                                        "action": "vacuum.clean_area",
+                                        "target": {"area_id": "{{ repeat.item }}"},
+                                    }
+                                ],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
+
+
+async def test_an_area_nobody_mentions_at_all_is_still_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """So the check above cannot pass by never reporting anything again."""
+    area_registry.async_create("Mentioned")
+    forgotten = area_registry.async_create("Forgotten")
+    freezer.tick(_AGED)
+
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "clean": {
+                    "sequence": [
+                        {
+                            "repeat": {
+                                "for_each": ["mentioned"],
+                                "sequence": [{"action": "vacuum.start", "target": {}}],
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(forgotten.id))

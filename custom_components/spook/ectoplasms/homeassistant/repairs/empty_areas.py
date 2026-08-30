@@ -15,6 +15,7 @@ from homeassistant.helpers import (
 from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
+from ....reference_extraction import async_collect_mentioned_strings
 from ....repairs import AbstractSpookRepair
 
 # Give a freshly created area time to be filled before nagging about it.
@@ -46,6 +47,8 @@ class SpookRepair(AbstractSpookRepair):
         """Trigger an inspection."""
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
+        mentioned = async_collect_mentioned_strings(self.hass)
+
         area_registry = ar.async_get(self.hass)
         device_registry = dr.async_get(self.hass)
         entity_registry = er.async_get(self.hass)
@@ -64,6 +67,11 @@ class SpookRepair(AbstractSpookRepair):
             if automations_with_area(self.hass, area.id):
                 continue
             if scripts_with_area(self.hass, area.id):
+                continue
+            if area.id in mentioned:
+                # Named somewhere in an automation or script without
+                # being a target of it, so removing it would break
+                # something. Not ours to offer up.
                 continue
 
             self.async_create_issue(
