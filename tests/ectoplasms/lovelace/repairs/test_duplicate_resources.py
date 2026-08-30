@@ -5,10 +5,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
+import re
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
 from homeassistant.components.lovelace.resources import RESOURCE_STORAGE_KEY
+from homeassistant.helpers import collection
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.const import DOMAIN
@@ -57,11 +59,16 @@ class _FakeStorageResources:
         return {"resources": len(self.items)}
 
     async def async_delete_item(self, item_id: str) -> None:
-        """Drop one item, raising like the real one when it is not there."""
+        """Drop one item, raising what the real collection raises.
+
+        `DictStorageCollection` raises `ItemNotFound`, which is a
+        `HomeAssistantError` and not a `KeyError`, so anything catching the
+        wrong one would look fine here and abort the flow in the house.
+        """
         before = len(self.items)
         self.items = [item for item in self.items if item["id"] != item_id]
         if len(self.items) == before:
-            raise KeyError(item_id)
+            raise collection.ItemNotFound(item_id)
 
 
 def _set_resources(hass: HomeAssistant, urls: list[str]) -> _FakeStorageResources:
@@ -347,3 +354,47 @@ def test_lovelace_is_a_hard_dependency() -> None:
     )
 
     assert "lovelace" in manifest["dependencies"]
+
+
+async def test_the_non_fixable_issue_says_something(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """A YAML issue has no fix flow, so its text is the top-level description.
+
+    Without one the repairs list shows a title and nothing else: no URLs, no
+    hint that the file is where to go. The fix flow's own text is unreachable
+    for these, since there is no button to open it.
+    """
+    hass.data["lovelace"] = SimpleNamespace(
+        resources=SimpleNamespace(
+            async_items=lambda: [
+                {"url": "/local/card.js?v=1", "type": "module"},
+                {"url": "/local/card.js?v=2", "type": "module"},
+            ],
+            async_get_info=_no_loading_needed,
+        ),
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _issue_id("/local/card.js"))
+    assert issue
+    assert not issue.is_fixable
+
+    strings = json.loads(
+        (
+            Path(__file__).parents[4]
+            / "custom_components"
+            / "spook"
+            / "translations"
+            / "en.json"
+        ).read_text()
+    )
+    block = strings["issues"]["lovelace_duplicate_resources"]
+    assert block.get("description"), "a non-fixable issue shows this or nothing"
+
+    # Everything that text interpolates has to be on the issue.
+    needed = set(re.findall(r"\{(\w+)\}", block["description"]))
+    assert issue.translation_placeholders
+    assert not needed - set(issue.translation_placeholders)

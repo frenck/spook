@@ -6,7 +6,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 
-from homeassistant.helpers import issue_registry as ir
+from homeassistant.helpers import collection, issue_registry as ir
 
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.repairs import (
@@ -94,10 +94,48 @@ async def test_removing_leaves_other_resources_alone(hass: HomeAssistant) -> Non
     ]
 
 
-async def test_removing_something_already_gone_still_finishes(
+class _RacyResources(_FakeStorageResources):
+    """A collection where one copy vanishes before the flow reaches it."""
+
+    def __init__(self, urls: list[str], *, vanishing: str) -> None:
+        """Remember which item ID somebody else is about to remove."""
+        super().__init__(urls)
+        self._vanishing = vanishing
+
+    async def async_delete_item(self, item_id: str) -> None:
+        """Raise for the vanished one, the way the real collection would."""
+        if item_id == self._vanishing:
+            raise collection.ItemNotFound(item_id)
+        await super().async_delete_item(item_id)
+
+
+async def test_a_copy_removed_underneath_the_flow_does_not_stop_it(
     hass: HomeAssistant,
 ) -> None:
-    """Somebody clearing it themselves first is a fine way for this to end."""
+    """The copies to clear are worked out first, then removed one at a time.
+
+    Somebody removing one in between is a fine way for this to end, but only
+    if the right exception is caught: the collection raises `ItemNotFound`,
+    which is a `HomeAssistantError` and not a `KeyError`.
+    """
+    resources = _RacyResources(
+        ["/local/card.js?v=1", "/local/card.js?v=2", "/local/card.js?v=3"],
+        vanishing="0",
+    )
+    hass.data["lovelace"] = SimpleNamespace(resources=resources)
+
+    result = await _flow(hass, "/local/card.js").async_step_remove()
+
+    assert result["type"] == "create_entry"
+    # The one that vanished is still listed here, because this fake only
+    # refuses to delete it. The point is that v=2 was still cleared after it.
+    assert _urls(resources) == ["/local/card.js?v=1", "/local/card.js?v=3"]
+
+
+async def test_removing_when_there_is_nothing_left_to_remove_still_finishes(
+    hass: HomeAssistant,
+) -> None:
+    """Somebody clearing them all themselves first is a fine ending too."""
     resources = _FakeStorageResources(["/local/card.js?v=2"])
     hass.data["lovelace"] = SimpleNamespace(resources=resources)
 

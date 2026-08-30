@@ -25,6 +25,7 @@ from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     area_registry as ar,
+    collection,
     device_registry as dr,
     entity_registry as er,
     floor_registry as fr,
@@ -767,9 +768,9 @@ class DuplicateResourceFixFlow(_RemoveOrIgnoreFixFlow):
         await resources.async_get_info()
 
         for item_id in redundant_item_ids(resources.async_items() or [], key):
-            # Somebody may have cleared it themselves since the issue was
-            # raised, which is a fine way for this to end too.
-            with suppress(KeyError, ValueError):
+            # Somebody may have cleared it themselves between the snapshot
+            # above and here, which is a fine way for this to end too.
+            with suppress(collection.ItemNotFound):
                 await resources.async_delete_item(item_id)
 
         return self.async_create_entry(data={})
