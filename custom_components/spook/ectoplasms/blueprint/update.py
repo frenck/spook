@@ -6,6 +6,7 @@ import asyncio
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from datetime import timedelta
+import difflib
 import hashlib
 import json
 import os
@@ -195,6 +196,11 @@ _CANNOT_SAY_WHAT_DIFFERS = (
 # Settings named before it turns into a wall. Past a few, what somebody needs
 # to know is how many there are, not what every one of them is called.
 _HOW_MANY_TO_NAME = 3
+
+# Lines of the difference itself before it stops being worth sending. A
+# blueprint of half a megabyte that has been rewritten runs to thousands,
+# and all of them travel to the dialog whether anybody opens it or not.
+_HOW_MANY_LINES = 100
 
 # The keys at the top of a blueprint that say what it does. Grouped, because
 # "the triggers changed" and "the actions changed" are the same news to
@@ -616,6 +622,49 @@ def _in_words(changes: _Changes) -> list[str]:
     lines.extend(f"{words} **changed**" for words in sorted(changes.calling))
 
     return lines
+
+
+def _diffed(here: blueprint.Blueprint, there: blueprint.Blueprint) -> str:
+    """Return the two of them line by line, with none of the noise.
+
+    Both sides written out by the same dumper, on purpose. The file on disk was
+    written by Home Assistant and the fetched one carries its author's own
+    layout, so comparing those two directly reports indentation and quoting as
+    changes: eleven lines of them on an eighteen-line blueprint that had not
+    changed at all, and hundreds of hunks on a real one. Dumping both puts
+    them in the same handwriting first, which leaves only what actually moved.
+
+    In the executor: dumping half a megabyte of YAML twice is not something to
+    do on the event loop.
+    """
+    lines = list(
+        difflib.unified_diff(
+            here.yaml().splitlines(),
+            there.yaml().splitlines(),
+            fromfile="the copy you have",
+            tofile="what is there now",
+            lineterm="",
+        ),
+    )
+
+    if not lines:
+        return ""
+
+    shown = lines[:_HOW_MANY_LINES]
+
+    if (rest := len(lines) - _HOW_MANY_LINES) > 0:
+        shown.append(f"... and {rest} more lines")
+
+    body = "\n".join(shown)
+
+    # Collapsed, because most people want the sentence above it and not this.
+    # Home Assistant's markdown keeps `details` and `summary`, and parses a
+    # fenced block inside them, so this arrives as a code block somebody can
+    # open rather than a wall they have to scroll past.
+    return (
+        "<details>\n<summary>Line by line</summary>\n\n"
+        f"```diff\n{body}\n```\n\n</details>"
+    )
 
 
 def _fingerprint(item: blueprint.Blueprint) -> str:
@@ -1242,6 +1291,31 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         return "\n".join([_WHAT_DIFFERS, *(f"- {line}" for line in lines)])
 
+    async def _async_line_by_line(self) -> str:
+        """Return the difference itself, for whoever wants to see it.
+
+        The words above it say what kind of change this is. This says exactly
+        what it is, which is the only thing that ever settles an argument about
+        whether an update is worth taking.
+        """
+        if self._fetched is None or (here := await self._async_here()) is None:
+            return ""
+
+        return await self.hass.async_add_executor_job(_diffed, here, self._fetched)
+
+    async def _async_here(self) -> blueprint.Blueprint | None:
+        """Return the blueprint as the file has it right now.
+
+        Read off the file rather than taken from the copy Home Assistant has
+        loaded. That one has been through the domain's own schema, which
+        rewrites the older spellings, and every blueprint written before those
+        names changed would come out looking different from itself.
+        """
+        if (file := self._file()) is None:
+            return None
+
+        return await self.hass.async_add_executor_job(_read_one, file)
+
     async def _async_what_differs(self) -> _Changes | None:
         """Return where the fetched blueprint and the one here disagree.
 
@@ -1254,10 +1328,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         rewrites the older spellings, and every blueprint written before those
         names changed would come out looking different from itself.
         """
-        if self._fetched is None or (file := self._file()) is None:
-            return None
-
-        if (here := await self.hass.async_add_executor_job(_read_one, file)) is None:
+        if self._fetched is None or (here := await self._async_here()) is None:
             return None
 
         return _changes(here, self._fetched)
@@ -1296,24 +1367,33 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         if nothing_on_offer:
             return "\n\n".join([*aside, came_from, built_on_it])
 
+        # A refusal goes at the top. Everything under it is context for a
+        # decision that has already been taken, and burying "this cannot be
+        # installed" under three paragraphs of what changed asks somebody to
+        # read all of it before finding out none of it matters yet.
+        #
+        # One entry per list rather than one per line, too: bullets handed
+        # over separately end up with a blank line between them, which
+        # markdown reads as a list wanting room around every item.
+        refusal: list[str] = []
+
+        if errors := self._fetched.validate():
+            refusal.append(_WOULD_NOT_RUN)
+            refusal.append("\n".join(f"- {error}" for error in errors))
+
+        if short := await self._async_consumers_left_short(self._fetched):
+            refusal.append(_WOULD_BE_REFUSED)
+            refusal.append(self._as_a_list(short))
+
         notes = [
+            *refusal,
             *aside,
             _NO_PROMISES,
             came_from,
             await self._async_differences(),
             built_on_it,
+            await self._async_line_by_line(),
         ]
-
-        # One entry per list rather than one per line. Bullets handed over
-        # separately end up with a blank line between them, which markdown
-        # reads as a list that wants room around every item.
-        if errors := self._fetched.validate():
-            notes.append(_WOULD_NOT_RUN)
-            notes.append("\n".join(f"- {error}" for error in errors))
-
-        if short := await self._async_consumers_left_short(self._fetched):
-            notes.append(_WOULD_BE_REFUSED)
-            notes.append(self._as_a_list(short))
 
         return "\n\n".join(line for line in notes if line)
 
