@@ -122,6 +122,31 @@ Underneath that, what is built on the {term}`blueprint <blueprint>`, because an 
 
 Each one links to its editor, so you can go and look at what an update is about to reach before you install it. An {term}`automation <automation>` written in YAML without an `id:` has no editor to open, so that one links to the overview page instead. And when nothing is built on it you get told that too, in as many words, because it means you can install without reading any further.
 
+And underneath that, the difference itself, folded away because most people want the sentence above it:
+
+```{code-block} text
+@@ -7,11 +7,14 @@
+       name: Motion sensor
+     light_target:
+       name: Light
++    wait_time:
++      name: Wait time
++      default: 120
+ trigger:
+ - platform: state
+   entity_id: !input motion_entity
+   to: 'on'
+ action:
+-- service: light.turn_on
++- service: light.toggle
+   entity_id: !input light_target
+ mode: restart
+```
+
+Both sides go through Home Assistant's own YAML writer before being compared. Without that, the file on your disk (written by Home Assistant) and the one just fetched (in its author's layout) differ in indentation and quoting before they differ in anything that matters: eleven lines of that on an eighteen-line {term}`blueprint <blueprint>` that had not changed at all, and hundreds of those on a large one. What is left after writing both out the same way is only what moved. Past a hundred lines it stops and says how many more there were, because all of it travels to your browser whether you open it or not.
+
+**When Spook is not going to install something, that comes first.** A red banner at the top, naming what would break or the Home Assistant version it wants, above everything else. What changed and what is built on it are still there underneath, but they are context for a decision already taken.
+
 The warning is advice, and an update that is otherwise fine still installs. The rest are refusals: Spook will not write a blueprint that would leave an automation or script short of an input, one that would not load once it has been built, or one that says it needs a Home Assistant you are not running.
 
 Matter and ZHA put much the same warning in front of a firmware update, for much the same reason.

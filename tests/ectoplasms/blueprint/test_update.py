@@ -37,6 +37,7 @@ from custom_components.spook.ectoplasms.blueprint.update import (
     _canonical,
     _in_words,
     _changes,
+    _HOW_MANY_LINES,
     _HOW_MANY_TO_NAME,
     _normalize,
     _fingerprint,
@@ -2179,7 +2180,11 @@ async def test_the_notes_count_settings_once_there_are_too_many_to_read(
 
     notes = await _release_notes(client)
     assert f"**New settings**: {plenty}" in notes
-    assert "Extra 0" not in notes
+
+    # The summary counts them. The difference itself is further down and does
+    # name every one, which is what it is for.
+    summary = notes.split("<details>")[0]
+    assert "Extra 0" not in summary
 
 
 def test_a_source_url_of_its_own_is_not_a_difference() -> None:
@@ -2424,3 +2429,123 @@ async def test_the_notes_call_a_script_a_script(
     notes = await _release_notes(client, "update.spooky_confirmable_notification")
     assert "**The following script is using this blueprint:**" in notes
     assert "/config/script/edit/shout" in notes
+
+
+async def test_the_notes_carry_the_difference_itself(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Collapsed, because most people want the sentence and not this.
+
+    Home Assistant's markdown keeps `details` and `summary` and parses a fenced
+    block inside them, so this arrives as something to open rather than a wall
+    to scroll past.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "<details>" in notes
+    assert "<summary>Line by line</summary>" in notes
+    assert "```diff" in notes
+    assert "+  to: 'off'" in notes
+
+
+async def test_the_difference_holds_nothing_but_the_difference(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Written by hand, so the file on disk is in its author's own layout.
+
+    Home Assistant writes a blueprint back out in its own formatting, so a
+    file somebody edited themselves and a freshly fetched one differ in
+    indentation, quoting and line breaks before either of them differs in
+    anything that matters. Eleven lines of that on this very blueprint.
+
+    So both sides go through the same dumper first, and what is left is the one
+    line that moved.
+    """
+    write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    # The difference itself, not the bullets above it: those start with a
+    # hyphen too, being a markdown list.
+    block = notes.split("```diff")[1].split("```")[0]
+    moved = [
+        line
+        for line in block.splitlines()
+        if line.startswith(("+", "-")) and not line.startswith(("+++", "---"))
+    ]
+
+    assert moved == ["-  to: 'on'", "+  to: 'off'"]
+
+
+async def test_a_difference_too_long_to_send_is_cut_short(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """All of it travels to the dialog whether anybody opens it or not.
+
+    A blueprint of half a megabyte that has been rewritten runs to thousands of
+    lines, and sending those to say "quite a lot changed" is not a trade worth
+    making.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    plenty = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        + "".join(
+            f"    extra_{number}:\n      name: Extra {number}\n"
+            f"      default: {number}\n"
+            for number in range(_HOW_MANY_LINES)
+        ),
+    )
+
+    with _source_says(plenty):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "more lines" in notes
+    assert len(notes.splitlines()) < _HOW_MANY_LINES * 2
+
+
+async def test_a_refusal_comes_before_anything_else(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Everything else is context for a decision already taken.
+
+    Burying "this cannot be installed" under three paragraphs of what changed
+    asks somebody to read all of it before finding out none of it matters yet.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Landing light", "motion.yaml", _MOTION_INPUTS)
+
+    with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    assert notes.startswith("<ha-alert alert-type='error'>")
+    assert notes.index("will not install this one") < notes.index("carry no changelog")
+    assert notes.index("will not install this one") < notes.index("Compared with")
