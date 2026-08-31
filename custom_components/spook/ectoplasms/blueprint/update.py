@@ -579,9 +579,13 @@ def _spelled_out(
     the blueprint, not only among the ones that moved. A new setting called
     "Light" alongside an untouched one of the same name is exactly as confusing
     as two new ones.
+
+    The key gets the same treatment as the label. It is written by the same
+    author, and one holding a backtick would otherwise close the span it was
+    put in and carry on in markup.
     """
     return [
-        label if len(carrying.get(label, ())) == 1 else f"{label} (`{key}`)"
+        label if len(carrying.get(label, ())) == 1 else f"{label} ({_as_text(key)})"
         for label, key in settings
     ]
 
@@ -1385,8 +1389,21 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             await self._async_install(backup=backup)
 
     async def _async_install(self, *, backup: bool = False) -> None:
-        """Write the source over what is here, with the blueprint to ourselves."""
-        fetched = await self._async_fetch()
+        """Write what was offered over the copy that is here.
+
+        What was offered, rather than whatever the source says by the time
+        somebody presses the button. The dialog has just told them which
+        settings moved, what it will stop, and every line that differs, and all
+        of that was worked out from this exact blueprint. Fetching again would
+        write something nobody has read, and leave the entity claiming a
+        version it never offered.
+
+        Only fetched here when there is nothing to install from, which means
+        somebody has called this before a round ever ran.
+        """
+        fetched = (
+            self._fetched if self._fetched is not None else await self._async_fetch()
+        )
 
         # The blueprint saying for itself that it needs a newer Home Assistant.
         # Writing it anyway would break every consumer on a version that is
@@ -1751,7 +1768,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         """
         component = self.hass.data.get(DATA_INSTANCES, {}).get(self.blueprint_domain)
         if component is None:
-            return {}
+            return _LeftShort(stopped={}, unknown=[])
 
         uses = _USES_BLUEPRINTS[self.blueprint_domain]
         short: dict[str, str] = {}

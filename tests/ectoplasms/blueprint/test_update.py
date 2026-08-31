@@ -721,24 +721,28 @@ async def test_another_blueprint_at_the_same_address_is_not_this_one(
 
     assert hass.states.get(_ENTITY).state == "off"
 
-    # And again for the gap in between: an update found honestly, and the
-    # topic having moved on by the time somebody presses the button.
+    # And the gap in between is not a gap any more. An update found honestly,
+    # the topic moving on to somebody else's blueprint before the button gets
+    # pressed, and what is written is still the one that was offered: the
+    # install has nothing to fetch, because it writes what the dialog just
+    # described.
     with _source_says(MOTION_LIGHT_CHANGED):
         await _check(hass, freezer)
     assert hass.states.get(_ENTITY).state == "on"
 
-    with (
-        _source_says(ANOTHER_AUTOMATION_BLUEPRINT),
-        pytest.raises(HomeAssistantError, match="Spooky doorbell chime"),
-    ):
+    with _source_says(ANOTHER_AUTOMATION_BLUEPRINT):
         await hass.services.async_call(
             "update",
             "install",
             {"entity_id": _ENTITY},
             blocking=True,
         )
+    await hass.async_block_till_done()
 
-    assert file.read_text(encoding="utf-8") == before
+    written = file.read_text(encoding="utf-8")
+    assert written != before
+    assert "Spooky doorbell chime" not in written
+    assert "to: 'off'" in written
 
 
 async def test_a_blueprint_needing_a_newer_home_assistant_is_refused(
@@ -2298,8 +2302,8 @@ async def test_a_rename_that_keeps_the_label_still_reads_as_two_things(
         await _check(hass, freezer)
 
     notes = await _release_notes(client)
-    assert "**New settings**: Motion sensor (`motion_sensor`)" in notes
-    assert "**Settings taken away**: Motion sensor (`motion_entity`)" in notes
+    assert "**New settings**: Motion sensor (motion\\_sensor)" in notes
+    assert "**Settings taken away**: Motion sensor (motion\\_entity)" in notes
 
 
 async def test_a_home_assistant_it_needs_is_only_said_once(
@@ -2747,7 +2751,7 @@ def test_a_new_setting_is_told_apart_from_one_that_was_already_there() -> None:
     )
 
     assert _said_about(MOTION_LIGHT, another) == [
-        "**New settings**: Light (`another_light`)",
+        "**New settings**: Light (another\\_light)",
     ]
 
 
@@ -3021,3 +3025,86 @@ async def test_not_knowing_is_said_apart_from_knowing(
 
     # Named the same way as everywhere else, and with nothing trailing it.
     assert "- [Landing light](/config/automation/edit/landing_light)\n" in notes
+
+
+async def test_what_gets_written_is_what_the_dialog_described(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The dialog works all of it out from one fetched blueprint.
+
+    Which settings moved, what would stop loading, every line that differs.
+    Fetching again on the way to the disk would write something nobody has
+    read, and leave the entity claiming a version it never offered.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    offered = hass.states.get(_ENTITY).attributes["latest_version"]
+    assert "to: 'off'" in await _release_notes(client)
+
+    # The source moves on between reading and pressing.
+    with _source_says(MOTION_LIGHT_CHANGED_AGAIN):
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    written = file.read_text(encoding="utf-8")
+    assert "to: 'off'" in written
+    assert "mode: queued" not in written
+
+    # And the version it claims is the one it offered, so nothing turns up
+    # installed under a fingerprint that was never shown to anybody.
+    assert hass.states.get(_ENTITY).attributes["installed_version"] == offered
+
+
+async def test_the_notes_survive_a_domain_that_is_not_loaded(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Asking what is built on a blueprint needs the domain to be there.
+
+    When it is not, there is nothing to say and the dialog says the rest. An
+    empty answer of the wrong shape takes the whole websocket command down
+    instead, and somebody opening the dialog sees nothing at all.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    monkeypatch.delitem(hass.data[DATA_INSTANCES], "automation")
+
+    notes = await _release_notes(client)
+    assert "Compared with the copy you have" in notes
+
+
+def test_a_key_cannot_close_the_span_it_is_named_in() -> None:
+    """A key is written by the same author as everything else.
+
+    Two settings sharing a label get their keys shown to tell them apart, and
+    a key holding a backtick would otherwise close the span it was put in and
+    carry on in markup.
+    """
+    hostile = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        '    "back`tick</ha-alert>":\n      name: Light\n      default: 1\n',
+    )
+
+    said = _said_about(MOTION_LIGHT, hostile)
+
+    assert said == ["**New settings**: Light (back\\`tick\\</ha-alert\\>)"]
