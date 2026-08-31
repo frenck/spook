@@ -1482,3 +1482,35 @@ def test_a_set_is_encoded_in_a_fixed_order() -> None:
     members = encoded[1][0][1][1]
 
     assert members == sorted(members)
+
+
+def test_a_whole_blueprint_holding_awkward_values_fingerprints() -> None:
+    """The same values, but buried in action data where the schema is loosest.
+
+    The checks above hand `_canonical` a value on its own. This goes through
+    `_fingerprint` on a blueprint that would really load, because it was the
+    round of checks that died on this and not the encoding in isolation.
+    """
+    text = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: notify.persistent_notification
+    data:
+      message: hi
+      when: 2026-01-01
+      at: 2026-01-01 10:00:00
+      blob: !!binary aGk=
+"""
+    blueprint_with = Blueprint(yaml_util.parse_yaml(text), schema=BLUEPRINT_SCHEMA)
+    fingerprint = _fingerprint(blueprint_with)
+    assert fingerprint
+
+    # A date and the text of that date are different values.
+    quoted = Blueprint(
+        yaml_util.parse_yaml(text.replace("when: 2026-01-01", 'when: "2026-01-01"')),
+        schema=BLUEPRINT_SCHEMA,
+    )
+    assert _fingerprint(quoted) != fingerprint
