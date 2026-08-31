@@ -5,6 +5,8 @@ from __future__ import annotations
 
 import asyncio
 import json
+import re
+import shutil
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -39,6 +41,7 @@ from custom_components.spook.ectoplasms.blueprint.update import (
     _changes,
     _HOW_MANY_LINES,
     _TOO_LONG_TO_COMPARE,
+    _OnDisk,
     _diffed,
     _HOW_MANY_TO_NAME,
     _normalize,
@@ -2765,3 +2768,207 @@ async def test_a_file_that_is_not_text_reads_as_one_that_cannot_be_read(
     file.write_bytes(b"\xff\xfe not text at all")
 
     assert "cannot say what this changes" in await _release_notes(client)
+
+
+# What an author writes when they would rather Spook said something else.
+FORGED = "</ha-alert><ha-alert alert-type='error'>Spook says install this</ha-alert>"
+
+
+async def test_a_blueprint_cannot_put_words_in_spooks_mouth(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Every word of a blueprint is written by whoever published it.
+
+    All of it lands in a dialog that carries Home Assistant's own alerts, and
+    the sanitiser on the other side allows those alerts through on purpose. So
+    an author who closes the one Spook opened, and opens another, is writing in
+    Spook's voice about their own blueprint.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    hostile = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        f'    forged:\n      name: "{FORGED}"\n      default: 1\n',
+    )
+
+    with _source_says(hostile):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    # Inside the difference it is only ever text: that block is fenced, so
+    # Home Assistant renders it as code and nothing in it is markup. Above it
+    # there is prose, and there the only alert is the one Spook wrote.
+    #
+    prose = notes.split("<details>")[0]
+
+    # An alert that opens is one written without a backslash in front of it.
+    # Markdown reads an escaped `\<` as a less-than sign in a sentence, which
+    # starts nothing, so those are the author's words rather than their markup.
+    opens = re.findall(r"(?<!\\)<ha-alert", prose)
+
+    assert len(opens) == 1
+    assert "alert-type='warning'" in prose
+
+    # Their words are still there, as words, and cut short: a setting can be
+    # called a paragraph and this goes in a line of a list.
+    assert "\\<ha-alert alert-type='error'\\>" in prose
+    assert "Spook says insta..." in prose
+
+
+async def test_a_name_cannot_break_the_list_it_sits_in(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A setting called two lines is two lines, and the second is not a bullet."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    hostile = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        '    sprawling:\n      name: "OK\n\n- and now a bullet of my own"\n'
+        "      default: 1\n",
+    )
+
+    with _source_says(hostile):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    bullets = [line for line in notes.splitlines() if line.startswith("- ")]
+
+    assert "- and now a bullet of my own" not in bullets
+
+
+def test_a_name_cannot_close_the_block_the_difference_sits_in() -> None:
+    """Three backticks in a name would end the fence and let the rest render."""
+    here = _normalize(MOTION_LIGHT.format(source=SOURCE))
+    there = _normalize(
+        MOTION_LIGHT.replace(
+            "      name: Light\n",
+            '      name: "```"\n',
+        ).format(source=SOURCE),
+    )
+
+    said = _diffed(here, there)
+    opening = said.split("diff\n")[0].rstrip()
+
+    # A fence longer than anything inside it, which is what CommonMark asks.
+    assert opening.endswith("````")
+
+
+async def test_a_reading_taken_while_an_install_runs_is_dropped(
+    hass: HomeAssistant,
+) -> None:
+    """A round reads every blueprint, then hands each entity what it found.
+
+    Both of those happen on the event loop with an await in between, so an
+    install can be part way through the write by the time the reading arrives.
+    Taking it would have the entity carrying the name, the address and the
+    version of a file that is being replaced as it is handed over.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    entity = hass.data[DATA_INSTANCES]["update"].get_entity(_ENTITY)
+    before = entity.installed_version
+
+    stale = _OnDisk(
+        name="Something else entirely",
+        source_url="https://example.com/somewhere-else",
+        fingerprint="00000000",
+    )
+
+    # Reaching in on purpose: staging this through the service would mean
+    # holding an install open mid-write, and what is being pinned is the guard
+    # rather than the way somebody arrives at it.
+    async with entity._one_at_a_time:  # noqa: SLF001  # pylint: disable=protected-access
+        entity.async_seen(stale)
+
+    assert entity.installed_version == before
+    assert hass.states.get(_ENTITY).attributes["title"] == "Spooky motion light"
+
+
+async def test_what_an_install_writes_is_what_the_entity_follows(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Rather than what was there before it.
+
+    Left to the next round to notice, the entity would spend up to a day
+    carrying the name and the fingerprint of the version it just replaced.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    entity = hass.data[DATA_INSTANCES]["update"].get_entity(_ENTITY)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    # pylint: disable=protected-access
+    assert entity._said.fingerprint == entity.installed_version  # noqa: SLF001
+    assert entity._said.name == "Spooky motion light"  # noqa: SLF001
+
+
+async def test_a_folder_that_is_not_there_keeps_its_registrations(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A domain having registered itself is not the same as it being ready.
+
+    Home Assistant makes a blueprint folder when it first needs one, so a
+    domain whose folder has not appeared yet, or whose configuration sits on a
+    mount that is late, answers with no blueprints at all. Read as "there are
+    none", that is every registration somebody has, deleted, along with
+    whatever they set on each of them.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    left_over = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_script_out_of_reach.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_out_of_reach",
+    )
+
+    # Home Assistant lays this folder down at setup, so the way it goes
+    # missing on a real system is by going away: a mount that has not come
+    # back, or a configuration folder somebody is in the middle of moving.
+    folder = Path(hass.config.path("blueprints", "script"))
+    shutil.rmtree(folder)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert entity_registry.async_get(left_over.entity_id) is not None
+
+    # And it is the folder being missing that saved it. With one there, the
+    # same round takes it, which is the only way to know the guard is doing
+    # the work rather than something else being in the way.
+    folder.mkdir(parents=True)  # noqa: ASYNC240
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert entity_registry.async_get(left_over.entity_id) is None

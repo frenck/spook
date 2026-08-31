@@ -203,6 +203,14 @@ _CANNOT_SAY_WHAT_DIFFERS = (
 # to know is how many there are, not what every one of them is called.
 _HOW_MANY_TO_NAME = 3
 
+# And how much of a name is worth reading. Nothing stops an author calling
+# a setting a paragraph, and this goes in a line of a list.
+_AS_LONG_AS_A_NAME = 60
+
+# What a blueprint writes that has to arrive as words. The backslash goes
+# first, or escaping the rest would escape the escapes.
+_NOT_MARKUP = "\\`*_[]<>&|#"
+
 # Lines of the difference itself before it stops being worth sending. A
 # blueprint of half a megabyte that has been rewritten runs to thousands,
 # and all of them travel to the dialog whether anybody opens it or not.
@@ -211,6 +219,16 @@ _HOW_MANY_LINES = 100
 # And the length of blueprint worth starting on at all. Measured: 3,500
 # lines takes a tenth of a second, 14,000 takes two, 36,000 takes ten.
 _TOO_LONG_TO_COMPARE = 5000
+
+# Nothing stops a blueprint holding one line of half a megabyte, and the
+# line count above would let it through.
+_AS_WIDE_AS_A_LINE = 400
+
+# The fence a code block is normally written with, before anything inside
+# it argues for a longer one.
+_HOW_LONG_A_FENCE = 3
+
+_BACKTICKS = re.compile(r"`+")
 
 # The keys at the top of a blueprint that say what it does. Grouped, because
 # "the triggers changed" and "the actions changed" are the same news to
@@ -474,6 +492,44 @@ class _Changes:
         )
 
 
+def _as_words(value: Any) -> str:
+    """Return something written elsewhere, as words and nothing else.
+
+    Longer than a name is allowed to be, because these are whole sentences,
+    but held to the same rule: no markup, and nothing that closes a tag Spook
+    opened.
+    """
+    plain = " ".join(str(value).split())
+
+    for character in _NOT_MARKUP:
+        plain = plain.replace(character, f"\\{character}")
+
+    return plain
+
+
+def _as_text(value: str) -> str:
+    """Return something a blueprint's author wrote, as text and nothing else.
+
+    Every word of a blueprint comes from whoever published it, and all of this
+    is rendered as markdown in a dialog that carries Home Assistant's own
+    alerts. An author who names an input
+
+        Light</ha-alert> Spook checked this and it is safe
+
+    otherwise gets to put words in Spook's mouth, in a box that looks exactly
+    like the one Spook warns people with. Newlines break the list it sits in,
+    and backticks and brackets start markdown of their own.
+
+    So: one line, no markup, and short enough to read.
+    """
+    plain = _as_words(value)
+
+    if len(plain) > _AS_LONG_AS_A_NAME:
+        plain = f"{plain[:_AS_LONG_AS_A_NAME]}..."
+
+    return plain
+
+
 def _called(key: str, definition: Any) -> str:
     """Return what an input is called, as its author wrote it.
 
@@ -484,9 +540,9 @@ def _called(key: str, definition: Any) -> str:
         name := definition.get(CONF_NAME),
         str,
     ):
-        return name
+        return _as_text(name)
 
-    return key
+    return _as_text(key)
 
 
 def _spelled_out(
@@ -750,7 +806,14 @@ def _diffed(here: blueprint.Blueprint, there: blueprint.Blueprint) -> str:
     if (rest := len(lines) - _HOW_MANY_LINES) > 0:
         shown.append(f"... and {rest} more lines")
 
-    body = "\n".join(shown)
+    body = "\n".join(line[:_AS_WIDE_AS_A_LINE] for line in shown)
+
+    # A fence longer than the longest run of backticks inside it, which is what
+    # CommonMark asks for and what stops an author closing it early and having
+    # the rest of their blueprint rendered as markup.
+    fence = "`" * max(
+        _HOW_LONG_A_FENCE, *(len(run) + 1 for run in _BACKTICKS.findall(body)), 0
+    )
 
     # Collapsed, because most people want the sentence above it and not this.
     # Home Assistant's markdown keeps `details` and `summary`, and parses a
@@ -758,7 +821,7 @@ def _diffed(here: blueprint.Blueprint, there: blueprint.Blueprint) -> str:
     # open rather than a wall they have to scroll past.
     return (
         "<details>\n<summary>Line by line</summary>\n\n"
-        f"```diff\n{body}\n```\n\n</details>"
+        f"{fence}diff\n{body}\n{fence}\n\n</details>"
     )
 
 
@@ -1021,7 +1084,19 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
             {},
         )
 
-        domains = {domain for domain in domain_blueprints if domain in _USES_BLUEPRINTS}
+        # A domain counts as answered only when its folder is there to look
+        # in. Home Assistant makes that folder when it first needs it, and one
+        # that has not appeared yet, or sits on a mount that is late, reads as
+        # a domain with no blueprints at all: which is how a tidy-up turns into
+        # a clear-out of every registration somebody has.
+        domains = {
+            domain
+            for domain, domain_blueprint in domain_blueprints.items()
+            if domain in _USES_BLUEPRINTS
+            and await self.hass.async_add_executor_job(
+                domain_blueprint.blueprint_folder.is_dir,
+            )
+        }
 
         for domain, domain_blueprint in sorted(domain_blueprints.items()):
             if domain not in _USES_BLUEPRINTS:
@@ -1222,6 +1297,17 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         if said == self._said:
             return
 
+        # An install writes the file this was read from, so a reading handed
+        # over while one is running is of a file being replaced as it arrives.
+        # Taking it would leave the entity carrying the name, the address and
+        # the version of what has just been written over.
+        if self._one_at_a_time.locked():
+            LOGGER.debug(
+                "Spook is dropping a reading of %s taken while installing",
+                self.blueprint_path,
+            )
+            return
+
         self._said = said
         self._attr_name = said.name
         self._attr_title = said.name
@@ -1329,6 +1415,18 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # source was unreachable until tomorrow's round.
         self._set_aside = None
         self._fetched = fetched
+
+        # The file now holds what was fetched, so this is what it says. Left
+        # for the next round to notice, the entity would spend up to a day
+        # carrying the name of the version it replaced.
+        self._said = _OnDisk(
+            name=fetched.name,
+            source_url=fetched.metadata.get(CONF_SOURCE_URL) or self._said.source_url,
+            fingerprint=_fingerprint(fetched),
+        )
+        self._attr_name = self._said.name
+        self._attr_title = self._said.name
+
         self._attr_installed_version = _fingerprint(fetched)
         self._attr_latest_version = self._attr_installed_version
         self.async_write_ha_state()
@@ -1424,9 +1522,13 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # while the source itself had stopped answering.
         aside: list[str] = []
         if self._set_aside is not None:
+            # Escaped, because that message was built around a blueprint's own
+            # name and the address it came from, and it is about to sit inside
+            # an alert of Spook's. An author who closes that alert and opens
+            # one of their own gets to say anything they like in Spook's voice.
             aside.append(
                 "<ha-alert alert-type='info'>"
-                + self._set_aside
+                + _as_words(self._set_aside)
                 + (
                     ""
                     if nothing_on_offer
@@ -1654,6 +1756,8 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                     candidate.async_substitute(),
                 )
             except (vol.Invalid, HomeAssistantError) as err:
-                short[entity_id] = f"would not load: {err}"
+                # Whatever went wrong is quoted back with a blueprint's own
+                # words in it, and this ends up in markdown.
+                short[entity_id] = f"would not load: {_as_words(err)}"
 
         return short
