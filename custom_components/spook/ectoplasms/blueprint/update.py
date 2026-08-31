@@ -156,20 +156,32 @@ _WOULD_NOT_RUN = (
     "</ha-alert>"
 )
 
-# Deliberately says nothing about why. There are three reasons a thing can end
-# up on that list and the line next to each one gives its own; a heading that
-# picked one of them would be wrong about the others.
+# A warning rather than an error, because this is not Spook's decision. What
+# is listed will stop loading, and how to put each one right is next to it.
 #
-# A warning rather than an error, because this is not Spook's decision. What is
-# listed will stop loading, and putting that right is a thing somebody can do:
-# the automation keeps its configuration and its editor reads the file rather
-# than the entity, so it opens and takes the new setting like any other.
+# Careful about what this promises. Filling in a setting is the answer to a
+# setting that is missing, and no answer at all to a blueprint whose body will
+# not load: that one is for its author. So the line says where to look rather
+# than that there is a fix.
 _WOULD_STOP_THEM = (
     "<ha-alert alert-type='warning'>"
-    "Installing this will stop what is listed below from loading, until you "
-    "give each one what the new version asks for. They keep everything else "
-    "you set, so opening one and filling in the rest is all it takes. Tick "
-    "Create backup first if you would rather be able to put this back."
+    "Installing this will stop what is listed below from loading, for the "
+    "reason given next to each one. They keep everything you set and their "
+    "editors still open, so a setting the new version asks for can be filled "
+    "in there. A blueprint that will not load at all is one for its author. "
+    "Tick Create backup first if you would rather be able to put this back."
+    "</ha-alert>"
+)
+
+# And the ones nothing can be said about, which is not the same as the ones
+# that will stop. Saying they will break would be as made up as saying they
+# will not.
+_CANNOT_TELL_ABOUT_THEM = (
+    "<ha-alert alert-type='warning'>"
+    "Spook cannot tell whether what is listed below will still load after "
+    "this. Home Assistant offers no way to read what they supply to a "
+    "blueprint, so this is a warning about not knowing rather than about "
+    "anything found."
     "</ha-alert>"
 )
 
@@ -443,6 +455,18 @@ def _compared(item: blueprint.Blueprint) -> dict[str, Any]:
         data[CONF_BLUEPRINT] = metadata
 
     return data
+
+
+class _LeftShort(NamedTuple):
+    """What an update would do to the things built on a blueprint.
+
+    Two answers, not one. "This will stop loading, here is why" and "nothing
+    can be read about this one" are different enough that saying them in the
+    same breath makes one of them untrue.
+    """
+
+    stopped: dict[str, str]
+    unknown: list[str]
 
 
 class _Settings(NamedTuple):
@@ -1561,9 +1585,17 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             refusal.append(_WOULD_NOT_RUN)
             refusal.append("\n".join(f"- {error}" for error in errors))
 
-        if short := await self._async_consumers_left_short(self._fetched):
+        left_short = await self._async_consumers_left_short(self._fetched)
+
+        if left_short.stopped:
             refusal.append(_WOULD_STOP_THEM)
-            refusal.append(self._as_a_list(short))
+            refusal.append(self._as_a_list(left_short.stopped))
+
+        if left_short.unknown:
+            refusal.append(_CANNOT_TELL_ABOUT_THEM)
+            refusal.append(
+                self._as_a_list(dict.fromkeys(left_short.unknown, "")),
+            )
 
         notes = [
             *refusal,
@@ -1631,10 +1663,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         lines = []
         for entity_id, reason in sorted(short.items()):
             if (built := known.get(entity_id)) is None:
-                lines.append(f"- `{entity_id}` {reason}")
+                lines.append(f"- `{entity_id}` {reason}".rstrip())
                 continue
 
-            lines.append(f"- [{built[0]}]({built[1]}) {reason}")
+            named = f"[{built[0]}]({built[1]})"
+            lines.append(f"- {named} {reason}".rstrip())
 
         return "\n".join(lines)
 
@@ -1700,7 +1733,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
     async def _async_consumers_left_short(
         self,
         fetched: blueprint.Blueprint,
-    ) -> dict[str, str]:
+    ) -> _LeftShort:
         """Return which users of this blueprint the new version would strand.
 
         Two ways it can. An input without a default has to be supplied by
@@ -1722,6 +1755,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         uses = _USES_BLUEPRINTS[self.blueprint_domain]
         short: dict[str, str] = {}
+        unknown: list[str] = []
 
         for entity_id in uses.users(self.hass, self.blueprint_path):
             if (entity := component.get_entity(entity_id)) is None:
@@ -1734,7 +1768,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             # than going ahead on a guess.
             supplied = getattr(entity, "_blueprint_inputs", None)
             if supplied is None:
-                short[entity_id] = "cannot be checked"
+                unknown.append(entity_id)
                 continue
 
             candidate = blueprint.BlueprintInputs(fetched, supplied)
@@ -1760,4 +1794,4 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 # words in it, and this ends up in markdown.
                 short[entity_id] = f"would not load: {_as_words(err)}"
 
-        return short
+        return _LeftShort(stopped=short, unknown=unknown)

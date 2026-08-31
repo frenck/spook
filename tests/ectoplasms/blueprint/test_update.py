@@ -880,7 +880,11 @@ async def test_a_consumer_that_cannot_be_read_does_not_stop_the_install(
     Home Assistant offers no public way to them: `raw_config` is the automation
     after the blueprint has already been substituted into it. So if that name
     ever changes, or there is simply nothing behind it, Spook stops being able
-    to tell whether an update is safe. Not knowing is not a reason to write.
+    to tell whether an update is safe.
+
+    Not knowing is not a reason to refuse, either. It is a reason to say so,
+    which the dialog does, in its own words rather than alongside the ones
+    Spook did find something wrong with.
     """
     file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
     await async_set_up(hass)
@@ -2972,3 +2976,48 @@ async def test_a_folder_that_is_not_there_keeps_its_registrations(
         await _check(hass, freezer)
 
     assert entity_registry.async_get(left_over.entity_id) is None
+
+
+async def test_not_knowing_is_said_apart_from_knowing(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Two answers that are not the same answer.
+
+    Said in the same breath, under one heading that promises filling a setting
+    in will put it right, one of them is untrue: an automation Spook could not
+    read anything about may be perfectly fine, and no setting anybody fills in
+    was ever going to change that.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Landing light", "motion.yaml", _MOTION_INPUTS)
+
+    class _AfterARename:  # pylint: disable=too-few-public-methods
+        """An automation whose supplied inputs cannot be reached for."""
+
+        entity_id = "automation.landing_light"
+        unique_id = "landing_light"
+        name = "Landing light"
+        raw_config: ClassVar[dict[str, object]] = {}
+
+    monkeypatch.setattr(
+        hass.data[DATA_INSTANCES]["automation"],
+        "get_entity",
+        lambda _entity_id: _AfterARename(),
+    )
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    assert "cannot tell whether what is listed below will still load" in notes
+    assert "will stop what is listed below from loading" not in notes
+
+    # Named the same way as everywhere else, and with nothing trailing it.
+    assert "- [Landing light](/config/automation/edit/landing_light)\n" in notes
