@@ -489,10 +489,19 @@ def _called(key: str, definition: Any) -> str:
     return key
 
 
-def _spelled_out(settings: list[tuple[str, str]], labels: list[str]) -> list[str]:
-    """Return what to call each setting, unambiguously."""
+def _spelled_out(
+    settings: list[tuple[str, str]],
+    carrying: dict[str, set[str]],
+) -> list[str]:
+    """Return what to call each setting, unambiguously.
+
+    A label is ambiguous when more than one setting answers to it anywhere in
+    the blueprint, not only among the ones that moved. A new setting called
+    "Light" alongside an untouched one of the same name is exactly as confusing
+    as two new ones.
+    """
     return [
-        label if labels.count(label) == 1 else f"{label} (`{key}`)"
+        label if len(carrying.get(label, ())) == 1 else f"{label} (`{key}`)"
         for label, key in settings
     ]
 
@@ -521,21 +530,28 @@ def _settings_apart(
     # breaking everything: whatever somebody set is stored under the old key
     # and the new version never looks there. So the key comes along whenever a
     # label alone would not tell them apart.
-    labels = [label for label, _ in [*gone, *new, *changed]]
+    carrying: dict[str, set[str]] = {}
+    for settings in (here, there):
+        for key, definition in settings.items():
+            carrying.setdefault(_called(key, definition), set()).add(key)
 
     return _Settings(
-        new=_spelled_out(new, labels),
-        gone=_spelled_out(gone, labels),
-        changed=_spelled_out(changed, labels),
+        new=_spelled_out(new, carrying),
+        gone=_spelled_out(gone, carrying),
+        changed=_spelled_out(changed, carrying),
     )
 
 
-def _moved(was: Mapping[str, Any], now: Mapping[str, Any], key: str) -> bool:
+def _moved(was: Mapping[Any, Any], now: Mapping[Any, Any], key: Any) -> bool:
     """Return whether a key holds something different than it did.
 
     A key that is not there at all and one holding nothing are two different
     things, and `.get()` on its own cannot tell them apart: a blueprint that
     grows a `variables: null` would look unchanged.
+
+    Taken as it is rather than as text, because YAML is happy with a key that
+    is not a string and looking one of those up by its spelling finds nothing
+    on either side, which reads as no difference.
     """
     if (key in was) != (key in now):
         return True
@@ -548,7 +564,7 @@ def _doing_apart(was: Mapping[str, Any], now: Mapping[str, Any]) -> set[str]:
     return {
         _WHAT_IT_DOES.get(str(key), "Something else in it")
         for key in dict.fromkeys([*was, *now])
-        if key != CONF_BLUEPRINT and _moved(was, now, str(key))
+        if key != CONF_BLUEPRINT and _moved(was, now, key)
     }
 
 
@@ -567,8 +583,8 @@ def _calling_apart(
     return {
         _WHAT_IT_IS_CALLED.get(str(key), "What it says about itself")
         for key in dict.fromkeys([*before.metadata, *after.metadata])
-        if str(key) not in _ANSWERED_ELSEWHERE
-        and _moved(before.metadata, after.metadata, str(key))
+        if key not in _ANSWERED_ELSEWHERE
+        and _moved(before.metadata, after.metadata, key)
     }
 
 
@@ -784,7 +800,7 @@ def _read_one(file: Path) -> blueprint.Blueprint | None:
     """
     try:
         raw = file.read_text(encoding="utf-8")
-    except OSError:
+    except OSError, UnicodeDecodeError:
         return None
 
     return _normalize(raw)
@@ -806,7 +822,9 @@ def _read_files(files: list[Path]) -> list[_OnDisk | None]:
     for file in files:
         try:
             raw = file.read_text(encoding="utf-8")
-        except OSError:
+        except OSError, UnicodeDecodeError:
+            # Bytes that are not text at all. A round that let that out would
+            # take every other blueprint down with it.
             on_disk.append(None)
             continue
 
