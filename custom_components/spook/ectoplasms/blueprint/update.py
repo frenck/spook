@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import timedelta
 import hashlib
+import json
 import os
 import random
 from typing import TYPE_CHECKING, Any
 
 import aiohttp
+from annotatedyaml.objects import Input
 import voluptuous as vol
 
 from homeassistant.components import blueprint
@@ -19,7 +22,7 @@ from homeassistant.components.automation import (
     config as automation_config,
 )
 from homeassistant.components.blueprint import BLUEPRINT_SCHEMA
-from homeassistant.components.blueprint.const import CONF_SOURCE_URL
+from homeassistant.components.blueprint.const import CONF_BLUEPRINT, CONF_SOURCE_URL
 from homeassistant.components.blueprint.importer import fetch_blueprint_from_url
 from homeassistant.components.script import (
     config as script_config,
@@ -170,14 +173,96 @@ def _normalize(raw: str) -> blueprint.Blueprint | None:
         return None
 
 
+def _canonical(value: Any) -> Any:
+    """Return a form in which no two different things can look the same.
+
+    Every value carries what kind of thing it is. Without that, a mapping
+    somebody wrote by hand could serialize exactly like an `!input`, and
+    swapping one for the other changes what a blueprint does while leaving the
+    fingerprint alone.
+
+    Mappings become ordered lists of pairs rather than objects, which keeps
+    their order in the hash. That order is not decoration: a `variables:`
+    block is rendered one entry at a time with earlier results available to
+    later ones, so `{a: 1, b: "{{ a }}"}` and the same two the other way round
+    are different scripts.
+
+    Keys go through here too. YAML hands back real integers, booleans and
+    floats as keys, so `{1: a}` and `{"1": a}` are different mappings and
+    stringifying both would have hidden the difference.
+
+    Anything JSON cannot hold is named by its type and written out as text. An
+    unquoted date in a blueprint arrives as a `datetime.date`, and that used
+    to take the whole round down with a `TypeError`.
+
+    The loader's own string and mapping classes go too. They carry the line
+    they came from, which says nothing about what the blueprint does.
+    """
+    if isinstance(value, Input):
+        return ["input", str(value.name)]
+    if isinstance(value, Mapping):
+        return [
+            "map",
+            [[_canonical(key), _canonical(item)] for key, item in value.items()],
+        ]
+    if isinstance(value, (list, tuple)):
+        return ["seq", [_canonical(item) for item in value]]
+    if isinstance(value, (set, frozenset)):
+        # A set carries no order of its own, and Python's iteration order for
+        # one is not stable between runs, so the members are sorted once
+        # encoded. `!!set` is rare in a blueprint but it parses.
+        return ["set", sorted(json.dumps(_canonical(item)) for item in value)]
+
+    return _canonical_scalar(value)
+
+
+def _canonical_scalar(value: Any) -> Any:
+    """Return the encoded form of something that holds nothing else."""
+    if isinstance(value, str):
+        return ["str", str(value)]
+    if value is None or isinstance(value, (bool, int, float)):
+        return ["value", value]
+
+    # A date, a datetime, a `!!binary`: things YAML produces that JSON cannot
+    # take. Without this the whole round died on a `TypeError` from a blueprint
+    # holding an unquoted date. Named by their type so two different kinds
+    # cannot look alike, and written out as text because that is all JSON can
+    # hold.
+    return [f"other:{type(value).__name__}", str(value)]
+
+
 def _fingerprint(item: blueprint.Blueprint) -> str:
     """Return a short hash of what a blueprint says.
 
     Blueprints carry no version and cannot be given one: the schema for the
     `blueprint:` block turns away keys it does not know, so an author has
     nowhere to put one. That leaves the content itself as the version.
+
+    Taken off the parsed data rather than off the YAML, which was the first way
+    round and the wrong one. Hashing `item.yaml()` hashes how Home Assistant
+    chose to lay the file out, and that moves for reasons that have nothing to
+    do with the blueprint:
+
+    - Whether libyaml is installed. `annotatedyaml` picks `CSafeDumper` when it
+      can and falls back to Python's `SafeDumper`, and the two disagree on 5761
+      lines of one real blueprint: 596495 bytes against 605097, unicode escaped
+      or not, folded differently.
+    - Line width and quoting style, which any PyYAML release is free to change.
+
+    The source URL comes out for the same reason. Where a blueprint was fetched
+    from is not part of what it does, and Home Assistant writes it into the
+    data on the way in, so leaving it in made a trailing slash on the URL look
+    like a new version.
     """
-    return hashlib.sha256(item.yaml().encode()).hexdigest()[:8]
+    data = dict(item.data)
+    if isinstance(metadata := data.get(CONF_BLUEPRINT), Mapping):
+        metadata = dict(metadata)
+        metadata.pop(CONF_SOURCE_URL, None)
+        data[CONF_BLUEPRINT] = metadata
+
+    return hashlib.sha256(
+        json.dumps(_canonical(data), ensure_ascii=True).encode()
+    ).hexdigest()[:8]
 
 
 def _read_files(files: list[Path]) -> list[_OnDisk | None]:

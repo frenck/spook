@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -13,7 +14,10 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.components.update import UpdateEntityFeature
 from homeassistant.core import CoreState
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.components.blueprint import BLUEPRINT_SCHEMA, Blueprint
 from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.util import yaml as yaml_util
+from annotatedyaml.objects import Input
 import aiohttp
 import pytest
 import voluptuous as vol
@@ -21,6 +25,9 @@ from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 from custom_components.spook.ectoplasms.blueprint import update as update_module
 from custom_components.spook.ectoplasms.blueprint.update import (
+    _canonical,
+    _normalize,
+    _fingerprint,
     _CHECK_INTERVAL,
     _SPREAD,
     BlueprintUpdateEntity,
@@ -1230,3 +1237,330 @@ async def test_where_a_blueprint_came_from_is_not_told_to_everybody(
 
     # Still in front of the people allowed to see it, though.
     assert "hunter2" in await _entity(hass).async_release_notes()
+
+
+def test_the_fingerprint_ignores_how_the_yaml_was_laid_out() -> None:
+    """It used to hash `blueprint.yaml()`, which is a formatting decision.
+
+    `annotatedyaml` picks `CSafeDumper` when libyaml is installed and Python's
+    `SafeDumper` when it is not, and the two disagree about unicode escaping,
+    folding and line width. On one real blueprint that was 5761 differing
+    lines. Hashing their output made the version depend on which one happened
+    to be available.
+
+    Written out as two fixed texts rather than by running both dumpers,
+    because `CSafeDumper` does not exist in the very environment this is
+    about, and the test would then fail there for the wrong reason.
+    """
+    escaped = (
+        "blueprint:\n"
+        "  name: Sensor Light\n"
+        "  domain: automation\n"
+        '  description: "Lights \\U0001F4A1 and a line long enough that a dumper\n'
+        '    is free to fold it wherever it likes."\n'
+        "triggers: []\n"
+    )
+    literal = (
+        "blueprint:\n"
+        "  name: Sensor Light\n"
+        "  domain: automation\n"
+        "  description: Lights 💡 and a line long enough that a dumper is free to fold\n"
+        "    it wherever it likes.\n"
+        "triggers: []\n"
+    )
+    assert escaped != literal, "the two layouts are the same, so this proves nothing"
+
+    one = Blueprint(yaml_util.parse_yaml(escaped), schema=BLUEPRINT_SCHEMA)
+    other = Blueprint(yaml_util.parse_yaml(literal), schema=BLUEPRINT_SCHEMA)
+
+    assert (
+        one.data["blueprint"]["description"] == other.data["blueprint"]["description"]
+    )
+    assert _fingerprint(one) == _fingerprint(other)
+
+
+def test_the_fingerprint_ignores_where_it_came_from() -> None:
+    """Home Assistant writes the source URL into the data on the way in.
+
+    So the URL was part of the version, and a trailing slash on it read as a
+    new release of the blueprint. Where something was fetched from is not part
+    of what it does.
+    """
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+triggers: []
+"""
+    url = "https://gist.github.com/somebody/abc123"
+
+    plain = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+
+    tagged = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    tagged.update_metadata(source_url=url)
+
+    slashed = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    slashed.update_metadata(source_url=url + "/")
+
+    assert _fingerprint(plain) == _fingerprint(tagged) == _fingerprint(slashed)
+
+
+def test_the_fingerprint_still_moves_when_the_blueprint_does() -> None:
+    """So the checks above cannot pass by never changing at all."""
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+triggers: []
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(
+        yaml_util.parse_yaml(raw.replace("Sensor Light", "Sensor Lights")),
+        schema=BLUEPRINT_SCHEMA,
+    )
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_fingerprint_notices_a_step_pointing_at_another_input() -> None:
+    """`!input` arrives as an object, and objects flatten too far too easily.
+
+    Both inputs are declared in both versions, so the `input:` block is
+    identical and the only thing that moves is which one an action points at.
+    Renaming an input instead would have changed that block as well, and then
+    this would pass even if the reference were thrown away entirely.
+    """
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+  input:
+    light:
+      name: Light
+    lamp:
+      name: Lamp
+triggers: []
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: !input light
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(
+        yaml_util.parse_yaml(raw.replace("!input light", "!input lamp")),
+        schema=BLUEPRINT_SCHEMA,
+    )
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_fingerprint_notices_variables_swapping_places() -> None:
+    """A `variables:` block is rendered one entry at a time.
+
+    Earlier results are available to later ones, so the order of those keys is
+    executable rather than decoration. Sorting keys before hashing, which is
+    what the first version of this did, made a reordering that changes what a
+    script does look like no change at all.
+    """
+    raw = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      first: 1
+      second: "{{ first }}"
+"""
+    swapped = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      second: "{{ first }}"
+      first: 1
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+@pytest.mark.parametrize(
+    ("one", "other"),
+    [
+        pytest.param(Input("light"), {"__input__": "light"}, id="input-vs-mapping"),
+        pytest.param(Input("light"), ["input", "light"], id="input-vs-sequence"),
+        pytest.param({"a": "b"}, [["a", "b"]], id="mapping-vs-pairs"),
+        pytest.param(
+            {"a": "b"}, [["map", [["a", ["str", "b"]]]]], id="mapping-vs-own-form"
+        ),
+        pytest.param("x", ["x"], id="string-vs-sequence"),
+        pytest.param("1", 1, id="string-vs-number"),
+        pytest.param({"a": "b", "c": "d"}, {"c": "d", "a": "b"}, id="order-swapped"),
+        pytest.param({1: "a"}, {"1": "a"}, id="number-key-vs-string-key"),
+        pytest.param({True: "a"}, {"True": "a"}, id="bool-key-vs-string-key"),
+        pytest.param({1.5: "a"}, {"1.5": "a"}, id="float-key-vs-string-key"),
+    ],
+)
+def test_the_encoding_keeps_different_things_apart(one: object, other: object) -> None:
+    """Nothing may serialize the same as anything else it is not.
+
+    Two blueprints that behave differently and fingerprint the same would be
+    an update Spook never mentions, which is worse than one it mentions twice.
+    A mapping somebody wrote by hand must not come out looking like an
+    `!input`, an ordered mapping must not come out looking like the list of
+    pairs it is encoded as, and swapping two keys must show.
+
+    Tested on the encoding rather than through a pair of blueprints, because
+    at that level it takes three separate mistakes at once to produce a
+    collision, and a test that needs all three is a test that catches none.
+    """
+    assert _canonical(one) != _canonical(other)
+
+
+@pytest.mark.parametrize(
+    ("value", "kind"),
+    [
+        pytest.param(Input("light"), "input", id="input"),
+        pytest.param({"a": "b"}, "map", id="mapping"),
+        pytest.param(["a"], "seq", id="sequence"),
+        pytest.param("a", "str", id="string"),
+        pytest.param(1, "value", id="number"),
+    ],
+)
+def test_every_kind_of_value_says_what_it_is(value: object, kind: str) -> None:
+    """Each kind carries its own tag, and that is what keeps them apart.
+
+    Asserted on the shape rather than by finding two values that collide,
+    because a collision needs several of these tags dropped at once. A test
+    that only fails when three mistakes are made together catches none of
+    them on its own.
+    """
+    assert _canonical(value)[0] == kind
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        pytest.param("a: 2026-01-01", id="date"),
+        pytest.param("a: 2026-01-01 10:00:00", id="datetime"),
+        pytest.param("a: !!binary aGk=", id="binary"),
+        pytest.param("a: !!set {x: null, y: null}", id="set"),
+    ],
+)
+def test_the_encoding_survives_what_yaml_hands_back(text: str) -> None:
+    """YAML produces things JSON has never heard of.
+
+    An unquoted date arrives as a `datetime.date`, and passing that to
+    `json.dumps` raises `TypeError`, which took the whole round of checks down
+    with it rather than one blueprint.
+    """
+    json.dumps(_canonical(yaml_util.parse_yaml(text)))
+
+
+def test_a_date_and_the_same_date_written_out_are_not_the_same() -> None:
+    """Rendering these as text must not let two kinds collide."""
+    as_date = yaml_util.parse_yaml("a: 2026-01-01")
+    as_string = yaml_util.parse_yaml('a: "2026-01-01"')
+
+    assert _canonical(as_date) != _canonical(as_string)
+
+
+def test_a_set_is_encoded_in_a_fixed_order() -> None:
+    """Two runs of Home Assistant must fingerprint a `!!set` the same.
+
+    A set has no order of its own and Python iterates one by hash, which
+    depends on `PYTHONHASHSEED` and so differs between processes. Within a
+    single test the order never varies, so this asserts the encoding is sorted
+    rather than trying to catch a difference that cannot happen here. Without
+    it a blueprint holding a `!!set` would report an update on some restarts
+    and not others, which is the least debuggable kind of wrong.
+    """
+    encoded = _canonical(yaml_util.parse_yaml("a: !!set {x: null, y: null, a: null}"))
+    members = encoded[1][0][1][1]
+
+    assert members == sorted(members)
+
+
+def test_a_whole_blueprint_holding_awkward_values_fingerprints() -> None:
+    """The same values, but buried in action data where the schema is loosest.
+
+    The checks above hand `_canonical` a value on its own. This goes through
+    `_fingerprint` on a blueprint that would really load, because it was the
+    round of checks that died on this and not the encoding in isolation.
+    """
+    text = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: notify.persistent_notification
+    data:
+      message: hi
+      when: 2026-01-01
+      at: 2026-01-01 10:00:00
+      blob: !!binary aGk=
+"""
+    blueprint_with = Blueprint(yaml_util.parse_yaml(text), schema=BLUEPRINT_SCHEMA)
+    fingerprint = _fingerprint(blueprint_with)
+    assert fingerprint
+
+    # A date and the text of that date are different values.
+    quoted = Blueprint(
+        yaml_util.parse_yaml(text.replace("when: 2026-01-01", 'when: "2026-01-01"')),
+        schema=BLUEPRINT_SCHEMA,
+    )
+    assert _fingerprint(quoted) != fingerprint
+
+
+def test_a_cyclic_alias_never_reaches_the_encoding() -> None:
+    """The encoding recurses without tracking what it has seen.
+
+    Which is safe only because Home Assistant's loader refuses a recursive
+    node while parsing, long before any of this. Worth pinning, because if
+    that ever changed the encoding would hit a `RecursionError` and
+    `_read_files` catches only `OSError`, so one file would take the whole
+    round of checks with it.
+    """
+    assert _normalize("a: &s [*s]") is None
+    assert _normalize("a: &m {k: *m}") is None
+
+
+def test_an_alias_fingerprints_the_same_as_writing_it_out() -> None:
+    """A shared alias is two names for one value, not a cycle, and it parses.
+
+    Two blueprints saying the same thing, one using an anchor and one spelling
+    it out twice, are the same blueprint. The old fingerprint went through
+    PyYAML's dumper, which writes anchors back out as `&id001`, so those two
+    used to disagree.
+    """
+    aliased = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: light.turn_on
+    target: &t {entity_id: light.a}
+  - action: light.turn_off
+    target: *t
+"""
+    written_out = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: light.turn_on
+    target: {entity_id: light.a}
+  - action: light.turn_off
+    target: {entity_id: light.a}
+"""
+    one = Blueprint(yaml_util.parse_yaml(aliased), schema=BLUEPRINT_SCHEMA)
+    other = Blueprint(yaml_util.parse_yaml(written_out), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(one) == _fingerprint(other)
