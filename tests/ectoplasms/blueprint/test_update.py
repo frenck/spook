@@ -2713,3 +2713,55 @@ def test_a_blueprint_too_long_to_compare_says_so_rather_than_trying() -> None:
     said = _diffed(here, there)
     assert "more than Spook will compare line by line" in said
     assert "```diff" not in said
+
+
+def test_a_key_that_is_not_a_word_is_still_looked_up() -> None:
+    """YAML is happy with a key that is not a string, and the schema lets it by.
+
+    Looking one of those up by its spelling finds nothing on either side, which
+    reads as no difference, and then the bottom of `_changes` calls it a
+    reordering. Which is the whole class of bug this is meant to be rid of.
+    """
+    odd = MOTION_LIGHT.replace("mode: restart\n", "mode: restart\n1: something\n")
+
+    assert _said_about(MOTION_LIGHT, odd) == ["Something else in it **changed**"]
+
+
+def test_a_new_setting_is_told_apart_from_one_that_was_already_there() -> None:
+    """Two settings answering to the same name is confusing however it happened.
+
+    Telling them apart only when both of them moved leaves the commonest case
+    alone: a new setting called Light, next to the Light that was always there.
+    """
+    another = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        "    another_light:\n      name: Light\n      default: light.kitchen\n",
+    )
+
+    assert _said_about(MOTION_LIGHT, another) == [
+        "**New settings**: Light (`another_light`)",
+    ]
+
+
+async def test_a_file_that_is_not_text_reads_as_one_that_cannot_be_read(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Bytes that are not UTF-8 raise something that is not an `OSError`.
+
+    Left uncaught it comes out of the executor and takes the websocket command
+    with it, so the dialog shows nothing at all rather than saying it cannot
+    tell.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    file.write_bytes(b"\xff\xfe not text at all")
+
+    assert "cannot say what this changes" in await _release_notes(client)
