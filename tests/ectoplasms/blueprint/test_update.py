@@ -35,6 +35,9 @@ from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.blueprint import update as update_module
 from custom_components.spook.ectoplasms.blueprint.update import (
     _canonical,
+    _in_words,
+    _changes,
+    _HOW_MANY_TO_NAME,
     _normalize,
     _fingerprint,
     _CHECK_INTERVAL,
@@ -2046,3 +2049,232 @@ async def test_a_copy_that_cannot_be_made_stops_the_install(
 
     assert file.read_text(encoding="utf-8") == was_there
     assert hass.states.get(_ENTITY).state == "on"
+
+
+async def test_the_notes_say_where_the_two_differ(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A fingerprint on its own is an assertion: something changed, trust us.
+
+    Whoever has to decide whether to install this is better off being told
+    where to look, and "only the bit I never touch" is an answer as much as
+    anything else is.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert "When it runs **changed**" in await _release_notes(client)
+
+
+async def test_the_notes_name_an_input_that_was_added(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Which is the one difference that decides whether this can be installed.
+
+    A new input nobody sets stops every automation on the blueprint from
+    loading, so it is worth naming rather than lumping in with the rest of the
+    metadata.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
+        await _check(hass, freezer)
+
+    assert "**New settings**: Wait time" in await _release_notes(client)
+
+
+async def test_the_notes_say_when_only_the_order_changed(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Every key the same, every value the same, and still not the same file.
+
+    Order counts in a blueprint: a `variables:` block is rendered one entry at
+    a time with the earlier ones already worked out. So this is a real
+    difference, and saying "nothing differs" while offering an update would be
+    the worst of both.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    swapped = MOTION_LIGHT.replace(
+        "    motion_entity:\n      name: Motion sensor\n"
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        "    motion_entity:\n      name: Motion sensor\n",
+    )
+    assert swapped != MOTION_LIGHT
+
+    with _source_says(swapped):
+        await _check(hass, freezer)
+
+    assert "written in a different order" in await _release_notes(client)
+
+
+async def test_the_notes_admit_when_the_copy_here_cannot_be_read(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Saying nothing would read as "nothing changed", which is not the same."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    file.write_text("{{{ not yaml", encoding="utf-8")
+
+    assert "cannot say what this changes" in await _release_notes(client)
+
+
+async def test_the_notes_count_settings_once_there_are_too_many_to_read(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Eighty names is not a release note, it is a wall.
+
+    Past a few, what somebody needs to know is how much of it changed, and the
+    names are in the blueprint for whoever wants them.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    plenty = _HOW_MANY_TO_NAME + 5
+    rewritten = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        + "".join(
+            f"    extra_{number}:\n      name: Extra {number}\n"
+            f"      default: {number}\n"
+            for number in range(plenty)
+        ),
+    )
+
+    with _source_says(rewritten):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert f"**New settings**: {plenty}" in notes
+    assert "Extra 0" not in notes
+
+
+def test_a_source_url_of_its_own_is_not_a_difference() -> None:
+    """Whoever imported a blueprint put that address in, not its author.
+
+    It is also the address this was just fetched from, so an author who moved
+    their blueprint has not changed it. The fingerprint leaves it out and this
+    has to leave it out the same way, or the dialog would name a difference
+    that never made an update appear.
+    """
+    here = _normalize(MOTION_LIGHT.format(source="https://example.com/one"))
+    there = _normalize(MOTION_LIGHT.format(source="https://example.com/two"))
+
+    assert not _changes(here, there)
+
+
+def test_what_a_change_to_the_trigger_is_called() -> None:
+    """One key of the file, and not a word of the file's own vocabulary.
+
+    A blueprint writes `trigger:` or `triggers:` depending on when it was
+    written, and neither is what somebody reading a dialog wants to be told.
+    """
+    here = _normalize(MOTION_LIGHT.format(source=SOURCE))
+    there = _normalize(MOTION_LIGHT_CHANGED.format(source=SOURCE))
+
+    assert _in_words(_changes(here, there)) == ["When it runs **changed**"]
+
+
+async def test_the_notes_say_when_the_whole_file_only_moved_around(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Nothing to name, because nothing in it is what changed.
+
+    Naming the file itself in a list of paths would read as a path, so this is
+    a sentence instead.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    # The same keys at the top of the file, the other way round.
+    swapped = MOTION_LIGHT.replace(
+        "trigger:\n  - platform: state\n    entity_id: !input motion_entity\n"
+        '    to: "on"\naction:\n  - service: light.turn_on\n'
+        "    entity_id: !input light_target\n",
+        "action:\n  - service: light.turn_on\n"
+        "    entity_id: !input light_target\n"
+        "trigger:\n  - platform: state\n    entity_id: !input motion_entity\n"
+        '    to: "on"\n',
+    )
+    assert swapped != MOTION_LIGHT
+
+    with _source_says(swapped):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "written in a different order" in notes
+
+
+async def test_a_rename_that_keeps_the_label_still_reads_as_two_things(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The one rename that says nothing while breaking everything.
+
+    An author who changes the key an input is stored under and leaves its
+    label alone gives two settings that read the same. Whatever somebody set
+    is under the old key and the new version never looks there, so the key has
+    to come along or the dialog says "Motion sensor is new, Motion sensor is
+    gone" and means it.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT.replace("motion_entity", "motion_sensor")):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "**New settings**: Motion sensor (`motion_sensor`)" in notes
+    assert "**Settings taken away**: Motion sensor (`motion_entity`)" in notes
+
+
+async def test_a_home_assistant_it_needs_is_only_said_once(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The refusal already names the version and says Spook will not write it.
+
+    Saying it again above reads as two separate problems with the same
+    blueprint.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "will not install it" in notes
+    assert "It now asks for Home Assistant" not in notes

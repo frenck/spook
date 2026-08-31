@@ -69,7 +69,47 @@ Every other update dialog in Home Assistant shows you release notes. This one ca
 
 So the dialog carries the next best thing. The address the blueprint came from, as a link, always, so you can go and read what actually changed before deciding. And a warning, because an update dialog looks the same whatever is behind it, and this one deserves a second thought: an author improving their blueprint and it still suiting the {term}`automations <automation>` you built on it are two different things. Inputs get renamed. Behaviour gets rethought.
 
-If Spook already knows something is wrong, it says so there too. Automations the update would leave short, named. A blueprint that says it needs a newer Home Assistant than the one you are running. Or a source that has stopped leading to this blueprint at all, which is the answer to "why does this one never have an update".
+It also tells you what changed, which is Spook comparing the two files rather than the author saying anything:
+
+```{code-block} text
+**Compared with the copy you have:**
+- **New settings**: Wait time
+- What it does **changed**
+```
+
+What an author did, and what you get told:
+
+```{list-table}
+:header-rows: 1
+:widths: 40 60
+
+* - What the author did
+  - What the dialog says
+* - Tidied up the description
+  - Its description **changed**
+* - Added an input
+  - **New settings**: Wait time
+* - Renamed an input, kept its label
+  - **New settings**: Motion sensor (`motion_sensor`), **Settings taken away**: Motion sensor (`motion_entity`)
+* - Put a selector on an input
+  - **Settings changed**: Motion sensor
+* - Changed what it does
+  - What it does **changed**
+* - Changed when it fires
+  - When it runs **changed**
+* - Changed the mode
+  - How it handles overlapping runs **changed**
+* - Moved two inputs around
+  - The same things, written in a different order
+* - Rewrote it, 80 things changed
+  - **New settings**: 80, What it does **changed**, When it runs **changed**
+```
+
+Settings are named as their author named them, up to three of them. Past that you get the count, because eighty names is a wall rather than a release note, and they are all in the blueprint for whoever wants to read them.
+
+The rename in that table is the one this exists for. An author who changes the key an input is stored under and leaves its label alone gives you two settings that read exactly the same, while whatever you filled in sits under the old key and the new version never looks there. So the key comes along whenever a label on its own would not tell them apart.
+
+And if Spook cannot read the copy you have at that moment, it says so instead of saying nothing, because saying nothing reads as "nothing changed".
 
 The warning is advice, and an update that is otherwise fine still installs. The rest are refusals: Spook will not write a blueprint that would leave an automation or script short of an input, one that would not load once it has been built, or one that says it needs a Home Assistant you are not running.
 
