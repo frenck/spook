@@ -208,8 +208,17 @@ def imported_from(raw: str, *, source: str = SOURCE) -> ImportedBlueprint:
     return ImportedBlueprint("spook/blueprint", body, item)
 
 
-async def async_set_up(hass: HomeAssistant) -> ConfigEntry:
-    """Set up automations, scripts and Spook's update platform."""
+async def async_set_up(
+    hass: HomeAssistant,
+    entry: MockConfigEntry | None = None,
+) -> ConfigEntry:
+    """Set up automations, scripts and Spook's update platform.
+
+    An entry can be handed in by a test that has to put something in the
+    registries under the same ownership before any of this is set up. It is
+    expected to have been added to hass already, because a device cannot be
+    linked to a config entry Home Assistant does not know yet.
+    """
     assert await async_setup_component(hass, "automation", {"automation": []})
     assert await async_setup_component(hass, "script", {"script": {}})
     await hass.async_block_till_done()
@@ -246,8 +255,10 @@ async def async_set_up(hass: HomeAssistant) -> ConfigEntry:
         """A config flow that does nothing."""
 
     with mock_config_flow("fake", _Flow):
-        entry = MockConfigEntry(domain="fake")
-        entry.add_to_hass(hass)
+        if entry is None:
+            entry = MockConfigEntry(domain="fake")
+            entry.add_to_hass(hass)
+
         assert await hass.config_entries.async_setup(entry.entry_id)
         await hass.async_block_till_done()
 

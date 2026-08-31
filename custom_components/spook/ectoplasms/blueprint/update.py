@@ -338,6 +338,10 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         """
         entry.async_on_unload(self._stop)
 
+        # Nothing to do with the rounds below. These entities used to sit on a
+        # device, and whoever ran that version still has it.
+        self._async_forget_the_old_device(entry.entry_id)
+
         if self.hass.state is CoreState.running:
             await self._async_begin()
             return
@@ -364,7 +368,7 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         await self._async_begin()
 
     @callback
-    def _async_forget_the_old_device(self) -> None:
+    def _async_forget_the_old_device(self, entry_id: str) -> None:
         """Remove the device these entities used to hang off.
 
         They had one called "Blueprints", which is what made every row on the
@@ -372,18 +376,38 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         with nothing on it, and a device that is not a device and holds nothing
         is just something to wonder about later.
         """
-        registry = dr.async_get(self.hass)
+        device_registry = dr.async_get(self.hass)
         if (
-            device := registry.async_get_device(
-                identifiers={(DOMAIN, blueprint.DOMAIN)},
+            device := device_registry.async_get_device_by_identifier(
+                (DOMAIN, blueprint.DOMAIN),
+                entry_id,
             )
-        ) is not None:
-            LOGGER.debug("Spook is removing the old blueprints device")
-            registry.async_remove_device(device.id)
+        ) is None:
+            return
+
+        # Taken off the device first. Home Assistant deletes the registration
+        # of every entity on a device when the device goes, and both are ours
+        # here, so it would. It hands the registration straight back when the
+        # same unique ID turns up again, which is later in this same setup, so
+        # nothing is lost by letting it happen. The churn is the reason not to:
+        # a dozen repairs re-inspect on any entity registry change, and an
+        # entity going and coming back gives them nothing to find.
+        entity_registry = er.async_get(self.hass)
+        for registration in er.async_entries_for_device(
+            entity_registry,
+            device.id,
+            include_disabled_entities=True,
+        ):
+            entity_registry.async_update_entity(
+                registration.entity_id,
+                device_id=None,
+            )
+
+        LOGGER.debug("Spook is removing the old blueprints device")
+        device_registry.async_remove_device(device.id)
 
     async def _async_begin(self) -> None:
         """Take stock, then arrange to keep looking."""
-        self._async_forget_the_old_device()
         await self._async_take_stock()
         self._async_schedule(
             random.uniform(  # noqa: S311
