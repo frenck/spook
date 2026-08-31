@@ -3,14 +3,17 @@
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Mapping
 from dataclasses import dataclass
 from datetime import timedelta
 import hashlib
+import json
 import os
 import random
 from typing import TYPE_CHECKING, Any
 
 import aiohttp
+from annotatedyaml.objects import Input
 import voluptuous as vol
 
 from homeassistant.components import blueprint
@@ -19,7 +22,7 @@ from homeassistant.components.automation import (
     config as automation_config,
 )
 from homeassistant.components.blueprint import BLUEPRINT_SCHEMA
-from homeassistant.components.blueprint.const import CONF_SOURCE_URL
+from homeassistant.components.blueprint.const import CONF_BLUEPRINT, CONF_SOURCE_URL
 from homeassistant.components.blueprint.importer import fetch_blueprint_from_url
 from homeassistant.components.script import (
     config as script_config,
@@ -170,14 +173,56 @@ def _normalize(raw: str) -> blueprint.Blueprint | None:
         return None
 
 
+def _plain(value: Any) -> Any:
+    """Return the same data with nothing of Home Assistant's own left on it.
+
+    The loader hands back its own string, list and mapping classes, which
+    carry the line they came from, and `!input` arrives as an object. None of
+    that says anything about what the blueprint does, and all of it would
+    change how the value serializes.
+    """
+    if isinstance(value, Input):
+        return {"__input__": str(value.name)}
+    if isinstance(value, Mapping):
+        return {str(key): _plain(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        return [_plain(item) for item in value]
+    if isinstance(value, str):
+        return str(value)
+    return value
+
+
 def _fingerprint(item: blueprint.Blueprint) -> str:
     """Return a short hash of what a blueprint says.
 
     Blueprints carry no version and cannot be given one: the schema for the
     `blueprint:` block turns away keys it does not know, so an author has
     nowhere to put one. That leaves the content itself as the version.
+
+    Taken off the parsed data rather than off the YAML, which was the first
+    way round and the wrong one. Hashing `item.yaml()` hashes how Home
+    Assistant chose to lay the file out, and that moves for reasons that have
+    nothing to do with the blueprint:
+
+    - Whether libyaml is installed. `annotatedyaml` picks `CSafeDumper` when
+      it can and falls back to Python's `SafeDumper`, and the two disagree on
+      5761 lines of one real blueprint: 596495 bytes against 605097, unicode
+      escaped or not, folded differently.
+    - Line width, quoting style and key order, which any PyYAML release is
+      free to change.
+
+    The source URL comes out for the same reason. Where a blueprint was
+    fetched from is not part of what it does, and Home Assistant writes it
+    into the data on the way in, so leaving it in made a trailing slash on the
+    URL look like a new version.
     """
-    return hashlib.sha256(item.yaml().encode()).hexdigest()[:8]
+    data = _plain(item.data)
+    if isinstance(metadata := data.get(CONF_BLUEPRINT), dict):
+        metadata.pop(CONF_SOURCE_URL, None)
+
+    return hashlib.sha256(
+        json.dumps(data, sort_keys=True, ensure_ascii=True).encode()
+    ).hexdigest()[:8]
 
 
 def _read_files(files: list[Path]) -> list[_OnDisk | None]:

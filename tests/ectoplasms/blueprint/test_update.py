@@ -13,14 +13,18 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.components.update import UpdateEntityFeature
 from homeassistant.core import CoreState
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.components.blueprint import BLUEPRINT_SCHEMA, Blueprint
 from homeassistant.helpers.entity_component import DATA_INSTANCES
+from homeassistant.util import yaml as yaml_util
 import aiohttp
 import pytest
+import yaml
 import voluptuous as vol
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 from custom_components.spook.ectoplasms.blueprint import update as update_module
 from custom_components.spook.ectoplasms.blueprint.update import (
+    _fingerprint,
     _CHECK_INTERVAL,
     _SPREAD,
     BlueprintUpdateEntity,
@@ -1230,3 +1234,120 @@ async def test_where_a_blueprint_came_from_is_not_told_to_everybody(
 
     # Still in front of the people allowed to see it, though.
     assert "hunter2" in await _entity(hass).async_release_notes()
+
+
+def test_the_fingerprint_ignores_how_the_yaml_was_laid_out() -> None:
+    """It used to hash `blueprint.yaml()`, which is a formatting decision.
+
+    `annotatedyaml` picks `CSafeDumper` when libyaml is installed and Python's
+    `SafeDumper` when it is not, and the two disagree about unicode escaping,
+    folding and line width. On one real blueprint that was 5761 differing
+    lines. Hashing their output made the version depend on which one happened
+    to be available.
+    """
+    data = {
+        "blueprint": {
+            "name": "Sensor Light",
+            "domain": "automation",
+            "description": "Lights 💡 and a very long line that a dumper is free "
+            "to fold wherever it likes, which is the whole point of this test.",
+        },
+        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.motion"}],
+    }
+
+    # The same data, laid out by each dumper in turn.
+    c_text = yaml.dump(
+        data,
+        default_flow_style=False,
+        allow_unicode=True,
+        sort_keys=False,
+        Dumper=yaml.CSafeDumper,
+    )
+    py_text = yaml.dump(
+        data,
+        default_flow_style=False,
+        allow_unicode=True,
+        sort_keys=False,
+        Dumper=yaml.SafeDumper,
+    )
+    assert c_text != py_text, "the dumpers agree here, so this proves nothing"
+
+    from_c = Blueprint(yaml_util.parse_yaml(c_text), schema=BLUEPRINT_SCHEMA)
+    from_py = Blueprint(yaml_util.parse_yaml(py_text), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(from_c) == _fingerprint(from_py)
+
+
+def test_the_fingerprint_ignores_where_it_came_from() -> None:
+    """Home Assistant writes the source URL into the data on the way in.
+
+    So the URL was part of the version, and a trailing slash on it read as a
+    new release of the blueprint. Where something was fetched from is not part
+    of what it does.
+    """
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+triggers: []
+"""
+    url = "https://gist.github.com/somebody/abc123"
+
+    plain = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+
+    tagged = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    tagged.update_metadata(source_url=url)
+
+    slashed = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    slashed.update_metadata(source_url=url + "/")
+
+    assert _fingerprint(plain) == _fingerprint(tagged) == _fingerprint(slashed)
+
+
+def test_the_fingerprint_still_moves_when_the_blueprint_does() -> None:
+    """So the checks above cannot pass by never changing at all."""
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+triggers: []
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(
+        yaml_util.parse_yaml(raw.replace("Sensor Light", "Sensor Lights")),
+        schema=BLUEPRINT_SCHEMA,
+    )
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_fingerprint_notices_a_step_pointing_at_another_input() -> None:
+    """`!input` arrives as an object, and objects flatten too far too easily.
+
+    Both inputs are declared in both versions, so the `input:` block is
+    identical and the only thing that moves is which one an action points at.
+    Renaming an input instead would have changed that block as well, and then
+    this would pass even if the reference were thrown away entirely.
+    """
+    raw = """
+blueprint:
+  name: Sensor Light
+  domain: automation
+  input:
+    light:
+      name: Light
+    lamp:
+      name: Lamp
+triggers: []
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: !input light
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(
+        yaml_util.parse_yaml(raw.replace("!input light", "!input lamp")),
+        schema=BLUEPRINT_SCHEMA,
+    )
+
+    assert _fingerprint(before) != _fingerprint(after)

@@ -33,7 +33,7 @@ Spook adds a Blueprints {term}`device <device>`, holding one update {term}`entit
 
 ### Updates
 
-_Default {term}`entity ID <Entity ID>`: `update.blueprints_<blueprint name>`_
+_Default {term}`entity ID <Entity ID>`: `update.blueprints_<blueprint name>`\_
 
 When you import a {term}`blueprint <blueprint>`, Home Assistant writes down where it came from. Nothing ever looks at that address again. The blueprint's author can fix a bug in it a week later and you would have no way of knowing, short of opening the forum topic and reading the YAML yourself.
 
@@ -60,6 +60,8 @@ Matter and ZHA put much the same warning in front of a firmware update, for much
 They look like `a1b2c3d4`, and that is not Spook being clever. Blueprints have no version. There is nowhere in a blueprint to put one, because the format turns away anything it does not recognise, so no author can add one even if they wanted to.
 
 So Spook uses a fingerprint of the contents instead. Same fingerprint, same blueprint. A different one means something in it changed. It cannot tell you whether that change is newer or better, only that it is not what you have.
+
+The fingerprint is taken from what a blueprint says, not from how the file is laid out. Home Assistant does not keep the bytes it downloaded: it parses a blueprint and writes it back out in its own formatting, and that formatting is free to differ between installations and Home Assistant releases. Line width, quoting, whether an emoji is written out or escaped, all of it. None of that changes what the blueprint does, so none of it changes the fingerprint. Neither does the address it came from, which Home Assistant stores inside the blueprint on the way in.
 
 Comments and indentation are not part of it. Somebody tidying up their YAML does not count as an update.
 
