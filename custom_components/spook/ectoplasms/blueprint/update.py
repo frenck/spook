@@ -36,8 +36,7 @@ from homeassistant.components.update import (
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_call_later
 from homeassistant.util import yaml as yaml_util
@@ -364,8 +363,27 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         """Begin once the blueprint domains have registered themselves."""
         await self._async_begin()
 
+    @callback
+    def _async_forget_the_old_device(self) -> None:
+        """Remove the device these entities used to hang off.
+
+        They had one called "Blueprints", which is what made every row on the
+        updates page read the same. Dropping it leaves the device itself behind
+        with nothing on it, and a device that is not a device and holds nothing
+        is just something to wonder about later.
+        """
+        registry = dr.async_get(self.hass)
+        if (
+            device := registry.async_get_device(
+                identifiers={(DOMAIN, blueprint.DOMAIN)},
+            )
+        ) is not None:
+            LOGGER.debug("Spook is removing the old blueprints device")
+            registry.async_remove_device(device.id)
+
     async def _async_begin(self) -> None:
         """Take stock, then arrange to keep looking."""
+        self._async_forget_the_old_device()
         await self._async_take_stock()
         self._async_schedule(
             random.uniform(  # noqa: S311
@@ -519,11 +537,13 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self.blueprint_path = blueprint_path
 
         self._attr_unique_id = f"blueprint_{blueprint_domain}_{blueprint_path}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, blueprint.DOMAIN)},
-            manufacturer="Home Assistant",
-            name="Blueprints",
-        )
+
+        # Deliberately no device. These used to hang off one called
+        # "Blueprints", and the updates page shows the device a row belongs to,
+        # so twenty blueprints read "Blueprints" twenty times over with no way
+        # to tell which was which. A device each would have fixed the reading
+        # and filled the device list with twenty entries that are not devices.
+        # A blueprint is a file, not a thing with firmware.
 
         self._said = said
         self._fetched: blueprint.Blueprint | None = None
