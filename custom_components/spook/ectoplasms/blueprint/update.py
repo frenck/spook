@@ -10,6 +10,8 @@ import hashlib
 import json
 import os
 import random
+import re
+import shutil
 from typing import TYPE_CHECKING, Any, NamedTuple
 
 import aiohttp
@@ -39,7 +41,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_call_later
-from homeassistant.util import yaml as yaml_util
+from homeassistant.util import dt as dt_util, yaml as yaml_util
 
 from ...const import DOMAIN, LOGGER
 from ...entity import SpookEntity, SpookEntityDescription
@@ -133,6 +135,58 @@ _WOULD_BE_REFUSED = (
     "page if you would rather sort them out afterwards."
     "</ha-alert>"
 )
+
+
+# Sortable, and without the colons a time usually carries: those cost you the
+# file the moment the configuration folder is reached over Samba or sits on a
+# Windows share. Home Assistant's own backups avoid them the same way.
+_WHEN = "%Y-%m-%d_%H%M%S"
+
+# What a copy of a blueprint is called: the file's own name, when it was put
+# aside, and an extension that is deliberately not .yaml. Home Assistant globs
+# `**/*.yaml` through the blueprint folders, so a copy ending in .yaml would
+# come back as a blueprint of its own, complete with an update entity.
+_COPY = re.compile(r"\A(?P<of>.+)\.\d{4}-\d{2}-\d{2}_\d{6}\.bak\Z")
+
+# Kept per blueprint. Enough to go back past an update that looked fine at the
+# time, few enough that the folder stays readable to somebody who opens it.
+_KEEP_COPIES = 3
+
+
+def _keep_a_copy(file: Path) -> None:
+    """Put a copy of a blueprint beside it, and let go of the oldest.
+
+    Runs in the executor: all of it touches the disk.
+    """
+    if not file.exists():
+        # Nothing to keep. The install is about to write it fresh, which is
+        # the best that can be done for a file that is not there.
+        return
+
+    when = dt_util.now().strftime(_WHEN)
+    shutil.copy2(file, file.with_name(f"{file.name}.{when}.bak"))
+
+    for old in _copies_of(file)[_KEEP_COPIES:]:
+        old.unlink(missing_ok=True)
+
+
+def _copies_of(file: Path) -> list[Path]:
+    """Return the copies of a blueprint, newest first.
+
+    Sorted by name, which is by time, because that is what the stamp is for.
+
+    Matched on the whole shape rather than the leading part of the name. A
+    blueprint called `motion.yaml.old.yaml` would otherwise have its copies
+    counted as copies of `motion.yaml`, and thrown away as somebody else's.
+    """
+    copies = [
+        candidate
+        for candidate in file.parent.iterdir()
+        if (match := _COPY.match(candidate.name)) is not None
+        and match["of"] == file.name
+    ]
+
+    return sorted(copies, reverse=True)
 
 
 def _unique_id(blueprint_domain: str, blueprint_path: str) -> str:
@@ -648,7 +702,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
     _attr_should_poll = False
     _attr_supported_features = (
-        UpdateEntityFeature.INSTALL | UpdateEntityFeature.RELEASE_NOTES
+        UpdateEntityFeature.INSTALL
+        | UpdateEntityFeature.RELEASE_NOTES
+        | UpdateEntityFeature.BACKUP
     )
 
     def __init__(
@@ -754,14 +810,14 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
     async def async_install(
         self,
         version: str | None,  # noqa: ARG002
-        backup: bool,  # noqa: ARG002, FBT001
+        backup: bool,  # noqa: FBT001
         **kwargs: Any,  # noqa: ARG002
     ) -> None:
         """Fetch the blueprint again and write it over the one that is here."""
         async with self._one_at_a_time:
-            await self._async_install()
+            await self._async_install(backup=backup)
 
-    async def _async_install(self) -> None:
+    async def _async_install(self, *, backup: bool = False) -> None:
         """Write the source over what is here, with the blueprint to ourselves."""
         fetched = await self._async_fetch()
 
@@ -791,6 +847,20 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         if (domain_blueprint := domain_blueprints.get(self.blueprint_domain)) is None:
             msg = f"{self.blueprint_domain} blueprints are not loaded right now"
             raise HomeAssistantError(msg)
+
+        if backup:
+            file = domain_blueprint.blueprint_folder / self.blueprint_path
+            try:
+                await self.hass.async_add_executor_job(_keep_a_copy, file)
+            except OSError as err:
+                # Asked for a copy and did not get one. Writing anyway would
+                # take the version that works with nothing to fall back on,
+                # which is the opposite of what was asked for.
+                msg = (
+                    f"Could not put a copy of {self.blueprint_path} aside: "
+                    f"{err}. Nothing has been written."
+                )
+                raise HomeAssistantError(msg) from err
 
         try:
             await domain_blueprint.async_add_blueprint(

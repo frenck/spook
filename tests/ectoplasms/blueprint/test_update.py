@@ -38,6 +38,8 @@ from custom_components.spook.ectoplasms.blueprint.update import (
     _normalize,
     _fingerprint,
     _CHECK_INTERVAL,
+    _COPY,
+    _KEEP_COPIES,
     _SPREAD,
     BlueprintUpdateEntity,
 )
@@ -87,6 +89,19 @@ _ENOUGH_ROUNDS_TO_JUDGE = 8
 def _source_says(raw: str, *, source: str = SOURCE):  # noqa: ANN202
     """Make the importer hand back this blueprint."""
     return patch(_FETCH, return_value=imported_from(raw, source=source))
+
+
+def _copies_beside(file: Path) -> list[Path]:
+    """Return the copies put aside for a blueprint, newest first."""
+    return sorted(
+        (
+            candidate
+            for candidate in file.parent.iterdir()
+            if (match := _COPY.match(candidate.name)) is not None
+            and match["of"] == file.name
+        ),
+        reverse=True,
+    )
 
 
 async def _check(hass: HomeAssistant, freezer: FrozenDateTimeFactory) -> None:
@@ -1848,3 +1863,186 @@ async def test_a_registration_that_is_not_about_a_blueprint_is_left_alone(
     await async_set_up(hass, entry=entry)
 
     assert entity_registry.async_get(somebody_elses.entity_id) is not None
+
+
+async def test_the_dialog_offers_to_keep_a_copy(
+    hass: HomeAssistant,
+) -> None:
+    """Installing writes over whatever is there, so the offer has to be made.
+
+    Home Assistant renders the tick box off the back of this flag and refuses
+    a backup asked for without it, so the flag is the whole of the offer.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    assert (
+        UpdateEntityFeature.BACKUP
+        in hass.states.get(_ENTITY).attributes["supported_features"]
+    )
+
+
+async def test_a_copy_is_kept_when_one_was_asked_for(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """What is written over is gone, so the copy is the only way back."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    was_there = file.read_text(encoding="utf-8")
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY, "backup": True},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    copies = _copies_beside(file)
+    assert len(copies) == 1
+    assert copies[0].read_text(encoding="utf-8") == was_there
+
+    # Named after the file it is a copy of, and when. Deliberately not ending
+    # in .yaml: Home Assistant globs those out of the blueprint folders and
+    # would take the copy for a blueprint of its own.
+    assert _COPY.match(copies[0].name)["of"] == "motion.yaml"
+
+    # And the blueprint itself did get written.
+    assert "to: 'off'" in file.read_text(encoding="utf-8")
+
+
+async def test_no_copy_is_kept_when_none_was_asked_for(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The tick box is a question, not a formality."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY, "backup": False},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert _copies_beside(file) == []
+
+
+async def test_only_the_newest_few_copies_are_kept(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Otherwise the folder fills up with every update anybody ever installed.
+
+    Somebody opening it in a file editor has to be able to read it, and past
+    three there is nothing being offered that the newest three do not.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    versions = [
+        MOTION_LIGHT_CHANGED,
+        MOTION_LIGHT_CHANGED_AGAIN,
+        MOTION_LIGHT,
+        MOTION_LIGHT_CHANGED,
+    ]
+    made: list[str] = []
+    for version in versions:
+        with _source_says(version):
+            await _check(hass, freezer)
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY, "backup": True},
+                blocking=True,
+            )
+        await hass.async_block_till_done()
+
+        made.append(_copies_beside(file)[0].name)
+
+    # Four installs, and each one left something different behind, so this is
+    # counting four copies down to three rather than three copies twice.
+    assert len(set(made)) == len(versions)
+
+    kept = {copy.name for copy in _copies_beside(file)}
+    assert len(kept) == _KEEP_COPIES
+
+    # The oldest went and the newest stayed, which is the way round that
+    # matters and the whole reason the stamp reads as it does.
+    assert made[0] not in kept
+    assert set(made[1:]) == kept
+
+
+async def test_the_copies_of_another_blueprint_are_left_alone(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A name can be the start of another name.
+
+    `motion.yaml` is the front of `motion.yaml.old.yaml`, so anything matching
+    on the front of a filename counts one blueprint's copies as another's and
+    throws away somebody else's oldest.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    somebody_elses = [
+        file.with_name(f"motion.yaml.old.yaml.2026-01-0{day}_120000.bak")
+        for day in (1, 2, 3, 4)
+    ]
+    for copy in somebody_elses:
+        copy.write_text("not mine", encoding="utf-8")
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY, "backup": True},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert all(copy.exists() for copy in somebody_elses)
+    assert len(_copies_beside(file)) == 1
+
+
+async def test_a_copy_that_cannot_be_made_stops_the_install(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Asked for a copy, did not get one, and wrote anyway.
+
+    Which is the worst of both: the version that worked is gone and nothing
+    was kept in its place.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    was_there = file.read_text(encoding="utf-8")
+    await async_set_up(hass)
+
+    with (
+        _source_says(MOTION_LIGHT_CHANGED),
+        patch(
+            "custom_components.spook.ectoplasms.blueprint.update.shutil.copy2",
+            side_effect=OSError("no room left"),
+        ),
+    ):
+        await _check(hass, freezer)
+
+        with pytest.raises(HomeAssistantError, match="no room left"):
+            await hass.services.async_call(
+                "update",
+                "install",
+                {"entity_id": _ENTITY, "backup": True},
+                blocking=True,
+            )
+
+    assert file.read_text(encoding="utf-8") == was_there
+    assert hass.states.get(_ENTITY).state == "on"
