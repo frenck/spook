@@ -409,7 +409,19 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
 
         await self._async_setup_inspection()
 
-        for index, entity in enumerate(entity_component.entities):
+        # Taken as a snapshot, because this loop gives the event loop a turn
+        # every so often and an automation being added or removed during one of
+        # those turns changes the collection underneath it. Home Assistant says
+        # so itself: "callers that iterate over this asynchronously should make
+        # a copy". Without it the whole inspection dies on a `RuntimeError` and
+        # takes the round with it, since nothing above catches that. #1558.
+        #
+        # An entity that arrives while a round is running is missed until the
+        # next one, which is minutes away and no worse than arriving a moment
+        # after the round finished.
+        entities = list(entity_component.entities)
+
+        for index, entity in enumerate(entities):
             if index and index % INSPECTION_YIELD_INTERVAL == 0:
                 # Inspections are CPU-bound; periodically yield to the event
                 # loop so large installations do not stall it.
