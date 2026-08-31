@@ -1,1 +1,51 @@
-{}
+{
+    "config": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "entity_id": "Izvorni entitet",
+                    "hide_source": "Sakrij izvorni entitet",
+                    "name": "Naziv"
+                },
+                "title": "Invertuj 👻"
+            },
+            "switch": {
+                "data": {
+                    "entity_id": "Izvorni entitet",
+                    "hide_source": "Sakrij izvorni entitet",
+                    "name": "Naziv"
+                },
+                "title": "Invertuj 👻"
+            },
+            "user": {
+                "description": "Ovaj pomoćnik omogućava da obrnete ponašanje entiteta. Na primer, preokreće stanja otvoreno/zatvoreno ili uključeno/isključeno za binarne senzore i prekidače.",
+                "menu_options": {
+                    "binary_sensor": "Invertuj binarni senzor",
+                    "switch": "Invertuj prekidač"
+                },
+                "title": "Invertuj 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "binary_sensor": {
+                "data": {
+                    "name": "Naziv",
+                    "entity_id": "Izvorni entitet",
+                    "hide_source": "Sakrij izvorni entitet"
+                },
+                "title": "Invertuj 👻"
+            },
+            "switch": {
+                "data": {
+                    "name": "Naziv",
+                    "entity_id": "Izvorni entitet",
+                    "hide_source": "Sakrij izvorni entitet"
+                },
+                "title": "Invertuj 👻"
+            }
+        }
+    },
+    "title": "Invertuj 👻"
+}
