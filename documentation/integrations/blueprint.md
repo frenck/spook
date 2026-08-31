@@ -39,13 +39,29 @@ When you import a {term}`blueprint <blueprint>`, Home Assistant writes down wher
 
 Spook gives every one of those blueprints an update entity. It follows the address the blueprint came in with, roughly once a day, and tells you when what is there no longer matches what you have. Roughly, because each round picks its own moment for the next one somewhere in the following few hours: a fixed hour would have every installation that restarted after the same release knocking on the community forum together, every day, for ever. Pressing install fetches it again and writes it over the copy you have, exactly as Home Assistant's own re-import button does, and reloads every {term}`automation <automation>` and {term}`script <script>` using it.
 
-The update dialog offers to keep a copy first, and it is worth ticking. Installing writes over the file you have, and if you edited that blueprint yourself those edits are what gets written over. The copy lands beside the blueprint as `<name>.yaml.<date>_<time>.bak`, in your own time, and the newest three are kept. Nothing about a `.bak` file is special to Home Assistant: to go back to one, rename it over the blueprint it is a copy of and reload your {term}`automations <automation>`. The extension deliberately does not end in `.yaml`, because Home Assistant reads every `.yaml` file under the blueprint folders as a blueprint and the copies are not blueprints.
+The dialog offers to keep a copy of the file first, and it is worth ticking. Installing writes over the blueprint you have, and if you ever edited that blueprint yourself, your edits are what gets written over.
 
 Only blueprints that came from a URL get one. A blueprint you wrote yourself has no source to check against, and the three example blueprints Home Assistant lays down for you are left alone as well: they point at Home Assistant's development branch, which is not the version you are running.
 
 Only automation and script blueprints, too. Those are the only two kinds whose users Home Assistant can list, and without that list there is no way to tell whether an update would leave one of them unable to load. An install button that cannot promise that is worse than no button at all, so template blueprints are left out until there is a way to check them.
 
 Delete a blueprint, or take the source address back out of it, and the update {term}`entity <entity>` goes with it. Blueprints raise no events, so nothing notices at the moment it happens: the next round does. One deleted while Home Assistant was stopped is caught the next time Spook starts, so you are not left with an entity in the list and no blueprint behind it.
+
+#### Where the copies go
+
+Beside the blueprint itself, in the same folder, with the date and time it was put there added to the filename:
+
+```{code-block} text
+config/blueprints/automation/frenck/motion_light.yaml
+config/blueprints/automation/frenck/motion_light.yaml.2026-08-31_204512.bak
+config/blueprints/automation/frenck/motion_light.yaml.2026-08-24_091133.bak
+```
+
+So a copy sits next to the blueprint it belongs to, wherever in `blueprints/` that blueprint lives. The time is your own rather than UTC, so it reads by the same clock you do. The newest three per blueprint are kept, and installing a fourth update lets go of the oldest.
+
+To go back to one, rename it over the blueprint it is a copy of and reload your {term}`automations <automation>` or {term}`scripts <script>`. Nothing about a `.bak` file is special to Home Assistant, so whatever you already use to reach your configuration folder will do: the File editor or Studio Code Server add-ons, Samba, SSH. There is no action for it, because putting one back is a rename and the file is already sitting there.
+
+The extension deliberately does not end in `.yaml`. Home Assistant reads every `.yaml` file under the blueprint folders as a blueprint, so a copy named that way would turn up in your blueprint list, and be given an update entity of its own.
 
 #### What the update dialog tells you
 
