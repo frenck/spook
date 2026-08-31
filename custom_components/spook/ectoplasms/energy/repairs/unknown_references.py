@@ -9,6 +9,7 @@ from homeassistant.helpers import entity_registry as er
 from ....const import LOGGER
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
+from ....statistics_sources import async_known_to_home_assistant
 
 # The energy validation issue type raised when a referenced entity or
 # statistic has no state at all: it was removed. Other issue types
@@ -54,6 +55,16 @@ class SpookRepair(AbstractSpookRepair):
                     unknown.update(
                         affected for affected, _detail in issue.affected_entities
                     )
+
+        # Home Assistant reports "entity not defined" for anything it cannot
+        # find a state for, and having no state covers more than being unknown:
+        # an integration that has not finished setting up, an entity somebody
+        # disabled, and an energy source fed by statistics that were published
+        # straight into the recorder without an entity ever existing. The
+        # energy dashboard draws that last one perfectly happily. Telling
+        # somebody their working gas meter is unknown is a repair for a problem
+        # they do not have. #1565.
+        unknown -= await async_known_to_home_assistant(self.hass, unknown)
 
         if unknown:
             self.async_create_issue(
