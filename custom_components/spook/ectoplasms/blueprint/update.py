@@ -157,13 +157,18 @@ _WOULD_NOT_RUN = (
 
 # Deliberately says nothing about why. There are three reasons a thing can end
 # up on that list and the line next to each one gives its own; a heading that
-# names only the commonest of them sends people off fixing the wrong thing.
-_WOULD_BE_REFUSED = (
-    "<ha-alert alert-type='error'>"
-    "Spook will not install this one. What is listed below would stop loading "
-    "the moment it is written, and the version it does work with is gone by "
-    "then. Put those right first, or import it yourself from the blueprint "
-    "page if you would rather sort them out afterwards."
+# picked one of them would be wrong about the others.
+#
+# A warning rather than an error, because this is not Spook's decision. What is
+# listed will stop loading, and putting that right is a thing somebody can do:
+# the automation keeps its configuration and its editor reads the file rather
+# than the entity, so it opens and takes the new setting like any other.
+_WOULD_STOP_THEM = (
+    "<ha-alert alert-type='warning'>"
+    "Installing this will stop what is listed below from loading, until you "
+    "give each one what the new version asks for. They keep everything else "
+    "you set, so opening one and filling in the rest is all it takes. Tick "
+    "Create backup first if you would rather be able to put this back."
     "</ha-alert>"
 )
 
@@ -1191,15 +1196,6 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             )
             raise HomeAssistantError(msg)
 
-        if short := await self._async_consumers_left_short(fetched):
-            msg = (
-                f"Updating {self._said.name} would stop {_listed(short)} from "
-                f"loading. Nothing has been written. Put that right first, or "
-                f"import {self._said.source_url} yourself from the blueprint "
-                f"page if you would rather sort them out afterwards."
-            )
-            raise HomeAssistantError(msg)
-
         domain_blueprints: dict[str, blueprint.DomainBlueprints] = self.hass.data.get(
             blueprint.DOMAIN,
             {},
@@ -1382,7 +1378,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             refusal.append("\n".join(f"- {error}" for error in errors))
 
         if short := await self._async_consumers_left_short(self._fetched):
-            refusal.append(_WOULD_BE_REFUSED)
+            refusal.append(_WOULD_STOP_THEM)
             refusal.append(self._as_a_list(short))
 
         notes = [
@@ -1579,10 +1575,3 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 short[entity_id] = f"would not load: {err}"
 
         return short
-
-
-def _listed(short: dict[str, str]) -> str:
-    """Return the stranded consumers as something to put in a sentence."""
-    return ", ".join(
-        f"{entity_id} ({reason})" for entity_id, reason in sorted(short.items())
-    )

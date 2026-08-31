@@ -145,9 +145,13 @@ And underneath that, the difference itself, folded away because most people want
 
 Both sides go through Home Assistant's own YAML writer before being compared. Without that, the file on your disk (written by Home Assistant) and the one just fetched (in its author's layout) differ in indentation and quoting before they differ in anything that matters: eleven lines of that on an eighteen-line {term}`blueprint <blueprint>` that had not changed at all, and hundreds of those on a large one. What is left after writing both out the same way is only what moved. Past a hundred lines it stops and says how many more there were, because all of it travels to your browser whether you open it or not.
 
-**When Spook is not going to install something, that comes first.** A red banner at the top, naming what would break or the Home Assistant version it wants, above everything else. What changed and what is built on it are still there underneath, but they are context for a decision already taken.
+**What an update is going to cost you comes first**, above everything else, because people do not read to the bottom for a headline. What changed and what is built on the {term}`blueprint <blueprint>` are still there underneath, as context.
 
-The warning is advice, and an update that is otherwise fine still installs. The rest are refusals: Spook will not write a blueprint that would leave an automation or script short of an input, one that would not load once it has been built, or one that says it needs a Home Assistant you are not running.
+The colour is the whole of the message. **Orange is your decision**: what is listed will stop loading, and Spook is telling you so and installing it anyway if you say so. **Red is Spook's**: it will not write this one at all.
+
+There is exactly one red case. A {term}`blueprint <blueprint>` that says it needs a newer Home Assistant than you are running cannot work on your installation no matter what you do to your {term}`automations <automation>`, so writing it would break everything on it with no way out but upgrading Home Assistant.
+
+Everything else is orange, including an update that adds a setting nobody has filled in yet. Those {term}`automations <automation>` do stop loading, and that is worth saying loudly, but updating first and filling the new setting in afterwards is a perfectly ordinary way round and which way round you want is not Spook's to decide. Nothing is lost either: a stopped automation keeps its configuration and its ID, its editor opens it as normal, and you fill in what the new version asks for. Ticking **Create backup** first means you can put the {term}`blueprint <blueprint>` back as well.
 
 Matter and ZHA put much the same warning in front of a firmware update, for much the same reason.
 
