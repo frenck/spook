@@ -384,10 +384,6 @@
             "description": "Spook je pronašao duha u vašoj energetskoj kontrolnoj tabli 👻\n\nEnergetska kontrolna tabla koristi sledeće entitete koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nOvo se obično dešava kada se entitet korišćen u energetskoj konfiguraciji preimenuje ili ukloni. Da biste ispravili ovu grešku, otvorite Podešavanja > Kontrolne table > Energija i ažurirajte ili uklonite ove entitete.\n\nSpook 👻 Vaš ortak.",
             "title": "Nepoznati entiteti korišćeni u energetskoj kontrolnoj tabli"
         },
-        "dead_entities": {
-            "description": "Spook je pronašao duha u vašim entitetima 👻\n\nIntegracija {integration} je završila podešavanje, ali se sledeći entiteti koje je registrovala nikada nisu pojavili, tako da više ne postoje:\n\n{entities}\n\n\n\nOvo se obično dešava kada se uređaj ili njegovi entiteti uklone na samom izvoru, ali unosi u registru ostanu zaostali. Da biste ispravili ovu grešku, uklonite ove entitete iz registra entiteta ako vam više nisu potrebni.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepostojeći entiteti koje je registrovala integracija: {integration}"
-        },
         "unknown_helper_source_references": {
             "fix_flow": {
                 "step": {
@@ -509,26 +505,6 @@
                 }
             },
             "title": "Neiskorišćena oznaka: {label}"
-        },
-        "stale_access_tokens": {
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "ignore": "Zadrži, prestani da me obaveštavaš",
-                            "remove": "Poništite ovaj token",
-                            "manage": "Dozvoli mi da sam popravim"
-                        },
-                        "title": "Izgleda da je dugotrajni pristupni token zaboravljen: {token}",
-                        "description": "Dugotrajni pristupni token `{token}` (vlasnik: {owner}) nije korišćen od {last_active}.\n\nPoništite ga ili ga zadržite i Spook ga više neće prijavljivati. Poništavanje će zaustaviti sve što još koristi ovaj token dok ne dobije novi.\n\nSpook 👻 Vaš ortak."
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook vas od sada neće obaveštavati o ovom tokenu.",
-                    "manage": "Možete sami upravljati dugotrajnim pristupnim tokenima u [bezbednosnim podešavanjima vašeg profila](/profile/security)."
-                }
-            },
-            "title": "Izgleda da je dugotrajni pristupni token zaboravljen: {token}"
         },
         "unused_blueprints": {
             "fix_flow": {
