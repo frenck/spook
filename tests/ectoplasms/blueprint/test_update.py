@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
 from unittest.mock import patch
 
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_UNAVAILABLE
 from homeassistant.components.update import UpdateEntityFeature
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
@@ -222,14 +222,22 @@ async def test_installing_writes_the_new_blueprint(
     assert hass.states.get(_ENTITY).state == "off"
 
 
-async def test_an_update_that_would_strand_an_automation_is_refused(
+async def test_an_update_that_strands_an_automation_still_installs(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
 ) -> None:
     """An input with no default has to come from whoever uses the blueprint.
 
-    A new one that nobody sets stops every automation on it from loading the
-    moment the file is written, and the old version is gone by then.
+    A new one that nobody sets stops every automation on it from loading. That
+    is worth saying loudly and it is not worth refusing over: updating and then
+    filling the new setting in is a perfectly ordinary way round, and which way
+    round somebody wants is not Spook's to decide.
+
+    What makes it ordinary is that nothing is lost. The automation goes
+    unavailable and keeps its configuration and its ID, and its editor reads
+    the file rather than the entity, so it opens and takes the new setting like
+    any other. This pins that, because the whole argument for going ahead rests
+    on it.
     """
     file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
     await async_set_up(hass)
@@ -243,18 +251,29 @@ async def test_an_update_that_would_strand_an_automation_is_refused(
 
     with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
         await _check(hass, freezer)
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
 
-        # Named as its author named it, which is how it reads in the
-        # editor somebody is about to go and set it in.
-        with pytest.raises(HomeAssistantError, match="Wait time"):
-            await hass.services.async_call(
-                "update",
-                "install",
-                {"entity_id": _ENTITY},
-                blocking=True,
-            )
+    assert file.read_text(encoding="utf-8") != before
+    assert "wait_time" in file.read_text(encoding="utf-8")
 
-    assert file.read_text(encoding="utf-8") == before
+    # Stopped, as promised.
+    stranded = hass.states.get("automation.landing_light")
+    assert stranded is not None
+    assert stranded.state == STATE_UNAVAILABLE
+
+    # And still there to be put right: its ID survives, which is what its
+    # editor is reached by, and it still holds what somebody configured.
+    entity = hass.data[DATA_INSTANCES]["automation"].get_entity(
+        "automation.landing_light",
+    )
+    assert entity.unique_id == "landing_light"
+    assert entity.raw_config is not None
 
 
 async def test_a_new_input_nobody_needs_to_set_goes_through(
@@ -602,7 +621,9 @@ async def test_the_notes_name_the_automations_that_would_be_left_short(
         await _check(hass, freezer)
 
     notes = await _release_notes(client)
-    assert "alert-type='error'" in notes
+    # A warning, not an error: what is listed will stop loading, and putting
+    # that right is something somebody can do.
+    assert "alert-type='warning'" in notes
     assert "[Landing light](/config/automation/edit/landing_light)" in notes
     assert "Wait time" in notes
 
@@ -810,7 +831,7 @@ async def test_a_script_blueprint_gets_one_too(
     assert hass.states.get("script.shout") is not None
 
 
-async def test_a_script_that_would_be_left_short_stops_the_install(
+async def test_a_script_left_short_of_an_input_still_installs(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
 ) -> None:
@@ -833,18 +854,18 @@ async def test_a_script_that_would_be_left_short_stops_the_install(
     with _source_says(A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT):
         await _check(hass, freezer)
 
-        with pytest.raises(HomeAssistantError, match="Title"):
-            await hass.services.async_call(
-                "update",
-                "install",
-                {"entity_id": entity_id},
-                blocking=True,
-            )
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": entity_id},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
 
-    assert file.read_text(encoding="utf-8") == before
+    assert file.read_text(encoding="utf-8") != before
 
 
-async def test_a_consumer_that_cannot_be_read_stops_the_install(
+async def test_a_consumer_that_cannot_be_read_does_not_stop_the_install(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
     monkeypatch: pytest.MonkeyPatch,
@@ -886,15 +907,15 @@ async def test_a_consumer_that_cannot_be_read_stops_the_install(
     with _source_says(MOTION_LIGHT_CHANGED):
         await _check(hass, freezer)
 
-        with pytest.raises(HomeAssistantError, match="landing_light"):
-            await hass.services.async_call(
-                "update",
-                "install",
-                {"entity_id": _ENTITY},
-                blocking=True,
-            )
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
 
-    assert file.read_text(encoding="utf-8") == before
+    assert file.read_text(encoding="utf-8") != before
 
 
 async def test_nothing_is_looked_at_while_home_assistant_is_still_starting(
@@ -1116,7 +1137,7 @@ async def test_a_check_and_an_install_do_not_tread_on_each_other(
     assert hass.states.get(_ENTITY).state == "off", "the check undid the install"
 
 
-async def test_an_update_that_would_not_load_is_refused(
+async def test_an_update_that_would_not_load_still_installs(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
 ) -> None:
@@ -1140,19 +1161,19 @@ async def test_an_update_that_would_not_load_is_refused(
     with _source_says(MOTION_LIGHT_WITH_A_BAD_TRIGGER):
         await _check(hass, freezer)
 
-        with pytest.raises(HomeAssistantError, match="would not load"):
-            await hass.services.async_call(
-                "update",
-                "install",
-                {"entity_id": _ENTITY},
-                blocking=True,
-            )
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
 
-    assert file.read_text(encoding="utf-8") == before
+    assert file.read_text(encoding="utf-8") != before
     assert hass.states.get("automation.landing_light") is not None
 
 
-async def test_a_script_update_that_would_not_load_is_refused(
+async def test_a_script_update_that_would_not_load_still_installs(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
 ) -> None:
@@ -1171,15 +1192,15 @@ async def test_a_script_update_that_would_not_load_is_refused(
     with _source_says(A_SCRIPT_BLUEPRINT_WITH_A_BAD_STEP):
         await _check(hass, freezer)
 
-        with pytest.raises(HomeAssistantError, match="would not load"):
-            await hass.services.async_call(
-                "update",
-                "install",
-                {"entity_id": entity_id},
-                blocking=True,
-            )
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": entity_id},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
 
-    assert file.read_text(encoding="utf-8") == before
+    assert file.read_text(encoding="utf-8") != before
     assert hass.states.get("script.shout") is not None
 
 
@@ -1204,7 +1225,7 @@ async def test_the_notes_say_an_update_would_not_load(
 
         notes = await _release_notes(client)
 
-    assert "alert-type='error'" in notes
+    assert "alert-type='warning'" in notes
     assert "[Landing light](/config/automation/edit/landing_light)" in notes
     assert "would not load" in notes
 
@@ -2525,7 +2546,7 @@ async def test_a_difference_too_long_to_send_is_cut_short(
     assert len(notes.splitlines()) < _HOW_MANY_LINES * 2
 
 
-async def test_a_refusal_comes_before_anything_else(
+async def test_what_spook_will_not_do_comes_before_anything_else(
     hass: HomeAssistant,
     hass_ws_client: WebSocketGenerator,
     freezer: FrozenDateTimeFactory,
@@ -2534,6 +2555,39 @@ async def test_a_refusal_comes_before_anything_else(
 
     Burying "this cannot be installed" under three paragraphs of what changed
     asks somebody to read all of it before finding out none of it matters yet.
+
+    A Home Assistant version it needs is the one thing Spook does refuse over,
+    because nothing anybody does to their own automations gets them out of it.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Landing light", "motion.yaml", _MOTION_INPUTS)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    assert notes.startswith("<ha-alert alert-type='error'>")
+    assert notes.index("will not install it") < notes.index("carry no changelog")
+    assert notes.index("will not install it") < notes.index("Imported from")
+
+    # And the version is said once. The refusal names it, so the summary above
+    # leaves it out rather than reading as a second problem.
+    assert "It now asks for Home Assistant" not in notes
+
+
+async def test_what_an_update_will_cost_comes_before_anything_else(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Same reasoning for a warning as for a refusal.
+
+    Whether an update stops the automations built on it is the headline, and
+    people do not read to the bottom for a headline.
     """
     async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
     await async_set_up(hass)
@@ -2546,6 +2600,5 @@ async def test_a_refusal_comes_before_anything_else(
 
     notes = await _release_notes(client)
 
-    assert notes.startswith("<ha-alert alert-type='error'>")
-    assert notes.index("will not install this one") < notes.index("carry no changelog")
-    assert notes.index("will not install this one") < notes.index("Compared with")
+    assert notes.startswith("<ha-alert alert-type='warning'>")
+    assert notes.index("stop what is listed below") < notes.index("Compared with")
