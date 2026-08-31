@@ -111,6 +111,17 @@ The rename in that table is the one this exists for. An author who changes the k
 
 And if Spook cannot read the copy you have at that moment, it says so instead of saying nothing, because saying nothing reads as "nothing changed".
 
+Underneath that, what is built on the {term}`blueprint <blueprint>`, because an update writes over a file other things are running on and which ones is not written down anywhere you can see:
+
+```{code-block} text
+**The following 2 automations are using this blueprint:**
+
+- [Hallway light](/config/automation/edit/hallway)
+- [Porch light](/config/automation/edit/porch)
+```
+
+Each one links to its editor, so you can go and look at what an update is about to reach before you install it. An {term}`automation <automation>` written in YAML without an `id:` has no editor to open, so that one links to the overview page instead. And when nothing is built on it you get told that too, in as many words, because it means you can install without reading any further.
+
 The warning is advice, and an update that is otherwise fine still installs. The rest are refusals: Spook will not write a blueprint that would leave an automation or script short of an input, one that would not load once it has been built, or one that says it needs a Home Assistant you are not running.
 
 Matter and ZHA put much the same warning in front of a firmware update, for much the same reason.
