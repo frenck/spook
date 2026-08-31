@@ -191,6 +191,10 @@ def _canonical(value: Any) -> Any:
     floats as keys, so `{1: a}` and `{"1": a}` are different mappings and
     stringifying both would have hidden the difference.
 
+    Anything JSON cannot hold is named by its type and written out as text. An
+    unquoted date in a blueprint arrives as a `datetime.date`, and that used
+    to take the whole round down with a `TypeError`.
+
     The loader's own string and mapping classes go too. They carry the line
     they came from, which says nothing about what the blueprint does.
     """
@@ -203,9 +207,28 @@ def _canonical(value: Any) -> Any:
         ]
     if isinstance(value, (list, tuple)):
         return ["seq", [_canonical(item) for item in value]]
+    if isinstance(value, (set, frozenset)):
+        # A set carries no order of its own, and Python's iteration order for
+        # one is not stable between runs, so the members are sorted once
+        # encoded. `!!set` is rare in a blueprint but it parses.
+        return ["set", sorted(json.dumps(_canonical(item)) for item in value)]
+
+    return _canonical_scalar(value)
+
+
+def _canonical_scalar(value: Any) -> Any:
+    """Return the encoded form of something that holds nothing else."""
     if isinstance(value, str):
         return ["str", str(value)]
-    return ["value", value]
+    if value is None or isinstance(value, (bool, int, float)):
+        return ["value", value]
+
+    # A date, a datetime, a `!!binary`: things YAML produces that JSON cannot
+    # take. Without this the whole round died on a `TypeError` from a blueprint
+    # holding an unquoted date. Named by their type so two different kinds
+    # cannot look alike, and written out as text because that is all JSON can
+    # hold.
+    return [f"other:{type(value).__name__}", str(value)]
 
 
 def _fingerprint(item: blueprint.Blueprint) -> str:

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 from datetime import timedelta
 from pathlib import Path
 from typing import TYPE_CHECKING, ClassVar
@@ -1438,3 +1439,46 @@ def test_every_kind_of_value_says_what_it_is(value: object, kind: str) -> None:
     them on its own.
     """
     assert _canonical(value)[0] == kind
+
+
+@pytest.mark.parametrize(
+    "text",
+    [
+        pytest.param("a: 2026-01-01", id="date"),
+        pytest.param("a: 2026-01-01 10:00:00", id="datetime"),
+        pytest.param("a: !!binary aGk=", id="binary"),
+        pytest.param("a: !!set {x: null, y: null}", id="set"),
+    ],
+)
+def test_the_encoding_survives_what_yaml_hands_back(text: str) -> None:
+    """YAML produces things JSON has never heard of.
+
+    An unquoted date arrives as a `datetime.date`, and passing that to
+    `json.dumps` raises `TypeError`, which took the whole round of checks down
+    with it rather than one blueprint.
+    """
+    json.dumps(_canonical(yaml_util.parse_yaml(text)))
+
+
+def test_a_date_and_the_same_date_written_out_are_not_the_same() -> None:
+    """Rendering these as text must not let two kinds collide."""
+    as_date = yaml_util.parse_yaml("a: 2026-01-01")
+    as_string = yaml_util.parse_yaml('a: "2026-01-01"')
+
+    assert _canonical(as_date) != _canonical(as_string)
+
+
+def test_a_set_is_encoded_in_a_fixed_order() -> None:
+    """Two runs of Home Assistant must fingerprint a `!!set` the same.
+
+    A set has no order of its own and Python iterates one by hash, which
+    depends on `PYTHONHASHSEED` and so differs between processes. Within a
+    single test the order never varies, so this asserts the encoding is sorted
+    rather than trying to catch a difference that cannot happen here. Without
+    it a blueprint holding a `!!set` would report an update on some restarts
+    and not others, which is the least debuggable kind of wrong.
+    """
+    encoded = _canonical(yaml_util.parse_yaml("a: !!set {x: null, y: null, a: null}"))
+    members = encoded[1][0][1][1]
+
+    assert members == sorted(members)
