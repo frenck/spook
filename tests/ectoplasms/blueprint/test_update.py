@@ -42,6 +42,7 @@ from custom_components.spook.ectoplasms.blueprint.update import (
     _HOW_MANY_LINES,
     _TOO_LONG_TO_COMPARE,
     _OnDisk,
+    _AS_WIDE_AS_A_LINE,
     _diffed,
     _HOW_MANY_TO_NAME,
     _normalize,
@@ -3108,3 +3109,124 @@ def test_a_key_cannot_close_the_span_it_is_named_in() -> None:
     said = _said_about(MOTION_LIGHT, hostile)
 
     assert said == ["**New settings**: Light (back\\`tick\\</ha-alert\\>)"]
+
+
+async def test_a_folder_that_is_not_there_keeps_the_entities_too(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Not only the registrations left behind by blueprints that are gone.
+
+    A domain nobody could look at says nothing about the blueprints somebody
+    is actually following either, and those cost more: they are entities on
+    the updates page, with whatever their owner set on them, rather than rows
+    in a registry nobody has looked at.
+    """
+    async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    following = "update.spooky_confirmable_notification"
+    assert hass.states.get(following) is not None
+
+    shutil.rmtree(Path(hass.config.path("blueprints", "script")))
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(following) is not None
+    assert entity_registry.async_get(following) is not None
+
+    # And once the folder is back and the blueprint really is gone, it goes.
+    Path(hass.config.path("blueprints", "script")).mkdir(parents=True)  # noqa: ASYNC240
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert hass.states.get(following) is None
+
+
+async def test_an_automation_cannot_write_markup_into_the_notes_either(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A blueprint's author is not the only one whose words end up in here.
+
+    An automation is named by whoever wrote it, and that name goes into a
+    markdown link. One holding `](` or a tag of its own reshapes the list it
+    is in.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(
+        hass,
+        "Mine](https://example.com) <ha-alert alert-type='error'>Trust me",
+        "motion.yaml",
+        _MOTION_INPUTS,
+    )
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    prose = (await _release_notes(client)).split("<details>")[0]
+
+    assert len(re.findall(r"(?<!\\)<ha-alert", prose)) == 1
+    assert "\\](https://example.com)" in prose
+
+
+async def test_two_missing_settings_of_the_same_name_are_told_apart(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Naming neither of them is what "never sets Light, Light" does.
+
+    Somebody reading that has to open the blueprint to work out which of the
+    two they are being asked for, which is the reading this is here to save.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Landing light", "motion.yaml", _MOTION_INPUTS)
+
+    # Two new settings, both called Light, neither of them with a default.
+    twice = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        "    first_light:\n      name: Light\n"
+        "    second_light:\n      name: Light\n",
+    )
+
+    with _source_says(twice):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+
+    assert "never sets Light (first\\_light), Light (second\\_light)" in notes
+
+
+def test_a_line_that_was_cut_says_so() -> None:
+    """Two long lines differing past the cut would arrive identical.
+
+    And a difference showing the same text twice, once with a minus and once
+    with a plus, says nothing at all.
+    """
+    long_one = "x" * (_AS_WIDE_AS_A_LINE * 2)
+
+    here = _normalize(
+        MOTION_LIGHT.replace(
+            "  name: Spooky motion light\n", f"  name: {long_one}A\n"
+        ).format(source=SOURCE),
+    )
+    there = _normalize(
+        MOTION_LIGHT.replace(
+            "  name: Spooky motion light\n", f"  name: {long_one}B\n"
+        ).format(source=SOURCE),
+    )
+
+    assert "[cut]" in _diffed(here, there)

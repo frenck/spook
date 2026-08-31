@@ -14,6 +14,7 @@ import random
 import re
 import shutil
 from typing import TYPE_CHECKING, Any, NamedTuple
+from urllib.parse import quote
 
 import aiohttp
 from annotatedyaml.objects import Input
@@ -569,6 +570,25 @@ def _called(key: str, definition: Any) -> str:
     return _as_text(key)
 
 
+def _all_of(item: blueprint.Blueprint, keys: set[str]) -> str:
+    """Return what to call each of some settings, unambiguously.
+
+    Through the same telling apart as everywhere else. Two required settings
+    both called Light would otherwise read as "never sets Light, Light", which
+    names neither of them.
+    """
+    carrying: dict[str, set[str]] = {}
+    for key, definition in item.inputs.items():
+        carrying.setdefault(_called(key, definition), set()).add(key)
+
+    named = _spelled_out(
+        [(_called(key, item.inputs[key]), key) for key in keys],
+        carrying,
+    )
+
+    return ", ".join(sorted(named))
+
+
 def _spelled_out(
     settings: list[tuple[str, str]],
     carrying: dict[str, set[str]],
@@ -834,7 +854,15 @@ def _diffed(here: blueprint.Blueprint, there: blueprint.Blueprint) -> str:
     if (rest := len(lines) - _HOW_MANY_LINES) > 0:
         shown.append(f"... and {rest} more lines")
 
-    body = "\n".join(line[:_AS_WIDE_AS_A_LINE] for line in shown)
+    # Marked where it was cut, because two long lines that differ past the cut
+    # would otherwise arrive identical, and a difference showing the same text
+    # twice says nothing at all.
+    body = "\n".join(
+        line
+        if len(line) <= _AS_WIDE_AS_A_LINE
+        else f"{line[:_AS_WIDE_AS_A_LINE]} [cut]"
+        for line in shown
+    )
 
     # A fence longer than the longest run of backticks inside it, which is what
     # CommonMark asks for and what stops an author closing it early and having
@@ -1081,7 +1109,15 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         # way, so whatever is already here stays. A file that was read and no
         # longer names a source is somebody asking to be left alone, and that
         # one goes.
-        await self._async_forget(set(self._entities) - set(followed) - unreadable)
+        #
+        # And a whole domain nobody could look at says nothing either, for the
+        # same reason and at a higher price: these are entities somebody has,
+        # rather than registrations left behind, and a folder that has gone
+        # missing for a moment would take every one of them.
+        out_of_sight = {key for key in self._entities if key[0] not in found.domains}
+        await self._async_forget(
+            set(self._entities) - set(followed) - unreadable - out_of_sight,
+        )
 
         self._async_drop_what_is_not_there(found, followed, unreadable)
 
@@ -1737,13 +1773,18 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
             # Written in YAML without an `id:`, so there is no editor to open.
             # The overview page is the nearest thing to where it lives.
+            # Encoded, because an ID written by hand in YAML can hold a
+            # closing bracket, which ends the link it was put in and leaves the
+            # rest of it loose in the sentence.
             where = (
                 uses.dashboard_url
                 if entity.unique_id is None
-                else uses.edit_url.format(unique_id=entity.unique_id)
+                else uses.edit_url.format(
+                    unique_id=quote(str(entity.unique_id), safe=""),
+                )
             )
 
-            built[entity_id] = (entity.name or entity_id, where)
+            built[entity_id] = (_as_words(entity.name or entity_id), where)
 
         return built
 
@@ -1793,8 +1834,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             if missing := set(fetched.inputs) - set(candidate.inputs_with_default):
                 # Named the way their author named them, which is how they
                 # read in the editor somebody is about to go and fix this in.
-                called = sorted(_called(key, fetched.inputs[key]) for key in missing)
-                short[entity_id] = f"never sets {', '.join(called)}"
+                short[entity_id] = f"never sets {_all_of(fetched, missing)}"
                 continue
 
             # Substituting cannot fail here: a blueprint whose body reaches for
