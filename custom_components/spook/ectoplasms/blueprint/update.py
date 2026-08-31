@@ -1304,16 +1304,16 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             built_on_it,
         ]
 
+        # One entry per list rather than one per line. Bullets handed over
+        # separately end up with a blank line between them, which markdown
+        # reads as a list that wants room around every item.
         if errors := self._fetched.validate():
             notes.append(_WOULD_NOT_RUN)
-            notes.extend(f"- {error}" for error in errors)
+            notes.append("\n".join(f"- {error}" for error in errors))
 
         if short := await self._async_consumers_left_short(self._fetched):
             notes.append(_WOULD_BE_REFUSED)
-            notes.extend(
-                f"- `{entity_id}` {reason}"
-                for entity_id, reason in sorted(short.items())
-            )
+            notes.append(self._as_a_list(short))
 
         return "\n\n".join(line for line in notes if line)
 
@@ -1358,6 +1358,27 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         return fetched
 
     @callback
+    def _as_a_list(self, short: dict[str, str]) -> str:
+        """Return the stranded ones the way the rest of the dialog names them.
+
+        By what their owner called them, linked, rather than by entity ID. The
+        same automation reading as "Hallway light" higher up and
+        `automation.hallway_light` here is two names for one thing in one
+        dialog.
+        """
+        known = self._async_who_built_on_it()
+
+        lines = []
+        for entity_id, reason in sorted(short.items()):
+            if (built := known.get(entity_id)) is None:
+                lines.append(f"- `{entity_id}` {reason}")
+                continue
+
+            lines.append(f"- [{built[0]}]({built[1]}) {reason}")
+
+        return "\n".join(lines)
+
+    @callback
     def _async_built_on_it(self) -> str:
         """Return what the dialog says about what is built on this blueprint.
 
@@ -1379,18 +1400,26 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             )
 
         return "\n".join(
-            [opening, "", *(f"- [{name}]({where})" for name, where in built)],
+            [
+                opening,
+                "",
+                *(f"- [{name}]({where})" for name, where in sorted(built.values())),
+            ],
         )
 
     @callback
-    def _async_who_built_on_it(self) -> list[tuple[str, str]]:
-        """Return what runs on this blueprint, and where to go and edit it."""
+    def _async_who_built_on_it(self) -> dict[str, tuple[str, str]]:
+        """Return what runs on this blueprint, and where to go and edit it.
+
+        Keyed by entity ID, because that is what the rest of this has to hand
+        when it needs to say something about one of them.
+        """
         component = self.hass.data.get(DATA_INSTANCES, {}).get(self.blueprint_domain)
         if component is None:
-            return []
+            return {}
 
         uses = _USES_BLUEPRINTS[self.blueprint_domain]
-        built: list[tuple[str, str]] = []
+        built: dict[str, tuple[str, str]] = {}
 
         for entity_id in uses.users(self.hass, self.blueprint_path):
             if (entity := component.get_entity(entity_id)) is None:
@@ -1404,9 +1433,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 else uses.edit_url.format(unique_id=entity.unique_id)
             )
 
-            built.append((entity.name or entity_id, where))
+            built[entity_id] = (entity.name or entity_id, where)
 
-        return sorted(built)
+        return built
 
     async def _async_consumers_left_short(
         self,
@@ -1451,7 +1480,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             candidate = blueprint.BlueprintInputs(fetched, supplied)
 
             if missing := set(fetched.inputs) - set(candidate.inputs_with_default):
-                short[entity_id] = f"never sets {', '.join(sorted(missing))}"
+                # Named the way their author named them, which is how they
+                # read in the editor somebody is about to go and fix this in.
+                called = sorted(_called(key, fetched.inputs[key]) for key in missing)
+                short[entity_id] = f"never sets {', '.join(called)}"
                 continue
 
             # Substituting cannot fail here: a blueprint whose body reaches for
