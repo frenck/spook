@@ -63,7 +63,7 @@ So Spook uses a fingerprint of the contents instead. Same fingerprint, same blue
 
 The fingerprint is taken from what a blueprint says, not from how the file is laid out. Home Assistant does not keep the bytes it downloaded: it parses a blueprint and writes it back out in its own formatting, and that formatting is free to differ between installations and Home Assistant releases. Line width, quoting, whether an emoji is written out or escaped, all of it. None of that changes what the blueprint does, so none of it changes the fingerprint. Neither does the address it came from, which Home Assistant stores inside the blueprint on the way in.
 
-Comments and indentation are not part of it. Somebody tidying up their YAML does not count as an update.
+Comments and indentation are not part of it either, since neither survives being parsed. Reordering keys is, though. Home Assistant renders some of them in the order they are written, a `variables:` block among them, so moving two keys around can change what a blueprint does. Spook keeps that order rather than trying to work out which mappings are the executable ones, because guessing wrong there would mean missing a real update rather than mentioning an extra one.
 
 #### When an update would break your automations
 
