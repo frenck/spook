@@ -26,6 +26,7 @@ from pytest_homeassistant_custom_component.common import async_fire_time_changed
 from custom_components.spook.ectoplasms.blueprint import update as update_module
 from custom_components.spook.ectoplasms.blueprint.update import (
     _canonical,
+    _normalize,
     _fingerprint,
     _CHECK_INTERVAL,
     _SPREAD,
@@ -1514,3 +1515,52 @@ actions:
         schema=BLUEPRINT_SCHEMA,
     )
     assert _fingerprint(quoted) != fingerprint
+
+
+def test_a_cyclic_alias_never_reaches_the_encoding() -> None:
+    """The encoding recurses without tracking what it has seen.
+
+    Which is safe only because Home Assistant's loader refuses a recursive
+    node while parsing, long before any of this. Worth pinning, because if
+    that ever changed the encoding would hit a `RecursionError` and
+    `_read_files` catches only `OSError`, so one file would take the whole
+    round of checks with it.
+    """
+    assert _normalize("a: &s [*s]") is None
+    assert _normalize("a: &m {k: *m}") is None
+
+
+def test_an_alias_fingerprints_the_same_as_writing_it_out() -> None:
+    """A shared alias is two names for one value, not a cycle, and it parses.
+
+    Two blueprints saying the same thing, one using an anchor and one spelling
+    it out twice, are the same blueprint. The old fingerprint went through
+    PyYAML's dumper, which writes anchors back out as `&id001`, so those two
+    used to disagree.
+    """
+    aliased = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: light.turn_on
+    target: &t {entity_id: light.a}
+  - action: light.turn_off
+    target: *t
+"""
+    written_out = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - action: light.turn_on
+    target: {entity_id: light.a}
+  - action: light.turn_off
+    target: {entity_id: light.a}
+"""
+    one = Blueprint(yaml_util.parse_yaml(aliased), schema=BLUEPRINT_SCHEMA)
+    other = Blueprint(yaml_util.parse_yaml(written_out), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(one) == _fingerprint(other)
