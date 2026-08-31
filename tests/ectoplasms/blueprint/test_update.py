@@ -243,7 +243,9 @@ async def test_an_update_that_would_strand_an_automation_is_refused(
     with _source_says(MOTION_LIGHT_WITH_NEW_INPUT):
         await _check(hass, freezer)
 
-        with pytest.raises(HomeAssistantError, match="wait_time"):
+        # Named as its author named it, which is how it reads in the
+        # editor somebody is about to go and set it in.
+        with pytest.raises(HomeAssistantError, match="Wait time"):
             await hass.services.async_call(
                 "update",
                 "install",
@@ -600,8 +602,8 @@ async def test_the_notes_name_the_automations_that_would_be_left_short(
 
     notes = await _release_notes(client)
     assert "alert-type='error'" in notes
-    assert "automation.landing_light" in notes
-    assert "wait_time" in notes
+    assert "[Landing light](/config/automation/edit/landing_light)" in notes
+    assert "Wait time" in notes
 
 
 async def test_the_notes_do_not_warn_when_there_is_nothing_to_install(
@@ -830,7 +832,7 @@ async def test_a_script_that_would_be_left_short_stops_the_install(
     with _source_says(A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT):
         await _check(hass, freezer)
 
-        with pytest.raises(HomeAssistantError, match="title"):
+        with pytest.raises(HomeAssistantError, match="Title"):
             await hass.services.async_call(
                 "update",
                 "install",
@@ -1202,7 +1204,7 @@ async def test_the_notes_say_an_update_would_not_load(
         notes = await _release_notes(client)
 
     assert "alert-type='error'" in notes
-    assert "automation.landing_light" in notes
+    assert "[Landing light](/config/automation/edit/landing_light)" in notes
     assert "would not load" in notes
 
     # And the heading over that list says nothing about inputs. There are
