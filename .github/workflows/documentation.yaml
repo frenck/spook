@@ -9,6 +9,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      SITE_ORIGIN: https://spook.boo
     permissions:
       actions: write
       contents: read
@@ -33,6 +35,18 @@ jobs:
 
       - name: ©️ Public folder
         run: cp ./documentation/public/* ./documentation/_build/html/
+
+      - name: 🔗 Correct generated site origin
+        run: |
+          grep -RIlZ "http://localhost:3000" ./documentation/_build/html \
+            | xargs -0 -r sed -i "s|http://localhost:3000|${SITE_ORIGIN}|g"
+
+      - name: 🔍 Verify generated site origin
+        run: |
+          if grep -RIl "http://localhost:3000" ./documentation/_build/html; then
+            echo "Found localhost URLs in the generated documentation"
+            exit 1
+          fi
 
       - name: 🆙 Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
