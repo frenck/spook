@@ -99,8 +99,10 @@ What an author did, and what you get told:
   - When it runs **changed**
 * - Changed the mode
   - How it handles overlapping runs **changed**
-* - Moved two inputs around
-  - The same things, written in a different order
+* - Moved two settings around, or gathered them into sections
+  - **The settings are arranged differently**
+* - Said it no longer needs a particular Home Assistant
+  - It **no longer asks** for a particular Home Assistant version
 * - Rewrote it, 80 things changed
   - **New settings**: 80, What it does **changed**, When it runs **changed**
 ```
@@ -143,7 +145,7 @@ And underneath that, the difference itself, folded away because most people want
  mode: restart
 ```
 
-Both sides go through Home Assistant's own YAML writer before being compared. Without that, the file on your disk (written by Home Assistant) and the one just fetched (in its author's layout) differ in indentation and quoting before they differ in anything that matters: eleven lines of that on an eighteen-line {term}`blueprint <blueprint>` that had not changed at all, and hundreds of those on a large one. What is left after writing both out the same way is only what moved. Past a hundred lines it stops and says how many more there were, because all of it travels to your browser whether you open it or not.
+Both sides go through Home Assistant's own YAML writer before being compared. Without that, the file on your disk (written by Home Assistant) and the one just fetched (in its author's layout) differ in indentation and quoting before they differ in anything that matters: eleven lines of that on an eighteen-line {term}`blueprint <blueprint>` that had not changed at all, and hundreds of those on a large one. What is left after writing both out the same way is only what moved. Past a hundred lines it stops and says how many more there were, because all of it travels to your browser whether you open it or not. And a {term}`blueprint <blueprint>` past a few thousand lines is not compared line by line at all: the work grows with the square of the length, which on a real one of 36,000 lines came to ten seconds, all of it to build something that would then be cut to a hundred lines anyway.
 
 **What an update is going to cost you comes first**, above everything else, because people do not read to the bottom for a headline. What changed and what is built on the {term}`blueprint <blueprint>` are still there underneath, as context.
 

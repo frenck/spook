@@ -28,6 +28,7 @@ from homeassistant.components.blueprint import BLUEPRINT_SCHEMA
 from homeassistant.components.blueprint.const import (
     CONF_BLUEPRINT,
     CONF_HOMEASSISTANT,
+    CONF_INPUT,
     CONF_MIN_VERSION,
     CONF_SOURCE_URL,
 )
@@ -207,6 +208,10 @@ _HOW_MANY_TO_NAME = 3
 # and all of them travel to the dialog whether anybody opens it or not.
 _HOW_MANY_LINES = 100
 
+# And the length of blueprint worth starting on at all. Measured: 3,500
+# lines takes a tenth of a second, 14,000 takes two, 36,000 takes ten.
+_TOO_LONG_TO_COMPARE = 5000
+
 # The keys at the top of a blueprint that say what it does. Grouped, because
 # "the triggers changed" and "the actions changed" are the same news to
 # somebody deciding whether to install this.
@@ -228,6 +233,10 @@ _WHAT_IT_DOES = {
 # And the ones that only say what it is called. A blueprint whose description
 # changed and nothing else is worth saying out loud precisely because it means
 # somebody can stop reading.
+# Answered by the settings, the requirement, and by not caring: the source
+# URL belongs to whoever imported the blueprint rather than to its author.
+_ANSWERED_ELSEWHERE = (CONF_INPUT, CONF_HOMEASSISTANT, CONF_SOURCE_URL)
+
 _WHAT_IT_IS_CALLED = {
     "name": "Its name",
     "description": "Its description",
@@ -418,6 +427,14 @@ def _compared(item: blueprint.Blueprint) -> dict[str, Any]:
     return data
 
 
+class _Settings(NamedTuple):
+    """The settings that are new, gone and changed between two versions."""
+
+    new: list[str]
+    gone: list[str]
+    changed: list[str]
+
+
 @dataclass(frozen=True, kw_only=True)
 class _Changes:
     """What is different between two versions of a blueprint.
@@ -427,9 +444,8 @@ class _Changes:
     that `blueprint.input.light_target` is gone.
     """
 
-    settings_new: list[str]
-    settings_gone: list[str]
-    settings_changed: list[str]
+    settings: _Settings
+    """The settings somebody fills in, and how they moved."""
 
     doing: set[str]
     """What it does, in the words of `_WHAT_IT_DOES`."""
@@ -437,8 +453,11 @@ class _Changes:
     calling: set[str]
     """What it is called, in the words of `_WHAT_IT_IS_CALLED`."""
 
-    needs: str | None
-    """A Home Assistant version it now asks for and did not before."""
+    requirement: str | None
+    """What to say about the Home Assistant it asks for, if that moved."""
+
+    arranged: bool
+    """The settings were moved about without any of them changing."""
 
     rearranged: bool
     """Nothing above, and still not the same file."""
@@ -446,12 +465,11 @@ class _Changes:
     def __bool__(self) -> bool:
         """Return whether anything at all was found."""
         return bool(
-            self.settings_new
-            or self.settings_gone
-            or self.settings_changed
+            any(self.settings)
             or self.doing
             or self.calling
-            or self.needs
+            or self.requirement
+            or self.arranged
             or self.rearranged,
         )
 
@@ -477,14 +495,6 @@ def _spelled_out(settings: list[tuple[str, str]], labels: list[str]) -> list[str
         label if labels.count(label) == 1 else f"{label} (`{key}`)"
         for label, key in settings
     ]
-
-
-class _Settings(NamedTuple):
-    """The settings that are new, gone and changed between two versions."""
-
-    new: list[str]
-    gone: list[str]
-    changed: list[str]
 
 
 def _settings_apart(
@@ -520,47 +530,98 @@ def _settings_apart(
     )
 
 
-def _doing_apart(was: dict[str, Any], now: dict[str, Any]) -> set[str]:
+def _moved(was: Mapping[str, Any], now: Mapping[str, Any], key: str) -> bool:
+    """Return whether a key holds something different than it did.
+
+    A key that is not there at all and one holding nothing are two different
+    things, and `.get()` on its own cannot tell them apart: a blueprint that
+    grows a `variables: null` would look unchanged.
+    """
+    if (key in was) != (key in now):
+        return True
+
+    return key in was and _canonical(was[key]) != _canonical(now[key])
+
+
+def _doing_apart(was: Mapping[str, Any], now: Mapping[str, Any]) -> set[str]:
     """Return what a blueprint does differently, in words."""
-    doing: set[str] = set()
-
-    for key in dict.fromkeys([*was, *now]):
-        if key == CONF_BLUEPRINT:
-            continue
-
-        if _canonical(was.get(key)) != _canonical(now.get(key)):
-            doing.add(_WHAT_IT_DOES.get(str(key), "Something else in it"))
-
-    return doing
+    return {
+        _WHAT_IT_DOES.get(str(key), "Something else in it")
+        for key in dict.fromkeys([*was, *now])
+        if key != CONF_BLUEPRINT and _moved(was, now, str(key))
+    }
 
 
 def _calling_apart(
     before: blueprint.Blueprint,
     after: blueprint.Blueprint,
 ) -> set[str]:
-    """Return what a blueprint calls itself differently, in words."""
+    """Return what a blueprint says about itself differently, in words.
+
+    Every key of the metadata, not a chosen few. The three that are left out
+    are answered elsewhere, and anything nobody has thought of gets a plain
+    line rather than falling through to the bottom of `_changes`, where it
+    would be reported as a reordering: which would be a made-up answer to a
+    real question.
+    """
     return {
-        words
-        for key, words in _WHAT_IT_IS_CALLED.items()
-        if _canonical(before.metadata.get(key)) != _canonical(after.metadata.get(key))
+        _WHAT_IT_IS_CALLED.get(str(key), "What it says about itself")
+        for key in dict.fromkeys([*before.metadata, *after.metadata])
+        if str(key) not in _ANSWERED_ELSEWHERE
+        and _moved(before.metadata, after.metadata, str(key))
     }
 
 
-def _needs_apart(
+def _arranged_apart(
+    before: blueprint.Blueprint,
+    after: blueprint.Blueprint,
+) -> bool:
+    """Return whether the settings were moved about without changing.
+
+    Home Assistant hands back the settings of a blueprint flattened, so an
+    author gathering them into sections, or simply putting them in another
+    order, comes out as no difference at all. It is a real change and it is
+    the one somebody sees first when they open the thing.
+    """
+    return _moved(before.metadata, after.metadata, CONF_INPUT)
+
+
+def _asked_for(metadata: Mapping[str, Any]) -> str | None:
+    """Return the Home Assistant version a blueprint says it needs."""
+    if not isinstance(needs := metadata.get(CONF_HOMEASSISTANT), Mapping):
+        return None
+
+    if (version := needs.get(CONF_MIN_VERSION)) is None:
+        return None
+
+    return str(version)
+
+
+def _requirement_apart(
     before: blueprint.Blueprint,
     after: blueprint.Blueprint,
 ) -> str | None:
-    """Return a Home Assistant version a blueprint now asks for and did not.
+    """Return what to say about the Home Assistant a blueprint asks for.
 
-    An empty string for one that asks for something unreadable, which is still
-    worth saying: it did not ask for anything before.
+    A finished sentence or nothing at all. Handing back the version on its own
+    left no way to say one had been taken away, and the empty string that stood
+    in for it was falsy: a blueprint that dropped its requirement came out as
+    no difference at all, and then got reported as a reordering.
     """
-    asked = after.metadata.get(CONF_HOMEASSISTANT)
+    was, now = _asked_for(before.metadata), _asked_for(after.metadata)
 
-    if _canonical(before.metadata.get(CONF_HOMEASSISTANT)) == _canonical(asked):
+    if was == now and not _moved(before.metadata, after.metadata, CONF_HOMEASSISTANT):
         return None
 
-    return str(asked.get(CONF_MIN_VERSION)) if isinstance(asked, Mapping) else ""
+    if now is not None:
+        return f"{_ASKS_FOR}{now}** or newer"
+
+    if was is not None:
+        return "It **no longer asks** for a particular Home Assistant version"
+
+    # Something in that block moved without either side naming a version,
+    # which is nothing to promise anybody a reading of.
+    return "**What it says it needs changed**"
 
 
 def _changes(before: blueprint.Blueprint, after: blueprint.Blueprint) -> _Changes:
@@ -573,12 +634,11 @@ def _changes(before: blueprint.Blueprint, after: blueprint.Blueprint) -> _Change
     settings = _settings_apart(before, after)
 
     changes = _Changes(
-        settings_new=settings.new,
-        settings_gone=settings.gone,
-        settings_changed=settings.changed,
+        settings=settings,
+        arranged=_arranged_apart(before, after) and not any(settings),
         doing=_doing_apart(was, now),
         calling=_calling_apart(before, after),
-        needs=_needs_apart(before, after),
+        requirement=_requirement_apart(before, after),
         rearranged=False,
     )
 
@@ -612,16 +672,18 @@ def _in_words(changes: _Changes) -> list[str]:
 
     lines: list[str] = []
 
-    if changes.settings_new:
-        lines.append(f"**New settings**: {_named(changes.settings_new)}")
-    if changes.settings_gone:
-        lines.append(f"**Settings taken away**: {_named(changes.settings_gone)}")
-    if changes.settings_changed:
-        lines.append(f"**Settings changed**: {_named(changes.settings_changed)}")
+    if changes.settings.new:
+        lines.append(f"**New settings**: {_named(changes.settings.new)}")
+    if changes.settings.gone:
+        lines.append(f"**Settings taken away**: {_named(changes.settings.gone)}")
+    if changes.settings.changed:
+        lines.append(f"**Settings changed**: {_named(changes.settings.changed)}")
 
-    if changes.needs is not None:
-        asked = changes.needs or "a particular version"
-        lines.append(f"{_ASKS_FOR}{asked}** or newer")
+    if changes.arranged:
+        lines.append("**The settings are arranged differently**")
+
+    if changes.requirement is not None:
+        lines.append(changes.requirement)
 
     lines.extend(f"{words} **changed**" for words in sorted(changes.doing))
     lines.extend(f"{words} **changed**" for words in sorted(changes.calling))
@@ -642,10 +704,22 @@ def _diffed(here: blueprint.Blueprint, there: blueprint.Blueprint) -> str:
     In the executor: dumping half a megabyte of YAML twice is not something to
     do on the event loop.
     """
+    was, now = here.yaml().splitlines(), there.yaml().splitlines()
+
+    # Comparing two sequences costs roughly the square of their length, and
+    # blueprints get big: measured at ten seconds on a real one of 36,000
+    # lines, all of it to build a difference that then gets cut to a hundred
+    # lines anyway. Beyond this it is not worth anybody's processor.
+    if max(len(was), len(now)) > _TOO_LONG_TO_COMPARE:
+        return (
+            f"This blueprint runs to {max(len(was), len(now))} lines, which is "
+            f"more than Spook will compare line by line."
+        )
+
     lines = list(
         difflib.unified_diff(
-            here.yaml().splitlines(),
-            there.yaml().splitlines(),
+            was,
+            now,
             fromfile="the copy you have",
             tofile="what is there now",
             lineterm="",
@@ -1253,7 +1327,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         return domain_blueprint.blueprint_folder / self.blueprint_path
 
-    async def _async_differences(self) -> str:
+    async def _async_differences(self, here: blueprint.Blueprint | None) -> str:
         """Return what the dialog says about the difference it found.
 
         A fingerprint on its own is an assertion: something changed, take our
@@ -1262,8 +1336,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         whether an author tidied up their wording, in which case they can stop
         reading.
         """
-        if (changes := await self._async_what_differs()) is None:
+        if self._fetched is None or here is None:
             return _CANNOT_SAY_WHAT_DIFFERS
+
+        changes = _changes(here, self._fetched)
 
         if not changes:
             # The fetch says otherwise, and the two are measured the same way,
@@ -1287,14 +1363,14 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         return "\n".join([_WHAT_DIFFERS, *(f"- {line}" for line in lines)])
 
-    async def _async_line_by_line(self) -> str:
+    async def _async_line_by_line(self, here: blueprint.Blueprint | None) -> str:
         """Return the difference itself, for whoever wants to see it.
 
         The words above it say what kind of change this is. This says exactly
         what it is, which is the only thing that ever settles an argument about
         whether an update is worth taking.
         """
-        if self._fetched is None or (here := await self._async_here()) is None:
+        if self._fetched is None or here is None:
             return ""
 
         return await self.hass.async_add_executor_job(_diffed, here, self._fetched)
@@ -1311,23 +1387,6 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             return None
 
         return await self.hass.async_add_executor_job(_read_one, file)
-
-    async def _async_what_differs(self) -> _Changes | None:
-        """Return where the fetched blueprint and the one here disagree.
-
-        `None` when that cannot be worked out, which is worth saying out loud
-        rather than quietly leaving the answer out of a dialog that is already
-        asking somebody to take an update on trust.
-
-        Read off the file rather than taken from the copy Home Assistant has
-        loaded. That one has been through the domain's own schema, which
-        rewrites the older spellings, and every blueprint written before those
-        names changed would come out looking different from itself.
-        """
-        if self._fetched is None or (here := await self._async_here()) is None:
-            return None
-
-        return _changes(here, self._fetched)
 
     async def async_release_notes(self) -> str | None:
         """Return what can honestly be said before somebody presses install.
@@ -1360,6 +1419,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         built_on_it = self._async_built_on_it()
 
+        # Read once for both what gets said about the difference and the
+        # difference itself. Two goes at it is two full parses of a file that
+        # reaches half a megabyte.
+        here = await self._async_here()
+
         if nothing_on_offer:
             return "\n\n".join([*aside, came_from, built_on_it])
 
@@ -1386,9 +1450,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             *aside,
             _NO_PROMISES,
             came_from,
-            await self._async_differences(),
+            await self._async_differences(here),
             built_on_it,
-            await self._async_line_by_line(),
+            await self._async_line_by_line(here),
         ]
 
         return "\n\n".join(line for line in notes if line)

@@ -38,6 +38,8 @@ from custom_components.spook.ectoplasms.blueprint.update import (
     _in_words,
     _changes,
     _HOW_MANY_LINES,
+    _TOO_LONG_TO_COMPARE,
+    _diffed,
     _HOW_MANY_TO_NAME,
     _normalize,
     _fingerprint,
@@ -2123,17 +2125,18 @@ async def test_the_notes_name_an_input_that_was_added(
     assert "**New settings**: Wait time" in await _release_notes(client)
 
 
-async def test_the_notes_say_when_only_the_order_changed(
+async def test_the_notes_say_when_the_settings_only_moved_about(
     hass: HomeAssistant,
     hass_ws_client: WebSocketGenerator,
     freezer: FrozenDateTimeFactory,
 ) -> None:
-    """Every key the same, every value the same, and still not the same file.
+    """Every setting the same, every value the same, in another order.
 
-    Order counts in a blueprint: a `variables:` block is rendered one entry at
-    a time with the earlier ones already worked out. So this is a real
-    difference, and saying "nothing differs" while offering an update would be
-    the worst of both.
+    Home Assistant hands the settings back flattened, so an author reordering
+    them, or gathering them into sections, comes out of that as no difference
+    at all. It is a real change and it is the first thing somebody sees when
+    they open the blueprint, so it gets said rather than falling through to
+    the catch-all at the bottom.
     """
     async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
     await async_set_up(hass)
@@ -2150,7 +2153,7 @@ async def test_the_notes_say_when_only_the_order_changed(
     with _source_says(swapped):
         await _check(hass, freezer)
 
-    assert "written in a different order" in await _release_notes(client)
+    assert "settings are arranged differently" in await _release_notes(client)
 
 
 async def test_the_notes_admit_when_the_copy_here_cannot_be_read(
@@ -2602,3 +2605,111 @@ async def test_what_an_update_will_cost_comes_before_anything_else(
 
     assert notes.startswith("<ha-alert alert-type='warning'>")
     assert notes.index("stop what is listed below") < notes.index("Compared with")
+
+
+def _said_about(before: str, after: str) -> list[str]:
+    """Return what the dialog would say about two versions of a blueprint."""
+    return _in_words(
+        _changes(
+            _normalize(before.format(source=SOURCE)),
+            _normalize(after.format(source=SOURCE)),
+        ),
+    )
+
+
+def test_a_home_assistant_requirement_that_is_taken_away_is_not_a_reordering() -> None:
+    """An author dropping a requirement is news, and good news at that.
+
+    Handing back the version on its own left nothing to say one had gone, and
+    the empty string standing in for it was falsy, so the whole thing came out
+    as no difference at all and then got reported as things being written in
+    another order. Which is a made-up answer to a real question.
+    """
+    with_it = MOTION_LIGHT.replace(
+        "  source_url: {source}\n",
+        "  source_url: {source}\n  homeassistant:\n    min_version: 2026.1.0\n",
+    )
+
+    assert _said_about(with_it, MOTION_LIGHT) == [
+        "It **no longer asks** for a particular Home Assistant version",
+    ]
+    assert _said_about(MOTION_LIGHT, with_it) == [
+        "**It now asks for Home Assistant 2026.1.0** or newer",
+    ]
+
+
+def test_a_home_assistant_block_with_no_version_in_it_still_says_something() -> None:
+    """Neither side names a version, and the file is not the same file.
+
+    There is nothing to promise anybody a reading of, so it says that much
+    rather than falling through to the bottom and inventing a reordering.
+    """
+    empty = MOTION_LIGHT.replace(
+        "  source_url: {source}\n",
+        "  source_url: {source}\n  homeassistant: {{}}\n",
+    )
+
+    assert _said_about(MOTION_LIGHT, empty) == ["**What it says it needs changed**"]
+
+
+def test_a_top_level_key_holding_nothing_is_not_the_same_as_no_key() -> None:
+    """`variables:` with nothing under it is a key that is there.
+
+    Reaching for both sides with `.get()` cannot tell that from a key that is
+    not there, so a blueprint growing one came out as no difference and got
+    reported as a reordering.
+    """
+    with_nothing = MOTION_LIGHT.replace(
+        "mode: restart\n", "mode: restart\nvariables:\n"
+    )
+
+    assert _said_about(MOTION_LIGHT, with_nothing) == [
+        "The variables in it **changed**",
+    ]
+
+
+def test_a_setting_moved_into_a_section_is_not_a_reordering() -> None:
+    """Home Assistant hands the settings back flattened.
+
+    So an author gathering them into sections comes out of that as no
+    difference at all, while it is the first thing anybody sees when they open
+    the blueprint.
+    """
+    sectioned = MOTION_LIGHT.replace(
+        "    motion_entity:\n      name: Motion sensor\n"
+        "    light_target:\n      name: Light\n",
+        "    the_bits:\n      name: The bits\n      input:\n"
+        "        motion_entity:\n          name: Motion sensor\n"
+        "        light_target:\n          name: Light\n",
+    )
+
+    assert _said_about(MOTION_LIGHT, sectioned) == [
+        "**The settings are arranged differently**",
+    ]
+
+
+def test_a_blueprint_too_long_to_compare_says_so_rather_than_trying() -> None:
+    """Comparing two sequences costs about the square of their length.
+
+    Measured on a real one: 3,500 lines takes a tenth of a second, 14,000
+    takes two, 36,000 takes ten. All of that to build a difference that gets
+    cut to a hundred lines anyway.
+    """
+    long_one = MOTION_LIGHT.replace(
+        "    light_target:\n      name: Light\n",
+        "    light_target:\n      name: Light\n"
+        + "".join(
+            f"    filler_{number}:\n      name: Filler {number}\n"
+            f"      default: {number}\n"
+            for number in range(_TOO_LONG_TO_COMPARE)
+        ),
+    )
+
+    here = _normalize(long_one.format(source=SOURCE))
+    there = _normalize(
+        long_one.replace("mode: restart", "mode: queued").format(source=SOURCE)
+    )
+
+    said = _diffed(here, there)
+    assert "more than Spook will compare line by line" in said
+    assert "```diff" not in said
