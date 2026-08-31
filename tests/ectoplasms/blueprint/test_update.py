@@ -16,14 +16,15 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.components.blueprint import BLUEPRINT_SCHEMA, Blueprint
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.util import yaml as yaml_util
+from annotatedyaml.objects import Input
 import aiohttp
 import pytest
-import yaml
 import voluptuous as vol
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 from custom_components.spook.ectoplasms.blueprint import update as update_module
 from custom_components.spook.ectoplasms.blueprint.update import (
+    _canonical,
     _fingerprint,
     _CHECK_INTERVAL,
     _SPREAD,
@@ -1244,38 +1245,36 @@ def test_the_fingerprint_ignores_how_the_yaml_was_laid_out() -> None:
     folding and line width. On one real blueprint that was 5761 differing
     lines. Hashing their output made the version depend on which one happened
     to be available.
+
+    Written out as two fixed texts rather than by running both dumpers,
+    because `CSafeDumper` does not exist in the very environment this is
+    about, and the test would then fail there for the wrong reason.
     """
-    data = {
-        "blueprint": {
-            "name": "Sensor Light",
-            "domain": "automation",
-            "description": "Lights 💡 and a very long line that a dumper is free "
-            "to fold wherever it likes, which is the whole point of this test.",
-        },
-        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.motion"}],
-    }
-
-    # The same data, laid out by each dumper in turn.
-    c_text = yaml.dump(
-        data,
-        default_flow_style=False,
-        allow_unicode=True,
-        sort_keys=False,
-        Dumper=yaml.CSafeDumper,
+    escaped = (
+        "blueprint:\n"
+        "  name: Sensor Light\n"
+        "  domain: automation\n"
+        '  description: "Lights \\U0001F4A1 and a line long enough that a dumper\n'
+        '    is free to fold it wherever it likes."\n'
+        "triggers: []\n"
     )
-    py_text = yaml.dump(
-        data,
-        default_flow_style=False,
-        allow_unicode=True,
-        sort_keys=False,
-        Dumper=yaml.SafeDumper,
+    literal = (
+        "blueprint:\n"
+        "  name: Sensor Light\n"
+        "  domain: automation\n"
+        "  description: Lights 💡 and a line long enough that a dumper is free to fold\n"
+        "    it wherever it likes.\n"
+        "triggers: []\n"
     )
-    assert c_text != py_text, "the dumpers agree here, so this proves nothing"
+    assert escaped != literal, "the two layouts are the same, so this proves nothing"
 
-    from_c = Blueprint(yaml_util.parse_yaml(c_text), schema=BLUEPRINT_SCHEMA)
-    from_py = Blueprint(yaml_util.parse_yaml(py_text), schema=BLUEPRINT_SCHEMA)
+    one = Blueprint(yaml_util.parse_yaml(escaped), schema=BLUEPRINT_SCHEMA)
+    other = Blueprint(yaml_util.parse_yaml(literal), schema=BLUEPRINT_SCHEMA)
 
-    assert _fingerprint(from_c) == _fingerprint(from_py)
+    assert (
+        one.data["blueprint"]["description"] == other.data["blueprint"]["description"]
+    )
+    assert _fingerprint(one) == _fingerprint(other)
 
 
 def test_the_fingerprint_ignores_where_it_came_from() -> None:
@@ -1351,3 +1350,88 @@ actions:
     )
 
     assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_fingerprint_notices_variables_swapping_places() -> None:
+    """A `variables:` block is rendered one entry at a time.
+
+    Earlier results are available to later ones, so the order of those keys is
+    executable rather than decoration. Sorting keys before hashing, which is
+    what the first version of this did, made a reordering that changes what a
+    script does look like no change at all.
+    """
+    raw = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      first: 1
+      second: "{{ first }}"
+"""
+    swapped = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      second: "{{ first }}"
+      first: 1
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+@pytest.mark.parametrize(
+    ("one", "other"),
+    [
+        pytest.param(Input("light"), {"__input__": "light"}, id="input-vs-mapping"),
+        pytest.param(Input("light"), ["input", "light"], id="input-vs-sequence"),
+        pytest.param({"a": "b"}, [["a", "b"]], id="mapping-vs-pairs"),
+        pytest.param(
+            {"a": "b"}, [["map", [["a", ["str", "b"]]]]], id="mapping-vs-own-form"
+        ),
+        pytest.param("x", ["x"], id="string-vs-sequence"),
+        pytest.param("1", 1, id="string-vs-number"),
+        pytest.param({"a": "b", "c": "d"}, {"c": "d", "a": "b"}, id="order-swapped"),
+    ],
+)
+def test_the_encoding_keeps_different_things_apart(one: object, other: object) -> None:
+    """Nothing may serialize the same as anything else it is not.
+
+    Two blueprints that behave differently and fingerprint the same would be
+    an update Spook never mentions, which is worse than one it mentions twice.
+    A mapping somebody wrote by hand must not come out looking like an
+    `!input`, an ordered mapping must not come out looking like the list of
+    pairs it is encoded as, and swapping two keys must show.
+
+    Tested on the encoding rather than through a pair of blueprints, because
+    at that level it takes three separate mistakes at once to produce a
+    collision, and a test that needs all three is a test that catches none.
+    """
+    assert _canonical(one) != _canonical(other)
+
+
+@pytest.mark.parametrize(
+    ("value", "kind"),
+    [
+        pytest.param(Input("light"), "input", id="input"),
+        pytest.param({"a": "b"}, "map", id="mapping"),
+        pytest.param(["a"], "seq", id="sequence"),
+        pytest.param("a", "str", id="string"),
+        pytest.param(1, "value", id="number"),
+    ],
+)
+def test_every_kind_of_value_says_what_it_is(value: object, kind: str) -> None:
+    """Each kind carries its own tag, and that is what keeps them apart.
+
+    Asserted on the shape rather than by finding two values that collide,
+    because a collision needs several of these tags dropped at once. A test
+    that only fails when three mistakes are made together catches none of
+    them on its own.
+    """
+    assert _canonical(value)[0] == kind

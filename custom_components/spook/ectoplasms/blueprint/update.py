@@ -173,23 +173,32 @@ def _normalize(raw: str) -> blueprint.Blueprint | None:
         return None
 
 
-def _plain(value: Any) -> Any:
-    """Return the same data with nothing of Home Assistant's own left on it.
+def _canonical(value: Any) -> Any:
+    """Return a form in which no two different things can look the same.
 
-    The loader hands back its own string, list and mapping classes, which
-    carry the line they came from, and `!input` arrives as an object. None of
-    that says anything about what the blueprint does, and all of it would
-    change how the value serializes.
+    Every value carries what kind of thing it is. Without that, a mapping
+    somebody wrote by hand could serialize exactly like an `!input`, and
+    swapping one for the other changes what a blueprint does while leaving the
+    fingerprint alone.
+
+    Mappings become ordered lists of pairs rather than objects, which keeps
+    their order in the hash. That order is not decoration: a `variables:`
+    block is rendered one entry at a time with earlier results available to
+    later ones, so `{a: 1, b: "{{ a }}"}` and the same two the other way round
+    are different scripts.
+
+    The loader's own string and mapping classes go too. They carry the line
+    they came from, which says nothing about what the blueprint does.
     """
     if isinstance(value, Input):
-        return {"__input__": str(value.name)}
+        return ["input", str(value.name)]
     if isinstance(value, Mapping):
-        return {str(key): _plain(item) for key, item in value.items()}
+        return ["map", [[str(key), _canonical(item)] for key, item in value.items()]]
     if isinstance(value, (list, tuple)):
-        return [_plain(item) for item in value]
+        return ["seq", [_canonical(item) for item in value]]
     if isinstance(value, str):
-        return str(value)
-    return value
+        return ["str", str(value)]
+    return ["value", value]
 
 
 def _fingerprint(item: blueprint.Blueprint) -> str:
@@ -199,29 +208,30 @@ def _fingerprint(item: blueprint.Blueprint) -> str:
     `blueprint:` block turns away keys it does not know, so an author has
     nowhere to put one. That leaves the content itself as the version.
 
-    Taken off the parsed data rather than off the YAML, which was the first
-    way round and the wrong one. Hashing `item.yaml()` hashes how Home
-    Assistant chose to lay the file out, and that moves for reasons that have
-    nothing to do with the blueprint:
+    Taken off the parsed data rather than off the YAML, which was the first way
+    round and the wrong one. Hashing `item.yaml()` hashes how Home Assistant
+    chose to lay the file out, and that moves for reasons that have nothing to
+    do with the blueprint:
 
-    - Whether libyaml is installed. `annotatedyaml` picks `CSafeDumper` when
-      it can and falls back to Python's `SafeDumper`, and the two disagree on
-      5761 lines of one real blueprint: 596495 bytes against 605097, unicode
-      escaped or not, folded differently.
-    - Line width, quoting style and key order, which any PyYAML release is
-      free to change.
+    - Whether libyaml is installed. `annotatedyaml` picks `CSafeDumper` when it
+      can and falls back to Python's `SafeDumper`, and the two disagree on 5761
+      lines of one real blueprint: 596495 bytes against 605097, unicode escaped
+      or not, folded differently.
+    - Line width and quoting style, which any PyYAML release is free to change.
 
-    The source URL comes out for the same reason. Where a blueprint was
-    fetched from is not part of what it does, and Home Assistant writes it
-    into the data on the way in, so leaving it in made a trailing slash on the
-    URL look like a new version.
+    The source URL comes out for the same reason. Where a blueprint was fetched
+    from is not part of what it does, and Home Assistant writes it into the
+    data on the way in, so leaving it in made a trailing slash on the URL look
+    like a new version.
     """
-    data = _plain(item.data)
-    if isinstance(metadata := data.get(CONF_BLUEPRINT), dict):
+    data = dict(item.data)
+    if isinstance(metadata := data.get(CONF_BLUEPRINT), Mapping):
+        metadata = dict(metadata)
         metadata.pop(CONF_SOURCE_URL, None)
+        data[CONF_BLUEPRINT] = metadata
 
     return hashlib.sha256(
-        json.dumps(data, sort_keys=True, ensure_ascii=True).encode()
+        json.dumps(_canonical(data), ensure_ascii=True).encode()
     ).hexdigest()[:8]
 
 
