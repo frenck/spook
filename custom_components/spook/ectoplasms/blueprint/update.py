@@ -36,8 +36,7 @@ from homeassistant.components.update import (
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.device_registry import DeviceInfo
+from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_call_later
 from homeassistant.util import yaml as yaml_util
@@ -339,6 +338,10 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         """
         entry.async_on_unload(self._stop)
 
+        # Nothing to do with the rounds below. These entities used to sit on a
+        # device, and whoever ran that version still has it.
+        self._async_forget_the_old_device(entry.entry_id)
+
         if self.hass.state is CoreState.running:
             await self._async_begin()
             return
@@ -363,6 +366,45 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
     async def _async_started(self, _event: Event[Any]) -> None:
         """Begin once the blueprint domains have registered themselves."""
         await self._async_begin()
+
+    @callback
+    def _async_forget_the_old_device(self, entry_id: str) -> None:
+        """Remove the device these entities used to hang off.
+
+        They had one called "Blueprints", which is what made every row on the
+        updates page read the same. Dropping it leaves the device itself behind
+        with nothing on it, and a device that is not a device and holds nothing
+        is just something to wonder about later.
+        """
+        device_registry = dr.async_get(self.hass)
+        if (
+            device := device_registry.async_get_device_by_identifier(
+                (DOMAIN, blueprint.DOMAIN),
+                entry_id,
+            )
+        ) is None:
+            return
+
+        # Taken off the device first. Home Assistant deletes the registration
+        # of every entity on a device when the device goes, and both are ours
+        # here, so it would. It hands the registration straight back when the
+        # same unique ID turns up again, which is later in this same setup, so
+        # nothing is lost by letting it happen. The churn is the reason not to:
+        # a dozen repairs re-inspect on any entity registry change, and an
+        # entity going and coming back gives them nothing to find.
+        entity_registry = er.async_get(self.hass)
+        for registration in er.async_entries_for_device(
+            entity_registry,
+            device.id,
+            include_disabled_entities=True,
+        ):
+            entity_registry.async_update_entity(
+                registration.entity_id,
+                device_id=None,
+            )
+
+        LOGGER.debug("Spook is removing the old blueprints device")
+        device_registry.async_remove_device(device.id)
 
     async def _async_begin(self) -> None:
         """Take stock, then arrange to keep looking."""
@@ -519,11 +561,13 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self.blueprint_path = blueprint_path
 
         self._attr_unique_id = f"blueprint_{blueprint_domain}_{blueprint_path}"
-        self._attr_device_info = DeviceInfo(
-            identifiers={(DOMAIN, blueprint.DOMAIN)},
-            manufacturer="Home Assistant",
-            name="Blueprints",
-        )
+
+        # Deliberately no device. These used to hang off one called
+        # "Blueprints", and the updates page shows the device a row belongs to,
+        # so twenty blueprints read "Blueprints" twenty times over with no way
+        # to tell which was which. A device each would have fixed the reading
+        # and filled the device list with twenty entries that are not devices.
+        # A blueprint is a file, not a thing with firmware.
 
         self._said = said
         self._fetched: blueprint.Blueprint | None = None

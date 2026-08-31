@@ -29,11 +29,11 @@ Spook adds an action to import Blueprints directly from an URL.
 
 ## Devices & entities
 
-Spook adds a Blueprints {term}`device <device>`, holding one update {term}`entity <entity>` for every {term}`automation <automation>` or {term}`script <script>` blueprint you imported from a URL.
+Spook adds one update {term}`entity <entity>` for every {term}`automation <automation>` or {term}`script <script>` blueprint you imported from a URL. No {term}`device <device>`: a blueprint is a file, and the updates page reads a row by the device it belongs to, so putting them all on one would leave every row saying the same thing.
 
 ### Updates
 
-_Default {term}`entity ID <Entity ID>`: `update.blueprints_<blueprint name>`\_
+_Default {term}`entity ID <Entity ID>`: `update.<blueprint name>`_
 
 When you import a {term}`blueprint <blueprint>`, Home Assistant writes down where it came from. Nothing ever looks at that address again. The blueprint's author can fix a bug in it a week later and you would have no way of knowing, short of opening the forum topic and reading the YAML yourself.
 

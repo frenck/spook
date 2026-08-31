@@ -12,17 +12,22 @@ from unittest.mock import patch
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.components.update import UpdateEntityFeature
-from homeassistant.core import CoreState
+from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.components.blueprint import BLUEPRINT_SCHEMA, Blueprint
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.util import yaml as yaml_util
 from annotatedyaml.objects import Input
 import aiohttp
 import pytest
 import voluptuous as vol
-from pytest_homeassistant_custom_component.common import async_fire_time_changed
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    async_fire_time_changed,
+)
 
+from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.blueprint import update as update_module
 from custom_components.spook.ectoplasms.blueprint.update import (
     _canonical,
@@ -57,6 +62,7 @@ from .conftest import (
 )
 
 if TYPE_CHECKING:
+    from homeassistant.helpers import device_registry as dr
     from collections.abc import Callable
 
     from freezegun.api import FrozenDateTimeFactory
@@ -65,10 +71,9 @@ if TYPE_CHECKING:
         WebSocketGenerator,
     )
 
-    from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import entity_registry as er
+    from homeassistant.core import Event, HomeAssistant
 
-_ENTITY = "update.blueprints_spooky_motion_light"
+_ENTITY = "update.spooky_motion_light"
 _FETCH = "custom_components.spook.ectoplasms.blueprint.update.fetch_blueprint_from_url"
 _BOTH_OF_THEM = 2
 _NOBODY_SAW_IT_COMING = "something nobody saw coming"
@@ -426,7 +431,7 @@ async def test_a_blueprint_nobody_dumped_back_out_still_matches(
     write_by_hand(hass, "automation", "fixed.yaml", NO_INPUTS)
     await async_set_up(hass)
 
-    entity_id = "update.blueprints_spooky_fixed_automation"
+    entity_id = "update.spooky_fixed_automation"
     assert hass.states.get(entity_id) is not None
 
     with _source_says(NO_INPUTS):
@@ -754,7 +759,7 @@ async def test_a_script_blueprint_gets_one_too(
         {"notify_target": "mobile_app_phone"},
     )
 
-    entity_id = "update.blueprints_spooky_confirmable_notification"
+    entity_id = "update.spooky_confirmable_notification"
     assert hass.states.get(entity_id) is not None
 
     with _source_says(A_SCRIPT_BLUEPRINT_CHANGED):
@@ -793,7 +798,7 @@ async def test_a_script_that_would_be_left_short_stops_the_install(
     )
     before = file.read_text(encoding="utf-8")
 
-    entity_id = "update.blueprints_spooky_confirmable_notification"
+    entity_id = "update.spooky_confirmable_notification"
     with _source_says(A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT):
         await _check(hass, freezer)
 
@@ -1131,7 +1136,7 @@ async def test_a_script_update_that_would_not_load_is_refused(
     )
     before = file.read_text(encoding="utf-8")
 
-    entity_id = "update.blueprints_spooky_confirmable_notification"
+    entity_id = "update.spooky_confirmable_notification"
     with _source_says(A_SCRIPT_BLUEPRINT_WITH_A_BAD_STEP):
         await _check(hass, freezer)
 
@@ -1564,3 +1569,108 @@ actions:
     other = Blueprint(yaml_util.parse_yaml(written_out), schema=BLUEPRINT_SCHEMA)
 
     assert _fingerprint(one) == _fingerprint(other)
+
+
+async def test_the_name_is_the_blueprint_and_nothing_else(
+    hass: HomeAssistant,
+) -> None:
+    """The updates page reads a row by the device it belongs to.
+
+    These used to hang off one device called "Blueprints", so twenty rows all
+    said "Blueprints" and none of them said which blueprint. Without a device
+    the name is the blueprint's own.
+    """
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    state = hass.states.get(_ENTITY)
+    assert state
+    assert state.attributes["friendly_name"] == "Spooky motion light"
+    assert state.attributes["title"] == "Spooky motion light"
+
+
+async def test_no_device_is_made_for_these(
+    hass: HomeAssistant,
+    device_registry: dr.DeviceRegistry,
+) -> None:
+    """A blueprint is a file. It has no firmware and it is not a device."""
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    assert hass.states.get(_ENTITY)
+    # Iterated rather than looked up: mapping access on this is deprecated.
+    assert not list(device_registry.devices)
+
+
+async def test_the_old_blueprints_device_is_cleared_away(
+    hass: HomeAssistant,
+    device_registry: dr.DeviceRegistry,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Anybody who ran an earlier version has one of these sitting there.
+
+    Dropping the device off the entities leaves it behind holding nothing, and
+    a device that is not a device and has nothing on it is only something to
+    wonder about later.
+
+    Home Assistant deletes the registration of every entity on a device when
+    the device goes, and both belong to the same config entry here, so this
+    reaches for that. What it asserts is that it never happens: the entity is
+    taken off the device first. Home Assistant would in fact hand the whole
+    registration back the moment the same unique ID turned up again, a few
+    lines further into the same setup, so nothing would be lost either way.
+    The point is the churn. A dozen repairs re-inspect on any entity registry
+    change, and this would tell them all that an entity had gone and come back
+    for no reason at all.
+
+    So the config entry is handed to the setup rather than made up on the
+    spot. Under two entries Home Assistant never compares them as equal, this
+    would not reach the removal at all, and it would pass while doing nothing.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    left_behind = device_registry.async_get_or_create(
+        config_entry_id=entry.entry_id,
+        identifiers={(DOMAIN, "blueprint")},
+        manufacturer="Home Assistant",
+        name="Blueprints",
+    )
+    was_there = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_spooky.yaml",
+        config_entry=entry,
+        device_id=left_behind.id,
+        suggested_object_id="blueprints_spooky_motion_light",
+    )
+    entity_registry.async_update_entity(
+        was_there.entity_id,
+        icon="mdi:ghost",
+        name="The one I renamed myself",
+    )
+
+    dropped: list[str] = []
+
+    @callback
+    def _note_what_goes(event: Event[er.EventEntityRegistryUpdatedData]) -> None:
+        if event.data["action"] == "remove":
+            dropped.append(event.data["entity_id"])
+
+    hass.bus.async_listen(er.EVENT_ENTITY_REGISTRY_UPDATED, _note_what_goes)
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    assert device_registry.async_get(left_behind.id) is None
+    assert not dropped
+
+    kept = entity_registry.async_get(was_there.entity_id)
+    assert kept is not None
+    assert kept.device_id is None
+    assert kept.name == "The one I renamed myself"
+    assert kept.icon == "mdi:ghost"
+
+    # And it is the entity that is actually there, rather than a registration
+    # sitting next to one that came back under a name of its own.
+    assert hass.states.get(was_there.entity_id)
