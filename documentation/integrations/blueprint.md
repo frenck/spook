@@ -43,6 +43,8 @@ Only blueprints that came from a URL get one. A blueprint you wrote yourself has
 
 Only automation and script blueprints, too. Those are the only two kinds whose users Home Assistant can list, and without that list there is no way to tell whether an update would leave one of them unable to load. An install button that cannot promise that is worse than no button at all, so template blueprints are left out until there is a way to check them.
 
+Delete a blueprint, or take the source address back out of it, and the update {term}`entity <entity>` goes with it. Blueprints raise no events, so nothing notices at the moment it happens: the next round does. One deleted while Home Assistant was stopped is caught the next time Spook starts, so you are not left with an entity in the list and no blueprint behind it.
+
 #### What the update dialog tells you
 
 Every other update dialog in Home Assistant shows you release notes. This one cannot, because there are none: a blueprint has no changelog, and the author is under no obligation to say anything anywhere.
