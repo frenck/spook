@@ -82,6 +82,18 @@ class _UsesBlueprints:
         Awaitable[Any],
     ]
 
+    one: str
+    """What one of them is called, for a sentence about it."""
+
+    many: str
+    """And what more than one of them are called."""
+
+    edit_url: str
+    """Where to edit one, given its unique ID."""
+
+    dashboard_url: str
+    """And where to send somebody whose own has no unique ID to link to."""
+
 
 # Which is why it is these two and not template blueprints as well. Without
 # both halves there is no telling whether an update would leave something
@@ -91,10 +103,18 @@ _USES_BLUEPRINTS: dict[str, _UsesBlueprints] = {
     "automation": _UsesBlueprints(
         users=automations_with_blueprint,
         validate=automation_config.async_validate_config_item,
+        one="automation",
+        many="automations",
+        edit_url="/config/automation/edit/{unique_id}",
+        dashboard_url="/config/automation/dashboard",
     ),
     "script": _UsesBlueprints(
         users=scripts_with_blueprint,
         validate=script_config.async_validate_config_item,
+        one="script",
+        many="scripts",
+        edit_url="/config/script/edit/{unique_id}",
+        dashboard_url="/config/script/dashboard",
     ),
 }
 
@@ -1271,10 +1291,18 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 + "</ha-alert>",
             )
 
-        if nothing_on_offer:
-            return "\n\n".join([*aside, came_from])
+        built_on_it = self._async_built_on_it()
 
-        notes = [*aside, _NO_PROMISES, came_from, await self._async_differences()]
+        if nothing_on_offer:
+            return "\n\n".join([*aside, came_from, built_on_it])
+
+        notes = [
+            *aside,
+            _NO_PROMISES,
+            came_from,
+            await self._async_differences(),
+            built_on_it,
+        ]
 
         if errors := self._fetched.validate():
             notes.append(_WOULD_NOT_RUN)
@@ -1328,6 +1356,57 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             raise HomeAssistantError(msg)
 
         return fetched
+
+    @callback
+    def _async_built_on_it(self) -> str:
+        """Return what the dialog says about what is built on this blueprint.
+
+        An update writes over a file that other things are running on, and
+        which ones is not written down anywhere somebody can see. So they are
+        named, with a link to each, because "what is this going to touch" is
+        the first thing anybody asks and the answer used to be a shrug.
+        """
+        uses = _USES_BLUEPRINTS[self.blueprint_domain]
+
+        if not (built := self._async_who_built_on_it()):
+            return f"No {uses.many} are using this blueprint."
+
+        if len(built) == 1:
+            opening = f"**The following {uses.one} is using this blueprint:**"
+        else:
+            opening = (
+                f"**The following {len(built)} {uses.many} are using this blueprint:**"
+            )
+
+        return "\n".join(
+            [opening, "", *(f"- [{name}]({where})" for name, where in built)],
+        )
+
+    @callback
+    def _async_who_built_on_it(self) -> list[tuple[str, str]]:
+        """Return what runs on this blueprint, and where to go and edit it."""
+        component = self.hass.data.get(DATA_INSTANCES, {}).get(self.blueprint_domain)
+        if component is None:
+            return []
+
+        uses = _USES_BLUEPRINTS[self.blueprint_domain]
+        built: list[tuple[str, str]] = []
+
+        for entity_id in uses.users(self.hass, self.blueprint_path):
+            if (entity := component.get_entity(entity_id)) is None:
+                continue
+
+            # Written in YAML without an `id:`, so there is no editor to open.
+            # The overview page is the nearest thing to where it lives.
+            where = (
+                uses.dashboard_url
+                if entity.unique_id is None
+                else uses.edit_url.format(unique_id=entity.unique_id)
+            )
+
+            built.append((entity.name or entity_id, where))
+
+        return sorted(built)
 
     async def _async_consumers_left_short(
         self,

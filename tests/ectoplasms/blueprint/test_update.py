@@ -62,6 +62,7 @@ from .conftest import (
     NO_INPUTS,
     SOURCE,
     async_add_automation,
+    async_write_config,
     async_add_script,
     async_set_up,
     async_write_blueprint,
@@ -83,6 +84,8 @@ if TYPE_CHECKING:
     from homeassistant.core import Event, HomeAssistant
 
 _ENTITY = "update.spooky_motion_light"
+_MOTION_INPUTS = {"motion_entity": "binary_sensor.hall", "light_target": "light.hall"}
+_SHOUT_INPUTS = {"notify_target": "mobile_app_phone"}
 _FETCH = "custom_components.spook.ectoplasms.blueprint.update.fetch_blueprint_from_url"
 _BOTH_OF_THEM = 2
 _NOBODY_SAW_IT_COMING = "something nobody saw coming"
@@ -515,10 +518,13 @@ def _entity(hass: HomeAssistant) -> BlueprintUpdateEntity:
     return hass.data[DATA_INSTANCES]["update"].get_entity(_ENTITY)
 
 
-async def _release_notes(client: MockHAClientWebSocket) -> str:
+async def _release_notes(
+    client: MockHAClientWebSocket,
+    entity_id: str = _ENTITY,
+) -> str:
     """Ask for the release notes the way the dialog does."""
     await client.send_json_auto_id(
-        {"type": "update/release_notes", "entity_id": _ENTITY},
+        {"type": "update/release_notes", "entity_id": entity_id},
     )
 
     result = await client.receive_json()
@@ -2278,3 +2284,141 @@ async def test_a_home_assistant_it_needs_is_only_said_once(
     notes = await _release_notes(client)
     assert "will not install it" in notes
     assert "It now asks for Home Assistant" not in notes
+
+
+async def test_the_notes_say_nothing_is_built_on_it(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Which is worth saying out loud, because it makes the decision easy.
+
+    An update that cannot reach anything is one somebody can install without
+    reading another word.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert "No automations are using this blueprint." in await _release_notes(client)
+
+
+async def test_the_notes_name_the_one_automation_built_on_it(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """With a link to it.
+
+    What an update is about to touch is the first question anybody asks, and
+    the answer used to be a shrug.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_automation(hass, "Hallway light", "motion.yaml", _MOTION_INPUTS)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "**The following automation is using this blueprint:**" in notes
+    assert "- [Hallway light](/config/automation/edit/hallway_light)" in notes
+
+
+async def test_the_notes_count_the_automations_built_on_it(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """And put them in an order somebody can read."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    # Three of them, written in an order that is neither the one they should
+    # come out in nor its reverse. With two, handing them back backwards would
+    # land on the right answer by accident and this would pass while sorting
+    # nothing.
+    written = ["Porch light", "Attic light", "Hallway light"]
+    async_write_config(
+        hass,
+        [
+            {
+                "id": alias.split()[0].lower(),
+                "alias": alias,
+                "use_blueprint": {"path": "motion.yaml", "input": _MOTION_INPUTS},
+            }
+            for alias in written
+        ],
+    )
+    await hass.services.async_call("automation", "reload", blocking=True)
+    await hass.async_block_till_done()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "**The following 3 automations are using this blueprint:**" in notes
+
+    assert [notes.index(alias) for alias in sorted(written)] == sorted(
+        notes.index(alias) for alias in written
+    )
+
+
+async def test_an_automation_with_no_id_gets_the_overview_page(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Written in YAML without an `id:`, so there is no editor to open.
+
+    Linking to `/config/automation/edit/None` sends somebody to a page that
+    cannot load, which is worse than sending them to the list.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    async_write_config(
+        hass,
+        [
+            {
+                "alias": "Nameless in YAML",
+                "use_blueprint": {"path": "motion.yaml", "input": _MOTION_INPUTS},
+            },
+        ],
+    )
+    await hass.services.async_call("automation", "reload", blocking=True)
+    await hass.async_block_till_done()
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client)
+    assert "- [Nameless in YAML](/config/automation/dashboard)" in notes
+    assert "None" not in notes
+
+
+async def test_the_notes_call_a_script_a_script(
+    hass: HomeAssistant,
+    hass_ws_client: WebSocketGenerator,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A script blueprint is used by scripts, and they live somewhere else."""
+    async_write_blueprint(hass, "script", "notify.yaml", A_SCRIPT_BLUEPRINT)
+    await async_set_up(hass)
+    client = await hass_ws_client(hass)
+
+    await async_add_script(hass, "shout", "notify.yaml", _SHOUT_INPUTS)
+
+    with _source_says(A_SCRIPT_BLUEPRINT_CHANGED):
+        await _check(hass, freezer)
+
+    notes = await _release_notes(client, "update.spooky_confirmable_notification")
+    assert "**The following script is using this blueprint:**" in notes
+    assert "/config/script/edit/shout" in notes
