@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import asyncio
 from collections.abc import Mapping
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from datetime import timedelta
 import hashlib
 import json
@@ -24,7 +24,12 @@ from homeassistant.components.automation import (
     config as automation_config,
 )
 from homeassistant.components.blueprint import BLUEPRINT_SCHEMA
-from homeassistant.components.blueprint.const import CONF_BLUEPRINT, CONF_SOURCE_URL
+from homeassistant.components.blueprint.const import (
+    CONF_BLUEPRINT,
+    CONF_HOMEASSISTANT,
+    CONF_MIN_VERSION,
+    CONF_SOURCE_URL,
+)
 from homeassistant.components.blueprint.importer import fetch_blueprint_from_url
 from homeassistant.components.script import (
     config as script_config,
@@ -35,7 +40,12 @@ from homeassistant.components.update import (
     UpdateEntityDescription,
     UpdateEntityFeature,
 )
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON, Platform
+from homeassistant.const import (
+    CONF_NAME,
+    EVENT_HOMEASSISTANT_STARTED,
+    STATE_ON,
+    Platform,
+)
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr, entity_registry as er
@@ -110,10 +120,10 @@ _FETCH_TIMEOUT = 30
 # a warning in front of a firmware update. Same idea here.
 _NO_PROMISES = (
     "<ha-alert alert-type='warning'>"
-    "Blueprints carry no changelog, so there is nothing here that says what "
-    "changed. An update is whatever the author decided to do, and nothing "
-    "promises it still fits the automations you built on it: inputs get "
-    "renamed, behaviour gets rethought. Read the source before you install it."
+    "Blueprints carry no changelog. What is below is Spook comparing the two "
+    "files, not the author saying what they did, and nothing promises an "
+    "update still fits the automations you built on it: inputs get renamed, "
+    "behaviour gets rethought. Read the source before you install it."
     "</ha-alert>"
 )
 
@@ -151,6 +161,48 @@ _COPY = re.compile(r"\A(?P<of>.+)\.\d{4}-\d{2}-\d{2}_\d{6}\.bak\Z")
 # Kept per blueprint. Enough to go back past an update that looked fine at the
 # time, few enough that the folder stays readable to somebody who opens it.
 _KEEP_COPIES = 3
+
+_WHAT_DIFFERS = "**Compared with the copy you have:**\n"
+_ASKS_FOR = "**It now asks for Home Assistant "
+
+_CANNOT_SAY_WHAT_DIFFERS = (
+    "<ha-alert alert-type='info'>"
+    "Spook could not read the copy you have just now, so it cannot say what "
+    "this changes."
+    "</ha-alert>"
+)
+
+# Settings named before it turns into a wall. Past a few, what somebody needs
+# to know is how many there are, not what every one of them is called.
+_HOW_MANY_TO_NAME = 3
+
+# The keys at the top of a blueprint that say what it does. Grouped, because
+# "the triggers changed" and "the actions changed" are the same news to
+# somebody deciding whether to install this.
+_WHAT_IT_DOES = {
+    "trigger": "When it runs",
+    "triggers": "When it runs",
+    "condition": "The conditions on it",
+    "conditions": "The conditions on it",
+    "action": "What it does",
+    "actions": "What it does",
+    "sequence": "What it does",
+    "variables": "The variables in it",
+    "fields": "The fields it takes",
+    "mode": "How it handles overlapping runs",
+    "max": "How it handles overlapping runs",
+    "max_exceeded": "How it handles overlapping runs",
+}
+
+# And the ones that only say what it is called. A blueprint whose description
+# changed and nothing else is worth saying out loud precisely because it means
+# somebody can stop reading.
+_WHAT_IT_IS_CALLED = {
+    "name": "Its name",
+    "description": "Its description",
+    "author": "Who it says wrote it",
+    "domain": "The kind of thing it builds",
+}
 
 
 def _keep_a_copy(file: Path) -> None:
@@ -317,6 +369,235 @@ def _canonical_scalar(value: Any) -> Any:
     return [f"other:{type(value).__name__}", str(value)]
 
 
+def _compared(item: blueprint.Blueprint) -> dict[str, Any]:
+    """Return the part of a blueprint that two versions are judged on.
+
+    Which is all of it bar the source URL. That one is put in by whoever
+    imported the blueprint rather than by its author, it is the address this
+    was fetched from in the first place, and an author who moves their
+    blueprint has not changed it.
+    """
+    data = dict(item.data)
+
+    if isinstance(metadata := data.get(CONF_BLUEPRINT), Mapping):
+        metadata = dict(metadata)
+        metadata.pop(CONF_SOURCE_URL, None)
+        data[CONF_BLUEPRINT] = metadata
+
+    return data
+
+
+@dataclass(frozen=True, kw_only=True)
+class _Changes:
+    """What is different between two versions of a blueprint.
+
+    In terms somebody deciding whether to install it can act on, rather than
+    the keys of the file it came out of. Nobody has ever wanted to be told
+    that `blueprint.input.light_target` is gone.
+    """
+
+    settings_new: list[str]
+    settings_gone: list[str]
+    settings_changed: list[str]
+
+    doing: set[str]
+    """What it does, in the words of `_WHAT_IT_DOES`."""
+
+    calling: set[str]
+    """What it is called, in the words of `_WHAT_IT_IS_CALLED`."""
+
+    needs: str | None
+    """A Home Assistant version it now asks for and did not before."""
+
+    rearranged: bool
+    """Nothing above, and still not the same file."""
+
+    def __bool__(self) -> bool:
+        """Return whether anything at all was found."""
+        return bool(
+            self.settings_new
+            or self.settings_gone
+            or self.settings_changed
+            or self.doing
+            or self.calling
+            or self.needs
+            or self.rearranged,
+        )
+
+
+def _called(key: str, definition: Any) -> str:
+    """Return what an input is called, as its author wrote it.
+
+    Falling back to the key, which is what somebody who never gave it a name
+    would recognise it by anyway.
+    """
+    if isinstance(definition, Mapping) and isinstance(
+        name := definition.get(CONF_NAME),
+        str,
+    ):
+        return name
+
+    return key
+
+
+def _spelled_out(settings: list[tuple[str, str]], labels: list[str]) -> list[str]:
+    """Return what to call each setting, unambiguously."""
+    return [
+        label if labels.count(label) == 1 else f"{label} (`{key}`)"
+        for label, key in settings
+    ]
+
+
+class _Settings(NamedTuple):
+    """The settings that are new, gone and changed between two versions."""
+
+    new: list[str]
+    gone: list[str]
+    changed: list[str]
+
+
+def _settings_apart(
+    before: blueprint.Blueprint,
+    after: blueprint.Blueprint,
+) -> _Settings:
+    """Return how the settings somebody fills in have moved.
+
+    Read through Home Assistant's own flattened view, so an input inside a
+    section counts as an input rather than as part of the section.
+    """
+    here, there = before.inputs, after.inputs
+
+    gone = [(_called(key, here[key]), key) for key in here if key not in there]
+    new = [(_called(key, there[key]), key) for key in there if key not in here]
+    changed = [
+        (_called(key, there[key]), key)
+        for key in here
+        if key in there and _canonical(here[key]) != _canonical(there[key])
+    ]
+
+    # An author who renames the key and keeps the label leaves two settings
+    # reading the same, which is the one rename that says nothing while
+    # breaking everything: whatever somebody set is stored under the old key
+    # and the new version never looks there. So the key comes along whenever a
+    # label alone would not tell them apart.
+    labels = [label for label, _ in [*gone, *new, *changed]]
+
+    return _Settings(
+        new=_spelled_out(new, labels),
+        gone=_spelled_out(gone, labels),
+        changed=_spelled_out(changed, labels),
+    )
+
+
+def _doing_apart(was: dict[str, Any], now: dict[str, Any]) -> set[str]:
+    """Return what a blueprint does differently, in words."""
+    doing: set[str] = set()
+
+    for key in dict.fromkeys([*was, *now]):
+        if key == CONF_BLUEPRINT:
+            continue
+
+        if _canonical(was.get(key)) != _canonical(now.get(key)):
+            doing.add(_WHAT_IT_DOES.get(str(key), "Something else in it"))
+
+    return doing
+
+
+def _calling_apart(
+    before: blueprint.Blueprint,
+    after: blueprint.Blueprint,
+) -> set[str]:
+    """Return what a blueprint calls itself differently, in words."""
+    return {
+        words
+        for key, words in _WHAT_IT_IS_CALLED.items()
+        if _canonical(before.metadata.get(key)) != _canonical(after.metadata.get(key))
+    }
+
+
+def _needs_apart(
+    before: blueprint.Blueprint,
+    after: blueprint.Blueprint,
+) -> str | None:
+    """Return a Home Assistant version a blueprint now asks for and did not.
+
+    An empty string for one that asks for something unreadable, which is still
+    worth saying: it did not ask for anything before.
+    """
+    asked = after.metadata.get(CONF_HOMEASSISTANT)
+
+    if _canonical(before.metadata.get(CONF_HOMEASSISTANT)) == _canonical(asked):
+        return None
+
+    return str(asked.get(CONF_MIN_VERSION)) if isinstance(asked, Mapping) else ""
+
+
+def _changes(before: blueprint.Blueprint, after: blueprint.Blueprint) -> _Changes:
+    """Return what is different between two versions of a blueprint.
+
+    Measured through the same canonical form the fingerprint is taken of, so
+    what gets said and what made the update appear cannot come apart.
+    """
+    was, now = _compared(before), _compared(after)
+    settings = _settings_apart(before, after)
+
+    changes = _Changes(
+        settings_new=settings.new,
+        settings_gone=settings.gone,
+        settings_changed=settings.changed,
+        doing=_doing_apart(was, now),
+        calling=_calling_apart(before, after),
+        needs=_needs_apart(before, after),
+        rearranged=False,
+    )
+
+    # Everything above agreeing while the files do not means the same things
+    # are written in a different order. Which counts: Home Assistant renders
+    # some blocks in the order they appear, a `variables:` block among them.
+    if changes or _canonical(was) == _canonical(now):
+        return changes
+
+    return replace(changes, rearranged=True)
+
+
+def _named(names: list[str]) -> str:
+    """Return a few names, or a count once there are too many to read."""
+    if len(names) > _HOW_MANY_TO_NAME:
+        return str(len(names))
+
+    return ", ".join(names)
+
+
+def _in_words(changes: _Changes) -> list[str]:
+    """Return what changed, as lines somebody can act on."""
+    if changes.rearranged:
+        return [
+            (
+                "The same things, written in a different order. That can still "
+                "change what it does: Home Assistant renders some blocks in "
+                "the order they appear."
+            ),
+        ]
+
+    lines: list[str] = []
+
+    if changes.settings_new:
+        lines.append(f"**New settings**: {_named(changes.settings_new)}")
+    if changes.settings_gone:
+        lines.append(f"**Settings taken away**: {_named(changes.settings_gone)}")
+    if changes.settings_changed:
+        lines.append(f"**Settings changed**: {_named(changes.settings_changed)}")
+
+    if changes.needs is not None:
+        asked = changes.needs or "a particular version"
+        lines.append(f"{_ASKS_FOR}{asked}** or newer")
+
+    lines.extend(f"{words} **changed**" for words in sorted(changes.doing))
+    lines.extend(f"{words} **changed**" for words in sorted(changes.calling))
+
+    return lines
+
+
 def _fingerprint(item: blueprint.Blueprint) -> str:
     """Return a short hash of what a blueprint says.
 
@@ -340,15 +621,25 @@ def _fingerprint(item: blueprint.Blueprint) -> str:
     data on the way in, so leaving it in made a trailing slash on the URL look
     like a new version.
     """
-    data = dict(item.data)
-    if isinstance(metadata := data.get(CONF_BLUEPRINT), Mapping):
-        metadata = dict(metadata)
-        metadata.pop(CONF_SOURCE_URL, None)
-        data[CONF_BLUEPRINT] = metadata
-
     return hashlib.sha256(
-        json.dumps(_canonical(data), ensure_ascii=True).encode()
+        json.dumps(_canonical(_compared(item)), ensure_ascii=True).encode()
     ).hexdigest()[:8]
+
+
+def _read_one(file: Path) -> blueprint.Blueprint | None:
+    """Return the blueprint a file holds, or `None` if it cannot be read.
+
+    The whole of it, rather than the summary `_read_files` keeps. Only ever
+    asked for one blueprint at a time, when somebody has the dialog open, so
+    holding all of it in memory is nothing: the summary is what is kept for
+    every blueprint on the system, all day.
+    """
+    try:
+        raw = file.read_text(encoding="utf-8")
+    except OSError:
+        return None
+
+    return _normalize(raw)
 
 
 def _read_files(files: list[Path]) -> list[_OnDisk | None]:
@@ -849,7 +1140,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             raise HomeAssistantError(msg)
 
         if backup:
-            file = domain_blueprint.blueprint_folder / self.blueprint_path
+            file = self._file()
+            if file is None:  # pragma: no cover - the domain is right here
+                msg = f"Could not work out where {self.blueprint_path} lives"
+                raise HomeAssistantError(msg)
+
             try:
                 await self.hass.async_add_executor_job(_keep_a_copy, file)
             except OSError as err:
@@ -880,6 +1175,72 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._attr_installed_version = _fingerprint(fetched)
         self._attr_latest_version = self._attr_installed_version
         self.async_write_ha_state()
+
+    @callback
+    def _file(self) -> Path | None:
+        """Return the blueprint's own file, if its domain is loaded."""
+        domain_blueprints: dict[str, blueprint.DomainBlueprints] = self.hass.data.get(
+            blueprint.DOMAIN,
+            {},
+        )
+        if (domain_blueprint := domain_blueprints.get(self.blueprint_domain)) is None:
+            return None
+
+        return domain_blueprint.blueprint_folder / self.blueprint_path
+
+    async def _async_differences(self) -> str:
+        """Return what the dialog says about the difference it found.
+
+        A fingerprint on its own is an assertion: something changed, take our
+        word for it. What somebody actually needs is whether this touches the
+        settings they filled in, whether it changes what the thing does, or
+        whether an author tidied up their wording, in which case they can stop
+        reading.
+        """
+        if (changes := await self._async_what_differs()) is None:
+            return _CANNOT_SAY_WHAT_DIFFERS
+
+        if not changes:
+            # The fetch says otherwise, and the two are measured the same way,
+            # so this is not something to paper over with a cheerful sentence.
+            return (
+                "<ha-alert alert-type='warning'>"
+                "Spook found no difference between this and the copy you have, "
+                "having just been told there is one. Please report that."
+                "</ha-alert>"
+            )
+
+        lines = _in_words(changes)
+
+        if self._fetched.validate():
+            # The refusal further down names the version and says Spook will
+            # not write this. Saying it here as well reads as two problems.
+            lines = [line for line in lines if not line.startswith(_ASKS_FOR)]
+
+        if not lines:
+            return ""
+
+        return "\n".join([_WHAT_DIFFERS, *(f"- {line}" for line in lines)])
+
+    async def _async_what_differs(self) -> _Changes | None:
+        """Return where the fetched blueprint and the one here disagree.
+
+        `None` when that cannot be worked out, which is worth saying out loud
+        rather than quietly leaving the answer out of a dialog that is already
+        asking somebody to take an update on trust.
+
+        Read off the file rather than taken from the copy Home Assistant has
+        loaded. That one has been through the domain's own schema, which
+        rewrites the older spellings, and every blueprint written before those
+        names changed would come out looking different from itself.
+        """
+        if self._fetched is None or (file := self._file()) is None:
+            return None
+
+        if (here := await self.hass.async_add_executor_job(_read_one, file)) is None:
+            return None
+
+        return _changes(here, self._fetched)
 
     async def async_release_notes(self) -> str | None:
         """Return what can honestly be said before somebody presses install.
@@ -913,7 +1274,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         if nothing_on_offer:
             return "\n\n".join([*aside, came_from])
 
-        notes = [*aside, _NO_PROMISES, came_from]
+        notes = [*aside, _NO_PROMISES, came_from, await self._async_differences()]
 
         if errors := self._fetched.validate():
             notes.append(_WOULD_NOT_RUN)
@@ -926,7 +1287,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 for entity_id, reason in sorted(short.items())
             )
 
-        return "\n\n".join(notes)
+        return "\n\n".join(line for line in notes if line)
 
     async def _async_fetch(self) -> blueprint.Blueprint:
         """Fetch whatever the source URL points at now."""
