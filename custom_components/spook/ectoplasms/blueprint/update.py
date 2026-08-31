@@ -187,13 +187,20 @@ def _canonical(value: Any) -> Any:
     later ones, so `{a: 1, b: "{{ a }}"}` and the same two the other way round
     are different scripts.
 
+    Keys go through here too. YAML hands back real integers, booleans and
+    floats as keys, so `{1: a}` and `{"1": a}` are different mappings and
+    stringifying both would have hidden the difference.
+
     The loader's own string and mapping classes go too. They carry the line
     they came from, which says nothing about what the blueprint does.
     """
     if isinstance(value, Input):
         return ["input", str(value.name)]
     if isinstance(value, Mapping):
-        return ["map", [[str(key), _canonical(item)] for key, item in value.items()]]
+        return [
+            "map",
+            [[_canonical(key), _canonical(item)] for key, item in value.items()],
+        ]
     if isinstance(value, (list, tuple)):
         return ["seq", [_canonical(item) for item in value]]
     if isinstance(value, str):

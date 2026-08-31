@@ -1398,6 +1398,9 @@ actions:
         pytest.param("x", ["x"], id="string-vs-sequence"),
         pytest.param("1", 1, id="string-vs-number"),
         pytest.param({"a": "b", "c": "d"}, {"c": "d", "a": "b"}, id="order-swapped"),
+        pytest.param({1: "a"}, {"1": "a"}, id="number-key-vs-string-key"),
+        pytest.param({True: "a"}, {"True": "a"}, id="bool-key-vs-string-key"),
+        pytest.param({1.5: "a"}, {"1.5": "a"}, id="float-key-vs-string-key"),
     ],
 )
 def test_the_encoding_keeps_different_things_apart(one: object, other: object) -> None:
