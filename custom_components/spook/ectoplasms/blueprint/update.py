@@ -10,7 +10,7 @@ import hashlib
 import json
 import os
 import random
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, NamedTuple
 
 import aiohttp
 from annotatedyaml.objects import Input
@@ -33,7 +33,7 @@ from homeassistant.components.update import (
     UpdateEntityDescription,
     UpdateEntityFeature,
 )
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON
+from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_ON, Platform
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import device_registry as dr, entity_registry as er
@@ -135,13 +135,46 @@ _WOULD_BE_REFUSED = (
 )
 
 
+def _unique_id(blueprint_domain: str, blueprint_path: str) -> str:
+    """Return the unique ID of the entity following a blueprint."""
+    return f"blueprint_{blueprint_domain}_{blueprint_path}"
+
+
+def _blueprint_behind(unique_id: str) -> tuple[str, str] | None:
+    """Return the blueprint a unique ID of ours is about, if it is one.
+
+    Matched against the domains themselves rather than split on the
+    separator, because a blueprint path is free to hold underscores of its
+    own and a domain is not.
+    """
+    for blueprint_domain in _USES_BLUEPRINTS:
+        prefix = _unique_id(blueprint_domain, "")
+        if unique_id.startswith(prefix):
+            return blueprint_domain, unique_id.removeprefix(prefix)
+
+    return None
+
+
+class _Found(NamedTuple):
+    """What a look at the blueprint folders turned up."""
+
+    files: dict[tuple[str, str], Path]
+    """The file behind every blueprint Home Assistant could load."""
+
+    listed: set[tuple[str, str]]
+    """Every blueprint Home Assistant named, loadable or not."""
+
+    domains: set[str]
+    """The domains that were there to be asked. Absence is not emptiness."""
+
+
 async def async_setup_entry(
     hass: HomeAssistant,
     entry: ConfigEntry,
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Set up an update entity for every blueprint that came from a URL."""
-    await _BlueprintUpdates(hass, async_add_entities).async_start(entry)
+    await _BlueprintUpdates(hass, entry, async_add_entities).async_start()
 
 
 @dataclass(frozen=True, kw_only=True)
@@ -318,16 +351,18 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
     def __init__(
         self,
         hass: HomeAssistant,
+        entry: ConfigEntry,
         async_add_entities: AddEntitiesCallback,
     ) -> None:
         """Initialize the manager."""
         self.hass = hass
+        self._entry = entry
         self._async_add_entities = async_add_entities
         self._entities: dict[tuple[str, str], BlueprintUpdateEntity] = {}
         self._stopped = False
         self._cancel: CALLBACK_TYPE | None = None
 
-    async def async_start(self, entry: ConfigEntry) -> None:
+    async def async_start(self) -> None:
         """Begin now, or once Home Assistant is up.
 
         Nothing is scheduled before then either. Starting up can take longer
@@ -336,17 +371,17 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         arriving, and goes out to the internet while the house is still
         getting dressed.
         """
-        entry.async_on_unload(self._stop)
+        self._entry.async_on_unload(self._stop)
 
         # Nothing to do with the rounds below. These entities used to sit on a
         # device, and whoever ran that version still has it.
-        self._async_forget_the_old_device(entry.entry_id)
+        self._async_forget_the_old_device()
 
         if self.hass.state is CoreState.running:
             await self._async_begin()
             return
 
-        entry.async_on_unload(
+        self._entry.async_on_unload(
             async_listen_once_tracked(
                 self.hass,
                 EVENT_HOMEASSISTANT_STARTED,
@@ -368,7 +403,7 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         await self._async_begin()
 
     @callback
-    def _async_forget_the_old_device(self, entry_id: str) -> None:
+    def _async_forget_the_old_device(self) -> None:
         """Remove the device these entities used to hang off.
 
         They had one called "Blueprints", which is what made every row on the
@@ -380,7 +415,7 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         if (
             device := device_registry.async_get_device_by_identifier(
                 (DOMAIN, blueprint.DOMAIN),
-                entry_id,
+                self._entry.entry_id,
             )
         ) is None:
             return
@@ -426,15 +461,15 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
 
     async def _async_take_stock(self) -> None:
         """Match the entities to the blueprints that are on disk."""
-        files = await self._async_look()
+        found = await self._async_look()
         on_disk = await self.hass.async_add_executor_job(
             _read_files,
-            list(files.values()),
+            list(found.files.values()),
         )
 
         followed: dict[tuple[str, str], _OnDisk] = {}
         unreadable: set[tuple[str, str]] = set()
-        for key, said in zip(files, on_disk, strict=True):
+        for key, said in zip(found.files, on_disk, strict=True):
             if said is None:
                 unreadable.add(key)
             elif said.source_url is not None:
@@ -445,6 +480,8 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         # longer names a source is somebody asking to be left alone, and that
         # one goes.
         await self._async_forget(set(self._entities) - set(followed) - unreadable)
+
+        self._async_drop_what_is_not_there(found, followed, unreadable)
 
         added: list[BlueprintUpdateEntity] = []
         for key in sorted(followed):
@@ -459,28 +496,98 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
         if added:
             self._async_add_entities(added)
 
-    async def _async_look(self) -> dict[tuple[str, str], Path]:
-        """Return the file behind every blueprint Home Assistant can load."""
+    async def _async_look(self) -> _Found:
+        """Return what the blueprint folders hold.
+
+        Which domains were asked is part of the answer. A domain that has not
+        registered itself says nothing about its blueprints, and reading that
+        silence as "there are none" is how a tidy-up turns into a clear-out.
+        """
         files: dict[tuple[str, str], Path] = {}
+        listed: set[tuple[str, str]] = set()
         domain_blueprints: dict[str, blueprint.DomainBlueprints] = self.hass.data.get(
             blueprint.DOMAIN,
             {},
         )
+
+        domains = {domain for domain in domain_blueprints if domain in _USES_BLUEPRINTS}
 
         for domain, domain_blueprint in sorted(domain_blueprints.items()):
             if domain not in _USES_BLUEPRINTS:
                 continue
 
             for path, item in (await domain_blueprint.async_get_blueprints()).items():
-                # Failed to load, or Home Assistant's own examples.
-                if not isinstance(item, blueprint.Blueprint):
-                    continue
+                # Home Assistant's own examples are not somebody's blueprints.
                 if path.startswith(_HOME_ASSISTANTS_OWN):
+                    continue
+
+                listed.add((domain, path))
+
+                # Failed to load. Named, so it is there, but nothing can be
+                # read out of it.
+                if not isinstance(item, blueprint.Blueprint):
                     continue
 
                 files[(domain, path)] = domain_blueprint.blueprint_folder / path
 
-        return files
+        return _Found(files=files, listed=listed, domains=domains)
+
+    @callback
+    def _async_drop_what_is_not_there(
+        self,
+        found: _Found,
+        followed: dict[tuple[str, str], _OnDisk],
+        unreadable: set[tuple[str, str]],
+    ) -> None:
+        """Remove registrations left behind by blueprints that have gone.
+
+        Blueprints fire no events, so one deleted while Home Assistant was
+        stopped is noticed by nobody. The round that would have caught it
+        compares against the entities of this run, and on the first round
+        there are none, so the registration sits there for good: an entity in
+        the list with nothing behind it and no way to work out why.
+
+        This is that same comparison, put to the registry instead.
+
+        What it will not do is take a registration on a guess. A blueprint can
+        be sitting right there and still not be followed, so being followed is
+        not the question. Being gone is.
+        """
+        registry = er.async_get(self.hass)
+
+        # Named but not loadable: broken YAML, most likely mid-edit. It is
+        # there, and nothing can be read out of it to say otherwise.
+        keep = found.listed - set(found.files)
+
+        # Read, and asked to be left alone or unreadable just now.
+        keep |= set(followed) | unreadable
+
+        wanted = {_unique_id(*key) for key in keep}
+
+        for registration in er.async_entries_for_config_entry(
+            registry,
+            self._entry.entry_id,
+        ):
+            if registration.domain != Platform.UPDATE:
+                continue
+
+            if (behind := _blueprint_behind(registration.unique_id)) is None:
+                continue
+
+            # A domain that was not there to be asked. Its blueprints are out
+            # of sight rather than gone, and the difference is every
+            # registration it has.
+            if behind[0] not in found.domains:
+                continue
+
+            if registration.unique_id in wanted:
+                continue
+
+            LOGGER.debug(
+                "Spook is dropping %s, left behind by a blueprint that is gone",
+                registration.entity_id,
+            )
+            registry.async_remove(registration.entity_id)
 
     async def _async_forget(self, keys: set[tuple[str, str]]) -> None:
         """Drop the entities of blueprints that are no longer being followed."""
@@ -560,7 +667,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self.blueprint_domain = blueprint_domain
         self.blueprint_path = blueprint_path
 
-        self._attr_unique_id = f"blueprint_{blueprint_domain}_{blueprint_path}"
+        self._attr_unique_id = _unique_id(blueprint_domain, blueprint_path)
 
         # Deliberately no device. These used to hang off one called
         # "Blueprints", and the updates page shows the device a row belongs to,

@@ -14,7 +14,11 @@ from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.components.update import UpdateEntityFeature
 from homeassistant.core import CoreState, callback
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.components.blueprint import BLUEPRINT_SCHEMA, Blueprint
+from homeassistant.components.blueprint import (
+    BLUEPRINT_SCHEMA,
+    DOMAIN as BLUEPRINT_DOMAIN,
+    Blueprint,
+)
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.util import yaml as yaml_util
@@ -1674,3 +1678,173 @@ async def test_the_old_blueprints_device_is_cleared_away(
     # And it is the entity that is actually there, rather than a registration
     # sitting next to one that came back under a name of its own.
     assert hass.states.get(was_there.entity_id)
+
+
+async def test_a_registration_left_behind_by_a_deleted_blueprint_is_dropped(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A blueprint deleted while Home Assistant was stopped tells nobody.
+
+    The round that would have caught it compares against the entities of this
+    run, and on the first round there are none, so without this the
+    registration sits in the list for good with nothing behind it.
+
+    Seeded in the shape the released version wrote it, on purpose: the whole
+    point is reading what an older Spook left, so a literal is the only honest
+    way to write it down.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    left_over = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_i_deleted_this.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_something_i_deleted",
+    )
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    assert entity_registry.async_get(left_over.entity_id) is None
+
+    # The blueprint that is there keeps everything it had.
+    assert entity_registry.async_get(_ENTITY) is not None
+    assert hass.states.get(_ENTITY)
+
+
+async def test_a_domain_that_is_out_of_sight_keeps_its_registrations(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A domain that has not registered says nothing about its blueprints.
+
+    Reading that silence as "there are none" would take every registration it
+    has, on a round that happened to land while the integration was still
+    setting up. So the domains that were there to be asked are part of what a
+    look reports, and a domain that was not is left alone entirely.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    out_of_sight = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_script_gone_fishing.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_gone_fishing",
+    )
+
+    without_scripts = {
+        domain: item
+        for domain, item in hass.data[BLUEPRINT_DOMAIN].items()
+        if domain != "script"
+    }
+    with (
+        patch.dict(hass.data, {BLUEPRINT_DOMAIN: without_scripts}),
+        _source_says(MOTION_LIGHT),
+    ):
+        await _check(hass, freezer)
+
+    assert entity_registry.async_get(out_of_sight.entity_id) is not None
+
+    # And it was the looking away that saved it. With the domain back, the
+    # same registration goes, which is the only way to know the round would
+    # otherwise have taken it.
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    assert entity_registry.async_get(out_of_sight.entity_id) is None
+
+
+async def test_a_blueprint_that_will_not_load_keeps_its_registration(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Home Assistant names a blueprint it could not load, and so it is there.
+
+    Most likely somebody is halfway through editing it. Nothing can be read
+    out of it to say whether it still comes from anywhere, and a file being
+    unreadable is not a file being gone.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    mid_edit = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_halfway.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_halfway",
+    )
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    write_by_hand(hass, "automation", "halfway.yaml", "nope: not a blueprint\n")
+    await async_set_up(hass, entry=entry)
+
+    assert entity_registry.async_get(mid_edit.entity_id) is not None
+
+
+async def test_a_blueprint_that_dropped_its_source_loses_its_registration(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Taking the source URL out is asking to be left alone.
+
+    Which the round already honours for an entity it has. Done while Home
+    Assistant was stopped it never had one, so the registration is the only
+    thing left saying Spook was ever interested.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    on_its_own = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_on_its_own.yaml",
+        config_entry=entry,
+        suggested_object_id="blueprints_on_its_own",
+    )
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    write_by_hand(
+        hass,
+        "automation",
+        "on_its_own.yaml",
+        MOTION_LIGHT.replace("  source_url: {source}\n", ""),
+    )
+    await async_set_up(hass, entry=entry)
+
+    assert entity_registry.async_get(on_its_own.entity_id) is None
+
+
+async def test_a_registration_that_is_not_about_a_blueprint_is_left_alone(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Spook is free to put other updates on this config entry.
+
+    Nothing here knows anything about those, and a tidy-up that cannot tell
+    what a unique ID is about has no business touching it.
+    """
+    entry = MockConfigEntry(domain="fake")
+    entry.add_to_hass(hass)
+
+    somebody_elses = entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "nothing_to_do_with_blueprints",
+        config_entry=entry,
+        suggested_object_id="spook_itself",
+    )
+
+    write_by_hand(hass, "automation", "spooky.yaml", MOTION_LIGHT)
+    await async_set_up(hass, entry=entry)
+
+    assert entity_registry.async_get(somebody_elses.entity_id) is not None
