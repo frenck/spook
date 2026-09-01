@@ -499,7 +499,8 @@
             "title": "Okända enhetsspårare spårar person: {person}"
         },
         "orphaned_statistics": {
-            "title": "Föräldralös långtidsstatistik hittad"
+            "title": "Föräldralös långtidsstatistik hittad",
+            "description": "Spook har hittat ett spöke i din inspelare 👻\n\nHome Assistant sparar långtidsstatistik för följande, men det finns inte längre någon entitet som hör till den:\n\n{statistics}\n\n\n\nDet brukar hända när en sensor tagits bort och dess statistik blivit kvar. För att åtgärda felet, öppna Inställningar > Verktyg > Statistik och red ut det där.\n\nSpook 👻 Din polare."
         },
         "lovelace_unknown_area_references": {
             "title": "Okända områden används i kontrollpanel: {dashboard}",
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook har hittat ett spöke bland dina aviseringsgrupper 👻\n\nAviseringsgruppen `{group}` vidarebefordrar till följande åtgärder som är okända för Home Assistant:\n\n{members}\n\nGruppen levererar fortfarande till sina övriga medlemmar, och den rapporterar fortfarande att allt gick bra till den som anropade den, så ingenting uppströms märker något. Felet syns bara som ett ensamt \"Task exception was never retrieved\" i loggen, som inte nämner någon grupp och ser ut som ett programfel. Den som fanns bakom den medlemmen slutar helt enkelt att få aviseringar.\n\nFör att åtgärda felet, redigera `services:`-listan för den här gruppen i din konfiguration och ta bort eller rätta dessa poster.\n\nSpook 👻 Din polare.",
             "title": "Okända medlemmar i aviseringsgrupp: {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Instrumentpanelsresurs finns med mer än en gång: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Instrumentpanelsresurs finns med mer än en gång: {resource}",
+                        "description": "Spook har hittat ett spöke bland dina instrumentpaneler 👻\n\nDenna instrumentpanelsresurs förekommer {count} gånger:\n\n{resources}\n\nDet brukar hända när ett anpassat kort uppdaterats genom att lägga till en resurs för den nya versionen i stället för att redigera den som redan fanns. Webbläsaren laddar båda, kortet försöker registrera sig två gånger och andra försöket misslyckas, vilket ser ut som ett trasigt kort i stället för en dubblerad resurs.\n\nSpook kan städa bort de överflödiga kopiorna och behålla den som lades till senast.\n\nSpook 👻 Din polare.",
+                        "menu_options": {
+                            "remove": "Städa bort de överflödiga kopiorna och behåll den senaste",
+                            "ignore": "Låt dem vara, och säg inget mer om det",
+                            "manage": "Jag fixar det själv"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer inte att säga något mer om denna resurs.",
+                    "manage": "Du kan sköta dina instrumentpanelers resurser själv på [sidan Resurser](/config/lovelace/resources).",
+                    "yaml": "Dessa resurser står i din YAML-konfiguration, så Spook kan inte ändra dem åt dig. Redigera avsnittet `resources:` i din Lovelace-konfiguration och ta bort de kopior av `{resource}` som du inte längre behöver."
+                }
+            }
         }
     },
     "services": {
@@ -1446,6 +1468,146 @@
                 }
             },
             "name": "Ställ in visningsprecision"
+        },
+        "wait_for_condition": {
+            "name": "Vänta på ett villkor",
+            "description": "Väntar tills ett villkor är sant. Återvänder direkt om det redan är det.",
+            "fields": {
+                "condition": {
+                    "name": "Villkor",
+                    "description": "Villkoret att vänta på."
+                },
+                "timeout": {
+                    "name": "Tidsgräns",
+                    "description": "Hur länge att vänta innan det får vara. Lämna tomt för att vänta hur länge som helst."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Snooza",
+            "description": "Stänger av en automatisering ett tag och slår på den igen när tiden är ute.",
+            "fields": {
+                "duration": {
+                    "name": "Varaktighet",
+                    "description": "Hur länge automatiseringen förblir avstängd. Den kommer tillbaka av sig själv när tiden är ute, även om Home Assistant startas om under tiden."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Slå på under",
+            "description": "Slår på en automatisering ett tag och stänger av den igen när tiden är ute.",
+            "fields": {
+                "duration": {
+                    "name": "Varaktighet",
+                    "description": "Hur länge automatiseringen förblir påslagen. Den stänger av sig själv när tiden är ute, även om Home Assistant startas om under tiden."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Ställ in ljusstyrkan",
+            "description": "Ställer in ljusstyrkan på de lampor som redan är tända, och lämnar de släckta i fred.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Ljusstyrka",
+                    "description": "Ljusstyrkan att ställa in, i procent. Grupper justeras lampa för lampa, så en släckt lampa förblir släckt."
+                },
+                "transition": {
+                    "name": "Övergång",
+                    "description": "Hur lång tid ändringen ska ta, i sekunder."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Öka ljusstyrkan",
+            "description": "Skruvar upp de lampor som redan är tända, och lämnar de släckta i fred.",
+            "fields": {
+                "step_pct": {
+                    "name": "Steg",
+                    "description": "Hur mycket ljusstyrkan ska upp, i procent. Varje lampa utgår från sin egen nivå, så en grupp behåller sin form i stället för att jämnas ut."
+                },
+                "transition": {
+                    "name": "Övergång",
+                    "description": "Hur lång tid ändringen ska ta, i sekunder."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Minska ljusstyrkan",
+            "description": "Skruvar ner de lampor som redan är tända, till det svagaste de klarar i stället för att släcka dem.",
+            "fields": {
+                "step_pct": {
+                    "name": "Steg",
+                    "description": "Hur mycket ljusstyrkan ska ner, i procent. Varje lampa utgår från sin egen nivå, så en grupp behåller sin form i stället för att jämnas ut."
+                },
+                "transition": {
+                    "name": "Övergång",
+                    "description": "Hur lång tid ändringen ska ta, i sekunder."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Ställ in färgen",
+            "description": "Ställer in färgen på de lampor som redan är tända, och lämnar de släckta eller de som inte kan färg i fred.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Färg",
+                    "description": "Färgen att ställa in. Lampor som inte kan färg hoppas över i stället för att slås om till vitt."
+                },
+                "transition": {
+                    "name": "Övergång",
+                    "description": "Hur lång tid ändringen ska ta, i sekunder."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Ställ in färgtemperaturen",
+            "description": "Ställer in färgtemperaturen på de lampor som redan är tända, var och en inom det spann den faktiskt når.",
+            "fields": {
+                "kelvin": {
+                    "name": "Färgtemperatur",
+                    "description": "Färgtemperaturen att ställa in. Varje lampa hålls inom sitt eget spann, för en lampas varmvita är ett tal som en annan inte når."
+                },
+                "transition": {
+                    "name": "Övergång",
+                    "description": "Hur lång tid ändringen ska ta, i sekunder."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Ställ in effekten",
+            "description": "Sätter en effekt på de lampor som redan är tända och som faktiskt har den.",
+            "fields": {
+                "effect": {
+                    "name": "Effekt",
+                    "description": "Namnet på effekten att ställa in. Effektnamn skiljer sig mellan tillverkare, så lampor som inte har denna lämnas som de är."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Uppdatera en etikett",
+            "description": "Uppdaterar en befintlig etikett i farten. Allt du utelämnar behåller det värde det redan hade. Beskrivningen, ikonen och färgen kan tömmas genom att sättas till null.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID:t för etiketten som ska uppdateras."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Nytt namn för etiketten."
+                },
+                "description": {
+                    "name": "Beskrivning",
+                    "description": "Ny beskrivning för etiketten."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ny ikon för etiketten."
+                },
+                "color": {
+                    "name": "Färg",
+                    "description": "Färg att använda för etiketten. Kan vara ett färgnamn ur listan eller en hexadecimal färgkod (som #FF0000)."
+                }
+            }
         }
     },
     "conditions": {
@@ -1468,6 +1630,201 @@
                 }
             },
             "name": "Vilotid"
+        },
+        "repair_issue_present": {
+            "name": "Reparationsärende öppet",
+            "description": "Uppfylls så länge det finns ett öppet reparationsärende. Ärenden som någon ignorerat räknas inte.",
+            "fields": {
+                "domain": {
+                    "name": "Integrationer",
+                    "description": "Begränsa detta till ärenden som rapporterats av vissa integrationer, efter deras domän. Lämna tomt för alla."
+                },
+                "severity": {
+                    "name": "Allvarlighetsgrad",
+                    "description": "Begränsa detta till ärenden av en viss allvarlighetsgrad. Lämna tomt för alla."
+                }
+            }
+        },
+        "quota": {
+            "name": "Körningar kvar",
+            "description": "Uppfylls så länge denna automatisering har körts färre än ett visst antal gånger inom en viss period. Skript räknas inte.",
+            "fields": {
+                "limit": {
+                    "name": "Gräns",
+                    "description": "Hur många körningar som tillåts inom perioden."
+                },
+                "period": {
+                    "name": "Period",
+                    "description": "Fönstret som gränsen gäller för. Det glider framåt, så en dag betyder vilka tjugofyra timmar som helst och inte midnatt till midnatt."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Startad av en automatisering",
+            "description": "Uppfylls när en annan automatisering satte igång denna körning, antingen direkt eller via ett skript.",
+            "fields": {
+                "automation": {
+                    "name": "Automatiseringar",
+                    "description": "Begränsa detta till vissa automatiseringar. Lämna tomt för att godta alla."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Startad av en användare",
+            "description": "Uppfylls när det finns en människa bakom det som satte igång detta: en tillståndsändring eller en händelse som personen orsakade, inklusive en som gjorde en mallutlösare sann. Ett schema, solen eller en integration som agerar på egen hand har ingen bakom sig, och att tvinga fram en körning med Kör-knappen har det inte heller.",
+            "fields": {
+                "person": {
+                    "name": "Personer",
+                    "description": "Uppfylls bara när någon av dessa personer satte igång det. Lämna tomt för att uppfyllas av vem som helst. En person måste ha ett användarkonto kopplat till sig, annars finns det ingenting att jämföra med."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Inte startad av en användare",
+            "description": "Uppfylls när ingen kan hållas ansvarig för denna körning: ett schema, solen, en integration som agerar på egen hand eller Kör-knappen. Har med flit inga alternativ. Vill du utesluta bestämda personer så lägg \"Startad av en användare\" inuti ett Inte-villkor."
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "name": "Utlösare i ordning",
+            "description": "Utlöses när flera utlösare inträffar efter varandra, i den ordning du anger.",
+            "fields": {
+                "steps": {
+                    "name": "Steg",
+                    "description": "De utlösare som måste inträffa, i ordning. Bara den som väntas just då lyssnas på, så ett senare steg som inträffar för tidigt räknas inte."
+                },
+                "timeout": {
+                    "name": "Tidsgräns",
+                    "description": "Hur lång tid hela sekvensen får ta, räknat från första steget. Lämna tomt för att vänta hur länge som helst."
+                },
+                "reset": {
+                    "name": "Återställ",
+                    "description": "Utlösare som överger en sekvens som redan är igång och sätter den att vänta på första steget igen."
+                }
+            }
+        },
+        "while": {
+            "name": "Så länge ett villkor är sant",
+            "description": "Utlöses när ett villkor blir sant, och fortsätter utlösa med jämna mellanrum så länge det förblir sant.",
+            "fields": {
+                "condition": {
+                    "name": "Villkor",
+                    "description": "Villkoret som ska hållas ögonen på. Börjar utlösa när det blir sant och slutar när det inte längre är det."
+                },
+                "every": {
+                    "name": "Varje",
+                    "description": "Hur länge att vänta mellan en utlösning och nästa, så länge villkoret är sant."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Vakthund",
+            "description": "Utlöses när något du väntade dig inte inträffar i tid.",
+            "fields": {
+                "arm": {
+                    "name": "Aktivera",
+                    "description": "Det som sätter vakten i beredskap. Väntan räknas därifrån, och att aktivera på nytt medan väntan redan pågår startar om den."
+                },
+                "expect": {
+                    "name": "Förväntat",
+                    "description": "Det du väntar dig ska hända sedan. Kommer det i tid avbryts vakten och ingenting utlöses."
+                },
+                "within": {
+                    "name": "Inom",
+                    "description": "Hur lång tid det förväntade har på sig att komma. Detta utlöses när den tiden gått och ingenting kommit."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entiteten lugnar sig inte",
+            "description": "Utlöses när en entitet byter tillstånd oftare än den borde inom ett tidsintervall.",
+            "fields": {
+                "changes": {
+                    "name": "Ändringar",
+                    "description": "Hur många tillståndsbyten som krävs innan detta utlöses. Attributändringar räknas inte, och inte heller en entitet som dyker upp eller försvinner."
+                },
+                "within": {
+                    "name": "Inom",
+                    "description": "Tidsintervallet som de ändringarna måste rymmas inom. Det glider framåt, så det handlar alltid om de senaste ändringarna."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Villkoret blev sant",
+            "description": "Utlöses när ett villkor går från falskt till sant, med samma villkorsblock som du använder överallt annars.",
+            "fields": {
+                "condition": {
+                    "name": "Villkor",
+                    "description": "Villkoret som ska hållas ögonen på."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron-schema",
+            "description": "Utlöses enligt ett crontab-schema, för de tider som Home Assistants egna tidsutlösare inte kan uttrycka, som varje vardag klockan sju eller sista fredagen i månaden.",
+            "fields": {
+                "schedule": {
+                    "name": "Schema",
+                    "description": "Ett crontab-uttryck med fem fält: minut, timme, dag i månaden, månad, veckodag. Intervall och steg fungerar, liksom veckodagstilläggen, så \"MON#2\" är andra måndagen och \"5L\" sista fredagen. Smeknamn som \"@daily\" fungerar inte."
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "Integrationen kunde inte konfigureras",
+            "description": "Utlöses när en konfigurationspost inte har gått att konfigurera på ett tag, förbi den punkt där Home Assistants egna omförsök skulle ha löst det.",
+            "fields": {
+                "for": {
+                    "name": "Under",
+                    "description": "Hur länge en post måste fortsätta misslyckas innan detta utlöses. Home Assistant försöker om med en misslyckad post som mest var tionde minut, så ett kortare värde larmar om problem som fortfarande kan lösa sig själva."
+                },
+                "entry_id": {
+                    "name": "Poster",
+                    "description": "Begränsa detta till vissa konfigurationsposter. Lämna tomt för att hålla ögonen på alla."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Reparationsärende skapat",
+            "description": "Utlöses när ett nytt reparationsärende dyker upp, så att du får veta det utan att gå in på reparationssidan.",
+            "fields": {
+                "domain": {
+                    "name": "Integrationer",
+                    "description": "Begränsa detta till ärenden som rapporterats av vissa integrationer, efter deras domän. Lämna tomt för alla."
+                },
+                "severity": {
+                    "name": "Allvarlighetsgrad",
+                    "description": "Begränsa detta till ärenden av en viss allvarlighetsgrad. Lämna tomt för alla."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Reparationsärende löst",
+            "description": "Utlöses när ett reparationsärende försvinner, antingen för att det lösts eller helt enkelt för att det inte rapporteras längre.",
+            "fields": {
+                "domain": {
+                    "name": "Integrationer",
+                    "description": "Begränsa detta till ärenden som rapporterats av vissa integrationer, efter deras domän. Lämna tomt för alla."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entiteten har tystnat",
+            "description": "Utlöses när ingenting har skrivit till en entitet på ett tag, vilket avslöjar en enhet som dött i tysthet i stället för att bli otillgänglig.",
+            "fields": {
+                "for": {
+                    "name": "Under",
+                    "description": "Hur länge en entitet måste vara tyst innan detta utlöses. En entitet som fortsätter rapportera samma värde är inte tyst."
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritisk",
+                "error": "Fel",
+                "warning": "Varning"
+            }
         }
     }
 }
