@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from datetime import timedelta
 
+from homeassistant.components.energy.data import async_get_manager
 from homeassistant.components.energy.validate import async_validate
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
@@ -44,6 +45,26 @@ class SpookRepair(AbstractSpookRepair):
 
     automatically_clean_up_issues = True
 
+    async def _async_read_from_the_state(self) -> set[str]:
+        """Return the energy settings that name an entity, not a statistic.
+
+        The settings say which is which by their own names: a key beginning
+        `stat_` holds a statistic ID and one beginning `entity_` holds an
+        entity that has to be there, because its value is read live while the
+        dashboard adds things up.
+        """
+        preferences = (await async_get_manager(self.hass)).data or {}
+
+        return {
+            value
+            for group in preferences.values()
+            if isinstance(group, list)
+            for source in group
+            if isinstance(source, dict)
+            for key, value in source.items()
+            if key.startswith("entity_") and isinstance(value, str)
+        }
+
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
         if "energy" not in self.hass.config.components:
@@ -74,7 +95,14 @@ class SpookRepair(AbstractSpookRepair):
         # energy dashboard draws that last one perfectly happily. Telling
         # somebody their working gas meter is unknown is a repair for a problem
         # they do not have. #1565.
-        unknown -= await async_known_to_home_assistant(self.hass, unknown)
+        #
+        # Not for a price, though. A price is read off the state as the
+        # dashboard works, so statistics recorded under the same name do not
+        # make one work and letting it off would hide a setting that is broken.
+        unknown -= await async_known_to_home_assistant(
+            self.hass,
+            unknown - await self._async_read_from_the_state(),
+        )
 
         if unknown:
             self.async_create_issue(

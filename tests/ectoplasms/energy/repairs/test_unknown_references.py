@@ -6,6 +6,7 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.components.energy.data import async_get_manager
 from homeassistant.components.energy.validate import (
     EnergyPreferencesValidation,
     ValidationIssues,
@@ -136,6 +137,10 @@ async def test_a_source_kept_by_statistics_alone_is_not_unknown(
     somewhere arrives as `sensor.something` with no state. The energy
     dashboard draws it perfectly happily. Calling that unknown is a repair for
     a problem nobody has. #1565.
+
+    What says it was imported is the name on the statistics. A sensor writing
+    its own leaves that empty, because Home Assistant takes the name off the
+    entity, and anything importing has to supply one.
     """
     result = EnergyPreferencesValidation()
     source_issues = ValidationIssues()
@@ -144,7 +149,10 @@ async def test_a_source_kept_by_statistics_alone_is_not_unknown(
     result.energy_sources.append(source_issues)
 
     _install_validation(hass, monkeypatch, result)
-    marker = _install_statistics(monkeypatch, {"sensor.gas_from_a_service": None})
+    marker = _install_statistics(
+        monkeypatch,
+        {"sensor.gas_from_a_service": "Gas, read by a service"},
+    )
     hass.data[marker] = object()
 
     await SpookRepair(hass).async_inspect()
@@ -278,3 +286,44 @@ async def test_the_recorder_is_asked_again_on_a_clock(
     registry change happened along.
     """
     assert SpookRepair(hass).inspect_interval is not None
+
+
+async def test_a_price_entity_is_not_let_off_by_statistics(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A price is read off the state while the dashboard adds things up.
+
+    So statistics recorded under the same name do not make one work, and
+    letting it off because the recorder has something would hide a setting
+    that is broken. The energy settings say which is which by their own names:
+    `stat_` holds a statistic, `entity_` holds an entity that has to be there.
+    """
+    manager = await async_get_manager(hass)
+    manager.data = {
+        "energy_sources": [
+            {
+                "type": "gas",
+                "stat_energy_from": "sensor.gas_from_a_service",
+                "entity_energy_price": "sensor.the_price",
+            },
+        ],
+        "device_consumption": [],
+    }
+
+    result = EnergyPreferencesValidation()
+    source_issues = ValidationIssues()
+    source_issues.add_issue(hass, "entity_not_defined", "sensor.the_price")
+    result.energy_sources.append(source_issues)
+
+    _install_validation(hass, monkeypatch, result)
+    marker = _install_statistics(monkeypatch, {"sensor.the_price": "Priced elsewhere"})
+    hass.data[marker] = object()
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert issue
+    assert issue.translation_placeholders
+    assert "sensor.the_price" in issue.translation_placeholders["entities"]
