@@ -10,6 +10,7 @@ from typing import TYPE_CHECKING, Any
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import issue_registry as ir
 
 from custom_components.spook import repairs
 from custom_components.spook.const import DOMAIN
@@ -25,7 +26,6 @@ if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
     from homeassistant.config_entries import ConfigEntry, ConfigEntryChange
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import issue_registry as ir
 
 
 class MockRepairBase(AbstractSpookRepairBase):
@@ -62,21 +62,15 @@ class MockRepair(AbstractSpookRepair):
         self.inspections += 1
 
 
-async def test_deactivate_deletes_issues_from_snapshot(hass: HomeAssistant) -> None:
-    """Test deactivation can delete issues while mutating the issue ID set."""
-    repair = MockRepairBase(hass)
-    repair.issue_ids = {"one", "two"}
-
-    await repair.async_deactivate()
-
-    assert not repair.issue_ids
-
-
-async def test_deactivate_keeps_issues_registered_when_stopping(
+async def test_deactivate_leaves_what_it_reported_alone(
     hass: HomeAssistant,
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """Test shutdown keeps issues for the issue registry to restore."""
+    """Deactivating is not the same as the problem being over.
+
+    It happens on every reload, every integration reload and every update, and
+    taking the issues down took the "ignore" anybody had pressed with them.
+    """
     deleted: list[tuple[str, str]] = []
 
     def async_delete_issue(
@@ -88,7 +82,6 @@ async def test_deactivate_keeps_issues_registered_when_stopping(
         deleted.append((domain, issue_id))
 
     monkeypatch.setattr(repairs.ir, "async_delete_issue", async_delete_issue)
-    monkeypatch.setattr(hass, "is_stopping", True)
 
     repair = MockRepairBase(hass)
     repair.issue_ids = {"one", "two"}
@@ -188,8 +181,14 @@ async def test_inspect_interval_reinspects_over_time(
     assert repair.inspections == EXPECTED_INTERVAL_INSPECTIONS
 
 
-async def test_repair_manager_removes_issues_on_unload(hass: HomeAssistant) -> None:
-    """Test unloading removes issues created by the repair."""
+async def test_unloading_leaves_the_issue_registry_alone(
+    hass: HomeAssistant,
+) -> None:
+    """Unloading happens on every reload, every update, every restart.
+
+    Clearing the issues out here made all of those look like a fresh start,
+    which is the whole of #1572.
+    """
     repair = MockRepair(hass)
     await repair.async_activate()
     manager = repairs.SpookRepairManager(hass)
@@ -199,25 +198,42 @@ async def test_repair_manager_removes_issues_on_unload(hass: HomeAssistant) -> N
 
     await manager.async_on_unload()
 
-    assert (DOMAIN, "mock_repair_one") not in manager.issue_registry.issues
+    assert (DOMAIN, "mock_repair_one") in manager.issue_registry.issues
     assert (DOMAIN, "unrelated_issue") in manager.issue_registry.issues
 
 
-async def test_repair_manager_keeps_issues_on_shutdown(
+async def test_an_ignored_repair_stays_ignored_through_a_reload(
     hass: HomeAssistant,
-    monkeypatch: pytest.MonkeyPatch,
+    issue_registry: ir.IssueRegistry,
 ) -> None:
-    """Test shutdown keeps issues for the issue registry to restore."""
+    """Which is the reason the registry is left alone, spelled out.
+
+    Pressing ignore writes that on the issue. Deleting the issue throws it
+    away, and the next inspection puts the same problem back as something
+    nobody has ever seen. Every reload, every update through HACS.
+    """
     repair = MockRepair(hass)
     await repair.async_activate()
+    repair.async_create_issue(issue_id="one", translation_placeholders={})
+
+    ir.async_ignore_issue(hass, DOMAIN, "mock_repair_one", ignore=True)
+    ignored = issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+    assert ignored
+    assert ignored.dismissed_version
+
     manager = repairs.SpookRepairManager(hass)
     manager._repairs.add(repair)
-    manager.issue_registry.issues[(DOMAIN, "mock_repair_one")] = None
-    monkeypatch.setattr(hass, "is_stopping", True)
-
     await manager.async_on_unload()
 
-    assert (DOMAIN, "mock_repair_one") in manager.issue_registry.issues
+    # Coming back up, and finding the same thing wrong all over again.
+    await repair.async_activate()
+    repair.async_create_issue(issue_id="one", translation_placeholders={})
+
+    still = issue_registry.async_get_issue(DOMAIN, "mock_repair_one")
+    assert still
+    assert still.dismissed_version == ignored.dismissed_version
+
+    await repair.async_deactivate()
 
 
 class MockCleanupRepair(AbstractSpookRepair):
