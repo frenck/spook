@@ -38,8 +38,16 @@ jobs:
 
       - name: 🔗 Correct generated site origin
         run: |
-          grep -RIlZ "http://localhost:3000" ./documentation/_build/html \
-            | xargs -0 -r sed -i "s|http://localhost:3000|${SITE_ORIGIN}|g"
+          files=$(mktemp)
+          trap 'rm -f "$files"' EXIT
+          if grep -RIlZ "http://localhost:3000" ./documentation/_build/html > "$files"; then
+            xargs -0 sed -i "s|http://localhost:3000|${SITE_ORIGIN}|g" < "$files"
+          else
+            status=$?
+            if [ "$status" -ne 1 ]; then
+              exit "$status"
+            fi
+          fi
 
       - name: 🔍 Verify generated site origin
         run: |
