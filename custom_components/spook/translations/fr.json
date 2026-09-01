@@ -499,7 +499,8 @@
             "title": "Dispositifs de suivi inconnus suivis par : {person}"
         },
         "orphaned_statistics": {
-            "title": "Statistiques long terme orpheline trouvée"
+            "title": "Statistiques long terme orpheline trouvée",
+            "description": "Spook a trouvé un fantôme dans votre enregistreur 👻\n\nHome Assistant conserve des statistiques à long terme pour ce qui suit, mais il n'existe plus d'entité correspondante :\n\n{statistics}\n\n\n\nCela arrive généralement lorsqu'un capteur a été supprimé alors que ses statistiques ont été conservées. Pour corriger cette erreur, ouvrez Paramètres > Outils > Statistiques et réglez cela sur place.\n\nSpook 👻 Votre pote."
         },
         "automation_unknown_condition_references": {
             "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation utilise ces conditions qui ne peuvent être fournies par aucune intégration disponible à Home Assistant :\n\n\n\n{conditions}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces conditions ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Votre pote.",
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook a trouvé un fantôme dans vos groupes de notification 👻\n\nLe groupe de notification `{group}` transmet aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{members}\n\nLe groupe continue de livrer au reste de ses membres, et il continue de signaler une réussite à ce qui l'a appelé, si bien que rien en amont ne s'en aperçoit. La défaillance n'apparaît que sous la forme d'un \"Task exception was never retrieved\" isolé dans le journal, qui ne nomme aucun groupe et ressemble à un bogue. Celui qui se trouvait derrière ce membre cesse simplement d'être notifié.\n\nPour corriger cette erreur, modifiez la liste `services:` de ce groupe dans votre configuration et supprimez ou corrigez ces entrées.\n\nSpook 👻 Votre pote.",
             "title": "Membres inconnus dans le groupe de notification : {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Ressource de tableau de bord présente plusieurs fois : {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ressource de tableau de bord présente plusieurs fois : {resource}",
+                        "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nCette ressource de tableau de bord est présente {count} fois :\n\n{resources}\n\nCela arrive généralement lorsqu'une carte personnalisée a été mise à jour en ajoutant une ressource pour la nouvelle version au lieu de modifier celle qui existait déjà. Le navigateur charge les deux, la carte tente de s'enregistrer deux fois, et la seconde tentative échoue. Cela ressemble à une carte cassée plutôt qu'à une ressource en double.\n\nSpook peut supprimer les copies superflues et garder la plus récemment ajoutée.\n\nSpook 👻 Votre pote.",
+                        "menu_options": {
+                            "remove": "Supprimer les copies superflues, garder la plus récente",
+                            "ignore": "Les laisser, ne plus m'en parler",
+                            "manage": "Je m'en occupe moi-même"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook ne dira plus rien au sujet de cette ressource.",
+                    "manage": "Vous pouvez gérer vous-même les ressources de vos tableaux de bord sur la [page Ressources](/config/lovelace/resources).",
+                    "yaml": "Ces ressources figurent dans votre configuration YAML, Spook ne peut donc pas les modifier pour vous. Modifiez la section `resources:` de votre configuration Lovelace et retirez les copies de `{resource}` dont vous n'avez plus besoin."
+                }
+            }
         }
     },
     "services": {
@@ -1526,6 +1548,66 @@
             },
             "name": "Augmenter la luminosité",
             "description": "Augmente la luminosité des lumières déjà allumées, sans toucher à celles qui sont éteintes."
+        },
+        "wait_for_condition": {
+            "name": "Attendre une condition",
+            "description": "Attend qu'une condition soit vraie. Rend la main immédiatement si elle l'est déjà.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "La condition à attendre."
+                },
+                "timeout": {
+                    "name": "Délai d'attente",
+                    "description": "Combien de temps attendre avant d'abandonner. Sans valeur, l'attente est illimitée."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Mettre en veille",
+            "description": "Désactive une automatisation pendant un temps, et la réactive une fois ce temps écoulé.",
+            "fields": {
+                "duration": {
+                    "name": "Durée",
+                    "description": "Combien de temps l'automatisation reste désactivée. Elle se réactive d'elle-même une fois ce temps écoulé, même si Home Assistant redémarre entre-temps."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Activer pendant",
+            "description": "Active une automatisation pendant un temps, et la désactive une fois ce temps écoulé.",
+            "fields": {
+                "duration": {
+                    "name": "Durée",
+                    "description": "Combien de temps l'automatisation reste activée. Elle se désactive d'elle-même une fois ce temps écoulé, même si Home Assistant redémarre entre-temps."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Mettre à jour une étiquette",
+            "description": "Met à jour une étiquette existante à la volée. Tout ce que vous omettez garde la valeur qu'il a déjà. La description, l'icône et la couleur peuvent être vidées en les mettant à null.",
+            "fields": {
+                "label_id": {
+                    "name": "ID de l'étiquette",
+                    "description": "L'ID de l'étiquette à mettre à jour."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "Nouveau nom de l'étiquette."
+                },
+                "description": {
+                    "name": "Description",
+                    "description": "Nouvelle description de l'étiquette."
+                },
+                "icon": {
+                    "name": "Icône",
+                    "description": "Nouvelle icône de l'étiquette."
+                },
+                "color": {
+                    "name": "Couleur",
+                    "description": "Couleur à utiliser pour l'étiquette. Peut être un nom de couleur de la liste ou un code couleur hexadécimal (comme #FF0000)."
+                }
+            }
         }
     },
     "conditions": {
@@ -1548,6 +1630,201 @@
                 }
             },
             "name": "Temps de repos"
+        },
+        "repair_issue_present": {
+            "name": "Problème de réparation en cours",
+            "description": "Est satisfait tant qu'un problème de réparation est en cours. Les problèmes que quelqu'un a ignorés ne comptent pas.",
+            "fields": {
+                "domain": {
+                    "name": "Intégrations",
+                    "description": "Limitez ceci aux problèmes signalés par certaines intégrations, par leur domaine. Laissez vide pour toutes."
+                },
+                "severity": {
+                    "name": "Gravité",
+                    "description": "Limitez ceci aux problèmes d'une gravité donnée. Laissez vide pour toutes."
+                }
+            }
+        },
+        "quota": {
+            "name": "Exécutions restantes",
+            "description": "Est satisfait tant que cette automatisation s'est exécutée moins d'un certain nombre de fois sur une période donnée. Les scripts ne sont pas comptés.",
+            "fields": {
+                "limit": {
+                    "name": "Limite",
+                    "description": "Combien d'exécutions sont autorisées sur la période."
+                },
+                "period": {
+                    "name": "Période",
+                    "description": "La fenêtre à laquelle s'applique la limite. Elle glisse, un jour signifie donc n'importe quelles vingt-quatre heures et non de minuit à minuit."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Déclenché par une automatisation",
+            "description": "Est satisfait lorsqu'une autre automatisation a lancé cette exécution, directement ou par l'intermédiaire d'un script.",
+            "fields": {
+                "automation": {
+                    "name": "Automatisations",
+                    "description": "Limitez ceci à certaines automatisations. Laissez vide pour les accepter toutes."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Déclenché par un utilisateur",
+            "description": "Est satisfait lorsqu'une personne est à l'origine de ce qui a lancé l'exécution : un changement d'état ou un événement qu'elle a provoqué, y compris celui qui a rendu vrai un déclencheur de modèle. Une planification, le soleil ou une intégration agissant d'elle-même ne portent personne, et forcer une exécution avec le bouton Exécuter non plus.",
+            "fields": {
+                "person": {
+                    "name": "Personnes",
+                    "description": "N'être satisfait que si l'une de ces personnes l'a lancée. Laissez vide pour accepter tout le monde. Une personne doit avoir un compte utilisateur associé, sans quoi il n'y a rien à comparer."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Non déclenché par un utilisateur",
+            "description": "Est satisfait lorsque personne ne peut être tenu pour responsable de cette exécution : une planification, le soleil, une intégration agissant d'elle-même ou le bouton Exécuter. Sans options, volontairement. Pour exclure des personnes précises, placez plutôt \"Déclenché par un utilisateur\" dans une condition Non."
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "name": "Déclencheurs dans l'ordre",
+            "description": "Se déclenche lorsque plusieurs déclencheurs surviennent l'un après l'autre, dans l'ordre indiqué.",
+            "fields": {
+                "steps": {
+                    "name": "Étapes",
+                    "description": "Les déclencheurs qui doivent survenir, dans l'ordre. Seul celui qui est attendu est à l'écoute, une étape ultérieure qui survient trop tôt ne compte donc pas."
+                },
+                "timeout": {
+                    "name": "Délai d'attente",
+                    "description": "Durée maximale de toute la séquence, comptée à partir de la première étape. Sans valeur, l'attente est illimitée."
+                },
+                "reset": {
+                    "name": "Réinitialiser",
+                    "description": "Déclencheurs qui abandonnent une séquence déjà en cours, la ramenant à l'attente de la première étape."
+                }
+            }
+        },
+        "while": {
+            "name": "Tant qu'une condition tient",
+            "description": "Se déclenche lorsqu'une condition devient vraie, et continue à intervalles réguliers tant qu'elle le reste.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "La condition à surveiller. Les déclenchements commencent lorsqu'elle devient vraie et cessent lorsqu'elle ne l'est plus."
+                },
+                "every": {
+                    "name": "Toutes les",
+                    "description": "Durée d'attente entre deux déclenchements, tant que la condition tient."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Chien de garde",
+            "description": "Se déclenche lorsque ce qui était attendu ne se produit pas à temps.",
+            "fields": {
+                "arm": {
+                    "name": "Armer",
+                    "description": "Ce qui lance la surveillance. L'attente se compte à partir de là, et armer de nouveau pendant l'attente la fait repartir de zéro."
+                },
+                "expect": {
+                    "name": "Attendu",
+                    "description": "Ce qui est censé suivre. Si cela arrive à temps, la surveillance est annulée et rien ne se déclenche."
+                },
+                "within": {
+                    "name": "En moins de",
+                    "description": "Le temps dont dispose l'événement attendu pour arriver. Ceci se déclenche lorsque ce temps s'écoule sans qu'il soit venu."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entité qui ne se stabilise pas",
+            "description": "Se déclenche lorsqu'une entité change d'état plus souvent qu'elle ne le devrait sur une période donnée.",
+            "fields": {
+                "changes": {
+                    "name": "Changements",
+                    "description": "Combien de changements d'état il faut avant que ceci se déclenche. Les changements d'attribut ne comptent pas, ni une entité qui apparaît ou disparaît."
+                },
+                "within": {
+                    "name": "En moins de",
+                    "description": "La période dans laquelle ces changements doivent tomber. Elle glisse, il s'agit donc toujours des changements les plus récents."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Condition devenue vraie",
+            "description": "Se déclenche lorsqu'une condition passe de fausse à vraie, avec les mêmes briques de condition que partout ailleurs.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "La condition à surveiller."
+                }
+            }
+        },
+        "cron": {
+            "name": "Planification cron",
+            "description": "Se déclenche selon une planification crontab, pour les horaires que les déclencheurs temporels de Home Assistant ne savent pas exprimer, comme chaque jour ouvré à sept heures ou le dernier vendredi du mois.",
+            "fields": {
+                "schedule": {
+                    "name": "Planification",
+                    "description": "Une expression crontab à cinq champs : minute, heure, jour du mois, mois, jour de la semaine. Prend en charge les plages et les pas, ainsi que les extensions du jour de la semaine, ainsi \"MON#2\" est le deuxième lundi et \"5L\" le dernier vendredi. Les raccourcis comme \"@daily\" ne sont pas pris en charge."
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "Échec de configuration d'une intégration",
+            "description": "Se déclenche lorsqu'une entrée de configuration n'arrive pas à se mettre en place depuis un moment, au-delà du point où les nouvelles tentatives de Home Assistant auraient réglé la chose.",
+            "fields": {
+                "for": {
+                    "name": "Pendant",
+                    "description": "Combien de temps une entrée doit continuer d'échouer avant que ceci se déclenche. Home Assistant réessaie une entrée en échec toutes les dix minutes au plus lent, tout ce qui est plus court signale donc un souci qui peut encore se résoudre tout seul."
+                },
+                "entry_id": {
+                    "name": "Entrées",
+                    "description": "Limitez ceci à certaines entrées de configuration. Laissez vide pour toutes les surveiller."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Problème de réparation créé",
+            "description": "Se déclenche lorsqu'un nouveau problème de réparation apparaît, pour en être informé sans passer par la page des réparations.",
+            "fields": {
+                "domain": {
+                    "name": "Intégrations",
+                    "description": "Limitez ceci aux problèmes signalés par certaines intégrations, par leur domaine. Laissez vide pour toutes."
+                },
+                "severity": {
+                    "name": "Gravité",
+                    "description": "Limitez ceci aux problèmes d'une gravité donnée. Laissez vide pour toutes."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Problème de réparation résolu",
+            "description": "Se déclenche lorsqu'un problème de réparation disparaît, corrigé ou simplement plus signalé.",
+            "fields": {
+                "domain": {
+                    "name": "Intégrations",
+                    "description": "Limitez ceci aux problèmes signalés par certaines intégrations, par leur domaine. Laissez vide pour toutes."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entité devenue muette",
+            "description": "Se déclenche lorsque plus rien n'a écrit dans une entité depuis un moment, ce qui attrape un appareil mort en silence plutôt que passé indisponible.",
+            "fields": {
+                "for": {
+                    "name": "Pendant",
+                    "description": "Combien de temps une entité doit rester muette avant que ceci se déclenche. Une entité qui continue de signaler la même valeur n'est pas muette."
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Critique",
+                "error": "Erreur",
+                "warning": "Avertissement"
+            }
         }
     }
 }
