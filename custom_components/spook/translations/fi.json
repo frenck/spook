@@ -434,7 +434,8 @@
             }
         },
         "orphaned_statistics": {
-            "title": "Orpoja pitkän aikavälin tilastoja löydetty"
+            "title": "Orpoja pitkän aikavälin tilastoja löydetty",
+            "description": "Spook on löytänyt kummituksen tallentimestasi 👻\n\nHome Assistant säilyttää seuraavista pitkän aikavälin tilastoja, mutta niitä vastaavaa entiteettiä ei enää ole:\n\n{statistics}\n\n\n\nTämä tapahtuu usein, kun anturi on poistettu ja sen tilastot ovat jääneet jäljelle. Korjataksesi tämän ongelman, avaa Asetukset > Työkalut > Tilastot ja selvitä ne siellä.\n\nSpook 👻 Kamusi."
         },
         "person_unknown_device_trackers": {
             "title": "Tuntemattomia laiteseuraimia seurataan: {person}",
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook on löytänyt kummituksen ilmoitusryhmistäsi 👻\n\nIlmoitusryhmä `{group}` välittää seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{members}\n\nRyhmä toimittaa edelleen muille jäsenilleen ja ilmoittaa edelleen onnistumisesta kutsujalleen, joten mikään sitä ennen ei huomaa mitään. Virhe näkyy vain yksittäisenä \"Task exception was never retrieved\" -merkintänä lokissa, joka ei nimeä mitään ryhmää ja näyttää ohjelmavirheeltä. Se, joka oli tuon jäsenen takana, ei yksinkertaisesti saa enää ilmoituksia.\n\nKorjataksesi tämän virheen, muokkaa tämän ryhmän `services:`-luetteloa määrityksissäsi ja poista tai korjaa nämä merkinnät.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia jäseniä ilmoitusryhmässä: {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Kojelaudan resurssi esiintyy useammin kuin kerran: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Kojelaudan resurssi esiintyy useammin kuin kerran: {resource}",
+                        "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nTämä kojelaudan resurssi esiintyy {count} kertaa:\n\n{resources}\n\nTämä tapahtuu usein, kun mukautettu kortti on päivitetty lisäämällä resurssi uudelle versiolle sen sijaan että olisi muokattu jo olemassa olevaa. Selain lataa molemmat, kortti yrittää rekisteröityä kahdesti ja toinen yritys epäonnistuu, mikä näyttää rikkinäiseltä kortilta eikä kahdentuneelta resurssilta.\n\nSpook voi siivota ylimääräiset kopiot ja jättää viimeksi lisätyn.\n\nSpook 👻 Kamusi.",
+                        "menu_options": {
+                            "remove": "Siivoa ylimääräiset kopiot ja jätä tuorein",
+                            "ignore": "Anna niiden olla, äläkä puhu tästä enää",
+                            "manage": "Hoidan sen itse"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook ei enää sano mitään tästä resurssista.",
+                    "manage": "Voit hallita kojelautojesi resursseja itse [Resurssit-sivulla](/config/lovelace/resources).",
+                    "yaml": "Nämä resurssit ovat YAML-konfiguraatiossasi, joten Spook ei voi muuttaa niitä puolestasi. Muokkaa Lovelace-konfiguraatiosi `resources:`-osiota ja poista ne `{resource}`-kopiot joita et enää tarvitse."
+                }
+            }
         }
     },
     "services": {
@@ -1446,6 +1468,146 @@
                 }
             },
             "name": "Aseta näyttötarkkuus"
+        },
+        "wait_for_condition": {
+            "name": "Odota ehtoa",
+            "description": "Odottaa, kunnes ehto on tosi. Palaa heti, jos se jo on.",
+            "fields": {
+                "condition": {
+                    "name": "Ehto",
+                    "description": "Ehto, jota odotetaan."
+                },
+                "timeout": {
+                    "name": "Aikakatkaisu",
+                    "description": "Kuinka kauan odotetaan ennen luovuttamista. Jätä tyhjäksi, jos haluat odottaa loputtomiin."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Torkku",
+            "description": "Sammuttaa automaation hetkeksi ja käynnistää sen taas, kun aika on kulunut.",
+            "fields": {
+                "duration": {
+                    "name": "Kesto",
+                    "description": "Kuinka kauan automaatio pysyy sammuksissa. Se palaa itsestään ajan kuluttua umpeen, vaikka Home Assistant käynnistettäisiin sillä välin uudelleen."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Käynnistä ajaksi",
+            "description": "Käynnistää automaation hetkeksi ja sammuttaa sen taas, kun aika on kulunut.",
+            "fields": {
+                "duration": {
+                    "name": "Kesto",
+                    "description": "Kuinka kauan automaatio pysyy päällä. Se sammuu itsestään ajan kuluttua umpeen, vaikka Home Assistant käynnistettäisiin sillä välin uudelleen."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Aseta kirkkaus",
+            "description": "Asettaa kirkkauden valoille jotka ovat jo päällä, ja jättää sammuneet rauhaan.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Kirkkaus",
+                    "description": "Asetettava kirkkaus prosentteina. Ryhmät säädetään valo kerrallaan, joten sammunut valo pysyy sammuneena."
+                },
+                "transition": {
+                    "name": "Siirtymä",
+                    "description": "Kuinka kauan muutoksen pitäisi kestää, sekunteina."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Lisää kirkkautta",
+            "description": "Kirkastaa valoja jotka ovat jo päällä, ja jättää sammuneet rauhaan.",
+            "fields": {
+                "step_pct": {
+                    "name": "Askel",
+                    "description": "Kuinka paljon kirkkautta nostetaan, prosentteina. Jokainen valo lähtee omasta tasostaan, joten ryhmä säilyttää muotonsa eikä tasoitu."
+                },
+                "transition": {
+                    "name": "Siirtymä",
+                    "description": "Kuinka kauan muutoksen pitäisi kestää, sekunteina."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Vähennä kirkkautta",
+            "description": "Himmentää valoja jotka ovat jo päällä, niin himmeäksi kuin ne pystyvät sen sijaan että sammuttaisi ne.",
+            "fields": {
+                "step_pct": {
+                    "name": "Askel",
+                    "description": "Kuinka paljon kirkkautta lasketaan, prosentteina. Jokainen valo lähtee omasta tasostaan, joten ryhmä säilyttää muotonsa eikä tasoitu."
+                },
+                "transition": {
+                    "name": "Siirtymä",
+                    "description": "Kuinka kauan muutoksen pitäisi kestää, sekunteina."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Aseta väri",
+            "description": "Asettaa värin valoille jotka ovat jo päällä, ja jättää rauhaan ne jotka ovat sammuksissa tai eivät osaa väriä.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Väri",
+                    "description": "Asetettava väri. Valot jotka eivät osaa väriä ohitetaan sen sijaan että ne käännettäisiin valkoiselle."
+                },
+                "transition": {
+                    "name": "Siirtymä",
+                    "description": "Kuinka kauan muutoksen pitäisi kestää, sekunteina."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Aseta värilämpötila",
+            "description": "Asettaa värilämpötilan valoille jotka ovat jo päällä, kunkin sen alueen sisällä johon se oikeasti yltää.",
+            "fields": {
+                "kelvin": {
+                    "name": "Värilämpötila",
+                    "description": "Asetettava värilämpötila. Jokainen valo pysyy omalla alueellaan, sillä yhden lampun lämmin valkoinen on luku johon toinen ei yllä."
+                },
+                "transition": {
+                    "name": "Siirtymä",
+                    "description": "Kuinka kauan muutoksen pitäisi kestää, sekunteina."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Aseta tehoste",
+            "description": "Panee tehosteen valoihin jotka ovat jo päällä ja joilla se oikeasti on.",
+            "fields": {
+                "effect": {
+                    "name": "Tehoste",
+                    "description": "Asetettavan tehosteen nimi. Tehosteiden nimet vaihtelevat valmistajittain, joten valot joilla tätä ei ole jäävät ennalleen."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Päivitä tunniste",
+            "description": "Päivittää olemassa olevan tunnisteen lennossa. Kaikki minkä jätät pois säilyttää arvon joka sillä jo oli. Kuvauksen, kuvakkeen ja värin voi tyhjentää asettamalla ne arvoon null.",
+            "fields": {
+                "label_id": {
+                    "name": "Tunnisteen ID",
+                    "description": "Päivitettävän tunnisteen ID."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Tunnisteen uusi nimi."
+                },
+                "description": {
+                    "name": "Kuvaus",
+                    "description": "Tunnisteen uusi kuvaus."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Tunnisteen uusi kuvake."
+                },
+                "color": {
+                    "name": "Väri",
+                    "description": "Tunnisteelle käytettävä väri. Voi olla värin nimi listasta tai heksadesimaalinen värikoodi (kuten #FF0000)."
+                }
+            }
         }
     },
     "conditions": {
@@ -1468,6 +1630,201 @@
                 }
             },
             "name": "Jäähtymisaika"
+        },
+        "repair_issue_present": {
+            "name": "Korjausongelma avoinna",
+            "description": "Toteutuu niin kauan kuin avoin korjausongelma on olemassa. Ongelmat jotka joku on sivuuttanut eivät lasketa.",
+            "fields": {
+                "domain": {
+                    "name": "Integraatiot",
+                    "description": "Rajaa tämä tiettyjen integraatioiden ilmoittamiin ongelmiin, niiden verkkotunnuksen mukaan. Jätä tyhjäksi, niin kaikki kelpaavat."
+                },
+                "severity": {
+                    "name": "Vakavuus",
+                    "description": "Rajaa tämä tietyn vakavuuden ongelmiin. Jätä tyhjäksi, niin kaikki kelpaavat."
+                }
+            }
+        },
+        "quota": {
+            "name": "Suorituksia jäljellä",
+            "description": "Toteutuu niin kauan kuin tämä automaatio on suoriutunut harvemmin kuin tietyn määrän kertoja tietyn jakson sisällä. Skriptejä ei lasketa.",
+            "fields": {
+                "limit": {
+                    "name": "Raja",
+                    "description": "Kuinka monta suoritusta jakson sisällä sallitaan."
+                },
+                "period": {
+                    "name": "Jakso",
+                    "description": "Ikkuna, jota raja koskee. Se liukuu eteenpäin, joten päivä tarkoittaa mitä tahansa kahtakymmentäneljää tuntia eikä keskiyöstä keskiyöhön."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Automaation käynnistämä",
+            "description": "Toteutuu, kun toinen automaatio pani tämän suorituksen liikkeelle, joko suoraan tai skriptin kautta.",
+            "fields": {
+                "automation": {
+                    "name": "Automaatiot",
+                    "description": "Rajaa tämä tiettyihin automaatioihin. Jätä tyhjäksi, niin kaikki kelpaavat."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Käyttäjän käynnistämä",
+            "description": "Toteutuu, kun sen takana mikä pani tämän liikkeelle on ihminen: hänen aiheuttamansa tilanmuutos tai tapahtuma, mukaan lukien sellainen joka teki mallilaukaisimesta toden. Aikataulun, auringon tai omin päin toimivan integraation takana ei ole ketään, eikä myöskään Suorita-painikkeella pakotetun ajon.",
+            "fields": {
+                "person": {
+                    "name": "Henkilöt",
+                    "description": "Toteudu vain, kun joku näistä henkilöistä pani sen alulle. Jätä tyhjäksi, niin kuka tahansa kelpaa. Henkilöllä on oltava käyttäjätili liitettynä, muuten ei ole mitään mihin verrata."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Ei käyttäjän käynnistämä",
+            "description": "Toteutuu, kun tätä suoritusta ei voi panna kenenkään nimiin: aikataulu, aurinko, omin päin toimiva integraatio tai Suorita-painike. Tässä ei ole tarkoituksella valintoja. Jos haluat sulkea pois tiettyjä henkilöitä, pane \"Käyttäjän käynnistämä\" Ei-ehdon sisään."
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "name": "Laukaisimet järjestyksessä",
+            "description": "Laukeaa, kun useampi laukaisin tapahtuu peräkkäin, antamassasi järjestyksessä.",
+            "fields": {
+                "steps": {
+                    "name": "Vaiheet",
+                    "description": "Laukaisimet, joiden on tapahduttava, järjestyksessä. Vain sitä kuunnellaan, jota juuri odotetaan, joten myöhempi vaihe joka tapahtuu liian aikaisin ei kelpaa."
+                },
+                "timeout": {
+                    "name": "Aikakatkaisu",
+                    "description": "Kuinka kauan koko sarja saa kestää ensimmäisestä vaiheesta laskien. Jätä tyhjäksi, jos haluat odottaa loputtomiin."
+                },
+                "reset": {
+                    "name": "Nollaus",
+                    "description": "Laukaisimet, jotka hylkäävät jo käynnissä olevan sarjan ja panevat sen odottamaan taas ensimmäistä vaihetta."
+                }
+            }
+        },
+        "while": {
+            "name": "Niin kauan kuin ehto on tosi",
+            "description": "Laukeaa, kun ehdosta tulee tosi, ja jatkaa laukeamista väliajoin niin kauan kuin se pysyy tosena.",
+            "fields": {
+                "condition": {
+                    "name": "Ehto",
+                    "description": "Ehto, jota pidetään silmällä. Alkaa laueta, kun siitä tulee tosi, ja lakkaa, kun se ei enää ole."
+                },
+                "every": {
+                    "name": "Joka",
+                    "description": "Kuinka kauan odotetaan laukeamisten välissä, niin kauan kuin ehto on tosi."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Vahtikoira",
+            "description": "Laukeaa, kun jokin odottamasi asia ei tapahdukaan ajoissa.",
+            "fields": {
+                "arm": {
+                    "name": "Viritys",
+                    "description": "Se, mikä panee vahdin valmiuteen. Odotus lasketaan siitä, ja uusi viritys kesken odotuksen aloittaa laskennan alusta."
+                },
+                "expect": {
+                    "name": "Odotettu",
+                    "description": "Se, minkä odotat tapahtuvan seuraavaksi. Jos se saapuu ajoissa, vahti perutaan eikä mitään laukea."
+                },
+                "within": {
+                    "name": "Ajassa",
+                    "description": "Kuinka paljon aikaa odotetulla on saapua. Tämä laukeaa, kun se aika kuluu umpeen eikä mitään ole tullut."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entiteetti ei rauhoitu",
+            "description": "Laukeaa, kun entiteetti vaihtaa tilaa useammin kuin sen pitäisi tietyn aikavälin sisällä.",
+            "fields": {
+                "changes": {
+                    "name": "Muutokset",
+                    "description": "Kuinka monta tilanvaihtoa tarvitaan ennen kuin tämä laukeaa. Määritteiden muutokset eivät kelpaa, eikä entiteetti joka ilmestyy tai katoaa."
+                },
+                "within": {
+                    "name": "Aikavälillä",
+                    "description": "Aikaväli, jolle noiden muutosten on osuttava. Se liukuu eteenpäin, joten kyse on aina tuoreimmista muutoksista."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Ehdosta tuli tosi",
+            "description": "Laukeaa, kun ehto vaihtuu epätodesta todeksi, samoilla ehtolohkoilla joita käytät muuallakin.",
+            "fields": {
+                "condition": {
+                    "name": "Ehto",
+                    "description": "Ehto, jota pidetään silmällä."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron-aikataulu",
+            "description": "Laukeaa crontab-aikataulun mukaan, niitä hetkiä varten joita Home Assistantin omat aikalaukaisimet eivät osaa ilmaista, kuten joka arkipäivä seitsemältä tai kuukauden viimeinen perjantai.",
+            "fields": {
+                "schedule": {
+                    "name": "Aikataulu",
+                    "description": "Crontab-lauseke, jossa on viisi kenttää: minuutti, tunti, kuukaudenpäivä, kuukausi, viikonpäivä. Välit ja askeleet toimivat, samoin viikonpäivälaajennukset, joten \"MON#2\" on kuukauden toinen maanantai ja \"5L\" viimeinen perjantai. Lempinimet kuten \"@daily\" eivät toimi."
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "Integraation määritys epäonnistui",
+            "description": "Laukeaa, kun konfiguraatiomerkinnän määritys on epäonnistunut jo jonkin aikaa, ohi sen pisteen jossa Home Assistantin omat uudelleenyritykset olisivat sen korjanneet.",
+            "fields": {
+                "for": {
+                    "name": "Ajan",
+                    "description": "Kuinka kauan merkinnän on jatkettava epäonnistumista ennen kuin tämä laukeaa. Home Assistant yrittää epäonnistunutta merkintää uudelleen enintään kymmenen minuutin välein, joten lyhyempi arvo hälyttää ongelmista jotka voivat vielä korjautua itsestään."
+                },
+                "entry_id": {
+                    "name": "Merkinnät",
+                    "description": "Rajaa tämä tiettyihin konfiguraatiomerkintöihin. Jätä tyhjäksi, jos haluat pitää silmällä kaikkia."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Korjausongelma luotu",
+            "description": "Laukeaa, kun uusi korjausongelma ilmestyy, jotta saat sen tietää käymättä korjaussivulla.",
+            "fields": {
+                "domain": {
+                    "name": "Integraatiot",
+                    "description": "Rajaa tämä tiettyjen integraatioiden ilmoittamiin ongelmiin, niiden verkkotunnuksen mukaan. Jätä tyhjäksi, niin kaikki kelpaavat."
+                },
+                "severity": {
+                    "name": "Vakavuus",
+                    "description": "Rajaa tämä tietyn vakavuuden ongelmiin. Jätä tyhjäksi, niin kaikki kelpaavat."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Korjausongelma ratkaistu",
+            "description": "Laukeaa, kun korjausongelma katoaa, joko koska se ratkaistiin tai koska sitä ei yksinkertaisesti enää ilmoiteta.",
+            "fields": {
+                "domain": {
+                    "name": "Integraatiot",
+                    "description": "Rajaa tämä tiettyjen integraatioiden ilmoittamiin ongelmiin, niiden verkkotunnuksen mukaan. Jätä tyhjäksi, niin kaikki kelpaavat."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entiteetti vaikeni",
+            "description": "Laukeaa, kun mikään ei ole kirjoittanut entiteettiin vähään aikaan, mikä paljastaa laitteen joka kuoli hiljaa sen sijaan että olisi mennyt tilaan ei saatavilla.",
+            "fields": {
+                "for": {
+                    "name": "Ajan",
+                    "description": "Kuinka kauan entiteetin on oltava hiljaa ennen kuin tämä laukeaa. Entiteetti joka ilmoittaa yhä samaa arvoa ei ole hiljaa."
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kriittinen",
+                "error": "Virhe",
+                "warning": "Varoitus"
+            }
         }
     }
 }
