@@ -434,7 +434,8 @@
             }
         },
         "orphaned_statistics": {
-            "title": "發現孤立的長期統計數據"
+            "title": "發現孤立的長期統計數據",
+            "description": "Spook 在您的記錄器中發現了一個幽靈 👻\n\nHome Assistant 仍在為以下內容保留長期統計資料，但已經沒有對應的實體了：\n\n{statistics}\n\n\n\n這通常發生在感測器被移除但其統計資料被保留時。要修正此錯誤，請開啟 設定 > 工具 > 統計資料 並在其中修正。\n\nSpook 👻 您的好夥伴。"
         },
         "person_unknown_device_trackers": {
             "title": "{person} 追蹤了未知的裝置追蹤器",
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook 在您的通知群組中發現了一個幽靈 👻\n\n通知群組 `{group}` 會轉發到以下 Home Assistant 無法辨識的動作：\n\n{members}\n\n該群組仍會投遞給其餘成員，也仍會向呼叫方回報成功，因此上游察覺不到任何異常。這個故障只會在日誌裡留下一條孤零零的 \"Task exception was never retrieved\"，它不會指明是哪個群組，讀起來就像一個程式缺陷。原本在該成員背後的人，就這樣再也收不到通知了。\n\n要修復此錯誤，請編輯設定中該群組的 `services:` 清單，移除或更正這些項目。\n\nSpook 👻 您的好夥伴。",
             "title": "以下通知群組中存在未知成員：{group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "儀表板資源被重複列出：{resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "儀表板資源被重複列出：{resource}",
+                        "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n以下儀表板資源被列出了 {count} 次：\n\n{resources}\n\n這通常發生在更新自訂卡片時，為新版本新增了一個資源條目，而不是編輯已有的條目。瀏覽器會同時載入兩者，卡片嘗試註冊兩次，第二次失敗，看起來像是卡片壞了，而不是資源重複。\n\nSpook 可以清除多餘的副本，保留最近新增的那一個。\n\nSpook 👻 您的好夥伴。",
+                        "menu_options": {
+                            "remove": "清除多餘副本，保留最新的",
+                            "ignore": "保留，不要再提示我",
+                            "manage": "讓我自己處理"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "從現在起，Spook 將不再就此資源發聲。",
+                    "manage": "您可以在 [資源頁面](/config/lovelace/resources) 自行管理儀表板資源。",
+                    "yaml": "這些資源在 YAML 配置中列出，因此 Spook 無法為您修改。請編輯 Lovelace 配置中的 `resources:` 區段，移除不再需要的 `{resource}` 副本。"
+                }
+            }
         }
     },
     "services": {
@@ -1446,6 +1468,146 @@
                 }
             },
             "name": "設定顯示精度 👻"
+        },
+        "wait_for_condition": {
+            "name": "等待條件 👻",
+            "description": "等待條件為真。如果已經為真則立即返回。",
+            "fields": {
+                "condition": {
+                    "name": "條件",
+                    "description": "需要等待的條件。"
+                },
+                "timeout": {
+                    "name": "逾時",
+                    "description": "等待多久後放棄。不設定則無限等待。"
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "打盹 👻",
+            "description": "將自動化暫時關閉一段時間，時間到了再自動開啟。",
+            "fields": {
+                "duration": {
+                    "name": "持續時間",
+                    "description": "自動化保持關閉的時間。時間到了會自動恢復開啟，期間重新啟動 Home Assistant 也包含在內。"
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "定時啟用 👻",
+            "description": "將自動化暫時開啟一段時間，時間到了再自動關閉。",
+            "fields": {
+                "duration": {
+                    "name": "持續時間",
+                    "description": "自動化保持開啟的時間。時間到了會自動關閉，期間重新啟動 Home Assistant 也包含在內。"
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "設定亮度 👻",
+            "description": "設定已開啟燈光的亮度，不改變關閉的燈。",
+            "fields": {
+                "brightness_pct": {
+                    "name": "亮度",
+                    "description": "要設定的亮度，以百分比表示。群組會逐燈調整，因此關閉的燈保持關閉。"
+                },
+                "transition": {
+                    "name": "漸層",
+                    "description": "變化所需的時間，以秒為單位。"
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "增加亮度 👻",
+            "description": "調亮已開啟的燈光，不改變關閉的燈。",
+            "fields": {
+                "step_pct": {
+                    "name": "步長",
+                    "description": "要增加的亮度，以百分比表示。每盞燈從自身亮度開始遞增，因此群組保持各自的比例而非統一。"
+                },
+                "transition": {
+                    "name": "漸層",
+                    "description": "變化所需的時間，以秒為單位。"
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "降低亮度 👻",
+            "description": "調暗已開啟的燈光，到最暗時停止而非關閉。",
+            "fields": {
+                "step_pct": {
+                    "name": "步長",
+                    "description": "要降低的亮度，以百分比表示。每盞燈從自身亮度開始遞減，因此群組保持各自的比例而非統一。"
+                },
+                "transition": {
+                    "name": "漸層",
+                    "description": "變化所需的時間，以秒為單位。"
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "設定顏色 👻",
+            "description": "設定已開啟燈光的顏色，不改變關閉的或不支援顏色的燈。",
+            "fields": {
+                "rgb_color": {
+                    "name": "顏色",
+                    "description": "要設定的顏色。不支援顏色的燈會被跳過，而非變為白色。"
+                },
+                "transition": {
+                    "name": "漸層",
+                    "description": "變化所需的時間，以秒為單位。"
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "設定色溫 👻",
+            "description": "設定已開啟燈光的色溫，每盞燈在其實際可達的範圍內調整。",
+            "fields": {
+                "kelvin": {
+                    "name": "色溫",
+                    "description": "要設定的色溫。每盞燈受限於自身的範圍，因為一盞燈上的暖白數值可能是另一盞燈無法達到的。"
+                },
+                "transition": {
+                    "name": "漸層",
+                    "description": "變化所需的時間，以秒為單位。"
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "設定效果 👻",
+            "description": "為已開啟且支援該效果的燈光設定效果。",
+            "fields": {
+                "effect": {
+                    "name": "效果",
+                    "description": "要設定的效果名稱。不同廠商的效果名稱不同，因此沒有該效果的燈保持原樣。"
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "更新標籤 👻",
+            "description": "動態更新現有標籤。未修改的欄位保持原值。描述、圖示和顏色可以透過設定為 null 來清除。",
+            "fields": {
+                "label_id": {
+                    "name": "標籤 ID",
+                    "description": "要更新的標籤 ID。"
+                },
+                "name": {
+                    "name": "名稱",
+                    "description": "標籤的新名稱。"
+                },
+                "description": {
+                    "name": "描述",
+                    "description": "標籤的新描述。"
+                },
+                "icon": {
+                    "name": "圖示",
+                    "description": "標籤使用的新圖示。"
+                },
+                "color": {
+                    "name": "顏色",
+                    "description": "標籤使用的顏色。可以是清單中的顏色名稱，也可以是十六進位顏色代碼（如 #FF0000）。"
+                }
+            }
         }
     },
     "conditions": {
@@ -1468,6 +1630,201 @@
                 }
             },
             "name": "冷卻時間 👻"
+        },
+        "repair_issue_present": {
+            "name": "存在未解決的修復問題",
+            "description": "當存在未解決的修復問題時通過。被人忽略的問題不計入。",
+            "fields": {
+                "domain": {
+                    "name": "整合",
+                    "description": "限制為特定整合領域回報的問題。留空則監視所有整合。"
+                },
+                "severity": {
+                    "name": "嚴重程度",
+                    "description": "限制為特定嚴重程度的問題。留空則監視所有嚴重程度。"
+                }
+            }
+        },
+        "quota": {
+            "name": "剩餘執行配額",
+            "description": "當此自動化在指定時間段內執行次數少於指定值時通過。腳本不計入。",
+            "fields": {
+                "limit": {
+                    "name": "上限",
+                    "description": "在指定時間段內允許的執行次數。"
+                },
+                "period": {
+                    "name": "時間段",
+                    "description": "上限適用的時間窗口。它是滾動的，因此一天指的是任意二十四小時，而非兩個午夜之間。"
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "由自動化觸發",
+            "description": "當另一個自動化啟動了本次執行時通過，無論是直接啟動或透過腳本啟動。",
+            "fields": {
+                "automation": {
+                    "name": "自動化",
+                    "description": "限制為特定的自動化。留空則接受任何自動化。"
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "由使用者觸發",
+            "description": "當有人引發了本次執行時通過：他們引起的狀態變化或事件，包括使範本觸發條件變為真的情況。排程、太陽或整合自行行動不算，按下執行按鈕強制執行也不算。",
+            "fields": {
+                "person": {
+                    "name": "人員",
+                    "description": "僅當這些人員之一啟動了本次執行時才通過。留空則對任何人通過。人員必須關聯了使用者帳戶，否則無法匹配。"
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "非使用者觸發",
+            "description": "當沒有人為本次執行負責時通過：排程、太陽、整合自行行動或執行按鈕。故意不接受任何選項。要排除特定人員，請將「由使用者觸發」放在「非」條件內。"
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "name": "依順序觸發",
+            "description": "當多個觸發條件依給定順序接連發生時觸發。",
+            "fields": {
+                "steps": {
+                    "name": "步驟",
+                    "description": "需要依序發生的觸發條件。只有目前正在等待的觸發條件處於監聽狀態，因此後續步驟提前觸發不會匹配。"
+                },
+                "timeout": {
+                    "name": "逾時",
+                    "description": "整個序列允許的最長時間，從第一步開始計算。不設定則無限等待。"
+                },
+                "reset": {
+                    "name": "重置",
+                    "description": "放棄已進行中的序列，使其回到等待第一步狀態的觸發條件。"
+                }
+            }
+        },
+        "while": {
+            "name": "條件持續成立時",
+            "description": "當條件變為真時觸發，並在條件持續為真期間依固定間隔重複觸發。",
+            "fields": {
+                "condition": {
+                    "name": "條件",
+                    "description": "需要監視的條件。條件變為真時開始觸發，不再為真時停止。"
+                },
+                "every": {
+                    "name": "間隔",
+                    "description": "在條件持續成立期間，兩次觸發之間的等待時間。"
+                }
+            }
+        },
+        "watchdog": {
+            "name": "看門狗",
+            "description": "當預期的事情未在規定時間內發生時觸發。",
+            "fields": {
+                "arm": {
+                    "name": "啟動",
+                    "description": "啟動監視的條件。等待時間從此處開始計算，在等待中再次啟動會重新開始計時。"
+                },
+                "expect": {
+                    "name": "預期",
+                    "description": "預期隨後發生的事情。及時發生則取消監視，不會觸發任何東西。"
+                },
+                "within": {
+                    "name": "時限",
+                    "description": "預期事件必須發生的時限。當時間過後仍未發生，則觸發。"
+                }
+            }
+        },
+        "flapping": {
+            "name": "實體無法穩定",
+            "description": "當實體在一段時間內過於頻繁地改變狀態時觸發。",
+            "fields": {
+                "changes": {
+                    "name": "變化次數",
+                    "description": "觸發前需要的狀態變化次數。屬性變化不計入，實體出現或消失也不計入。"
+                },
+                "within": {
+                    "name": "時間窗口",
+                    "description": "這些變化必須落入的時間窗口。它會隨時間滑動，因此始終關注最近的變化。"
+                }
+            }
+        },
+        "condition_met": {
+            "name": "條件變為真",
+            "description": "當條件從假變為真時觸發，使用與其他地方相同的條件建構區塊。",
+            "fields": {
+                "condition": {
+                    "name": "條件",
+                    "description": "需要監視的條件。"
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron 排程",
+            "description": "依 crontab 排程觸發，用於 Home Assistant 自身的時間觸發條件無法表達的時間安排，例如每個工作日上午七點或每月最後一個星期五。",
+            "fields": {
+                "schedule": {
+                    "name": "排程",
+                    "description": "包含五個欄位的 crontab 表達式：分鐘、小時、月份中的日期、月份、星期幾。支援範圍和步長，以及星期幾的擴展標記法，因此 \"MON#2\" 表示第二個星期一，\"5L\" 表示最後一個星期五。不支援 \"@daily\" 等別名。"
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "整合設定失敗",
+            "description": "當設定條目長時間無法完成設定，超過 Home Assistant 自身重試所能解決的範圍時觸發。",
+            "fields": {
+                "for": {
+                    "name": "持續時間",
+                    "description": "條目必須持續失敗多長時間後才觸發。Home Assistant 最慢每十分鐘重試一次失敗的條目，因此短於此時間的設定會回報可能自行恢復的問題。"
+                },
+                "entry_id": {
+                    "name": "條目",
+                    "description": "限制為特定的設定條目。留空則監視所有條目。"
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "修復問題已建立",
+            "description": "當新的修復問題出現時觸發，無需存取修復頁面即可獲知。",
+            "fields": {
+                "domain": {
+                    "name": "整合",
+                    "description": "限制為特定整合領域回報的問題。留空則監視所有整合。"
+                },
+                "severity": {
+                    "name": "嚴重程度",
+                    "description": "限制為特定嚴重程度的問題。留空則監視所有嚴重程度。"
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "修復問題已解決",
+            "description": "當修復問題消失時觸發，無論是已修復或不再被回報。",
+            "fields": {
+                "domain": {
+                    "name": "整合",
+                    "description": "限制為特定整合領域回報的問題。留空則監視所有整合。"
+                }
+            }
+        },
+        "stale": {
+            "name": "實體已靜默",
+            "description": "當實體一段時間沒有寫入時觸發，可以捕捉到悄悄失效的裝置，而不是變為無法使用。",
+            "fields": {
+                "for": {
+                    "name": "持續時間",
+                    "description": "實體必須保持靜默多長時間後才觸發。持續回報相同值的實體不算靜默。"
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "嚴重",
+                "error": "錯誤",
+                "warning": "警告"
+            }
         }
     }
 }
