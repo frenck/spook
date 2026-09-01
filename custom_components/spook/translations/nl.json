@@ -442,7 +442,8 @@
             "title": "Onbekende leden gebruikt in min/max-helper: {helper}"
         },
         "orphaned_statistics": {
-            "title": "Verweesde langetermijnstatistieken gevonden"
+            "title": "Verweesde langetermijnstatistieken gevonden",
+            "description": "Spook heeft een geest gevonden in je recorder 👻\n\nHome Assistant bewaart langetermijnstatistieken voor het volgende, maar er is geen bijbehorende entiteit meer:\n\n{statistics}\n\n\n\nDit gebeurt meestal wanneer een sensor is verwijderd terwijl de statistieken bewaard bleven. Om deze fout te verhelpen, open je Instellingen > Hulpmiddelen > Statistieken en los je ze daar op.\n\nSpook 👻 Je homie."
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook heeft een geest gevonden in je notificatiegroepen 👻\n\nDe notificatiegroep `{group}` stuurt door naar de volgende acties, die Home Assistant niet kent:\n\n{members}\n\nDe groep bezorgt nog steeds aan de rest van zijn leden, en meldt nog steeds succes terug aan wie hem aanriep, dus stroomopwaarts merkt niemand iets. De fout komt alleen boven als een losse \"Task exception was never retrieved\" in het logboek, die geen groep noemt en leest als een bug. Wie er achter dat lid zat, krijgt simpelweg geen bericht meer.\n\nOm deze fout te verhelpen, bewerk je de `services:` lijst van deze groep in je configuratie en verwijder of corrigeer je deze regels.\n\nSpook 👻 Je homie.",
             "title": "Onbekende leden in notificatiegroep: {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Dashboardbron staat meer dan eens in de lijst: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Dashboardbron staat meer dan eens in de lijst: {resource}",
+                        "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nDeze dashboardbron staat {count} keer in de lijst:\n\n{resources}\n\nDit gebeurt meestal wanneer een custom card werd bijgewerkt door een bron voor de nieuwe versie toe te voegen in plaats van de bestaande te bewerken. De browser laadt ze allebei, de kaart probeert zichzelf twee keer te registreren, en de tweede poging mislukt. Dat ziet eruit als een kapotte kaart in plaats van een dubbele bron.\n\nSpook kan de extra kopieën opruimen en de laatst toegevoegde behouden.\n\nSpook 👻 Je homie.",
+                        "menu_options": {
+                            "remove": "Ruim de extra kopieën op, behoud de recentste",
+                            "ignore": "Laat ze staan, zeg er niets meer over",
+                            "manage": "Ik los het zelf op"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook zwijgt voortaan over deze bron.",
+                    "manage": "Je kunt je dashboardbronnen zelf beheren op de [Bronnenpagina](/config/lovelace/resources).",
+                    "yaml": "Deze bronnen staan in je YAML-configuratie, dus Spook kan ze niet voor je wijzigen. Bewerk de `resources:`-sectie van je Lovelace-configuratie en verwijder de kopieën van `{resource}` die je niet meer nodig hebt."
+                }
+            }
         }
     },
     "services": {
@@ -1446,6 +1468,146 @@
                 }
             },
             "name": "Werk een zone bij"
+        },
+        "wait_for_condition": {
+            "name": "Wachten op een voorwaarde",
+            "description": "Wacht tot een voorwaarde waar is. Keert meteen terug als dat al zo is.",
+            "fields": {
+                "condition": {
+                    "name": "Voorwaarde",
+                    "description": "De voorwaarde om op te wachten."
+                },
+                "timeout": {
+                    "name": "Time-out",
+                    "description": "Hoe lang er gewacht wordt voordat het wordt opgegeven. Wacht onbeperkt als je dit leeg laat."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Snoozen",
+            "description": "Zet een automatisering een tijdje uit, en zet hem weer aan als de tijd om is.",
+            "fields": {
+                "duration": {
+                    "name": "Duur",
+                    "description": "Hoe lang de automatisering uit blijft. Hij komt vanzelf weer aan als dit om is, ook als Home Assistant er tussendoor opnieuw start."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Aanzetten voor",
+            "description": "Zet een automatisering een tijdje aan, en zet hem weer uit als de tijd om is.",
+            "fields": {
+                "duration": {
+                    "name": "Duur",
+                    "description": "Hoe lang de automatisering aan blijft. Hij gaat vanzelf weer uit als dit om is, ook als Home Assistant er tussendoor opnieuw start."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Helderheid instellen",
+            "description": "Stelt de helderheid in van lampen die al aan zijn, en laat de lampen die uit zijn met rust.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Helderheid",
+                    "description": "De helderheid die ingesteld wordt, als percentage. Groepen worden lamp voor lamp aangepast, dus een lamp die uit is blijft uit."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Hoe lang de verandering mag duren, in seconden."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Helderheid verhogen",
+            "description": "Draait de lampen die al aan zijn hoger, en laat de lampen die uit zijn met rust.",
+            "fields": {
+                "step_pct": {
+                    "name": "Stap",
+                    "description": "Hoeveel helderder er gegaan wordt, als percentage. Elke lamp stapt vanaf zijn eigen niveau, dus een groep houdt zijn vorm in plaats van gelijk te trekken."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Hoe lang de verandering mag duren, in seconden."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Helderheid verlagen",
+            "description": "Draait de lampen die al aan zijn lager, tot hun laagste stand in plaats van ze uit te schakelen.",
+            "fields": {
+                "step_pct": {
+                    "name": "Stap",
+                    "description": "Hoeveel zwakker er gegaan wordt, als percentage. Elke lamp stapt vanaf zijn eigen niveau, dus een groep houdt zijn vorm in plaats van gelijk te trekken."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Hoe lang de verandering mag duren, in seconden."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Kleur instellen",
+            "description": "Stelt de kleur in van lampen die al aan zijn, en laat de lampen met rust die uit zijn of geen kleur kunnen.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Kleur",
+                    "description": "De kleur die ingesteld wordt. Lampen die geen kleur kunnen worden overgeslagen in plaats van wit gezet."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Hoe lang de verandering mag duren, in seconden."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Kleurtemperatuur instellen",
+            "description": "Stelt de kleurtemperatuur in van lampen die al aan zijn, elk binnen het bereik dat hij echt kan halen.",
+            "fields": {
+                "kelvin": {
+                    "name": "Kleurtemperatuur",
+                    "description": "De kleurtemperatuur die ingesteld wordt. Elke lamp wordt binnen zijn eigen bereik gehouden, want warm wit op de ene lamp is een getal dat de andere niet haalt."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Hoe lang de verandering mag duren, in seconden."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Effect instellen",
+            "description": "Stelt een effect in op de lampen die al aan zijn en dat effect ook echt hebben.",
+            "fields": {
+                "effect": {
+                    "name": "Effect",
+                    "description": "De naam van het effect dat ingesteld wordt. Effectnamen verschillen per fabrikant, dus lampen die dit effect niet hebben blijven zoals ze zijn."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Label bijwerken",
+            "description": "Werkt een bestaand label direct bij. Alles wat je weglaat houdt de waarde die het al had. De beschrijving, het icoon en de kleur kun je leegmaken door ze op null te zetten.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID van het label dat bijgewerkt wordt."
+                },
+                "name": {
+                    "name": "Naam",
+                    "description": "Nieuwe naam voor het label."
+                },
+                "description": {
+                    "name": "Beschrijving",
+                    "description": "Nieuwe beschrijving voor het label."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Nieuw icoon voor het label."
+                },
+                "color": {
+                    "name": "Kleur",
+                    "description": "Kleur voor het label. Mag een kleurnaam uit de lijst zijn, of een hexadecimale kleurcode (zoals #FF0000)."
+                }
+            }
         }
     },
     "conditions": {
@@ -1468,6 +1630,201 @@
                 }
             },
             "name": "Afkoeltijd"
+        },
+        "repair_issue_present": {
+            "name": "Reparatiemelding openstaand",
+            "description": "Slaagt zolang er een reparatiemelding openstaat. Meldingen die iemand heeft genegeerd tellen niet mee.",
+            "fields": {
+                "domain": {
+                    "name": "Integraties",
+                    "description": "Beperk dit tot meldingen van bepaalde integraties, op hun domein. Laat het leeg voor allemaal."
+                },
+                "severity": {
+                    "name": "Ernst",
+                    "description": "Beperk dit tot meldingen van een bepaalde ernst. Laat het leeg voor allemaal."
+                }
+            }
+        },
+        "quota": {
+            "name": "Resterende uitvoeringen",
+            "description": "Slaagt zolang deze automatisering binnen een opgegeven periode minder dan een opgegeven aantal keer heeft gelopen. Scripts tellen niet mee.",
+            "fields": {
+                "limit": {
+                    "name": "Limiet",
+                    "description": "Hoeveel keer er binnen de periode gelopen mag worden."
+                },
+                "period": {
+                    "name": "Periode",
+                    "description": "Het venster waarvoor de limiet geldt. Dat schuift mee, dus een dag betekent elke vierentwintig uur en niet van middernacht tot middernacht."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Gestart door een automatisering",
+            "description": "Slaagt wanneer een andere automatisering deze uitvoering in gang heeft gezet, rechtstreeks of via een script.",
+            "fields": {
+                "automation": {
+                    "name": "Automatiseringen",
+                    "description": "Beperk dit tot bepaalde automatiseringen. Laat het leeg om ze allemaal te accepteren."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Gestart door een gebruiker",
+            "description": "Slaagt wanneer er een persoon achter zit die dit in gang heeft gezet: een statuswijziging of een gebeurtenis die zij veroorzaakten, ook een die een template-trigger waar maakte. Een schema, de zon, of een integratie die uit zichzelf iets doet draagt niemand met zich mee, en een uitvoering forceren met de knop Uitvoeren evenmin.",
+            "fields": {
+                "person": {
+                    "name": "Personen",
+                    "description": "Slaag alleen wanneer een van deze personen het gestart heeft. Laat leeg om voor iedereen te slagen. Aan een persoon moet een gebruikersaccount gekoppeld zijn, anders valt er niets te vergelijken."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Niet gestart door een gebruiker",
+            "description": "Slaagt wanneer niemand verantwoordelijk kan worden gehouden voor deze uitvoering: een schema, de zon, een integratie die uit zichzelf iets doet, of de knop Uitvoeren. Heeft met opzet geen opties. Wil je juist bepaalde personen uitsluiten, zet dan \"Gestart door een gebruiker\" in een Niet-voorwaarde."
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "description": "Wordt geactiveerd wanneer meerdere triggers na elkaar optreden, in de opgegeven volgorde.",
+            "name": "Triggers op volgorde",
+            "fields": {
+                "steps": {
+                    "name": "Stappen",
+                    "description": "De triggers die moeten optreden, op volgorde. Alleen de trigger waarop wordt gewacht luistert mee, dus een latere stap die te vroeg afgaat telt niet mee."
+                },
+                "timeout": {
+                    "name": "Time-out",
+                    "description": "Hoe lang de hele reeks mag duren, gerekend vanaf de eerste stap. Laat je dit leeg, dan wordt er onbeperkt gewacht."
+                },
+                "reset": {
+                    "name": "Reset",
+                    "description": "Triggers die een reeks die al loopt afbreken, zodat er weer op de eerste stap wordt gewacht."
+                }
+            }
+        },
+        "while": {
+            "name": "Zolang een voorwaarde geldt",
+            "description": "Wordt geactiveerd wanneer een voorwaarde waar wordt, en blijft met een interval afgaan zolang die waar blijft.",
+            "fields": {
+                "condition": {
+                    "description": "De voorwaarde om in de gaten te houden. Het afgaan begint wanneer die waar wordt en stopt wanneer die niet meer waar is.",
+                    "name": "Voorwaarde"
+                },
+                "every": {
+                    "name": "Elke",
+                    "description": "Hoe lang er tussen twee keer afgaan wordt gewacht, zolang de voorwaarde geldt."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Waakhond",
+            "fields": {
+                "expect": {
+                    "name": "Verwacht",
+                    "description": "Wat er verwacht wordt te volgen. Komt het op tijd, dan wordt de bewaking afgeblazen en gaat er niets af."
+                },
+                "arm": {
+                    "description": "Wat de bewaking start. De wachttijd wordt hiervandaan gemeten, en opnieuw scherpstellen terwijl er al gewacht wordt begint de wachttijd opnieuw.",
+                    "name": "Scherpstellen"
+                },
+                "within": {
+                    "name": "Binnen",
+                    "description": "Hoe lang het verwachte de tijd heeft om te komen. Dit gaat af wanneer die tijd verstrijkt en het er niet is."
+                }
+            },
+            "description": "Wordt geactiveerd wanneer iets dat verwacht werd niet op tijd gebeurt."
+        },
+        "flapping": {
+            "name": "Entiteit komt niet tot rust",
+            "description": "Wordt geactiveerd wanneer een entiteit binnen een bepaalde tijd vaker van status verandert dan zou moeten.",
+            "fields": {
+                "changes": {
+                    "name": "Wijzigingen",
+                    "description": "Hoeveel statuswijzigingen er nodig zijn voordat dit afgaat. Wijzigingen van attributen tellen niet mee, en een entiteit die verschijnt of verdwijnt ook niet."
+                },
+                "within": {
+                    "name": "Binnen",
+                    "description": "De tijdspanne waarbinnen die wijzigingen moeten vallen. Die schuift mee, dus het gaat altijd om de meest recente wijzigingen."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Voorwaarde werd waar",
+            "description": "Wordt geactiveerd wanneer een voorwaarde van onwaar naar waar gaat, met dezelfde bouwstenen voor voorwaarden als overal elders.",
+            "fields": {
+                "condition": {
+                    "name": "Voorwaarde",
+                    "description": "De voorwaarde om in de gaten te houden."
+                }
+            }
+        },
+        "cron": {
+            "fields": {
+                "schedule": {
+                    "name": "Schema",
+                    "description": "Een crontab-expressie met vijf velden: minuut, uur, dag van de maand, maand, dag van de week. Ondersteunt bereiken en stappen, en de uitbreidingen voor de dag van de week, dus \"MON#2\" is de tweede maandag en \"5L\" de laatste vrijdag. Bijnamen als \"@daily\" worden niet ondersteund."
+                }
+            },
+            "description": "Wordt geactiveerd volgens een crontab-schema, voor de tijden die de eigen tijdtriggers van Home Assistant niet kunnen uitdrukken, zoals elke werkdag om zeven uur of de laatste vrijdag van de maand.",
+            "name": "Cron-schema"
+        },
+        "integration_failed": {
+            "name": "Integratie kon niet worden ingesteld",
+            "description": "Wordt geactiveerd wanneer een configuratie-item zichzelf al een tijd niet kan instellen, voorbij het punt waarop de eigen nieuwe pogingen van Home Assistant het opgelost zouden hebben.",
+            "fields": {
+                "for": {
+                    "name": "Gedurende",
+                    "description": "Hoe lang een item moet blijven falen voordat dit afgaat. Home Assistant probeert een falend item op zijn traagst elke tien minuten opnieuw, dus alles wat korter is meldt problemen die zichzelf nog kunnen oplossen."
+                },
+                "entry_id": {
+                    "name": "Items",
+                    "description": "Beperk dit tot bepaalde configuratie-items. Laat het leeg om ze allemaal in de gaten te houden."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "fields": {
+                "domain": {
+                    "name": "Integraties",
+                    "description": "Beperk dit tot meldingen van bepaalde integraties, op hun domein. Laat het leeg voor allemaal."
+                },
+                "severity": {
+                    "description": "Beperk dit tot meldingen van een bepaalde ernst. Laat het leeg voor allemaal.",
+                    "name": "Ernst"
+                }
+            },
+            "name": "Reparatiemelding aangemaakt",
+            "description": "Wordt geactiveerd wanneer er een nieuwe reparatiemelding opduikt, zodat je ervan hoort zonder de reparatiepagina te bezoeken."
+        },
+        "repair_issue_removed": {
+            "description": "Wordt geactiveerd wanneer een reparatiemelding verdwijnt, opgelost of niet langer gemeld.",
+            "name": "Reparatiemelding opgelost",
+            "fields": {
+                "domain": {
+                    "name": "Integraties",
+                    "description": "Beperk dit tot meldingen van bepaalde integraties, op hun domein. Laat het leeg voor allemaal."
+                }
+            }
+        },
+        "stale": {
+            "fields": {
+                "for": {
+                    "name": "Gedurende",
+                    "description": "Hoe lang een entiteit stil moet blijven voordat dit afgaat. Een entiteit die steeds dezelfde waarde blijft melden is niet stil."
+                }
+            },
+            "name": "Entiteit viel stil",
+            "description": "Wordt geactiveerd wanneer er een tijd niets naar een entiteit is geschreven, wat een apparaat betrapt dat stilletjes is overleden in plaats van onbeschikbaar te worden."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritiek",
+                "error": "Fout",
+                "warning": "Waarschuwing"
+            }
         }
     }
 }
