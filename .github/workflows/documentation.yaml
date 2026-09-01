@@ -9,6 +9,8 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
+    env:
+      SITE_ORIGIN: https://spook.boo
     permissions:
       actions: write
       contents: read
@@ -33,6 +35,61 @@ jobs:
 
       - name: ©️ Public folder
         run: cp ./documentation/public/* ./documentation/_build/html/
+
+      - name: 🔗 Correct generated site origin
+        run: |
+          # Required until MyST fixes static sitemap/robots origins:
+          # https://github.com/jupyter-book/mystmd/issues/2695
+          # https://github.com/jupyter-book/myst-theme/issues/669
+          # Remove this step once those issues are fixed upstream.
+          sed -i "s|http://localhost:3000|${SITE_ORIGIN}|g" \
+            ./documentation/_build/html/robots.txt \
+            ./documentation/_build/html/sitemap.xml
+
+          files=$(mktemp)
+          trap 'rm -f "$files"' EXIT
+          if grep -RIlZ \
+            --include='*.html' \
+            --include='*.json' \
+            '"domain":"http://localhost:3000"' \
+            ./documentation/_build/html > "$files"; then
+            xargs -0 sed -i \
+              "s|\"domain\":\"http://localhost:3000\"|\"domain\":\"${SITE_ORIGIN}\"|g" \
+              < "$files"
+          else
+            status=$?
+            if [ "$status" -ne 1 ]; then
+              exit "$status"
+            fi
+          fi
+
+      - name: 🔍 Verify generated site origin
+        run: |
+          if grep -q "http://localhost:3000" \
+            ./documentation/_build/html/robots.txt \
+            ./documentation/_build/html/sitemap.xml; then
+            echo "Found localhost URLs in generated SEO metadata"
+            exit 1
+          else
+            status=$?
+            if [ "$status" -ne 1 ]; then
+              exit "$status"
+            fi
+          fi
+
+          if grep -RIl \
+            --include='*.html' \
+            --include='*.json' \
+            '"domain":"http://localhost:3000"' \
+            ./documentation/_build/html; then
+            echo "Found localhost URLs in generated page metadata"
+            exit 1
+          else
+            status=$?
+            if [ "$status" -ne 1 ]; then
+              exit "$status"
+            fi
+          fi
 
       - name: 🆙 Upload artifact
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
