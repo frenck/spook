@@ -442,7 +442,8 @@
             "title": "Unknown members used in min/max helper: {helper}"
         },
         "orphaned_statistics": {
-            "title": "Orphaned long-term statistics found"
+            "title": "Orphaned long-term statistics found",
+            "description": "Spook has found a ghost in your recorder 👻\n\nHome Assistant is keeping long-term statistics for the following, but there is no matching entity for them anymore:\n\n{statistics}\n\n\n\nThis usually happens when a sensor was removed while its statistics were kept. To fix this error, open Settings > Tools > Statistics and fix them there.\n\nSpook 👻 Your homie."
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook has found a ghost in your notify groups 👻\n\nThe notify group `{group}` forwards to the following actions, which are unknown to Home Assistant:\n\n{members}\n\nThe group still delivers to the rest of its members, and it still reports success to whatever called it, so nothing upstream notices. The failure surfaces only as a stray \"Task exception was never retrieved\" in the log, which names no group and reads like a bug. Whoever was behind that member simply stops being notified.\n\nTo fix this error, edit the `services:` list of this group in your configuration and remove or correct these entries.\n\nSpook 👻 Your homie.",
             "title": "Unknown members in notify group: {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Dashboard resource listed more than once: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Dashboard resource listed more than once: {resource}",
+                        "description": "Spook has found a ghost in your dashboards 👻\n\nThis dashboard resource is listed {count} times:\n\n{resources}\n\nThis usually happens when a custom card was updated by adding a resource for the new version instead of editing the one already there. The browser loads both, the card tries to register itself twice, and the second attempt fails, which looks like a broken card rather than a duplicated resource.\n\nSpook can clear the extra copies and keep the most recently added one.\n\nSpook 👻 Your homie.",
+                        "menu_options": {
+                            "remove": "Clear the extra copies, keep the most recent",
+                            "ignore": "Leave them, stop telling me",
+                            "manage": "Let me fix it myself"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook will keep quiet about this resource from now on.",
+                    "manage": "You can manage your dashboard resources yourself on the [Resources page](/config/lovelace/resources).",
+                    "yaml": "These resources are listed in your YAML configuration, so Spook cannot change them for you. Edit the `resources:` section of your Lovelace configuration and remove the copies of `{resource}` you no longer need."
+                }
+            }
         }
     },
     "conditions": {
@@ -570,6 +592,58 @@
                 }
             },
             "name": "Cooldown"
+        },
+        "repair_issue_present": {
+            "name": "Repair issue outstanding",
+            "description": "Passes while a repair issue is outstanding. Issues somebody has ignored do not count.",
+            "fields": {
+                "domain": {
+                    "name": "Integrations",
+                    "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+                },
+                "severity": {
+                    "name": "Severity",
+                    "description": "Limit this to issues of a particular severity. Leave it empty for all of them."
+                }
+            }
+        },
+        "quota": {
+            "name": "Run allowance left",
+            "description": "Passes while this automation has run fewer than a given number of times within a given period. Scripts are not counted.",
+            "fields": {
+                "limit": {
+                    "name": "Limit",
+                    "description": "How many runs are allowed within the period."
+                },
+                "period": {
+                    "name": "Period",
+                    "description": "The window the limit applies to. It rolls, so a day means any twenty-four hours rather than between midnights."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Triggered by an automation",
+            "description": "Passes when another automation set this run going, whether it did so directly or through a script.",
+            "fields": {
+                "automation": {
+                    "name": "Automations",
+                    "description": "Limit this to particular automations. Leave it empty to accept any of them."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Triggered by a user",
+            "description": "Passes when a person is behind what set this off: a state change or an event they caused, including one that made a template trigger become true. A schedule, the sun, or an integration acting on its own carries nobody, and neither does forcing a run with the Run button.",
+            "fields": {
+                "person": {
+                    "name": "People",
+                    "description": "Only pass when one of these people started it. Leave empty to pass for anyone. A person has to have a user account linked to them, otherwise there is nothing to match against."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Not triggered by a user",
+            "description": "Passes when nobody can be held responsible for this run: a schedule, the sun, an integration acting on its own, or the Run button. Takes no options on purpose. To exclude specific people instead, put \"Triggered by a user\" inside a Not condition."
         }
     },
     "services": {
@@ -1468,6 +1542,289 @@
                 }
             },
             "name": "Update a zone"
+        },
+        "wait_for_condition": {
+            "name": "Wait for a condition",
+            "description": "Wait until a condition is true. Returns straight away if it already is.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "The condition to wait for."
+                },
+                "timeout": {
+                    "name": "Timeout",
+                    "description": "How long to wait before giving up. Waits indefinitely when left out."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Snooze",
+            "description": "Turns an automation off for a while, and turns it back on when the time is up.",
+            "fields": {
+                "duration": {
+                    "name": "Duration",
+                    "description": "How long the automation stays off. It comes back on by itself when this is up, a restart of Home Assistant in between included."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Turn on for",
+            "description": "Turns an automation on for a while, and turns it back off when the time is up.",
+            "fields": {
+                "duration": {
+                    "name": "Duration",
+                    "description": "How long the automation stays on. It goes back off by itself when this is up, a restart of Home Assistant in between included."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Set brightness",
+            "description": "Sets the brightness of lights that are already on, and leaves the ones that are off alone.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Brightness",
+                    "description": "The brightness to set, as a percentage. Groups are adjusted light by light, so a light that is off stays off."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Increase brightness",
+            "description": "Turns up the lights that are already on, and leaves the ones that are off alone.",
+            "fields": {
+                "step_pct": {
+                    "name": "Step",
+                    "description": "How much brighter to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Decrease brightness",
+            "description": "Turns down the lights that are already on, stopping at the dimmest they go rather than switching them off.",
+            "fields": {
+                "step_pct": {
+                    "name": "Step",
+                    "description": "How much dimmer to go, as a percentage. Each light steps from its own level, so a group keeps its shape instead of levelling out."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Set colour",
+            "description": "Sets the colour of lights that are already on, and leaves alone the ones that are off or cannot do colour.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Colour",
+                    "description": "The colour to set. Lights that cannot do colour are passed over rather than turned white."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Set colour temperature",
+            "description": "Sets the colour temperature of lights that are already on, each within the range it can actually reach.",
+            "fields": {
+                "kelvin": {
+                    "name": "Colour temperature",
+                    "description": "The colour temperature to set. Every light is held to its own range, since warm white on one lamp is a number another cannot reach."
+                },
+                "transition": {
+                    "name": "Transition",
+                    "description": "How long the change should take, in seconds."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Set effect",
+            "description": "Sets an effect on the lights that are already on and actually have it.",
+            "fields": {
+                "effect": {
+                    "name": "Effect",
+                    "description": "The name of the effect to set. Effect names differ per manufacturer, so lights that do not have this one are left as they are."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Update a label",
+            "description": "Updates an existing label on the fly. Anything you leave out keeps the value it already has. The description, icon and colour can be cleared by setting them to null.",
+            "fields": {
+                "label_id": {
+                    "name": "Label ID",
+                    "description": "The ID of the label to update."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "New name for the label."
+                },
+                "description": {
+                    "name": "Description",
+                    "description": "New description for the label."
+                },
+                "icon": {
+                    "name": "Icon",
+                    "description": "New icon to use for the label."
+                },
+                "color": {
+                    "name": "Colour",
+                    "description": "Colour to use for the label. Can be a colour name from the list, or a hex colour code (like #FF0000)."
+                }
+            }
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "name": "Triggers in order",
+            "description": "Fires when several triggers happen one after another, in the order given.",
+            "fields": {
+                "steps": {
+                    "name": "Steps",
+                    "description": "The triggers that have to happen, in order. Only the one being waited for is listening, so a later step firing early is not a match."
+                },
+                "timeout": {
+                    "name": "Timeout",
+                    "description": "How long the whole sequence may take, counted from the first step. Left out, it waits indefinitely."
+                },
+                "reset": {
+                    "name": "Reset",
+                    "description": "Triggers that abandon a sequence already under way, putting it back to waiting for the first step."
+                }
+            }
+        },
+        "while": {
+            "name": "While a condition holds",
+            "description": "Fires when a condition turns true, and keeps firing on an interval for as long as it stays true.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "The condition to watch. Firing starts when it turns true and stops when it stops being true."
+                },
+                "every": {
+                    "name": "Every",
+                    "description": "How long to wait between one firing and the next, for as long as the condition holds."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Watchdog",
+            "description": "Fires when something that was expected to happen does not happen in time.",
+            "fields": {
+                "arm": {
+                    "name": "Arm",
+                    "description": "What starts the watch. The wait is measured from here, and arming again while already waiting starts the wait over."
+                },
+                "expect": {
+                    "name": "Expect",
+                    "description": "What is expected to follow. Arriving in time calls the watch off, and nothing fires."
+                },
+                "within": {
+                    "name": "Within",
+                    "description": "How long the expected thing has to arrive. This fires when that time passes and it has not."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entity will not settle",
+            "description": "Fires when an entity changes state more often than it should within a stretch of time.",
+            "fields": {
+                "changes": {
+                    "name": "Changes",
+                    "description": "How many changes of state it takes before this fires. Changes of attribute do not count, and neither does an entity appearing or disappearing."
+                },
+                "within": {
+                    "name": "Within",
+                    "description": "The stretch of time those changes have to fall inside. It slides along, so this is always about the most recent changes."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Condition turned true",
+            "description": "Fires when a condition goes from false to true, using the same condition building blocks as anywhere else.",
+            "fields": {
+                "condition": {
+                    "name": "Condition",
+                    "description": "The condition to watch."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron schedule",
+            "description": "Fires on a crontab schedule, for the times Home Assistant's own time triggers cannot express, like every weekday at seven or the last Friday of the month.",
+            "fields": {
+                "schedule": {
+                    "name": "Schedule",
+                    "description": "A crontab expression with five fields: minute, hour, day of month, month, day of week. Supports ranges and steps, and the day-of-week extensions, so \"MON#2\" is the second Monday and \"5L\" the last Friday. Nicknames like \"@daily\" are not supported."
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "Integration failed to set up",
+            "description": "Fires when a configuration entry has been unable to set itself up for a while, past the point where Home Assistant's own retries would have sorted it out.",
+            "fields": {
+                "for": {
+                    "name": "For",
+                    "description": "How long an entry has to keep failing before this fires. Home Assistant retries a failing entry every ten minutes at the slowest, so anything shorter than that reports trouble that may still fix itself."
+                },
+                "entry_id": {
+                    "name": "Entries",
+                    "description": "Limit this to particular configuration entries. Leave it empty to watch every one of them."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Repair issue created",
+            "description": "Fires when a new repair issue turns up, so you can hear about one without visiting the repairs page.",
+            "fields": {
+                "domain": {
+                    "name": "Integrations",
+                    "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+                },
+                "severity": {
+                    "name": "Severity",
+                    "description": "Limit this to issues of a particular severity. Leave it empty for all of them."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Repair issue resolved",
+            "description": "Fires when a repair issue goes away, either fixed or no longer reported.",
+            "fields": {
+                "domain": {
+                    "name": "Integrations",
+                    "description": "Limit this to issues reported by particular integrations, by their domain. Leave it empty for all of them."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entity fell silent",
+            "description": "Fires when nothing has written to an entity for a while, which catches a device that died quietly rather than going unavailable.",
+            "fields": {
+                "for": {
+                    "name": "For",
+                    "description": "How long an entity has to stay silent before this fires. An entity that keeps reporting the same value is not silent."
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Critical",
+                "error": "Error",
+                "warning": "Warning"
+            }
         }
     }
 }
