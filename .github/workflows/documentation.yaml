@@ -38,6 +38,10 @@ jobs:
 
       - name: 🔗 Correct generated site origin
         run: |
+          # Required until MyST fixes static sitemap/robots origins:
+          # https://github.com/jupyter-book/mystmd/issues/2695
+          # https://github.com/jupyter-book/myst-theme/issues/669
+          # Remove this step once those issues are fixed upstream.
           files=$(mktemp)
           trap 'rm -f "$files"' EXIT
           if grep -RIlZ "http://localhost:3000" ./documentation/_build/html > "$files"; then
