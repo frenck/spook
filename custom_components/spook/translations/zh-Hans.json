@@ -434,7 +434,8 @@
             }
         },
         "orphaned_statistics": {
-            "title": "发现孤立的长期统计数据"
+            "title": "发现孤立的长期统计数据",
+            "description": "Spook 在你的记录器中发现了一个幽灵 👻\n\nHome Assistant 仍在为以下内容保留长期统计数据，但已经没有对应的实体了：\n\n{statistics}\n\n\n\n这通常发生在传感器被移除但其统计数据被保留时。要修复此错误，请打开 设置 > 工具 > 统计数据 并在其中修复。\n\nSpook 👻 你的好哥们。"
         },
         "person_unknown_device_trackers": {
             "title": "{person} 追踪了未知的设备追踪器",
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook 在你的通知组中发现了一个幽灵 👻\n\n通知组 `{group}` 会转发到以下 Home Assistant 无法识别的动作：\n\n{members}\n\n该组仍会投递给其余成员，也仍会向调用方报告成功，因此上游察觉不到任何异常。这个故障只会在日志里留下一条孤零零的 \"Task exception was never retrieved\"，它不会指明是哪个组，读起来就像一个程序缺陷。原本在该成员背后的人，就这样再也收不到通知了。\n\n要修复此错误，请编辑配置中该组的 `services:` 列表，移除或更正这些条目。\n\nSpook 👻 你的好哥们。",
             "title": "以下通知组中存在未知成员：{group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "仪表盘资源被重复列出：{resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "仪表盘资源被重复列出：{resource}",
+                        "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n以下仪表盘资源被列出了 {count} 次：\n\n{resources}\n\n这通常发生在更新自定义卡片时，为新版本添加了一个资源条目，而不是编辑已有的条目。浏览器会同时加载两者，卡片尝试注册两次，第二次失败，看起来像是卡片坏了，而不是资源重复。\n\nSpook 可以清除多余的副本，保留最近添加的那一个。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "清除多余副本，保留最新的",
+                            "ignore": "保留，不要再提示我",
+                            "manage": "让我自己处理"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此资源发声。",
+                    "manage": "你可以在 [资源页面](/config/lovelace/resources) 自行管理仪表盘资源。",
+                    "yaml": "这些资源在 YAML 配置中列出，因此 Spook 无法为你修改。请编辑 Lovelace 配置中的 `resources:` 部分，移除不再需要的 `{resource}` 副本。"
+                }
+            }
         }
     },
     "services": {
@@ -1446,6 +1468,146 @@
                 }
             },
             "name": "设置显示精度 👻"
+        },
+        "wait_for_condition": {
+            "name": "等待条件 👻",
+            "description": "等待条件为真。如果已经为真则立即返回。",
+            "fields": {
+                "condition": {
+                    "name": "条件",
+                    "description": "需要等待的条件。"
+                },
+                "timeout": {
+                    "name": "超时",
+                    "description": "等待多久后放弃。不设置则无限等待。"
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "打盹 👻",
+            "description": "将自动化暂时关闭一段时间，时间到了再自动开启。",
+            "fields": {
+                "duration": {
+                    "name": "持续时间",
+                    "description": "自动化保持关闭的时间。时间到了会自动恢复开启，期间重启 Home Assistant 也包含在内。"
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "定时启用 👻",
+            "description": "将自动化暂时开启一段时间，时间到了再自动关闭。",
+            "fields": {
+                "duration": {
+                    "name": "持续时间",
+                    "description": "自动化保持开启的时间。时间到了会自动关闭，期间重启 Home Assistant 也包含在内。"
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "设置亮度 👻",
+            "description": "设置已开启灯光的亮度，不改变关闭的灯。",
+            "fields": {
+                "brightness_pct": {
+                    "name": "亮度",
+                    "description": "要设置的亮度，以百分比表示。群组会逐灯调整，因此关闭的灯保持关闭。"
+                },
+                "transition": {
+                    "name": "过渡",
+                    "description": "变化所需的时间，以秒为单位。"
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "增加亮度 👻",
+            "description": "调亮已开启的灯光，不改变关闭的灯。",
+            "fields": {
+                "step_pct": {
+                    "name": "步长",
+                    "description": "要增加的亮度，以百分比表示。每盏灯从自身亮度开始递增，因此群组保持各自的比例而非统一。"
+                },
+                "transition": {
+                    "name": "过渡",
+                    "description": "变化所需的时间，以秒为单位。"
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "降低亮度 👻",
+            "description": "调暗已开启的灯光，到最暗时停止而非关闭。",
+            "fields": {
+                "step_pct": {
+                    "name": "步长",
+                    "description": "要降低的亮度，以百分比表示。每盏灯从自身亮度开始递减，因此群组保持各自的比例而非统一。"
+                },
+                "transition": {
+                    "name": "过渡",
+                    "description": "变化所需的时间，以秒为单位。"
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "设置颜色 👻",
+            "description": "设置已开启灯光的颜色，不改变关闭的或不支持颜色的灯。",
+            "fields": {
+                "rgb_color": {
+                    "name": "颜色",
+                    "description": "要设置的颜色。不支持颜色的灯会被跳过，而非变为白色。"
+                },
+                "transition": {
+                    "name": "过渡",
+                    "description": "变化所需的时间，以秒为单位。"
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "设置色温 👻",
+            "description": "设置已开启灯光的色温，每盏灯在其实际可达的范围内调整。",
+            "fields": {
+                "kelvin": {
+                    "name": "色温",
+                    "description": "要设置的色温。每盏灯受限于自身的范围，因为一盏灯上的暖白数值可能是另一盏灯无法达到的。"
+                },
+                "transition": {
+                    "name": "过渡",
+                    "description": "变化所需的时间，以秒为单位。"
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "设置效果 👻",
+            "description": "为已开启且支持该效果的灯光设置效果。",
+            "fields": {
+                "effect": {
+                    "name": "效果",
+                    "description": "要设置的效果名称。不同厂商的效果名称不同，因此没有该效果的灯保持原样。"
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "更新标签 👻",
+            "description": "动态更新现有标签。未修改的字段保持原值。描述、图标和颜色可以通过设置为 null 来清除。",
+            "fields": {
+                "label_id": {
+                    "name": "标签 ID",
+                    "description": "要更新的标签 ID。"
+                },
+                "name": {
+                    "name": "名称",
+                    "description": "标签的新名称。"
+                },
+                "description": {
+                    "name": "描述",
+                    "description": "标签的新描述。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "标签使用的新图标。"
+                },
+                "color": {
+                    "name": "颜色",
+                    "description": "标签使用的颜色。可以是列表中的颜色名称，也可以是十六进制颜色代码（如 #FF0000）。"
+                }
+            }
         }
     },
     "conditions": {
@@ -1468,6 +1630,201 @@
                 }
             },
             "name": "冷却时间 👻"
+        },
+        "repair_issue_present": {
+            "name": "存在未解决的修复问题",
+            "description": "当存在未解决的修复问题时通过。被人忽略的问题不计入。",
+            "fields": {
+                "domain": {
+                    "name": "集成",
+                    "description": "限制为特定集成域报告的问题。留空则监视所有集成。"
+                },
+                "severity": {
+                    "name": "严重程度",
+                    "description": "限制为特定严重程度的问题。留空则监视所有严重程度。"
+                }
+            }
+        },
+        "quota": {
+            "name": "剩余运行配额",
+            "description": "当此自动化在指定时间段内运行次数少于指定值时通过。脚本不计入。",
+            "fields": {
+                "limit": {
+                    "name": "上限",
+                    "description": "在指定时间段内允许的运行次数。"
+                },
+                "period": {
+                    "name": "时间段",
+                    "description": "上限适用的时间窗口。它是滚动的，因此一天指的是任意二十四小时，而非两个午夜之间。"
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "由自动化触发",
+            "description": "当另一个自动化启动了本次运行时通过，无论是直接启动还是通过脚本启动。",
+            "fields": {
+                "automation": {
+                    "name": "自动化",
+                    "description": "限制为特定的自动化。留空则接受任何自动化。"
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "由用户触发",
+            "description": "当有人引发了本次运行时通过：他们引起的状态变化或事件，包括使模板触发条件变为真的情况。计划任务、太阳或集成自行行动不算，按下运行按钮强制执行也不算。",
+            "fields": {
+                "person": {
+                    "name": "人员",
+                    "description": "仅当这些人员之一启动了本次运行时才通过。留空则对任何人通过。人员必须关联了用户账户，否则无法匹配。"
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "非用户触发",
+            "description": "当没有人为本次运行负责时通过：计划任务、太阳、集成自行行动或运行按钮。故意不接受任何选项。要排除特定人员，请将\"由用户触发\"放在\"非\"条件内。"
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "name": "按顺序触发",
+            "description": "当多个触发条件按给定顺序依次发生时触发。",
+            "fields": {
+                "steps": {
+                    "name": "步骤",
+                    "description": "需要按顺序发生的触发条件。只有当前正在等待的那个触发条件处于监听状态，因此后续步骤提前触发不会匹配。"
+                },
+                "timeout": {
+                    "name": "超时",
+                    "description": "整个序列允许的最长时间，从第一步开始计算。不设置则无限等待。"
+                },
+                "reset": {
+                    "name": "重置",
+                    "description": "放弃已进行中的序列，使其回到等待第一步的状态的触发条件。"
+                }
+            }
+        },
+        "while": {
+            "name": "条件持续成立时",
+            "description": "当条件变为真时触发，并在条件持续为真期间按固定间隔重复触发。",
+            "fields": {
+                "condition": {
+                    "name": "条件",
+                    "description": "需要监视的条件。条件变为真时开始触发，不再为真时停止。"
+                },
+                "every": {
+                    "name": "间隔",
+                    "description": "在条件持续成立期间，两次触发之间的等待时间。"
+                }
+            }
+        },
+        "watchdog": {
+            "name": "看门狗",
+            "description": "当预期的事情未在规定时间内发生时触发。",
+            "fields": {
+                "arm": {
+                    "name": "启动",
+                    "description": "启动监视的条件。等待时间从此处开始计算，在等待中再次启动会重新开始计时。"
+                },
+                "expect": {
+                    "name": "预期",
+                    "description": "预期随后发生的事情。及时发生则取消监视，不会触发任何东西。"
+                },
+                "within": {
+                    "name": "时限",
+                    "description": "预期事件必须发生的时限。当时间过后仍未发生，则触发。"
+                }
+            }
+        },
+        "flapping": {
+            "name": "实体无法稳定",
+            "description": "当实体在一段时间内过于频繁地改变状态时触发。",
+            "fields": {
+                "changes": {
+                    "name": "变化次数",
+                    "description": "触发前需要的状态变化次数。属性变化不计入，实体出现或消失也不计入。"
+                },
+                "within": {
+                    "name": "时间窗口",
+                    "description": "这些变化必须落入的时间窗口。它会随时间滑动，因此始终关注最近的变化。"
+                }
+            }
+        },
+        "condition_met": {
+            "name": "条件变为真",
+            "description": "当条件从假变为真时触发，使用与其他地方相同的条件构建块。",
+            "fields": {
+                "condition": {
+                    "name": "条件",
+                    "description": "需要监视的条件。"
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron 计划",
+            "description": "按 crontab 计划触发，用于 Home Assistant 自身的时间触发器无法表达的时间安排，例如每个工作日上午七点或每月最后一个星期五。",
+            "fields": {
+                "schedule": {
+                    "name": "计划",
+                    "description": "包含五个字段的 crontab 表达式：分钟、小时、月份中的日期、月份、星期几。支持范围和步长，以及星期几的扩展标记法，因此 \"MON#2\" 表示第二个星期一，\"5L\" 表示最后一个星期五。不支持 \"@daily\" 等别名。"
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "集成设置失败",
+            "description": "当配置条目长时间无法完成设置，超过 Home Assistant 自身重试所能解决的范围时触发。",
+            "fields": {
+                "for": {
+                    "name": "持续时间",
+                    "description": "条目必须持续失败多长时间后才触发。Home Assistant 最慢每十分钟重试一次失败的条目，因此短于此时间的设置会报告可能自行恢复的问题。"
+                },
+                "entry_id": {
+                    "name": "条目",
+                    "description": "限制为特定的配置条目。留空则监视所有条目。"
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "修复问题已创建",
+            "description": "当新的修复问题出现时触发，无需访问修复页面即可获知。",
+            "fields": {
+                "domain": {
+                    "name": "集成",
+                    "description": "限制为特定集成域报告的问题。留空则监视所有集成。"
+                },
+                "severity": {
+                    "name": "严重程度",
+                    "description": "限制为特定严重程度的问题。留空则监视所有严重程度。"
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "修复问题已解决",
+            "description": "当修复问题消失时触发，无论是已修复还是不再被报告。",
+            "fields": {
+                "domain": {
+                    "name": "集成",
+                    "description": "限制为特定集成域报告的问题。留空则监视所有集成。"
+                }
+            }
+        },
+        "stale": {
+            "name": "实体已静默",
+            "description": "当实体一段时间没有写入时触发，可以捕捉到悄悄失效的设备，而不是变为不可用。",
+            "fields": {
+                "for": {
+                    "name": "持续时间",
+                    "description": "实体必须保持静默多长时间后才触发。持续报告相同值的实体不算静默。"
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "严重",
+                "error": "错误",
+                "warning": "警告"
+            }
         }
     }
 }
