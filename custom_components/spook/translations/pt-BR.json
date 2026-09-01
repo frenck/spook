@@ -442,7 +442,8 @@
             "title": "Membros desconhecidos usados no auxiliar mín/máx: {helper}"
         },
         "orphaned_statistics": {
-            "title": "Foram encontradas estatísticas de longo prazo órfãs"
+            "title": "Foram encontradas estatísticas de longo prazo órfãs",
+            "description": "Spook encontrou um fantasma no seu gravador 👻\n\nO Home Assistant guarda estatísticas de longo prazo do seguinte, mas não existe mais uma entidade correspondente:\n\n{statistics}\n\n\n\nIsso costuma acontecer quando um sensor foi apagado e as estatísticas dele ficaram. Para corrigir esse erro, abra Configurações > Ferramentas > Estatísticas e ajeite tudo por lá.\n\nSpook 👻 Seu mano."
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook encontrou um fantasma em seus grupos de notificação 👻\n\nO grupo de notificação `{group}` encaminha para as seguintes ações, que são desconhecidas do Home Assistant:\n\n{members}\n\nO grupo continua entregando para os demais membros e continua informando sucesso para quem o chamou, então nada acima percebe. A falha aparece apenas como um \"Task exception was never retrieved\" solto no registro, que não nomeia nenhum grupo e parece um bug. Quem estava por trás desse membro simplesmente para de ser notificado.\n\nPara corrigir esse erro, edite a lista `services:` desse grupo na sua configuração e remova ou corrija essas entradas.\n\nSpook 👻 Seu mano.",
             "title": "Membros desconhecidos no grupo de notificação: {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Recurso do painel presente mais de uma vez: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Recurso do painel presente mais de uma vez: {resource}",
+                        "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEste recurso do painel aparece {count} vezes:\n\n{resources}\n\nIsso costuma acontecer quando um cartão personalizado foi atualizado acrescentando um recurso para a versão nova em vez de editar o que já estava lá. O navegador carrega os dois, o cartão tenta se registrar duas vezes e a segunda tentativa falha, o que parece um cartão quebrado em vez de um recurso duplicado.\n\nO Spook pode limpar as cópias sobrando e ficar com a que foi acrescentada mais recentemente.\n\nSpook 👻 Seu mano.",
+                        "menu_options": {
+                            "remove": "Limpar as cópias sobrando e ficar com a mais recente",
+                            "ignore": "Deixar como está, e não me avisar mais",
+                            "manage": "Eu mesmo cuido disso"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "O Spook não vai falar mais nada sobre este recurso.",
+                    "manage": "Você pode gerenciar os recursos dos seus painéis na [página de Recursos](/config/lovelace/resources).",
+                    "yaml": "Estes recursos estão na sua configuração YAML, então o Spook não pode mudá-los por você. Edite a seção `resources:` da sua configuração Lovelace e tire as cópias de `{resource}` que você não precisa mais."
+                }
+            }
         }
     },
     "conditions": {
@@ -570,6 +592,58 @@
                 }
             },
             "name": "Tempo de espera"
+        },
+        "repair_issue_present": {
+            "name": "Problema de reparo em aberto",
+            "description": "É satisfeita enquanto houver um problema de reparo em aberto. Problemas que alguém ignorou não contam.",
+            "fields": {
+                "domain": {
+                    "name": "Integrações",
+                    "description": "Limite isto a problemas informados por certas integrações, pelo domínio delas. Deixe vazio para todas."
+                },
+                "severity": {
+                    "name": "Gravidade",
+                    "description": "Limite isto a problemas de uma certa gravidade. Deixe vazio para todas."
+                }
+            }
+        },
+        "quota": {
+            "name": "Execuções restantes",
+            "description": "É satisfeita enquanto esta automação tiver sido executada menos de um certo número de vezes dentro de um certo período. Scripts não são contados.",
+            "fields": {
+                "limit": {
+                    "name": "Limite",
+                    "description": "Quantas execuções são permitidas dentro do período."
+                },
+                "period": {
+                    "name": "Período",
+                    "description": "A janela à qual o limite se aplica. Ela vai andando para a frente, então um dia quer dizer quaisquer vinte e quatro horas e não da meia-noite à meia-noite."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Disparado por uma automação",
+            "description": "É satisfeita quando outra automação colocou esta execução em movimento, seja diretamente, seja passando por um script.",
+            "fields": {
+                "automation": {
+                    "name": "Automações",
+                    "description": "Limite isto a certas automações. Deixe vazio para aceitar todas."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Disparado por um usuário",
+            "description": "É satisfeita quando há uma pessoa por trás do que colocou isto em movimento: uma mudança de estado ou um evento que ela causou, incluindo um que tornou verdadeiro um acionador de modelo. Um agendamento, o sol ou uma integração agindo por conta própria não têm ninguém por trás, e forçar uma execução com o botão Executar também não.",
+            "fields": {
+                "person": {
+                    "name": "Pessoas",
+                    "description": "Ser satisfeita apenas quando uma destas pessoas deu a partida. Deixe vazio para ser satisfeita com qualquer uma. Uma pessoa precisa ter uma conta de usuário vinculada, senão não há nada com que comparar."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Não disparado por um usuário",
+            "description": "É satisfeita quando não há ninguém a quem atribuir esta execução: um agendamento, o sol, uma integração agindo por conta própria ou o botão Executar. De propósito não tem opções. Se o que você quer é excluir pessoas específicas, coloque \"Disparado por um usuário\" dentro de uma condição Não."
         }
     },
     "services": {
@@ -1468,6 +1542,289 @@
                 }
             },
             "name": "Atualizar uma zona"
+        },
+        "wait_for_condition": {
+            "name": "Esperar por uma condição",
+            "description": "Espera até que uma condição seja verdadeira. Volta na hora se ela já for.",
+            "fields": {
+                "condition": {
+                    "name": "Condição",
+                    "description": "A condição pela qual esperar."
+                },
+                "timeout": {
+                    "name": "Tempo limite",
+                    "description": "Quanto esperar antes de desistir. Deixe vazio para esperar sem limite."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Adiar",
+            "description": "Desliga uma automação por um tempo e liga de novo quando o tempo acaba.",
+            "fields": {
+                "duration": {
+                    "name": "Duração",
+                    "description": "Quanto tempo a automação fica desligada. Ela volta sozinha quando o tempo acaba, mesmo que o Home Assistant reinicie nesse meio-tempo."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Ligar por",
+            "description": "Liga uma automação por um tempo e desliga de novo quando o tempo acaba.",
+            "fields": {
+                "duration": {
+                    "name": "Duração",
+                    "description": "Quanto tempo a automação fica ligada. Ela se desliga sozinha quando o tempo acaba, mesmo que o Home Assistant reinicie nesse meio-tempo."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Definir o brilho",
+            "description": "Define o brilho das luzes que já estão acesas, e deixa em paz as que estão apagadas.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Brilho",
+                    "description": "O brilho a definir, em porcentagem. Grupos são ajustados luz por luz, então uma luz apagada continua apagada."
+                },
+                "transition": {
+                    "name": "Transição",
+                    "description": "Quanto tempo a mudança deve levar, em segundos."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Aumentar o brilho",
+            "description": "Sobe as luzes que já estão acesas, e deixa em paz as que estão apagadas.",
+            "fields": {
+                "step_pct": {
+                    "name": "Passo",
+                    "description": "Quanto subir o brilho, em porcentagem. Cada luz parte do próprio nível, então um grupo mantém o formato em vez de ficar todo igual."
+                },
+                "transition": {
+                    "name": "Transição",
+                    "description": "Quanto tempo a mudança deve levar, em segundos."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Reduzir o brilho",
+            "description": "Abaixa as luzes que já estão acesas, até o mais fraco que elas conseguem em vez de apagá-las.",
+            "fields": {
+                "step_pct": {
+                    "name": "Passo",
+                    "description": "Quanto abaixar o brilho, em porcentagem. Cada luz parte do próprio nível, então um grupo mantém o formato em vez de ficar todo igual."
+                },
+                "transition": {
+                    "name": "Transição",
+                    "description": "Quanto tempo a mudança deve levar, em segundos."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Definir a cor",
+            "description": "Define a cor das luzes que já estão acesas, e deixa em paz as que estão apagadas ou não fazem cor.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Cor",
+                    "description": "A cor a definir. As luzes que não fazem cor são puladas em vez de ficarem no branco."
+                },
+                "transition": {
+                    "name": "Transição",
+                    "description": "Quanto tempo a mudança deve levar, em segundos."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Definir a temperatura da cor",
+            "description": "Define a temperatura da cor das luzes que já estão acesas, cada uma dentro da faixa que ela realmente alcança.",
+            "fields": {
+                "kelvin": {
+                    "name": "Temperatura da cor",
+                    "description": "A temperatura da cor a definir. Cada luz fica dentro da própria faixa, porque o branco quente de uma lâmpada é um número que a outra não alcança."
+                },
+                "transition": {
+                    "name": "Transição",
+                    "description": "Quanto tempo a mudança deve levar, em segundos."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Definir o efeito",
+            "description": "Coloca um efeito nas luzes que já estão acesas e que realmente têm esse efeito.",
+            "fields": {
+                "effect": {
+                    "name": "Efeito",
+                    "description": "O nome do efeito a definir. Os nomes dos efeitos variam de fabricante para fabricante, então as luzes que não têm este ficam como estão."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Atualizar uma etiqueta",
+            "description": "Atualiza uma etiqueta existente na hora. Tudo o que você deixar de fora fica com o valor que já tinha. A descrição, o ícone e a cor podem ser esvaziados colocando-os em null.",
+            "fields": {
+                "label_id": {
+                    "name": "ID da etiqueta",
+                    "description": "O ID da etiqueta a atualizar."
+                },
+                "name": {
+                    "name": "Nome",
+                    "description": "Novo nome para a etiqueta."
+                },
+                "description": {
+                    "name": "Descrição",
+                    "description": "Nova descrição para a etiqueta."
+                },
+                "icon": {
+                    "name": "Ícone",
+                    "description": "Novo ícone para a etiqueta."
+                },
+                "color": {
+                    "name": "Cor",
+                    "description": "Cor a usar para a etiqueta. Pode ser um nome de cor da lista ou um código de cor hexadecimal (como #FF0000)."
+                }
+            }
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "name": "Acionadores em ordem",
+            "description": "É acionado quando vários acionadores acontecem um após o outro, na ordem informada.",
+            "fields": {
+                "steps": {
+                    "name": "Passos",
+                    "description": "Os acionadores que precisam acontecer, em ordem. Só é escutado aquele que está sendo esperado, então um passo mais adiante que aconteça cedo demais não conta."
+                },
+                "timeout": {
+                    "name": "Tempo limite",
+                    "description": "Quanto tempo a sequência inteira pode levar, contando a partir do primeiro passo. Deixe vazio para esperar sem limite."
+                },
+                "reset": {
+                    "name": "Reiniciar",
+                    "description": "Acionadores que abandonam uma sequência já em andamento e a colocam de volta esperando o primeiro passo."
+                }
+            }
+        },
+        "while": {
+            "name": "Enquanto uma condição for verdadeira",
+            "description": "É acionado quando uma condição passa a ser verdadeira, e continua acionando em intervalos enquanto ela assim permanecer.",
+            "fields": {
+                "condition": {
+                    "name": "Condição",
+                    "description": "A condição a ser observada. Começa a acionar quando ela passa a ser verdadeira e para quando deixa de ser."
+                },
+                "every": {
+                    "name": "A cada",
+                    "description": "Quanto esperar entre um acionamento e o seguinte, enquanto a condição for verdadeira."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Cão de guarda",
+            "description": "É acionado quando algo que você esperava não acontece a tempo.",
+            "fields": {
+                "arm": {
+                    "name": "Armar",
+                    "description": "O que coloca a guarda de prontidão. A espera conta a partir daí, e armar de novo enquanto já se está esperando reinicia a contagem."
+                },
+                "expect": {
+                    "name": "Esperado",
+                    "description": "O que você espera que aconteça em seguida. Se chegar a tempo, a guarda é cancelada e nada é acionado."
+                },
+                "within": {
+                    "name": "Dentro de",
+                    "description": "Quanto tempo o que é esperado tem para chegar. Isto é acionado quando esse tempo passa e nada chegou."
+                }
+            }
+        },
+        "flapping": {
+            "name": "A entidade não se estabiliza",
+            "description": "É acionado quando uma entidade muda de estado com mais frequência do que deveria dentro de um intervalo de tempo.",
+            "fields": {
+                "changes": {
+                    "name": "Mudanças",
+                    "description": "Quantas mudanças de estado são necessárias antes de isto ser acionado. Mudanças de atributo não contam, nem uma entidade que aparece ou some."
+                },
+                "within": {
+                    "name": "Dentro de",
+                    "description": "O intervalo de tempo em que essas mudanças precisam caber. Ele vai andando para a frente, então são sempre as mudanças mais recentes."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "A condição passou a ser verdadeira",
+            "description": "É acionado quando uma condição passa de falsa para verdadeira, com os mesmos blocos de condição que você usa em todo lugar.",
+            "fields": {
+                "condition": {
+                    "name": "Condição",
+                    "description": "A condição a ser observada."
+                }
+            }
+        },
+        "cron": {
+            "name": "Agendamento cron",
+            "description": "É acionado conforme um agendamento crontab, para os horários que os acionadores de tempo do próprio Home Assistant não conseguem expressar, como todo dia útil às sete ou a última sexta-feira do mês.",
+            "fields": {
+                "schedule": {
+                    "name": "Agendamento",
+                    "description": "Uma expressão crontab com cinco campos: minuto, hora, dia do mês, mês, dia da semana. Aceita intervalos e passos, e as extensões do dia da semana, então \"MON#2\" é a segunda segunda-feira e \"5L\" a última sexta-feira. Apelidos como \"@daily\" não são aceitos."
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "A integração não conseguiu ser configurada",
+            "description": "É acionado quando uma entrada de configuração já faz um tempo que não consegue ser configurada, passado o ponto em que as novas tentativas do próprio Home Assistant teriam resolvido a questão.",
+            "fields": {
+                "for": {
+                    "name": "Durante",
+                    "description": "Quanto tempo uma entrada precisa continuar falhando antes de isto ser acionado. O Home Assistant tenta de novo uma entrada que falhou no máximo a cada dez minutos, então um valor mais curto avisa sobre problemas que ainda podem se resolver sozinhos."
+                },
+                "entry_id": {
+                    "name": "Entradas",
+                    "description": "Limite isto a certas entradas de configuração. Deixe vazio para observar todas."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Problema de reparo criado",
+            "description": "É acionado quando aparece um novo problema de reparo, para você ficar sabendo sem passar pela página de reparos.",
+            "fields": {
+                "domain": {
+                    "name": "Integrações",
+                    "description": "Limite isto a problemas informados por certas integrações, pelo domínio delas. Deixe vazio para todas."
+                },
+                "severity": {
+                    "name": "Gravidade",
+                    "description": "Limite isto a problemas de uma certa gravidade. Deixe vazio para todas."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Problema de reparo resolvido",
+            "description": "É acionado quando um problema de reparo some, seja porque foi resolvido, seja porque simplesmente não é mais informado.",
+            "fields": {
+                "domain": {
+                    "name": "Integrações",
+                    "description": "Limite isto a problemas informados por certas integrações, pelo domínio delas. Deixe vazio para todas."
+                }
+            }
+        },
+        "stale": {
+            "name": "A entidade ficou muda",
+            "description": "É acionado quando já faz um tempo que nada escreve em uma entidade, o que pega um dispositivo que morreu em silêncio em vez de ficar indisponível.",
+            "fields": {
+                "for": {
+                    "name": "Durante",
+                    "description": "Quanto tempo uma entidade precisa ficar calada antes de isto ser acionado. Uma entidade que continua informando o mesmo valor não está calada."
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Crítico",
+                "error": "Erro",
+                "warning": "Aviso"
+            }
         }
     }
 }
