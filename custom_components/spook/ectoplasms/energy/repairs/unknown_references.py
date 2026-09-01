@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
+
 from homeassistant.components.energy.validate import async_validate
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
@@ -32,6 +34,14 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_COMPONENT_LOADED,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
+
+    # Whether a source counts as known now depends on what the recorder holds,
+    # and statistics arriving or being cleared raises no event at all. Without
+    # a clock, an issue raised before the first import would sit there until
+    # some unrelated registry change happened along, which on a quiet system
+    # can be a long time.
+    inspect_interval = timedelta(hours=1)
+
     automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:
