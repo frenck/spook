@@ -147,13 +147,23 @@ class AbstractSpookRepairBase(ABC):
         """Trigger a repair check."""
         raise NotImplementedError
 
-    async def async_deactivate(self) -> None:
-        """Unregister the repair."""
-        if self.hass.is_stopping:
-            return
+    async def async_deactivate(self) -> None:  # noqa: B027
+        """Unregister the repair, and leave what it reported where it is.
 
-        for issue_id in self.issue_ids.copy():
-            self.async_delete_issue(issue_id)
+        Deliberately does nothing, and that is the point of it. Somebody
+        pressing "ignore" has that written on the issue itself, so deleting
+        the issue takes the mark with it and the next inspection puts the same
+        thing back as something nobody has ever seen. Home Assistant keeps an
+        issue over a restart for exactly that reason, as an empty record
+        holding only the mark, and reporting the same thing again finds it and
+        leaves it alone.
+
+        Which makes this a matter of not getting in the way. Every repair
+        already compares what it left in the registry against what it finds
+        when it next looks, and deletes what is no longer there, so the tidying
+        this used to do happens anyway and happens later, when there is
+        something to compare against. #1572.
+        """
 
 
 class AbstractSpookRepair(AbstractSpookRepairBase):
@@ -540,7 +550,28 @@ class SpookRepairManager:
         self._repairs.add(repair)
 
     async def async_on_unload(self) -> None:
-        """Tear down the Spook reapris."""
+        """Tear down the Spook repairs.
+
+        Nothing is removed from the issue registry on the way out, on purpose.
+
+        Somebody pressing "ignore" on a repair has that written down on the
+        issue itself, and deleting the issue throws it away with everything
+        else. Home Assistant is built for it to survive: an issue that is not
+        marked persistent is still kept over a restart as an empty record
+        holding only that, and creating the same issue again finds that record
+        and leaves the mark alone. Which means the way to keep an ignored
+        repair ignored is to not touch it.
+
+        Spook used to clear them all out here, so every reload, every
+        integration reload and every update through HACS quietly undid every
+        ignore anybody had ever pressed.
+
+        Leaving them behind costs nothing. Every repair already looks at what
+        it left in the registry when it next inspects, and deletes whatever it
+        does not find again, which covers the very things this was for: an
+        issue about something that was resolved or removed while Spook was not
+        running.
+        """
         LOGGER.debug("Tearing down Spook repairs")
         for repair in self._repairs:
             LOGGER.debug(
@@ -549,15 +580,6 @@ class SpookRepairManager:
                 repair.repair,
             )
             await repair.async_deactivate()
-
-            if self.hass.is_stopping:
-                continue
-
-            # Remove issues created by this Spook repair. Issue IDs are
-            # created as "<repair>_<issue_id>" (see async_create_issue).
-            for domain, issue_id in list(self.issue_registry.issues):
-                if domain == DOMAIN and issue_id.startswith(f"{repair.repair}_"):
-                    self.issue_registry.async_delete(domain, issue_id)
 
 
 class RestartRequiredFixFlow(RepairsFlow):
