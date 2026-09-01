@@ -1446,6 +1446,86 @@
                 }
             },
             "name": "Définir la précision d'affichage"
+        },
+        "light_set_brightness": {
+            "fields": {
+                "brightness_pct": {
+                    "name": "Luminosité",
+                    "description": "La luminosité à régler, en pourcentage. Les groupes sont ajustés lumière par lumière, une lumière éteinte reste donc éteinte."
+                },
+                "transition": {
+                    "description": "Durée du changement, en secondes.",
+                    "name": "Transition"
+                }
+            },
+            "name": "Régler la luminosité",
+            "description": "Règle la luminosité des lumières déjà allumées, sans toucher à celles qui sont éteintes."
+        },
+        "light_set_color": {
+            "fields": {
+                "rgb_color": {
+                    "name": "Couleur",
+                    "description": "La couleur à régler. Les lumières incapables de gérer la couleur sont ignorées plutôt que réglées sur blanc."
+                },
+                "transition": {
+                    "description": "Durée du changement, en secondes.",
+                    "name": "Transition"
+                }
+            },
+            "name": "Régler la couleur",
+            "description": "Règle la couleur des lumières déjà allumées, sans toucher à celles qui sont éteintes ou incapables de gérer la couleur."
+        },
+        "light_set_color_temperature": {
+            "fields": {
+                "kelvin": {
+                    "name": "Température de couleur",
+                    "description": "La température de couleur à régler. Chaque lumière est limitée à sa propre plage, un blanc chaud pour une lampe pouvant être un nombre inatteignable pour une autre."
+                },
+                "transition": {
+                    "description": "Durée du changement, en secondes.",
+                    "name": "Transition"
+                }
+            },
+            "name": "Régler la température de couleur",
+            "description": "Règle la température de couleur des lumières déjà allumées, chacune dans la plage qu'elle peut réellement atteindre."
+        },
+        "light_decrease_brightness": {
+            "name": "Diminuer la luminosité",
+            "fields": {
+                "transition": {
+                    "description": "Durée du changement, en secondes.",
+                    "name": "Transition"
+                },
+                "step_pct": {
+                    "description": "De combien diminuer, en pourcentage. Chaque lumière part de son propre niveau, ce qui préserve les écarts au sein d'un groupe au lieu de les uniformiser.",
+                    "name": "Palier"
+                }
+            },
+            "description": "Diminue la luminosité des lumières déjà allumées, en s'arrêtant à leur minimum plutôt que de les éteindre."
+        },
+        "light_set_effect": {
+            "fields": {
+                "effect": {
+                    "name": "Effet",
+                    "description": "Le nom de l'effet à appliquer. Les noms d'effets varient selon le fabricant, les lumières qui ne le proposent pas restent donc inchangées."
+                }
+            },
+            "name": "Régler l'effet",
+            "description": "Applique un effet sur les lumières déjà allumées qui le proposent réellement."
+        },
+        "light_increase_brightness": {
+            "fields": {
+                "transition": {
+                    "description": "Durée du changement, en secondes.",
+                    "name": "Transition"
+                },
+                "step_pct": {
+                    "description": "De combien augmenter, en pourcentage. Chaque lumière part de son propre niveau, ce qui préserve les écarts au sein d'un groupe au lieu de les uniformiser.",
+                    "name": "Palier"
+                }
+            },
+            "name": "Augmenter la luminosité",
+            "description": "Augmente la luminosité des lumières déjà allumées, sans toucher à celles qui sont éteintes."
         }
     },
     "conditions": {
