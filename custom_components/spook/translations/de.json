@@ -482,7 +482,8 @@
             "title": "Unbekannte Mitglieder in Min/Max-Helfer: {helper}"
         },
         "orphaned_statistics": {
-            "title": "Verwaiste Langzeitstatistik gefunden"
+            "title": "Verwaiste Langzeitstatistik gefunden",
+            "description": "Spook hat einen Geist in deinem Recorder gefunden 👻\n\nHome Assistant bewahrt Langzeitstatistiken für Folgendes auf, aber es gibt keine passende Entität mehr dazu:\n\n{statistics}\n\n\n\nDas passiert meist, wenn ein Sensor entfernt wurde, während seine Statistiken erhalten blieben. Um diesen Fehler zu beheben, öffne Einstellungen > Werkzeuge > Statistiken und bringe sie dort in Ordnung.\n\nSpook 👻 Dein Kumpel."
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -548,6 +549,27 @@
         "notify_unknown_group_members": {
             "description": "Spook hat ein Gespenst in deinen Benachrichtigungsgruppen gefunden 👻\n\nDie Benachrichtigungsgruppe `{group}` leitet an die folgenden Aktionen weiter, die Home Assistant nicht kennt:\n\n{members}\n\nDie Gruppe liefert weiterhin an ihre übrigen Mitglieder aus und meldet dem Aufrufer weiterhin Erfolg, sodass davor niemand etwas mitbekommt. Der Fehler zeigt sich nur als vereinzeltes \"Task exception was never retrieved\" im Protokoll, das keine Gruppe nennt und wie ein Programmfehler aussieht. Wer hinter diesem Mitglied stand, wird einfach nicht mehr benachrichtigt.\n\nUm diesen Fehler zu beheben, bearbeite die `services:` Liste dieser Gruppe in deiner Konfiguration und entferne oder korrigiere diese Einträge.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Mitglieder in Benachrichtigungsgruppe: {group}"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Dashboard-Ressource mehrfach aufgeführt: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Dashboard-Ressource mehrfach aufgeführt: {resource}",
+                        "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nDiese Dashboard-Ressource ist {count} mal aufgeführt:\n\n{resources}\n\nDas passiert meist, wenn eine benutzerdefinierte Karte aktualisiert wurde, indem eine Ressource für die neue Version hinzugefügt wurde, statt die vorhandene zu bearbeiten. Der Browser lädt beide, die Karte versucht sich zweimal zu registrieren, und der zweite Versuch scheitert. Das sieht nach einer kaputten Karte aus statt nach einer doppelten Ressource.\n\nSpook kann die überzähligen Kopien aufräumen und die zuletzt hinzugefügte behalten.\n\nSpook 👻 Dein Kumpel.",
+                        "menu_options": {
+                            "remove": "Überzählige Kopien aufräumen, die neueste behalten",
+                            "ignore": "So lassen, nichts mehr dazu sagen",
+                            "manage": "Ich kümmere mich selbst darum"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook schweigt ab jetzt über diese Ressource.",
+                    "manage": "Du kannst deine Dashboard-Ressourcen selbst auf der [Ressourcenseite](/config/lovelace/resources) verwalten.",
+                    "yaml": "Diese Ressourcen stehen in deiner YAML-Konfiguration, Spook kann sie also nicht für dich ändern. Bearbeite den Abschnitt `resources:` deiner Lovelace-Konfiguration und entferne die Kopien von `{resource}`, die du nicht mehr brauchst."
+                }
+            }
         }
     },
     "services": {
@@ -1446,6 +1468,146 @@
                 }
             },
             "name": "Anzeigegenauigkeit festlegen"
+        },
+        "wait_for_condition": {
+            "name": "Auf eine Bedingung warten",
+            "description": "Wartet, bis eine Bedingung wahr ist. Kehrt sofort zurück, wenn sie es schon ist.",
+            "fields": {
+                "condition": {
+                    "name": "Bedingung",
+                    "description": "Die Bedingung, auf die gewartet wird."
+                },
+                "timeout": {
+                    "name": "Zeitlimit",
+                    "description": "Wie lange gewartet wird, bevor aufgegeben wird. Ohne Angabe wird unbegrenzt gewartet."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Schlummern",
+            "description": "Schaltet eine Automatisierung eine Weile aus und wieder ein, wenn die Zeit um ist.",
+            "fields": {
+                "duration": {
+                    "name": "Dauer",
+                    "description": "Wie lange die Automatisierung aus bleibt. Sie kommt von selbst wieder, wenn das um ist, auch wenn Home Assistant zwischendurch neu startet."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Einschalten für",
+            "description": "Schaltet eine Automatisierung eine Weile ein und wieder aus, wenn die Zeit um ist.",
+            "fields": {
+                "duration": {
+                    "name": "Dauer",
+                    "description": "Wie lange die Automatisierung an bleibt. Sie geht von selbst wieder aus, wenn das um ist, auch wenn Home Assistant zwischendurch neu startet."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Helligkeit einstellen",
+            "description": "Stellt die Helligkeit der Lampen ein, die bereits an sind, und lässt die ausgeschalteten in Ruhe.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Helligkeit",
+                    "description": "Die einzustellende Helligkeit in Prozent. Gruppen werden Lampe für Lampe angepasst, eine ausgeschaltete Lampe bleibt also aus."
+                },
+                "transition": {
+                    "name": "Übergang",
+                    "description": "Wie lange die Änderung dauern soll, in Sekunden."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Helligkeit erhöhen",
+            "description": "Dreht die Lampen, die bereits an sind, heller und lässt die ausgeschalteten in Ruhe.",
+            "fields": {
+                "step_pct": {
+                    "name": "Schritt",
+                    "description": "Um wie viel heller es gehen soll, in Prozent. Jede Lampe geht von ihrem eigenen Stand aus, eine Gruppe behält also ihre Form, statt sich anzugleichen."
+                },
+                "transition": {
+                    "name": "Übergang",
+                    "description": "Wie lange die Änderung dauern soll, in Sekunden."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Helligkeit verringern",
+            "description": "Dreht die Lampen, die bereits an sind, dunkler, bis zu ihrer dunkelsten Stufe, statt sie auszuschalten.",
+            "fields": {
+                "step_pct": {
+                    "name": "Schritt",
+                    "description": "Um wie viel dunkler es gehen soll, in Prozent. Jede Lampe geht von ihrem eigenen Stand aus, eine Gruppe behält also ihre Form, statt sich anzugleichen."
+                },
+                "transition": {
+                    "name": "Übergang",
+                    "description": "Wie lange die Änderung dauern soll, in Sekunden."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Farbe einstellen",
+            "description": "Stellt die Farbe der Lampen ein, die bereits an sind, und lässt die in Ruhe, die aus sind oder keine Farbe können.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Farbe",
+                    "description": "Die einzustellende Farbe. Lampen, die keine Farbe können, werden übergangen, statt weiß geschaltet zu werden."
+                },
+                "transition": {
+                    "name": "Übergang",
+                    "description": "Wie lange die Änderung dauern soll, in Sekunden."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Farbtemperatur einstellen",
+            "description": "Stellt die Farbtemperatur der Lampen ein, die bereits an sind, jede innerhalb des Bereichs, den sie wirklich erreichen kann.",
+            "fields": {
+                "kelvin": {
+                    "name": "Farbtemperatur",
+                    "description": "Die einzustellende Farbtemperatur. Jede Lampe wird in ihrem eigenen Bereich gehalten, denn Warmweiß bei der einen Lampe ist eine Zahl, die eine andere nicht erreicht."
+                },
+                "transition": {
+                    "name": "Übergang",
+                    "description": "Wie lange die Änderung dauern soll, in Sekunden."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Effekt einstellen",
+            "description": "Stellt einen Effekt bei den Lampen ein, die bereits an sind und ihn auch wirklich haben.",
+            "fields": {
+                "effect": {
+                    "name": "Effekt",
+                    "description": "Der Name des einzustellenden Effekts. Effektnamen unterscheiden sich je nach Hersteller, Lampen ohne diesen Effekt bleiben also, wie sie sind."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Label aktualisieren",
+            "description": "Aktualisiert ein vorhandenes Label im laufenden Betrieb. Alles, was du weglässt, behält den Wert, den es schon hat. Beschreibung, Symbol und Farbe lassen sich leeren, indem du sie auf null setzt.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "Die ID des zu aktualisierenden Labels."
+                },
+                "name": {
+                    "name": "Name",
+                    "description": "Neuer Name für das Label."
+                },
+                "description": {
+                    "name": "Beschreibung",
+                    "description": "Neue Beschreibung für das Label."
+                },
+                "icon": {
+                    "name": "Symbol",
+                    "description": "Neues Symbol für das Label."
+                },
+                "color": {
+                    "name": "Farbe",
+                    "description": "Farbe für das Label. Kann ein Farbname aus der Liste sein oder ein Hex-Farbcode (etwa #FF0000)."
+                }
+            }
         }
     },
     "conditions": {
@@ -1468,6 +1630,201 @@
                 }
             },
             "name": "Abklingzeit"
+        },
+        "repair_issue_present": {
+            "name": "Reparaturmeldung offen",
+            "description": "Trifft zu, solange eine Reparaturmeldung offen ist. Meldungen, die jemand ignoriert hat, zählen nicht mit.",
+            "fields": {
+                "domain": {
+                    "name": "Integrationen",
+                    "description": "Beschränke dies auf Meldungen bestimmter Integrationen, nach ihrer Domain. Leer lassen für alle."
+                },
+                "severity": {
+                    "name": "Schweregrad",
+                    "description": "Beschränke dies auf Meldungen eines bestimmten Schweregrads. Leer lassen für alle."
+                }
+            }
+        },
+        "quota": {
+            "name": "Verbleibende Durchläufe",
+            "description": "Trifft zu, solange diese Automatisierung innerhalb eines angegebenen Zeitraums seltener als eine angegebene Anzahl gelaufen ist. Skripte zählen nicht mit.",
+            "fields": {
+                "limit": {
+                    "name": "Limit",
+                    "description": "Wie viele Durchläufe innerhalb des Zeitraums erlaubt sind."
+                },
+                "period": {
+                    "name": "Zeitraum",
+                    "description": "Das Fenster, für das das Limit gilt. Es wandert mit, ein Tag bedeutet also irgendwelche vierundzwanzig Stunden und nicht von Mitternacht bis Mitternacht."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Von einer Automatisierung ausgelöst",
+            "description": "Trifft zu, wenn eine andere Automatisierung diesen Durchlauf in Gang gesetzt hat, ob direkt oder über ein Skript.",
+            "fields": {
+                "automation": {
+                    "name": "Automatisierungen",
+                    "description": "Beschränke dies auf bestimmte Automatisierungen. Leer lassen, um alle zu akzeptieren."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Von einem Benutzer ausgelöst",
+            "description": "Trifft zu, wenn eine Person dahintersteckt: eine Statusänderung oder ein Ereignis, das sie verursacht hat, auch eines, das einen Template-Auslöser wahr werden ließ. Ein Zeitplan, die Sonne oder eine Integration, die von sich aus handelt, trägt niemanden mit sich, und einen Durchlauf über die Schaltfläche Ausführen zu erzwingen ebenso wenig.",
+            "fields": {
+                "person": {
+                    "name": "Personen",
+                    "description": "Nur zutreffen, wenn eine dieser Personen es gestartet hat. Leer lassen, damit es für alle zutrifft. Einer Person muss ein Benutzerkonto zugeordnet sein, sonst gibt es nichts zu vergleichen."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Nicht von einem Benutzer ausgelöst",
+            "description": "Trifft zu, wenn niemand für diesen Durchlauf verantwortlich gemacht werden kann: ein Zeitplan, die Sonne, eine Integration, die von sich aus handelt, oder die Schaltfläche Ausführen. Hat mit Absicht keine Optionen. Willst du stattdessen bestimmte Personen ausschließen, setze \"Von einem Benutzer ausgelöst\" in eine Nicht-Bedingung."
+        }
+    },
+    "triggers": {
+        "sequence": {
+            "name": "Auslöser der Reihe nach",
+            "description": "Wird ausgelöst, wenn mehrere Auslöser nacheinander eintreten, in der angegebenen Reihenfolge.",
+            "fields": {
+                "steps": {
+                    "name": "Schritte",
+                    "description": "Die Auslöser, die eintreten müssen, der Reihe nach. Nur auf den gerade erwarteten wird gehört, ein späterer Schritt zählt also nicht, wenn er zu früh eintritt."
+                },
+                "timeout": {
+                    "name": "Zeitlimit",
+                    "description": "Wie lange die ganze Abfolge dauern darf, gerechnet ab dem ersten Schritt. Ohne Angabe wird unbegrenzt gewartet."
+                },
+                "reset": {
+                    "name": "Zurücksetzen",
+                    "description": "Auslöser, die eine bereits laufende Abfolge abbrechen, sodass wieder auf den ersten Schritt gewartet wird."
+                }
+            }
+        },
+        "while": {
+            "name": "Solange eine Bedingung gilt",
+            "description": "Wird ausgelöst, wenn eine Bedingung wahr wird, und löst weiter in einem Intervall aus, solange sie wahr bleibt.",
+            "fields": {
+                "condition": {
+                    "name": "Bedingung",
+                    "description": "Die zu beobachtende Bedingung. Das Auslösen beginnt, wenn sie wahr wird, und endet, wenn sie es nicht mehr ist."
+                },
+                "every": {
+                    "name": "Alle",
+                    "description": "Wie lange zwischen zwei Auslösungen gewartet wird, solange die Bedingung gilt."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Wachhund",
+            "description": "Wird ausgelöst, wenn etwas Erwartetes nicht rechtzeitig eintritt.",
+            "fields": {
+                "arm": {
+                    "name": "Scharfschalten",
+                    "description": "Was die Überwachung startet. Die Wartezeit wird von hier an gemessen, und erneutes Scharfschalten während der Wartezeit beginnt sie von vorn."
+                },
+                "expect": {
+                    "name": "Erwartet",
+                    "description": "Was darauf folgen soll. Trifft es rechtzeitig ein, wird die Überwachung abgeblasen und nichts wird ausgelöst."
+                },
+                "within": {
+                    "name": "Innerhalb",
+                    "description": "Wie lange das Erwartete Zeit hat einzutreffen. Dies wird ausgelöst, wenn diese Zeit verstreicht und es nicht da ist."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entität kommt nicht zur Ruhe",
+            "description": "Wird ausgelöst, wenn eine Entität innerhalb einer bestimmten Zeit öfter ihren Status wechselt, als sie sollte.",
+            "fields": {
+                "changes": {
+                    "name": "Änderungen",
+                    "description": "Wie viele Statusänderungen nötig sind, bevor dies ausgelöst wird. Änderungen an Attributen zählen nicht mit, und eine Entität, die auftaucht oder verschwindet, ebenso wenig."
+                },
+                "within": {
+                    "name": "Innerhalb",
+                    "description": "Der Zeitraum, in den diese Änderungen fallen müssen. Er wandert mit, es geht also immer um die jüngsten Änderungen."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Bedingung wurde wahr",
+            "description": "Wird ausgelöst, wenn eine Bedingung von falsch auf wahr wechselt, mit denselben Bausteinen für Bedingungen wie überall sonst.",
+            "fields": {
+                "condition": {
+                    "name": "Bedingung",
+                    "description": "Die zu beobachtende Bedingung."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron-Zeitplan",
+            "description": "Wird nach einem Crontab-Zeitplan ausgelöst, für die Zeiten, die sich mit den eigenen Zeitauslösern von Home Assistant nicht ausdrücken lassen, etwa jeden Werktag um sieben oder am letzten Freitag des Monats.",
+            "fields": {
+                "schedule": {
+                    "name": "Zeitplan",
+                    "description": "Ein Crontab-Ausdruck mit fünf Feldern: Minute, Stunde, Tag des Monats, Monat, Wochentag. Unterstützt Bereiche und Schritte sowie die Erweiterungen für den Wochentag, sodass \"MON#2\" der zweite Montag ist und \"5L\" der letzte Freitag. Kurznamen wie \"@daily\" werden nicht unterstützt."
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "Integration konnte nicht eingerichtet werden",
+            "description": "Wird ausgelöst, wenn sich ein Konfigurationseintrag schon eine Weile nicht einrichten lässt, über den Punkt hinaus, an dem die eigenen Wiederholungen von Home Assistant es geklärt hätten.",
+            "fields": {
+                "for": {
+                    "name": "Für",
+                    "description": "Wie lange ein Eintrag scheitern muss, bevor dies ausgelöst wird. Home Assistant versucht es bei einem scheiternden Eintrag längstens alle zehn Minuten erneut, alles Kürzere meldet also Ärger, der sich noch von selbst erledigen kann."
+                },
+                "entry_id": {
+                    "name": "Einträge",
+                    "description": "Beschränke dies auf bestimmte Konfigurationseinträge. Leer lassen, um alle zu beobachten."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Reparaturmeldung erstellt",
+            "description": "Wird ausgelöst, wenn eine neue Reparaturmeldung auftaucht, sodass du davon erfährst, ohne die Reparaturseite zu besuchen.",
+            "fields": {
+                "domain": {
+                    "name": "Integrationen",
+                    "description": "Beschränke dies auf Meldungen bestimmter Integrationen, nach ihrer Domain. Leer lassen für alle."
+                },
+                "severity": {
+                    "name": "Schweregrad",
+                    "description": "Beschränke dies auf Meldungen eines bestimmten Schweregrads. Leer lassen für alle."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Reparaturmeldung erledigt",
+            "description": "Wird ausgelöst, wenn eine Reparaturmeldung verschwindet, behoben oder nicht mehr gemeldet.",
+            "fields": {
+                "domain": {
+                    "name": "Integrationen",
+                    "description": "Beschränke dies auf Meldungen bestimmter Integrationen, nach ihrer Domain. Leer lassen für alle."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entität ist verstummt",
+            "description": "Wird ausgelöst, wenn eine Weile nichts mehr in eine Entität geschrieben wurde, was ein Gerät erwischt, das still gestorben ist, statt nicht verfügbar zu werden.",
+            "fields": {
+                "for": {
+                    "name": "Für",
+                    "description": "Wie lange eine Entität stumm bleiben muss, bevor dies ausgelöst wird. Eine Entität, die immer denselben Wert meldet, ist nicht stumm."
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritisch",
+                "error": "Fehler",
+                "warning": "Warnung"
+            }
         }
     }
 }
