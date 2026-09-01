@@ -56,7 +56,13 @@ class SpookService(AbstractSpookAdminService):
                 if call.data["has_mean"]
                 else StatisticMeanType.NONE
             ),
-            "name": call.data["name"],
+            # Named after itself when nobody says otherwise. Home Assistant
+            # writes no name on the statistics a sensor keeps for itself, and
+            # takes that as meaning there is an entity somewhere holding the
+            # name instead. Importing without one leaves statistics that read
+            # as a sensor's, which is how Spook's own repairs end up calling
+            # something imported through here unknown. #1565.
+            "name": call.data["name"] or call.data["statistic_id"],
             "source": call.data["source"],
             "statistic_id": call.data["statistic_id"],
             "unit_class": STATISTIC_UNIT_TO_UNIT_CONVERTER.get(

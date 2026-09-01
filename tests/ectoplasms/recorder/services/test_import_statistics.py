@@ -121,3 +121,94 @@ async def test_import_statistics_service_sets_no_mean_metadata(
     assert calls[0]["mean_type"] is StatisticMeanType.NONE
     assert calls[0]["unit_class"] == STATISTIC_UNIT_TO_UNIT_CONVERTER[None].UNIT_CLASS
     assert "has_mean" not in calls[0]
+
+
+@pytest.mark.usefixtures("recorder_import_statistics_service")
+async def test_import_statistics_service_names_them_after_themselves(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Statistics kept for a sensor carry no name of their own.
+
+    Home Assistant takes that off the entity instead, so importing without one
+    leaves statistics that read exactly like a sensor's. Spook's own repairs
+    read that as an entity having gone missing, and end up calling something
+    imported through this very action unknown. #1565.
+    """
+    calls: list[tuple[StatisticMetaData, list[StatisticData]]] = []
+
+    def mock_import_statistics(
+        _hass: HomeAssistant,
+        metadata: StatisticMetaData,
+        statistics: list[StatisticData],
+    ) -> None:
+        """Mock importing internal statistics."""
+        calls.append((metadata, statistics))
+
+    monkeypatch.setattr(
+        import_statistics,
+        "async_import_statistics",
+        mock_import_statistics,
+    )
+
+    await hass.services.async_call(
+        DOMAIN,
+        "import_statistics",
+        {
+            "has_mean": False,
+            "has_sum": True,
+            "source": DOMAIN,
+            "statistic_id": "sensor.gas_from_a_service",
+            "unit_of_measurement": "m³",
+            "stats": [{"start": datetime(2026, 1, 1, tzinfo=UTC), "sum": 1.0}],
+        },
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    metadata, _imported = calls[0]
+    assert metadata["name"] == "sensor.gas_from_a_service"
+
+
+@pytest.mark.usefixtures("recorder_import_statistics_service")
+async def test_import_statistics_service_keeps_a_name_that_was_given(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Naming them after themselves is a fallback, not a rule."""
+    calls: list[tuple[StatisticMetaData, list[StatisticData]]] = []
+
+    def mock_import_statistics(
+        _hass: HomeAssistant,
+        metadata: StatisticMetaData,
+        statistics: list[StatisticData],
+    ) -> None:
+        """Mock importing internal statistics."""
+        calls.append((metadata, statistics))
+
+    monkeypatch.setattr(
+        import_statistics,
+        "async_import_statistics",
+        mock_import_statistics,
+    )
+
+    await hass.services.async_call(
+        DOMAIN,
+        "import_statistics",
+        {
+            "has_mean": False,
+            "has_sum": True,
+            "name": "Gas, read by a service",
+            "source": DOMAIN,
+            "statistic_id": "sensor.gas_from_a_service",
+            "unit_of_measurement": "m³",
+            "stats": [{"start": datetime(2026, 1, 1, tzinfo=UTC), "sum": 1.0}],
+        },
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    metadata, _imported = calls[0]
+    assert metadata["name"] == "Gas, read by a service"
