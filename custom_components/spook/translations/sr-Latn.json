@@ -242,7 +242,7 @@
     },
     "issues": {
         "automation_unknown_area_references": {
-            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{aomation}]({edit}) (`{entity_id}`)\n\n\nOva automatizacija koristi sledeće prostorije koje su nepoznate Home Assistant-u:\n\n{areas}\n\n\n\nDa biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nepostojećih prostorija.\n\nSpook 👻 Vaš ortak.",
+            "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\nOva automatizacija koristi sledeće prostorije koje su nepoznate Home Assistant-u:\n\n{areas}\n\n\n\nDa biste ispravili ovu grešku, [uredite automatizaciju]({edit}) i uklonite upotrebu ovih nepostojećih prostorija.\n\nSpook 👻 Vaš ortak.",
             "title": "Nepoznate prostorije korišćene u: {automation}"
         },
         "automation_unknown_device_references": {
@@ -353,7 +353,7 @@
             }
         },
         "alert_unknown_notifiers": {
-            "description": "Spook je pronašao duha u vašim alarmima 👻\n\nAlarm {alert} ({entity_id) šalje obaveštenja putem sledećih akcija koje su nepoznate Home Assistant-u:\n\n{notifiers}\n\nAlarm se i dalje aktivira i prolazi kroz svoje cikluse, ali ova obaveštenja ne odlaze nikuda. Home Assistant ovo beleži u dnevnik tek u trenutku kada se alarm aktivira, što je loš trenutak da saznate da niko ne sluša.\n\nDa biste ispravili ovu grešku, uredite listu notifiers: za ovaj alarm u vašoj konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš ortak.",
+            "description": "Spook je pronašao duha u vašim alarmima 👻\n\nAlarm {alert} (`{entity_id}`) šalje obaveštenja putem sledećih akcija koje su nepoznate Home Assistant-u:\n\n{notifiers}\n\nAlarm se i dalje aktivira i prolazi kroz svoje cikluse, ali ova obaveštenja ne odlaze nikuda. Home Assistant ovo beleži u dnevnik tek u trenutku kada se alarm aktivira, što je loš trenutak da saznate da niko ne sluša.\n\nDa biste ispravili ovu grešku, uredite listu notifiers: za ovaj alarm u vašoj konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš ortak.",
             "title": "Nepoznate usluge obaveštavanja koje obaveštenje koristi: {alert}"
         },
         "alert_unknown_entity_references": {
@@ -377,7 +377,7 @@
             "title": "Resursi kontrolne table ukazuju na datoteke koje nedostaju"
         },
         "lovelace_unknown_area_references": {
-            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n{dashboard}\n\nOva kontrolna tabla koristi sledeće prostorije koje su nepoznate Home Assistant-u:\n\n{areas}\n\n\n\nOvo se često dešava kada se prostorija preimenuje ili ukloni. Da biste ispravili ovu grešku, uredite kontrolnu tablu i uklonite upotrebu ovih nepostojećih prostorija.\n\nSpook 👻 Vaš ortak.",
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n{dashboard}\n\nOva kontrolna tabla koristi sledeće prostorije koje su nepoznate Home Assistant-u:\n\n{areas}\n\n\n\nOvo se često dešava kada se prostorija preimenuje ili ukloni. Da biste ispravili ovu grešku, [uredite kontrolnu tablu]({edit}) i uklonite upotrebu ovih nepostojećih prostorija.\n\nSpook 👻 Vaš ortak.",
             "title": "Nepoznate prostorije korišćene u kontrolnoj tabli: {dashboard}"
         },
         "energy_unknown_references": {
