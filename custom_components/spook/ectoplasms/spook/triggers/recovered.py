@@ -29,6 +29,7 @@ if TYPE_CHECKING:
     from datetime import datetime
 
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
+    from homeassistant.helpers.event import EventStateChangedData
     from homeassistant.helpers.trigger import (
         TriggerActionRunner,
         TriggerConfig,
@@ -86,7 +87,9 @@ class _AbsenceTracker(TargetEntityChangeTracker):
         hass: HomeAssistant,
         target_selection: TargetSelection,
         duration: timedelta,
-        on_return: Callable[[str, datetime, timedelta], None],
+        on_return: Callable[
+            [str, Event[EventStateChangedData], datetime, timedelta], None
+        ],
     ) -> None:
         """Initialize the tracker."""
         super().__init__(hass, target_selection, entity_filter=lambda ids: ids)
@@ -183,7 +186,7 @@ class _AbsenceTracker(TargetEntityChangeTracker):
             unsub()
 
     @callback
-    def _entity_changed(self, event: Event) -> None:
+    def _entity_changed(self, event: Event[EventStateChangedData]) -> None:
         """Follow one entity through going away and coming back."""
         entity_id: str = event.data["entity_id"]
 
@@ -212,7 +215,7 @@ class _AbsenceTracker(TargetEntityChangeTracker):
             return
 
         if (gone_for := new_state.last_changed - gone_since) >= self._duration:
-            self._on_return(entity_id, gone_since, gone_for)
+            self._on_return(entity_id, event, gone_since, gone_for)
 
     def _unsubscribe(self) -> None:
         """Unsubscribe from everything, the base class' listeners included."""
@@ -274,18 +277,27 @@ class SpookTrigger(Trigger):
         @callback
         def entity_came_back(
             entity_id: str,
+            event: Event[EventStateChangedData],
             gone_since: datetime,
             gone_for: timedelta,
         ) -> None:
             """Run the action for the entity that returned."""
+            to_state = event.data["new_state"]
+
             run_action(
                 {
                     "entity_id": entity_id,
+                    "from_state": event.data["old_state"],
+                    "to_state": to_state,
                     "for": self._duration,
                     "gone_since": dt_util.as_local(gone_since),
                     "gone_for": gone_for,
                 },
                 f"{entity_id} came back after {gone_for}",
+                # Carried through, so Spook's own context conditions can still
+                # tell whether a person was behind the return. Without it, a
+                # device somebody switched back on reads as nobody's doing.
+                to_state.context if to_state else None,
             )
 
         tracker = _AbsenceTracker(
