@@ -1,5 +1,19 @@
 {
   "triggers": {
+    "all_of": {
+      "name": "All of these happened",
+      "description": "Fires when every one of several triggers has fired inside the same window of time, in any order. Home Assistant's own triggers are a list where any one of them is enough; this is the other one.",
+      "fields": {
+        "triggers": {
+          "name": "Triggers",
+          "description": "The triggers that all have to have fired. Order does not matter, and a trigger firing again replaces its earlier turn rather than counting twice."
+        },
+        "within": {
+          "name": "Within",
+          "description": "How close together they have to be. The window slides, so a trigger that fired longer ago than this is forgotten while the others carry on counting."
+        }
+      }
+    },
     "recovered": {
       "name": "Entity came back",
       "description": "Fires when an entity comes back after having been unavailable for a while, so a router rebooting does not read as everything in the house recovering.",

@@ -9,6 +9,12 @@ date: 2026-08-27T21:15:00+02:00
 
 Spook provides new triggers to Home Assistant. This reference page lists them all and points you to the right documentation for that trigger.
 
+## All of these happened
+
+Fires when every one of several triggers has fired inside the same window of time, in any order. Home Assistant's own triggers are a list where any one of them is enough; this is the other one. _#and_ _#together_ _#combination_
+
+`spook.all_of`, [documentation](other-features#all-of-these-happened) 📚
+
 ## Cron schedule
 
 Fires on a crontab schedule, for the times Home Assistant's own time triggers cannot express, like every weekday at seven or the last Friday of the month. _#crontab_

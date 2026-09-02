@@ -69,6 +69,17 @@ condition_met:
       required: true
       selector:
         condition:
+all_of:
+  fields:
+    triggers:
+      required: true
+      selector:
+        trigger:
+    within:
+      required: true
+      example: "00:05:00"
+      selector:
+        duration:
 sequence:
   fields:
     steps:
