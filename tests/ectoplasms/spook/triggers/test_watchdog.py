@@ -24,6 +24,7 @@ from custom_components.spook.ectoplasms.spook.triggers import (
 )
 from custom_components.spook.ectoplasms.spook.triggers.watchdog import SpookTrigger
 from custom_components.spook.trigger import async_get_triggers
+from tests.nested_trigger_helpers import async_stop_while_attaching
 
 # Importing Spook puts it in `sys.modules`, which is what lets Home Assistant's
 # loader resolve the integration when it goes looking for the trigger platform.
@@ -335,33 +336,8 @@ async def test_stopping_while_attaching_leaves_nothing_behind(
         barks.append,
     )
 
-    real = trigger_helper.async_initialize_triggers
-    hold = asyncio.Event()
-    attaching = asyncio.Event()
-
-    async def _suspending(*args: Any, **kwargs: Any):  # noqa: ANN202
-        if "arming" in args[4]:
-            attaching.set()
-            await hold.wait()
-        return await real(*args, **kwargs)
-
-    with patch.object(
-        trigger_nesting.trigger_helper,
-        "async_initialize_triggers",
-        _suspending,
-    ):
-        starting = hass.async_create_task(watchdog.async_start())
-        async with asyncio.timeout(5):
-            await attaching.wait()
-
-        # The automation is turned off while the arming half is being
-        # attached.
-        watchdog.async_stop()
-
-        hold.set()
-        async with asyncio.timeout(5):
-            await starting
-        await hass.async_block_till_done()
+    # Stopped while the arming half is still being attached.
+    await async_stop_while_attaching(hass, watchdog, holding="arming")
 
     assert not watchdog._unsubs, "a listener was left behind"
 
