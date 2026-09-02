@@ -34,14 +34,29 @@ async def _no_loading_needed() -> dict[str, int]:
     return {"resources": 0}
 
 
-def _set_resources(hass: HomeAssistant, urls: list[str]) -> None:
-    """Install a fake resource collection with the given URLs."""
-    hass.data["lovelace"] = SimpleNamespace(
-        resources=SimpleNamespace(
-            async_items=lambda: [{"url": url, "type": "module"} for url in urls],
-            async_get_info=_no_loading_needed,
-        ),
+async def _no_deleting_needed(_item_id: str) -> None:
+    """Stand in for the delete a storage-mode collection offers."""
+
+
+def _set_resources(
+    hass: HomeAssistant,
+    urls: list[str],
+    *,
+    from_yaml: bool = False,
+) -> None:
+    """Install a fake resource collection with the given URLs.
+
+    A storage-mode collection can delete an item and a YAML one cannot, which
+    is the whole difference Spook goes on, so the fake has to carry it.
+    """
+    collection = SimpleNamespace(
+        async_items=lambda: [{"url": url, "type": "module"} for url in urls],
+        async_get_info=_no_loading_needed,
     )
+    if not from_yaml:
+        collection.async_delete_item = _no_deleting_needed
+
+    hass.data["lovelace"] = SimpleNamespace(resources=collection)
 
 
 async def test_missing_local_resource_creates_issue(
@@ -127,3 +142,38 @@ async def test_storage_resources_are_loaded_before_they_are_read(
     issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
     assert issue
     assert "/local/gone.js" in issue.translation_placeholders["resources"]
+
+
+async def test_stored_resources_point_at_the_resources_page(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test resources managed from the interface get the page to go to."""
+    _set_resources(hass, ["/local/gone.js"])
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert issue
+    assert issue.translation_key == "lovelace_missing_resources"
+
+
+async def test_yaml_resources_are_told_where_the_file_is(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test resources listed in YAML are not sent to a page that cannot help.
+
+    Nothing can delete a resource that came from the configuration, so the
+    Resources page has nothing to offer somebody in this position.
+    """
+    _set_resources(hass, ["/local/gone.js"], from_yaml=True)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert issue
+    assert issue.translation_key == "lovelace_missing_resources_yaml"
+    # Same finding either way, so the list of what is missing must not differ.
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["resources"] == "- `/local/gone.js`"

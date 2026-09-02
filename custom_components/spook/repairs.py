@@ -39,7 +39,7 @@ from homeassistant.helpers.event import async_track_time_interval
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
-from .dashboard_resources import redundant_item_ids
+from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from .entity_suggestions import async_describe_unknown_entities
 
@@ -104,9 +104,17 @@ class AbstractSpookRepairBase(ABC):
         issue_id: str,
         learn_more_url: str | None = None,
         severity: ir.IssueSeverity = ir.IssueSeverity.WARNING,
+        translation_key: str | None = None,
         translation_placeholders: dict[str, str] | None = None,
     ) -> None:
-        """Create an issue."""
+        """Create an issue.
+
+        `translation_key` defaults to the repair's own name, which is what
+        nearly every repair wants. Pass one when the same finding needs to be
+        worded differently depending on what the house looks like, so that the
+        alternative is a translated string of its own rather than a sentence
+        smuggled in through a placeholder.
+        """
         self.issue_ids.add(issue_id)
         ir.async_create_issue(
             self.hass,
@@ -119,7 +127,7 @@ class AbstractSpookRepairBase(ABC):
             issue_id=f"{self.repair}_{issue_id}",
             learn_more_url=learn_more_url,
             severity=severity,
-            translation_key=self.repair,
+            translation_key=translation_key or self.repair,
             translation_placeholders=translation_placeholders,
         )
 
@@ -797,7 +805,7 @@ class DuplicateResourceFixFlow(_RemoveOrIgnoreFixFlow):
         lovelace = self.hass.data.get(lovelace_const.DOMAIN)
         resources = lovelace.resources if lovelace is not None else None
 
-        if resources is not None and not hasattr(resources, "async_delete_item"):
+        if resources is not None and is_yaml_managed(resources):
             return self.async_abort(
                 reason="yaml",
                 description_placeholders=self._menu_placeholders(),

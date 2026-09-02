@@ -9,7 +9,7 @@ from homeassistant.components.lovelace import DOMAIN
 from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_LOVELACE_UPDATED
 
 from ....const import LOGGER
-from ....dashboard_resources import async_watch_resources
+from ....dashboard_resources import async_watch_resources, is_yaml_managed
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
@@ -102,8 +102,14 @@ class SpookRepair(AbstractSpookRepair):
 
         missing = await self.hass.async_add_executor_job(self._find_missing, to_check)
         if missing:
+            # Where to go and fix it depends on where the resources live.
+            # Sending somebody with a YAML configuration to the Resources page
+            # sends them to a screen that cannot change what they came for.
             self.async_create_issue(
                 issue_id=self.repair,
+                translation_key=(
+                    f"{self.repair}_yaml" if is_yaml_managed(resources) else self.repair
+                ),
                 translation_placeholders={
                     "resources": "\n".join(f"- `{url}`" for url in sorted(missing)),
                 },
