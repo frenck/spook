@@ -551,12 +551,12 @@
             "title": "Okända medlemmar i aviseringsgrupp: {group}"
         },
         "lovelace_duplicate_resources": {
-            "title": "Instrumentpanelsresurs finns med mer än en gång: {resource}",
+            "title": "Kontrollpanelsresurs finns med mer än en gång: {resource}",
             "fix_flow": {
                 "step": {
                     "init": {
-                        "title": "Instrumentpanelsresurs finns med mer än en gång: {resource}",
-                        "description": "Spook har hittat ett spöke bland dina instrumentpaneler 👻\n\nDenna instrumentpanelsresurs förekommer {count} gånger:\n\n{resources}\n\nDet brukar hända när ett anpassat kort uppdaterats genom att lägga till en resurs för den nya versionen i stället för att redigera den som redan fanns. Webbläsaren laddar båda, kortet försöker registrera sig två gånger och andra försöket misslyckas, vilket ser ut som ett trasigt kort i stället för en dubblerad resurs.\n\nSpook kan städa bort de överflödiga kopiorna och behålla den som lades till senast.\n\nSpook 👻 Din polare.",
+                        "title": "Kontrollpanelsresurs finns med mer än en gång: {resource}",
+                        "description": "Spook har hittat ett spöke bland dina kontrollpanaler 👻\n\nDenna kontrollpanelsresurs förekommer {count} gånger:\n\n{resources}\n\nDet brukar hända när ett anpassat kort uppdaterats genom att lägga till en resurs för den nya versionen i stället för att redigera den som redan fanns. Webbläsaren laddar båda, kortet försöker registrera sig två gånger och andra försöket misslyckas, vilket ser ut som ett trasigt kort i stället för en dubblerad resurs.\n\nSpook kan städa bort de överflödiga kopiorna och behålla den som lades till senast.\n\nSpook 👻 Din polare.",
                         "menu_options": {
                             "remove": "Städa bort de överflödiga kopiorna och behåll den senaste",
                             "ignore": "Låt dem vara, och säg inget mer om det",
@@ -566,7 +566,7 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook kommer inte att säga något mer om denna resurs.",
-                    "manage": "Du kan sköta dina instrumentpanelers resurser själv på [sidan Resurser](/config/lovelace/resources).",
+                    "manage": "Du kan sköta dina kontrollpanelers resurser själv på [sidan för Resurser](/config/lovelace/resources).",
                     "yaml": "Dessa resurser står i din YAML-konfiguration, så Spook kan inte ändra dem åt dig. Redigera avsnittet `resources:` i din Lovelace-konfiguration och ta bort de kopior av `{resource}` som du inte längre behöver."
                 }
             }
@@ -1471,7 +1471,7 @@
         },
         "wait_for_condition": {
             "name": "Vänta på ett villkor",
-            "description": "Väntar tills ett villkor är sant. Återvänder direkt om det redan är det.",
+            "description": "Väntar tills ett villkor är sant. Returnerar direkt om det redan är det.",
             "fields": {
                 "condition": {
                     "name": "Villkor",
@@ -1585,7 +1585,7 @@
         },
         "homeassistant_update_label": {
             "name": "Uppdatera en etikett",
-            "description": "Uppdaterar en befintlig etikett i farten. Allt du utelämnar behåller det värde det redan hade. Beskrivningen, ikonen och färgen kan tömmas genom att sättas till null.",
+            "description": "Uppdaterar en befintlig etikett direkt. Allt du utelämnar behåller det värde det redan hade. Beskrivningen, ikonen och färgen kan tömmas genom att sättas till null.",
             "fields": {
                 "label_id": {
                     "name": "Etikett-ID",
@@ -1655,7 +1655,7 @@
                 },
                 "period": {
                     "name": "Period",
-                    "description": "Fönstret som gränsen gäller för. Det glider framåt, så en dag betyder vilka tjugofyra timmar som helst och inte midnatt till midnatt."
+                    "description": "Det tidsfönster som gränsen gäller för. Det glider framåt, så en dag betyder vilka tjugofyra timmar som helst och inte midnatt till midnatt."
                 }
             }
         },
@@ -1709,7 +1709,7 @@
             "fields": {
                 "condition": {
                     "name": "Villkor",
-                    "description": "Villkoret som ska hållas ögonen på. Börjar utlösa när det blir sant och slutar när det inte längre är det."
+                    "description": "Villkor att bevaka. Börjar utlösa när det blir sant och slutar när det inte längre är det."
                 },
                 "every": {
                     "name": "Varje",
@@ -1723,15 +1723,15 @@
             "fields": {
                 "arm": {
                     "name": "Aktivera",
-                    "description": "Det som sätter vakten i beredskap. Väntan räknas därifrån, och att aktivera på nytt medan väntan redan pågår startar om den."
+                    "description": "Det som startar bevakningen. Väntan räknas därifrån, och att aktivera på nytt medan väntan redan pågår startar om den."
                 },
                 "expect": {
                     "name": "Förväntat",
-                    "description": "Det du väntar dig ska hända sedan. Kommer det i tid avbryts vakten och ingenting utlöses."
+                    "description": "Det du väntar dig ska hända. Händer det i tid avbryts bevakningen och ingenting utlöses."
                 },
                 "within": {
                     "name": "Inom",
-                    "description": "Hur lång tid det förväntade har på sig att komma. Detta utlöses när den tiden gått och ingenting kommit."
+                    "description": "Hur lång tid det förväntade har på sig att hända. Detta utlöses när den tiden gått och ingenting hänt."
                 }
             }
         },
@@ -1755,7 +1755,7 @@
             "fields": {
                 "condition": {
                     "name": "Villkor",
-                    "description": "Villkoret som ska hållas ögonen på."
+                    "description": "Villkoret som ska bevkas."
                 }
             }
         },
