@@ -3,23 +3,21 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
-import asyncio
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from homeassistant.core import Context
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import trigger as trigger_helper
 from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
 import pytest
 import voluptuous as vol
 
-from custom_components.spook import trigger_nesting
 from custom_components.spook.ectoplasms.spook.triggers import all_of as all_of_module
 from custom_components.spook.ectoplasms.spook.triggers.all_of import SpookTrigger
 from custom_components.spook.trigger import async_get_triggers
+from tests.nested_trigger_helpers import async_stop_while_attaching
 
 # Importing Spook puts it in `sys.modules`, which is what lets Home Assistant's
 # loader resolve the integration when it goes looking for the trigger platform.
@@ -447,29 +445,7 @@ async def test_stopping_while_attaching_leaves_nothing_behind(
         lambda *_args: None,
     )
 
-    real = trigger_helper.async_initialize_triggers
-    hold = asyncio.Event()
-    attaching = asyncio.Event()
-
-    async def _suspending(*args: Any, **kwargs: Any):  # noqa: ANN202
-        if "trigger 2" in args[4]:
-            attaching.set()
-            await hold.wait()
-        return await real(*args, **kwargs)
-
-    with patch.object(
-        trigger_nesting.trigger_helper, "async_initialize_triggers", _suspending
-    ):
-        starting = hass.async_create_task(watcher.async_start())
-        async with asyncio.timeout(5):
-            await attaching.wait()
-
-        watcher.async_stop()
-
-        hold.set()
-        async with asyncio.timeout(5):
-            await starting
-        await hass.async_block_till_done()
+    await async_stop_while_attaching(hass, watcher, holding="trigger 2")
 
     assert not watcher._unsubs, "a listener was left behind"  # noqa: SLF001
 

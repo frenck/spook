@@ -16,12 +16,12 @@ from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
 import voluptuous as vol
 
-from custom_components.spook import trigger_nesting
 from custom_components.spook.ectoplasms.spook.triggers import (
     sequence as sequence_module,
 )
 from custom_components.spook.ectoplasms.spook.triggers.sequence import SpookTrigger
 from custom_components.spook.trigger import async_get_triggers
+from tests.nested_trigger_helpers import async_stop_while_attaching
 
 # Importing Spook puts it in `sys.modules`, which is what lets Home Assistant's
 # loader resolve the integration when it goes looking for the trigger platform.
@@ -815,29 +815,7 @@ async def test_stopping_while_attaching_the_reset_leaves_nothing_behind(
         lambda *_args: None,
     )
 
-    real = trigger_helper.async_initialize_triggers
-    hold = asyncio.Event()
-    attaching = asyncio.Event()
-
-    async def _suspending(*args: Any, **kwargs: Any):  # noqa: ANN202
-        if "reset" in args[4]:
-            attaching.set()
-            await hold.wait()
-        return await real(*args, **kwargs)
-
-    with patch.object(
-        trigger_nesting.trigger_helper, "async_initialize_triggers", _suspending
-    ):
-        starting = hass.async_create_task(watcher.async_start())
-        async with asyncio.timeout(5):
-            await attaching.wait()
-
-        watcher.async_stop()
-
-        hold.set()
-        async with asyncio.timeout(5):
-            await starting
-        await hass.async_block_till_done()
+    await async_stop_while_attaching(hass, watcher, holding="reset")
 
     assert watcher._unsub_reset is None, "a reset listener was left behind"  # noqa: SLF001
     assert watcher._run.unsub_step is None, "a step listener was left behind"  # noqa: SLF001
