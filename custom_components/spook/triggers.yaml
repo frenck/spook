@@ -69,6 +69,17 @@ condition_met:
       required: true
       selector:
         condition:
+debounce:
+  fields:
+    triggers:
+      required: true
+      selector:
+        trigger:
+    for:
+      required: true
+      example: "00:00:30"
+      selector:
+        duration:
 all_of:
   fields:
     triggers:

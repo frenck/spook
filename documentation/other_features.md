@@ -1106,6 +1106,93 @@ options:
 
 :::
 
+### Once it settles
+
+Fires once a trigger has stopped firing for a while, so a burst of them arrives as one.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Once it settles 👻
+* - Trigger name
+  - `spook.debounce`
+* - Targets
+  - No targets
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `triggers`
+  - {term}`list <list>`
+  - Yes
+  - One or more triggers
+* - `for`
+  - {term}`string <string>`
+  - Yes
+  - `00:00:30`
+```
+
+A motion sensor in a hallway does not report motion, it reports motion twenty times. A power meter crossing a threshold crosses it back and forth for a minute. Acting on the first of those is usually wrong and acting on every one of them is always wrong, and what you wanted was to hear about it once, after it settled.
+
+Written out by hand that takes a helper entity and a second automation to turn it off again, which is the most rebuilt pattern on the forum.
+
+Every firing starts the quiet period over. When it finally runs out, the trigger fires once for the whole burst. It is not [](#watchdog), which is about something that never happened at all.
+
+Give it more than one trigger and they are waited out together: any of them starts a burst, any of them keeps it going, and the lot arrives as a single report.
+
+When it fires, `trigger.count` is how many firings were collapsed, `trigger.span` is how long the burst lasted from its first firing to its last, not counting the quiet after it, and `trigger.for` is the quiet period you set. The last firing of the burst is lifted to the top, so `trigger.entity_id`, `trigger.to_state` and `trigger.event` mean what they mean in any other trigger, and a condition asking who set the run going still gets an answer.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Motion in the hallway, reported once, thirty seconds after it stopped:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.debounce
+options:
+  for: "00:00:30"
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.hallway_motion
+      to: "on"
+```
+
+Somebody is finished at the front door, whichever way they left it:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.debounce
+options:
+  for: "00:01:00"
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.front_door
+    - trigger: state
+      entity_id: lock.front_door
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Something that never stops firing is never reported. That is what waiting for quiet means, and it is worth knowing before you point this at a sensor that fires every ten seconds all day with a quiet period of a minute.
+- Only counts are kept, not every payload. A burst has no ceiling, and holding hundreds of firings to hand over would be a memory cost for something nobody reads. The last firing is the one you get.
+- It fires on the way out, never on the way in. If you want to act on the first of a burst and ignore the rest, that is a different thing and this is not it.
+- A quiet period of zero is refused. It would report the first thing to happen and collapse nothing, which is the trigger you already had, only later.
+- If one of the triggers cannot be attached, the whole thing refuses to load and the automation is marked unavailable. A trigger that is not listening cannot start the burst you asked about.
+
+:::
+
 ### Triggers in order
 
 Fires when several triggers happen one after another, in the order given.
