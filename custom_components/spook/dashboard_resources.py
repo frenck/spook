@@ -96,6 +96,20 @@ def redundant_item_ids(items: Iterable[dict], key: str) -> list[str]:
     return [item["id"] for item in matching[:-1] if item.get("id")]
 
 
+def is_yaml_managed(resources: object) -> bool:
+    """Return whether these resources come from YAML rather than the interface.
+
+    A storage-mode collection can be written to. One built from a `lovelace:`
+    block in the configuration cannot, so anything offering to change it would
+    be a button that quietly does nothing, and anything pointing at the
+    Resources page is sending somebody to a screen that cannot help them.
+
+    Asked by attribute rather than by class, because this is another
+    integration's object and Spook is a guest in it.
+    """
+    return not hasattr(resources, "async_delete_item")
+
+
 def async_watch_resources(
     hass: HomeAssistant,
     on_change: ChangeListener,

@@ -564,7 +564,11 @@
       }
     },
     "lovelace_missing_resources": {
-      "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind. To fix this error, open Settings > Dashboards > Resources and remove or correct these resources.\n\nSpook 👻 Your homie.",
+      "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind. To fix this error, open the [Resources page](/config/lovelace/resources) and remove or correct these resources. It has no tab of its own: on the Dashboards page it is behind the three dots, top right.\n\nSpook 👻 Your homie.",
+      "title": "Dashboard resources point at missing files"
+    },
+    "lovelace_missing_resources_yaml": {
+      "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind.\n\nThese resources are listed in your YAML configuration, so the Resources page cannot change them. Edit the `resources:` section of your Lovelace configuration and remove or correct these entries.\n\nSpook 👻 Your homie.",
       "title": "Dashboard resources point at missing files"
     },
     "lovelace_duplicate_resources": {
