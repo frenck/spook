@@ -36,7 +36,7 @@
                 "name": "Zanemari sve"
             },
             "repairs_unignore_all": {
-                "name": "Poništi zanemarivanje za sve"
+                "name": "Poništi sva zanemarivanja"
             }
         },
         "event": {
@@ -247,15 +247,15 @@
         },
         "automation_unknown_device_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće uređaje koji su nepoznati Home Assistant-u:\n\n{devices}\n\n\n\nDa biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nepostojećih uređaja.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati uređaji korišćeni u: {automation}"
+            "title": "Nepoznati uređaji u: {automation}"
         },
         "automation_unknown_entity_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lutao, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [uredi automatizaciju]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati entiteti korišćeni u: {automation}"
+            "title": "Nepoznati entiteti u: {automation}"
         },
         "automation_unknown_floor_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće spratove koji su nepoznati Home Assistant-u:\n\n{floors}\n\n\n\nDa biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nepostojećih spratova.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati spratovi korišćeni u: {automation}"
+            "title": "Nepoznati spratovi u: {automation}"
         },
         "automation_unknown_label_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće oznake koje su nepoznate Home Assistant-u:\n\n{labels}\n\n\n\nDa biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nepostojećih oznaka.\n\nSpook 👻 Vaš ortak.",
@@ -287,8 +287,8 @@
             }
         },
         "lovelace_unknown_entity_references": {
-            "description": "SSpook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće entitete koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, uredite kontrolnu tablu i uklonite upotrebu ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati entiteti korišćeni u: {dashboard}"
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće entitete koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, uredite kontrolnu tablu i uklonite upotrebu ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
+            "title": "Nepoznati entiteti u: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
             "description": "Spook je pronašao duha u vašoj konfiguraciji blizine 👻\n\nDok je lutao okolo, Spook je naišao na sledeću konfiguraciju blizine:\n\n{name}\n\nOva konfiguracija ignoriše zone koje su nepoznate Home Assistant‑u:\n\n{zones}\n\n\n\nDa biste ispravili ovu grešku, izmenite konfiguraciju i uklonite ovu/ove zone.\n\nSpook 👻 Vaš ortak.",
@@ -304,7 +304,7 @@
         },
         "scene_unknown_entity_references": {
             "description": "Spook je pronašao duha u vašim scenama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću scenu:\n\n[{scene}]({edit})\n\nOva scena referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [izmenite scenu]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati entiteti korišćeni u: {scene}"
+            "title": "Nepoznati entiteti u: {scene}"
         },
         "script_unknown_area_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće oblasti koje su nepoznate Home Assistant‑u:\n\n{areas}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih oblasti.\n\nSpook 👻 Vaš ortak.",
@@ -312,15 +312,15 @@
         },
         "script_unknown_device_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće uređaje koji su nepoznati Home Assistant‑u:\n\n{devices}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih uređaja.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati uređaji korišćeni u: {script}"
+            "title": "Nepoznati uređaji u: {script}"
         },
         "script_unknown_entity_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati entiteti korišćeni u: {script}"
+            "title": "Nepoznati entiteti u: {script}"
         },
         "script_unknown_floor_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće spratove koji su nepoznati Home Assistant‑u:\n\n{floors}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih spratova.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati spratovi korišćeni u: {script}"
+            "title": "Nepoznati spratovi u: {script}"
         },
         "script_unknown_label_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće oznake koje su nepoznate Home Assistant‑u:\n\n{labels}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih oznaka.\n\nSpook 👻 Vaš ortak.",
@@ -362,11 +362,11 @@
         },
         "automation_unknown_condition_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće uslove koje ne može da obezbedi nijedna integracija dostupna Home Assistant-u:\n\n{conditions}\n\n\n\nOvo se često dešava kada se ukloni integracija koja obezbeđuje uslov. Da biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nedostupnih uslova, ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati uslovi korišćeni u: {automation}"
+            "title": "Nepoznati uslovi u: {automation}"
         },
         "automation_unknown_trigger_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće pokretače koje ne može da obezbedi nijedna integracija dostupna Home Assistant-u:\n\n{triggers}\n\nOvo se često dešava kada se ukloni integracija koja obezbeđuje pokretač. Da biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nedostupnih pokretača, ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati pokretači korišćeni u: {automation}"
+            "title": "Nepoznati pokretači u: {automation}"
         },
         "unknown_customized_entities": {
             "description": "Spook je pronašao duha u vašim prilagođavanjima 👻\n\nOdeljak customize: dodeljuje atribute sledećim entitetima koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nOvo se često dešava kada se entitet preimenuje ili ukloni, dok njegovo prilagođavanje ostane zaostalo. Da biste ispravili ovu grešku, uredite odeljak customize: u vašoj konfiguraciji i uklonite ove entitete.\n\nSpook 👻 Vaš ortak.",
@@ -394,7 +394,7 @@
                             "manage": "Dozvoli mi da sam popravim",
                             "remove": "Ukloni ovog pomoćnika"
                         },
-                        "title": "Nepoznati izvorni entiteti korišćeni u pomoćniku: {helper}"
+                        "title": "Nepoznati izvorni entiteti u pomoćniku: {helper}"
                     }
                 },
                 "abort": {
@@ -402,14 +402,14 @@
                     "manage": "Ovog pomoćnika možete sami upravljati na stranici [Pomoćnici](/config/helpers)."
                 }
             },
-            "title": "Nepoznati izvorni entiteti korišćeni u pomoćniku: {helper}"
+            "title": "Nepoznati izvorni entiteti u pomoćniku: {helper}"
         },
         "min_max_unknown_sources": {
             "fix_flow": {
                 "step": {
                     "init": {
                         "description": "Spook je pronašao duha u vašim pomoćnicima 👻\n\nMin/max pomoćnik {helper} kombinuje sledeće članove koji su nepoznati Home Assistant-u:\n\n{sources}\n\nUklonite ih kako bi pomoćnik nastavio sa radom pomoću preostalih članova, ili ih zadržite i Spook će prestati da ukazuje na njih.\n\nSpook 👻 Vaš ortak.",
-                        "title": "Nepoznati članovi korišćeni u min/max pomoćniku: {helper}",
+                        "title": "Nepoznati članovi u min/max pomoćniku: {helper}",
                         "menu_options": {
                             "remove": "Ukloni ove članove",
                             "manage": "Dozvoli mi da sam popravim",
@@ -423,7 +423,7 @@
                     "too_few_members": "Pomoćnik za minimum/maksimum zahteva najmanje dva člana, pa bi uklanjanje nedostajućih ostavilo premalo. Ponovo konfigurišite ili uklonite pomoćnika sami na stranici [Pomoćnici](/config/helpers)."
                 }
             },
-            "title": "Nepoznati članovi korišćeni u min/max pomoćniku: {helper}"
+            "title": "Nepoznati članovi u min/max pomoćniku: {helper}"
         },
         "empty_areas": {
             "title": "Prazna prostorija: {area}",
@@ -528,11 +528,11 @@
         },
         "script_unknown_condition_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi sledeće uslove koje nijedna dostupna integracija u Home Assistant‑u ne može da obezbedi:\n\n{conditions}\n\n\n\nOvo se često dešava kada je integracija koja obezbeđuje uslov uklonjena. Da biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nedostupnih uslova ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati uslovi korišćeni u: {script}"
+            "title": "Nepoznati uslovi u: {script}"
         },
         "script_unknown_trigger_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi sledeće pokretače koje nijedna dostupna integracija u Home Assistant‑u ne može da obezbedi:\n\n{triggers}\n\n\n\nOvo se često dešava kada je integracija koja obezbeđuje pokretač uklonjena. Da biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nedostupnih pokretača ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati pokretači korišćeni u: {script}"
+            "title": "Nepoznati pokretači u: {script}"
         },
         "template_unknown_service_references": {
             "description": "Spook je pronašao duha u vašim pomoćnicima za šablone 👻\n\nDok je lutao okolo, Spook je naišao na sledećeg pomoćnika za šablone:\n\n[{helper}]({edit})\n\nOn referencira sledeće akcije koje su nepoznate Home Assistant‑u:\n\n{services}\n\n\n\nOvo se često dešava kada je pružalac akcije uklonjen ili je skripta preimenovana ili obrisana. Da biste ispravili ovu grešku, ponovo konfigurišite pomoćnika za šablone da koristi postojeće akcije.\n\nSpook 👻 Vaš ortak.",
