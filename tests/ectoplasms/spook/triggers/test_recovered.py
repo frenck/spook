@@ -11,7 +11,7 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
-from homeassistant.core import CoreState
+from homeassistant.core import Context, CoreState
 from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
@@ -409,3 +409,47 @@ async def test_a_spell_of_unknown_is_not_an_absence(
     assert ran == []
 
     await _detach(hass)
+
+
+async def test_the_return_carries_its_own_context(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Whoever caused the return is still on it.
+
+    Spook's own context conditions read the person off the state change that
+    set the trigger off. Hand over a fresh context and a device somebody
+    switched back on themselves reads as nobody's doing, which is worse than
+    saying nothing: `spook.not_triggered_by_user` would pass.
+    """
+    hass.states.async_set("sensor.probe", STATE_UNAVAILABLE)
+
+    handed: list[tuple[dict, Context | None]] = []
+    trigger = SpookTrigger(
+        hass,
+        TriggerConfig(
+            key="recovered",
+            target={"entity_id": "sensor.probe"},
+            options={"for": QUARTER_OF_AN_HOUR},
+        ),
+    )
+
+    def _run(payload, _description, context=None) -> None:  # noqa: ANN001
+        handed.append((payload, context))
+
+    unsub = await trigger.async_attach_runner(_run)
+
+    freezer.tick(timedelta(minutes=20))
+    theirs = Context(user_id="abc123")
+    hass.states.async_set("sensor.probe", "21.5", context=theirs)
+    await hass.async_block_till_done()
+
+    unsub()
+
+    assert len(handed) == 1
+    payload, context = handed[0]
+    assert context is theirs
+    # The change itself is on the payload too, like every other trigger that
+    # fires on one.
+    assert payload["to_state"].state == "21.5"
+    assert payload["from_state"].state == STATE_UNAVAILABLE
