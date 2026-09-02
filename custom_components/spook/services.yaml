@@ -1745,3 +1745,70 @@ wait_for_condition:
       example: "00:05:00"
       selector:
         duration:
+
+group_add_members:
+  name: Add members to a group 👻
+  description: >-
+    Adds entities to a group made through the interface, while Home Assistant
+    is running. Entities already in the group are left where they are.
+  fields:
+    group:
+      name: Group
+      description: The group to add to.
+      required: true
+      example: light.hallway
+      selector:
+        entity:
+          integration: group
+    members:
+      name: Members
+      description: The entities to add to the group.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+group_remove_members:
+  name: Remove members from a group 👻
+  description: >-
+    Takes entities out of a group made through the interface, while Home
+    Assistant is running. Naming something that is not in the group does
+    nothing, so this is also how you clear out a member that no longer exists.
+  fields:
+    group:
+      name: Group
+      description: The group to take them out of.
+      required: true
+      example: light.hallway
+      selector:
+        entity:
+          integration: group
+    members:
+      name: Members
+      description: The entities to remove from the group.
+      required: true
+      selector:
+        entity:
+          multiple: true
+
+group_set_members:
+  name: Set the members of a group 👻
+  description: >-
+    Replaces the members of a group made through the interface with the ones
+    given, while Home Assistant is running.
+  fields:
+    group:
+      name: Group
+      description: The group to change.
+      required: true
+      example: light.hallway
+      selector:
+        entity:
+          integration: group
+    members:
+      name: Members
+      description: The entities the group should hold from now on.
+      required: true
+      selector:
+        entity:
+          multiple: true

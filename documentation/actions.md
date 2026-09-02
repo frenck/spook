@@ -82,6 +82,24 @@ Downloads and imports an automation/script blueprint, directly from the URL you 
 
 `blueprint.import`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import), [documentation](integrations/blueprint#import-blueprint) 📚
 
+## Group: Add members
+
+Adds entities to a group while the house is running, which the interface only lets you do by hand. _#roomforonemore_
+
+`group.add_members`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=group.add_members), [documentation](integrations/group#add-members-to-a-group) 📚
+
+## Group: Remove members
+
+Takes entities out of a group while the house is running. Naming something that is not in it does nothing, so it also clears out a member that no longer exists. _#youdonthavetogohome_
+
+`group.remove_members`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=group.remove_members), [documentation](integrations/group#remove-members-from-a-group) 📚
+
+## Group: Set members
+
+Replaces a group's members with the ones you give it. _#allchange_
+
+`group.set_members`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=group.set_members), [documentation](integrations/group#set-the-members-of-a-group) 📚
+
 ## Light: Set brightness
 
 Sets the brightness of lights that are already on, and leaves the ones that are off alone. _#light_ _#adjust_

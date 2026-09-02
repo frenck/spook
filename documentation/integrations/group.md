@@ -33,7 +33,138 @@ Spook does not provide any new devices or entities for this integration.
 
 ## Actions
 
-Spook does not provide action enhancements for this integration.
+Spook adds the following new actions to your Home Assistant instance:
+
+### Add members to a group
+
+Adds entities to a group made through the interface, while Home Assistant is running.
+
+Entities that are already in the group are left where they are, and the order you arranged the group in is kept: what joins is appended at the end.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Group: Add members to a group 👻
+* - {term}`Action name`
+  - `group.add_members`
+* - {term}`Action targets`
+  - No targets
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=group.add_members)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=group.add_members)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `group`
+  - {term}`string <string>`
+  - Yes
+  - `light.hallway`
+* - `members`
+  - {term}`list <list>`
+  - Yes
+  - `light.desk`
+```
+
+The `group` attribute names the group to add to. The `members` attribute lists the entities joining it, which have to exist and belong to the same domain as the group.
+
+### Remove members from a group
+
+Takes entities out of a group made through the interface, while Home Assistant is running.
+
+Naming something that is not in the group does nothing rather than failing, so this is also how you clear out a member that no longer exists.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Group: Remove members from a group 👻
+* - {term}`Action name`
+  - `group.remove_members`
+* - {term}`Action targets`
+  - No targets
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=group.remove_members)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=group.remove_members)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `group`
+  - {term}`string <string>`
+  - Yes
+  - `light.hallway`
+* - `members`
+  - {term}`list <list>`
+  - Yes
+  - `light.desk`
+```
+
+The `group` attribute names the group to take them out of. The `members` attribute lists the entities leaving it, whether or not they still exist.
+
+### Set the members of a group
+
+Replaces the members of a group made through the interface with the ones given, while Home Assistant is running.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Group: Set the members of a group 👻
+* - {term}`Action name`
+  - `group.set_members`
+* - {term}`Action targets`
+  - No targets
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=group.set_members)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=group.set_members)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `group`
+  - {term}`string <string>`
+  - Yes
+  - `light.hallway`
+* - `members`
+  - {term}`list <list>`
+  - Yes
+  - `light.desk`
+```
+
+The `group` attribute names the group to change. The `members` attribute lists the entities it should hold from now on, which have to exist and belong to the same domain as the group.
+
+All three only work on groups created through the interface. A group defined in your YAML configuration cannot be changed while Home Assistant is running; the built-in `group.set` action still works on that older kind of group.
+
+If the group is set to hide its members, Spook follows that: a member that joins is hidden, and one that leaves is shown again, as long as it was the group that hid it in the first place.
 
 ## Repairs
 
