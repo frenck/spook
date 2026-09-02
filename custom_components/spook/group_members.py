@@ -17,7 +17,7 @@ from typing import TYPE_CHECKING
 from homeassistant.components.group import DOMAIN as GROUP_DOMAIN
 from homeassistant.components.group.const import CONF_HIDE_MEMBERS
 from homeassistant.const import CONF_ENTITIES
-from homeassistant.core import callback
+from homeassistant.core import callback, split_entity_id
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 
@@ -29,6 +29,22 @@ if TYPE_CHECKING:
 # on. Core writes and reads this key as a bare string with no constant of its
 # own, so this is where Spook names it.
 _GROUP_TYPE = "group_type"
+
+
+def identity_of(hass: HomeAssistant, member: str) -> str:
+    """Return what two references to the same entity have in common.
+
+    A group is allowed to hold either an entity ID or a registry ID, and the
+    interface writes whichever it has. Compared as plain strings, the two
+    forms of one entity look like two entities: adding it a second time gets
+    it stored twice, and asking for it to be taken out by the name it is not
+    stored under reports success and changes nothing.
+
+    A registry ID whose entry has gone resolves to nothing, and then the value
+    itself is the best identity available. That keeps a dangling reference
+    removable by exactly what is written in the group.
+    """
+    return er.async_resolve_entity_id(er.async_get(hass), member) or member
 
 
 def async_entry_of(hass: HomeAssistant, group_entity_id: str) -> ConfigEntry:
@@ -46,7 +62,14 @@ def async_entry_of(hass: HomeAssistant, group_entity_id: str) -> ConfigEntry:
         # A group from YAML carries no unique ID, so it never reaches the
         # entity registry. Having a state is what separates one of those from
         # a name somebody mistyped.
-        if hass.states.get(group_entity_id) is not None:
+        if hass.states.get(group_entity_id) is None:
+            msg = f"Could not find entity_id: {group_entity_id}"
+            raise HomeAssistantError(msg)
+
+        # Only the group domain holds that older kind. Anything else with a
+        # state and no registry entry belongs to somebody else entirely, and
+        # pointing them at `group.set` would send them a long way off.
+        if split_entity_id(group_entity_id)[0] == GROUP_DOMAIN:
             msg = (
                 f"{group_entity_id} is a group from your YAML configuration, "
                 "which Spook cannot change. Edit it in your configuration, or "
@@ -54,7 +77,7 @@ def async_entry_of(hass: HomeAssistant, group_entity_id: str) -> ConfigEntry:
             )
             raise HomeAssistantError(msg)
 
-        msg = f"Could not find entity_id: {group_entity_id}"
+        msg = f"{group_entity_id} is not a group"
         raise HomeAssistantError(msg)
 
     if entry_entity.platform != GROUP_DOMAIN:
@@ -108,7 +131,7 @@ def async_check_joining(
             msg = f"Could not find entity_id: {member}"
             raise HomeAssistantError(msg)
 
-        if group_type and resolved.split(".")[0] != group_type:
+        if group_type and split_entity_id(resolved)[0] != group_type:
             msg = f"{member} cannot join this group: it holds {group_type} entities"
             raise HomeAssistantError(msg)
 
@@ -160,19 +183,50 @@ def _async_follow_hiding(
 
     registry = er.async_get(hass)
 
-    for member in set(now) - set(was):
-        if (entity_id := er.async_resolve_entity_id(registry, member)) and (
-            registry.async_get(entity_id) is not None
-        ):
+    # By identity rather than by the strings, or an entity stored as a
+    # registry ID and named as an entity ID reads as one leaving and another
+    # arriving, and both halves get the wrong treatment.
+    before = {identity_of(hass, member) for member in was}
+    after = {identity_of(hass, member) for member in now}
+
+    for entity_id in after - before:
+        if registry.async_get(entity_id) is not None:
             registry.async_update_entity(
                 entity_id, hidden_by=er.RegistryEntryHider.INTEGRATION
             )
 
-    for member in set(was) - set(now):
-        if (entity_id := er.async_resolve_entity_id(registry, member)) is None or (
-            entity := registry.async_get(entity_id)
-        ) is None:
+    for entity_id in before - after:
+        if (entity := registry.async_get(entity_id)) is None:
             continue
 
-        if entity.hidden_by is er.RegistryEntryHider.INTEGRATION:
-            registry.async_update_entity(entity_id, hidden_by=None)
+        if entity.hidden_by is not er.RegistryEntryHider.INTEGRATION:
+            continue
+
+        if _hidden_by_another_group(hass, entry, entity_id):
+            continue
+
+        registry.async_update_entity(entity_id, hidden_by=None)
+
+
+@callback
+def _hidden_by_another_group(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    entity_id: str,
+) -> bool:
+    """Return whether another group that hides its members still holds this one.
+
+    An entity can be in more than one group, and either of them hiding its
+    members is reason enough for it to stay out of the way. Showing it again
+    because it left one group would quietly undo what the other one asked
+    for, and `hidden_by` records only that an integration did it, not which.
+    """
+    for other in hass.config_entries.async_entries(GROUP_DOMAIN):
+        if other.entry_id == entry.entry_id or not other.options.get(CONF_HIDE_MEMBERS):
+            continue
+
+        for member in other.options.get(CONF_ENTITIES) or []:
+            if identity_of(hass, member) == entity_id:
+                return True
+
+    return False

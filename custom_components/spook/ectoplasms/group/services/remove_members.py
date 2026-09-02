@@ -12,6 +12,7 @@ from homeassistant.helpers import config_validation as cv
 from ....group_members import (
     async_entry_of,
     async_write_members,
+    identity_of,
     members_of,
 )
 from ....services import AbstractSpookAdminService
@@ -41,10 +42,18 @@ class SpookService(AbstractSpookAdminService):
         twice should not start failing.
         """
         entry = async_entry_of(self.hass, call.data[CONF_GROUP])
-        leaving = set(call.data[CONF_MEMBERS])
+
+        # By identity, so a member stored as a registry ID goes when it is
+        # named by its entity ID. Comparing the strings would report success
+        # and leave it exactly where it was.
+        leaving = {identity_of(self.hass, member) for member in call.data[CONF_MEMBERS]}
 
         await async_write_members(
             self.hass,
             entry,
-            [member for member in members_of(entry) if member not in leaving],
+            [
+                member
+                for member in members_of(entry)
+                if identity_of(self.hass, member) not in leaving
+            ],
         )
