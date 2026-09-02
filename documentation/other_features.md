@@ -260,6 +260,83 @@ options:
 
 :::
 
+### Entity came back
+
+Fires when an entity returns after having been unavailable for a while.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Entity came back 👻
+* - Trigger name
+  - `spook.recovered`
+* - Targets
+  - {term}`Entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `for`
+  - {term}`string <string>`
+  - Yes
+  - `00:15:00`
+```
+
+Home Assistant will tell you the moment something goes unavailable and the moment it returns, but not the difference between a blink and an outage. A router rebooting takes every device in the house through unavailable and back inside seconds, which is why an automation on the plain return is usually more trouble than it is worth.
+
+This one only counts a return worth hearing about. The entity has to have been away for at least as long as you asked before coming back says anything, so the freezer that dropped off the network overnight reaches you and the reload of an integration does not.
+
+The absence starts when the entity goes unavailable and ends when it reaches a state that is neither unavailable nor unknown. A device that reconnects before it has a reading passes through unknown on the way, and that neither ends the absence nor restarts it. An entity that only ever sits at unknown has not been away at all: that is the entity answering rather than the entity missing.
+
+When it fires, `trigger.entity_id` names the entity that came back, `trigger.gone_since` is when it went, `trigger.gone_for` is how long it was away, and `trigger.for` is the minimum you configured.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Anything in the garage that has been gone for a quarter of an hour:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.recovered
+target:
+  area_id: garage
+options:
+  for: "00:15:00"
+```
+
+One freezer, with a longer fuse, because a short outage is not worth waking up for:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.recovered
+target:
+  entity_id: sensor.freezer_temperature
+options:
+  for: "02:00:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Nothing is recorded until Home Assistant has finished starting. An integration that sets itself up minutes into a start brings every one of its entities from unavailable to a value at that moment, and recording through the start would turn each of those into a recovery.
+- An absence that began before the trigger started watching still counts, and is measured from when the entity actually went. That is read from the entity itself, so an automation reloaded while a device was down still reports how long the device was down. A restart of Home Assistant is the exception: nothing survives it, so an absence that spans one is measured from the restart.
+- Only unavailable starts an absence. An entity that reports unknown for an hour never went away, and `spook.stale` is the trigger for a sensor that is reachable but has nothing useful to say.
+- A duration of zero is refused. It would fire on every flicker, which is the noise this trigger exists to filter out.
+- A target that names nothing is refused. An empty target is valid as far as the fields go, and would sit there watching no entities at all.
+- Expanding a device, area or floor covers its primary entities. Configuration and diagnostic entities are left out, the same as every other Home Assistant trigger that takes a target. Name one as an entity and it is always watched, whichever category it is in.
+
+:::
+
 ### Entity fell silent
 
 Fires when nothing has written to an entity for a while.
