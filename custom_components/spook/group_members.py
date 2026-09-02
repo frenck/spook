@@ -15,11 +15,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.components.group import DOMAIN as GROUP_DOMAIN
+from homeassistant.components.group.config_flow import GroupConfigFlowHandler
 from homeassistant.components.group.const import CONF_HIDE_MEMBERS
 from homeassistant.const import CONF_ENTITIES
 from homeassistant.core import callback, split_entity_id
 from homeassistant.exceptions import HomeAssistantError
-from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers import entity_registry as er, selector
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -29,6 +30,36 @@ if TYPE_CHECKING:
 # on. Core writes and reads this key as a bare string with no constant of its
 # own, so this is where Spook names it.
 _GROUP_TYPE = "group_type"
+
+
+def domains_a_group_holds(group_type: str) -> set[str] | None:
+    """Return the domains core's own dialog offers for this kind of group.
+
+    Read out of core rather than written down here, because it is not simply
+    one domain per group: a sensor group takes `number` and `input_number`
+    alongside `sensor`, and a copy of that here would be a copy that goes
+    quietly out of date.
+
+    Returns nothing when the shape of core's flow has moved, and then there
+    is no domain check at all. That is the right way round to fail. Refusing
+    a member the interface would have accepted is worse than storing an odd
+    one, and there is a test that fails the moment this stops finding
+    anything.
+    """
+    step = GroupConfigFlowHandler.config_flow.get(group_type)
+    schema = getattr(step, "schema", None)
+    if schema is None or not hasattr(schema, "schema"):
+        return None
+
+    for key, value in schema.schema.items():
+        if str(key) == CONF_ENTITIES and isinstance(value, selector.EntitySelector):
+            domains = value.config.get("domain")
+            if isinstance(domains, str):
+                return {domains}
+            if domains:
+                return set(domains)
+
+    return None
 
 
 def identity_of(hass: HomeAssistant, member: str) -> str:
@@ -116,6 +147,7 @@ def async_check_joining(
     clears up exactly these mistakes, so removal never questions the name.
     """
     group_type = entry.options.get(_GROUP_TYPE)
+    allowed = domains_a_group_holds(group_type) if group_type else None
     registry = er.async_get(hass)
 
     for member in members:
@@ -131,8 +163,11 @@ def async_check_joining(
             msg = f"Could not find entity_id: {member}"
             raise HomeAssistantError(msg)
 
-        if group_type and split_entity_id(resolved)[0] != group_type:
-            msg = f"{member} cannot join this group: it holds {group_type} entities"
+        if allowed is not None and split_entity_id(resolved)[0] not in allowed:
+            msg = (
+                f"{member} cannot join this group: it holds "
+                f"{', '.join(sorted(allowed))} entities"
+            )
             raise HomeAssistantError(msg)
 
 
@@ -190,7 +225,12 @@ def _async_follow_hiding(
     after = {identity_of(hass, member) for member in now}
 
     for entity_id in after - before:
-        if registry.async_get(entity_id) is not None:
+        # Only what is on show gets claimed. An entity somebody hid
+        # themselves is already out of the way, and writing over that would
+        # mean this puts it back on show the day it leaves the group, which
+        # is the very thing the rule below is there to prevent.
+        entity = registry.async_get(entity_id)
+        if entity is not None and entity.hidden_by is None:
             registry.async_update_entity(
                 entity_id, hidden_by=er.RegistryEntryHider.INTEGRATION
             )

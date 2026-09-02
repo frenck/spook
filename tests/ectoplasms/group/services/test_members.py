@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from homeassistant.components.group.config_flow import GroupConfigFlowHandler
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 from homeassistant.setup import async_setup_component
@@ -18,6 +19,7 @@ from custom_components.spook.ectoplasms.group.services import (
     remove_members,
     set_members,
 )
+from custom_components.spook.group_members import domains_a_group_holds
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -57,6 +59,9 @@ async def _group(
 async def _call(hass: HomeAssistant, service: str, **data: object) -> None:
     """Call one of the actions."""
     await hass.services.async_call("group", service, dict(data), blocking=True)
+
+
+ENOUGH_GROUP_TYPES = 5
 
 
 def _running(hass: HomeAssistant) -> list[str]:
@@ -433,3 +438,119 @@ async def test_a_plain_entity_is_not_mistaken_for_a_yaml_group(
 
     with pytest.raises(HomeAssistantError, match="is not a group"):
         await _call(hass, "add_members", group="light.one", members=["light.two"])
+
+
+async def test_a_sensor_group_takes_the_domains_the_dialog_offers(
+    hass: HomeAssistant,
+) -> None:
+    """Test a sensor group holds numbers too, because core's dialog says so.
+
+    It is not one domain per group. A sensor group offers `sensor`, `number`
+    and `input_number`, and refusing the last two would mean these actions
+    cannot build a group the interface builds happily.
+    """
+    hass.states.async_set("number.setpoint", "21", {"unit_of_measurement": "°C"})
+    hass.states.async_set("sensor.temperature", "20", {"unit_of_measurement": "°C"})
+    await _setup(hass)
+
+    entry = MockConfigEntry(
+        domain="group",
+        title="Warmth",
+        options={
+            "group_type": "sensor",
+            "name": "Warmth",
+            "entities": ["sensor.temperature"],
+            "hide_members": False,
+            "type": "max",
+        },
+    )
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    await _call(hass, "add_members", group="sensor.warmth", members=["number.setpoint"])
+    await hass.async_block_till_done()
+
+    assert entry.options["entities"] == ["sensor.temperature", "number.setpoint"]
+
+
+async def test_a_sensor_group_still_refuses_a_light(hass: HomeAssistant) -> None:
+    """Test widening the check did not turn it off."""
+    await _setup(hass)
+
+    hass.states.async_set("sensor.temperature", "20", {"unit_of_measurement": "°C"})
+    entry = MockConfigEntry(
+        domain="group",
+        title="Warmth",
+        options={
+            "group_type": "sensor",
+            "name": "Warmth",
+            "entities": ["sensor.temperature"],
+            "hide_members": False,
+            "type": "max",
+        },
+    )
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    with pytest.raises(HomeAssistantError, match="input_number, number, sensor"):
+        await _call(hass, "add_members", group="sensor.warmth", members=["light.one"])
+
+
+def test_every_group_type_reports_the_domains_it_holds() -> None:
+    """Guard the one assumption about the shape of somebody else's flow.
+
+    The allowed domains are read out of core's own config flow. If that moves,
+    the reading returns nothing and the domain check silently stops happening,
+    which is a quiet loss rather than a loud one. This is the loud one.
+
+    Needs nothing running: it is a question about the shape of two modules.
+    """
+    checked = 0
+    for group_type, step in GroupConfigFlowHandler.config_flow.items():
+        if not hasattr(step, "schema"):
+            # The menu step that asks which kind of group to make.
+            continue
+        domains = domains_a_group_holds(group_type)
+        assert domains, f"no domains found for a {group_type} group"
+        assert group_type in domains
+        checked += 1
+
+    assert checked > ENOUGH_GROUP_TYPES, "the walk stopped finding group types"
+    assert domains_a_group_holds("sensor") == {"sensor", "number", "input_number"}
+
+
+async def test_a_member_the_user_hid_is_never_claimed(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test joining does not write over somebody's own choice.
+
+    Claiming it would look harmless, since it is hidden either way. The
+    damage shows up later: on the way out this would see its own mark and put
+    the entity back on show, which is exactly what it must not do.
+    """
+    theirs = entity_registry.async_get_or_create(
+        "light", "demo", "two", hidden_by=er.RegistryEntryHider.USER
+    )
+    entity_registry.async_get_or_create("light", "demo", "one")
+    await _setup(hass)
+    await _group(hass, ["light.demo_one"], hide_members=True)
+
+    await _call(hass, "set_members", group="light.hallway", members=[theirs.entity_id])
+    await hass.async_block_till_done()
+
+    assert (
+        entity_registry.async_get(theirs.entity_id).hidden_by
+        is er.RegistryEntryHider.USER
+    )
+
+    # And out again: still theirs, still hidden.
+    await _call(hass, "set_members", group="light.hallway", members=["light.demo_one"])
+    await hass.async_block_till_done()
+
+    assert (
+        entity_registry.async_get(theirs.entity_id).hidden_by
+        is er.RegistryEntryHider.USER
+    )
