@@ -76,7 +76,7 @@ Entities that are already in the group are left where they are, and the order yo
   - `light.desk`
 ```
 
-The `group` attribute names the group to add to. The `members` attribute lists the entities joining it, which have to exist and belong to the same domain as the group.
+The `group` attribute names the group to add to. The `members` attribute lists the entities joining it, which have to exist and be a kind the group can hold.
 
 ### Remove members from a group
 
@@ -160,11 +160,13 @@ Replaces the members of a group made through the interface with the ones given, 
   - `light.desk`
 ```
 
-The `group` attribute names the group to change. The `members` attribute lists the entities it should hold from now on, which have to exist and belong to the same domain as the group.
+The `group` attribute names the group to change. The `members` attribute lists the entities it should hold from now on, which have to exist and be a kind the group can hold.
 
 All three only work on groups created through the interface. A group defined in your YAML configuration is not something they can change, and they say so rather than failing quietly. The built-in `group.set` action does still work on that older kind of group, and it does not need a restart either.
 
 If the group is set to hide its members, Spook follows that: a member that joins is hidden, and one that leaves is shown again. Two things are left alone. An entity you hid yourself stays hidden, because you meant it. So does one that another group with hidden members still holds, since leaving this group is no reason to undo what that one asked for.
+
+Which entities a group can hold is read from the same list Home Assistant's own dialog offers, so it is not always one domain: a sensor group takes `number` and `input_number` alongside `sensor`.
 
 A group holds either an entity ID or a registry ID, whichever the interface had when it was made, and all three actions treat the two names for one entity as one member. So an entity cannot end up in a group twice, and one stored under the name you did not use still goes when you ask for it.
 
