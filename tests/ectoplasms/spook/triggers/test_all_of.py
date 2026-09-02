@@ -1,19 +1,23 @@
 """Tests for the spook.all_of trigger."""
 
-# pylint: disable=wrong-import-order
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from homeassistant.core import Context
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import trigger as trigger_helper
 from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
 import pytest
 import voluptuous as vol
 
+from custom_components.spook import trigger_nesting
+from custom_components.spook.ectoplasms.spook.triggers import all_of as all_of_module
 from custom_components.spook.ectoplasms.spook.triggers.all_of import SpookTrigger
 from custom_components.spook.trigger import async_get_triggers
 
@@ -381,3 +385,92 @@ async def test_a_trigger_that_will_not_attach_refuses_the_lot(
         pytest.raises(HomeAssistantError, match="every trigger"),
     ):
         await trigger.async_attach_runner(_run)
+
+
+async def test_a_spook_trigger_can_be_one_of_the_members(
+    hass: HomeAssistant,
+) -> None:
+    """Nesting Spook's own triggers is advertised, so it is tested.
+
+    A core state trigger and a Spook one go through different routes on the
+    way in: a Spook member is validated through Spook's own discovery and
+    `async_validate_complete_config`, not the generic path. `flapping` is the
+    member here because it needs no timer to fire, only changes.
+    """
+    hass.states.async_set("binary_sensor.motion", "off")
+    runs = await _automation(
+        hass,
+        {
+            "within": "00:05:00",
+            "triggers": [
+                DOOR,
+                {
+                    "trigger": "spook.flapping",
+                    "target": {"entity_id": "binary_sensor.motion"},
+                    "options": {"changes": 2, "within": "00:01:00"},
+                },
+            ],
+        },
+    )
+
+    hass.states.async_set("binary_sensor.door", "on")
+    await hass.async_block_till_done()
+    assert runs == []
+
+    hass.states.async_set("binary_sensor.motion", "on")
+    hass.states.async_set("binary_sensor.motion", "off")
+    await hass.async_block_till_done()
+
+    assert len(runs) == 1
+    # The nested trigger's own payload is carried like any other member's.
+    assert runs[0]["last"] == "binary_sensor.motion"
+
+    await _detach(hass)
+
+
+async def test_stopping_while_attaching_leaves_nothing_behind(
+    hass: HomeAssistant,
+) -> None:
+    """Stopping is synchronous while attaching is not.
+
+    The same window every attach in Spook has, and the shape of test the
+    watchdog and sequence watchers already carry, because that race turned up
+    in both of them more than once.
+    """
+    config = await SpookTrigger.async_validate_config(
+        hass, {"options": {"triggers": [DOOR, MOTION], "within": "00:05:00"}}
+    )
+    watcher = all_of_module._AllOfWatcher(  # noqa: SLF001
+        hass,
+        config["options"]["triggers"],
+        FIVE_MINUTES,
+        lambda *_args: None,
+    )
+
+    real = trigger_helper.async_initialize_triggers
+    hold = asyncio.Event()
+    attaching = asyncio.Event()
+
+    async def _suspending(*args: Any, **kwargs: Any):  # noqa: ANN202
+        if "trigger 2" in args[4]:
+            attaching.set()
+            await hold.wait()
+        return await real(*args, **kwargs)
+
+    with patch.object(
+        trigger_nesting.trigger_helper, "async_initialize_triggers", _suspending
+    ):
+        starting = hass.async_create_task(watcher.async_start())
+        async with asyncio.timeout(5):
+            await attaching.wait()
+
+        watcher.async_stop()
+
+        hold.set()
+        async with asyncio.timeout(5):
+            await starting
+        await hass.async_block_till_done()
+
+    assert not watcher._unsubs, "a listener was left behind"  # noqa: SLF001
+
+    watcher.async_stop()
