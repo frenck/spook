@@ -296,3 +296,140 @@ async def test_a_member_named_by_registry_id_is_accepted(
     await hass.async_block_till_done()
 
     assert entry.options["entities"] == ["light.one", joining.id]
+
+
+async def test_adding_the_same_entity_under_its_other_name_is_not_a_duplicate(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test one entity cannot be in a group twice under two names.
+
+    A group holds either an entity ID or a registry ID, whichever the
+    interface had. Compared as strings the two names for one entity look like
+    two entities, and the group would end up holding it twice.
+    """
+    existing = entity_registry.async_get_or_create("light", "demo", "one")
+    await _setup(hass)
+    entry = await _group(hass, [existing.id])
+
+    await _call(
+        hass, "add_members", group="light.hallway", members=[existing.entity_id]
+    )
+    await hass.async_block_till_done()
+
+    assert entry.options["entities"] == [existing.id]
+
+
+async def test_naming_one_entity_twice_in_a_call_adds_it_once(
+    hass: HomeAssistant,
+) -> None:
+    """Test the check keeps up within a single call, not just against storage."""
+    await _setup(hass)
+    entry = await _group(hass, ["light.one"])
+
+    await _call(
+        hass,
+        "add_members",
+        group="light.hallway",
+        members=["light.two", "light.two"],
+    )
+    await hass.async_block_till_done()
+
+    assert entry.options["entities"] == ["light.one", "light.two"]
+
+
+async def test_removing_works_through_the_other_name(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a member stored as a registry ID goes when named as an entity ID.
+
+    Comparing the strings meant this reported success and left the member
+    exactly where it was, which is the failure Spook is least willing to
+    ship: a button that says it did something.
+    """
+    stored = entity_registry.async_get_or_create("light", "demo", "one")
+    await _setup(hass)
+    entry = await _group(hass, [stored.id, "light.two"])
+
+    await _call(
+        hass, "remove_members", group="light.hallway", members=[stored.entity_id]
+    )
+    await hass.async_block_till_done()
+
+    assert entry.options["entities"] == ["light.two"]
+
+
+async def test_setting_drops_two_names_for_one_entity(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the first name given is kept and the second is dropped."""
+    both = entity_registry.async_get_or_create("light", "demo", "one")
+    await _setup(hass)
+    entry = await _group(hass, ["light.two"])
+
+    await _call(
+        hass,
+        "set_members",
+        group="light.hallway",
+        members=[both.entity_id, both.id],
+    )
+    await hass.async_block_till_done()
+
+    assert entry.options["entities"] == [both.entity_id]
+
+
+async def test_a_member_another_hiding_group_still_holds_stays_hidden(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test leaving one group does not undo what another group asked for.
+
+    An entity can be in two groups, and either of them hiding its members is
+    reason enough for it to stay out of the way. `hidden_by` records only
+    that an integration did it, never which one, so the other groups have to
+    be asked.
+    """
+    shared = entity_registry.async_get_or_create(
+        "light", "demo", "one", hidden_by=er.RegistryEntryHider.INTEGRATION
+    )
+    entity_registry.async_get_or_create("light", "demo", "two")
+
+    other = MockConfigEntry(
+        domain="group",
+        title="Landing",
+        options={
+            "group_type": "light",
+            "name": "Landing",
+            "entities": [shared.entity_id],
+            "hide_members": True,
+        },
+    )
+    other.add_to_hass(hass)
+
+    await _setup(hass)
+    await _group(hass, [shared.entity_id], hide_members=True)
+
+    await _call(hass, "set_members", group="light.hallway", members=["light.demo_two"])
+    await hass.async_block_till_done()
+
+    assert (
+        entity_registry.async_get(shared.entity_id).hidden_by
+        is er.RegistryEntryHider.INTEGRATION
+    )
+
+
+async def test_a_plain_entity_is_not_mistaken_for_a_yaml_group(
+    hass: HomeAssistant,
+) -> None:
+    """Test only the group domain gets pointed at `group.set`.
+
+    An entity with a state and no registry entry is not automatically an old
+    group; most of them belong to somebody else entirely. Telling their owner
+    to go and edit their Lovelace groups would send them a long way off.
+    """
+    await _setup(hass)
+
+    with pytest.raises(HomeAssistantError, match="is not a group"):
+        await _call(hass, "add_members", group="light.one", members=["light.two"])

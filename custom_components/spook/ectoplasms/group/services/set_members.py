@@ -13,6 +13,7 @@ from ....group_members import (
     async_check_joining,
     async_entry_of,
     async_write_members,
+    identity_of,
 )
 from ....services import AbstractSpookAdminService
 
@@ -39,7 +40,15 @@ class SpookService(AbstractSpookAdminService):
         async_check_joining(self.hass, entry, call.data[CONF_MEMBERS])
 
         # Repeats are dropped rather than refused: the same entity named
-        # twice is one member, and dict.fromkeys keeps the order given.
-        await async_write_members(
-            self.hass, entry, list(dict.fromkeys(call.data[CONF_MEMBERS]))
-        )
+        # twice is one member. By identity rather than by the string, because
+        # an entity ID and the registry ID of the same entity are two names
+        # for one member, and the first name given is the one kept.
+        kept: list[str] = []
+        seen: set[str] = set()
+        for member in call.data[CONF_MEMBERS]:
+            if (identity := identity_of(self.hass, member)) in seen:
+                continue
+            seen.add(identity)
+            kept.append(member)
+
+        await async_write_members(self.hass, entry, kept)
