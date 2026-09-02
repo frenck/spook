@@ -948,6 +948,14 @@ class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
                 self.hass.config_entries.async_update_entry(
                     entry, options={**entry.options, CONF_ENTITIES: remaining}
                 )
+                # Writing the options is not the end of it. Nothing in the
+                # group integration listens for its own entry changing, so
+                # the group that is running carries on with the list it was
+                # built from until something reloads it. Leave that out and
+                # the button reports success, the member is still in the
+                # group, and the repair goes on reporting it because it reads
+                # the group rather than the stored options.
+                await self.hass.config_entries.async_reload(entry.entry_id)
         return self.async_create_entry(data={})
 
 
@@ -997,6 +1005,11 @@ class MinMaxUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
                 self.hass.config_entries.async_update_entry(
                     entry, options={**entry.options, "entity_ids": remaining}
                 )
+                # Same as above, and here it is worse than a stale reference:
+                # the helper keeps listening to the source somebody just took
+                # out, so if that source comes back it drives the value again
+                # while the configuration says it is gone.
+                await self.hass.config_entries.async_reload(entry.entry_id)
         return self.async_create_entry(data={})
 
 

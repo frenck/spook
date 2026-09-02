@@ -10,6 +10,7 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
+from homeassistant.setup import async_setup_component
 
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.group.repairs.unknown_members import SpookRepair
@@ -120,3 +121,49 @@ async def test_fix_flow_remove_yaml_group_aborts(
 
     assert result["type"] == FlowResultType.ABORT
     assert result["reason"] == "not_editable"
+
+
+async def test_remove_reloads_the_running_group(hass: HomeAssistant) -> None:
+    """Test the group that is running loses the member, not just the options.
+
+    Runs the real group integration rather than a stand-in, because the whole
+    question is whether the entity Home Assistant is serving changed. Nothing
+    in the group integration listens for its own entry changing, so writing
+    the options and stopping there leaves the member in the group until a
+    restart, while the button says it is done.
+    """
+    hass.states.async_set("light.real", "on")
+    assert await async_setup_component(hass, "group", {})
+
+    entry = MockConfigEntry(
+        domain="group",
+        title="Hallway",
+        options={
+            "group_type": "light",
+            "name": "Hallway",
+            "entities": ["light.real", "light.gone"],
+            "hide_members": False,
+        },
+    )
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert hass.states.get("light.hallway").attributes["entity_id"] == [
+        "light.real",
+        "light.gone",
+    ]
+
+    flow = GroupUnknownMembersFixFlow()
+    flow.hass = hass
+    flow.data = {
+        "group_entity_id": "light.hallway",
+        "group": "Hallway",
+        "entities": "- `light.gone`",
+    }
+    result = await flow.async_step_remove()
+    await hass.async_block_till_done()
+
+    assert result["type"] is FlowResultType.CREATE_ENTRY
+    assert entry.options["entities"] == ["light.real"]
+    assert hass.states.get("light.hallway").attributes["entity_id"] == ["light.real"]
