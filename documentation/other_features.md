@@ -1010,6 +1010,102 @@ options:
 
 :::
 
+### All of these happened
+
+Fires when every one of several triggers has fired inside the same window of time, in any order.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - All of these happened 👻
+* - Trigger name
+  - `spook.all_of`
+* - Targets
+  - No targets
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `triggers`
+  - {term}`list <list>`
+  - Yes
+  - Two or more triggers
+* - `within`
+  - {term}`string <string>`
+  - Yes
+  - `00:05:00`
+```
+
+Home Assistant cannot say "and" over time. The triggers on an automation are a list where any one of them is enough to set it off, and `for` covers a single state holding still. "These three things have all happened in the last five minutes, in whatever order" is not expressible, and written out by hand it takes a helper entity for each thing and an automation to set each one.
+
+[](#triggers-in-order) already covers the case where the order matters. The difference here is that it does not.
+
+The window slides. Each trigger's most recent turn is remembered, anything that happened longer ago than the window is forgotten as time passes, and the trigger fires the moment what is left covers all of them. That means a member going stale does not throw away the others: two things that happened a minute ago still count towards a set that a third completes later.
+
+It fires once per set. After it goes off, every trigger has to have its turn again, or the next turn of any one member would complete the same set over and over.
+
+When it fires, `trigger.triggers` holds each member's own payload in the order you configured them, `trigger.span` is how far apart the oldest and newest actually were, and `trigger.within` is the window you set. The trigger that completed the set is lifted to the top as well, so `trigger.entity_id`, `trigger.to_state` and `trigger.event` mean what they mean in any other trigger, and a condition asking who set the run going still gets an answer.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Somebody arrived and the door opened, in either order, within two minutes. Which is a person coming home, rather than a door opening on its own:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.all_of
+options:
+  within: "00:02:00"
+  triggers:
+    - trigger: state
+      entity_id: device_tracker.phone
+      to: home
+    - trigger: state
+      entity_id: binary_sensor.front_door
+      to: "on"
+```
+
+It nests, so the members can be Spook's own triggers too. Here, two things that both went quiet inside the same hour, which is a bridge dying rather than a sensor dying:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.all_of
+options:
+  within: "01:00:00"
+  triggers:
+    - trigger: spook.stale
+      target:
+        entity_id: sensor.kitchen_temperature
+      options:
+        for: "00:30:00"
+    - trigger: spook.stale
+      target:
+        entity_id: sensor.hallway_temperature
+      options:
+        for: "00:30:00"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Two triggers is the minimum. One trigger combined with nothing is that trigger, and it is refused rather than accepted as a pointless wrapper.
+- A window is required, and one of zero is refused. Without a window the set would eventually be complete forever, and with a window of zero nothing could ever happen inside it.
+- A member firing twice replaces its earlier turn rather than counting as two members. Every trigger has to have had its own turn.
+- If one of the triggers cannot be attached, the whole thing refuses to load and the automation is marked unavailable. A set missing a member can never be complete, so loading and sitting there silent would be worse.
+- The window is measured from when Spook saw each trigger fire, not from anything inside the event. For a state change those are the same moment; for a trigger that reports something that happened earlier, they are not.
+
+:::
+
 ### Triggers in order
 
 Fires when several triggers happen one after another, in the order given.
