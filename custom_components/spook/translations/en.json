@@ -1,5 +1,15 @@
 {
   "triggers": {
+    "recovered": {
+      "name": "Entity came back",
+      "description": "Fires when an entity comes back after having been unavailable for a while, so a router rebooting does not read as everything in the house recovering.",
+      "fields": {
+        "for": {
+          "name": "For",
+          "description": "How long the entity has to have been away before coming back counts. Anything shorter is a flicker: reloading an integration takes every one of its entities through unavailable and back inside a second."
+        }
+      }
+    },
     "sequence": {
       "name": "Triggers in order",
       "description": "Fires when several triggers happen one after another, in the order given.",

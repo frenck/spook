@@ -15,6 +15,12 @@ Fires on a crontab schedule, for the times Home Assistant's own time triggers ca
 
 `spook.cron`, [documentation](other-features#cron-schedule) 📚
 
+## Entity came back
+
+Fires when an entity returns after having been unavailable for a while, so a router rebooting does not read as everything in the house recovering. _#recovered_ _#back_ _#unavailable_
+
+`spook.recovered`, [documentation](other-features#entity-came-back) 📚
+
 ## Entity fell silent
 
 Fires when nothing has written to an entity for a while, which catches the device that died quietly instead of going unavailable. _#stale_ _#silent_ _#dead_

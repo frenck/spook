@@ -20,6 +20,8 @@ from homeassistant.helpers.target import TargetEntityChangeTracker, TargetSelect
 from homeassistant.helpers.trigger import Trigger
 from homeassistant.util import dt as dt_util
 
+from ....target_watching import watchable_target
+
 if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import datetime
@@ -47,30 +49,9 @@ def _quiet_period(value: Any) -> timedelta:
     return duration
 
 
-# `TARGET_FIELDS` is a plain mapping of schema fields, so it needs compiling
-# before it can validate anything.
-_TARGET_SCHEMA = vol.Schema(cv.TARGET_FIELDS)
-
-
-def _watchable_target(value: Any) -> ConfigType:
-    """Validate the target, and refuse one that names nothing.
-
-    An empty target passes the field validation happily and then watches
-    nothing at all: a trigger that loads and can never fire. Core's own
-    target tracking helper raises on this for the same reason.
-    """
-    target: ConfigType = _TARGET_SCHEMA(value)
-    if not TargetSelection(target).has_any_target:
-        message = (
-            "The target must name at least one entity, device, area, floor or label"
-        )
-        raise vol.Invalid(message)
-    return target
-
-
 _TRIGGER_SCHEMA = vol.Schema(
     {
-        vol.Required(CONF_TARGET): _watchable_target,
+        vol.Required(CONF_TARGET): watchable_target,
         vol.Required(CONF_OPTIONS): {
             vol.Required(CONF_FOR): _quiet_period,
         },
