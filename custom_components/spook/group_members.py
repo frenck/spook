@@ -202,16 +202,24 @@ def _async_follow_hiding(
     was: list[str],
     now: list[str],
 ) -> None:
-    """Hide what joined and show what left, for a group that hides members.
+    """Hide the members that just joined, for a group that hides its members.
 
     A group set to hide its members promises that what is in it is out of the
-    way. Leaving that to the next reload would leave a member that just joined
-    still on show, and one that just left hidden with nothing left to explain
-    why.
+    way, and leaving that to the next reload would leave a member that just
+    joined still on show.
 
-    Only what this integration hid is shown again, the same rule core follows
-    when a whole group is deleted. Somebody who hid an entity themselves meant
-    it, and it is not this action's place to undo that.
+    Nothing is ever shown again. That is not an omission, it is what the
+    interface does: core applies the hiding to the new list of members and
+    never touches one that left, so a member you take out through Settings
+    stays hidden too. It is also the only safe answer, because `hidden_by`
+    records that an integration hid something and never which one. Clearing
+    it would mean guessing, and guessing wrong means undoing what another
+    integration, or another group, still asks for.
+
+    Only what is on show gets hidden. An entity somebody hid themselves, or
+    that another integration is keeping out of the way, is already where the
+    group wants it, so there is nothing to do and nothing to overwrite. Core
+    is blunter here and writes over both.
     """
     if not entry.options.get(CONF_HIDE_MEMBERS):
         return
@@ -219,54 +227,15 @@ def _async_follow_hiding(
     registry = er.async_get(hass)
 
     # By identity rather than by the strings, or an entity stored as a
-    # registry ID and named as an entity ID reads as one leaving and another
-    # arriving, and both halves get the wrong treatment.
+    # registry ID and named as an entity ID reads as a different member.
     before = {identity_of(hass, member) for member in was}
-    after = {identity_of(hass, member) for member in now}
 
-    for entity_id in after - before:
-        # Only what is on show gets claimed. An entity somebody hid
-        # themselves is already out of the way, and writing over that would
-        # mean this puts it back on show the day it leaves the group, which
-        # is the very thing the rule below is there to prevent.
+    for member in now:
+        if (entity_id := identity_of(hass, member)) in before:
+            continue
+
         entity = registry.async_get(entity_id)
         if entity is not None and entity.hidden_by is None:
             registry.async_update_entity(
                 entity_id, hidden_by=er.RegistryEntryHider.INTEGRATION
             )
-
-    for entity_id in before - after:
-        if (entity := registry.async_get(entity_id)) is None:
-            continue
-
-        if entity.hidden_by is not er.RegistryEntryHider.INTEGRATION:
-            continue
-
-        if _hidden_by_another_group(hass, entry, entity_id):
-            continue
-
-        registry.async_update_entity(entity_id, hidden_by=None)
-
-
-@callback
-def _hidden_by_another_group(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    entity_id: str,
-) -> bool:
-    """Return whether another group that hides its members still holds this one.
-
-    An entity can be in more than one group, and either of them hiding its
-    members is reason enough for it to stay out of the way. Showing it again
-    because it left one group would quietly undo what the other one asked
-    for, and `hidden_by` records only that an integration did it, not which.
-    """
-    for other in hass.config_entries.async_entries(GROUP_DOMAIN):
-        if other.entry_id == entry.entry_id or not other.options.get(CONF_HIDE_MEMBERS):
-            continue
-
-        for member in other.options.get(CONF_ENTITIES) or []:
-            if identity_of(hass, member) == entity_id:
-                return True
-
-    return False

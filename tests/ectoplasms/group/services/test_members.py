@@ -232,14 +232,16 @@ async def test_something_that_is_not_a_group_is_refused(
         await _call(hass, "add_members", group="light.demo_bulb", members=["light.two"])
 
 
-async def test_hiding_follows_the_members_in_and_out(
+async def test_hiding_covers_what_joins_and_leaves_the_rest_alone(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
 ) -> None:
-    """Test a group that hides its members keeps that promise.
+    """Test a group that hides its members hides the ones that join it.
 
-    Left to the next reload, a member that just joined would still be on show
-    and one that just left would stay hidden with nothing to explain why.
+    A member that leaves stays hidden, which is not an oversight. Core does
+    the same: it applies the hiding to the new list of members and never
+    touches one that left, so removing a member through Settings leaves it
+    hidden as well.
     """
     joining = entity_registry.async_get_or_create("light", "demo", "two")
     leaving = entity_registry.async_get_or_create(
@@ -255,7 +257,25 @@ async def test_hiding_follows_the_members_in_and_out(
         entity_registry.async_get(joining.entity_id).hidden_by
         is er.RegistryEntryHider.INTEGRATION
     )
-    assert entity_registry.async_get(leaving.entity_id).hidden_by is None
+    assert (
+        entity_registry.async_get(leaving.entity_id).hidden_by
+        is er.RegistryEntryHider.INTEGRATION
+    )
+
+
+async def test_a_group_that_does_not_hide_its_members_hides_nothing(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the option is honoured in the obvious direction too."""
+    joining = entity_registry.async_get_or_create("light", "demo", "two")
+    await _setup(hass)
+    await _group(hass, ["light.one"], hide_members=False)
+
+    await _call(hass, "add_members", group="light.hallway", members=[joining.entity_id])
+    await hass.async_block_till_done()
+
+    assert entity_registry.async_get(joining.entity_id).hidden_by is None
 
 
 async def test_hiding_leaves_what_somebody_hid_themselves(
@@ -385,42 +405,30 @@ async def test_setting_drops_two_names_for_one_entity(
     assert entry.options["entities"] == [both.entity_id]
 
 
-async def test_a_member_another_hiding_group_still_holds_stays_hidden(
+async def test_a_member_another_integration_hid_is_never_shown_again(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
 ) -> None:
-    """Test leaving one group does not undo what another group asked for.
+    """Test leaving a group does not undo somebody else's hiding.
 
-    An entity can be in two groups, and either of them hiding its members is
-    reason enough for it to stay out of the way. `hidden_by` records only
-    that an integration did it, never which one, so the other groups have to
-    be asked.
+    `hidden_by` records that an integration hid an entity and never which
+    one. A helper that wraps a source entity marks it exactly the same way
+    this group would, so clearing the mark on the way out would expose a
+    source that its own helper still wants out of the way. Nothing is ever
+    shown again, which is the only answer that cannot be wrong.
     """
-    shared = entity_registry.async_get_or_create(
+    theirs = entity_registry.async_get_or_create(
         "light", "demo", "one", hidden_by=er.RegistryEntryHider.INTEGRATION
     )
     entity_registry.async_get_or_create("light", "demo", "two")
-
-    other = MockConfigEntry(
-        domain="group",
-        title="Landing",
-        options={
-            "group_type": "light",
-            "name": "Landing",
-            "entities": [shared.entity_id],
-            "hide_members": True,
-        },
-    )
-    other.add_to_hass(hass)
-
     await _setup(hass)
-    await _group(hass, [shared.entity_id], hide_members=True)
+    await _group(hass, [theirs.entity_id], hide_members=True)
 
     await _call(hass, "set_members", group="light.hallway", members=["light.demo_two"])
     await hass.async_block_till_done()
 
     assert (
-        entity_registry.async_get(shared.entity_id).hidden_by
+        entity_registry.async_get(theirs.entity_id).hidden_by
         is er.RegistryEntryHider.INTEGRATION
     )
 
@@ -554,3 +562,27 @@ async def test_a_member_the_user_hid_is_never_claimed(
         entity_registry.async_get(theirs.entity_id).hidden_by
         is er.RegistryEntryHider.USER
     )
+
+
+async def test_asking_again_for_a_member_that_is_gone_is_not_an_error(
+    hass: HomeAssistant,
+) -> None:
+    """Test a group holding a deleted member can still be added to.
+
+    Only what is actually joining is questioned. A group is allowed to be
+    holding something that no longer exists, and naming that one again
+    changes nothing, so refusing the call over it would be refusing to do
+    nothing.
+    """
+    await _setup(hass)
+    entry = await _group(hass, ["light.one", "light.vanished"])
+
+    await _call(
+        hass,
+        "add_members",
+        group="light.hallway",
+        members=["light.vanished", "light.two"],
+    )
+    await hass.async_block_till_done()
+
+    assert entry.options["entities"] == ["light.one", "light.vanished", "light.two"]

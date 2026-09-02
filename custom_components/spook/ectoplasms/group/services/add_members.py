@@ -38,8 +38,6 @@ class SpookService(AbstractSpookAdminService):
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
         entry = async_entry_of(self.hass, call.data[CONF_GROUP])
-        async_check_joining(self.hass, entry, call.data[CONF_MEMBERS])
-
         current = members_of(entry)
 
         # By identity, not by the string. A group holds either an entity ID or
@@ -58,5 +56,11 @@ class SpookService(AbstractSpookAdminService):
                 continue
             held.add(identity)
             joining.append(member)
+
+        # Only what is actually joining is questioned. A group is allowed to
+        # be holding a member that no longer exists, and asking for that one
+        # again changes nothing, so refusing the call over it would be
+        # refusing to do nothing.
+        async_check_joining(self.hass, entry, joining)
 
         await async_write_members(self.hass, entry, current + joining)

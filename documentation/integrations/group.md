@@ -164,7 +164,7 @@ The `group` attribute names the group to change. The `members` attribute lists t
 
 All three only work on groups created through the interface. A group defined in your YAML configuration is not something they can change, and they say so rather than failing quietly. The built-in `group.set` action does still work on that older kind of group, and it does not need a restart either.
 
-If the group is set to hide its members, Spook follows that: a member that joins is hidden, and one that leaves is shown again. Two things are left alone. An entity you hid yourself stays hidden, because you meant it. So does one that another group with hidden members still holds, since leaving this group is no reason to undo what that one asked for.
+If the group is set to hide its members, the ones that join it are hidden. A member that leaves stays hidden, the same as when you take one out through Settings: Home Assistant applies the hiding to the members a group has and never touches one that left. It is also the only safe answer, because the registry records that an integration hid an entity and never which one, so showing it again could undo what another helper still asks for. An entity that was already hidden, whether by you or by anything else, is left exactly as it is.
 
 Which entities a group can hold is read from the same list Home Assistant's own dialog offers, so it is not always one domain: a sensor group takes `number` and `input_number` alongside `sensor`.
 
