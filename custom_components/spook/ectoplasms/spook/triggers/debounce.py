@@ -32,17 +32,21 @@ if TYPE_CHECKING:
 
 CONF_TRIGGERS = "triggers"
 
-# What gets lifted out of the last firing of a burst and put at the top of the
-# payload, so `trigger.to_state` and friends mean here what they mean
-# everywhere else. It is also what carries the person through: an automation
-# starts a fresh context, so a condition asking who set the run going reads
-# them off `trigger.to_state`.
+# What the last firing of a burst may not bring to the top of the payload.
+# Home Assistant lays the automation's own `id`, `idx` and `alias` under what a
+# trigger hands over, with `platform` and the description, and what is handed
+# over wins. A nested payload carries all five too, so merging it wholesale
+# would replace the automation's `trigger.id` with the nested trigger's and
+# break every `choose` keyed on it.
 #
-# An allowlist on purpose. A nested payload also carries `id`, `idx`,
-# `platform` and `description`, and what is handed to `run_action` overrides
-# those, so merging one wholesale would replace the automation's own
-# `trigger.id` and break every `choose` keyed on it.
-_CARRIED_FROM_THE_LAST = ("entity_id", "from_state", "to_state", "event")
+# Everything else comes through. `spook.all_of` and `spook.sequence` hand over
+# every payload in a list and lift only the common keys, but this one keeps no
+# list, so the last firing is the only payload there is: `trigger.to_state`
+# means what it means everywhere else, and so does an MQTT trigger's `payload`
+# or a calendar trigger's `calendar_event`. It is also what carries the person
+# through: an automation starts a fresh context, so a condition asking who set
+# the run going reads them off `trigger.to_state`.
+_THE_AUTOMATIONS_OWN = frozenset({"id", "idx", "alias", "platform", "description"})
 
 
 def _a_real_pause(value: Any) -> timedelta:
@@ -83,10 +87,10 @@ class _Burst:
 class _BurstWatcher:
     """Listens to the triggers and reports once they have stopped.
 
-    Only counts are kept, not every payload. A burst has no ceiling: a sensor
-    that will not settle can fire hundreds of times, and holding all of that
-    to hand over is a memory cost for something nobody reads. The last firing
-    is the one worth having.
+    The firings before the last are counted, not kept. A burst has no ceiling:
+    a sensor that will not settle can fire hundreds of times, and holding all
+    of that to hand over is a memory cost for something nobody reads. The last
+    firing is the one worth having, and it is kept whole.
     """
 
     def __init__(
@@ -282,6 +286,14 @@ class SpookTrigger(Trigger):
         shaped: ConfigType = _TRIGGER_SCHEMA(config)
         options = shaped[CONF_OPTIONS]
 
+        if not options[CONF_TRIGGERS]:
+            # `cv.TRIGGER_SCHEMA` is content with an empty list, and so would
+            # `async_start` be: nothing to attach is nothing that can fail.
+            # What that leaves is an automation that looks healthy and can
+            # never fire.
+            msg = "A debounce trigger needs at least one trigger to wait out"
+            raise vol.Invalid(msg)
+
         options[CONF_TRIGGERS] = await trigger_helper.async_validate_trigger_config(
             hass, options[CONF_TRIGGERS]
         )
@@ -314,7 +326,13 @@ class SpookTrigger(Trigger):
 
             run_action(
                 {
-                    **{key: last[key] for key in _CARRIED_FROM_THE_LAST if key in last},
+                    **{
+                        key: value
+                        for key, value in last.items()
+                        if key not in _THE_AUTOMATIONS_OWN
+                    },
+                    # After the merge on purpose: a nested state trigger has a
+                    # `for` of its own, and this one is the quiet period.
                     "count": count,
                     "span": span,
                     "for": self._pause,

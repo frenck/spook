@@ -1148,7 +1148,7 @@ Every firing starts the quiet period over. When it finally runs out, the trigger
 
 Give it more than one trigger and they are waited out together: any of them starts a burst, any of them keeps it going, and the lot arrives as a single report.
 
-When it fires, `trigger.count` is how many firings were collapsed, `trigger.span` is how long the burst lasted from its first firing to its last, not counting the quiet after it, and `trigger.for` is the quiet period you set. The last firing of the burst is lifted to the top, so `trigger.entity_id`, `trigger.to_state` and `trigger.event` mean what they mean in any other trigger, and a condition asking who set the run going still gets an answer.
+When it fires, `trigger.count` is how many firings were collapsed, `trigger.span` is how long the burst lasted from its first firing to its last, not counting the quiet after it, and `trigger.for` is the quiet period you set. The last firing of the burst is lifted to the top, all of it: `trigger.entity_id` and `trigger.to_state` mean what they mean in any other trigger, an MQTT trigger's `trigger.payload` or a calendar trigger's `trigger.calendar_event` are there too, and a condition asking who set the run going still gets an answer. What stays the automation's own is `trigger.id`, `trigger.platform` and the description, and `trigger.for` is always the quiet period, not the `for` of a nested state trigger.
 
 :::{seealso} Example trigger in {term}`YAML`
 :class: dropdown
@@ -1186,7 +1186,7 @@ options:
 :class: dropdown
 
 - Something that never stops firing is never reported. That is what waiting for quiet means, and it is worth knowing before you point this at a sensor that fires every ten seconds all day with a quiet period of a minute.
-- Only counts are kept, not every payload. A burst has no ceiling, and holding hundreds of firings to hand over would be a memory cost for something nobody reads. The last firing is the one you get.
+- The firings before the last are counted, not kept. A burst has no ceiling, and holding hundreds of payloads to hand over would be a memory cost for something nobody reads. The last firing is the one you get, and you get all of it.
 - It fires on the way out, never on the way in. If you want to act on the first of a burst and ignore the rest, that is a different thing and this is not it.
 - A quiet period of zero is refused. It would report the first thing to happen and collapse nothing, which is the trigger you already had, only later.
 - If one of the triggers cannot be attached, the whole thing refuses to load and the automation is marked unavailable. A trigger that is not listening cannot start the burst you asked about.

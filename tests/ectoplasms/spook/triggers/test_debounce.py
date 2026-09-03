@@ -3,18 +3,21 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+import asyncio
 from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 from homeassistant.core import Context
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import trigger as trigger_helper
 from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
 from pytest_homeassistant_custom_component.common import async_fire_time_changed
 import pytest
 import voluptuous as vol
 
+from custom_components.spook import trigger_nesting
 from custom_components.spook.ectoplasms.spook.triggers import (
     debounce as debounce_module,
 )
@@ -33,6 +36,12 @@ if TYPE_CHECKING:
 
 MOTION = {"trigger": "state", "entity_id": "binary_sensor.motion", "to": "on"}
 DOOR = {"trigger": "state", "entity_id": "binary_sensor.door", "to": "on"}
+POWER_THRESHOLD = 100
+POWER = {
+    "trigger": "numeric_state",
+    "entity_id": "sensor.power",
+    "above": POWER_THRESHOLD,
+}
 
 HALF_A_MINUTE = timedelta(seconds=30)
 THREE = 3
@@ -60,6 +69,7 @@ async def _automation(
                     "alias": "settled",
                     "trigger": {
                         "platform": "spook.debounce",
+                        "id": "settled",
                         "options": options or {"triggers": [MOTION], "for": "00:00:30"},
                     },
                     "action": [
@@ -69,6 +79,8 @@ async def _automation(
                                 "count": "{{ trigger.count }}",
                                 "span": "{{ trigger.span }}",
                                 "entity_id": "{{ trigger.entity_id }}",
+                                "id": "{{ trigger.id }}",
+                                "platform": "{{ trigger.platform }}",
                             },
                         }
                     ],
@@ -117,6 +129,18 @@ async def test_a_zero_pause_is_refused(hass: HomeAssistant, pause: object) -> No
     with pytest.raises(vol.Invalid, match="longer than zero"):
         await SpookTrigger.async_validate_config(
             hass, {"options": {"triggers": [MOTION], "for": pause}}
+        )
+
+
+async def test_no_triggers_at_all_is_refused(hass: HomeAssistant) -> None:
+    """Nothing to attach is nothing that can fail, and nothing that can ever fire.
+
+    Home Assistant's own trigger schema lets an empty list through, so without
+    this the automation would load, look healthy, and stay silent for good.
+    """
+    with pytest.raises(vol.Invalid, match="at least one trigger"):
+        await SpookTrigger.async_validate_config(
+            hass, {"options": {"triggers": [], "for": "00:00:30"}}
         )
 
 
@@ -241,6 +265,10 @@ async def test_several_triggers_are_collapsed_together(
     assert len(runs) == 1
     # The last one to fire is the one at the top of the payload.
     assert runs[0]["entity_id"] == "binary_sensor.door"
+    # But not its `id` and `platform`. Those are the automation's own, and a
+    # `choose` keyed on `trigger.id` has to keep working.
+    assert runs[0]["id"] == "settled"
+    assert runs[0]["platform"] == "spook.debounce"
 
     await _detach(hass)
 
@@ -289,6 +317,46 @@ async def test_the_payload_comes_from_the_last_firing(
     assert payload["for"] == HALF_A_MINUTE
 
 
+async def test_the_whole_of_the_last_firing_comes_through(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Not just the four keys every trigger has.
+
+    The other nested triggers hand over every payload in a list and lift only
+    the common keys to the top. This one keeps no list, so the last firing is
+    the only payload there is, and an automation asking what value settled
+    would otherwise have nowhere to look.
+    """
+    fired: list[dict] = []
+
+    config = await SpookTrigger.async_validate_config(
+        hass, {"options": {"triggers": [POWER], "for": "00:00:30"}}
+    )
+    trigger = SpookTrigger(
+        hass, TriggerConfig(key="debounce", options=config["options"])
+    )
+
+    def _run(payload, _description, _context=None) -> None:  # noqa: ANN001
+        fired.append(payload)
+
+    unsub = await trigger.async_attach_runner(_run)
+
+    hass.states.async_set("sensor.power", "50")
+    hass.states.async_set("sensor.power", "150")
+    await hass.async_block_till_done()
+
+    await _wait_out(hass, freezer)
+    unsub()
+
+    assert len(fired) == 1
+    # `above` is the numeric_state trigger's own, and it is there.
+    assert fired[0]["above"] == POWER_THRESHOLD
+    assert fired[0]["entity_id"] == "sensor.power"
+    # What Home Assistant lays underneath for the automation is left to it.
+    assert debounce_module._THE_AUTOMATIONS_OWN.isdisjoint(fired[0])  # noqa: SLF001
+
+
 async def test_a_trigger_that_will_not_attach_refuses_the_lot(
     hass: HomeAssistant,
 ) -> None:
@@ -312,6 +380,66 @@ async def test_a_trigger_that_will_not_attach_refuses_the_lot(
         pytest.raises(HomeAssistantError, match="every trigger"),
     ):
         await trigger.async_attach_runner(_run)
+
+
+async def test_a_firing_that_lands_mid_attach_goes_with_a_failed_attach(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A trigger already attached can fire while a later one is still attaching.
+
+    That firing is counted, as it is in `spook.all_of` and in a plain list of
+    triggers, which Home Assistant attaches side by side. The question is what
+    becomes of the wait it started when the later attach then fails: the lot is
+    refused, and the wait has to go with it rather than report a burst on
+    behalf of a trigger that no longer exists.
+    """
+    reported: list[int] = []
+
+    config = await SpookTrigger.async_validate_config(
+        hass, {"options": {"triggers": [MOTION, DOOR], "for": "00:00:30"}}
+    )
+    watcher = debounce_module._BurstWatcher(  # noqa: SLF001
+        hass,
+        config["options"]["triggers"],
+        HALF_A_MINUTE,
+        lambda count, *_args: reported.append(count),
+    )
+
+    real = trigger_helper.async_initialize_triggers
+    hold = asyncio.Event()
+    attaching = asyncio.Event()
+
+    async def _second_one_fails(*args: Any, **kwargs: Any):  # noqa: ANN202
+        if "trigger 2" not in args[4]:
+            return await real(*args, **kwargs)
+        attaching.set()
+        await hold.wait()
+        return None
+
+    with patch.object(
+        trigger_nesting.trigger_helper, "async_initialize_triggers", _second_one_fails
+    ):
+        starting = hass.async_create_task(watcher.async_start())
+        async with asyncio.timeout(5):
+            await attaching.wait()
+
+        # Trigger 1 is listening and trigger 2 is not yet. Motion, right now.
+        hass.states.async_set("binary_sensor.motion", "off")
+        hass.states.async_set("binary_sensor.motion", "on")
+        assert watcher._burst is not None, "the firing was not counted"  # noqa: SLF001
+
+        hold.set()
+        with pytest.raises(HomeAssistantError, match="every trigger"):
+            async with asyncio.timeout(5):
+                await starting
+        await hass.async_block_till_done()
+
+    assert watcher._burst is None, "the wait outlived the refusal"  # noqa: SLF001
+    assert not watcher._unsubs, "a listener was left behind"  # noqa: SLF001
+
+    await _wait_out(hass, freezer)
+    assert not reported
 
 
 async def test_stopping_while_attaching_leaves_nothing_behind(
