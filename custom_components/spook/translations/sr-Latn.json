@@ -373,7 +373,7 @@
             "title": "Nepoznati entiteti u vašim prilagođavanjima"
         },
         "lovelace_missing_resources": {
-            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se prilagođena kartica ili njene datoteke uklone, ali resurs ostane zaostao. Da biste ispravili ovu grešku, otvorite Podešavanja > Kontrolne table > Resursi i uklonite ili ispravite ove resurse.\n\nSpook 👻 Vaš ortak.",
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se prilagođena kartica ili njene datoteke uklone, ali resurs ostane za njima. Da biste ispravili ovu grešku, otvorite stranicu [Resursi] (/config/lovelace/resources) i uklonite ili ispravite ove resurse. Ona nema sopstvenu karticu: na stranici Kontrolne table nalazi se iza tri tačke, gore desno..\n\nSpook 👻 Vaš ortak.",
             "title": "Resursi kontrolne table ukazuju na datoteke koje nedostaju"
         },
         "lovelace_unknown_area_references": {
@@ -570,6 +570,10 @@
                 }
             },
             "title": "Resurs kontrolne table naveden više puta: {resource}"
+        },
+        "lovelace_missing_resources_yaml": {
+            "title": "Resursi kontrolne table ukazuju na nepostojeće datoteke",
+            "description": "Spook je pronašao duha na Vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se ukloni prilagođena kartica ili njene datoteke, ali resurs ostane konfigurisan.\n\nOvi resursi su navedeni u vašoj YAML konfiguraciji, pa ih stranica „Resursi“ ne može promeniti. Uredite odeljak `resources:` u svojoj Lovelace konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš ortak."
         }
     },
     "services": {
@@ -1608,6 +1612,48 @@
                     "description": "Koliko bi prelaz trebalo da traje, u sekundama."
                 }
             }
+        },
+        "group_add_members": {
+            "name": "Dodaj članove u grupu",
+            "description": "Dodaje entitete u grupu napravljenu preko interfejsa, dok Home Assistant radi. Entiteti koji su već u grupi ostaju nepromenjeni.",
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa u koju ih treba dodati."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje treba dodati u grupu."
+                }
+            }
+        },
+        "group_remove_members": {
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa iz koje ih treba ukloniti."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje treba ukloniti iz grupe."
+                }
+            },
+            "name": "Ukloni članove iz grupe",
+            "description": "Uklanja entitete iz grupe koja je napravljena kroz interfejs, dok Home Assistant radi. Navođenje nečega što nije u grupi ne radi ništa, pa je ovo ujedno i način da očistite člana koji više ne postoji."
+        },
+        "group_set_members": {
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa koju treba izmeniti."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje bi grupa od sada trebalo da sadrži."
+                }
+            },
+            "description": "Zamenjuje članove grupe napravljene kroz interfejs navedenim članovima, dok Home Assistant radi.",
+            "name": "Postavi članove grupe"
         }
     },
     "conditions": {
@@ -1670,7 +1716,7 @@
             }
         },
         "triggered_by_user": {
-            "name": "Pokrenuto od strane korisnika",
+            "name": "Pokretač aktiviran od strane korisnika",
             "description": "Uslov je ispunjen kada osoba stoji iza pokretanja ove akcije: promena stanja ili događaj koji je sama izazvala, uključujući i situaciju koja je dovela do ispunjenja šablonskog pokretača. Raspored, sunce ili integracija koja deluje samostalno ne nose korisnički kontekst, a isto važi i za ručno pokretanje pomoću dugmeta „Pokreni“.",
             "fields": {
                 "person": {
@@ -1680,7 +1726,7 @@
             }
         },
         "not_triggered_by_user": {
-            "name": "Nije pokrenuto od strane korisnika",
+            "name": "Pokretač aktiviran bez učešća korisnika",
             "description": "Uslov je ispunjen kada niko ne može biti odgovoran za ovo pokretanje: vremenski raspored, sunce, integracija koja deluje samostalno ili dugme Pokreni. Ovaj uslov s namerom ne prima dodatne opcije. Ako umesto toga želite da isključite određene osobe, postavite filter „Pokrenuto od strane korisnika“ unutar uslova Ne."
         }
     },
@@ -1724,7 +1770,7 @@
                     "description": "Vremenski period unutar kojeg te promene moraju da se dese. Prozor se pomera, tako da se ovo uvek odnosi na najnovije promene."
                 }
             },
-            "name": "Entitet se ne smiruje",
+            "name": "Entitet nestabilan i ne može da se smiri",
             "description": "Aktivira se kada entitet menja stanje češće nego što bi trebalo unutar određenog vremenskog perioda."
         },
         "while": {
@@ -1738,7 +1784,7 @@
                     "description": "Koliko se čeka između dva uzastopna aktiviranja, sve dok je uslov ispunjen."
                 }
             },
-            "name": "Dok je uslov ispunjen",
+            "name": "Uslov ispunjen",
             "description": "Aktivira se kada uslov postane ispunjen, a zatim nastavlja sa periodičnim aktiviranjem sve dok taj uslov ostaje tačan."
         },
         "condition_met": {
@@ -1790,11 +1836,11 @@
                     "description": "Ograničite ovo na probleme određene ozbiljnosti. Ostavite prazno za sve nivoe."
                 }
             },
-            "name": "Kreiran je problem za popravku",
+            "name": "Kreiran problem za popravku",
             "description": "Aktivira se kada se pojavi novi problem za popravku, tako da možete saznati za njega bez posete stranici „Popravke“."
         },
         "integration_failed": {
-            "name": "Podešavanje integracije nije uspelo",
+            "name": "Podešavanje integracije neuspešno",
             "description": "Aktivira se kada podešavanje unosa konfiguracije ne uspeva već neko vreme, i to nakon što su iscrpljeni svi interni ponovni pokušaji kojima bi Home Assistant samostalno rešio problem.",
             "fields": {
                 "for": {
@@ -1808,7 +1854,7 @@
             }
         },
         "repair_issue_removed": {
-            "name": "Problem za popravku je rešen",
+            "name": "Problem za popravku rešen",
             "description": "Aktivira se kada problem za popravku nestane, bilo zato što je rešen ili zato što se više ne prijavljuje.",
             "fields": {
                 "domain": {
@@ -1816,6 +1862,44 @@
                     "description": "Ograničite ovo na probleme koje prijavljuju određene integracije, prema njihovom domenu. Ostavite prazno za sve integracije."
                 }
             }
+        },
+        "all_of": {
+            "name": "Sve ovo se dogodilo",
+            "description": "Aktivira se kada se svaki od nekoliko pokretača pokrene unutar istog vremenskog prozora, bilo kojim redosledom. Sopstveni pokretači Home Assistant-a su lista gde je dovoljno da se bilo koji od njih aktivira; ovo je ona druga opcija.",
+            "fields": {
+                "within": {
+                    "description": "Koliko blizu jedno drugom moraju biti. Vremenski prozor se pomera, pa se pokretač koji se aktivirao ranije od ovog perioda zaboravlja, dok ostali nastavljaju da se računaju.",
+                    "name": "Unutar"
+                },
+                "triggers": {
+                    "name": "Pokretači",
+                    "description": "Pokretači koji svi moraju biti aktivirani. Redosled nije važan, a ponovna aktivacija pokretača samo osvežava njegovo stanje umesto da se računa dvaput."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entitet se ponovo pojavio",
+            "description": "Aktivira se kada se entitet vrati nakon što je neko vreme bio nedostupan, kako se ponovno pokretanje rutera ne bi očitalo kao oporavak svega u kući.",
+            "fields": {
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Koliko dugo entitet mora biti odsutan da bi se povratak računao. Sve kraće od toga je samo treperenje: ponovno učitavanje integracije prebacuje svaki njen entitet u stanje nedostupnosti i vraća ga nazad u roku od jedne sekunde."
+                }
+            }
+        },
+        "debounce": {
+            "description": "Aktivira se kada pokretač prestane da se pokreće na neko vreme, tako da čitav nalet signala stigne kao jedan. Senzor pokreta ne prijavljuje kretanje samo jednom, već ga prijavi dvadeset puta.",
+            "fields": {
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Koliko dugo mora da bude mirno pre nego što se ovo pokrene. Svaka nova aktivacija ponovo pokreće to čekanje, tako da se nešto što neprestano šalje signale nikada ne prijavljuje."
+                },
+                "triggers": {
+                    "name": "Pokretači",
+                    "description": "Pokretači koje treba sačekati. Aktivacija bilo kog od njih započinje seriju akcija, a ponovna aktivacija je održava u toku, tako da se više pokretača spaja u jedno umesto da se izvršavaju jedan po jedan."
+                }
+            },
+            "name": "Kada se stanje stabilizuje"
         }
     },
     "selector": {
