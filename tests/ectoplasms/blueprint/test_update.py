@@ -47,6 +47,7 @@ from custom_components.spook.ectoplasms.blueprint.update import (
     _HOW_MANY_TO_NAME,
     _normalize,
     _fingerprint,
+    _settled,
     _CHECK_INTERVAL,
     _COPY,
     _KEEP_COPIES,
@@ -61,11 +62,13 @@ from .conftest import (
     A_SCRIPT_BLUEPRINT_WITH_NEW_INPUT,
     ANOTHER_AUTOMATION_BLUEPRINT,
     MOTION_LIGHT,
+    MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT,
     MOTION_LIGHT_CHANGED,
     MOTION_LIGHT_CHANGED_AGAIN,
     MOTION_LIGHT_FROM_THE_FUTURE,
     MOTION_LIGHT_WITH_A_BAD_TRIGGER,
     MOTION_LIGHT_WITH_NEW_INPUT,
+    MOTION_LIGHT_WITH_SELECTORS,
     NO_INPUTS,
     SOURCE,
     async_add_automation,
@@ -185,6 +188,35 @@ async def test_a_source_that_still_says_the_same_is_not_an_update(
     await async_set_up(hass)
 
     with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["latest_version"] == state.attributes["installed_version"]
+
+
+async def test_a_file_written_by_an_older_home_assistant_is_not_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """What everybody who upgraded to Home Assistant 2026.9 was shown.
+
+    The file on disk holds the selector settings in the order voluptuous
+    filled them in, which came off the hash seed of the process that wrote it.
+    Probatio keeps that order when it reads the file back and puts a fresh
+    fetch in schema order, so the two never agreed, and installing the update
+    it made appear only wrote the file again. Nothing about the blueprint had
+    changed.
+    """
+    write_by_hand(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT,
+    )
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_WITH_SELECTORS):
         await _check(hass, freezer)
 
     state = hass.states.get(_ENTITY)
@@ -1457,6 +1489,108 @@ actions:
     after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
 
     assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_fingerprint_ignores_the_order_home_assistant_filled_a_selector_in() -> (
+    None
+):
+    """The settings an author leaves out of a selector are filled in on the way.
+
+    In what order was up to the validator. Voluptuous took it from the hash
+    seed of the process, so a file written by one run of Home Assistant read
+    back differently in the next. Probatio keeps the order a file already has
+    and gives a fresh fetch schema order, so a file written before it arrived
+    never agreed with its own source. Twelve "changed" settings on a blueprint
+    nobody had touched, and the same update offered after every restart.
+    """
+    fresh = Blueprint(
+        yaml_util.parse_yaml(MOTION_LIGHT_WITH_SELECTORS.format(source=SOURCE)),
+        schema=BLUEPRINT_SCHEMA,
+    )
+    older = Blueprint(
+        yaml_util.parse_yaml(
+            MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT.format(source=SOURCE),
+        ),
+        schema=BLUEPRINT_SCHEMA,
+    )
+
+    assert list(fresh.inputs["light_target"]["selector"]["select"]) != list(
+        older.inputs["light_target"]["selector"]["select"],
+    ), "the two came out in the same order, so this proves nothing"
+    assert _fingerprint(fresh) == _fingerprint(older)
+
+
+def test_a_selector_setting_that_really_changed_still_moves_the_fingerprint() -> None:
+    """So the sorting above cannot pass by making every selector look alike."""
+    raw = MOTION_LIGHT_WITH_SELECTORS.format(source=SOURCE)
+    more_than_one = raw.replace(
+        "          filter:\n",
+        "          multiple: true\n          filter:\n",
+    )
+    assert more_than_one != raw
+
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(more_than_one), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_the_options_of_a_select_still_count_in_their_order() -> None:
+    """The sorting stops at the selector's own keys.
+
+    What sits under them is the author's: the options of a `select` are a list
+    somebody is shown in that order, and swapping two of them is a change.
+    """
+    raw = MOTION_LIGHT_WITH_SELECTORS.format(source=SOURCE)
+    swapped = raw.replace(
+        "            - hall\n            - landing\n",
+        "            - landing\n            - hall\n",
+    )
+    assert swapped != raw
+
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
+
+
+def test_a_selector_inside_a_section_is_settled_too() -> None:
+    """Home Assistant tells a section from an input by the `input` key in it.
+
+    So does this, and it has to: a blueprint that gathers its settings into
+    sections has its selectors one level further down, and leaving those as
+    they came would bring the whole thing back for exactly those blueprints.
+    """
+    one = {
+        "the_bits": {
+            "name": "The bits",
+            "input": {
+                "light": {"selector": {"select": {"options": ["hall"], "sort": False}}},
+            },
+        },
+    }
+    other = {
+        "the_bits": {
+            "name": "The bits",
+            "input": {
+                "light": {"selector": {"select": {"sort": False, "options": ["hall"]}}},
+            },
+        },
+    }
+    assert _canonical(one) != _canonical(other), "same order, so this proves nothing"
+
+    assert _canonical(_settled(one)) == _canonical(_settled(other))
+
+
+def test_an_input_with_nothing_under_it_is_left_as_it_is() -> None:
+    """`wait_time:` with nothing under it is an input all the same.
+
+    There is nothing in it to put in order, and nothing in one that names no
+    selector either. Both come back exactly as they went in.
+    """
+    inputs = {"wait_time": None, "light": {"name": "Light"}}
+
+    assert _settled(inputs) == inputs
 
 
 @pytest.mark.parametrize(
@@ -3230,3 +3364,34 @@ def test_a_line_that_was_cut_says_so() -> None:
     )
 
     assert "[cut]" in _diffed(here, there)
+
+
+def test_the_order_home_assistant_filled_a_selector_in_is_not_a_difference() -> None:
+    """The fingerprint leaves it out, so the dialog has to leave it out too.
+
+    Or a real update to a blueprint written to disk before 2026.9 would name
+    every setting with a selector as changed, and the settings as arranged
+    differently, on top of whatever the author did. The line by line view is
+    written from the same compared form, for the same reason.
+    """
+    here = _normalize(
+        MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT.format(source=SOURCE),
+    )
+    there = _normalize(MOTION_LIGHT_WITH_SELECTORS.format(source=SOURCE))
+
+    assert not _changes(here, there)
+    assert _diffed(here, there) == ""
+
+
+def test_what_the_author_changed_is_all_that_gets_said() -> None:
+    """A real change to a file written before 2026.9 names that change alone."""
+    another_option = MOTION_LIGHT_WITH_SELECTORS.replace(
+        "            - landing\n",
+        "            - landing\n            - stairs\n",
+    )
+    assert another_option != MOTION_LIGHT_WITH_SELECTORS
+
+    assert _said_about(
+        MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT,
+        another_option,
+    ) == ["**Settings changed**: Light"]

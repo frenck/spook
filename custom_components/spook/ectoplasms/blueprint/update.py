@@ -45,6 +45,7 @@ from homeassistant.components.update import (
 )
 from homeassistant.const import (
     CONF_NAME,
+    CONF_SELECTOR,
     EVENT_HOMEASSISTANT_STARTED,
     STATE_ON,
     Platform,
@@ -406,6 +407,10 @@ def _canonical(value: Any) -> Any:
 
     The loader's own string and mapping classes go too. They carry the line
     they came from, which says nothing about what the blueprint does.
+
+    The one place where the order of a mapping is not the author's, the
+    settings inside a selector, is put in order before it gets here. See
+    `_settled`.
     """
     if isinstance(value, Input):
         return ["input", str(value.name)]
@@ -443,19 +448,78 @@ def _canonical_scalar(value: Any) -> Any:
 def _compared(item: blueprint.Blueprint) -> dict[str, Any]:
     """Return the part of a blueprint that two versions are judged on.
 
-    Which is all of it bar the source URL. That one is put in by whoever
-    imported the blueprint rather than by its author, it is the address this
-    was fetched from in the first place, and an author who moves their
-    blueprint has not changed it.
+    Which is all of it bar the source URL, with the settings of every selector
+    put in one fixed order.
+
+    The source URL is put in by whoever imported the blueprint rather than by
+    its author, it is the address this was fetched from in the first place,
+    and an author who moves their blueprint has not changed it.
+
+    The order inside a selector is not the author's either. See `_settled`.
     """
     data = dict(item.data)
 
     if isinstance(metadata := data.get(CONF_BLUEPRINT), Mapping):
         metadata = dict(metadata)
         metadata.pop(CONF_SOURCE_URL, None)
+        metadata[CONF_INPUT] = _settled(metadata[CONF_INPUT])
         data[CONF_BLUEPRINT] = metadata
 
     return data
+
+
+def _settled(inputs: Mapping[Any, Any]) -> dict[Any, Any]:
+    """Return the inputs with the settings of every selector in one fixed order.
+
+    Home Assistant fills in the settings an author left out of a selector:
+    `multiple`, `reorder`, `sort` and the rest. Where those land in the mapping
+    is decided by the validator and not by the blueprint. Voluptuous put them
+    wherever the hash seed of the process said, so a file written by one run
+    of Home Assistant read back differently in the next. Probatio keeps
+    whatever order a file already has and puts them in schema order on a fresh
+    fetch, so a file written before it arrived never agrees with the source it
+    came from. Either way the same blueprint fingerprinted differently on the
+    two sides of the comparison, and every one of those was offered as an
+    update: twelve "changed" settings on a blueprint nobody had touched.
+
+    Sorting the keys of each selector takes the validator's hand out of it.
+    Nothing else is reordered. The inputs stay in the order the author gave
+    them, which is the order somebody sees them in, and so does everything
+    inside a selector, the options of a `select` among them.
+
+    A section is told from an input the same way Home Assistant does it.
+    """
+    settled: dict[Any, Any] = {}
+
+    for key, definition in inputs.items():
+        if isinstance(definition, Mapping) and CONF_INPUT in definition:
+            section = dict(definition)
+            section[CONF_INPUT] = _settled(section[CONF_INPUT])
+            settled[key] = section
+            continue
+
+        settled[key] = _settled_input(definition)
+
+    return settled
+
+
+def _settled_input(definition: Any) -> Any:
+    """Return one input with the settings of its selector in one fixed order."""
+    if not isinstance(definition, Mapping):
+        return definition
+
+    if not isinstance(selector := definition.get(CONF_SELECTOR), Mapping):
+        return definition
+
+    # Sorted by spelling rather than by value, so two keys of different kinds
+    # cannot end the round with a comparison Python refuses to make.
+    definition = dict(definition)
+    definition[CONF_SELECTOR] = {
+        kind: dict(sorted(settings.items(), key=lambda pair: str(pair[0])))
+        for kind, settings in selector.items()
+    }
+
+    return definition
 
 
 class _LeftShort(NamedTuple):
@@ -618,6 +682,10 @@ def _settings_apart(
 
     Read through Home Assistant's own flattened view, so an input inside a
     section counts as an input rather than as part of the section.
+
+    Each setting is measured with its selector in the same fixed order the
+    fingerprint uses, so the order Home Assistant happened to fill a selector
+    in cannot be reported as the author changing it.
     """
     here, there = before.inputs, after.inputs
 
@@ -626,7 +694,9 @@ def _settings_apart(
     changed = [
         (_called(key, there[key]), key)
         for key in here
-        if key in there and _canonical(here[key]) != _canonical(there[key])
+        if key in there
+        and _canonical(_settled_input(here[key]))
+        != _canonical(_settled_input(there[key]))
     ]
 
     # An author who renames the key and keeps the label leaves two settings
@@ -692,18 +762,19 @@ def _calling_apart(
     }
 
 
-def _arranged_apart(
-    before: blueprint.Blueprint,
-    after: blueprint.Blueprint,
-) -> bool:
+def _arranged_apart(was: Mapping[str, Any], now: Mapping[str, Any]) -> bool:
     """Return whether the settings were moved about without changing.
 
     Home Assistant hands back the settings of a blueprint flattened, so an
     author gathering them into sections, or simply putting them in another
     order, comes out as no difference at all. It is a real change and it is
     the one somebody sees first when they open the thing.
+
+    Read off the compared form rather than the blueprint, so the order
+    Home Assistant filled a selector in does not pass for the author moving
+    things about.
     """
-    return _moved(before.metadata, after.metadata, CONF_INPUT)
+    return _moved(was[CONF_BLUEPRINT], now[CONF_BLUEPRINT], CONF_INPUT)
 
 
 def _asked_for(metadata: Mapping[str, Any]) -> str | None:
@@ -755,7 +826,7 @@ def _changes(before: blueprint.Blueprint, after: blueprint.Blueprint) -> _Change
 
     changes = _Changes(
         settings=settings,
-        arranged=_arranged_apart(before, after) and not any(settings),
+        arranged=_arranged_apart(was, now) and not any(settings),
         doing=_doing_apart(was, now),
         calling=_calling_apart(before, after),
         requirement=_requirement_apart(before, after),
@@ -821,10 +892,16 @@ def _diffed(here: blueprint.Blueprint, there: blueprint.Blueprint) -> str:
     changed at all, and hundreds of hunks on a real one. Dumping both puts
     them in the same handwriting first, which leaves only what actually moved.
 
+    The compared form of both, so the source URL and the order Home Assistant
+    filled a selector in do not turn up as lines that moved either. Those are
+    left out of the fingerprint, and a difference that shows what never made
+    the update appear is a difference somebody has to read past.
+
     In the executor: dumping half a megabyte of YAML twice is not something to
     do on the event loop.
     """
-    was, now = here.yaml().splitlines(), there.yaml().splitlines()
+    was = yaml_util.dump(_compared(here)).splitlines()
+    now = yaml_util.dump(_compared(there)).splitlines()
 
     # Comparing two sequences costs roughly the square of their length, and
     # blueprints get big: measured at ten seconds on a real one of 36,000
@@ -903,6 +980,11 @@ def _fingerprint(item: blueprint.Blueprint) -> str:
     from is not part of what it does, and Home Assistant writes it into the
     data on the way in, so leaving it in made a trailing slash on the URL look
     like a new version.
+
+    And the settings of each selector go in sorted. Home Assistant fills in
+    the ones an author left out, in an order that is the validator's rather
+    than the blueprint's, and that order used to be hashed along with the rest.
+    See `_settled`.
     """
     return hashlib.sha256(
         json.dumps(_canonical(_compared(item)), ensure_ascii=True).encode()
