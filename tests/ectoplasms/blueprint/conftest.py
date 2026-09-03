@@ -76,6 +76,51 @@ MOTION_LIGHT_WITH_NEW_INPUT = MOTION_LIGHT.replace(
     "    light_target:\n      name: Light\n    wait_time:\n      name: Wait time\n",
 )
 
+# The same again, with a selector on each setting, written the way an author
+# writes one: nothing said about `multiple`, `reorder`, `custom_value` or
+# `sort`. The schema fills those in on the way through.
+MOTION_LIGHT_WITH_SELECTORS = MOTION_LIGHT.replace(
+    "    motion_entity:\n      name: Motion sensor\n"
+    "    light_target:\n      name: Light\n",
+    "    motion_entity:\n      name: Motion sensor\n"
+    "      selector:\n"
+    "        entity:\n"
+    "          filter:\n"
+    "            domain: binary_sensor\n"
+    "    light_target:\n      name: Light\n"
+    "      selector:\n"
+    "        select:\n"
+    "          options:\n"
+    "            - hall\n"
+    "            - landing\n",
+)
+
+# And that one as a Home Assistant before 2026.9 wrote it to disk. The schema
+# filled in what the author left out, in whatever order the hash seed of that
+# process gave it, and the file has held that order since. A fresh fetch today
+# comes back as `multiple, reorder` and `multiple, custom_value, sort`.
+MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT = MOTION_LIGHT.replace(
+    "    motion_entity:\n      name: Motion sensor\n"
+    "    light_target:\n      name: Light\n",
+    "    motion_entity:\n      name: Motion sensor\n"
+    "      selector:\n"
+    "        entity:\n"
+    "          reorder: false\n"
+    "          multiple: false\n"
+    "          filter:\n"
+    "          - domain:\n"
+    "            - binary_sensor\n"
+    "    light_target:\n      name: Light\n"
+    "      selector:\n"
+    "        select:\n"
+    "          options:\n"
+    "          - hall\n"
+    "          - landing\n"
+    "          custom_value: false\n"
+    "          multiple: false\n"
+    "          sort: false\n",
+)
+
 # No inputs at all, and no `input:` key to say so. The schema puts an empty
 # one in on the way through, which is why both sides have to go through it.
 NO_INPUTS = """
