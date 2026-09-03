@@ -1,5 +1,19 @@
 {
   "triggers": {
+    "debounce": {
+      "name": "Once it settles",
+      "description": "Fires once a trigger has stopped firing for a while, so a burst of them arrives as one. A motion sensor does not report motion once, it reports it twenty times.",
+      "fields": {
+        "triggers": {
+          "name": "Triggers",
+          "description": "The triggers to wait out. Any of them firing starts a burst and any of them firing again keeps it going, so several triggers are collapsed together rather than one at a time."
+        },
+        "for": {
+          "name": "For",
+          "description": "How long it has to have been quiet before this fires. Every firing starts that wait over, so something that never stops firing never gets reported."
+        }
+      }
+    },
     "all_of": {
       "name": "All of these happened",
       "description": "Fires when every one of several triggers has fired inside the same window of time, in any order. Home Assistant's own triggers are a list where any one of them is enough; this is the other one.",

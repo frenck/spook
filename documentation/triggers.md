@@ -39,6 +39,12 @@ Fires when a configuration entry has been unable to set itself up for a while, p
 
 `spook.integration_failed`, [documentation](other-features#integration-failed-to-set-up) 📚
 
+## Once it settles
+
+Fires once a trigger has stopped firing for a while, so a burst of them arrives as one. A motion sensor does not report motion once, it reports it twenty times. _#debounce_ _#burst_ _#quiet_
+
+`spook.debounce`, [documentation](other-features#once-it-settles) 📚
+
 ## Repair issue created
 
 Fires when a new repair issue turns up, so you hear about one without visiting the repairs page. Can be narrowed by integration and severity. _#repairs_ _#issue_
