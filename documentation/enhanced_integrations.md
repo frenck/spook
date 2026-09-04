@@ -47,7 +47,7 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 :::{card} HACS
 :footer: 📚 [Learn more](integrations/hacs)
 
-[![](https://brands.home-assistant.io/hacs/icon.png)](integrations/hacs)
+[![HACS brand icon](https://brands.home-assistant.io/hacs/icon.png)](integrations/hacs)
 :::
 
 :::{card} Home Assistant Cloud
