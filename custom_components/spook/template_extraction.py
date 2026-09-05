@@ -13,7 +13,7 @@ from homeassistant.helpers.template import Template
 from .const import LOGGER
 from .entity_filtering import (
     IGNORED_ENTITY_DOMAINS,
-    NEVER_AN_ENTITY,
+    NEVER_AN_ENTITY_PREFIXES,
     async_drop_existing_action_names,
     async_get_all_entity_ids,
     async_get_all_services,
@@ -282,7 +282,7 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
 
             # For each entity ID (which might be comma-separated), add all valid ones
             for individual_id in split_comma_separated_entity_ids(entity_id):
-                if individual_id in NEVER_AN_ENTITY:
+                if individual_id.startswith(NEVER_AN_ENTITY_PREFIXES):
                     continue
                 if valid_entity_id(individual_id):
                     entities.add(individual_id)
@@ -404,7 +404,7 @@ async def async_filter_known_entity_ids_with_templates(
             # Process as regular entity ID(s), handling comma-separated lists
             for entity_id in split_comma_separated_entity_ids(entity_id_raw):
                 if (
-                    entity_id not in NEVER_AN_ENTITY
+                    not entity_id.startswith(NEVER_AN_ENTITY_PREFIXES)
                     and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
                     and entity_id not in known_entity_ids
                     and valid_entity_id(entity_id)
