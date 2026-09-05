@@ -36,7 +36,7 @@
                 "name": "Zanemari sve"
             },
             "repairs_unignore_all": {
-                "name": "Poništi zanemarivanje za sve"
+                "name": "Poništi sva zanemarivanja"
             }
         },
         "event": {
@@ -247,15 +247,15 @@
         },
         "automation_unknown_device_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće uređaje koji su nepoznati Home Assistant-u:\n\n{devices}\n\n\n\nDa biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nepostojećih uređaja.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati uređaji korišćeni u: {automation}"
+            "title": "Nepoznati uređaji u: {automation}"
         },
         "automation_unknown_entity_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lutao, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [uredi automatizaciju]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati entiteti korišćeni u: {automation}"
+            "title": "Nepoznati entiteti u: {automation}"
         },
         "automation_unknown_floor_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće spratove koji su nepoznati Home Assistant-u:\n\n{floors}\n\n\n\nDa biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nepostojećih spratova.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati spratovi korišćeni u: {automation}"
+            "title": "Nepoznati spratovi u: {automation}"
         },
         "automation_unknown_label_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće oznake koje su nepoznate Home Assistant-u:\n\n{labels}\n\n\n\nDa biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nepostojećih oznaka.\n\nSpook 👻 Vaš ortak.",
@@ -287,8 +287,8 @@
             }
         },
         "lovelace_unknown_entity_references": {
-            "description": "SSpook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće entitete koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, uredite kontrolnu tablu i uklonite upotrebu ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati entiteti korišćeni u: {dashboard}"
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla koristi sledeće entitete koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, uredite kontrolnu tablu i uklonite upotrebu ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
+            "title": "Nepoznati entiteti u: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
             "description": "Spook je pronašao duha u vašoj konfiguraciji blizine 👻\n\nDok je lutao okolo, Spook je naišao na sledeću konfiguraciju blizine:\n\n{name}\n\nOva konfiguracija ignoriše zone koje su nepoznate Home Assistant‑u:\n\n{zones}\n\n\n\nDa biste ispravili ovu grešku, izmenite konfiguraciju i uklonite ovu/ove zone.\n\nSpook 👻 Vaš ortak.",
@@ -304,7 +304,7 @@
         },
         "scene_unknown_entity_references": {
             "description": "Spook je pronašao duha u vašim scenama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću scenu:\n\n[{scene}]({edit})\n\nOva scena referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [izmenite scenu]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati entiteti korišćeni u: {scene}"
+            "title": "Nepoznati entiteti u: {scene}"
         },
         "script_unknown_area_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće oblasti koje su nepoznate Home Assistant‑u:\n\n{areas}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih oblasti.\n\nSpook 👻 Vaš ortak.",
@@ -312,15 +312,15 @@
         },
         "script_unknown_device_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće uređaje koji su nepoznati Home Assistant‑u:\n\n{devices}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih uređaja.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati uređaji korišćeni u: {script}"
+            "title": "Nepoznati uređaji u: {script}"
         },
         "script_unknown_entity_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih entiteta.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati entiteti korišćeni u: {script}"
+            "title": "Nepoznati entiteti u: {script}"
         },
         "script_unknown_floor_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće spratove koji su nepoznati Home Assistant‑u:\n\n{floors}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih spratova.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati spratovi korišćeni u: {script}"
+            "title": "Nepoznati spratovi u: {script}"
         },
         "script_unknown_label_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta referencira sledeće oznake koje su nepoznate Home Assistant‑u:\n\n{labels}\n\n\n\nDa biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nepostojećih oznaka.\n\nSpook 👻 Vaš ortak.",
@@ -362,18 +362,18 @@
         },
         "automation_unknown_condition_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće uslove koje ne može da obezbedi nijedna integracija dostupna Home Assistant-u:\n\n{conditions}\n\n\n\nOvo se često dešava kada se ukloni integracija koja obezbeđuje uslov. Da biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nedostupnih uslova, ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati uslovi korišćeni u: {automation}"
+            "title": "Nepoznati uslovi u: {automation}"
         },
         "automation_unknown_trigger_references": {
             "description": "Spook je pronašao duha u vašim automatizacijama 👻\n\nDok je lebdeo okolo, Spook je naišao na sledeću automatizaciju:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOva automatizacija koristi sledeće pokretače koje ne može da obezbedi nijedna integracija dostupna Home Assistant-u:\n\n{triggers}\n\nOvo se često dešava kada se ukloni integracija koja obezbeđuje pokretač. Da biste ispravili ovu grešku, uredite automatizaciju i uklonite upotrebu ovih nedostupnih pokretača, ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati pokretači korišćeni u: {automation}"
+            "title": "Nepoznati pokretači u: {automation}"
         },
         "unknown_customized_entities": {
             "description": "Spook je pronašao duha u vašim prilagođavanjima 👻\n\nOdeljak customize: dodeljuje atribute sledećim entitetima koji su nepoznati Home Assistant-u:\n\n{entities}\n\n\n\nOvo se često dešava kada se entitet preimenuje ili ukloni, dok njegovo prilagođavanje ostane zaostalo. Da biste ispravili ovu grešku, uredite odeljak customize: u vašoj konfiguraciji i uklonite ove entitete.\n\nSpook 👻 Vaš ortak.",
             "title": "Nepoznati entiteti u vašim prilagođavanjima"
         },
         "lovelace_missing_resources": {
-            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se prilagođena kartica ili njene datoteke uklone, ali resurs ostane zaostao. Da biste ispravili ovu grešku, otvorite Podešavanja > Kontrolne table > Resursi i uklonite ili ispravite ove resurse.\n\nSpook 👻 Vaš ortak.",
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se prilagođena kartica ili njene datoteke uklone, ali resurs ostane za njima. Da biste ispravili ovu grešku, otvorite stranicu [Resursi] (/config/lovelace/resources) i uklonite ili ispravite ove resurse. Ona nema sopstvenu karticu: na stranici Kontrolne table nalazi se iza tri tačke, gore desno..\n\nSpook 👻 Vaš ortak.",
             "title": "Resursi kontrolne table ukazuju na datoteke koje nedostaju"
         },
         "lovelace_unknown_area_references": {
@@ -394,7 +394,7 @@
                             "manage": "Dozvoli mi da sam popravim",
                             "remove": "Ukloni ovog pomoćnika"
                         },
-                        "title": "Nepoznati izvorni entiteti korišćeni u pomoćniku: {helper}"
+                        "title": "Nepoznati izvorni entiteti u pomoćniku: {helper}"
                     }
                 },
                 "abort": {
@@ -402,14 +402,14 @@
                     "manage": "Ovog pomoćnika možete sami upravljati na stranici [Pomoćnici](/config/helpers)."
                 }
             },
-            "title": "Nepoznati izvorni entiteti korišćeni u pomoćniku: {helper}"
+            "title": "Nepoznati izvorni entiteti u pomoćniku: {helper}"
         },
         "min_max_unknown_sources": {
             "fix_flow": {
                 "step": {
                     "init": {
                         "description": "Spook je pronašao duha u vašim pomoćnicima 👻\n\nMin/max pomoćnik {helper} kombinuje sledeće članove koji su nepoznati Home Assistant-u:\n\n{sources}\n\nUklonite ih kako bi pomoćnik nastavio sa radom pomoću preostalih članova, ili ih zadržite i Spook će prestati da ukazuje na njih.\n\nSpook 👻 Vaš ortak.",
-                        "title": "Nepoznati članovi korišćeni u min/max pomoćniku: {helper}",
+                        "title": "Nepoznati članovi u min/max pomoćniku: {helper}",
                         "menu_options": {
                             "remove": "Ukloni ove članove",
                             "manage": "Dozvoli mi da sam popravim",
@@ -423,7 +423,7 @@
                     "too_few_members": "Pomoćnik za minimum/maksimum zahteva najmanje dva člana, pa bi uklanjanje nedostajućih ostavilo premalo. Ponovo konfigurišite ili uklonite pomoćnika sami na stranici [Pomoćnici](/config/helpers)."
                 }
             },
-            "title": "Nepoznati članovi korišćeni u min/max pomoćniku: {helper}"
+            "title": "Nepoznati članovi u min/max pomoćniku: {helper}"
         },
         "empty_areas": {
             "title": "Prazna prostorija: {area}",
@@ -528,11 +528,11 @@
         },
         "script_unknown_condition_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi sledeće uslove koje nijedna dostupna integracija u Home Assistant‑u ne može da obezbedi:\n\n{conditions}\n\n\n\nOvo se često dešava kada je integracija koja obezbeđuje uslov uklonjena. Da biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nedostupnih uslova ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati uslovi korišćeni u: {script}"
+            "title": "Nepoznati uslovi u: {script}"
         },
         "script_unknown_trigger_references": {
             "description": "Spook je pronašao duha u vašim skriptama 👻\n\nDok je lutao okolo, Spook je naišao na sledeću skriptu:\n\n[{script}]({edit}) (`{entity_id}`)\n\nOva skripta koristi sledeće pokretače koje nijedna dostupna integracija u Home Assistant‑u ne može da obezbedi:\n\n{triggers}\n\n\n\nOvo se često dešava kada je integracija koja obezbeđuje pokretač uklonjena. Da biste ispravili ovu grešku, [izmenite skriptu]({edit}) i uklonite korišćenje ovih nedostupnih pokretača ili vratite integraciju koja ih obezbeđuje.\n\nSpook 👻 Vaš ortak.",
-            "title": "Nepoznati pokretači korišćeni u: {script}"
+            "title": "Nepoznati pokretači u: {script}"
         },
         "template_unknown_service_references": {
             "description": "Spook je pronašao duha u vašim pomoćnicima za šablone 👻\n\nDok je lutao okolo, Spook je naišao na sledećeg pomoćnika za šablone:\n\n[{helper}]({edit})\n\nOn referencira sledeće akcije koje su nepoznate Home Assistant‑u:\n\n{services}\n\n\n\nOvo se često dešava kada je pružalac akcije uklonjen ili je skripta preimenovana ili obrisana. Da biste ispravili ovu grešku, ponovo konfigurišite pomoćnika za šablone da koristi postojeće akcije.\n\nSpook 👻 Vaš ortak.",
@@ -570,6 +570,10 @@
                 }
             },
             "title": "Resurs kontrolne table naveden više puta: {resource}"
+        },
+        "lovelace_missing_resources_yaml": {
+            "title": "Resursi kontrolne table ukazuju na nepostojeće datoteke",
+            "description": "Spook je pronašao duha na Vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se ukloni prilagođena kartica ili njene datoteke, ali resurs ostane konfigurisan.\n\nOvi resursi su navedeni u vašoj YAML konfiguraciji, pa ih stranica „Resursi“ ne može promeniti. Uredite odeljak `resources:` u svojoj Lovelace konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš ortak."
         }
     },
     "services": {
@@ -1608,6 +1612,48 @@
                     "description": "Koliko bi prelaz trebalo da traje, u sekundama."
                 }
             }
+        },
+        "group_add_members": {
+            "name": "Dodaj članove u grupu",
+            "description": "Dodaje entitete u grupu napravljenu preko interfejsa, dok Home Assistant radi. Entiteti koji su već u grupi ostaju nepromenjeni.",
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa u koju ih treba dodati."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje treba dodati u grupu."
+                }
+            }
+        },
+        "group_remove_members": {
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa iz koje ih treba ukloniti."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje treba ukloniti iz grupe."
+                }
+            },
+            "name": "Ukloni članove iz grupe",
+            "description": "Uklanja entitete iz grupe koja je napravljena kroz interfejs, dok Home Assistant radi. Navođenje nečega što nije u grupi ne radi ništa, pa je ovo ujedno i način da očistite člana koji više ne postoji."
+        },
+        "group_set_members": {
+            "fields": {
+                "group": {
+                    "name": "Grupa",
+                    "description": "Grupa koju treba izmeniti."
+                },
+                "members": {
+                    "name": "Članovi",
+                    "description": "Entiteti koje bi grupa od sada trebalo da sadrži."
+                }
+            },
+            "description": "Zamenjuje članove grupe napravljene kroz interfejs navedenim članovima, dok Home Assistant radi.",
+            "name": "Postavi članove grupe"
         }
     },
     "conditions": {
@@ -1670,7 +1716,7 @@
             }
         },
         "triggered_by_user": {
-            "name": "Pokrenuto od strane korisnika",
+            "name": "Pokretač aktiviran od strane korisnika",
             "description": "Uslov je ispunjen kada osoba stoji iza pokretanja ove akcije: promena stanja ili događaj koji je sama izazvala, uključujući i situaciju koja je dovela do ispunjenja šablonskog pokretača. Raspored, sunce ili integracija koja deluje samostalno ne nose korisnički kontekst, a isto važi i za ručno pokretanje pomoću dugmeta „Pokreni“.",
             "fields": {
                 "person": {
@@ -1680,7 +1726,7 @@
             }
         },
         "not_triggered_by_user": {
-            "name": "Nije pokrenuto od strane korisnika",
+            "name": "Pokretač aktiviran bez učešća korisnika",
             "description": "Uslov je ispunjen kada niko ne može biti odgovoran za ovo pokretanje: vremenski raspored, sunce, integracija koja deluje samostalno ili dugme Pokreni. Ovaj uslov s namerom ne prima dodatne opcije. Ako umesto toga želite da isključite određene osobe, postavite filter „Pokrenuto od strane korisnika“ unutar uslova Ne."
         }
     },
@@ -1724,7 +1770,7 @@
                     "description": "Vremenski period unutar kojeg te promene moraju da se dese. Prozor se pomera, tako da se ovo uvek odnosi na najnovije promene."
                 }
             },
-            "name": "Entitet se ne smiruje",
+            "name": "Entitet nestabilan i ne može da se smiri",
             "description": "Aktivira se kada entitet menja stanje češće nego što bi trebalo unutar određenog vremenskog perioda."
         },
         "while": {
@@ -1738,7 +1784,7 @@
                     "description": "Koliko se čeka između dva uzastopna aktiviranja, sve dok je uslov ispunjen."
                 }
             },
-            "name": "Dok je uslov ispunjen",
+            "name": "Uslov ispunjen",
             "description": "Aktivira se kada uslov postane ispunjen, a zatim nastavlja sa periodičnim aktiviranjem sve dok taj uslov ostaje tačan."
         },
         "condition_met": {
@@ -1790,11 +1836,11 @@
                     "description": "Ograničite ovo na probleme određene ozbiljnosti. Ostavite prazno za sve nivoe."
                 }
             },
-            "name": "Kreiran je problem za popravku",
+            "name": "Kreiran problem za popravku",
             "description": "Aktivira se kada se pojavi novi problem za popravku, tako da možete saznati za njega bez posete stranici „Popravke“."
         },
         "integration_failed": {
-            "name": "Podešavanje integracije nije uspelo",
+            "name": "Podešavanje integracije neuspešno",
             "description": "Aktivira se kada podešavanje unosa konfiguracije ne uspeva već neko vreme, i to nakon što su iscrpljeni svi interni ponovni pokušaji kojima bi Home Assistant samostalno rešio problem.",
             "fields": {
                 "for": {
@@ -1808,7 +1854,7 @@
             }
         },
         "repair_issue_removed": {
-            "name": "Problem za popravku je rešen",
+            "name": "Problem za popravku rešen",
             "description": "Aktivira se kada problem za popravku nestane, bilo zato što je rešen ili zato što se više ne prijavljuje.",
             "fields": {
                 "domain": {
@@ -1816,6 +1862,44 @@
                     "description": "Ograničite ovo na probleme koje prijavljuju određene integracije, prema njihovom domenu. Ostavite prazno za sve integracije."
                 }
             }
+        },
+        "all_of": {
+            "name": "Sve ovo se dogodilo",
+            "description": "Aktivira se kada se svaki od nekoliko pokretača pokrene unutar istog vremenskog prozora, bilo kojim redosledom. Sopstveni pokretači Home Assistant-a su lista gde je dovoljno da se bilo koji od njih aktivira; ovo je ona druga opcija.",
+            "fields": {
+                "within": {
+                    "description": "Koliko blizu jedno drugom moraju biti. Vremenski prozor se pomera, pa se pokretač koji se aktivirao ranije od ovog perioda zaboravlja, dok ostali nastavljaju da se računaju.",
+                    "name": "Unutar"
+                },
+                "triggers": {
+                    "name": "Pokretači",
+                    "description": "Pokretači koji svi moraju biti aktivirani. Redosled nije važan, a ponovna aktivacija pokretača samo osvežava njegovo stanje umesto da se računa dvaput."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entitet se ponovo pojavio",
+            "description": "Aktivira se kada se entitet vrati nakon što je neko vreme bio nedostupan, kako se ponovno pokretanje rutera ne bi očitalo kao oporavak svega u kući.",
+            "fields": {
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Koliko dugo entitet mora biti odsutan da bi se povratak računao. Sve kraće od toga je samo treperenje: ponovno učitavanje integracije prebacuje svaki njen entitet u stanje nedostupnosti i vraća ga nazad u roku od jedne sekunde."
+                }
+            }
+        },
+        "debounce": {
+            "description": "Aktivira se kada pokretač prestane da se pokreće na neko vreme, tako da čitav nalet signala stigne kao jedan. Senzor pokreta ne prijavljuje kretanje samo jednom, već ga prijavi dvadeset puta.",
+            "fields": {
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Koliko dugo mora da bude mirno pre nego što se ovo pokrene. Svaka nova aktivacija ponovo pokreće to čekanje, tako da se nešto što neprestano šalje signale nikada ne prijavljuje."
+                },
+                "triggers": {
+                    "name": "Pokretači",
+                    "description": "Pokretači koje treba sačekati. Aktivacija bilo kog od njih započinje seriju akcija, a ponovna aktivacija je održava u toku, tako da se više pokretača spaja u jedno umesto da se izvršavaju jedan po jedan."
+                }
+            },
+            "name": "Kada se stanje stabilizuje"
         }
     },
     "selector": {
