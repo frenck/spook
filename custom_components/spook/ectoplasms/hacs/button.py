@@ -77,7 +77,11 @@ class HACSCheckForUpdatesButtonEntity(HACSSpookEntity, ButtonEntity):
         entity_ids = [
             entry.entity_id
             for entry in registry.entities.values()
-            if entry.platform == HACS_DOMAIN and entry.domain == Platform.UPDATE
+            if (
+                entry.platform == HACS_DOMAIN
+                and entry.domain == Platform.UPDATE
+                and entry.disabled_by is None
+           )
         ]
 
         # Nothing tracked yet, so nothing to ask about. Calling the service
