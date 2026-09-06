@@ -579,7 +579,7 @@
     "services": {
         "boo": {
             "name": "Bu!",
-            "description": "Pozivanje ove akcije zbunjuje Home Assistant. Izvršavanje ove akcije nikada neće uspeti."
+            "description": "Pozivanje ove akcije zbunjuje Home Assistant i njeno izvršavanje nikada neće uspeti."
         },
         "blueprint_import": {
             "fields": {
@@ -1391,7 +1391,7 @@
         },
         "random_fail": {
             "name": "Slučajni neuspeh",
-            "description": "Izvođenje ove radnje će slučajno neuspeti."
+            "description": "Izvršavanje ove akcije će nasumično otkazati."
         },
         "homeassistant_delete_floor": {
             "fields": {
@@ -1573,7 +1573,7 @@
                 }
             },
             "name": "Čekanje uslova",
-            "description": "Čeka dok uslov ne postane tačan. Vraća se odmah ukoliko je uslov već ispunjen."
+            "description": "Čeka da uslov postane tačan. Odmah završava rad ako je uslov već ispunjen."
         },
         "light_decrease_brightness": {
             "name": "Smanji osvetljenost",
@@ -1659,7 +1659,7 @@
     "conditions": {
         "chance": {
             "name": "Verovatnoća",
-            "description": "Propušta u određenom procentu slučajeva, birajući slučajno pri svakoj proveri. Zgodno za dodavanje malo raznolikosti u vaše automatizacije.",
+            "description": "Uslov se ispunjava u određenom procentu slučajeva, koji se bira nasumično pri svakoj proveri. Korisno za dodavanje malo varijacije u vaše automatizacije.",
             "fields": {
                 "percentage": {
                     "name": "Procenat",
@@ -1669,7 +1669,7 @@
         },
         "cooldown": {
             "name": "Period hlađenja",
-            "description": "Propušta samo ako se ova automatizacija ili skripta nisu pokrenuli u navedenom vremenu (ili se nikada nisu pokrenuli). Ugrađeni period hlađenja sprečava prečesta ponovna pokretanja.",
+            "description": "Uslov je ispunjen samo ako ova automatizacija ili skripta nisu pokrenute u navedenom vremenskom periodu (ili ako nikada nisu pokrenute). Ugrađeni period hlađenja koji sprečava prečesto ponovno aktiviranje.",
             "fields": {
                 "duration": {
                     "name": "Trajanje",
@@ -1689,7 +1689,7 @@
         },
         "repair_issue_present": {
             "name": "Nerešen problem za popravku",
-            "description": "Prolazi ako je problem za popravku nerešen. Problemi koje je neko zanemario se ne računaju.",
+            "description": "Uslov je ispunjen ako postoji nerešen problem u odeljku Popravke. Zanemareni problemi se ne računaju.",
             "fields": {
                 "domain": {
                     "name": "Integracije",
@@ -1703,7 +1703,7 @@
         },
         "quota": {
             "name": "Preostalo dozvoljenih pokretanja",
-            "description": "Prolazi ako je ova automatizacija pokrenuta manje od zadatog broja puta unutar određenog perioda. Skripte se ne računaju.",
+            "description": "Uslov je ispunjen ako je ova automatizacija pokrenuta manje od zadatog broja puta unutar određenog perioda. Skripte se ne računaju.",
             "fields": {
                 "limit": {
                     "name": "Ograničenje",
@@ -1717,7 +1717,7 @@
         },
         "triggered_by_user": {
             "name": "Pokretač aktiviran od strane korisnika",
-            "description": "Uslov je ispunjen kada osoba stoji iza pokretanja ove akcije: promena stanja ili događaj koji je sama izazvala, uključujući i situaciju koja je dovela do ispunjenja šablonskog pokretača. Raspored, sunce ili integracija koja deluje samostalno ne nose korisnički kontekst, a isto važi i za ručno pokretanje pomoću dugmeta „Pokreni“.",
+            "description": "Uslov je ispunjen ako je pokretanje inicirala osoba: promenom stanja ili događajem koji je izazvala (uključujući i promenu koja je aktivirala šablonski okidač). Vremenski raspored, položaj sunca, automatske integracije ili ručno pokretanje dugmetom „Pokreni“ ne računaju se kao pokretanje od strane korisnika.",
             "fields": {
                 "person": {
                     "name": "Osobe",
@@ -1727,7 +1727,7 @@
         },
         "not_triggered_by_user": {
             "name": "Pokretač aktiviran bez učešća korisnika",
-            "description": "Uslov je ispunjen kada niko ne može biti odgovoran za ovo pokretanje: vremenski raspored, sunce, integracija koja deluje samostalno ili dugme Pokreni. Ovaj uslov s namerom ne prima dodatne opcije. Ako umesto toga želite da isključite određene osobe, postavite filter „Pokrenuto od strane korisnika“ unutar uslova Ne."
+            "description": "Uslov je ispunjen kada niko nije odgovoran za ovo pokretanje: vremenski raspored, položaj sunca, automatska integracija ili pritisak na dugme „Pokreni“. Namerno nema dodatnih opcija. Ako umesto toga želiš da isključiš konkretne osobe, stavi uslov „Pokrenuto od strane korisnika“ unutar „Nije“ (Not) uslova."
         }
     },
     "triggers": {
@@ -1739,7 +1739,7 @@
                 }
             },
             "name": "Cron raspored",
-            "description": "Aktivira se prema crontab rasporedu, za vreme koje sopstveni vremenski pokretači Home Assistant sistema ne mogu da izraze, kao što je svaki radni dan u nedelji ili poslednji petak u mesecu."
+            "description": "Aktivira se prema crontab rasporedu za vremena koja ugrađeni vremenski pokretači Home Assistant-a ne mogu da definišu, kao što je svakog radnog dana u sedam ili poslednjeg petka u mesecu."
         },
         "watchdog": {
             "fields": {
@@ -1785,7 +1785,7 @@
                 }
             },
             "name": "Uslov ispunjen",
-            "description": "Aktivira se kada uslov postane ispunjen, a zatim nastavlja sa periodičnim aktiviranjem sve dok taj uslov ostaje tačan."
+            "description": "Aktivira se kada se uslov ispuni, a zatim nastavlja sa periodičnim aktiviranjem sve dok je uslov tačan."
         },
         "condition_met": {
             "fields": {
@@ -1799,7 +1799,7 @@
         },
         "stale": {
             "name": "Entitet prestao da šalje podatke",
-            "description": "Aktivira se kada se u entitet ništa ne upiše već neko vreme, što omogućava prepoznavanje uređaja koji je tiho prestao sa radom umesto da prijavi status nedostupnosti.",
+            "description": "Aktivira se kada se stanje entiteta ne ažurira određeno vreme, što omogućava prepoznavanje uređaja koji su tiho prestali sa radom umesto da pređu u status nedostupnosti.",
             "fields": {
                 "for": {
                     "name": "U trajanju od",
