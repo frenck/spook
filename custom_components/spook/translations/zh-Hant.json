@@ -570,6 +570,10 @@
                     "yaml": "這些資源在 YAML 配置中列出，因此 Spook 無法為您修改。請編輯 Lovelace 配置中的 `resources:` 區段，移除不再需要的 `{resource}` 副本。"
                 }
             }
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook 在您的儀表板中發現了一個幽靈 👻\n\n以下儀表板資源指向了不存在的檔案：\n\n{resources}\n\n\n\n這通常發生在自定義卡片或其檔案被移除，但資源條目仍保留在系統中的情況。\n\n這些資源列在您的 YAML 設定中，因此資源頁面無法修改它們。請編輯 Lovelace 設定中的 `resources:` 部分，移除或修正這些條目。\n\nSpook 👻 您的好夥伴。",
+            "title": "儀表板資源指向缺失的檔案"
         }
     },
     "services": {
@@ -1608,6 +1612,48 @@
                     "description": "標籤使用的顏色。可以是清單中的顏色名稱，也可以是十六進位顏色代碼（如 #FF0000）。"
                 }
             }
+        },
+        "group_add_members": {
+            "name": "向群組新增成員 👻",
+            "description": "在 Home Assistant 執行期間，將透過介面建立的群組中新增實體。已在群組中的實體保持不變。",
+            "fields": {
+                "group": {
+                    "name": "群組",
+                    "description": "要新增到的群組。"
+                },
+                "members": {
+                    "name": "成員",
+                    "description": "要新增到群組的實體。"
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "從群組移除成員 👻",
+            "description": "在 Home Assistant 執行期間，從透過介面建立的群組中移除實體。指定不在群組中的東西什麼也不會發生，因此這也是清除已不存在成員的方法。",
+            "fields": {
+                "group": {
+                    "name": "群組",
+                    "description": "要從中移除的群組。"
+                },
+                "members": {
+                    "name": "成員",
+                    "description": "要從群組中移除的實體。"
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "設定群組的成員 👻",
+            "description": "在 Home Assistant 執行期間，將透過介面建立的群組的成員替換為指定的成員。",
+            "fields": {
+                "group": {
+                    "name": "群組",
+                    "description": "要變更的群組。"
+                },
+                "members": {
+                    "name": "成員",
+                    "description": "群組從現在起應包含的實體。"
+                }
+            }
         }
     },
     "conditions": {
@@ -1814,6 +1860,44 @@
                 "for": {
                     "name": "持續時間",
                     "description": "實體必須保持靜默多長時間後才觸發。持續回報相同值的實體不算靜默。"
+                }
+            }
+        },
+        "debounce": {
+            "name": "穩定後觸發",
+            "description": "當觸發條件停止觸發一段時間後再觸發，這樣一連串觸發會合併為一次。運動感測器不會只回報一次運動，它會回報二十次。",
+            "fields": {
+                "triggers": {
+                    "name": "觸發條件",
+                    "description": "需要等待其穩定的觸發條件。其中任何一個觸發都會開始一輪等待，再次觸發則繼續等待，因此多個觸發會被合併在一起，而不是逐個回報。"
+                },
+                "for": {
+                    "name": "持續時間",
+                    "description": "必須保持安靜多長時間後才觸發。每次觸發都會重新開始這段等待，因此持續不斷觸發的東西永遠不會被回報。"
+                }
+            }
+        },
+        "all_of": {
+            "name": "全部發生",
+            "description": "當多個觸發條件都在同一個時間窗口內觸發過時觸發，順序不限。Home Assistant 自身的觸發條件是一個清單，其中任何一個都足夠；這個是另一種。",
+            "fields": {
+                "triggers": {
+                    "name": "觸發條件",
+                    "description": "必須全部觸發過的觸發條件。順序無關緊要，同一個觸發條件再次觸發會替換它之前的那次，而不是重複計數。"
+                },
+                "within": {
+                    "name": "時間窗口",
+                    "description": "它們之間必須靠得多近。這個窗口會滑動，因此比這更早觸發的觸發條件會被遺忘，而其他觸發條件繼續計數。"
+                }
+            }
+        },
+        "recovered": {
+            "name": "實體已恢復",
+            "description": "當實體在無法使用一段時間後重新恢復時觸發，這樣路由器重新啟動不會被解讀為全屋裝置都在恢復。",
+            "fields": {
+                "for": {
+                    "name": "持續時間",
+                    "description": "實體必須離開多長時間後回來才算數。比這更短的只是閃一下：重新載入整合會在一秒內讓它的所有實體經歷無法使用再恢復。"
                 }
             }
         }
