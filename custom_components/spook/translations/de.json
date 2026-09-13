@@ -570,6 +570,10 @@
                     "yaml": "Diese Ressourcen stehen in deiner YAML-Konfiguration, Spook kann sie also nicht für dich ändern. Bearbeite den Abschnitt `resources:` deiner Lovelace-Konfiguration und entferne die Kopien von `{resource}`, die du nicht mehr brauchst."
                 }
             }
+        },
+        "lovelace_missing_resources_yaml": {
+            "title": "Die Ressourcen im Dashboard verweisen auf fehlende Dateien",
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nDie folgenden Dashboard-Ressourcen verweisen auf Dateien, die nicht existieren:\n\n{resources}\n\nDas passiert meist, wenn eine benutzerdefinierte Karte oder ihre Dateien entfernt wurden, die Ressource aber zurückgeblieben ist.\n\nDiese Ressourcen sind in deiner YAML-Konfiguration eingetragen, daher kann die Ressourcen-Seite sie nicht ändern. Bearbeite den Abschnitt resources: deiner Lovelace-Konfiguration und entferne oder korrigiere diese Einträge.\n\nSpook 👻 Dein Kumpel."
         }
     },
     "services": {
@@ -1608,6 +1612,48 @@
                     "description": "Farbe für das Label. Kann ein Farbname aus der Liste sein oder ein Hex-Farbcode (etwa #FF0000)."
                 }
             }
+        },
+        "group_add_members": {
+            "name": "Füge Mitglieder einer Gruppe hinzu",
+            "description": "Fügt Entitäten zu einer über die Oberfläche erstellten Gruppe hinzu, während Home Assistant läuft. Entitäten, die bereits in der Gruppe enthalten sind, bleiben unverändert.",
+            "fields": {
+                "group": {
+                    "name": "Gruppe",
+                    "description": "Die Gruppe, zu der hinzugefügt werden soll."
+                },
+                "members": {
+                    "name": "Mitglieder",
+                    "description": "Die Entitäten, die zur Gruppe hinzugefügt werden sollen."
+                }
+            }
+        },
+        "group_remove_members": {
+            "fields": {
+                "group": {
+                    "name": "Gruppe",
+                    "description": "Die Gruppe, aus der sie entfernt werden sollen."
+                },
+                "members": {
+                    "name": "Mitglieder",
+                    "description": "Die Entitäten, die aus der Gruppe entfernt werden sollen."
+                }
+            },
+            "name": "Mitglieder aus Gruppe entfernen",
+            "description": "Entfernt Entitäten aus einer über die Oberfläche erstellten Gruppe, während Home Assistant läuft. Wird etwas angegeben, das nicht in der Gruppe ist, passiert nichts – so lässt sich auch ein Mitglied entfernen, das nicht mehr existiert."
+        },
+        "group_set_members": {
+            "fields": {
+                "group": {
+                    "name": "Gruppe",
+                    "description": "Die zu ändernde Gruppe."
+                },
+                "members": {
+                    "name": "Mitglieder",
+                    "description": "Die Entitäten, die die Gruppe ab jetzt enthalten soll."
+                }
+            },
+            "description": "Ersetzt die Mitglieder einer über die Oberfläche erstellten Gruppe durch die angegebenen, während Home Assistant läuft.",
+            "name": "Lege die Mitglieder einer Gruppe fest"
         }
     },
     "conditions": {
@@ -1816,6 +1862,44 @@
                     "description": "Wie lange eine Entität stumm bleiben muss, bevor dies ausgelöst wird. Eine Entität, die immer denselben Wert meldet, ist nicht stumm."
                 }
             }
+        },
+        "all_of": {
+            "name": "Alle sind eingetreten",
+            "fields": {
+                "within": {
+                    "description": "Wie eng beieinander sie liegen müssen. Das Zeitfenster gleitet mit: Ein Trigger, der länger als diese Zeitspanne zurückliegt, wird vergessen, während die anderen weiterzählen.",
+                    "name": "Innerhalb"
+                },
+                "triggers": {
+                    "description": "Die Trigger, die alle ausgelöst haben müssen. Die Reihenfolge spielt keine Rolle, und ein erneut auslösender Trigger ersetzt seine frühere Auslösung, statt doppelt gezählt zu werden.",
+                    "name": "Trigger"
+                }
+            },
+            "description": "Löst aus, wenn jeder von mehreren Triggern innerhalb desselben Zeitfensters ausgelöst hat, unabhängig von der Reihenfolge. Die eingebauten Trigger von Home Assistant bilden eine Liste, bei der einer davon genügt; dies ist das Gegenstück dazu."
+        },
+        "debounce": {
+            "name": "Sobald es sich beruhigt",
+            "description": "Löst aus, sobald ein Trigger eine Weile lang nicht mehr ausgelöst hat – so kommt eine ganze Salve als eine einzige Auslösung an. Ein Bewegungsmelder meldet Bewegung nicht einmal, sondern zwanzigmal.",
+            "fields": {
+                "for": {
+                    "name": "Für",
+                    "description": "Wie lange es ruhig gewesen sein muss, bevor dies auslöst. Jede Auslösung setzt diese Wartezeit zurück, sodass etwas, das nie aufhört auszulösen, nie gemeldet wird."
+                },
+                "triggers": {
+                    "description": "Die Trigger, die abgewartet werden. Löst einer von ihnen aus, beginnt damit eine Salve; löst einer von ihnen erneut aus, verlängert das die Salve. So werden mehrere Trigger zusammengefasst, statt einzeln behandelt zu werden.",
+                    "name": "Trigger"
+                }
+            }
+        },
+        "recovered": {
+            "fields": {
+                "for": {
+                    "name": "Für",
+                    "description": "Wie lange die Entität weg gewesen sein muss, damit die Rückkehr zählt. Alles Kürzere ist ein Flackern: Das Neuladen einer Integration schickt jede ihrer Entitäten innerhalb einer Sekunde durch „nicht verfügbar\" und wieder zurück."
+                }
+            },
+            "name": "Entität ist zurückgekehrt",
+            "description": "Löst aus, wenn eine Entität zurückkehrt, nachdem sie eine Weile nicht verfügbar war, sodass ein neu startender Router nicht so aussieht, als würde alles im Haus gleichzeitig wieder verfügbar."
         }
     },
     "selector": {

@@ -7,7 +7,7 @@
         },
         "step": {
             "user": {
-                "description": "Luitko readme:n? Luitko lisenssiehdot? Oletko aivan varma?"
+                "description": "Luitko readme-osion? Luitko lisenssiehdot? Oletko aivan varma?"
             },
             "choice_restart": {
                 "description": "Jotta Spook pystyy viimeistelemään käyttöönoton, Home Assistant pitää käynnistää uudelleen.\n\nHaluatko käynnistää Home Assistantin uudelleen nyt?",
@@ -405,7 +405,7 @@
             "title": "Tuntemattomia entiteettejä käytetty energiakojelaudalla"
         },
         "lovelace_missing_resources": {
-            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nSeuraavat resurssit viittaavat tiedostoihin joita ei ole:\n\n{resources}\n\n\n\nTämä tapahtuu usein kun mukautettu kortti tai sen tiedostot on poistettu, mutta resurssia ei. Korjataksesi ongelman, avaa Asetukset > Kojelaudat > Resurssit ja poista tai korjaa nämä resurssit.\n\nSpook 👻 Kamusi.",
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nSeuraavat resurssit viittaavat tiedostoihin joita ei ole olemassa:\n\n{resources}\n\n\n\nTämä tapahtuu usein kun mukautettu kortti tai sen tiedostot on poistettu, mutta resurssia ei. Korjataksesi ongelman, avaa [Resurssit-sivu](/config/lovelace/resources) ja poista tai korjaa nämä resurssit. Resursseilla ei ole omaa tabia. Löydät ne kojelautojen alta, kolmen pisteen takaa sivun oikeassaa yläkulmassa. \n\nSpook 👻 Kamusi.",
             "title": "Kojelaudan resurssit viittaavat puuttuvaan tiedostoon."
         },
         "lovelace_unknown_area_references": {
@@ -570,6 +570,10 @@
                     "yaml": "Nämä resurssit ovat YAML-konfiguraatiossasi, joten Spook ei voi muuttaa niitä puolestasi. Muokkaa Lovelace-konfiguraatiosi `resources:`-osiota ja poista ne `{resource}`-kopiot joita et enää tarvitse."
                 }
             }
+        },
+        "lovelace_missing_resources_yaml": {
+            "title": "Kojelaudan resurssit viittaavat puuttuvaan tiedostoon",
+            "description": "Spook on löytänyt kummituksen hälytyksistäsi 👻\n\nSeuraavat kojelautaresurssit viittaavat tiedostoihin joita ei ole enää olemassa:\n\n{resources}\n\nTämä tapahtuu yleensä, kun mukautettu kortti tai sen tiedostot on poistettu, mutta resurssi on yhä määriteltynä.\n\nNämä resurssit on listattu YAML-määrityksessä, joten niitä ei voi muokata resurssisivulla. Korjataksesi ongelman, mene `resources:`-osioon konfiguraatiossasi ja poista tai muokkaa näitä määrityksiä.\n\nSpook 👻 Kamusi."
         }
     },
     "services": {
@@ -649,7 +653,7 @@
             "fields": {
                 "alias": {
                     "name": "Alias",
-                    "description": "Kerrokselle lisättävät aliakset."
+                    "description": "Alias (tai lista aliaksia) jotka kerrokselle lisätään."
                 },
                 "floor_id": {
                     "name": "Kerroksen ID",
@@ -1608,6 +1612,48 @@
                     "description": "Tunnisteelle käytettävä väri. Voi olla värin nimi listasta tai heksadesimaalinen värikoodi (kuten #FF0000)."
                 }
             }
+        },
+        "group_add_members": {
+            "name": "Lisää jäseniä ryhmään",
+            "description": "Lisää entiteettejä käyttöliittymän kautta luotuun ryhmään, Home Assistantin ollessa käynnissä. Ryhmän nykyiset entiteetit säilyvät ennallaan.",
+            "fields": {
+                "group": {
+                    "name": "Ryhmä",
+                    "description": "Ryhmä johon lisätään."
+                },
+                "members": {
+                    "name": "Jäsenet",
+                    "description": "Jäsenet jotka lisätään ryhmään."
+                }
+            }
+        },
+        "group_remove_members": {
+            "fields": {
+                "group": {
+                    "name": "Ryhmä",
+                    "description": "Ryhmä josta poistetaan."
+                },
+                "members": {
+                    "name": "Jäsenet",
+                    "description": "Jäsenet jotka poistetaan ryhmästä."
+                }
+            },
+            "name": "Poista jäseniä ryhmästä",
+            "description": "Poistaa jäseniä käyttöliittymän kautta luodusta ryhmästä, Home Assistantin ollessa käynnissä. Sellaisen entiteetin valinta jota ei ole ryhmässä ei tee mitään, joten tällä tavalla saat poistettua myös jäseniä joita ei ole enää olemassa."
+        },
+        "group_set_members": {
+            "fields": {
+                "group": {
+                    "name": "Ryhmä",
+                    "description": "Ryhmä jota muokataan."
+                },
+                "members": {
+                    "name": "Jäsenet",
+                    "description": "Jäsenet joista ryhmän pitäisi koostua jatkossa."
+                }
+            },
+            "description": "Korvaa käyttöliittymän kautta luodun ryhmän jäsenet annetuilla, Home Assistantin ollessa käynnissä.",
+            "name": "Aseta ryhmän jäsenet"
         }
     },
     "conditions": {
@@ -1816,6 +1862,44 @@
                     "description": "Kuinka kauan entiteetin on oltava hiljaa ennen kuin tämä laukeaa. Entiteetti joka ilmoittaa yhä samaa arvoa ei ole hiljaa."
                 }
             }
+        },
+        "all_of": {
+            "name": "Kaikki nämä tapahtuivat",
+            "fields": {
+                "within": {
+                    "description": "Kuinka lähekkäin niiden täytyy olla. Ikkuna on liukuva, joten tätä vanhemmat laukeamiset sivuutetaan, ja ikkunan sisällä olevat lasketaan mukaan.",
+                    "name": "Aikaikkuna"
+                },
+                "triggers": {
+                    "description": "Laukaisimet, joiden on kaikkien pitänyt laueta. Järjestyksellä ei ole väliä, ja ainoastaan laukaisimen uusin laukeaminen lasketaan.",
+                    "name": "Laukaisimet"
+                }
+            },
+            "description": "Laukeaa kun kaikki annetuista laukaisimista on lauennut saman aikaikkunan sisällä, missä tahansa järjestyksessä. Home Assistantin sisäiset laukaisimet luetaan listaksi, joista yhdenkin laukeaminen riittää."
+        },
+        "recovered": {
+            "name": "Entiteetti tuli takaisin",
+            "description": "Laukeaa, kun entiteetti on ollut tovin tavoittamattomissa. Esim. reitittimen uudelleenkäynnistys ei palauta kaikkea normaaliin tilaan.",
+            "fields": {
+                "for": {
+                    "name": "Kohde",
+                    "description": "Kuinka pitkään entiteetin on pitänyt olla poissa, ennenkuin paluu huomioidaan. Lyhyemmät poistumiset tulkitaan normaaliksi heilunnaksi. Integraation uudelleenlataaminen käyttää aina kaikki entiteettinsä hetken saavuttamattomissa."
+                }
+            }
+        },
+        "debounce": {
+            "description": "Laukeaa, kun laukaisin on ollut tovin poissa toiminnasta, jonka jälkeen rykelmä tapahtumia saapuu kerralla. Esim. liiketunnistin raportoi 20 tapahtumaa yhden sijaan.",
+            "fields": {
+                "for": {
+                    "name": "Kohde",
+                    "description": "Kuinka pitkään on pitänyt olla hiljaista ennen tämän laukaisemista. Jokainen laukaisu aloittaa laskurin uudestaan, joten laukaisin joka ei koskaan hiljene ei tule raportoiduksi."
+                },
+                "triggers": {
+                    "description": "Laukaisimet joita seurataan. Minkä tahansa niistä laukeaminen aloittaa purskeen ja minkä tahansa niistä laukeaminen seuraavaksi pitää purskeen käynnissä, joten useita laukaisimia niputetaan yhteen sen sijaan että niitä seurattaisiin yksittäisinä.",
+                    "name": "Laukaisimet"
+                }
+            },
+            "name": "Kun laukaisin asettuu"
         }
     },
     "selector": {
