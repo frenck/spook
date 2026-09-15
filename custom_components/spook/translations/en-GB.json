@@ -1816,6 +1816,19 @@
                     "description": "How long an entity has to stay silent before this fires. An entity that keeps reporting the same value is not silent."
                 }
             }
+        },
+        "debounce": {
+            "name": "Once it settles",
+            "description": "Fires once a trigger has stopped firing for a while, so a burst of them arrives as one. A motion sensor does not report motion once, it reports it twenty times.",
+            "fields": {
+                "triggers": {
+                    "name": "Triggers",
+                    "description": "The triggers to wait out. Any of them firing starts a burst and any of them firing again keeps it going, so several triggers are collapsed together rather than one at a time."
+                },
+                "for": {
+                    "name": "For"
+                }
+            }
         }
     },
     "selector": {
