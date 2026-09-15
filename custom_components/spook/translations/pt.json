@@ -570,6 +570,9 @@
                     "yaml": "Estes recursos estão na tua configuração YAML, por isso o Spook não os pode mudar por ti. Edita a secção `resources:` da tua configuração Lovelace e tira as cópias de `{resource}` que já não precisas."
                 }
             }
+        },
+        "lovelace_missing_resources_yaml": {
+            "title": "Os recursos da vista apontam para ficheiros em falta"
         }
     },
     "conditions": {
@@ -794,7 +797,7 @@
                     "name": "Entidade"
                 }
             },
-            "description": "Ativa uma entidade (ou entidades) num instante.",
+            "description": "Ativa uma entidade (ou entidades) em tempo real.",
             "name": "Ativar uma entidade"
         },
         "homeassistant_hide_entity": {
@@ -999,7 +1002,7 @@
                     "name": "Alias"
                 }
             },
-            "description": "Adiciona um alias a um piso."
+            "description": "Adiciona uma alcunha a um piso."
         },
         "homeassistant_add_entity_to_area": {
             "name": "Adiciona uma entidade a uma área",
@@ -1423,7 +1426,7 @@
                     "name": "Assistentes"
                 },
                 "entity_id": {
-                    "description": "A entidade ou entidades a deixar de expor.",
+                    "description": "A(s) entidade(s) a deixar de expor.",
                     "name": "Entidade"
                 }
             },
@@ -1537,7 +1540,7 @@
                     "name": "Precisão de apresentação"
                 },
                 "entity_id": {
-                    "description": "A entidade ou entidades de sensor a alterar.",
+                    "description": "A(s) entidade(s) de sensor a atualizar.",
                     "name": "Entidade"
                 }
             },
@@ -1682,6 +1685,42 @@
                     "description": "Cor a usar para a etiqueta. Pode ser um nome de cor da lista ou um código de cor hexadecimal (como #FF0000)."
                 }
             }
+        },
+        "group_remove_members": {
+            "name": "Remove membros de um grupo",
+            "fields": {
+                "members": {
+                    "name": "Membros",
+                    "description": "As entidades a remover do grupo."
+                },
+                "group": {
+                    "name": "Grupo"
+                }
+            }
+        },
+        "group_set_members": {
+            "fields": {
+                "group": {
+                    "name": "Grupo",
+                    "description": "O grupo a mudar."
+                },
+                "members": {
+                    "name": "Membros"
+                }
+            }
+        },
+        "group_add_members": {
+            "name": "Adiciona membros a um grupo",
+            "fields": {
+                "group": {
+                    "name": "Grupo",
+                    "description": "O grupo a adicionar."
+                },
+                "members": {
+                    "name": "Membros",
+                    "description": "As entidades a adicionar ao grupo."
+                }
+            }
         }
     },
     "triggers": {
@@ -1808,12 +1847,31 @@
             }
         },
         "stale": {
-            "name": "A entidade calou-se",
+            "name": "A entidade ficou em silêncio",
             "description": "Dispara quando já há algum tempo que nada escreve numa entidade, o que apanha um aparelho que morreu em silêncio em vez de ficar indisponível.",
             "fields": {
                 "for": {
                     "name": "Durante",
                     "description": "Quanto tempo uma entidade tem de ficar calada antes de isto disparar. Uma entidade que continua a comunicar o mesmo valor não está calada."
+                }
+            }
+        },
+        "debounce": {
+            "fields": {
+                "triggers": {
+                    "name": "Gatilhos"
+                },
+                "for": {
+                    "name": "Para"
+                }
+            },
+            "name": "Assim que ficar configurado"
+        },
+        "all_of": {
+            "name": "Todos esses aconteceram",
+            "fields": {
+                "triggers": {
+                    "name": "Gatilhos"
                 }
             }
         }
