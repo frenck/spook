@@ -481,7 +481,7 @@ def async_drop_existing_action_names(
 # neither `trigger` nor `this` is a domain Home Assistant knows, off a list that
 # grows every release and was never chosen with these in mind. Named here so
 # that it is a decision.
-NEVER_AN_ENTITY = frozenset({"trigger.entity_id", "this.entity_id"})
+NEVER_AN_ENTITY_PREFIXES = ("trigger.entity_id", "this.entity_id")
 
 
 @callback
@@ -506,7 +506,7 @@ def async_filter_known_entity_ids(
         # Process any comma-separated entity lists
         for entity_id in split_comma_separated_entity_ids(entity_id_raw):
             if (
-                entity_id not in NEVER_AN_ENTITY
+                not entity_id.startswith(NEVER_AN_ENTITY_PREFIXES)
                 and not entity_id.startswith(IGNORED_ENTITY_DOMAINS)
                 and entity_id not in known_entity_ids
                 and valid_entity_id(entity_id)
