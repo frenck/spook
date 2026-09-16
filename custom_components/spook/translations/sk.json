@@ -570,6 +570,10 @@
                     "manage": "Tento štítok si môžeš spravovať sám na [stránke Štítky](/config/labels)."
                 }
             }
+        },
+        "lovelace_missing_resources_yaml": {
+            "title": "Zdroje dashboardu poukazujú na chýbajúce súbory",
+            "description": "Spook našiel ducha vo vašich paneloch 👻\n\nNasledujúce zdroje panelov odkazujú na súbory, ktoré neexistujú:\n\n{resources}\n\n\n\nZvyčajne k tomu dochádza, keď bola odstránená vlastná karta alebo jej súbory, no samotný záznam zdroja v konfigurácii zostal.\n\nTieto zdroje sú uvedené vo vašej konfigurácii YAML, takže ich nemožno upraviť priamo na stránke Zdroje. Upravte sekciu `resources:` v konfigurácii Lovelace a tieto záznamy odstráňte alebo opravte.\n\nSpook 👻 Váš parťák."
         }
     },
     "services": {
@@ -1608,6 +1612,48 @@
                     "description": "Počet desatinných miest, ktoré sa majú pri senzore zobraziť."
                 }
             }
+        },
+        "group_add_members": {
+            "name": "Pridať členov do skupiny",
+            "description": "Pridáva entity do skupiny vytvorenej prostredníctvom rozhrania počas chodu systému Home Assistant. Entity, ktoré sa už v skupine nachádzajú, zostávajú na svojom mieste.",
+            "fields": {
+                "group": {
+                    "name": "Skupina",
+                    "description": "Skupina, do ktorej treba pridať."
+                },
+                "members": {
+                    "name": "Členovia",
+                    "description": "Entity, ktoré sa majú pridať do skupiny."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Odstrániť členov zo skupiny",
+            "description": "Odstraňuje entity zo skupiny vytvorenej prostredníctvom rozhrania počas chodu systému Home Assistant. Uvedenie názvu entity, ktorá v skupine nie je, nemá žiadny účinok; týmto spôsobom teda môžete odstrániť aj člena, ktorý už neexistuje.",
+            "fields": {
+                "group": {
+                    "name": "Skupina",
+                    "description": "Skupina, z ktorej ich treba vybrať."
+                },
+                "members": {
+                    "name": "Členovia",
+                    "description": "Entity, ktoré sa majú zo skupiny odstrániť."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Nastavte členov skupiny",
+            "description": "Počas chodu Home Assistant nahradí členov skupiny vytvorenej prostredníctvom rozhrania zadanými členmi.",
+            "fields": {
+                "group": {
+                    "name": "Skupina",
+                    "description": "Skupina, ktorú treba zmeniť."
+                },
+                "members": {
+                    "name": "Členovia",
+                    "description": "Entity, ktoré by skupina mala odteraz držať."
+                }
+            }
         }
     },
     "triggers": {
@@ -1740,6 +1786,44 @@
                 "for": {
                     "name": "Počas",
                     "description": "Ako dlho musí byť entita ticho, kým sa toto spustí. Entita, ktorá stále hlási tú istú hodnotu, ticho nie je."
+                }
+            }
+        },
+        "debounce": {
+            "name": "Akonáhle sa to ustáli",
+            "description": "Aktivuje sa až po tom, čo spúšťací signál na chvíľu ustane, takže séria týchto signálov dorazí naraz. Snímač pohybu neohlási pohyb len raz – ohlási ho dvadsaťkrát.",
+            "fields": {
+                "triggers": {
+                    "name": "Spúšťače",
+                    "description": "Spúšte, ktoré majú čakať. Ktorýkoľvek z nich vystrelí, spustí dávku a ktorýkoľvek z nich vystrelí znova, ju udrží v chode, takže niekoľko spúští sa zhlukuje naraz, a nie jeden po druhom."
+                },
+                "for": {
+                    "name": "Pre",
+                    "description": "Ako dlho musí byť ticho, kým sa toto spustí. Každé spustenie resetuje toto čakanie, takže niečo, čo sa spúšťa nepretržite, sa nikdy nenahlási."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Všetky tieto veci sa stali.",
+            "description": "Aktivuje sa vtedy, keď sa v rámci toho istého časového úseku aktivujú všetky z viacerých spúšťačov, a to v ľubovoľnom poradí. Štandardné spúšťače v systéme Home Assistant fungujú na princípe zoznamu, kde stačí aktivácia ktoréhokoľvek z nich; toto je alternatívny spôsob.",
+            "fields": {
+                "triggers": {
+                    "name": "Spúšťače",
+                    "description": "Spúšťače, ktoré sa všetky musia aktivovať. Na poradí nezáleží a opätovná aktivácia spúšťača nahrádza jeho predchádzajúce uplatnenie, namiesto toho, aby sa počítala dvakrát."
+                },
+                "within": {
+                    "name": "V rámci",
+                    "description": "Ako blízko pri sebe sa musia nachádzať. Toto okno sa posúva, takže spúšťacia udalosť, ktorá nastala skôr než v tomto časovom rámci, sa považuje za neplatnú, zatiaľ čo ostatné pokračujú v počítaní."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entita sa vrátila.",
+            "description": "Aktivuje sa, keď sa entita vráti do stavu dostupnosti po predchádzajúcom výpadku; vďaka tomu sa reštart smerovača neinterpretuje ako obnova všetkých zariadení v domácnosti.",
+            "fields": {
+                "for": {
+                    "name": "Pre",
+                    "description": "Počíta sa, ako dlho musela byť entita preč, kým sa vrátila. Čokoľvek kratšie je len blikanie: opätovné načítanie integrácie prevedie všetky jej entity cez stav nedostupnosti a späť v priebehu sekundy."
                 }
             }
         }
