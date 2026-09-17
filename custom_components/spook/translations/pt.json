@@ -572,7 +572,8 @@
             }
         },
         "lovelace_missing_resources_yaml": {
-            "title": "Os recursos da vista apontam para ficheiros em falta"
+            "title": "Os recursos da vista apontam para ficheiros em falta",
+            "description": "O Spook encontrou um fantasma nos teus painéis 👻\n\nOs seguintes recursos de painel apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsto geralmente acontece quando um cartão personalizado ou seus arquivos foram removidos, mas o recurso permaneceu.\n\nEsses recursos estão listados na tua configuração YAML, portanto, a página de Recursos não pode alterá-los. Edita a seção `resources:` da tua configuração do Lovelace e remove ou corrige essas entradas.\n\nSpook 👻 O teu amigo."
         }
     },
     "conditions": {
@@ -1696,7 +1697,8 @@
                 "group": {
                     "name": "Grupo"
                 }
-            }
+            },
+            "description": "Remove entidades de um grupo criado pela interface enquanto o Home Assistant está em execução. Renomear algo que não faz parte do grupo não faz nada, portanto essa também é a maneira de remover um membro que já não existe."
         },
         "group_set_members": {
             "fields": {
@@ -1705,7 +1707,8 @@
                     "description": "O grupo a mudar."
                 },
                 "members": {
-                    "name": "Membros"
+                    "name": "Membros",
+                    "description": "As entidades que o grupo deve manter de agora em diante."
                 }
             }
         },
@@ -1814,7 +1817,7 @@
             "fields": {
                 "for": {
                     "name": "Durante",
-                    "description": "Quanto tempo uma entrada tem de continuar a falhar antes de isto disparar. O Home Assistant volta a tentar uma entrada falhada no máximo de dez em dez minutos, por isso um valor mais curto avisa de problemas que ainda se podem resolver sozinhos."
+                    "description": "Quanto tempo uma entrada tem de continuar a falhar antes de isto disparar. O Home Assistant volta a tentar uma entrada falhada no máximo de dez em dez minutos, por isso um valor mais curto avisa sobre problemas que ainda se podem resolver sozinhos."
                 },
                 "entry_id": {
                     "name": "Entradas",
@@ -1852,7 +1855,7 @@
             "fields": {
                 "for": {
                     "name": "Durante",
-                    "description": "Quanto tempo uma entidade tem de ficar calada antes de isto disparar. Uma entidade que continua a comunicar o mesmo valor não está calada."
+                    "description": "Quanto tempo uma entidade tem de ficar silenciada antes de isto disparar. Uma entidade que continua a comunicar o mesmo valor não está silenciada."
                 }
             }
         },
@@ -1862,7 +1865,8 @@
                     "name": "Gatilhos"
                 },
                 "for": {
-                    "name": "Para"
+                    "name": "Para",
+                    "description": "Quanto tempo deve permanecer silenciado antes que isto dispare. Cada disparo reinicia essa contagem de tempo, portanto, algo que nunca para de disparar nunca chega a ser relatado."
                 }
             },
             "name": "Assim que ficar configurado"
@@ -1872,6 +1876,9 @@
             "fields": {
                 "triggers": {
                     "name": "Gatilhos"
+                },
+                "within": {
+                    "description": "O quão perto eles têm de estar um do outro. A janela desliza, e um gatilho que tenha disparado há mais tempo que isso é esquecido, enquanto os outros continuam a contar."
                 }
             }
         }
