@@ -9,11 +9,12 @@ from homeassistant.helpers.recorder import DATA_INSTANCE, get_instance
 
 from ....const import LOGGER
 from ....repairs import AbstractSpookRepair
+from ....statistics_sources import async_known_to_home_assistant
 
 # The recorder validation issue type for a statistic ID that has recorded
-# statistics but no matching sensor state at all: a genuine orphan. Other
-# issue types (unit or state-class changes, intentionally excluded
-# entities) are either handled by Home Assistant itself or expected.
+# statistics but no matching sensor state at all. Other issue types (unit or
+# state-class changes, intentionally excluded entities) are either handled
+# by Home Assistant itself or expected.
 _ORPHAN_ISSUE_TYPE = "no_state"
 
 
@@ -50,10 +51,20 @@ class SpookRepair(AbstractSpookRepair):
             validate_statistics,
             self.hass,
         )
-        orphaned = sorted(
+        candidates = {
             statistic_id
             for statistic_id, issues in validation.items()
             if any(issue.type == _ORPHAN_ISSUE_TYPE for issue in issues)
+        }
+
+        # Having no state is not the same as being left behind. A registered
+        # entity that is disabled or not set up yet has statistics waiting for
+        # it, and an integration can publish statistics straight into the
+        # recorder with no entity ever existing; the energy dashboard draws
+        # those perfectly happily. Following the repair on either would delete
+        # working history. #1625.
+        orphaned = sorted(
+            candidates - await async_known_to_home_assistant(self.hass, candidates)
         )
 
         if orphaned:
