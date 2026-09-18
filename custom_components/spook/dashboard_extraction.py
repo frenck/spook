@@ -141,9 +141,15 @@ def extract_entities_from_dashboard_node(node: Any) -> set[str]:
     return entities
 
 
-# Keys whose value holds one or more area references. ``area`` is the area
-# card and area view strategy; ``area_id`` is a service-call area target.
-_AREA_REFERENCE_KEYS = frozenset({"area", "area_id"})
+# `area` is a reference on exactly two things, the area card and the area
+# view strategy, and both say `type: area`. Anywhere else the word is up for
+# grabs, and a custom card took it: flex-horseshoe-card prints whatever is
+# under `area` as a caption beneath its gauge, so `area: Garaj` was reported
+# as an area that had gone missing. #1609.
+_AREA_TYPE = "area"
+
+# `area_id` is a service-call target, and nobody captions with one of those.
+_AREA_ID_KEY = "area_id"
 
 
 def _collect_plain(value: Any, out: set[str]) -> None:
@@ -172,9 +178,9 @@ def _walk_areas(node: Any, areas: set[str]) -> None:
     if not isinstance(node, dict):
         return
 
-    for key in _AREA_REFERENCE_KEYS:
-        if key in node:
-            _collect_plain(node[key], areas)
+    if node.get("type") == _AREA_TYPE:
+        _collect_plain(node.get("area"), areas)
+    _collect_plain(node.get(_AREA_ID_KEY), areas)
 
     # The areas dashboard strategy lists area IDs to hide or order.
     if isinstance(areas_display := node.get("areas_display"), dict):

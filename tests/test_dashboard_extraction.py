@@ -224,3 +224,32 @@ def test_area_extraction_ignores_unrelated_keys() -> None:
     config = {"type": "entity", "entity": "sensor.x", "name": "kitchen"}
 
     assert extract_areas_from_dashboard_node(config) == set()
+
+
+def test_an_area_on_anything_but_an_area_card_is_a_label() -> None:
+    """A custom card is free to call a caption `area`, and one does.
+
+    flex-horseshoe-card prints whatever is under `area` beneath the gauge.
+    Only the area card and the area view strategy take `area` as a reference,
+    so only a node of that type has one. #1609.
+    """
+    config = {
+        "views": [
+            {
+                "strategy": {"type": "area", "area": "kitchen"},
+            },
+            {
+                "cards": [
+                    {
+                        "type": "custom:flex-horseshoe-card",
+                        "entities": [
+                            {"entity": "sensor.garage_temperature", "area": "Garaj"},
+                        ],
+                    },
+                    {"type": "custom:area-ish-card", "area": "Not an ID"},
+                ],
+            },
+        ],
+    }
+
+    assert extract_areas_from_dashboard_node(config) == {"kitchen"}
