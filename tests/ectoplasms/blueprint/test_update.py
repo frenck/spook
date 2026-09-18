@@ -3395,3 +3395,47 @@ def test_what_the_author_changed_is_all_that_gets_said() -> None:
         MOTION_LIGHT_AS_AN_OLDER_HOME_ASSISTANT_WROTE_IT,
         another_option,
     ) == ["**Settings changed**: Light"]
+
+
+async def test_a_blueprint_nobody_wants_to_hear_about_is_left_alone(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Disabling the entity is asking not to be told; the round should not ask.
+
+    A disabled entity is never added to Home Assistant, so it has no hass to
+    fetch with and no state to write. A round that checked it anyway fell over
+    on every pass and told the log to report a bug, which is what #1602 and
+    #1624 were.
+    """
+    entity_registry.async_get_or_create(
+        "update",
+        "fake",
+        "blueprint_automation_motion.yaml",
+        disabled_by=er.RegistryEntryDisabler.USER,
+    )
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    hallway = SOURCE.replace("motion", "hallway")
+    async_write_blueprint(
+        hass,
+        "automation",
+        "hallway.yaml",
+        MOTION_LIGHT.replace("Spooky motion light", "Spooky hallway light"),
+        source=hallway,
+    )
+    await async_set_up(hass)
+    assert hass.states.get(_ENTITY) is None
+
+    # Edited by hand in the meantime, so taking stock has a new reading to
+    # hand the disabled entity as well.
+    file.write_text(MOTION_LIGHT_CHANGED.format(source=SOURCE), encoding="utf-8")
+
+    with _source_says(MOTION_LIGHT) as fetch:
+        await _check(hass, freezer)
+
+    assert "fell over" not in caplog.text
+    assert [call.args[1] for call in fetch.call_args_list] == [hallway], (
+        "the round did not check exactly the enabled one"
+    )

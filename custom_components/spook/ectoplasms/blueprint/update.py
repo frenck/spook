@@ -1352,6 +1352,13 @@ class _BlueprintUpdates:  # pylint: disable=too-few-public-methods
                 if self._stopped:
                     return
 
+                # Somebody disabling one of these is asking not to be told
+                # about that blueprint. Home Assistant never adds a disabled
+                # entity, so it has no hass to fetch with either, and asking
+                # anyway fell over every round (#1602, #1624).
+                if entity.hass is None:
+                    continue
+
                 try:
                     await entity.async_check()
                 # One blueprint pointing somewhere strange must not take the
@@ -1458,7 +1465,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._attr_name = said.name
         self._attr_title = said.name
         self._attr_installed_version = said.fingerprint
-        self.async_write_ha_state()
+
+        # A disabled entity was never added, so there is no state to write.
+        # The reading is still kept, for the check that follows.
+        if self.hass is not None:
+            self.async_write_ha_state()
 
     def version_is_newer(self, latest_version: str, installed_version: str) -> bool:
         """Return whether the source says something other than what is here.
