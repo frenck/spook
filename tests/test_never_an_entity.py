@@ -98,7 +98,7 @@ def test_the_yardstick_still_matches_the_code() -> None:
     A third placeholder worth excluding should be added to both. This failing
     is the reminder, not a bug in itself.
     """
-    assert set(template_extraction.NEVER_AN_ENTITY) == _THE_PLACEHOLDERS
+    assert set(template_extraction.NEVER_AN_ENTITY_PREFIXES) == _THE_PLACEHOLDERS
 
 
 async def test_no_way_of_writing_them_reads_as_an_entity(
@@ -188,7 +188,7 @@ async def test_home_assistant_handing_them_over_does_not_count_either(
     handed_over = set()
     for entity in entities:
         handed_over |= {str(e) for e in entity.referenced_entities}
-    assert handed_over & set(template_extraction.NEVER_AN_ENTITY), (
+    assert handed_over & set(template_extraction.NEVER_AN_ENTITY_PREFIXES), (
         f"Home Assistant stopped reporting these, so this test is now testing "
         f"nothing: {sorted(handed_over)}"
     )
@@ -288,6 +288,44 @@ async def test_a_dashboard_does_not_report_them_either(
     )
 
     assert not _named(unknown), f"a dashboard reported {sorted(unknown)}"
+
+
+async def test_a_numbered_placeholder_is_still_the_placeholder(
+    hass: HomeAssistant,
+) -> None:
+    """`this.entity_id1` is the same variable with a number on it.
+
+    easy-layout-card wrapped around mini-graph-card hands out `this.entity_id`,
+    `this.entity_id1`, `this.entity_id2` and so on, one per entity it was
+    given. An exact match let the numbered ones through. Neither `this` nor
+    `trigger` is a domain, so anything starting with these is safe to drop
+    without looking further. #1606.
+    """
+    card = yaml.safe_load(
+        """
+        type: custom:easy-layout-card
+        cards:
+          - type: custom:mini-graph-card
+            entities:
+              - entity: this.entity_id
+              - entity: this.entity_id1
+              - entity: this.entity_id2
+              - entity: sensor.real_one
+        """,
+    )
+
+    extracted = extract_entities_from_dashboard_node(card)
+    assert "this.entity_id2" in extracted, (
+        "the walk stopped collecting it, so this no longer tests the filter"
+    )
+
+    unknown = async_filter_known_entity_ids(
+        hass,
+        entity_ids=extracted,
+        known_entity_ids={"sensor.real_one"},
+    )
+
+    assert not unknown, f"a dashboard reported {sorted(unknown)}"
 
 
 async def test_the_card_from_the_auto_entities_report_stays_quiet(
