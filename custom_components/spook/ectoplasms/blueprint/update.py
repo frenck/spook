@@ -42,6 +42,7 @@ from homeassistant.components.update import (
     UpdateEntity,
     UpdateEntityDescription,
     UpdateEntityFeature,
+    UpdateEntityStateAttribute,
 )
 from homeassistant.const import (
     CONF_NAME,
@@ -1439,6 +1440,33 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # username and password. Every one of its own blueprint commands is
         # admin only, so the address belongs with the release notes, which are
         # admin only too, and not in the states.
+
+    async def async_added_to_hass(self) -> None:
+        """Pick up what the last round before the restart had to say.
+
+        Home Assistant restores a skipped version, then drops it on the first
+        state write unless it matches what is on offer. The first round is
+        minutes away, so with nothing on offer yet, the skip went, and the
+        next round offered the very same update again (#1641). Bringing the
+        last offer back with it keeps the two in step.
+
+        Only when the file is the one that offer was measured against. A
+        blueprint edited or re-imported while Home Assistant was off is a
+        different file, and the old offer says nothing about it.
+        """
+        await super().async_added_to_hass()
+
+        if (last := await self.async_get_last_state()) is None:
+            return
+
+        attributes = last.attributes
+        if (
+            attributes.get(UpdateEntityStateAttribute.INSTALLED_VERSION)
+            == self._attr_installed_version
+            and (offered := attributes.get(UpdateEntityStateAttribute.LATEST_VERSION))
+            is not None
+        ):
+            self._attr_latest_version = offered
 
     @callback
     def async_seen(self, said: _OnDisk) -> None:

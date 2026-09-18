@@ -14,7 +14,7 @@ from unittest.mock import patch
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED, STATE_UNAVAILABLE
 from homeassistant.components.update import UpdateEntityFeature
-from homeassistant.core import CoreState, callback
+from homeassistant.core import CoreState, State, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.components.blueprint import (
     BLUEPRINT_SCHEMA,
@@ -31,6 +31,7 @@ import voluptuous as vol
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     async_fire_time_changed,
+    mock_restore_cache,
 )
 
 from custom_components.spook.const import DOMAIN
@@ -3439,3 +3440,85 @@ async def test_a_blueprint_nobody_wants_to_hear_about_is_left_alone(
     assert [call.args[1] for call in fetch.call_args_list] == [hallway], (
         "the round did not check exactly the enabled one"
     )
+
+
+def _fingerprint_of(raw: str) -> str:
+    """Return the fingerprint the entity would carry for this blueprint."""
+    return _fingerprint(imported_from(raw).blueprint)
+
+
+async def test_a_skipped_update_stays_skipped_across_a_restart(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Skipping is a decision; a restart should not take it back.
+
+    Home Assistant restores the skipped version, then drops it on the first
+    state write unless it matches what is on offer. The entity used to come
+    up saying the source and the file agreed, so nothing was on offer, the
+    skip went, and the next round offered the same update again (#1641).
+    """
+    installed = _fingerprint_of(MOTION_LIGHT)
+    offered = _fingerprint_of(MOTION_LIGHT_CHANGED)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "off",
+                {
+                    "installed_version": installed,
+                    "latest_version": offered,
+                    "skipped_version": offered,
+                },
+            ),
+        ],
+    )
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    state = hass.states.get(_ENTITY)
+    assert state.attributes["latest_version"] == offered
+    assert state.attributes["skipped_version"] == offered
+    assert state.state == "off"
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.attributes["skipped_version"] == offered
+    assert state.state == "off"
+
+
+async def test_a_file_changed_while_home_assistant_was_down_starts_afresh(
+    hass: HomeAssistant,
+) -> None:
+    """What was on offer was measured against a file that is no longer there.
+
+    Somebody edited or re-imported the blueprint by hand while Home Assistant
+    was off. The last known offer says nothing about this file, so the entity
+    comes up the way it always did, and the skip goes with it.
+    """
+    offered = _fingerprint_of(MOTION_LIGHT_CHANGED_AGAIN)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "off",
+                {
+                    "installed_version": _fingerprint_of(MOTION_LIGHT),
+                    "latest_version": offered,
+                    "skipped_version": offered,
+                },
+            ),
+        ],
+    )
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+    await async_set_up(hass)
+
+    state = hass.states.get(_ENTITY)
+    now_on_disk = _fingerprint_of(MOTION_LIGHT_CHANGED)
+    assert state.attributes["installed_version"] == now_on_disk
+    assert state.attributes["latest_version"] == now_on_disk
+    assert state.attributes["skipped_version"] is None
