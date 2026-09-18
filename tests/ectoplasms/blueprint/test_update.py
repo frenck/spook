@@ -3582,3 +3582,37 @@ async def test_another_blueprint_in_the_same_gist_is_not_this_one(
         await _check(hass, freezer)
 
     assert hass.states.get(_ENTITY).state == "off"
+
+
+def test_a_selector_somewhere_else_keeps_its_order() -> None:
+    """The input block is walked rather than the key looked for anywhere.
+
+    A `selector` in the data of an action is somebody else's mapping. Nothing
+    says its order is free to move, and a `variables:` block least of all.
+    """
+    raw = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      selector:
+        first: 1
+        second: "{{ first }}"
+"""
+    swapped = """
+blueprint:
+  name: T
+  domain: automation
+triggers: []
+actions:
+  - variables:
+      selector:
+        second: "{{ first }}"
+        first: 1
+"""
+    before = Blueprint(yaml_util.parse_yaml(raw), schema=BLUEPRINT_SCHEMA)
+    after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
+
+    assert _fingerprint(before) != _fingerprint(after)
