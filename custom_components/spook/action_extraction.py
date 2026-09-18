@@ -239,7 +239,9 @@ async def async_extract_entities_from_value(
                     value,
                     exc,
                 )
-        elif not value.startswith(NEVER_AN_ENTITY_PREFIXES) and _ENTITY_ID_RE.match(value):
+        elif not value.startswith(NEVER_AN_ENTITY_PREFIXES) and _ENTITY_ID_RE.match(
+            value
+        ):
             # Check if it matches the entity ID pattern with known domains
             entities.add(value)
     elif isinstance(value, list):
