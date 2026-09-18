@@ -3522,3 +3522,63 @@ async def test_a_file_changed_while_home_assistant_was_down_starts_afresh(
     assert state.attributes["installed_version"] == now_on_disk
     assert state.attributes["latest_version"] == now_on_disk
     assert state.attributes["skipped_version"] is None
+
+
+_A_FILE_ON_GITHUB = "https://github.com/spook/blueprints/blob/main/motion.yaml"
+_A_GIST = "https://gist.github.com/spook/0123456789abcdef"
+
+
+async def test_a_renamed_blueprint_in_a_file_of_its_own_is_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """One address, one file: a changed name can only be a rename.
+
+    The name guard is there for a topic that can hold several blueprints.
+    A file on GitHub holds one, so an author renaming it is an update like
+    any other, and used to be nothing at all (#1601).
+    """
+    file = async_write_blueprint(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT,
+        source=_A_FILE_ON_GITHUB,
+    )
+    await async_set_up(hass)
+
+    renamed = MOTION_LIGHT_CHANGED.replace("Spooky motion light", "Spooky hall light")
+    with _source_says(renamed, source=_A_FILE_ON_GITHUB):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    await hass.services.async_call(
+        "update",
+        "install",
+        {"entity_id": _ENTITY},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    assert "Spooky hall light" in file.read_text(encoding="utf-8")
+
+
+async def test_another_blueprint_in_the_same_gist_is_not_this_one(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A gist is a folder, and the importer takes the first blueprint in it.
+
+    Same as a topic, then: nothing but the name tells this one from another
+    that has since been put in front of it.
+    """
+    async_write_blueprint(
+        hass, "automation", "motion.yaml", MOTION_LIGHT, source=_A_GIST
+    )
+    await async_set_up(hass)
+
+    with _source_says(ANOTHER_AUTOMATION_BLUEPRINT, source=_A_GIST):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
