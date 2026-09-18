@@ -33,7 +33,10 @@ from homeassistant.components.blueprint.const import (
     CONF_MIN_VERSION,
     CONF_SOURCE_URL,
 )
-from homeassistant.components.blueprint.importer import fetch_blueprint_from_url
+from homeassistant.components.blueprint.importer import (
+    COMMUNITY_TOPIC_PATTERN,
+    fetch_blueprint_from_url,
+)
 from homeassistant.components.script import (
     config as script_config,
     scripts_with_blueprint,
@@ -139,6 +142,10 @@ _CHECK_INTERVAL = timedelta(hours=24)
 _SPREAD = timedelta(hours=4)
 
 _FETCH_TIMEOUT = 30
+
+# The one kind of address the importer recognises by prefix rather than by
+# pattern. It has no constant for it to borrow.
+_GIST = "https://gist.github.com/"
 
 # What goes in the dialog before somebody presses install. Home Assistant
 # renders `ha-alert` in release notes, which Matter and ZHA both lean on to put
@@ -312,6 +319,18 @@ def _copies_of(file: Path) -> list[Path]:
     ]
 
     return sorted(copies, reverse=True)
+
+
+def _holds_more_than_one(source_url: str) -> bool:
+    """Return whether this kind of address can hold several blueprints.
+
+    A community topic is a post with any number of code blocks in it, and a
+    gist is a folder of files. Home Assistant's importer takes the first
+    blueprint it finds in either. Everything else it can import from is a
+    single file.
+    """
+    a_topic = COMMUNITY_TOPIC_PATTERN.match(source_url) is not None
+    return a_topic or source_url.startswith(_GIST)
 
 
 def _unique_id(blueprint_domain: str, blueprint_path: str) -> str:
@@ -1806,18 +1825,29 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         fetched = imported.blueprint
 
-        # A community topic can hold more than one blueprint, and the importer
-        # takes the first it comes across. Every blueprint in a topic was given
-        # the same source URL on the way in, so following one can land on
-        # another. The domain and the name together are the most that can be
-        # asked of a format that carries no identity of its own: an author
-        # renaming their blueprint costs an update, writing somebody else's
-        # blueprint into this file costs a lot more.
-        if fetched.domain != self.blueprint_domain or fetched.name != self._said.name:
+        if fetched.domain != self.blueprint_domain:
             msg = (
                 f"{source_url} leads to '{fetched.name}', a {fetched.domain} "
                 f"blueprint, and not to '{self._said.name}'. Spook will not "
                 f"put one over the other."
+            )
+            raise HomeAssistantError(msg)
+
+        # A community topic or a gist can hold more than one blueprint, and
+        # the importer takes the first it comes across. Every blueprint in one
+        # was given the same source URL on the way in, so following it can
+        # land on another. The name is the most that can be asked of a format
+        # that carries no identity of its own: an author renaming their
+        # blueprint costs an update, writing somebody else's blueprint into
+        # this file costs a lot more.
+        #
+        # A file of its own is a different matter. One address holds one
+        # blueprint there, so a changed name can only be a rename, and that is
+        # an update like any other (#1601).
+        if _holds_more_than_one(source_url) and fetched.name != self._said.name:
+            msg = (
+                f"{source_url} now leads with '{fetched.name}' rather than "
+                f"'{self._said.name}'. Spook will not put one over the other."
             )
             raise HomeAssistantError(msg)
 
