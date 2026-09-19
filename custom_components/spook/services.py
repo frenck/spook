@@ -62,8 +62,11 @@ class AbstractSpookServiceBase(ABC):
 
     @abstractmethod
     @callback
-    def async_register(self) -> None:
-        """Handle the service call."""
+    def async_register(self) -> bool:
+        """Register the service with Home Assistant.
+
+        Returns True when the service was actually registered.
+        """
         raise NotImplementedError
 
     @final
@@ -92,7 +95,7 @@ class AbstractSpookService(AbstractSpookServiceBase):
 
     @final
     @callback
-    def async_register(self) -> None:
+    def async_register(self) -> bool:
         """Register the service with Home Assistant."""
         # Only register the service if the domain is the spook integration
         # or if the target integration is loaded.
@@ -103,7 +106,7 @@ class AbstractSpookService(AbstractSpookServiceBase):
                 self.service,
                 self.domain,
             )
-            return
+            return False
 
         LOGGER.debug(
             "Registering Spook service: %s.%s",
@@ -119,6 +122,8 @@ class AbstractSpookService(AbstractSpookServiceBase):
             supports_response=self.supports_response,
         )
 
+        return True
+
     @abstractmethod
     async def async_handle_service(self, call: ServiceCall) -> ServiceResponse:
         """Handle the service call."""
@@ -130,7 +135,7 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
 
     @final
     @callback
-    def async_register(self) -> None:
+    def async_register(self) -> bool:
         """Register the service with Home Assistant."""
         if self.domain != DOMAIN and self.domain not in self.hass.config.components:
             LOGGER.debug(
@@ -139,7 +144,7 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
                 self.service,
                 self.domain,
             )
-            return
+            return False
 
         LOGGER.debug(
             "Registering Spook admin service: %s.%s",
@@ -153,6 +158,8 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
             service_func=self.async_handle_service,
             schema=vol.Schema(self.schema) if self.schema else None,
         )
+
+        return True
 
     @abstractmethod
     async def async_handle_service(self, call: ServiceCall) -> None:
@@ -169,7 +176,7 @@ class AbstractSpookEntityService(AbstractSpookServiceBase, Generic[_EntityT]):
 
     @final
     @callback
-    def async_register(self) -> None:
+    def async_register(self) -> bool:
         """Register the service with Home Assistant."""
         LOGGER.debug(
             "Registering Spook entity service: %s.%s for platform %s",
@@ -205,6 +212,8 @@ class AbstractSpookEntityService(AbstractSpookServiceBase, Generic[_EntityT]):
             supports_response=self.supports_response,
         )
 
+        return True
+
     @abstractmethod
     async def async_handle_service(
         self,
@@ -223,7 +232,7 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
 
     @final
     @callback
-    def async_register(self) -> None:
+    def async_register(self) -> bool:
         """Register the service with Home Assistant."""
         LOGGER.debug(
             "Registering Spook entity component service: %s.%s",
@@ -247,6 +256,8 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
             required_features=self.required_features,
             supports_response=self.supports_response,
         )
+
+        return True
 
     @abstractmethod
     async def async_handle_service(
@@ -363,7 +374,12 @@ class SpookServiceManager:
     @callback
     def async_register_service(self, service: AbstractSpookService) -> None:
         """Register a Spook service."""
-        service.async_register()
+        # A service aimed at an integration that is not set up never lands in
+        # Home Assistant. Injecting a description for it would then describe
+        # an action that does not exist, which core refuses with a KeyError.
+        if not service.async_register():
+            return
+
         self._services.add(service)
 
         # Override service description with Spook's if the service is not
