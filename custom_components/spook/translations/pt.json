@@ -1,7 +1,7 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook já está configurado.",
+            "already_spooked": "O Spook já está configurado.",
             "enable_failed": "A entrada atual do Spook não pode ser ativada.",
             "enabled_existing": "A entrada atual do Spook foi ativada."
         },
@@ -17,7 +17,7 @@
                 }
             },
             "already_configured": {
-                "description": "Spook já está configurado, mas a entrada está desativada. Queres ativá-la?",
+                "description": "O Spook já está configurado, mas a entrada está desativada. Queres ativá-la?",
                 "menu_options": {
                     "enable_existing": "Ativar entrada existente"
                 }
@@ -198,10 +198,10 @@
                 "name": "Vacuums"
             },
             "homeassistant_water_heater": {
-                "name": "Water heaters"
+                "name": "Aquecedores de água"
             },
             "homeassistant_weather": {
-                "name": "Weather"
+                "name": "Metereologia"
             },
             "homeassistant_zone": {
                 "name": "Zonas"
@@ -269,7 +269,7 @@
             "title": "Membros do grupo desconhecido em: {group}",
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este grupo a partir de agora.",
+                    "issue_ignored": "O Spook vai manter-se calado sobre este grupo a partir de agora.",
                     "manage": "Podes gerir este grupo tu próprio na [página de Assistentes](/config/helpers).",
                     "not_editable": "Este grupo está configurado em YAML, por isso o Spook não o pode editar. Atualiza o grupo na tua configuração."
                 },
@@ -287,19 +287,19 @@
             }
         },
         "lovelace_unknown_entity_references": {
-            "description": "O Spook encontrou um fantasma nos teus dashboards 👻\n\nEnquanto flutuava por ai, o Spook cruzou-se com o seguinte dashboard:\n\n[{dashboard}]({edit})\n\nEste dashboard contém as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nPara corrigir este  erro, [edita a dashboard]({edit}) e remove as entidades inexistentes.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma nos teus painéis👻\n\nEnquanto flutuava por ai, o Spook cruzou-se com o seguinte dashboard:\n\n[{dashboard}]({edit})\n\nEste dashboard contém as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nPara corrigir este erro, [edita a dashboard]({edit}) e remove as entidades inexistentes.\n\nSpook 👻 O teu amigo.",
             "title": "Entidades desconhecidas utilizadas em: {dashboard}"
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook encontrou um fantasma na tua configuração de proximidade 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração ignora zonas que são desconhecidas para o Home Assistant:\n\n{zones}\n\nPara corrigir este erro, edita a configuração e remove esta ou estas zonas.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma na tua configuração de proximidade 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração ignora zonas que são desconhecidas para o Home Assistant:\n\n{zones}\n\nPara corrigir este erro, edita a configuração e remove esta ou estas zonas.\n\nSpook 👻 O teu amigo.",
             "title": "Zonas ignoradas desconhecidas: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook encontrou um fantasma na tua configuração de proximidade 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração segue pessoas ou rastreadores de dispositivo que são desconhecidos para o Home Assistant:\n\n{entities}\n\nPara corrigir este erro, edita a configuração e remove esta ou estas entidades.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma na tua configuração de proximidade 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração segue pessoas ou rastreadores de dispositivo que são desconhecidos para o Home Assistant:\n\n{entities}\n\nPara corrigir este erro, edita a configuração e remove esta ou estas entidades.\n\nSpook 👻 O teu amigo.",
             "title": "Entidades seguidas desconhecidas: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook encontrou um fantasma na tua configuração de proximidade 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração baseia-se numa zona que é desconhecida para o Home Assistant:\n\n`{zone}`\n\nPara corrigir este erro, e como não podes mudar a zona de uma configuração de proximidade, a única opção é remover esta instância da integração de proximidade.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma na tua configuração de proximidade 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com a seguinte configuração de proximidade:\n\n{name}\n\nEsta configuração baseia-se numa zona que é desconhecida para o Home Assistant:\n\n`{zone}`\n\nPara corrigir este erro, e como não podes mudar a zona de uma configuração de proximidade, a única opção é remover especificamente esta integração de proximidade.\n\nSpook 👻 O teu amigo.",
             "title": "Zona desconhecida: {zone}"
         },
         "scene_unknown_entity_references": {
@@ -355,7 +355,7 @@
         "empty_areas": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado relativamente a esta área a partir de agora.",
+                    "issue_ignored": "O Spook vai manter-se calado relativamente a esta área a partir de agora.",
                     "manage": "Podes gerir esta área tu próprio na [página de Áreas](/config/areas/dashboard)."
                 },
                 "step": {
@@ -375,7 +375,7 @@
         "unused_blueprints": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este blueprint a partir de agora.",
+                    "issue_ignored": "O Spook vai manter-se calado sobre este blueprint a partir de agora.",
                     "manage": "Podes gerir este blueprint tu próprio na [página de Blueprints](/config/blueprint/dashboard)."
                 },
                 "step": {
@@ -395,7 +395,7 @@
         "empty_floors": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este piso a partir de agora.",
+                    "issue_ignored": "O Spook vai manter-se calado sobre este piso a partir de agora.",
                     "manage": "Podes gerir este piso tu próprio na [página de Áreas](/config/areas/dashboard)."
                 },
                 "step": {
@@ -415,13 +415,13 @@
         "min_max_unknown_sources": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este auxiliar a partir de agora.",
+                    "issue_ignored": "O Spook vai manter-se calado sobre este auxiliar a partir de agora.",
                     "manage": "Podes gerir este assistente tu próprio na [página de Assistentes](/config/helpers).",
                     "too_few_members": "Um assistente mín/máx precisa de pelo menos dois membros, por isso remover os que faltam deixaria poucos demais. Reconfigura ou remove o assistente tu próprio na [página de Assistentes](/config/helpers)."
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma nos teus assistentes 👻\n\nO assistente mín/máx {helper} combina os seguintes membros, que são desconhecidos para o Home Assistant:\n\n{sources}\n\nRemove-os para o assistente continuar com os membros que restam, ou fica com eles e o Spook não volta a falar deles.\n\nSpook 👻 O teu amigo.",
+                        "description": "O Spook encontrou um fantasma nos teus assistentes 👻\n\nO assistente mín/máx {helper} combina os seguintes membros, que são desconhecidos para o Home Assistant:\n\n{sources}\n\nRemove-os para o assistente continuar com os membros que restam, ou fica com eles e o Spook não volta a falar deles.\n\nSpook 👻 O teu amigo.",
                         "menu_options": {
                             "ignore": "Fica com ele e não me digas mais nada",
                             "manage": "Eu próprio resolvo",
@@ -436,7 +436,7 @@
         "unknown_helper_source_references": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre este auxiliar a partir de agora.",
+                    "issue_ignored": "O Spook vai manter-se calado sobre este auxiliar a partir de agora.",
                     "manage": "Podes gerir este assistente tu próprio na [página de Assistentes](/config/helpers)."
                 },
                 "step": {
@@ -456,7 +456,7 @@
         "unused_labels": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre esta legenda a partir de agora.",
+                    "issue_ignored": "O Spook vai manter-se calado sobre esta legenda a partir de agora.",
                     "manage": "Podes gerir esta etiqueta tu próprio na [página de Etiquetas](/config/labels)."
                 },
                 "step": {
@@ -476,13 +476,13 @@
         "person_unknown_device_trackers": {
             "fix_flow": {
                 "abort": {
-                    "issue_ignored": "Spook vai manter-se calado sobre esta pessoa a partir de agora.",
+                    "issue_ignored": "O Spook vai manter-se calado sobre esta pessoa a partir de agora.",
                     "manage": "Podes gerir esta pessoa tu próprio na [página de Pessoas](/config/person).",
                     "not_editable": "Esta pessoa está configurada em YAML, por isso o Spook não a pode editar. Atualiza a pessoa na tua configuração."
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma nas tuas pessoas 👻\n\n{person} segue os seguintes rastreadores de dispositivo, que são desconhecidos para o Home Assistant:\n\n{device_trackers}\n\nIsto acontece muitas vezes quando um rastreador de dispositivo foi renomeado ou a sua integração foi removida.\n\nRemove-os de {person}, ou fica com eles e o Spook não volta a falar deles.\n\nSpook 👻 O teu amigo.",
+                        "description": "O Spook encontrou um fantasma nas tuas pessoas 👻\n\n{person} segue os seguintes rastreadores de dispositivo, que são desconhecidos para o Home Assistant:\n\n{device_trackers}\n\nIsto acontece muitas vezes quando um rastreador de dispositivo foi renomeado ou a sua integração foi removida.\n\nRemove-os de {person}, ou fica com eles e o Spook não volta a falar deles.\n\nSpook 👻 O teu amigo.",
                         "menu_options": {
                             "ignore": "Fica com ele e não me digas mais nada",
                             "manage": "Eu próprio resolvo",
@@ -507,7 +507,7 @@
             "title": "Entidades desconhecidas nas tuas personalizações"
         },
         "lovelace_missing_resources": {
-            "description": "O Spook encontrou um fantasma nos seus painéis 👻\n\nOs seguintes recursos de dashboard apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsto geralmente acontece quando um cartão personalizado ou seus arquivos foram removidos, mas o recurso permaneceu. Para corrigir esse erro, vá em Configurações > Dashboards > Recursos e remova ou corrija esses recursos.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma nos teus painéis 👻\n\nOs seguintes recursos de dashboard apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsto geralmente acontece quando um cartão personalizado ou seus arquivos foram removidos, mas o recurso permaneceu. Para corrigir este erro, vai a Configurações > Dashboards > Recursos (/config/lovelace/resources) e remove ou corrije esses recursos. Não há uma aba própria: na página dos Painéis, encontra-se nos três pontos, no canto superior direito.\n\nSpook 👻 O teu amigo.",
             "title": "Recursos do painel a apontar para ficheiros que faltam"
         },
         "lovelace_unknown_area_references": {
@@ -532,22 +532,22 @@
         },
         "orphaned_statistics": {
             "title": "Encontradas estatísticas de longo prazo órfãs",
-            "description": "Spook encontrou um fantasma no teu gravador 👻\n\nO Home Assistant guarda estatísticas de longo prazo do seguinte, mas já não existe uma entidade que lhes corresponda:\n\n{statistics}\n\n\n\nIsto costuma acontecer quando um sensor foi apagado e as estatísticas dele ficaram. Para corrigir este erro, abre Definições > Ferramentas > Estatísticas e trata delas aí.\n\nSpook 👻 O teu amigo."
+            "description": "O Spook encontrou um fantasma no teu gravador 👻\n\nO Home Assistant guarda estatísticas de longo prazo do seguinte, mas já não existe uma entidade que lhes corresponda:\n\n{statistics}\n\n\n\nIsto costuma acontecer quando um sensor foi apagado e as estatísticas dele ficaram. Para corrigir este erro, abre Definições > Ferramentas > Estatísticas e trata delas aí.\n\nSpook 👻 O teu amigo."
         },
         "script_unknown_trigger_references": {
-            "description": "Spook encontrou um fantasma nos teus scripts 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa os seguintes acionadores, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{triggers}\n\nIsto acontece muitas vezes quando a integração que fornecia um acionador foi removida. Para corrigir este erro, [edita o script]({edit}) e remove o uso destes acionadores indisponíveis, ou restaura a integração que os fornece.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma nos teus scripts 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa os seguintes acionadores, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{triggers}\n\nIsto acontece muitas vezes quando a integração que fornecia um acionador foi removida. Para corrigir este erro, [edita o script]({edit}) e remove o uso destes acionadores indisponíveis, ou restaura a integração que os fornece.\n\nSpook 👻 O teu amigo.",
             "title": "Acionadores desconhecidos usados em: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit})\n\nA sua configuração refere as seguintes entidades, que são desconhecidas para o Home Assistant:\n\n{entities}\n\nIsto acontece muitas vezes quando uma entidade foi renomeada ou removida. Para corrigir este erro, reconfigura o assistente de template para apontar para entidades que existam.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit})\n\nA sua configuração refere as seguintes entidades, que são desconhecidas para o Home Assistant:\n\n{entities}\n\nIsto acontece muitas vezes quando uma entidade foi renomeada ou removida. Para corrigir este erro, reconfigura o assistente de template para apontar para entidades que existam.\n\nSpook 👻 O teu amigo.",
             "title": "Entidades desconhecidas usadas no assistente de template: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit})\n\nRefere as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{services}\n\nIsto acontece muitas vezes quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou eliminado. Para corrigir este erro, reconfigura o assistente de template para usar ações que existam.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit})\n\nRefere as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{services}\n\nIsto acontece muitas vezes quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou eliminado. Para corrigir este erro, reconfigura o assistente de template para usar ações que existam.\n\nSpook 👻 O teu amigo.",
             "title": "Ações desconhecidas usadas no assistente de template: {helper}"
         },
         "notify_unknown_group_members": {
-            "description": "Spook encontrou um fantasma nos teus grupos de notificação 👻\n\nO grupo de notificação `{group}` encaminha para as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{members}\n\nO grupo continua a entregar aos restantes membros e continua a comunicar sucesso a quem o chamou, pelo que nada a montante se apercebe. A falha só aparece como um \"Task exception was never retrieved\" solto no registo, que não nomeia nenhum grupo e parece um erro de programação. Quem estava por trás desse membro deixa simplesmente de ser notificado.\n\nPara corrigir este erro, edita a lista `services:` deste grupo na tua configuração e remove ou corrige estas entradas.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma nos teus grupos de notificação 👻\n\nO grupo de notificação `{group}` encaminha para as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{members}\n\nO grupo continua a entregar aos restantes membros e continua a comunicar sucesso a quem o chamou, pelo que nada a montante se apercebe. A falha só aparece como um \"Task exception was never retrieved\" solto no registo, que não nomeia nenhum grupo e parece um erro de programação. Quem estava por trás desse membro deixa simplesmente de ser notificado.\n\nPara corrigir este erro, edita a lista `services:` deste grupo na tua configuração e remove ou corrige estas entradas.\n\nSpook 👻 O teu amigo.",
             "title": "Membros desconhecidos no grupo de notificação: {group}"
         },
         "lovelace_duplicate_resources": {
@@ -556,7 +556,7 @@
                 "step": {
                     "init": {
                         "title": "Recurso do painel presente mais do que uma vez: {resource}",
-                        "description": "Spook encontrou um fantasma nos teus painéis 👻\n\nEste recurso do painel aparece {count} vezes:\n\n{resources}\n\nIsto costuma acontecer quando um cartão personalizado foi atualizado acrescentando um recurso para a versão nova em vez de editar o que já lá estava. O navegador carrega os dois, o cartão tenta registar-se duas vezes e a segunda tentativa falha, o que parece um cartão avariado em vez de um recurso repetido.\n\nO Spook pode limpar as cópias a mais e ficar com a que foi acrescentada mais recentemente.\n\nSpook 👻 O teu amigo.",
+                        "description": "O Spook encontrou um fantasma nos teus painéis 👻\n\nEste recurso do painel aparece {count} vezes:\n\n{resources}\n\nIsto costuma acontecer quando um cartão personalizado foi atualizado acrescentando um recurso para a versão nova em vez de editar o que já lá estava. O navegador carrega os dois, o cartão tenta registar-se duas vezes e a segunda tentativa falha, o que parece um cartão avariado em vez de um recurso repetido.\n\nO Spook pode limpar as cópias a mais e ficar com a que foi acrescentada mais recentemente.\n\nSpook 👻 O teu amigo.",
                         "menu_options": {
                             "remove": "Limpar as cópias a mais e ficar com a mais recente",
                             "ignore": "Deixá-las estar, e não me dizer mais nada",
@@ -1420,7 +1420,7 @@
             "name": "Definir os aliases de uma área"
         },
         "homeassistant_unexpose_entity": {
-            "description": "Deixa de expor uma entidade (ou entidades) aos assistentes de voz.",
+            "description": "Deixa de expor uma(s) entidade(s) aos assistentes de voz.",
             "fields": {
                 "assistants": {
                     "description": "O assistente ou assistentes a que isto se aplica.",
@@ -1695,7 +1695,8 @@
                     "description": "As entidades a remover do grupo."
                 },
                 "group": {
-                    "name": "Grupo"
+                    "name": "Grupo",
+                    "description": "O grupo do qual é para retirar."
                 }
             },
             "description": "Remove entidades de um grupo criado pela interface enquanto o Home Assistant está em execução. Renomear algo que não faz parte do grupo não faz nada, portanto essa também é a maneira de remover um membro que já não existe."
@@ -1710,7 +1711,9 @@
                     "name": "Membros",
                     "description": "As entidades que o grupo deve manter de agora em diante."
                 }
-            }
+            },
+            "name": "Define os membros de um grupo",
+            "description": "Substitui os membros de um grupo criado pela interface pelos membros fornecidos, enquanto o Home Assistant está em execução."
         },
         "group_add_members": {
             "name": "Adiciona membros a um grupo",
@@ -1723,7 +1726,8 @@
                     "name": "Membros",
                     "description": "As entidades a adicionar ao grupo."
                 }
-            }
+            },
+            "description": "Adiciona entidades a um grupo criado pela interface, enquanto o Home Assistant está em execução. As entidades que já fazem parte do grupo permanecem onde estão."
         }
     },
     "triggers": {
@@ -1760,20 +1764,20 @@
             }
         },
         "watchdog": {
-            "name": "Cão de guarda",
+            "name": "Watchdog",
             "description": "Dispara quando algo que esperavas não acontece a tempo.",
             "fields": {
                 "arm": {
                     "name": "Armar",
-                    "description": "O que põe a guarda a postos. A espera conta a partir daí, e armar outra vez enquanto já se está à espera reinicia a contagem."
+                    "description": "O que inicia a contagem. A espera é começa a partir deste ponto, e reativar a função enquanto a espera já está em curso reinicia a contagem."
                 },
                 "expect": {
                     "name": "Esperado",
-                    "description": "O que esperas que aconteça a seguir. Se chegar a tempo, a guarda é cancelada e nada dispara."
+                    "description": "O que é esperado que aconteça a seguir. Se chegar a tempo, cancela e nada dispara."
                 },
                 "within": {
                     "name": "Dentro de",
-                    "description": "Quanto tempo tem o que é esperado para chegar. Isto dispara quando esse tempo passa e nada chegou."
+                    "description": "O tempo que é expectável esperar para chegar. Isto dispara quando esse tempo passa e nada chegou."
                 }
             }
         },
@@ -1862,23 +1866,38 @@
         "debounce": {
             "fields": {
                 "triggers": {
-                    "name": "Gatilhos"
+                    "name": "Gatilhos",
+                    "description": "Os gatilhos a serem aguardados. O disparo de qualquer um deles inicia uma sequência de disparos, por isso o disparo subsequente de qualquer um deles mantém tudo a correr. Assim, vários gatilhos são agrupados, em vez de processados um de cada vez."
                 },
                 "for": {
                     "name": "Para",
                     "description": "Quanto tempo deve permanecer silenciado antes que isto dispare. Cada disparo reinicia essa contagem de tempo, portanto, algo que nunca para de disparar nunca chega a ser relatado."
                 }
             },
-            "name": "Assim que ficar configurado"
+            "name": "Assim que ficar configurado",
+            "description": "Dispara após um gatilho parar de disparar por algum tempo, de modo que uma sequência de disparos chega como um único evento. Um sensor de movimento não relata o movimento apenas uma vez, reporta vinte vezes."
         },
         "all_of": {
             "name": "Todos esses aconteceram",
             "fields": {
                 "triggers": {
-                    "name": "Gatilhos"
+                    "name": "Gatilhos",
+                    "description": "Todos os gatilhos que precisam ter sido disparados. A ordem não importa, e o disparo de um gatilho novamente substitui sua ocorrência anterior, em vez de contar duas vezes."
                 },
                 "within": {
-                    "description": "O quão perto eles têm de estar um do outro. A janela desliza, e um gatilho que tenha disparado há mais tempo que isso é esquecido, enquanto os outros continuam a contar."
+                    "description": "O quão perto eles têm de estar um do outro. A janela desliza, e um gatilho que tenha disparado há mais tempo que isso é esquecido, enquanto os outros continuam a contar.",
+                    "name": "Dentro de"
+                }
+            },
+            "description": "É acionado quando todos os diversos gatilhos são disparados dentro do mesmo intervalo de tempo, em qualquer ordem. Os gatilhos nativos do Home Assistant funcionam como uma lista na qual basta que apenas um deles seja disparado; este é o outro tipo de gatilho."
+        },
+        "recovered": {
+            "name": "A entidade retornou",
+            "description": "É disparado quando uma entidade retorna após um período de indisponibilidade, evitando que a reinicialização de um router seja interpretada como a recuperação de todos os dispositivos da casa.",
+            "fields": {
+                "for": {
+                    "name": "Para",
+                    "description": "O tempo que a entidade tem de permanecer ausente antes de retornar é relevante. Qualquer período inferior a isso é apenas uma oscilação momentânea: ao recarregar uma integração, todas as suas entidades passam pelo estado de indisponibilidade e retornam em menos de um segundo."
                 }
             }
         }
