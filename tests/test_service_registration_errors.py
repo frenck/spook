@@ -1,6 +1,6 @@
 """Tests for what Spook says when a service cannot be registered."""
 
-# pylint: disable=wrong-import-order
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -11,6 +11,7 @@ from custom_components.spook.services import (
     AbstractSpookEntityComponentService,
     AbstractSpookEntityService,
     AbstractSpookService,
+    SpookServiceManager,
 )
 
 if TYPE_CHECKING:
@@ -96,3 +97,30 @@ async def test_a_service_for_an_unloaded_domain_is_not_registered(
     _Elsewhere(hass).async_register()
 
     assert not hass.services.has_service("not_a_loaded_integration", "do_something")
+
+
+async def test_a_skipped_service_gets_no_description(hass: HomeAssistant) -> None:
+    """Spook does not describe an action it never registered.
+
+    Home Assistant looks the action up while storing a description, so
+    injecting one for a service that was skipped ends in a KeyError on the
+    domain and takes the whole service module down with it.
+    """
+
+    class _Elsewhere(AbstractSpookService):
+        """A service on a domain nobody has loaded."""
+
+        domain = "not_a_loaded_integration"
+        service = "do_something"
+
+        async def async_handle_service(self, call: ServiceCall) -> None:
+            """Handle the service call."""
+
+    manager = SpookServiceManager(hass)
+    manager._service_schemas = {  # noqa: SLF001
+        "not_a_loaded_integration_do_something": {"name": "Do something"},
+    }
+
+    manager.async_register_service(_Elsewhere(hass))
+
+    assert not manager._services  # noqa: SLF001
