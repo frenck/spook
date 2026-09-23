@@ -7,7 +7,7 @@
         },
         "step": {
             "user": {
-                "description": "Hast du die Readme gelesen? Hast du die Lizenz gelesen? Bist du dir ganz sicher?"
+                "description": "Hast du die README gelesen? Hast du die Lizenz gelesen? Bist du dir wirklich sicher?"
             },
             "choice_restart": {
                 "description": "Damit Spook die Einrichtung abschließen kann, muss Home Assistant neu gestartet werden.\n\nMöchtest du Home Assistant jetzt neu starten?",
@@ -401,7 +401,7 @@
             }
         },
         "lovelace_missing_resources": {
-            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nDieses Dashboard verweist auf Dateien, die die nicht mehr existieren:\n\n{resources}\n\n\n\nDies tritt in der Regel auf, wenn eine benutzerdefinierte Karte oder deren Dateien gelöscht wurden, die Ressource jedoch noch vorhanden ist. Um diesen Fehler zu beheben, öffnen Sie „Einstellungen“ > „Dashboards“ > „Ressourcen“ und entfernen oder korrigieren Sie diese Ressourcen.\n\nSpook 👻 Dein Kumpel.",
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nDieses Dashboard verweist auf Dateien, die die nicht mehr existieren:\n\n{resources}\n\n\n\nDies passiert normalerweise, wenn eine benutzerdefinierte Karte oder deren Dateien entfernt wurden, die Ressource jedoch zurückgeblieben ist. Um diesen Fehler zu beheben, öffne die [Resources page](/config/lovelace/resources) und entferne oder korrigiere diese Ressourcen. Sie hat keinen eigenen Tab: Auf der Dashboards-Seite befindet sie sich oben rechts hinter den drei Punkten.\n\nSpook 👻 Dein Kumpel.",
             "title": "Die Ressourcen im Dashboard verweisen auf fehlende Dateien"
         },
         "lovelace_unknown_area_references": {
@@ -483,7 +483,7 @@
         },
         "orphaned_statistics": {
             "title": "Verwaiste Langzeitstatistik gefunden",
-            "description": "Spook hat einen Geist in deinem Recorder gefunden 👻\n\nHome Assistant bewahrt Langzeitstatistiken für Folgendes auf, aber es gibt keine passende Entität mehr dazu:\n\n{statistics}\n\n\n\nDas passiert meist, wenn ein Sensor entfernt wurde, während seine Statistiken erhalten blieben. Um diesen Fehler zu beheben, öffne Einstellungen > Werkzeuge > Statistiken und bringe sie dort in Ordnung.\n\nSpook 👻 Dein Kumpel."
+            "description": "Spook hat einen Geist in deinem Recorder gefunden 👻\n\nHome Assistant speichert Langzeitstatistiken für Folgendes, aber es gibt dafür keine passende Entität mehr:\n\n{statistics}\n\n\n\nDies passiert normalerweise, wenn ein Sensor entfernt wurde, während seine Statistiken aufbewahrt wurden. Um diesen Fehler zu beheben, öffne Einstellungen > Werkzeuge > Statistiken und behebe ihn dort.\n\nSpook 👻 Dein Kumpel."
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -649,7 +649,7 @@
         },
         "homeassistant_delete_all_orphaned_entities": {
             "name": "Alle verwaisten Entitäten löschen",
-            "description": "Löscht alle verwaisten Entitäten die keiner Integration mehr zugeordnet/bereitgestellt sind. Beachte, falls die Integration erst vor Kurzem gelöscht wurde, ist gegebenenfalls ein Neustart von Home Assistant nötigt, damit diese als verwaist angezeigt werden.\n**WARNUNG** Entitäten könnten auch als verwaist markiert sein, falls eine Integration offline ist oder nach einem Neustart von Home Assistant noch nicht funktioniert. Der Aufruf dieser Aktion löscht auch diese Entitäten."
+            "description": "Löscht alle verwaisten Entitäten, für die keine Integration mehr zuständig ist (oder die von keiner mehr bereitgestellt werden). Bitte beachten: Falls die Integration gerade erst entfernt wurde, ist möglicherweise ein Neustart erforderlich, damit Home Assistant erkennt, dass sie verwaist sind.\n**WARNUNG** Entitäten könnten als verwaist markiert worden sein, weil eine Integration offline ist oder seit dem Start von Home Assistant nicht funktioniert. Das Ausführen dieser Aktion löscht auch diese Entitäten."
         },
         "homeassistant_create_area": {
             "fields": {
