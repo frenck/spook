@@ -1639,20 +1639,6 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         Only fetched here when there is nothing to install from, which means
         somebody has called this before a round ever ran.
         """
-        fetched = (
-            self._fetched if self._fetched is not None else await self._async_fetch()
-        )
-
-        # The blueprint saying for itself that it needs a newer Home Assistant.
-        # Writing it anyway would break every consumer on a version that is
-        # never going to work.
-        if errors := fetched.validate():
-            msg = (
-                f"{self._said.name} cannot run here: {'; '.join(errors)}. "
-                f"Nothing has been written."
-            )
-            raise HomeAssistantError(msg)
-
         domain_blueprints: dict[str, blueprint.DomainBlueprints] = self.hass.data.get(
             blueprint.DOMAIN,
             {},
@@ -1666,6 +1652,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # purpose. Pressing install is also the obvious way to try and clear a
         # row for a blueprint that has gone, so this is the button they reach
         # for (#1664). The entity goes instead.
+        #
+        # Asked before anything else, because it takes a look at one file and
+        # the rest goes out to the internet. A source that is down, or a
+        # blueprint this Home Assistant is too old for, would otherwise be
+        # what somebody is told about a blueprint that is not even there.
         file = domain_blueprint.blueprint_folder / self.blueprint_path
         if not await self.hass.async_add_executor_job(file.is_file):
             LOGGER.debug(
@@ -1681,12 +1672,21 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             )
             raise HomeAssistantError(msg)
 
-        if backup:
-            file = self._file()
-            if file is None:  # pragma: no cover - the domain is right here
-                msg = f"Could not work out where {self.blueprint_path} lives"
-                raise HomeAssistantError(msg)
+        fetched = (
+            self._fetched if self._fetched is not None else await self._async_fetch()
+        )
 
+        # The blueprint saying for itself that it needs a newer Home Assistant.
+        # Writing it anyway would break every consumer on a version that is
+        # never going to work.
+        if errors := fetched.validate():
+            msg = (
+                f"{self._said.name} cannot run here: {'; '.join(errors)}. "
+                f"Nothing has been written."
+            )
+            raise HomeAssistantError(msg)
+
+        if backup:
             try:
                 await self.hass.async_add_executor_job(_keep_a_copy, file)
             except OSError as err:

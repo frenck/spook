@@ -3688,3 +3688,38 @@ async def test_a_deleted_blueprint_is_noticed_without_waiting_for_a_round(
     await hass.async_block_till_done(wait_background_tasks=True)
 
     assert hass.states.get(_ENTITY) is None
+
+
+async def test_a_deleted_blueprint_is_reported_before_anything_else_is(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """The file is right here to look at, and everything else is somebody else.
+
+    An offer that cannot be installed anyway, from a source that is down, or
+    one this Home Assistant is too old for, used to be what somebody was told
+    about a blueprint that is not even there, and the row stayed for the next
+    press.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    file.unlink()
+
+    with pytest.raises(HomeAssistantError) as caught:
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+
+    assert "no longer here" in str(caught.value)
+    assert hass.states.get(_ENTITY) is None
+    assert entity_registry.async_get(_ENTITY) is None
