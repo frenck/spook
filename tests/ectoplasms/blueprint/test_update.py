@@ -23,7 +23,7 @@ from homeassistant.components.blueprint import (
 )
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
-from homeassistant.util import yaml as yaml_util
+from homeassistant.util import dt as dt_util, yaml as yaml_util
 from annotatedyaml.objects import Input
 import aiohttp
 import pytest
@@ -51,6 +51,7 @@ from custom_components.spook.ectoplasms.blueprint.update import (
     _settled,
     _CHECK_INTERVAL,
     _COPY,
+    _RECONCILE_INTERVAL,
     _KEEP_COPIES,
     _SPREAD,
     BlueprintUpdateEntity,
@@ -1013,8 +1014,15 @@ async def test_each_round_picks_its_own_moment_for_the_next(
         delay: float,
         action: object,
     ) -> Callable[[], None]:
-        """Write down what the scheduler was asked for, then let it get on."""
-        seen.append(delay)
+        """Write down what the scheduler was asked for, then let it get on.
+
+        Only what the round of checks asked for. The look at the folder runs
+        on a timer of its own, at a fixed interval, and it is not the one
+        being spread here.
+        """
+        if getattr(action, "__name__", "") == "_async_check_all":
+            seen.append(delay)
+
         return schedule(hass, delay, action)
 
     with (
@@ -3616,3 +3624,102 @@ actions:
     after = Blueprint(yaml_util.parse_yaml(swapped), schema=BLUEPRINT_SCHEMA)
 
     assert _fingerprint(before) != _fingerprint(after)
+
+
+async def test_installing_does_not_write_back_a_blueprint_that_was_deleted(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Install is the button somebody presses to get rid of a stale row.
+
+    They delete the blueprint, the update for it is still sitting there, and
+    pressing install used to fetch the thing and write it straight back: Spook
+    putting a file back that somebody took away on purpose (#1664).
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    file.unlink()
+
+    with (
+        _source_says(MOTION_LIGHT_CHANGED),
+        pytest.raises(HomeAssistantError) as caught,
+    ):
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+
+    assert "no longer here" in str(caught.value)
+    assert not file.exists()
+
+    # And the row goes with it, rather than staying for the next press.
+    assert hass.states.get(_ENTITY) is None
+    assert entity_registry.async_get(_ENTITY) is None
+
+
+async def test_a_deleted_blueprint_is_noticed_without_waiting_for_a_round(
+    hass: HomeAssistant,
+) -> None:
+    """Nothing announces a blueprint being deleted, so the folder is looked at.
+
+    On the round of checks alone, that look came once a day, and whoever
+    deleted a blueprint was left with an update for it until then (#1664).
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    assert hass.states.get(_ENTITY) is not None
+
+    file.unlink()
+
+    async_fire_time_changed(
+        hass,
+        dt_util.utcnow() + _RECONCILE_INTERVAL + timedelta(seconds=1),
+    )
+    await hass.async_block_till_done(wait_background_tasks=True)
+
+    assert hass.states.get(_ENTITY) is None
+
+
+async def test_a_deleted_blueprint_is_reported_before_anything_else_is(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """The file is right here to look at, and everything else is somebody else.
+
+    An offer that cannot be installed anyway, from a source that is down, or
+    one this Home Assistant is too old for, used to be what somebody was told
+    about a blueprint that is not even there, and the row stayed for the next
+    press.
+    """
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_FROM_THE_FUTURE):
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "on"
+
+    file.unlink()
+
+    with pytest.raises(HomeAssistantError) as caught:
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+
+    assert "no longer here" in str(caught.value)
+    assert hass.states.get(_ENTITY) is None
+    assert entity_registry.async_get(_ENTITY) is None
