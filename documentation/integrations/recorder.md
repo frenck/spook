@@ -164,7 +164,7 @@ The repair itself offers to clear them for you. It gives you three choices:
 - **Let me do it myself**, which points you at **Settings** > {term}`Tools` > **Statistics**.
 - **Keep them, stop telling me**, which leaves them alone and stops the repair coming back.
 
-Spook looks again before it clears anything, and only removes what the list you read and that fresh look agree on. Anything that has an entity behind it again by the time you press the button is left where it is, and Spook tells you so rather than reporting a job it did not do.
+Spook looks again before it clears anything, and only removes what the list you read and that fresh look agree on. Anything that has an entity behind it again by the time you press the button is left where it is, without being named: the repair comes back for whatever is still orphaned, so nothing gets lost. If none of them still need clearing, Spook says so instead of reporting a job it did not do.
 
 A statistic has to keep looking abandoned for a quarter of an hour before Spook mentions it at all. Sensors go missing briefly all the time, when an integration reloads or while Home Assistant is still starting, and none of those are worth deleting anybody's history over.
 

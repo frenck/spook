@@ -20,6 +20,7 @@ from custom_components.spook import repairs, statistics_sources
 from custom_components.spook.statistics_sources import (
     DATA_ABANDONED_SINCE,
     async_settled_orphaned_statistic_ids,
+    async_setup_abandoned_statistics_watching,
 )
 from custom_components.spook.repairs import (
     OrphanedStatisticsFixFlow,
@@ -260,3 +261,37 @@ async def test_one_that_came_back_and_dipped_again_is_left_alone(
     await _flow(hass, "sensor.ghost,sensor.flapper").async_step_remove()
 
     assert cleared == [["sensor.ghost"]]
+
+
+async def test_a_return_between_two_looks_still_starts_the_wait_over(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the wait is not fooled by a sensor Spook never caught being back.
+
+    Looking every few minutes cannot tell a sensor that stayed away from one
+    that came back and went again in between: both looks see it missing.
+    Its wait would carry on from before it returned, and on the end of that
+    wait is an offer to delete its history. So the coming back is watched
+    for as it happens, rather than inferred from two snapshots.
+
+    A sensor with no registry entry is the one that needs it. The repair
+    hears about registry changes already; nothing else says this one is
+    here.
+    """
+    missing = {"sensor.ghost", "sensor.yaml_sensor"}
+    cleared = _install_fake_recorder(hass, monkeypatch, missing)
+    unsub = async_setup_abandoned_statistics_watching(hass)
+    await _settle(hass)
+
+    # Back and away again, with no inspection either side of it.
+    hass.states.async_set("sensor.yaml_sensor", "21")
+    await hass.async_block_till_done()
+    hass.states.async_remove("sensor.yaml_sensor")
+    await hass.async_block_till_done()
+
+    await _flow(hass, "sensor.ghost,sensor.yaml_sensor").async_step_remove()
+
+    assert cleared == [["sensor.ghost"]]
+
+    unsub()

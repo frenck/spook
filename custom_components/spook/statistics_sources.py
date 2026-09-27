@@ -10,6 +10,7 @@ from homeassistant.components.recorder.statistics import (
     get_metadata,
     validate_statistics,
 )
+from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE, get_instance
@@ -17,9 +18,11 @@ from homeassistant.util import dt as dt_util
 from homeassistant.util.hass_dict import HassKey
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
     from datetime import datetime
+    from typing import Any
 
-    from homeassistant.core import HomeAssistant
+    from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
 
 # The recorder validation issue type for a statistic ID that has recorded
 # statistics but no matching sensor state at all. Other issue types (unit or
@@ -39,6 +42,43 @@ _SETTLING_TIME = timedelta(minutes=15)
 DATA_ABANDONED_SINCE: HassKey[dict[str, datetime]] = HassKey(
     "spook_statistics_abandoned_since",
 )
+
+
+@callback
+def async_setup_abandoned_statistics_watching(hass: HomeAssistant) -> CALLBACK_TYPE:
+    """Watch for anything being waited on turning up again.
+
+    The wait exists so that a sensor briefly away is not mistaken for one
+    that is gone, and the only way to be sure it stayed away is to be
+    watching the whole time. Looking every few minutes is not that: a sensor
+    can come back and go again between two looks, and both of them would see
+    it missing with nothing in between to say otherwise. Its wait would carry
+    on from before it returned, and what is on the end of that wait is Spook
+    offering to delete its history.
+
+    Whether a statistic has a state is worked out from the state machine, so
+    a state change is the event that settles it. The entity registry raises
+    its own, which the repair already listens to, and a sensor that never
+    reaches the registry raises none of those at all.
+    """
+
+    @callback
+    def _something_being_waited_on_is_back(event_data: Mapping[str, Any]) -> bool:
+        """Return whether this is one of them, arriving."""
+        return event_data.get("new_state") is not None and event_data[
+            "entity_id"
+        ] in hass.data.get(DATA_ABANDONED_SINCE, {})
+
+    @callback
+    def _start_its_wait_over(event: Event) -> None:
+        """Forget how long it was away, because it is not away now."""
+        hass.data[DATA_ABANDONED_SINCE].pop(event.data["entity_id"], None)
+
+    return hass.bus.async_listen(
+        EVENT_STATE_CHANGED,
+        _start_its_wait_over,
+        event_filter=_something_being_waited_on_is_back,
+    )
 
 
 @callback
