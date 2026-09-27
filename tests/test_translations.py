@@ -25,7 +25,7 @@ def _walk_translation_strings(
     translation: dict[str, Any],
     path: str = "",
 ) -> list[str]:
-    """Return translation strings with mismatched placeholders."""
+    """Return translation strings naming a placeholder English does not."""
     mismatches: list[str] = []
 
     for key, base_value in base.items():
@@ -44,11 +44,12 @@ def _walk_translation_strings(
         if not isinstance(base_value, str) or not isinstance(translation_value, str):
             continue
 
-        expected = set(PLACEHOLDER_PATTERN.findall(base_value))
-        actual = set(PLACEHOLDER_PATTERN.findall(translation_value))
-        if expected != actual:
+        supplied = set(PLACEHOLDER_PATTERN.findall(base_value))
+        used = set(PLACEHOLDER_PATTERN.findall(translation_value))
+        if invented := used - supplied:
             mismatches.append(
-                f"{key_path}: expected {sorted(expected)}, got {sorted(actual)}"
+                f"{key_path}: names {sorted(invented)}, "
+                f"and only {sorted(supplied)} are supplied"
             )
 
     return mismatches
@@ -71,8 +72,20 @@ def _blank_strings(translation: dict[str, Any], path: str = "") -> list[str]:
     return blanks
 
 
-def test_translation_placeholders_match_english() -> None:
-    """Test translation placeholders match the English source strings."""
+def test_no_translation_names_a_placeholder_nobody_supplies() -> None:
+    """Test no translation interpolates something the code does not hand over.
+
+    A placeholder is filled from what the repair passes as
+    `translation_placeholders`, and that is written against the English
+    string. A translation naming anything else renders the braces to the
+    person reading the repair, and nothing fails or logs to say so.
+
+    Deliberately one-way. English is edited here and the other languages
+    follow through Weblate afterwards, so a translation carrying fewer
+    placeholders than English is one that has not caught up yet. It reads
+    perfectly well with a detail missing, and demanding they match would
+    mean no English string could ever gain a placeholder.
+    """
     mismatches = []
 
     for translations_path in _translation_paths():

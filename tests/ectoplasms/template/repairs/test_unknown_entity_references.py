@@ -17,7 +17,7 @@ from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import issue_registry as ir
+    from homeassistant.helpers import entity_registry as er, issue_registry as ir
 
 
 async def test_unknown_entity_in_template_creates_issue(
@@ -453,3 +453,74 @@ async def test_enabling_a_parked_step_is_a_new_finding(
         not in (live.translation_placeholders["entities"])
     )
     assert live.issue_id != parked.issue_id
+
+
+async def test_the_helper_is_named_by_its_entity_id(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the report says which entity the helper is, not only its title.
+
+    A helper is reported by its title, and a title is not something Home
+    Assistant can be searched by. Somebody following the link lands on a
+    Helpers page that does not offer to find one, which is where #1633 got
+    stuck.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Kitchen-Freezer-Sensor-TH Temperature-Alert",
+        options={
+            "name": "Kitchen-Freezer-Sensor-TH Temperature-Alert",
+            "template_type": "binary_sensor",
+            "state": "{{ states('sensor.freezer_gone') | float(0) > -10 }}",
+        },
+    )
+    entry.add_to_hass(hass)
+    entity_registry.async_get_or_create(
+        "binary_sensor",
+        "template",
+        "freezer-alert",
+        config_entry=entry,
+        suggested_object_id="kitchen_freezer_temperature_alert",
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
+    )
+    assert issue
+    assert issue.translation_placeholders["entity_id"] == (
+        "binary_sensor.kitchen_freezer_temperature_alert"
+    )
+
+
+async def test_a_helper_with_no_entity_falls_back_to_its_entry(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the helper nobody can find is named by the ID it is stored under.
+
+    A helper with nothing in the entity registry is exactly the one that
+    cannot be found by looking, so the config entry ID is the only handle
+    left and is worth more than an empty pair of backticks.
+    """
+    entry = MockConfigEntry(
+        domain="template",
+        title="Ghost helper",
+        options={
+            "name": "Ghost helper",
+            "template_type": "binary_sensor",
+            "state": "{{ is_state('sensor.long_gone', 'on') }}",
+        },
+    )
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
+    )
+    assert issue
+    assert issue.translation_placeholders["entity_id"] == entry.entry_id

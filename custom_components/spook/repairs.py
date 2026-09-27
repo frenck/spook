@@ -41,7 +41,11 @@ from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
-from .entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
+from .entity_filtering import (
+    async_filter_known_entity_ids,
+    async_get_all_entity_ids,
+    async_name_helper_in_the_registry,
+)
 from .entity_suggestions import (
     async_describe_unknown_entities,
     async_warm_rename_suggestions,
@@ -1045,6 +1049,9 @@ class MinMaxUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         data = self.data or {}
         return {
             "helper": str(data.get("helper", "")),
+            "entity_id": async_name_helper_in_the_registry(
+                self.hass, str(data.get(self._id_key, ""))
+            ),
             "sources": str(data.get("sources", "")),
         }
 
@@ -1103,6 +1110,9 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         return {
             "helper": str(data.get("helper", "")),
             "domain": str(data.get("domain", "")),
+            "entity_id": async_name_helper_in_the_registry(
+                self.hass, str(data.get(self._id_key, ""))
+            ),
             "sources": str(data.get("sources", "")),
             "usage": self._usage_text(str(data.get("helper_config_entry_id", ""))),
         }

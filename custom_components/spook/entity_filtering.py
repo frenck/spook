@@ -377,6 +377,29 @@ def async_get_rename_suggestion_cache(hass: HomeAssistant) -> dict[str, str | No
 
 
 @callback
+def async_name_helper_in_the_registry(hass: HomeAssistant, entry_id: str) -> str:
+    """Return how to find the helper behind a config entry, by ID.
+
+    A helper is reported by its title, which is the only name anybody gave
+    it, and a title is not something Home Assistant can be searched by. When
+    the helper has gone strange the title is all somebody has, and it takes
+    them to a Helpers page that does not show it. #1633.
+
+    So: the entity IDs it registered, which is what they were looking for.
+    Failing that the config entry ID, because a helper with nothing in the
+    entity registry is exactly the one that cannot be found by looking, and
+    that ID is the handle it is stored under.
+    """
+    registry = er.async_get(hass)
+    entity_ids = sorted(
+        entity.entity_id
+        for entity in er.async_entries_for_config_entry(registry, entry_id)
+    )
+
+    return ", ".join(entity_ids) if entity_ids else entry_id
+
+
+@callback
 def async_get_deleted_entities(
     hass: HomeAssistant,
 ) -> dict[str, er.DeletedRegistryEntry]:
