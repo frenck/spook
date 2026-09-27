@@ -12,10 +12,9 @@ from __future__ import annotations
 import difflib
 from typing import TYPE_CHECKING
 
-from homeassistant.helpers import entity_registry as er
-
 from .entity_filtering import (
     async_get_all_entity_ids_by_domain,
+    async_get_deleted_entities,
     async_get_rename_suggestion_cache,
 )
 
@@ -23,6 +22,7 @@ if TYPE_CHECKING:
     from collections.abc import Iterable
 
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers import entity_registry as er
 
 # Only suggest a rename when the names are quite close, to avoid pointing
 # at an unrelated entity.
@@ -40,11 +40,7 @@ def async_describe_unknown_entities(
     A ``note`` is appended to every line, to qualify a group of entity IDs
     that share something worth saying once per entry.
     """
-    entity_registry = er.async_get(hass)
-    deleted_by_entity_id = {
-        deleted.entity_id: deleted
-        for deleted in entity_registry.deleted_entities.values()
-    }
+    deleted_by_entity_id = async_get_deleted_entities(hass)
     known_by_domain = async_get_all_entity_ids_by_domain(hass)
     suggestions = async_get_rename_suggestion_cache(hass)
     # Parenthesized, like the deleted-on and did-you-mean details below.
@@ -89,6 +85,16 @@ def _rename_suggestion(
     if entity_id in suggestions:
         return suggestions[entity_id]
 
+    suggestions[entity_id] = _closest_known_entity_id(entity_id, known_by_domain)
+
+    return suggestions[entity_id]
+
+
+def _closest_known_entity_id(
+    entity_id: str,
+    known_by_domain: dict[str, list[str]],
+) -> str | None:
+    """Return the known entity ID most like this one, if any is close enough."""
     domain = entity_id.split(".", 1)[0]
     matches = difflib.get_close_matches(
         entity_id,
@@ -96,6 +102,64 @@ def _rename_suggestion(
         n=1,
         cutoff=_RENAME_SIMILARITY_CUTOFF,
     )
-    suggestions[entity_id] = matches[0] if matches else None
+    return matches[0] if matches else None
 
-    return suggestions[entity_id]
+
+def _work_out_suggestions(
+    entity_ids: list[str],
+    known_by_domain: dict[str, list[str]],
+) -> dict[str, str | None]:
+    """Work out a suggestion for each entity ID. Runs in an executor thread."""
+    return {
+        entity_id: _closest_known_entity_id(entity_id, known_by_domain)
+        for entity_id in entity_ids
+    }
+
+
+async def async_warm_rename_suggestions(
+    hass: HomeAssistant,
+    entity_ids: Iterable[str],
+) -> None:
+    """Work out the rename suggestions for these entity IDs ahead of time.
+
+    Every suggestion is a fuzzy comparison against every entity in its domain,
+    and a house with a lot of broken references has a lot of them to do. Left
+    where it used to be, inline in building one issue description after
+    another, that is tens of seconds during which Home Assistant does nothing
+    else at all, and a repair inspection is not worth an unresponsive house.
+    So it goes to a thread, in one hop for the whole round. #1667.
+
+    Only the comparing moves. What comes back is the same answer the inline
+    version gave, and anything still missing from the cache afterwards is
+    worked out where it always was.
+    """
+    deleted_by_entity_id = async_get_deleted_entities(hass)
+    suggestions = async_get_rename_suggestion_cache(hass)
+
+    # Deleted entities never reach the comparison: Spook has something better
+    # to say about those, and says it instead.
+    missing = [
+        entity_id
+        for entity_id in entity_ids
+        if entity_id not in suggestions and entity_id not in deleted_by_entity_id
+    ]
+    if not missing:
+        return
+
+    # Handed to the thread as it is. The cache rebuilds this rather than
+    # changing it in place, so the thread keeps reading the version it was
+    # given even if the house replaces it mid-round.
+    known_by_domain = async_get_all_entity_ids_by_domain(hass)
+
+    worked_out = await hass.async_add_executor_job(
+        _work_out_suggestions, missing, known_by_domain
+    )
+
+    if async_get_rename_suggestion_cache(hass) is not suggestions:
+        # Thrown away while that was running, which means the entities these
+        # were worked out against have moved. Dropped rather than written into
+        # the fresh cache, where they would sit as answers to a house that no
+        # longer looks like that.
+        return
+
+    suggestions.update(worked_out)

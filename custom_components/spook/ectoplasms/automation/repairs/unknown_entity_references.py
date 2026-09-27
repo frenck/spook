@@ -349,4 +349,5 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             self.hass,
             entity_ids=all_entities,
             known_entity_ids=self._known_entity_ids,
+            known_services=self._known_services,
         )

@@ -127,12 +127,45 @@ def test_rename_miss_is_looked_up_once(
     assert calls[0] == 1
 
 
-def test_rename_suggestion_follows_the_entity_ids_cache(hass: HomeAssistant) -> None:
+def test_rename_suggestion_follows_the_entity_registry(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
     """Test a cached answer does not outlive the entities it was based on.
 
-    The suggestion cache is cleared along with the known entity IDs, so a
-    "nothing similar exists" answer has to stop being true once something
-    similar shows up.
+    An entity registering is the moment a new name exists to be suggested, so
+    a "nothing similar exists" answer has to stop being true at that point.
+    """
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+
+    assert async_describe_unknown_entities(hass, ["sensor.living_room_temperatur"]) == (
+        "- `sensor.living_room_temperatur`"
+    )
+
+    entity_registry.async_get_or_create(
+        "sensor",
+        "demo",
+        "living_room_temperature",
+        suggested_object_id="living_room_temperature",
+    )
+    assert "did you mean" in async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+
+
+def test_rename_suggestion_survives_a_state_coming_and_going(
+    hass: HomeAssistant,
+) -> None:
+    """Test a state appearing does not throw the whole suggestion cache away.
+
+    Working a suggestion out means comparing against every entity in its
+    domain, and a house with a lot of broken references has a lot of them to
+    do. States arrive and leave constantly, so clearing on that put Home
+    Assistant into a loop of recomputing tens of seconds of them; #1667.
+
+    A suggestion made a moment before a state-only entity appeared is a
+    sentence in an issue description, not a wrong answer about what is
+    missing, so it is left standing until the registry moves.
     """
     entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
 
@@ -142,6 +175,34 @@ def test_rename_suggestion_follows_the_entity_ids_cache(hass: HomeAssistant) -> 
 
     hass.states.async_set("sensor.living_room_temperature", "21")
 
+    assert async_describe_unknown_entities(hass, ["sensor.living_room_temperatur"]) == (
+        "- `sensor.living_room_temperatur`"
+    )
+
+
+def test_an_ordinary_registry_write_keeps_the_suggestions(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a registry write that cannot change a name keeps the cache.
+
+    Entries are written for all sorts of reasons: an icon, a category, a
+    device being reassigned. None of those change what anything is called, so
+    none of them are worth recomputing every suggestion in the house over.
+    """
+    entry = entity_registry.async_get_or_create(
+        "sensor",
+        "demo",
+        "living_room_temperature",
+        suggested_object_id="living_room_temperature",
+    )
+    entity_filtering.async_setup_all_entity_ids_cache_invalidation(hass)
+
     assert "did you mean" in async_describe_unknown_entities(
         hass, ["sensor.living_room_temperatur"]
     )
+
+    suggestions = entity_filtering.async_get_rename_suggestion_cache(hass)
+    entity_registry.async_update_entity(entry.entity_id, icon="mdi:ghost")
+
+    assert entity_filtering.async_get_rename_suggestion_cache(hass) is suggestions
