@@ -8,7 +8,7 @@ from homeassistant.components import script
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
-from ....entity_filtering import async_get_all_entity_ids
+from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import (
     async_extract_entities_from_config,
@@ -61,13 +61,19 @@ def extract_referenced_entities_from_script(entity: script.ScriptEntity) -> set[
 
 
 async def extract_template_entities_from_script_entity(
-    hass: HomeAssistant, entity: Any
+    hass: HomeAssistant,
+    entity: Any,
+    known_services: set[str] | None = None,
 ) -> set[str]:
     """Extract entities from script configuration using Template analysis.
 
     This function finds template strings in script configuration and creates
     Template objects to extract entity references using Template.async_render_to_info().
     This provides more comprehensive entity detection than regex-based parsing alone.
+
+    ``known_services`` is built once per inspection and handed down, because
+    building it flattens every service Home Assistant has and every script
+    with a template in it needs the same answer.
     """
     # Get the script configuration
     config = None
@@ -82,7 +88,7 @@ async def extract_template_entities_from_script_entity(
     if not config:
         return set()
 
-    return await async_extract_entities_from_config(hass, config)
+    return await async_extract_entities_from_config(hass, config, known_services)
 
 
 class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
@@ -104,6 +110,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     edit_url_pattern = "/config/script/edit/{unique_id}"
 
     _known_entity_ids: set[str]
+    _known_services: set[str]
 
     def _get_blueprint_trigger_entities(self, entity: script.ScriptEntity) -> set[str]:
         """Extract entity references from blueprint trigger inputs."""
@@ -134,10 +141,16 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         return entities
 
     async def _async_setup_inspection(self) -> None:
-        """Cache known entity IDs (including ALL/NONE) for this inspection cycle."""
+        """Cache what every script in this cycle needs looked up.
+
+        The service set is in here for the same reason as the entity ids:
+        building it flattens every service Home Assistant has, and it is the
+        same answer for every script in one pass.
+        """
         self._known_entity_ids = async_get_all_entity_ids(
             self.hass, include_all_none=True
         )
+        self._known_services = async_get_all_services(self.hass)
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
@@ -149,11 +162,14 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
 
         # Extract entities from Template objects within the script entity
         all_entities.update(
-            await extract_template_entities_from_script_entity(self.hass, entity)
+            await extract_template_entities_from_script_entity(
+                self.hass, entity, self._known_services
+            )
         )
 
         return await async_filter_known_entity_ids_with_templates(
             self.hass,
             entity_ids=all_entities,
             known_entity_ids=self._known_entity_ids,
+            known_services=self._known_services,
         )

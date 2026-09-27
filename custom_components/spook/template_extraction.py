@@ -367,16 +367,20 @@ async def async_filter_known_entity_ids_with_templates(
     hass: HomeAssistant,
     entity_ids: Iterable[str],
     known_entity_ids: set[str] | None = None,
+    known_services: set[str] | None = None,
 ) -> set[str]:
     """Async version that can process templates to extract entity dependencies.
 
     This function processes both regular entity IDs and template strings,
     extracting entity dependencies from templates using RenderInfo. Names that
     belong to an existing action are dropped, since those are not entities.
+
+    ``known_services`` is what tells an action name apart from an entity id.
+    Building it flattens every service Home Assistant has, so a caller running
+    this over one item after another should build it once and pass it in.
     """
     if known_entity_ids is None:
         known_entity_ids = async_get_all_entity_ids(hass)
-    known_services: set[str] | None = None
 
     unknown_entities = set()
 

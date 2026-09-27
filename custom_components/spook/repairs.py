@@ -41,7 +41,10 @@ from homeassistant.util.async_ import create_eager_task
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
-from .entity_suggestions import async_describe_unknown_entities
+from .entity_suggestions import (
+    async_describe_unknown_entities,
+    async_warm_rename_suggestions,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Mapping, Sized
@@ -439,6 +442,13 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
         # after the round finished.
         entities = list(entity_component.entities)
 
+        # Collected first and reported afterwards, rather than an issue raised
+        # the moment one is found. Describing a broken entity reference means
+        # working out what it was probably meant to say, which is the most
+        # expensive thing in the whole inspection, and gathering the round's
+        # findings first lets all of that happen in one go. #1667.
+        findings: list[tuple[Any, list[str]]] = []
+
         for index, entity in enumerate(entities):
             if index and index % INSPECTION_YIELD_INTERVAL == 0:
                 # Inspections are CPU-bound; periodically yield to the event
@@ -459,8 +469,15 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
             if not unknown:
                 continue
 
-            sorted_unknown = sorted(unknown)
+            findings.append((entity, sorted(unknown)))
 
+        if self.references_are_entities and findings:
+            await async_warm_rename_suggestions(
+                self.hass,
+                {reference for _, references in findings for reference in references},
+            )
+
+        for entity, sorted_unknown in findings:
             self.async_create_issue(
                 issue_id=entity.entity_id,
                 translation_placeholders={
