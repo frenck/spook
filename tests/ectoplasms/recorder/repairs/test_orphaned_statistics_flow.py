@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
-from custom_components.spook import statistics_sources
+from custom_components.spook import repairs, statistics_sources
 from custom_components.spook.repairs import (
     OrphanedStatisticsFixFlow,
     async_create_fix_flow,
@@ -32,8 +32,14 @@ def _install_fake_recorder(
     hass: HomeAssistant,
     monkeypatch: pytest.MonkeyPatch,
     abandoned: set[str],
+    *,
+    confirms: bool = True,
 ) -> list[list[str]]:
-    """Stand in for the recorder, and record what it is asked to clear."""
+    """Stand in for the recorder, and record what it is asked to clear.
+
+    `confirms` is whether it gets round to saying it is done. A recorder
+    with a long queue in front of it, or one that is wedged, does not.
+    """
     cleared: list[list[str]] = []
 
     monkeypatch.setattr(
@@ -55,9 +61,19 @@ def _install_fake_recorder(
     async def _async_add_executor_job(func: Any, *args: Any) -> Any:
         return func(*args)
 
+    def _async_clear_statistics(
+        statistic_ids: list[str],
+        *,
+        on_done: Any = None,
+    ) -> None:
+        """Take the work on, and say so afterwards the way the recorder does."""
+        cleared.append(list(statistic_ids))
+        if confirms and on_done is not None:
+            on_done()
+
     instance = SimpleNamespace(
         async_add_executor_job=_async_add_executor_job,
-        async_clear_statistics=lambda ids, **_kwargs: cleared.append(list(ids)),
+        async_clear_statistics=_async_clear_statistics,
     )
     hass.data[DATA_INSTANCE] = instance
     monkeypatch.setattr(statistics_sources, "get_instance", lambda _hass: instance)
@@ -160,3 +176,27 @@ async def test_the_menu_lists_what_will_go(
     assert result["description_placeholders"]["statistics"] == (
         "- `sensor.ghost`\n- `sensor.gone`"
     )
+
+
+async def test_a_recorder_that_does_not_answer_is_not_a_success(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test asking is not the same as it having happened.
+
+    The recorder takes the work on its own thread and says when it lands.
+    Closing the issue on the strength of having asked would make a wedged
+    recorder look like a job well done, and the statistics would still be
+    there with nothing left to point at them.
+    """
+    cleared = _install_fake_recorder(
+        hass, monkeypatch, {"sensor.ghost"}, confirms=False
+    )
+    monkeypatch.setattr(repairs, "_CLEARING_TAKES_AT_MOST", 0.01)
+
+    result = await _flow(hass, "sensor.ghost").async_step_remove()
+
+    # It was asked for, and it may still land. What it is not is finished.
+    assert cleared == [["sensor.ghost"]]
+    assert result["type"] == "abort"
+    assert result["reason"] == "clearing_took_too_long"

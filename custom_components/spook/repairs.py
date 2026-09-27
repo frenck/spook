@@ -67,6 +67,11 @@ if TYPE_CHECKING:
 # large installations.
 INSPECTION_YIELD_INTERVAL = 50
 
+# How long to give the recorder to say it has cleared what it was asked to.
+# The same as Home Assistant allows its own Statistics page, which asks the
+# recorder the same question the same way.
+_CLEARING_TAKES_AT_MOST = 10
+
 # Enough of a digest to tell two sets of findings apart. A collision would
 # mean one dismissal covering a different finding in the same place, which is
 # the thing this exists to prevent, and eight hex characters make that four
@@ -1201,7 +1206,34 @@ class OrphanedStatisticsFixFlow(_RemoveOrIgnoreFixFlow):
             # so there is nothing left to do and nothing to apologise for.
             return self.async_abort(reason="nothing_to_clear")
 
-        get_instance(self.hass).async_clear_statistics(clearing)
+        # Queued rather than done: the recorder takes the work on its own
+        # thread and says when it has landed. Answering before that would
+        # close the issue on the strength of having asked, and a recorder
+        # that is wedged would look like a job well done. Home Assistant's
+        # own Statistics page waits on exactly this, for exactly this long.
+        cleared = asyncio.Event()
+
+        def _done() -> None:
+            """Say so from the recorder's thread."""
+            self.hass.loop.call_soon_threadsafe(cleared.set)
+
+        get_instance(self.hass).async_clear_statistics(clearing, on_done=_done)
+
+        try:
+            async with asyncio.timeout(_CLEARING_TAKES_AT_MOST):
+                await cleared.wait()
+        except TimeoutError:
+            # The work is still queued and will most likely land. Saying it
+            # is done would be a guess, and leaving the issue up costs
+            # nothing: the next round clears it if the statistics went, and
+            # reports them again if they did not.
+            LOGGER.debug(
+                "Spook asked for %s to be cleared and the recorder has not "
+                "said it is done",
+                ", ".join(clearing),
+            )
+            return self.async_abort(reason="clearing_took_too_long")
+
         LOGGER.debug("Spook cleared orphaned statistics: %s", ", ".join(clearing))
 
         return self.async_create_entry(data={})
