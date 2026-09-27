@@ -15,8 +15,8 @@ from typing import TYPE_CHECKING
 
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook.const import DOMAIN
 import pytest
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -112,9 +112,8 @@ async def test_repeat_nested_target_detected_on_real_script_entity(
     repair = module.SpookRepair(hass)
     await repair.async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        "script_unknown_area_references_script.spooky",
+    issue = async_issue_about(
+        issue_registry, "script_unknown_area_references_script.spooky"
     )
     assert issue
     assert issue.translation_placeholders

@@ -75,6 +75,7 @@ class SpookRepair(AbstractSpookRepair):
 
                 self.async_create_issue(
                     issue_id=name,
+                    references=unknown,
                     translation_placeholders={
                         "group": f"{DOMAIN}.{name}",
                         "members": "\n".join(

@@ -71,6 +71,7 @@ class SpookRepair(AbstractSpookRepair):
 
             self.async_create_issue(
                 issue_id=entry.entry_id,
+                references=unknown_services,
                 translation_placeholders={
                     "helper": entry.title,
                     "edit": "/config/helpers",

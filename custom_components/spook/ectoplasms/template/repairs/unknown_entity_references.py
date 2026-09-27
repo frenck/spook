@@ -120,6 +120,7 @@ class SpookRepair(AbstractSpookRepair):
                 )
                 self.async_create_issue(
                     issue_id=entry.entry_id,
+                    references=unknown_entities,
                     translation_placeholders={
                         "entities": self._describe(unknown_entities, unknown_active),
                         "helper": entry.title,

@@ -6,10 +6,10 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.unknown_area_references import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -68,9 +68,8 @@ async def test_unknown_area_creates_issue(
 
     await repair.async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        "lovelace_unknown_area_references_lovelace",
+    issue = async_issue_about(
+        issue_registry, "lovelace_unknown_area_references_lovelace"
     )
     assert issue
     assert issue.translation_placeholders
@@ -103,9 +102,6 @@ async def test_known_areas_create_no_issue(
     await repair.async_inspect()
 
     assert (
-        issue_registry.async_get_issue(
-            DOMAIN,
-            "lovelace_unknown_area_references_lovelace",
-        )
+        async_issue_about(issue_registry, "lovelace_unknown_area_references_lovelace")
         is None
     )

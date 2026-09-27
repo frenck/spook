@@ -12,12 +12,12 @@ from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.group.repairs.unknown_members import SpookRepair
 from custom_components.spook.repairs import (
     GroupUnknownMembersFixFlow,
     async_create_fix_flow,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -44,7 +44,7 @@ async def test_unknown_member_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.is_fixable
     assert issue.data
@@ -63,7 +63,7 @@ async def test_group_with_known_members_is_not_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_fix_flow_remove_prunes_ui_group(

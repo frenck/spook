@@ -15,11 +15,11 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.exceptions import HomeAssistantError
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.unknown_entity_references import (
     SpookRepair,
 )
 import pytest
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -238,7 +238,7 @@ async def test_one_unreadable_dashboard_does_not_stop_the_rest(
 
     await repair.async_inspect()
 
-    assert issue_registry.async_get_issue(
-        DOMAIN, "lovelace_unknown_entity_references_fine"
+    assert async_issue_about(
+        issue_registry, "lovelace_unknown_entity_references_fine"
     ), "the dashboard after the broken one was never checked"
     assert "could not read dashboard broken" in caplog.text

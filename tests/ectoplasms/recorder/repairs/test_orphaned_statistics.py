@@ -10,11 +10,11 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
 from custom_components.spook import statistics_sources
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.recorder.repairs import orphaned_statistics
 from custom_components.spook.ectoplasms.recorder.repairs.orphaned_statistics import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
@@ -107,7 +107,7 @@ async def test_orphaned_statistics_create_issue(
 
     await _inspect_until_settled(SpookRepair(hass), freezer)
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     # Only the no_state orphan is reported, not excluded or fine statistics.
@@ -127,7 +127,7 @@ async def test_no_orphans_create_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_recorder_not_set_up_is_a_no_op(
@@ -139,7 +139,7 @@ async def test_recorder_not_set_up_is_a_no_op(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_statistics_published_on_purpose_are_not_orphans(
@@ -169,7 +169,7 @@ async def test_statistics_published_on_purpose_are_not_orphans(
 
     await _inspect_until_settled(SpookRepair(hass), freezer)
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["statistics"] == "- `sensor.ghost`"
@@ -196,7 +196,7 @@ async def test_a_registered_entity_without_a_state_is_not_an_orphan(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_a_sensor_gone_for_a_moment_is_not_reported(
@@ -219,7 +219,7 @@ async def test_a_sensor_gone_for_a_moment_is_not_reported(
 
     await repair.async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
     # Back before the settling time is up, which is what those windows look
     # like from here.
@@ -227,7 +227,7 @@ async def test_a_sensor_gone_for_a_moment_is_not_reported(
     validation.clear()
     await repair.async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_a_sensor_that_comes_back_starts_the_wait_over(
@@ -256,7 +256,7 @@ async def test_a_sensor_that_comes_back_starts_the_wait_over(
         validation.clear()
         await repair.async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_a_sensor_that_stays_gone_is_reported(
@@ -275,7 +275,7 @@ async def test_a_sensor_that_stays_gone_is_reported(
 
     await _inspect_until_settled(SpookRepair(hass), freezer)
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["statistics"] == "- `sensor.ghost`"

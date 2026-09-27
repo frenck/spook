@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.template.repairs.unknown_entity_references import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -36,9 +36,8 @@ async def test_unknown_entity_in_template_creates_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
     assert issue
     assert issue.translation_placeholders
@@ -68,9 +67,8 @@ async def test_known_entities_create_no_issue(
     await SpookRepair(hass).async_inspect()
 
     assert (
-        issue_registry.async_get_issue(
-            DOMAIN,
-            f"template_unknown_entity_references_{entry.entry_id}",
+        async_issue_about(
+            issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
         )
         is None
     )
@@ -104,9 +102,8 @@ async def test_unknown_entity_in_action_target_creates_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
     assert issue
     assert issue.translation_placeholders
@@ -139,9 +136,8 @@ async def test_known_entity_in_action_target_creates_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert not issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    assert not async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
 
 
@@ -170,9 +166,8 @@ async def test_non_action_options_create_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert not issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    assert not async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
 
 
@@ -204,9 +199,8 @@ async def test_disabled_step_reference_is_qualified(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
     assert issue
     entities = issue.translation_placeholders["entities"]
@@ -250,9 +244,8 @@ async def test_disabled_step_only_still_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
     assert issue
     entities = issue.translation_placeholders["entities"]
@@ -287,9 +280,8 @@ async def test_enabled_key_in_service_data_is_not_a_disabled_step(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
     assert issue
     entities = issue.translation_placeholders["entities"]
@@ -329,9 +321,8 @@ async def test_enabled_key_in_payload_list_is_not_a_disabled_step(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
     assert issue
     entities = issue.translation_placeholders["entities"]
@@ -363,9 +354,8 @@ async def test_templated_enabled_counts_as_active(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        f"template_unknown_entity_references_{entry.entry_id}",
+    issue = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
     )
     assert issue
     entities = issue.translation_placeholders["entities"]
@@ -404,9 +394,8 @@ async def test_notify_group_in_a_helper_action_is_not_reported(
     await SpookRepair(hass).async_inspect()
 
     assert (
-        issue_registry.async_get_issue(
-            DOMAIN,
-            f"template_unknown_entity_references_{entry.entry_id}",
+        async_issue_about(
+            issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
         )
         is None
     )

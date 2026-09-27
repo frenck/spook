@@ -6,11 +6,11 @@ from __future__ import annotations
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.scene.repairs.unknown_entity_references import (
     SpookRepair,
 )
 import pytest
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -47,9 +47,8 @@ async def test_issue_edit_url(
     repair = SpookRepair(hass)
     await repair.async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        "scene_unknown_entity_references_scene.movie_night",
+    issue = async_issue_about(
+        issue_registry, "scene_unknown_entity_references_scene.movie_night"
     )
     assert issue
     assert issue.translation_placeholders

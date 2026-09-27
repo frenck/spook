@@ -15,10 +15,10 @@ from typing import TYPE_CHECKING
 from homeassistant.components import automation
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.automation.repairs.unknown_entity_references import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -46,8 +46,8 @@ async def _inspect(hass: HomeAssistant, actions: list[dict]) -> None:
 
 def _reported(issue_registry: ir.IssueRegistry) -> str | None:
     """Return the reported entities for the test automation, if any."""
-    issue = issue_registry.async_get_issue(
-        DOMAIN, "automation_unknown_entity_references_automation.notify_router"
+    issue = async_issue_about(
+        issue_registry, "automation_unknown_entity_references_automation.notify_router"
     )
     return issue.translation_placeholders["entities"] if issue else None
 

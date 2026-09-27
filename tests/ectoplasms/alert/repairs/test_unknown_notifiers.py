@@ -9,10 +9,10 @@ from unittest.mock import patch
 
 import pytest
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.alert.repairs.unknown_notifiers import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -51,7 +51,7 @@ async def test_notifier_that_is_gone_is_reported(
     with patch(_YAML_CONFIG, return_value=config):
         await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders is not None
     assert issue.translation_placeholders["alert"] == "Garage door"
@@ -133,7 +133,7 @@ async def test_notifier_named_like_an_entity_is_still_checked(
     with patch(_YAML_CONFIG, return_value=config):
         await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
 
 async def test_alert_not_set_up_reads_no_configuration(
@@ -165,9 +165,9 @@ async def test_issue_is_cleaned_up_when_the_notifier_returns(
 
     with patch(_YAML_CONFIG, return_value=config):
         await repair._async_inspect_with_cleanup()
-        assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+        assert async_issue_about(issue_registry, _ISSUE_ID)
 
         hass.services.async_register("notify", "late_phone", lambda _call: None)
         await repair._async_inspect_with_cleanup()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None

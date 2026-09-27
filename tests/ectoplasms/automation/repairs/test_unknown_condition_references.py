@@ -7,10 +7,10 @@ from typing import TYPE_CHECKING
 
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.automation.repairs.unknown_condition_references import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -67,9 +67,8 @@ async def test_broken_automation_gets_a_specific_issue(
     repair = SpookRepair(hass)
     await repair.async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        "automation_unknown_condition_references_automation.haunted",
+    issue = async_issue_about(
+        issue_registry, "automation_unknown_condition_references_automation.haunted"
     )
     assert issue
     assert issue.translation_placeholders
@@ -79,9 +78,8 @@ async def test_broken_automation_gets_a_specific_issue(
     )
 
     assert (
-        issue_registry.async_get_issue(
-            DOMAIN,
-            "automation_unknown_condition_references_automation.healthy",
+        async_issue_about(
+            issue_registry, "automation_unknown_condition_references_automation.healthy"
         )
         is None
     )

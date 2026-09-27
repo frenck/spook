@@ -10,7 +10,6 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.homeassistant.repairs.min_max_unknown_sources import (
     SpookRepair,
 )
@@ -18,6 +17,7 @@ from custom_components.spook.repairs import (
     MinMaxUnknownSourcesFixFlow,
     async_create_fix_flow,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -50,7 +50,7 @@ async def test_unknown_member_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    issue = async_issue_about(issue_registry, _issue_id(entry))
     assert issue
     assert issue.is_fixable
     assert issue.data
@@ -68,7 +68,7 @@ async def test_deleted_registry_member_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    assert async_issue_about(issue_registry, _issue_id(entry))
 
 
 async def test_all_known_members_create_no_issue(
@@ -81,7 +81,7 @@ async def test_all_known_members_create_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None
 
 
 async def test_fix_flow_remove_prunes_members(

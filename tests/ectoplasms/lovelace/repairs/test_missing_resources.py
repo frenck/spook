@@ -10,10 +10,10 @@ from typing import TYPE_CHECKING
 from homeassistant.components.lovelace.resources import RESOURCE_STORAGE_KEY
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.lovelace.repairs.missing_resources import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -78,7 +78,7 @@ async def test_missing_local_resource_creates_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     # Present local file and external URL are not reported; the two missing
@@ -99,7 +99,7 @@ async def test_all_present_creates_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_no_resource_collection_is_a_no_op(
@@ -111,7 +111,7 @@ async def test_no_resource_collection_is_a_no_op(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_storage_resources_are_loaded_before_they_are_read(
@@ -139,7 +139,7 @@ async def test_storage_resources_are_loaded_before_they_are_read(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert "/local/gone.js" in issue.translation_placeholders["resources"]
 
@@ -153,7 +153,7 @@ async def test_stored_resources_point_at_the_resources_page(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_key == "lovelace_missing_resources"
 
@@ -171,7 +171,7 @@ async def test_yaml_resources_are_told_where_the_file_is(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_key == "lovelace_missing_resources_yaml"
     # Same finding either way, so the list of what is missing must not differ.

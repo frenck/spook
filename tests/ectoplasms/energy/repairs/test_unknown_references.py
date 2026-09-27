@@ -13,11 +13,11 @@ from homeassistant.components.energy.validate import (
 )
 
 from custom_components.spook import statistics_sources
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.energy.repairs import unknown_references
 from custom_components.spook.ectoplasms.energy.repairs.unknown_references import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -58,7 +58,7 @@ async def test_missing_energy_entity_creates_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     assert "sensor.ghost_meter" in issue.translation_placeholders["entities"]
@@ -80,7 +80,7 @@ async def test_only_transient_issues_create_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_energy_not_set_up_is_a_no_op(
@@ -91,7 +91,7 @@ async def test_energy_not_set_up_is_a_no_op(
     # A fresh test instance has no energy component set up.
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 def _install_statistics(
@@ -157,7 +157,7 @@ async def test_a_source_kept_by_statistics_alone_is_not_unknown(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     named = issue.translation_placeholders["entities"]
@@ -194,7 +194,7 @@ async def test_an_entity_without_a_state_is_not_unknown_either(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_a_deleted_entity_is_still_worth_saying(
@@ -229,7 +229,7 @@ async def test_a_deleted_entity_is_still_worth_saying(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     assert "sensor.removed_meter" in issue.translation_placeholders["entities"]
@@ -273,7 +273,7 @@ async def test_statistics_that_carry_a_name_were_put_there_by_something(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_the_recorder_is_asked_again_on_a_clock(
@@ -323,7 +323,7 @@ async def test_a_price_entity_is_not_let_off_by_statistics(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     assert "sensor.the_price" in issue.translation_placeholders["entities"]

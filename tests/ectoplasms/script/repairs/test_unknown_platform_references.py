@@ -12,6 +12,7 @@ from custom_components.spook.ectoplasms.script.repairs import (
     unknown_condition_references,
     unknown_trigger_references,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -72,9 +73,8 @@ async def test_broken_scripts_get_specific_issues(
     trigger_repair = unknown_trigger_references.SpookRepair(hass)
     await trigger_repair.async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        "script_unknown_trigger_references_script.haunted_wait",
+    issue = async_issue_about(
+        issue_registry, "script_unknown_trigger_references_script.haunted_wait"
     )
     assert issue
     assert issue.translation_placeholders
@@ -85,9 +85,8 @@ async def test_broken_scripts_get_specific_issues(
     condition_repair = unknown_condition_references.SpookRepair(hass)
     await condition_repair.async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN,
-        "script_unknown_condition_references_script.haunted_check",
+    issue = async_issue_about(
+        issue_registry, "script_unknown_condition_references_script.haunted_check"
     )
     assert issue
     assert issue.translation_placeholders

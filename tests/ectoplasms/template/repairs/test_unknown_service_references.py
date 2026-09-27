@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.template.repairs.unknown_service_references import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -41,7 +41,7 @@ async def test_unknown_action_in_template_button_creates_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    issue = async_issue_about(issue_registry, _issue_id(entry))
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["edit"] == "/config/helpers"
@@ -68,7 +68,7 @@ async def test_unknown_action_in_another_template_helper_creates_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    issue = async_issue_about(issue_registry, _issue_id(entry))
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["services"] == "- `script.missing_turn_on`"
@@ -92,7 +92,7 @@ async def test_templated_action_in_template_helper_creates_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None
 
 
 async def test_parallel_shorthand_is_inspected(
@@ -119,7 +119,7 @@ async def test_parallel_shorthand_is_inspected(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    issue = async_issue_about(issue_registry, _issue_id(entry))
     assert issue
     assert issue.translation_placeholders["services"] == "- `script.ghost`"
 
@@ -163,7 +163,7 @@ async def test_nested_action_shapes_are_inspected(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    issue = async_issue_about(issue_registry, _issue_id(entry))
     assert issue
     assert issue.translation_placeholders["services"] == (
         "- `script.ghost_choose`\n- `script.ghost_if`\n- `script.ghost_repeat`"
@@ -193,7 +193,7 @@ async def test_unparsable_option_is_skipped(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None
 
 
 async def test_one_bad_entry_does_not_hide_the_next(
@@ -230,8 +230,8 @@ async def test_one_bad_entry_does_not_hide_the_next(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(broken)) is None
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(fine))
+    assert async_issue_about(issue_registry, _issue_id(broken)) is None
+    assert async_issue_about(issue_registry, _issue_id(fine))
 
 
 async def test_disabled_step_is_not_reported(
@@ -252,7 +252,7 @@ async def test_disabled_step_is_not_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None
 
 
 async def test_issue_clears_once_the_action_exists(
@@ -273,9 +273,9 @@ async def test_issue_clears_once_the_action_exists(
 
     repair = SpookRepair(hass)
     await repair._async_inspect_with_cleanup()
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    assert async_issue_about(issue_registry, _issue_id(entry))
 
     hass.services.async_register("script", "comes_back", lambda _call: None)
     await repair._async_inspect_with_cleanup()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None

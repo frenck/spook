@@ -5,12 +5,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.proximity.repairs.unknown_ignored_zones import (
     SpookRepair,
 )
 
 from .conftest import async_set_up_proximity
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -26,8 +26,8 @@ async def test_unknown_ignored_zone_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN, f"proximity_unknown_ignored_zones_{entry.entry_id}"
+    issue = async_issue_about(
+        issue_registry, f"proximity_unknown_ignored_zones_{entry.entry_id}"
     )
     assert issue
     assert "zone.demolished" in issue.translation_placeholders["zones"]
@@ -42,6 +42,6 @@ async def test_ignored_zones_that_exist_are_not_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    assert not issue_registry.async_get_issue(
-        DOMAIN, f"proximity_unknown_ignored_zones_{entry.entry_id}"
+    assert not async_issue_about(
+        issue_registry, f"proximity_unknown_ignored_zones_{entry.entry_id}"
     )

@@ -6,6 +6,7 @@ from abc import ABC, abstractmethod
 import asyncio
 from contextlib import suppress
 from dataclasses import dataclass, field
+import hashlib
 import importlib
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, final
@@ -47,7 +48,7 @@ from .entity_suggestions import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Coroutine, Mapping, Sized
+    from collections.abc import Callable, Coroutine, Iterable, Mapping, Sized
     from datetime import datetime, timedelta
     from types import ModuleType
 
@@ -60,6 +61,13 @@ if TYPE_CHECKING:
 # large installations.
 INSPECTION_YIELD_INTERVAL = 50
 
+# Enough of a digest to tell two sets of findings apart. A collision would
+# mean one dismissal covering a different finding in the same place, which is
+# the thing this exists to prevent, and eight hex characters make that four
+# billion to one.
+_FINGERPRINT_LENGTH = 8
+
+
 # A min/max helper needs at least this many members to function; Spook must
 # not prune it below this.
 _MIN_MAX_MINIMUM_MEMBERS = 2
@@ -68,6 +76,17 @@ _MIN_MAX_MINIMUM_MEMBERS = 2
 def _plural(items: Sized) -> str:
     """Return the plural suffix for a sized collection."""
     return "" if len(items) == 1 else "s"
+
+
+def _fingerprint(references: Iterable[str]) -> str:
+    """Return a short digest of what a finding is about.
+
+    Sorted first, because the same findings in a different order are the same
+    findings, and an ID that moved would resurface an issue somebody had
+    already dealt with.
+    """
+    digest = hashlib.sha256("\n".join(sorted(references)).encode())
+    return digest.hexdigest()[:_FINGERPRINT_LENGTH]
 
 
 class AbstractSpookRepairBase(ABC):
@@ -106,6 +125,7 @@ class AbstractSpookRepairBase(ABC):
         issue_domain: str | None = None,
         issue_id: str,
         learn_more_url: str | None = None,
+        references: Iterable[str] | None = None,
         severity: ir.IssueSeverity = ir.IssueSeverity.WARNING,
         translation_key: str | None = None,
         translation_placeholders: dict[str, str] | None = None,
@@ -117,7 +137,18 @@ class AbstractSpookRepairBase(ABC):
         worded differently depending on what the house looks like, so that the
         alternative is a translated string of its own rather than a sentence
         smuggled in through a placeholder.
+
+        `references` is what the issue is reporting, when that is a list of
+        things rather than the one place they were found in. Pass it and the
+        ID follows the findings, so that pressing "ignore" means "not these"
+        rather than "nothing here, ever". Without it an issue keyed to a
+        script keeps its dismissal while its text is quietly rewritten
+        underneath, and the next genuinely broken thing in that script is
+        hidden by a decision somebody made about something else. #1395.
         """
+        if references is not None:
+            issue_id = f"{issue_id}_{_fingerprint(references)}"
+
         self.issue_ids.add(issue_id)
         ir.async_create_issue(
             self.hass,
@@ -359,10 +390,9 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
     automatically_clean_up_issues = True
 
     #: Entity class representing an unavailable/broken instance. Entities of
-    #: this type are still tracked in ``possible_issue_ids`` but skipped during
-    #: issue creation. ``None`` inspects every entity, including unavailable
-    #: ones; repairs that diagnose *why* an entity is broken need exactly
-    #: those.
+    #: this type are skipped during issue creation. ``None`` inspects every
+    #: entity, including unavailable ones; repairs that diagnose *why* an
+    #: entity is broken need exactly those.
     unavailable_entity_class: type | None = None
 
     #: Translation placeholder key holding the entity's display name (e.g.
@@ -418,9 +448,14 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
         return self.edit_url_pattern.format(unique_id=entity.unique_id)
 
     async def async_inspect(self) -> None:
-        """Trigger an inspection."""
-        self.possible_issue_ids.clear()
+        """Trigger an inspection.
 
+        Nothing goes into ``possible_issue_ids`` here. An issue raised by this
+        repair is keyed to its findings rather than to the entity they were
+        found in, so a list of inspected entities no longer names anything
+        that could be in the registry. What this repair left behind is read
+        back out of the registry instead, which finds all of it.
+        """
         if self.domain not in (instances := self.hass.data.get(DATA_INSTANCES, {})):
             return
 
@@ -455,8 +490,6 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
                 # loop so large installations do not stall it.
                 await asyncio.sleep(0)
 
-            self.possible_issue_ids.add(entity.entity_id)
-
             unavailable_class = self.unavailable_entity_class
             # pylint: disable-next=isinstance-second-argument-not-valid-type
             if unavailable_class is not None and isinstance(entity, unavailable_class):
@@ -480,6 +513,7 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
         for entity, sorted_unknown in findings:
             self.async_create_issue(
                 issue_id=entity.entity_id,
+                references=sorted_unknown,
                 translation_placeholders={
                     self.reference_label: self._format_references(sorted_unknown),
                     self.entity_label: entity.name,
