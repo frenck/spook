@@ -103,6 +103,7 @@ class SpookRepair(AbstractSpookRepair):
                     title = dashboard.config.get("title", url_path)
                 self.async_create_issue(
                     issue_id=url_path,
+                    references=unknown_entities,
                     translation_placeholders={
                         "entities": async_describe_unknown_entities(
                             self.hass, sorted(unknown_entities)

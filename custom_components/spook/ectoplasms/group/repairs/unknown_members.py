@@ -61,6 +61,7 @@ class SpookRepair(AbstractSpookRepair):
                     )
                     self.async_create_issue(
                         issue_id=entity.entity_id,
+                        references=unknown_entities,
                         is_fixable=True,
                         data={
                             "group_entity_id": entity.entity_id,

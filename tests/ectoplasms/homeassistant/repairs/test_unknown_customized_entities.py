@@ -8,10 +8,10 @@ from typing import TYPE_CHECKING
 from homeassistant.core_config import DATA_CUSTOMIZE
 from homeassistant.helpers.entity_values import EntityValues
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.homeassistant.repairs.unknown_customized_entities import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -35,7 +35,7 @@ async def test_unknown_customized_entity_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders
     entities = issue.translation_placeholders["entities"]
@@ -53,7 +53,7 @@ async def test_known_customized_entity_is_not_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_no_customizations_create_no_issue(
@@ -65,4 +65,4 @@ async def test_no_customizations_create_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None

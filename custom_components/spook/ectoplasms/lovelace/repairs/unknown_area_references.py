@@ -72,6 +72,7 @@ class SpookRepair(AbstractSpookRepair):
                     title = dashboard.config.get("title", url_path)
                 self.async_create_issue(
                     issue_id=url_path,
+                    references=unknown_areas,
                     translation_placeholders={
                         "areas": "\n".join(
                             f"- `{area_id}`" for area_id in sorted(unknown_areas)

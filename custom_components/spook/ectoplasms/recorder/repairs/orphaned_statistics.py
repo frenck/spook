@@ -122,6 +122,7 @@ class SpookRepair(AbstractSpookRepair):
         if orphaned:
             self.async_create_issue(
                 issue_id=self.repair,
+                references=orphaned,
                 translation_placeholders={
                     "statistics": "\n".join(
                         f"- `{statistic_id}`" for statistic_id in orphaned

@@ -107,6 +107,7 @@ class SpookRepair(AbstractSpookRepair):
             # sends them to a screen that cannot change what they came for.
             self.async_create_issue(
                 issue_id=self.repair,
+                references=missing,
                 translation_key=(
                     f"{self.repair}_yaml" if is_yaml_managed(resources) else self.repair
                 ),

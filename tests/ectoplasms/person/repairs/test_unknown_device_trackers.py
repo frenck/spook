@@ -19,7 +19,7 @@ from custom_components.spook.repairs import (
     PersonUnknownDeviceTrackerFixFlow,
     async_create_fix_flow,
 )
-from tests.repair_helpers import async_count_scheduled_inspections
+from tests.repair_helpers import async_issue_about, async_count_scheduled_inspections
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant, ServiceCall
@@ -66,7 +66,7 @@ async def test_unknown_device_tracker_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.is_fixable
     assert issue.translation_placeholders == {"person": "Frenck"}
@@ -89,7 +89,7 @@ async def test_registered_device_tracker_is_not_flagged(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_all_known_trackers_create_no_issue(
@@ -102,7 +102,7 @@ async def test_all_known_trackers_create_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def test_no_person_component_does_nothing(
@@ -208,12 +208,12 @@ async def test_state_only_tracker_going_away_is_reported(
     repair = SpookRepair(hass)
 
     await repair._async_inspect_with_cleanup()
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
     hass.states.async_remove("device_tracker.phone")
     await repair._async_inspect_with_cleanup()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
 
 async def test_issue_clears_when_a_state_only_tracker_returns(
@@ -225,12 +225,12 @@ async def test_issue_clears_when_a_state_only_tracker_returns(
     repair = SpookRepair(hass)
 
     await repair._async_inspect_with_cleanup()
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
     hass.states.async_set("device_tracker.phone", "home")
     await repair._async_inspect_with_cleanup()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def _count_scheduled_inspections(

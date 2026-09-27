@@ -11,11 +11,10 @@ import pytest
 from homeassistant.core import State
 from homeassistant.exceptions import HomeAssistantError
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.alert.repairs.unknown_entity_references import (
     SpookRepair,
 )
-from tests.repair_helpers import async_count_scheduled_inspections
+from tests.repair_helpers import async_issue_about, async_count_scheduled_inspections
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -53,7 +52,7 @@ async def test_watched_entity_that_is_gone_is_reported(
     with patch(_YAML_CONFIG, return_value=config):
         await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders is not None
     assert issue.translation_placeholders["alert"] == "Garage door"
@@ -150,7 +149,7 @@ async def test_unreadable_configuration_keeps_existing_issues(
 
     with patch(_YAML_CONFIG, return_value=config):
         await repair._async_inspect_with_cleanup()
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
     with (
         patch(_YAML_CONFIG, side_effect=HomeAssistantError("broken")),
@@ -158,7 +157,7 @@ async def test_unreadable_configuration_keeps_existing_issues(
     ):
         await repair._async_inspect_with_cleanup()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
 
 @pytest.mark.usefixtures("alert_set_up")
@@ -179,12 +178,12 @@ async def test_watched_state_only_entity_going_away_is_reported(
 
     with patch(_YAML_CONFIG, return_value=config):
         await repair._async_inspect_with_cleanup()
-        assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+        assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
         hass.states.async_remove("device_tracker.phone")
         await repair._async_inspect_with_cleanup()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
 
 @pytest.mark.usefixtures("alert_set_up")
@@ -204,12 +203,12 @@ async def test_issue_is_cleaned_up_when_the_entity_returns(
 
     with patch(_YAML_CONFIG, return_value=config):
         await repair._async_inspect_with_cleanup()
-        assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+        assert async_issue_about(issue_registry, _ISSUE_ID)
 
         hass.states.async_set("binary_sensor.garage", "off")
         await repair._async_inspect_with_cleanup()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
 
 
 async def _count_scheduled_inspections(

@@ -120,6 +120,18 @@ class SpookRepair(AbstractSpookRepair):
                 )
                 self.async_create_issue(
                     issue_id=entry.entry_id,
+                    # Carrying which of them nothing running references any
+                    # more, because the report says so and that changes when
+                    # a step is enabled. Left out, a dismissal made while a
+                    # reference was harmless would outlive it becoming a live
+                    # problem, which is the thing an ID of its own prevents.
+                    references=[
+                        *unknown_active,
+                        *(
+                            f"{entity_id} (disabled)"
+                            for entity_id in unknown_entities - unknown_active
+                        ),
+                    ],
                     translation_placeholders={
                         "entities": self._describe(unknown_entities, unknown_active),
                         "helper": entry.title,

@@ -10,10 +10,10 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.group.notify import GroupNotifyPlatform
 from homeassistant.components.notify.legacy import NOTIFY_SERVICES
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.notify.repairs.unknown_group_members import (
     SpookRepair,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -47,7 +47,7 @@ async def test_unknown_member_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
     assert issue
     assert issue.translation_placeholders is not None
     assert issue.translation_placeholders["group"] == "notify.everyone"
@@ -83,7 +83,7 @@ async def test_member_carrying_data_is_still_checked(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
 
 async def test_member_named_like_an_entity_is_still_checked(
@@ -101,7 +101,7 @@ async def test_member_named_like_an_entity_is_still_checked(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
 
 async def test_non_group_notify_services_are_skipped(
@@ -132,7 +132,7 @@ async def test_group_registered_by_another_integration_is_found(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
 
 async def test_no_notify_services_does_nothing(
@@ -154,9 +154,9 @@ async def test_issue_is_cleaned_up_when_the_member_returns(
     repair = SpookRepair(hass)
 
     await repair._async_inspect_with_cleanup()
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID)
+    assert async_issue_about(issue_registry, _ISSUE_ID)
 
     hass.services.async_register("notify", "late_phone", lambda _call: None)
     await repair._async_inspect_with_cleanup()
 
-    assert issue_registry.async_get_issue(DOMAIN, _ISSUE_ID) is None
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None

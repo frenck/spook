@@ -45,6 +45,7 @@ class SpookRepair(AbstractSpookRepair):
             if coordinator.proximity_zone_id not in known_entity_ids:
                 self.async_create_issue(
                     issue_id=entry.entry_id,
+                    references=[coordinator.proximity_zone_id],
                     translation_placeholders={
                         "name": coordinator.name,
                         "zone": coordinator.proximity_zone_id,

@@ -69,6 +69,7 @@ class SpookRepair(AbstractSpookRepair):
 
             self.async_create_issue(
                 issue_id=entry.entry_id,
+                references=unknown,
                 issue_domain=entry.domain,
                 is_fixable=True,
                 data={

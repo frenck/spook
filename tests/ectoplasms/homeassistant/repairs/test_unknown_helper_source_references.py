@@ -9,7 +9,6 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 import pytest
 
 from custom_components.spook import repairs
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.homeassistant.repairs.unknown_helper_source_references import (
     SpookRepair,
 )
@@ -17,6 +16,7 @@ from custom_components.spook.repairs import (
     HelperUnknownSourcesFixFlow,
     async_create_fix_flow,
 )
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -55,7 +55,7 @@ async def test_unknown_source_creates_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    issue = async_issue_about(issue_registry, _issue_id(entry))
     assert issue
     assert issue.translation_placeholders
     assert "sensor.ghost" in issue.translation_placeholders["sources"]
@@ -78,7 +78,7 @@ async def test_known_source_creates_no_issue(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None
 
 
 async def test_source_stored_as_registry_id_is_resolved(
@@ -110,8 +110,8 @@ async def test_source_stored_as_registry_id_is_resolved(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(live_entry)) is None
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(dead_entry))
+    assert async_issue_about(issue_registry, _issue_id(live_entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(dead_entry))
 
 
 async def test_unrelated_config_entries_are_ignored(
@@ -128,7 +128,7 @@ async def test_unrelated_config_entries_are_ignored(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None
 
 
 async def test_bayesian_observation_subentry_is_inspected(
@@ -153,7 +153,7 @@ async def test_bayesian_observation_subentry_is_inspected(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    issue = async_issue_about(issue_registry, _issue_id(entry))
     assert issue
     assert issue.translation_placeholders
     assert "sensor.ghost" in issue.translation_placeholders["sources"]
@@ -173,7 +173,7 @@ async def test_bayesian_without_subentries_does_not_crash(
 
     await SpookRepair(hass).async_inspect()
 
-    assert issue_registry.async_get_issue(DOMAIN, _issue_id(entry)) is None
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None
 
 
 async def test_issue_is_fixable_with_config_entry_data(
@@ -190,7 +190,7 @@ async def test_issue_is_fixable_with_config_entry_data(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(DOMAIN, _issue_id(entry))
+    issue = async_issue_about(issue_registry, _issue_id(entry))
     assert issue
     assert issue.is_fixable
     assert issue.data

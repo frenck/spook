@@ -5,12 +5,12 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.proximity.repairs.unknown_tracked_entities import (
     SpookRepair,
 )
 
 from .conftest import async_set_up_proximity
+from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -33,8 +33,8 @@ async def test_unknown_tracked_entity_is_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    issue = issue_registry.async_get_issue(
-        DOMAIN, f"proximity_unknown_tracked_entities_{entry.entry_id}"
+    issue = async_issue_about(
+        issue_registry, f"proximity_unknown_tracked_entities_{entry.entry_id}"
     )
     assert issue
     assert "person.moved_out" in issue.translation_placeholders["entities"]
@@ -51,6 +51,6 @@ async def test_tracked_entities_that_exist_are_not_reported(
 
     await SpookRepair(hass).async_inspect()
 
-    assert not issue_registry.async_get_issue(
-        DOMAIN, f"proximity_unknown_tracked_entities_{entry.entry_id}"
+    assert not async_issue_about(
+        issue_registry, f"proximity_unknown_tracked_entities_{entry.entry_id}"
     )
