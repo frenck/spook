@@ -22,6 +22,7 @@ from homeassistant.components.blueprint import (
     Blueprint,
 )
 from homeassistant.helpers import entity_registry as er
+from homeassistant.setup import async_setup_component
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.util import dt as dt_util, yaml as yaml_util
 from annotatedyaml.objects import Input
@@ -259,6 +260,71 @@ async def test_installing_writes_the_new_blueprint(
     await hass.async_block_till_done()
 
     assert "to: 'off'" in file.read_text(encoding="utf-8")
+    assert hass.states.get(_ENTITY).state == "off"
+
+
+async def test_an_install_is_still_installed_when_the_next_round_looks(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the button stays pressed.
+
+    Settling down straight after writing proves only that the entity said so
+    itself. The round that comes along later reads the file back off disk and
+    weighs it against the source again, and if those two disagree the entity
+    goes back to offering the same update for ever. From the outside that is
+    a button that does nothing.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+        assert hass.states.get(_ENTITY).state == "on"
+
+        await hass.services.async_call(
+            "update",
+            "install",
+            {"entity_id": _ENTITY},
+            blocking=True,
+        )
+        await hass.async_block_till_done()
+
+        # The source has not moved, so a second look has to agree it is done.
+        await _check(hass, freezer)
+
+    assert hass.states.get(_ENTITY).state == "off"
+
+
+async def test_a_blueprint_home_assistant_wrote_is_not_an_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the file a real installation has is judged against its source.
+
+    Every other test here lays the raw text down on disk itself, so both
+    sides of the comparison are the same text read the same way once. A
+    blueprint somebody imported is not that: Home Assistant validates what it
+    fetched and writes out its own dump of the result, so the file is one
+    trip further along than the source is. Reading that back has to land in
+    the same place, or every imported blueprint on the system is an update
+    that never installs. #1653.
+    """
+    assert await async_setup_component(hass, "automation", {"automation": []})
+    await hass.async_block_till_done()
+
+    domain_blueprints = hass.data[BLUEPRINT_DOMAIN]["automation"]
+    await domain_blueprints.async_add_blueprint(
+        imported_from(MOTION_LIGHT).blueprint,
+        "motion.yaml",
+        allow_override=True,
+    )
+
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
     assert hass.states.get(_ENTITY).state == "off"
 
 
