@@ -50,7 +50,7 @@ if TYPE_CHECKING:
 
     from freezegun.api import FrozenDateTimeFactory
 
-    from homeassistant.core import Event, HomeAssistant
+    from homeassistant.core import Event, HomeAssistant, ServiceCall
     from homeassistant.helpers.event import EventStateChangedData
 
 SLEEPER = "automation.sleeper"
@@ -70,6 +70,18 @@ CONFIG = {
             "alias": "Other",
             "triggers": [{"trigger": "state", "entity_id": "input_boolean.x"}],
             "actions": [],
+        },
+    ]
+}
+
+
+SELF_SNOOZING = {
+    "automation": [
+        {
+            "id": "sleeper",
+            "alias": "Sleeper",
+            "triggers": [{"trigger": "event", "event_type": "go"}],
+            "actions": [{"action": "test.snooze_itself"}],
         },
     ]
 }
@@ -2131,5 +2143,72 @@ async def test_a_failed_call_leaves_somebody_elses_record_alone(
     assert timed_states.async_until(SLEEPER) == asked_for, (
         "the failed call tidied away a record that was not its own"
     )
+
+    timed_states.async_stop()
+
+
+async def test_an_automation_can_snooze_itself(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test the snooze survives being asked for from inside the run.
+
+    "Not again for an hour" is most plainly written as the last step of the
+    automation it is about, and that is the case that broke. Home Assistant
+    stops an automation's running actions when it turns it off, so the
+    cancellation landed inside the snooze, halfway through writing it down.
+    What was left was an automation switched off, nothing in the register,
+    and nothing anywhere to switch it back on. #1632.
+    """
+    assert await async_setup_component(hass, "automation", SELF_SNOOZING)
+    await hass.async_block_till_done()
+    timed_states = await _register(hass)
+
+    async def _snooze_itself(_call: ServiceCall) -> None:
+        """Snooze the automation that is running this very step."""
+        await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+
+    hass.services.async_register("test", "snooze_itself", _snooze_itself)
+
+    hass.bus.async_fire("go")
+    await hass.async_block_till_done()
+
+    assert hass.states.get(SLEEPER).state == STATE_OFF
+    assert timed_states.async_until(SLEEPER) is not None
+
+    await _pass(hass, freezer, AN_HOUR)
+
+    assert hass.states.get(SLEEPER).state == STATE_ON
+
+    timed_states.async_stop()
+
+
+async def test_snoozing_lets_the_running_actions_finish(
+    hass: HomeAssistant,
+) -> None:
+    """Test a snooze stops an automation starting, not what it is doing.
+
+    `automation.turn_off` kills the running actions by default, and that
+    default is wrong for this: a snooze says nothing about the run that is
+    already under way.
+    """
+    assert await async_setup_component(hass, "automation", SELF_SNOOZING)
+    await hass.async_block_till_done()
+    timed_states = await _register(hass)
+
+    got_to_the_end = False
+
+    async def _snooze_then_carry_on(_call: ServiceCall) -> None:
+        """Snooze, then do something after it, the way a sequence would."""
+        nonlocal got_to_the_end
+        await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
+        got_to_the_end = True
+
+    hass.services.async_register("test", "snooze_itself", _snooze_then_carry_on)
+
+    hass.bus.async_fire("go")
+    await hass.async_block_till_done()
+
+    assert got_to_the_end
 
     timed_states.async_stop()

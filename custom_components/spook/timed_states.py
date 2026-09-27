@@ -9,7 +9,10 @@ from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 
-from homeassistant.components.automation import DOMAIN as AUTOMATION_DOMAIN
+from homeassistant.components.automation import (
+    CONF_STOP_ACTIONS,
+    DOMAIN as AUTOMATION_DOMAIN,
+)
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     EVENT_HOMEASSISTANT_STARTED,
@@ -293,12 +296,29 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
         the entity alone would be too much: a person turning it the other way
         during the call is exactly the thing that has to keep counting, and
         that is the one an entity-wide mark would swallow.
+
+        Turning one off leaves whatever it is doing to finish. Snoozing is
+        about an automation not starting again for a while, not about
+        stopping the run that asked, and `automation.turn_off` would
+        otherwise stop it: its default is to kill the running actions.
+
+        An automation snoozing itself is the plain way to write "not again
+        for an hour", and it is the case that breaks. The snooze arrives from
+        inside the run, Home Assistant cancels that run to turn the
+        automation off, and the cancellation lands in here, halfway through
+        writing the snooze down. What was left was an automation switched off
+        with nothing anywhere to switch it back on. #1632.
         """
+        turning_off = state != STATE_ON
+        data: dict[str, Any] = {ATTR_ENTITY_ID: entity_id}
+        if turning_off:
+            data[CONF_STOP_ACTIONS] = False
+
         with self._moving_to(entity_id, state):
             await self._hass.services.async_call(
                 AUTOMATION_DOMAIN,
-                SERVICE_TURN_ON if state == STATE_ON else SERVICE_TURN_OFF,
-                {ATTR_ENTITY_ID: entity_id},
+                SERVICE_TURN_OFF if turning_off else SERVICE_TURN_ON,
+                data,
                 blocking=True,
                 context=context,
             )
