@@ -131,7 +131,8 @@ async def async_warm_rename_suggestions(
 
     Only the comparing moves. What comes back is the same answer the inline
     version gave, and anything still missing from the cache afterwards is
-    worked out where it always was.
+    worked out where it always was, on the event loop. Which is the one
+    outcome worth avoiding, so nothing here returns without filling the cache.
     """
     deleted_by_entity_id = async_get_deleted_entities(hass)
     suggestions = async_get_rename_suggestion_cache(hass)
@@ -155,11 +156,12 @@ async def async_warm_rename_suggestions(
         _work_out_suggestions, missing, known_by_domain
     )
 
-    if async_get_rename_suggestion_cache(hass) is not suggestions:
-        # Thrown away while that was running, which means the entities these
-        # were worked out against have moved. Dropped rather than written into
-        # the fresh cache, where they would sit as answers to a house that no
-        # longer looks like that.
-        return
-
-    suggestions.update(worked_out)
+    # Written into whatever cache is there now, which may not be the one these
+    # were worked out against: an entity registering during those seconds
+    # throws the old one away. They go in anyway. A suggestion made against a
+    # house half a minute out of date is the same cosmetic staleness this
+    # already accepts for entities that never reach the registry, and the
+    # alternative is leaving the cache empty for the caller that is about to
+    # describe these, which sends every one of them through the comparison
+    # again on the event loop. That is the stall, not the stale sentence.
+    async_get_rename_suggestion_cache(hass).update(worked_out)

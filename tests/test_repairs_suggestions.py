@@ -15,7 +15,7 @@ from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
-from custom_components.spook import entity_suggestions
+from custom_components.spook import entity_filtering, entity_suggestions
 from custom_components.spook.repairs import (
     AbstractSpookEntityComponentUnknownReferencesRepair,
 )
@@ -134,3 +134,44 @@ async def test_every_finding_still_gets_its_issue(
     ]
 
     assert len(issues) == ENTITY_COUNT
+
+
+async def test_a_cache_dropped_mid_flight_does_not_fall_back_to_the_loop(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test work done against a cache that moved is still kept.
+
+    An entity registering while the thread is comparing throws the cache
+    away, and the round is about to describe every finding it just gathered.
+    Dropping the work there would send all of them back through the
+    comparison on the event loop, which is the stall this is here to avoid.
+    Answers half a minute out of date are the cheaper problem.
+    """
+    _stock_entities(hass)
+
+    threads: list[str] = []
+    original_matches = entity_suggestions.difflib.get_close_matches
+
+    def _recording(*args: object, **kwargs: object) -> list[str]:
+        threads.append(threading.current_thread().name)
+        return original_matches(*args, **kwargs)
+
+    monkeypatch.setattr(entity_suggestions.difflib, "get_close_matches", _recording)
+
+    # pylint: disable-next=protected-access
+    original_work = entity_suggestions._work_out_suggestions  # noqa: SLF001
+
+    def _clearing_the_cache_first(*args: object, **kwargs: object) -> dict[str, Any]:
+        """Stand in for the house changing while the thread is busy."""
+        hass.data[entity_filtering.DATA_ALL_ENTITY_IDS_CACHE].rename_suggestions = None
+        return original_work(*args, **kwargs)
+
+    monkeypatch.setattr(
+        entity_suggestions, "_work_out_suggestions", _clearing_the_cache_first
+    )
+
+    await _BrokenReferencesRepair(hass).async_inspect()
+
+    assert threads, "nothing was compared, so nothing was tested"
+    assert threading.main_thread().name not in threads
