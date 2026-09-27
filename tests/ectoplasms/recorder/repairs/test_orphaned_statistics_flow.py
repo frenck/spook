@@ -295,3 +295,26 @@ async def test_a_return_between_two_looks_still_starts_the_wait_over(
     assert cleared == [["sensor.ghost"]]
 
     unsub()
+
+
+async def test_a_wait_does_not_survive_spook_being_unloaded(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test nothing carries over a stretch nobody was watching.
+
+    A wait is only worth something for as long as somebody was watching, and
+    nothing is while Spook is unloaded. A sensor can come and go in that
+    gap with nothing to notice, so what was recorded before it goes back to
+    meaning nothing.
+    """
+    cleared = _install_fake_recorder(hass, monkeypatch, {"sensor.ghost"})
+    stop_watching = async_setup_abandoned_statistics_watching(hass)
+    await _settle(hass)
+
+    stop_watching()
+    async_setup_abandoned_statistics_watching(hass)
+
+    await _flow(hass, "sensor.ghost").async_step_remove()
+
+    assert not cleared

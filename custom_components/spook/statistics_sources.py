@@ -74,11 +74,26 @@ def async_setup_abandoned_statistics_watching(hass: HomeAssistant) -> CALLBACK_T
         """Forget how long it was away, because it is not away now."""
         hass.data[DATA_ABANDONED_SINCE].pop(event.data["entity_id"], None)
 
-    return hass.bus.async_listen(
+    unsubscribe = hass.bus.async_listen(
         EVENT_STATE_CHANGED,
         _start_its_wait_over,
         event_filter=_something_being_waited_on_is_back,
     )
+
+    @callback
+    def _stop_watching() -> None:
+        """Stop, and throw away what was being waited on.
+
+        Every wait is only worth anything for as long as somebody was
+        watching. Nothing is while Spook is unloaded, so what was recorded
+        before that stops meaning "away the whole time" the moment it
+        stops, and keeping it would hand the next setup a wait that already
+        looks served.
+        """
+        unsubscribe()
+        hass.data.pop(DATA_ABANDONED_SINCE, None)
+
+    return _stop_watching
 
 
 @callback
