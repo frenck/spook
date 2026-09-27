@@ -275,3 +275,30 @@ async def test_a_sensor_that_stays_gone_is_reported(
     assert issue
     assert issue.translation_placeholders
     assert issue.translation_placeholders["statistics"] == "- `sensor.ghost`"
+
+
+async def test_the_issue_carries_what_the_fix_is_dispatched_on(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the issue is fixable and names its findings the agreed way.
+
+    Which flow opens is decided by a key in the issue's data, and the flow's
+    own tests build that data by hand. So a typo here would leave the real
+    repair on Home Assistant's plain confirm flow, offering nothing, with
+    every test of the fix still passing.
+    """
+    validation = {
+        "sensor.ghost": [SimpleNamespace(type="no_state")],
+        "sensor.gone": [SimpleNamespace(type="no_state")],
+    }
+    _install_fake_recorder(hass, monkeypatch, validation)
+
+    await _inspect_until_settled(SpookRepair(hass), freezer)
+
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
+    assert issue
+    assert issue.is_fixable
+    assert issue.data == {"orphaned_statistic_ids": "sensor.ghost,sensor.gone"}
