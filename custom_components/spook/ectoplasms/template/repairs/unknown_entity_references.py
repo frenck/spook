@@ -14,6 +14,7 @@ from ....entity_filtering import (
     async_filter_known_entity_ids,
     async_get_all_entity_ids,
     async_get_all_services,
+    async_name_helper_in_the_registry,
 )
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
@@ -135,6 +136,9 @@ class SpookRepair(AbstractSpookRepair):
                     translation_placeholders={
                         "entities": self._describe(unknown_entities, unknown_active),
                         "helper": entry.title,
+                        "entity_id": async_name_helper_in_the_registry(
+                            self.hass, entry.entry_id
+                        ),
                         "edit": "/config/helpers",
                     },
                 )
