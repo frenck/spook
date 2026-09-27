@@ -25,6 +25,7 @@ from .repairs import SpookRepairManager
 from .run_history import async_setup_run_history
 from .services import SpookServiceManager
 from .setup_helpers import async_forward_setup_entry
+from .statistics_sources import async_setup_abandoned_statistics_watching
 from .timed_states import async_setup_timed_states
 
 if TYPE_CHECKING:
@@ -93,6 +94,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     services = SpookServiceManager(hass)
     await services.async_setup()
     entry.async_on_unload(services.async_on_unload)
+
+    # Watching before anything can start a wait it has to observe. A repair
+    # can put a statistic on the clock the first time it looks, and on the
+    # reload path that happens below rather than at some later event, so a
+    # watcher registered afterwards would already have missed the beginning
+    # of what it is meant to be watching.
+    entry.async_on_unload(async_setup_abandoned_statistics_watching(hass))
 
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)
