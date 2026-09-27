@@ -29,6 +29,7 @@ from custom_components.spook.repairs import (
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers import entity_registry as er
     import pytest
 
 _ISSUE_ID = "orphaned_statistics_orphaned_statistics"
@@ -318,3 +319,33 @@ async def test_a_wait_does_not_survive_spook_being_unloaded(
     await _flow(hass, "sensor.ghost").async_step_remove()
 
     assert not cleared
+
+
+async def test_a_registry_entry_arriving_starts_the_wait_over(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test being registered counts as coming back, not just having a state.
+
+    A statistic is known once it has a state or a registry entry, so an
+    entry arriving ends the wait as surely as a state does. The repair
+    hears about registry changes as well, but through a debouncer: one
+    created and removed inside that cooldown looks to it like nothing
+    happened at all.
+    """
+    missing = {"sensor.ghost", "sensor.returning"}
+    cleared = _install_fake_recorder(hass, monkeypatch, missing)
+    async_setup_abandoned_statistics_watching(hass)
+    await _settle(hass)
+
+    entry = entity_registry.async_get_or_create(
+        "sensor", "demo", "returning", suggested_object_id="returning"
+    )
+    await hass.async_block_till_done()
+    entity_registry.async_remove(entry.entity_id)
+    await hass.async_block_till_done()
+
+    await _flow(hass, "sensor.ghost,sensor.returning").async_step_remove()
+
+    assert cleared == [["sensor.ghost"]]

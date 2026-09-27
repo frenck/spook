@@ -95,6 +95,13 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     await services.async_setup()
     entry.async_on_unload(services.async_on_unload)
 
+    # Watching before anything can start a wait it has to observe. A repair
+    # can put a statistic on the clock the first time it looks, and on the
+    # reload path that happens below rather than at some later event, so a
+    # watcher registered afterwards would already have missed the beginning
+    # of what it is meant to be watching.
+    entry.async_on_unload(async_setup_abandoned_statistics_watching(hass))
+
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)
 
@@ -121,7 +128,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
     # Set up the all entity ids cache invalidation
     entry.async_on_unload(async_setup_all_entity_ids_cache_invalidation(hass))
-    entry.async_on_unload(async_setup_abandoned_statistics_watching(hass))
 
     # Start noting which automation runs under which context. It has to begin
     # here rather than when a condition first asks: a condition inside an

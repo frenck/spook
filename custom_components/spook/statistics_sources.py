@@ -74,10 +74,24 @@ def async_setup_abandoned_statistics_watching(hass: HomeAssistant) -> CALLBACK_T
         """Forget how long it was away, because it is not away now."""
         hass.data[DATA_ABANDONED_SINCE].pop(event.data["entity_id"], None)
 
-    unsubscribe = hass.bus.async_listen(
-        EVENT_STATE_CHANGED,
-        _start_its_wait_over,
-        event_filter=_something_being_waited_on_is_back,
+    @callback
+    def _a_statistic_was_registered(event_data: Mapping[str, Any]) -> bool:
+        """Return whether a registry entry now stands for one of them."""
+        return event_data["action"] != "remove" and event_data[
+            "entity_id"
+        ] in hass.data.get(DATA_ABANDONED_SINCE, {})
+
+    unsubscribes = (
+        hass.bus.async_listen(
+            EVENT_STATE_CHANGED,
+            _start_its_wait_over,
+            event_filter=_something_being_waited_on_is_back,
+        ),
+        hass.bus.async_listen(
+            er.EVENT_ENTITY_REGISTRY_UPDATED,
+            _start_its_wait_over,
+            event_filter=_a_statistic_was_registered,
+        ),
     )
 
     @callback
@@ -90,7 +104,8 @@ def async_setup_abandoned_statistics_watching(hass: HomeAssistant) -> CALLBACK_T
         stops, and keeping it would hand the next setup a wait that already
         looks served.
         """
-        unsubscribe()
+        for unsubscribe in unsubscribes:
+            unsubscribe()
         hass.data.pop(DATA_ABANDONED_SINCE, None)
 
     return _stop_watching
