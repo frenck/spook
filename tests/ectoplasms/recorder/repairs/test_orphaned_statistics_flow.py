@@ -10,12 +10,17 @@ not really an offer at all. #1613.
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
+from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
 from custom_components.spook import repairs, statistics_sources
+from custom_components.spook.statistics_sources import (
+    DATA_ABANDONED_SINCE,
+    async_settled_orphaned_statistic_ids,
+)
 from custom_components.spook.repairs import (
     OrphanedStatisticsFixFlow,
     async_create_fix_flow,
@@ -26,6 +31,28 @@ if TYPE_CHECKING:
     import pytest
 
 _ISSUE_ID = "orphaned_statistics_orphaned_statistics"
+
+# Comfortably past the settling time a statistic has to survive before Spook
+# will say anything about it, let alone offer to delete it.
+_LONG_ENOUGH = timedelta(minutes=20)
+
+
+async def _settle(hass: HomeAssistant) -> None:
+    """Let whatever is missing now have been missing long enough.
+
+    The fix asks the same question the report asked, settling time and all,
+    so a test that wants the button to do something has to give it findings
+    that have earned their place.
+
+    Done by putting the clock back on what was seen rather than by freezing
+    time. The flow waits on the recorder with `asyncio.timeout`, and a
+    frozen clock is one that never runs out.
+    """
+    await async_settled_orphaned_statistic_ids(hass)
+    hass.data[DATA_ABANDONED_SINCE] = {
+        statistic_id: first_seen - _LONG_ENOUGH
+        for statistic_id, first_seen in hass.data[DATA_ABANDONED_SINCE].items()
+    }
 
 
 def _install_fake_recorder(
@@ -108,6 +135,7 @@ async def test_clearing_throws_away_what_was_offered(
 ) -> None:
     """Test pressing the button clears the statistics the report named."""
     cleared = _install_fake_recorder(hass, monkeypatch, {"sensor.ghost", "sensor.gone"})
+    await _settle(hass)
 
     result = await (_flow(hass, "sensor.ghost,sensor.gone")).async_step_remove()
 
@@ -126,6 +154,7 @@ async def test_one_that_came_back_is_left_alone(
     is what both the report and a fresh look agree on.
     """
     cleared = _install_fake_recorder(hass, monkeypatch, {"sensor.ghost"})
+    await _settle(hass)
 
     await (_flow(hass, "sensor.ghost,sensor.came_back")).async_step_remove()
 
@@ -144,6 +173,7 @@ async def test_nothing_is_cleared_that_was_never_offered(
     cleared = _install_fake_recorder(
         hass, monkeypatch, {"sensor.ghost", "sensor.newly_orphaned"}
     )
+    await _settle(hass)
 
     await (_flow(hass, "sensor.ghost")).async_step_remove()
 
@@ -192,6 +222,8 @@ async def test_a_recorder_that_does_not_answer_is_not_a_success(
     cleared = _install_fake_recorder(
         hass, monkeypatch, {"sensor.ghost"}, confirms=False
     )
+    await _settle(hass)
+
     monkeypatch.setattr(repairs, "_CLEARING_TAKES_AT_MOST", 0.01)
 
     result = await _flow(hass, "sensor.ghost").async_step_remove()
@@ -200,3 +232,31 @@ async def test_a_recorder_that_does_not_answer_is_not_a_success(
     assert cleared == [["sensor.ghost"]]
     assert result["type"] == "abort"
     assert result["reason"] == "clearing_took_too_long"
+
+
+async def test_one_that_came_back_and_dipped_again_is_left_alone(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a fresh glance is not enough to delete somebody's history.
+
+    An issue can sit unopened for days. In that time a sensor can come back,
+    work perfectly well, and then be missing again for a moment because its
+    integration happened to be reloading when the button was pressed. A fix
+    that only asks whether it is gone right now would take that moment as
+    permission, which is exactly the case the settling time exists for.
+    """
+    missing = {"sensor.ghost", "sensor.flapper"}
+    cleared = _install_fake_recorder(hass, monkeypatch, missing)
+    await _settle(hass)
+
+    # The flapper comes back, and Spook notices on its next round.
+    missing.discard("sensor.flapper")
+    await async_settled_orphaned_statistic_ids(hass)
+
+    # And is away again by the time somebody opens the repair.
+    missing.add("sensor.flapper")
+
+    await _flow(hass, "sensor.ghost,sensor.flapper").async_step_remove()
+
+    assert cleared == [["sensor.ghost"]]

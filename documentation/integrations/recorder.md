@@ -158,7 +158,15 @@ The recorder keeps long-term statistics separately from the states it records, a
 
 These are not harmful, but they are not free either: they take up database space, and they keep showing up in pickers and graphs long after the sensor they belonged to is gone.
 
-To resolve the raised issue, open **Settings** > {term}`Tools` > **Statistics** and fix them there. Spook will automatically remove the repair issue once the issue is fixed.
+The repair itself offers to clear them for you. It gives you three choices:
+
+- **Clear these statistics**, which throws that history away for good.
+- **Let me do it myself**, which points you at **Settings** > {term}`Tools` > **Statistics**.
+- **Keep them, stop telling me**, which leaves them alone and stops the repair coming back.
+
+Spook looks again before it clears anything, and only removes what the list you read and that fresh look agree on. Anything that has an entity behind it again by the time you press the button is left where it is, and Spook tells you so rather than reporting a job it did not do.
+
+A statistic has to keep looking abandoned for a quarter of an hour before Spook mentions it at all. Sensors go missing briefly all the time, when an integration reloads or while Home Assistant is still starting, and none of those are worth deleting anybody's history over.
 
 ## Use cases
 

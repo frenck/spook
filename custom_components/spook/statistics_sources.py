@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 import functools
 from typing import TYPE_CHECKING
 
@@ -9,10 +10,15 @@ from homeassistant.components.recorder.statistics import (
     get_metadata,
     validate_statistics,
 )
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE, get_instance
+from homeassistant.util import dt as dt_util
+from homeassistant.util.hass_dict import HassKey
 
 if TYPE_CHECKING:
+    from datetime import datetime
+
     from homeassistant.core import HomeAssistant
 
 # The recorder validation issue type for a statistic ID that has recorded
@@ -20,6 +26,58 @@ if TYPE_CHECKING:
 # state-class changes, intentionally excluded entities) are either handled
 # by Home Assistant itself or expected.
 _ORPHAN_ISSUE_TYPE = "no_state"
+
+# How long a statistic has to keep looking abandoned before Spook says so.
+# Nothing here is urgent: statistics left behind by a sensor removed last
+# year keep just as well for another quarter of an hour.
+_SETTLING_TIME = timedelta(minutes=15)
+
+# When each currently abandoned statistic was first seen that way. Held per
+# instance rather than written down, so a restart starts every wait over,
+# which is the point: the minutes after a start are when the house is least
+# sure what it has.
+DATA_ABANDONED_SINCE: HassKey[dict[str, datetime]] = HassKey(
+    "spook_statistics_abandoned_since",
+)
+
+
+@callback
+def _async_abandoned_since(hass: HomeAssistant) -> dict[str, datetime]:
+    """Return when each abandoned statistic was first seen that way."""
+    if DATA_ABANDONED_SINCE not in hass.data:
+        hass.data[DATA_ABANDONED_SINCE] = {}
+    return hass.data[DATA_ABANDONED_SINCE]
+
+
+async def async_settled_orphaned_statistic_ids(hass: HomeAssistant) -> set[str]:
+    """Return the statistics that have kept looking abandoned long enough.
+
+    A sensor is briefly in neither the state machine nor the registry more
+    often than it sounds: an integration re-registering its entities, a
+    config entry reloading, the moments during a start before everything has
+    arrived. Every one of those is a window in which a working sensor's
+    history looks abandoned, and what is on offer here is deleting it. #1672.
+
+    Asked by the report and by the fix, and it has to be the same question.
+    A fix satisfied by one glance would delete the history of a sensor that
+    came back days ago and happened to be between two of those windows when
+    somebody pressed the button, which is the very thing the wait is for.
+    """
+    abandoned = await async_abandoned_statistic_ids(hass)
+
+    now = dt_util.utcnow()
+    since = _async_abandoned_since(hass)
+    # Rebuilt rather than added to, so anything that turned up again drops
+    # out and starts its wait from scratch if it goes missing later.
+    since = hass.data[DATA_ABANDONED_SINCE] = {
+        statistic_id: since.get(statistic_id, now) for statistic_id in abandoned
+    }
+
+    return {
+        statistic_id
+        for statistic_id, first_seen in since.items()
+        if now - first_seen >= _SETTLING_TIME
+    }
 
 
 async def async_abandoned_statistic_ids(hass: HomeAssistant) -> set[str]:

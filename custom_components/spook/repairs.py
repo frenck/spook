@@ -51,7 +51,7 @@ from .entity_suggestions import (
     async_describe_unknown_entities,
     async_warm_rename_suggestions,
 )
-from .statistics_sources import async_abandoned_statistic_ids
+from .statistics_sources import async_settled_orphaned_statistic_ids
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Iterable, Mapping, Sized
@@ -1191,19 +1191,26 @@ class OrphanedStatisticsFixFlow(_RemoveOrIgnoreFixFlow):
         """Clear the statistics, after looking again to see if they still go.
 
         Looked up again rather than taken from the issue, and then kept in
-        common with it. The report may be a quarter of an hour old by the
-        time somebody opens it, and this deletes history: nothing goes that
-        was not on the list they read, and nothing goes that has come back
-        since it was written.
+        common with it. An issue sits there until somebody opens it, which
+        may be days, and this deletes history: nothing goes that was not on
+        the list they read, and nothing goes that has come back since.
+
+        Asked the same way the report asked it, settling time and all. A
+        glance would say yes to a sensor that came back long ago and happens
+        to be between two brief windows right now, which is the case the
+        wait exists for.
         """
         offered = set(self._offered())
         if not offered:
             return self.async_abort(reason="nothing_to_clear")
 
-        clearing = sorted(offered & await async_abandoned_statistic_ids(self.hass))
+        still_gone = await async_settled_orphaned_statistic_ids(self.hass)
+        clearing = sorted(offered & still_gone)
         if not clearing:
-            # Every one of them turned up again while the issue sat there,
-            # so there is nothing left to do and nothing to apologise for.
+            # Nothing on the list still needs clearing. They may have an
+            # entity behind them again, or somebody may have cleared them by
+            # hand while the issue sat there. Either way there is nothing to
+            # do, and which of the two it was is not worth guessing at.
             return self.async_abort(reason="nothing_to_clear")
 
         # Queued rather than done: the recorder takes the work on its own
