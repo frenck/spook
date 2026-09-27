@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING
 
 from homeassistant.setup import async_setup_component
 
-from custom_components.spook.const import DOMAIN
 from custom_components.spook.ectoplasms.script.repairs import (
     unknown_condition_references,
     unknown_trigger_references,
@@ -100,9 +99,5 @@ async def test_broken_scripts_get_specific_issues(
         "script_unknown_condition_references",
     ):
         assert (
-            issue_registry.async_get_issue(
-                DOMAIN,
-                f"{repair_name}_script.healthy",
-            )
-            is None
+            async_issue_about(issue_registry, f"{repair_name}_script.healthy") is None
         )

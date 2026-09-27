@@ -581,3 +581,28 @@ async def test_an_issue_goes_once_the_entity_is_put_right(
         for (domain, _issue_id), entry in issue_registry.issues.items()
         if domain == DOMAIN
     ]
+
+
+async def test_findings_that_run_together_are_told_apart(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a reference cannot borrow the one next to it.
+
+    The digest used to be taken over the references run together with a
+    separator between them, which reads two different sets the same way when
+    a reference holds that separator itself. Entity IDs cannot, but resource
+    URLs, notifier names and customize keys are whatever somebody typed, and
+    the cost of getting it wrong is a dismissal covering a finding nobody
+    dismissed.
+    """
+    repair = MockFindingsRepair(hass)
+
+    repair.findings = {"light.a\nlight.b", "light.c"}
+    await repair._async_inspect_with_cleanup()
+    first = _the_one_issue(issue_registry).issue_id
+
+    repair.findings = {"light.a", "light.b\nlight.c"}
+    await repair._async_inspect_with_cleanup()
+
+    assert _the_one_issue(issue_registry).issue_id != first

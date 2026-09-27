@@ -1,6 +1,9 @@
 """Tests for the template helper unknown entity references repair."""
 
-# pylint: disable=wrong-import-order
+# The cleanup round is what an issue keyed to its findings needs looking at,
+# and there is no public way to it.
+# ruff: noqa: SLF001
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -399,3 +402,54 @@ async def test_notify_group_in_a_helper_action_is_not_reported(
         )
         is None
     )
+
+
+async def test_enabling_a_parked_step_is_a_new_finding(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a reference waking up does not inherit an old dismissal.
+
+    The same entity is reported either way, so a digest taken over the
+    entity IDs alone does not move. But the report does move, from a
+    reference nothing runs to one that breaks the next press, and somebody
+    who waved the first away never saw the second.
+    """
+    options = {
+        "name": "Parked button",
+        "template_type": "button",
+        "press": [
+            {
+                "action": "light.turn_on",
+                "enabled": False,
+                "target": {"entity_id": "light.seasonal"},
+            },
+        ],
+    }
+    entry = MockConfigEntry(domain="template", title="Parked button", options=options)
+    entry.add_to_hass(hass)
+
+    await SpookRepair(hass)._async_inspect_with_cleanup()
+    parked = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
+    )
+    assert parked
+    assert (
+        "only referenced from disabled steps"
+        in (parked.translation_placeholders["entities"])
+    )
+
+    # The season comes round again.
+    del options["press"][0]["enabled"]
+    hass.config_entries.async_update_entry(entry, options=options)
+    await SpookRepair(hass)._async_inspect_with_cleanup()
+
+    live = async_issue_about(
+        issue_registry, f"template_unknown_entity_references_{entry.entry_id}"
+    )
+    assert live
+    assert (
+        "only referenced from disabled steps"
+        not in (live.translation_placeholders["entities"])
+    )
+    assert live.issue_id != parked.issue_id

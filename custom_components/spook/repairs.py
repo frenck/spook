@@ -79,13 +79,25 @@ def _plural(items: Sized) -> str:
 
 
 def _fingerprint(references: Iterable[str]) -> str:
-    """Return a short digest of what a finding is about.
+    r"""Return a short digest of what a finding is about.
 
     Sorted first, because the same findings in a different order are the same
     findings, and an ID that moved would resurface an issue somebody had
     already dealt with.
+
+    Each one is written down with its length in front of it, so that the
+    digest reads two different sets two different ways. Joining them with a
+    separator does not: a reference holding that separator borrows the one
+    next to it, and `{"a\nb", "c"}` and `{"a", "b\nc"}` come out identical.
+    Entity IDs cannot do that, but resource URLs, notifier names and
+    customize keys are whatever somebody typed.
     """
-    digest = hashlib.sha256("\n".join(sorted(references)).encode())
+    digest = hashlib.sha256()
+    for reference in sorted(references):
+        encoded = reference.encode()
+        digest.update(f"{len(encoded)}:".encode())
+        digest.update(encoded)
+
     return digest.hexdigest()[:_FINGERPRINT_LENGTH]
 
 
