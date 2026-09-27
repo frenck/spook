@@ -5,12 +5,54 @@ from __future__ import annotations
 import functools
 from typing import TYPE_CHECKING
 
-from homeassistant.components.recorder.statistics import get_metadata
+from homeassistant.components.recorder.statistics import (
+    get_metadata,
+    validate_statistics,
+)
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE, get_instance
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+
+# The recorder validation issue type for a statistic ID that has recorded
+# statistics but no matching sensor state at all. Other issue types (unit or
+# state-class changes, intentionally excluded entities) are either handled
+# by Home Assistant itself or expected.
+_ORPHAN_ISSUE_TYPE = "no_state"
+
+
+async def async_abandoned_statistic_ids(hass: HomeAssistant) -> set[str]:
+    """Return the statistics with no entity of any kind behind them.
+
+    In one place because two things ask it and they must not drift: the
+    repair that reports them, and the fix that offers to clear them. A fix
+    working from a different answer than the report would delete something
+    nobody was shown.
+
+    This is a snapshot of one moment and says nothing about how long it has
+    looked this way, which is a judgement its callers make for themselves.
+    """
+    if DATA_INSTANCE not in hass.data:
+        return set()  # Recorder is not set up.
+
+    validation = await get_instance(hass).async_add_executor_job(
+        validate_statistics,
+        hass,
+    )
+    candidates = {
+        statistic_id
+        for statistic_id, issues in validation.items()
+        if any(issue.type == _ORPHAN_ISSUE_TYPE for issue in issues)
+    }
+
+    # Having no state is not the same as being left behind. A registered
+    # entity that is disabled or not set up yet has statistics waiting for it,
+    # and an integration can publish statistics straight into the recorder
+    # with no entity ever existing; the energy dashboard draws those perfectly
+    # happily. Following the repair on either would delete working history.
+    # #1625.
+    return candidates - await async_known_to_home_assistant(hass, candidates)
 
 
 async def async_known_to_home_assistant(

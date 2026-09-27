@@ -10,7 +10,6 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
 from custom_components.spook import statistics_sources
-from custom_components.spook.ectoplasms.recorder.repairs import orphaned_statistics
 from custom_components.spook.ectoplasms.recorder.repairs.orphaned_statistics import (
     SpookRepair,
 )
@@ -50,45 +49,42 @@ def _install_fake_recorder(
     validation: dict[str, list[Any]],
     recorded: dict[str, str | None] | None = None,
 ) -> None:
-    """Install a fake recorder instance returning the given validation.
+    """Stand in for the recorder, answering with the given validation.
 
     `recorded` is what the recorder holds by way of metadata for those IDs:
     the name each was published under, or `None` for one a sensor wrote
     itself. Everything validated is recorded under no name unless said
     otherwise.
 
-    Once per test, and once only. Home Assistant's `get_instance` is an
-    `lru_cache` over `hass`, so a second install is written into `hass.data`
-    and never read: everything carries on seeing the first one. A test that
-    needs the validation to change part way through mutates the mapping it
-    passed in, which this reads on every call.
+    The executor really calls what it is handed, so the two questions Spook
+    asks stay told apart: which statistics have no state, and which of those
+    were published on purpose.
+
+    `validation` is read on every call rather than copied, so a test that
+    needs the answer to change part way through mutates the mapping it
+    passed in.
     """
-
-    async def _async_add_executor_job(_func: Any, *_args: Any) -> Any:
-        return validation
-
-    hass.data[DATA_INSTANCE] = SimpleNamespace(
-        async_add_executor_job=_async_add_executor_job,
-    )
-    monkeypatch.setattr(orphaned_statistics, "validate_statistics", lambda _hass: None)
-
     names = dict.fromkeys(validation) | (recorded or {})
 
-    async def _async_metadata(
-        _func: Any,
-        *_args: Any,
-    ) -> dict[str, tuple[int, dict[str, Any]]]:
-        return {
-            statistic_id: (1, {"name": name}) for statistic_id, name in names.items()
-        }
-
+    monkeypatch.setattr(
+        statistics_sources, "validate_statistics", lambda _hass: validation
+    )
     monkeypatch.setattr(
         statistics_sources,
-        "get_instance",
-        lambda hass: SimpleNamespace(  # noqa: ARG005
-            async_add_executor_job=_async_metadata,
-        ),
+        "get_metadata",
+        lambda _hass, statistic_ids: {
+            statistic_id: (1, {"name": names.get(statistic_id)})
+            for statistic_id in statistic_ids
+        },
     )
+
+    async def _async_add_executor_job(func: Any, *args: Any) -> Any:
+        """Run it here, the way the recorder would run it over there."""
+        return func(*args)
+
+    instance = SimpleNamespace(async_add_executor_job=_async_add_executor_job)
+    hass.data[DATA_INSTANCE] = instance
+    monkeypatch.setattr(statistics_sources, "get_instance", lambda _hass: instance)
 
 
 async def test_orphaned_statistics_create_issue(

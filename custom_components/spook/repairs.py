@@ -37,6 +37,7 @@ from homeassistant.helpers.debounce import Debouncer
 from homeassistant.helpers.dispatcher import async_dispatcher_connect
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.helpers.event import async_track_time_interval
+from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
@@ -50,6 +51,7 @@ from .entity_suggestions import (
     async_describe_unknown_entities,
     async_warm_rename_suggestions,
 )
+from .statistics_sources import async_abandoned_statistic_ids
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Coroutine, Iterable, Mapping, Sized
@@ -80,6 +82,11 @@ _MIN_MAX_MINIMUM_MEMBERS = 2
 def _plural(items: Sized) -> str:
     """Return the plural suffix for a sized collection."""
     return "" if len(items) == 1 else "s"
+
+
+def _bulleted(items: Iterable[str]) -> str:
+    """Return the markdown list a repair puts its findings in."""
+    return "\n".join(f"- `{item}`" for item in items)
 
 
 def _fingerprint(references: Iterable[str]) -> str:
@@ -1151,6 +1158,55 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         return self.async_create_entry(data={})
 
 
+class OrphanedStatisticsFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for long-term statistics with no entity left behind them.
+
+    Clearing them is a websocket command the Statistics page calls and no
+    action anybody can reach, so without this the only way to act on the
+    report is to open that page and work through it by hand, which on a list
+    of a couple of hundred is not really an offer at all. #1613.
+    """
+
+    _key = "statistics"
+    _id_key = "orphaned_statistic_ids"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """List what the report named, the way the report listed it."""
+        return {"statistics": _bulleted(self._offered())}
+
+    def _offered(self) -> list[str]:
+        """Return the statistic IDs the report put in front of somebody."""
+        written = str((self.data or {}).get(self._id_key, ""))
+        return [statistic_id for statistic_id in written.split(",") if statistic_id]
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Clear the statistics, after looking again to see if they still go.
+
+        Looked up again rather than taken from the issue, and then kept in
+        common with it. The report may be a quarter of an hour old by the
+        time somebody opens it, and this deletes history: nothing goes that
+        was not on the list they read, and nothing goes that has come back
+        since it was written.
+        """
+        offered = set(self._offered())
+        if not offered:
+            return self.async_abort(reason="nothing_to_clear")
+
+        clearing = sorted(offered & await async_abandoned_statistic_ids(self.hass))
+        if not clearing:
+            # Every one of them turned up again while the issue sat there,
+            # so there is nothing left to do and nothing to apologise for.
+            return self.async_abort(reason="nothing_to_clear")
+
+        get_instance(self.hass).async_clear_statistics(clearing)
+        LOGGER.debug("Spook cleared orphaned statistics: %s", ", ".join(clearing))
+
+        return self.async_create_entry(data={})
+
+
 # Remove-or-ignore fix flows, keyed by the data field that identifies their
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
@@ -1163,6 +1219,7 @@ _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "group_entity_id": GroupUnknownMembersFixFlow,
     "min_max_config_entry_id": MinMaxUnknownSourcesFixFlow,
     "helper_config_entry_id": HelperUnknownSourcesFixFlow,
+    "orphaned_statistic_ids": OrphanedStatisticsFixFlow,
 }
 
 
