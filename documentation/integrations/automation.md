@@ -79,6 +79,8 @@ The other way round, holding one on for a while, is [Turn on for](#turn-on-for).
 
 Turning the automation back on yourself cancels the snooze. Saying so is a clearer statement of what you want than a wake-up time set earlier, so Spook takes it that way and forgets the rest.
 
+An automation can snooze itself, which is the plainest way to write "and not again for an hour". Snoozing stops an automation starting again; it does not stop the run that asked, so the steps after it still happen.
+
 :::{seealso} Example actions in {term}`YAML`
 :class: dropdown
 
@@ -102,6 +104,21 @@ target:
   area_id: bedroom
 data:
   duration: "08:00:00"
+```
+
+Tell me the pool is warm, then leave it alone for twelve hours:
+
+```{code-block} yaml
+:linenos:
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      message: "The pool is {{ states('sensor.pool_temperature') }} degrees"
+  - action: automation.snooze
+    target:
+      entity_id: automation.pool_temperature_notification
+    data:
+      duration: "12:00:00"
 ```
 
 :::
