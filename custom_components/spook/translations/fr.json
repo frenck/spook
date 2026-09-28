@@ -406,7 +406,7 @@
                             "remove": "Supprimer l'entrée"
                         },
                         "title": "Entités sources inconnues utilisées dans l'entrée : {helper}",
-                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée {helper} (`{domain}`) fait référence à ces entités sources, qui sont incoonues de Home Assistant :\n\n\n\n{sources}\n\n\n\nSans ses sources, l'entrée ne peut fonctionner. {usage}\n\n\n\nSupprimez cette entrée ou gardez la et spook arrêtera de la mentionner.\n\n\n\nSpook 👻 Votre pote."
+                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée {helper} (`{domain}`, `{entity_id}`) fait référence à ces entités sources, qui sont incoonues de Home Assistant :\n\n\n\n{sources}\n\n\n\nSans ses sources, l'entrée ne peut fonctionner. {usage}\n\n\n\nSupprimez cette entrée ou gardez la et spook arrêtera de la mentionner.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -466,7 +466,7 @@
                             "remove": "Retirer ces membres"
                         },
                         "title": "Membres inconnus utilisé dans une entrée min/max : {helper}",
-                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée min/max {helper} combine les membres suivants, qui sont inconnus de Home Assistant :\n\n\n\n{sources}\n\n\n\nSupprimez les pour que l'entrée continue de fonctionner avec ceux qui restent, ou gardez les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Votre pote."
+                        "description": "Spook a trouvé un fantôme dans vos entrées 👻\n\n\n\nL'entrée min/max {helper} (`{entity_id}`) combine les membres suivants, qui sont inconnus de Home Assistant :\n\n\n\n{sources}\n\n\n\nSupprimez les pour que l'entrée continue de fonctionner avec ceux qui restent, ou gardez les et Spook arrêtera de les mentionner.\n\n\n\nSpook 👻 Votre pote."
                     }
                 },
                 "abort": {
@@ -527,7 +527,7 @@
         },
         "template_unknown_entity_references": {
             "title": "Entités inconnues utilisée dans une entrée template : {helper}",
-            "description": "Spook a trouvé un fantôme dans vos entrées template 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante :\n\n\n\n[{helper}]({edit})\n\n\n\nSon template fait référence à ces entités, qui sont inconnues de Home Assistant :\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une entité est renommée ou supprimée. Pour corriger cette erreur, reconfigurez l'entrée template pour qu'il fasse réference à des entités existantes.\n\n\n\nSpook 👻 Votre pote."
+            "description": "Spook a trouvé un fantôme dans vos entrées template 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'entrée suivante :\n\n\n\n[{helper}]({edit}) (`{entity_id}`)\n\n\n\nSon template fait référence à ces entités, qui sont inconnues de Home Assistant :\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une entité est renommée ou supprimée. Pour corriger cette erreur, reconfigurez l'entrée template pour qu'il fasse réference à des entités existantes.\n\n\n\nSpook 👻 Votre pote."
         },
         "script_unknown_trigger_references": {
             "title": "Déclencheur inconnu utilisé dans : {script}",
@@ -542,7 +542,7 @@
             "title": "Notificateurs inconnus utilisés par l'alerte : {alert}"
         },
         "template_unknown_service_references": {
-            "description": "Spook a trouvé un fantôme dans vos assistants de modèle 👻\n\nEn flottant dans les parages, Spook est tombé sur l'assistant de modèle suivant :\n\n[{helper}]({edit})\n\nIl fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nCela arrive souvent lorsque l'intégration derrière une action a été supprimée, ou qu'un script a été renommé ou supprimé. Pour résoudre cette erreur, reconfigurez l'assistant de modèle pour qu'il utilise des actions existantes.\n\nSpook 👻 Votre pote.",
+            "description": "Spook a trouvé un fantôme dans vos assistants de modèle 👻\n\nEn flottant dans les parages, Spook est tombé sur l'assistant de modèle suivant :\n\n[{helper}]({edit}) (`{entity_id}`)\n\nIl fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nCela arrive souvent lorsque l'intégration derrière une action a été supprimée, ou qu'un script a été renommé ou supprimé. Pour résoudre cette erreur, reconfigurez l'assistant de modèle pour qu'il utilise des actions existantes.\n\nSpook 👻 Votre pote.",
             "title": "Actions inconnues utilisées dans l'assistant de modèle : {helper}"
         },
         "notify_unknown_group_members": {
