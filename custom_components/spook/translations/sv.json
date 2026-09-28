@@ -406,7 +406,7 @@
                             "remove": "Ta bort denna hjälpare"
                         },
                         "title": "Okända entiteter används i hjälpare: {helper}",
-                        "description": "Spook har hittat ett spöke bland dina hjälpare 👻\n\nHjälparen {helper} (`{domain}`) refererar till följande källentiteter som är okända för Home Assistant:\n\n{sources}\n\nUtan dess källa så kan inte hjälparen fungera. {usage}\n\nTa bort hjälparen, eller behåll den och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare."
+                        "description": "Spook har hittat ett spöke bland dina hjälpare 👻\n\nHjälparen {helper} (`{domain}`, `{entity_id}`) refererar till följande källentiteter som är okända för Home Assistant:\n\n{sources}\n\nUtan dess källa så kan inte hjälparen fungera. {usage}\n\nTa bort hjälparen, eller behåll den och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare."
                     }
                 },
                 "abort": {
@@ -466,7 +466,7 @@
                             "remove": "Ta bort dessa medlemmar"
                         },
                         "title": "Okända medlemmar används i min/max-hjälpare: {helper}",
-                        "description": "Spook har hittat ett spöke bland dina hjälpare 👻\n\nMin/max-hjälparen {helper} kombinerar följande medlemmar som är okända för Home Assistant:\n\n{sources}\n\nTa bort dem så att hjälparen fortsätter med dem medlemmar som återstår, eller behåll dem och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare."
+                        "description": "Spook har hittat ett spöke bland dina hjälpare 👻\n\nMin/max-hjälparen {helper} (`{entity_id}`) kombinerar följande medlemmar som är okända för Home Assistant:\n\n{sources}\n\nTa bort dem så att hjälparen fortsätter med dem medlemmar som återstår, eller behåll dem och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare."
                     }
                 },
                 "abort": {
@@ -519,7 +519,7 @@
         },
         "template_unknown_entity_references": {
             "title": "Okända entiteter används i mallhjälpare: {helper}",
-            "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit})\n\nDess mall refererar till följande entiteter som är okända för Home Assistant:\n\n{entities}\n\n\n\nDetta kan hända när entitet döps om eller tas bort. För att åtgärda felet, konfigurera om mallhjälparen så att den refererar till existerande entiteter.\n\nSpook 👻 Din polare."
+            "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDess mall refererar till följande entiteter som är okända för Home Assistant:\n\n{entities}\n\n\n\nDetta kan hända när entitet döps om eller tas bort. För att åtgärda felet, konfigurera om mallhjälparen så att den refererar till existerande entiteter.\n\nSpook 👻 Din polare."
         },
         "energy_unknown_references": {
             "title": "Okända entiteter används i Energi-kontrollpanelen",
@@ -542,7 +542,7 @@
             "title": "Okända notifierare används av alert: {alert}"
         },
         "template_unknown_service_references": {
-            "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit})\n\nDen refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\nDet händer ofta när integrationen bakom en åtgärd har tagits bort, eller när ett skript har bytt namn eller tagits bort. För att åtgärda felet, konfigurera om mallhjälparen så att den använder åtgärder som finns.\n\nSpook 👻 Din polare.",
+            "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDen refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\nDet händer ofta när integrationen bakom en åtgärd har tagits bort, eller när ett skript har bytt namn eller tagits bort. För att åtgärda felet, konfigurera om mallhjälparen så att den använder åtgärder som finns.\n\nSpook 👻 Din polare.",
             "title": "Okända åtgärder används i mallhjälparen: {helper}"
         },
         "notify_unknown_group_members": {
