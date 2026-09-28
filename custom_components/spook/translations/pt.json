@@ -421,7 +421,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "O Spook encontrou um fantasma nos teus assistentes 👻\n\nO assistente mín/máx {helper} combina os seguintes membros, que são desconhecidos para o Home Assistant:\n\n{sources}\n\nRemove-os para o assistente continuar com os membros que restam, ou fica com eles e o Spook não volta a falar deles.\n\nSpook 👻 O teu amigo.",
+                        "description": "O Spook encontrou um fantasma nos teus assistentes 👻\n\nO assistente mín/máx {helper} (`{entity_id}`) combina os seguintes membros, que são desconhecidos para o Home Assistant:\n\n{sources}\n\nRemove-os para o assistente continuar com os membros que restam, ou fica com eles e o Spook não volta a falar deles.\n\nSpook 👻 O teu amigo.",
                         "menu_options": {
                             "ignore": "Fica com ele e não me digas mais nada",
                             "manage": "Eu próprio resolvo",
@@ -441,7 +441,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma nos teus assistentes 👻\n\nO assistente {helper} (`{domain}`) refere as seguintes entidades de origem, que são desconhecidas para o Home Assistant:\n\n{sources}\n\nSem as suas origens este assistente não consegue funcionar. {usage}\n\nRemove o assistente, ou fica com ele e o Spook não volta a falar dele.\n\nSpook 👻 O teu amigo.",
+                        "description": "Spook encontrou um fantasma nos teus assistentes 👻\n\nO assistente {helper} (`{domain}`, `{entity_id}`) refere as seguintes entidades de origem, que são desconhecidas para o Home Assistant:\n\n{sources}\n\nSem as suas origens este assistente não consegue funcionar. {usage}\n\nRemove o assistente, ou fica com ele e o Spook não volta a falar dele.\n\nSpook 👻 O teu amigo.",
                         "menu_options": {
                             "ignore": "Fica com ele e não me digas mais nada",
                             "manage": "Eu próprio resolvo",
@@ -538,11 +538,11 @@
             "title": "Acionadores desconhecidos usados em: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "O Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit})\n\nA sua configuração refere as seguintes entidades, que são desconhecidas para o Home Assistant:\n\n{entities}\n\nIsto acontece muitas vezes quando uma entidade foi renomeada ou removida. Para corrigir este erro, reconfigura o assistente de template para apontar para entidades que existam.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nA sua configuração refere as seguintes entidades, que são desconhecidas para o Home Assistant:\n\n{entities}\n\nIsto acontece muitas vezes quando uma entidade foi renomeada ou removida. Para corrigir este erro, reconfigura o assistente de template para apontar para entidades que existam.\n\nSpook 👻 O teu amigo.",
             "title": "Entidades desconhecidas usadas no assistente de template: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "O Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit})\n\nRefere as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{services}\n\nIsto acontece muitas vezes quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou eliminado. Para corrigir este erro, reconfigura o assistente de template para usar ações que existam.\n\nSpook 👻 O teu amigo.",
+            "description": "O Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nRefere as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{services}\n\nIsto acontece muitas vezes quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou eliminado. Para corrigir este erro, reconfigura o assistente de template para usar ações que existam.\n\nSpook 👻 O teu amigo.",
             "title": "Ações desconhecidas usadas no assistente de template: {helper}"
         },
         "notify_unknown_group_members": {
