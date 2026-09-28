@@ -429,7 +429,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma em seus auxiliares 👻\n\nO auxiliar mín/máx {helper} combina os seguintes membros, que são desconhecidos do Home Assistant:\n\n{sources}\n\nRemova para o auxiliar seguir com os membros que sobram, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "Spook encontrou um fantasma em seus auxiliares 👻\n\nO auxiliar mín/máx {helper} (`{entity_id}`) combina os seguintes membros, que são desconhecidos do Home Assistant:\n\n{sources}\n\nRemova para o auxiliar seguir com os membros que sobram, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
                             "ignore": "Manter e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
@@ -474,11 +474,11 @@
             "title": "Acionadores desconhecidos usados em: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit})\n\nA configuração dele faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida. Para corrigir esse erro, reconfigure o auxiliar de template para apontar para entidades que existam.\n\nSpook 👻 Seu mano.",
+            "description": "Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nA configuração dele faz referência às seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nIsso costuma acontecer quando uma entidade foi renomeada ou removida. Para corrigir esse erro, reconfigure o auxiliar de template para apontar para entidades que existam.\n\nSpook 👻 Seu mano.",
             "title": "Entidades desconhecidas usadas no auxiliar de template: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit})\n\nEle faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nIsso costuma acontecer quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou excluído. Para corrigir esse erro, reconfigure o auxiliar de template para usar ações que existam.\n\nSpook 👻 Seu mano.",
+            "description": "Spook encontrou um fantasma em seus auxiliares de template 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte auxiliar de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEle faz referência às seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nIsso costuma acontecer quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou excluído. Para corrigir esse erro, reconfigure o auxiliar de template para usar ações que existam.\n\nSpook 👻 Seu mano.",
             "title": "Ações desconhecidas usadas no auxiliar de template: {helper}"
         },
         "unknown_customized_entities": {
@@ -493,7 +493,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook encontrou um fantasma em seus auxiliares 👻\n\nO auxiliar {helper} (`{domain}`) faz referência às seguintes entidades de origem, que são desconhecidas do Home Assistant:\n\n{sources}\n\nSem as origens dele, este auxiliar não consegue funcionar. {usage}\n\nRemova o auxiliar, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
+                        "description": "Spook encontrou um fantasma em seus auxiliares 👻\n\nO auxiliar {helper} (`{domain}`, `{entity_id}`) faz referência às seguintes entidades de origem, que são desconhecidas do Home Assistant:\n\n{sources}\n\nSem as origens dele, este auxiliar não consegue funcionar. {usage}\n\nRemova o auxiliar, ou mantenha e o Spook não fala mais nisso.\n\nSpook 👻 Seu mano.",
                         "menu_options": {
                             "ignore": "Manter e não me avisar mais",
                             "manage": "Eu mesmo resolvo",
