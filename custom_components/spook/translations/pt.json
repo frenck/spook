@@ -531,8 +531,7 @@
             "title": "Notificadores desconhecidos usados pelo alerta: {alert}"
         },
         "orphaned_statistics": {
-            "title": "Encontradas estatísticas de longo prazo órfãs",
-            "description": "O Spook encontrou um fantasma no teu gravador 👻\n\nO Home Assistant guarda estatísticas de longo prazo do seguinte, mas já não existe uma entidade que lhes corresponda:\n\n{statistics}\n\n\n\nIsto costuma acontecer quando um sensor foi apagado e as estatísticas dele ficaram. Para corrigir este erro, abre Definições > Ferramentas > Estatísticas e trata delas aí.\n\nSpook 👻 O teu amigo."
+            "title": "Encontradas estatísticas de longo prazo órfãs"
         },
         "script_unknown_trigger_references": {
             "description": "O Spook encontrou um fantasma nos teus scripts 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script usa os seguintes acionadores, que nenhuma integração disponível para o Home Assistant consegue fornecer:\n\n{triggers}\n\nIsto acontece muitas vezes quando a integração que fornecia um acionador foi removida. Para corrigir este erro, [edita o script]({edit}) e remove o uso destes acionadores indisponíveis, ou restaura a integração que os fornece.\n\nSpook 👻 O teu amigo.",
