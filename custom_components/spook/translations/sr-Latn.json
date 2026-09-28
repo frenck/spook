@@ -388,7 +388,7 @@
             "fix_flow": {
                 "step": {
                     "init": {
-                        "description": "Spook je pronašao duha u vašim pomoćnicima 👻\n\nPomoćnik {helper} (`{domain}`) koristi sledeće izvorne entitete koji su nepoznati Home Assistant-u:\n\n{sources}\n\nBez svojih izvora ovaj pomoćnik ne može da radi. {usage}\n\nUklonite pomoćnika, ili ga zadržite i Spook će prestati da ukazuje na njega.\n\nSpook 👻 Vaš ortak.",
+                        "description": "Spook je pronašao duha u vašim pomoćnicima 👻\n\nPomoćnik {helper} (`{domain}`, `{entity_id}`) koristi sledeće izvorne entitete koji su nepoznati Home Assistant-u:\n\n{sources}\n\nBez svojih izvora ovaj pomoćnik ne može da radi. {usage}\n\nUklonite pomoćnika, ili ga zadržite i Spook će prestati da ukazuje na njega.\n\nSpook 👻 Vaš ortak.",
                         "menu_options": {
                             "ignore": "Zadrži, prestani da me obaveštavaš",
                             "manage": "Dozvoli mi da sam popravim",
@@ -408,7 +408,7 @@
             "fix_flow": {
                 "step": {
                     "init": {
-                        "description": "Spook je pronašao duha u vašim pomoćnicima 👻\n\nMin/max pomoćnik {helper} kombinuje sledeće članove koji su nepoznati Home Assistant-u:\n\n{sources}\n\nUklonite ih kako bi pomoćnik nastavio sa radom pomoću preostalih članova, ili ih zadržite i Spook će prestati da ukazuje na njih.\n\nSpook 👻 Vaš ortak.",
+                        "description": "Spook je pronašao duha u vašim pomoćnicima 👻\n\nMin/max pomoćnik {helper} (`{entity_id}`) kombinuje sledeće članove koji su nepoznati Home Assistant-u:\n\n{sources}\n\nUklonite ih kako bi pomoćnik nastavio sa radom pomoću preostalih članova, ili ih zadržite i Spook će prestati da ukazuje na njih.\n\nSpook 👻 Vaš ortak.",
                         "title": "Nepoznati članovi u min/max pomoćniku: {helper}",
                         "menu_options": {
                             "remove": "Ukloni ove članove",
@@ -535,11 +535,11 @@
             "title": "Nepoznati pokretači u: {script}"
         },
         "template_unknown_service_references": {
-            "description": "Spook je pronašao duha u vašim pomoćnicima za šablone 👻\n\nDok je lutao okolo, Spook je naišao na sledećeg pomoćnika za šablone:\n\n[{helper}]({edit})\n\nOn referencira sledeće akcije koje su nepoznate Home Assistant‑u:\n\n{services}\n\n\n\nOvo se često dešava kada je pružalac akcije uklonjen ili je skripta preimenovana ili obrisana. Da biste ispravili ovu grešku, ponovo konfigurišite pomoćnika za šablone da koristi postojeće akcije.\n\nSpook 👻 Vaš ortak.",
+            "description": "Spook je pronašao duha u vašim pomoćnicima za šablone 👻\n\nDok je lutao okolo, Spook je naišao na sledećeg pomoćnika za šablone:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nOn referencira sledeće akcije koje su nepoznate Home Assistant‑u:\n\n{services}\n\n\n\nOvo se često dešava kada je pružalac akcije uklonjen ili je skripta preimenovana ili obrisana. Da biste ispravili ovu grešku, ponovo konfigurišite pomoćnika za šablone da koristi postojeće akcije.\n\nSpook 👻 Vaš ortak.",
             "title": "Nepoznate akcije korišćene u pomoćniku za šablone: {helper}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook je pronašao duha u vašim pomoćnicima za šablone 👻\n\nDok je lutao okolo, Spook je naišao na sledećeg pomoćnika za šablone:\n\n[{helper}]({edit})\n\nNjegova konfiguracija referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nOvo se često dešava kada je entitet preimenovan ili uklonjen. Da biste ispravili ovu grešku, ponovo konfigurišite pomoćnika za šablone da referencira postojeće entitete.\n\nSpook 👻 Vaš ortak.",
+            "description": "Spook je pronašao duha u vašim pomoćnicima za šablone 👻\n\nDok je lutao okolo, Spook je naišao na sledećeg pomoćnika za šablone:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nNjegova konfiguracija referencira sledeće entitete koji su nepoznati Home Assistant‑u:\n\n{entities}\n\n\n\nOvo se često dešava kada je entitet preimenovan ili uklonjen. Da biste ispravili ovu grešku, ponovo konfigurišite pomoćnika za šablone da referencira postojeće entitete.\n\nSpook 👻 Vaš ortak.",
             "title": "Nepoznati entiteti korišćeni u pomoćniku za šablone: {helper}"
         },
         "orphaned_statistics": {
