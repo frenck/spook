@@ -429,7 +429,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook ha encontrado un fantasma en tus asistentes 👻\n\nEl asistente mín/máx {helper} combina los siguientes miembros, que son desconocidos para Home Assistant:\n\n{sources}\n\nQuítalos para que el asistente siga con los miembros que quedan, o quédatelos y Spook no volverá a mencionarlos.\n\nSpook 👻 Tu colega.",
+                        "description": "Spook ha encontrado un fantasma en tus asistentes 👻\n\nEl asistente mín/máx {helper} (`{entity_id}`) combina los siguientes miembros, que son desconocidos para Home Assistant:\n\n{sources}\n\nQuítalos para que el asistente siga con los miembros que quedan, o quédatelos y Spook no volverá a mencionarlos.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
                             "ignore": "Quedárselo y no volver a avisarme",
                             "manage": "Lo arreglo yo mismo",
@@ -474,11 +474,11 @@
             "title": "Disparadores desconocidos usados en: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook ha encontrado un fantasma en tus asistentes de plantilla 👻\n\nMientras flotaba, Spook se cruzó con el siguiente asistente de plantilla:\n\n[{helper}]({edit})\n\nSu configuración hace referencia a las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\nEsto suele pasar cuando se ha renombrado o quitado una entidad. Para solucionar este error, reconfigura el asistente de plantilla para que apunte a entidades que existan.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tus asistentes de plantilla 👻\n\nMientras flotaba, Spook se cruzó con el siguiente asistente de plantilla:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSu configuración hace referencia a las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\nEsto suele pasar cuando se ha renombrado o quitado una entidad. Para solucionar este error, reconfigura el asistente de plantilla para que apunte a entidades que existan.\n\nSpook 👻 Tu colega.",
             "title": "Entidades desconocidas usadas en el asistente de plantilla: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "Spook ha encontrado un fantasma en tus asistentes de plantilla 👻\n\nMientras flotaba, Spook se cruzó con el siguiente asistente de plantilla:\n\n[{helper}]({edit})\n\nHace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\nEsto suele pasar cuando se ha quitado la integración que estaba detrás de una acción, o cuando se ha renombrado o eliminado un script. Para solucionar este error, reconfigura el asistente de plantilla para que use acciones que existan.\n\nSpook 👻 Tu colega.",
+            "description": "Spook ha encontrado un fantasma en tus asistentes de plantilla 👻\n\nMientras flotaba, Spook se cruzó con el siguiente asistente de plantilla:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\nEsto suele pasar cuando se ha quitado la integración que estaba detrás de una acción, o cuando se ha renombrado o eliminado un script. Para solucionar este error, reconfigura el asistente de plantilla para que use acciones que existan.\n\nSpook 👻 Tu colega.",
             "title": "Acciones desconocidas usadas en el asistente de plantilla: {helper}"
         },
         "unknown_customized_entities": {
@@ -493,7 +493,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook ha encontrado un fantasma en tus asistentes 👻\n\nEl asistente {helper} (`{domain}`) hace referencia a las siguientes entidades de origen, que son desconocidas para Home Assistant:\n\n{sources}\n\nSin sus orígenes, este asistente no puede funcionar. {usage}\n\nQuita el asistente, o quédatelo y Spook no volverá a mencionarlo.\n\nSpook 👻 Tu colega.",
+                        "description": "Spook ha encontrado un fantasma en tus asistentes 👻\n\nEl asistente {helper} (`{domain}`, `{entity_id}`) hace referencia a las siguientes entidades de origen, que son desconocidas para Home Assistant:\n\n{sources}\n\nSin sus orígenes, este asistente no puede funcionar. {usage}\n\nQuita el asistente, o quédatelo y Spook no volverá a mencionarlo.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
                             "ignore": "Quedárselo y no volver a avisarme",
                             "manage": "Lo arreglo yo mismo",
