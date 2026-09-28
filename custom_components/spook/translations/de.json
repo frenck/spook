@@ -409,7 +409,7 @@
             "title": "Unbekannte Bereiche werden im Dashboard verwendet : {dashboard}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook hat einen Geist in deinen Template-Helfern entdeckt 👻\n\nBeim Herumschwebe traf Spook auf den folgenden Template-Helper:\n\n[{helper}]({edit})\n\nSeine Templates verweisen auf die folgenden Entitäten, die Home Assistant nicht kennt:\n\n{entities}\n\nDies passiert häufig, wenn eine Entität umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, konfiguriere den Template-Helper neu, sodass er auf vorhandene Entitäten verweist.\n\nSpook 👻 Dein Kumpel.",
+            "description": "Spook hat einen Geist in deinen Template-Helfern entdeckt 👻\n\nBeim Herumschwebe traf Spook auf den folgenden Template-Helper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSeine Templates verweisen auf die folgenden Entitäten, die Home Assistant nicht kennt:\n\n{entities}\n\nDies passiert häufig, wenn eine Entität umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, konfiguriere den Template-Helper neu, sodass er auf vorhandene Entitäten verweist.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Entitäten im Template-Helfer: {helper}"
         },
         "empty_areas": {
@@ -470,7 +470,7 @@
                 "step": {
                     "init": {
                         "title": "Unbekannte Mitglieder in Min/Max-Helfer: {helper}",
-                        "description": "Spook hat einen Fehler in deinen Helfern gefunden 👻\n\nDer Min/Max-Helfer {helper} kombiniert die folgenden Elemente, die Home Assistant nicht bekannt sind:\n\n{sources}\n\nEntferne sie, damit der Helfer mit den verbleibenden Elementen weiterarbeitet, oder behalte sie bei – dann wird Spook nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel.",
+                        "description": "Spook hat einen Fehler in deinen Helfern gefunden 👻\n\nDer Min/Max-Helfer {helper} (`{entity_id}`) kombiniert die folgenden Elemente, die Home Assistant nicht bekannt sind:\n\n{sources}\n\nEntferne sie, damit der Helfer mit den verbleibenden Elementen weiterarbeitet, oder behalte sie bei – dann wird Spook nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel.",
                         "menu_options": {
                             "remove": "Entferne diese Mitglieder",
                             "manage": "Lass es mich selbst beheben",
@@ -518,7 +518,7 @@
                 "step": {
                     "init": {
                         "title": "Im Helfer verwendete Entitäten mit unbekannter Quelle: {helper}",
-                        "description": "Spook hat einen Fehler in deinen Helfern gefunden 👻\n\nDer Helfer {helper} (`{domain}`) verweist auf die folgenden Quellentitäten, die Home Assistant nicht bekannt sind:\n\n{sources}\n\nOhne diese Quellen kann dieser Helfer nicht funktionieren. {usage}\n\nEntferne den Helfer oder behalte ihn – Spook wird dann nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel.",
+                        "description": "Spook hat einen Fehler in deinen Helfern gefunden 👻\n\nDer Helfer {helper} (`{domain}`, `{entity_id}`) verweist auf die folgenden Quellentitäten, die Home Assistant nicht bekannt sind:\n\n{sources}\n\nOhne diese Quellen kann dieser Helfer nicht funktionieren. {usage}\n\nEntferne den Helfer oder behalte ihn – Spook wird dann nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel.",
                         "menu_options": {
                             "remove": "Entferne diesen Helfer",
                             "manage": "Lass es mich selbst beheben",
@@ -542,7 +542,7 @@
             "title": "Unbekannte Notifier von Alert verwendet: {alert}"
         },
         "template_unknown_service_references": {
-            "description": "Spook hat einen Geist in deinen Vorlagen-Helfern gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Vorlagen-Helfer:\n\n[{helper}]({edit})\n\nEr bezieht sich auf die folgenden Aktionen, die Home Assistant unbekannt sind:\n\n{services}\n\nDas passiert oft, wenn die Integration hinter einer Aktion entfernt wurde oder ein Skript umbenannt oder gelöscht wurde. Um diesen Fehler zu beheben, richte den Vorlagen-Helfer so ein, dass er vorhandene Aktionen verwendet.\n\nSpook 👻 Dein Kumpel.",
+            "description": "Spook hat einen Geist in deinen Vorlagen-Helfern gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Vorlagen-Helfer:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEr bezieht sich auf die folgenden Aktionen, die Home Assistant unbekannt sind:\n\n{services}\n\nDas passiert oft, wenn die Integration hinter einer Aktion entfernt wurde oder ein Skript umbenannt oder gelöscht wurde. Um diesen Fehler zu beheben, richte den Vorlagen-Helfer so ein, dass er vorhandene Aktionen verwendet.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Aktionen in Vorlagen-Helfer verwendet: {helper}"
         },
         "notify_unknown_group_members": {
