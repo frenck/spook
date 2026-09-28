@@ -447,7 +447,7 @@
                 "step": {
                     "init": {
                         "title": "Neznámi členovia použití v pomocníkovi min/max: {helper}",
-                        "description": "Spook našiel ducha v tvojich pomocníkoch 👻\n\nPomocník min/max {helper} spája nasledujúcich členov, ktorých Home Assistant nepozná:\n\n{sources}\n\nOdstráň ich, nech pomocník beží ďalej s tými, čo zostali, alebo si ich nechaj a Spook na nich prestane upozorňovať.\n\nSpook 👻 Tvoj kamoš.",
+                        "description": "Spook našiel ducha v tvojich pomocníkoch 👻\n\nPomocník min/max {helper} (`{entity_id}`) spája nasledujúcich členov, ktorých Home Assistant nepozná:\n\n{sources}\n\nOdstráň ich, nech pomocník beží ďalej s tými, čo zostali, alebo si ich nechaj a Spook na nich prestane upozorňovať.\n\nSpook 👻 Tvoj kamoš.",
                         "menu_options": {
                             "remove": "Odstrániť týchto členov",
                             "manage": "Opravím si to sám",
@@ -499,11 +499,11 @@
             "title": "Neznáme spúšťače použité v: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook našiel ducha v tvojich pomocníkoch so šablónou 👻\n\nAko sa tak vznášal okolo, Spook narazil na tohto pomocníka so šablónou:\n\n[{helper}]({edit})\n\nJeho konfigurácia odkazuje na nasledujúce entity, ktoré Home Assistant nepozná:\n\n{entities}\n\n\n\nBýva to tak, keď bola entita premenovaná alebo odstránená. Ak chceš túto chybu opraviť, nastav pomocníka so šablónou nanovo tak, aby odkazoval na existujúce entity.\n\nSpook 👻 Tvoj kamoš.",
+            "description": "Spook našiel ducha v tvojich pomocníkoch so šablónou 👻\n\nAko sa tak vznášal okolo, Spook narazil na tohto pomocníka so šablónou:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nJeho konfigurácia odkazuje na nasledujúce entity, ktoré Home Assistant nepozná:\n\n{entities}\n\n\n\nBýva to tak, keď bola entita premenovaná alebo odstránená. Ak chceš túto chybu opraviť, nastav pomocníka so šablónou nanovo tak, aby odkazoval na existujúce entity.\n\nSpook 👻 Tvoj kamoš.",
             "title": "Neznáme entity použité v pomocníkovi so šablónou: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "Spook našiel ducha v tvojich pomocníkoch so šablónou 👻\n\nAko sa tak vznášal okolo, Spook narazil na tohto pomocníka so šablónou:\n\n[{helper}]({edit})\n\nOdkazuje na nasledujúce akcie, ktoré Home Assistant nepozná:\n\n{services}\n\n\n\nBýva to tak, keď bol odstránený poskytovateľ akcie alebo bol skript premenovaný či zmazaný. Ak chceš túto chybu opraviť, nastav pomocníka so šablónou nanovo tak, aby používal existujúce akcie.\n\nSpook 👻 Tvoj kamoš.",
+            "description": "Spook našiel ducha v tvojich pomocníkoch so šablónou 👻\n\nAko sa tak vznášal okolo, Spook narazil na tohto pomocníka so šablónou:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nOdkazuje na nasledujúce akcie, ktoré Home Assistant nepozná:\n\n{services}\n\n\n\nBýva to tak, keď bol odstránený poskytovateľ akcie alebo bol skript premenovaný či zmazaný. Ak chceš túto chybu opraviť, nastav pomocníka so šablónou nanovo tak, aby používal existujúce akcie.\n\nSpook 👻 Tvoj kamoš.",
             "title": "Neznáme akcie použité v pomocníkovi so šablónou: {helper}"
         },
         "unknown_customized_entities": {
@@ -516,7 +516,7 @@
                 "step": {
                     "init": {
                         "title": "Neznáme zdrojové entity použité v pomocníkovi: {helper}",
-                        "description": "Spook našiel ducha v tvojich pomocníkoch 👻\n\nPomocník {helper} (`{domain}`) odkazuje na nasledujúce zdrojové entity, ktoré Home Assistant nepozná:\n\n{sources}\n\nBez svojich zdrojov tento pomocník nemôže fungovať. {usage}\n\nOdstráň ho, alebo si ho nechaj a Spook naň prestane upozorňovať.\n\nSpook 👻 Tvoj kamoš.",
+                        "description": "Spook našiel ducha v tvojich pomocníkoch 👻\n\nPomocník {helper} (`{domain}`, `{entity_id}`) odkazuje na nasledujúce zdrojové entity, ktoré Home Assistant nepozná:\n\n{sources}\n\nBez svojich zdrojov tento pomocník nemôže fungovať. {usage}\n\nOdstráň ho, alebo si ho nechaj a Spook naň prestane upozorňovať.\n\nSpook 👻 Tvoj kamoš.",
                         "menu_options": {
                             "remove": "Odstrániť tohto pomocníka",
                             "manage": "Opravím si to sám",
