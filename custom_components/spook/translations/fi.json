@@ -418,7 +418,7 @@
                 "step": {
                     "init": {
                         "title": "Tuntemattomia jäseniä min/max-apurissa: {helper}",
-                        "description": "Spook on löytänyt kummituksen apureistasi 👻\n\nMin/max-apuri {helper} käyttää seuraavia jäseniä, jotka ovat Home Assistantille tuntemattomia:\n\n{sources}\n\nPoista ne, jotta apuri jatkaa jäljelle jäävien jäsenien kanssa, tai säilytä ne ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
+                        "description": "Spook on löytänyt kummituksen apureistasi 👻\n\nMin/max-apuri {helper} (`{entity_id}`) käyttää seuraavia jäseniä, jotka ovat Home Assistantille tuntemattomia:\n\n{sources}\n\nPoista ne, jotta apuri jatkaa jäljelle jäävien jäsenien kanssa, tai säilytä ne ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
                         "menu_options": {
                             "remove": "Poista nämä jäsenet",
                             "manage": "Korjaan asian itse",
@@ -466,7 +466,7 @@
             "title": "Tuntemattomia laukaisimia käytetty: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook on löytänyt kummituksen templaateistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan templaattiin:\n\n[{helper}]({edit})\n\nTemplaatti viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nTämä tapahtuu usein kun entiteetti on uudelleennimetty tai poistettu. Korjataksesi ongelman, muokkaa templaattia ja korjaa viittaukset\n\nSpook 👻 Kamusi.",
+            "description": "Spook on löytänyt kummituksen templaateistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan templaattiin:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nTemplaatti viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nTämä tapahtuu usein kun entiteetti on uudelleennimetty tai poistettu. Korjataksesi ongelman, muokkaa templaattia ja korjaa viittaukset\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia entiteettejä templaatissa: {helper}"
         },
         "unknown_customized_entities": {
@@ -479,7 +479,7 @@
                 "step": {
                     "init": {
                         "title": "Tuntemattomia lähde-entiteettejä apurissa: {helper}",
-                        "description": "Spook on löytänyt kummituksen apureistasi 👻\n\nApuri {helper} (`{domain}`) viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{sources}\n\nIlman lähde-entiteettejä apuri ei voi toimia. {usage}\n\nPoista apuri, tai säilytä se ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
+                        "description": "Spook on löytänyt kummituksen apureistasi 👻\n\nApuri {helper} (`{domain}`, `{entity_id}`) viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{sources}\n\nIlman lähde-entiteettejä apuri ei voi toimia. {usage}\n\nPoista apuri, tai säilytä se ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
                         "menu_options": {
                             "remove": "Poista tämä apuri",
                             "manage": "Korjaan asian itse",
@@ -542,7 +542,7 @@
             "title": "Hälytys käyttää tuntemattomia ilmoittajia: {alert}"
         },
         "template_unknown_service_references": {
-            "description": "Spook on löytänyt kummituksen mallipohja-avustajistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohja-avustajaan:\n\n[{helper}]({edit})\n\nSe viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\nNäin käy usein, kun toiminnon tarjonnut integraatio on poistettu tai skripti on nimetty uudelleen tai poistettu. Korjataksesi tämän ongelman, määritä mallipohja-avustaja käyttämään olemassa olevia toimintoja.\n\nSpook 👻 Kamusi.",
+            "description": "Spook on löytänyt kummituksen mallipohja-avustajistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohja-avustajaan:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSe viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\nNäin käy usein, kun toiminnon tarjonnut integraatio on poistettu tai skripti on nimetty uudelleen tai poistettu. Korjataksesi tämän ongelman, määritä mallipohja-avustaja käyttämään olemassa olevia toimintoja.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia toimintoja käytössä mallipohja-avustajassa: {helper}"
         },
         "notify_unknown_group_members": {
