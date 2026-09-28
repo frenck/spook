@@ -429,7 +429,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook heeft een geest gevonden in je helpers 👻\n\nDe min/max-helper {helper} combineert de volgende leden, die Home Assistant niet kent:\n\n{sources}\n\nVerwijder ze zodat de helper doorgaat met de leden die overblijven, of laat ze staan en Spook zwijgt er verder over.\n\nSpook 👻 Je homie.",
+                        "description": "Spook heeft een geest gevonden in je helpers 👻\n\nDe min/max-helper {helper} (`{entity_id}`) combineert de volgende leden, die Home Assistant niet kent:\n\n{sources}\n\nVerwijder ze zodat de helper doorgaat met de leden die overblijven, of laat ze staan en Spook zwijgt er verder over.\n\nSpook 👻 Je homie.",
                         "menu_options": {
                             "ignore": "Houden, zeg er niets meer over",
                             "manage": "Ik los het zelf op",
@@ -474,11 +474,11 @@
             "title": "Onbekende triggers gebruikt in: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook heeft een geest gevonden in je template-helpers 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-helper tegen:\n\n[{helper}]({edit})\n\nDe configuratie verwijst naar de volgende entiteiten, die Home Assistant niet kent:\n\n{entities}\n\nDit gebeurt vaak wanneer een entiteit is hernoemd of verwijderd. Om deze fout te verhelpen, stel je de template-helper opnieuw in zodat hij naar bestaande entiteiten verwijst.\n\nSpook 👻 Je homie.",
+            "description": "Spook heeft een geest gevonden in je template-helpers 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-helper tegen:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDe configuratie verwijst naar de volgende entiteiten, die Home Assistant niet kent:\n\n{entities}\n\nDit gebeurt vaak wanneer een entiteit is hernoemd of verwijderd. Om deze fout te verhelpen, stel je de template-helper opnieuw in zodat hij naar bestaande entiteiten verwijst.\n\nSpook 👻 Je homie.",
             "title": "Onbekende entiteiten gebruikt in template-helper: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "Spook heeft een geest gevonden in je template-helpers 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-helper tegen:\n\n[{helper}]({edit})\n\nHij verwijst naar de volgende acties, die Home Assistant niet kent:\n\n{services}\n\nDit gebeurt vaak wanneer de integratie achter een actie is verwijderd, of een script is hernoemd of verwijderd. Om deze fout te verhelpen, stel je de template-helper opnieuw in zodat hij bestaande acties gebruikt.\n\nSpook 👻 Je homie.",
+            "description": "Spook heeft een geest gevonden in je template-helpers 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende template-helper tegen:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHij verwijst naar de volgende acties, die Home Assistant niet kent:\n\n{services}\n\nDit gebeurt vaak wanneer de integratie achter een actie is verwijderd, of een script is hernoemd of verwijderd. Om deze fout te verhelpen, stel je de template-helper opnieuw in zodat hij bestaande acties gebruikt.\n\nSpook 👻 Je homie.",
             "title": "Onbekende acties gebruikt in template-helper: {helper}"
         },
         "unknown_customized_entities": {
@@ -493,7 +493,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook heeft een geest gevonden in je helpers 👻\n\nDe helper {helper} (`{domain}`) verwijst naar de volgende bronentiteiten, die Home Assistant niet kent:\n\n{sources}\n\nZonder zijn bronnen kan deze helper niet werken. {usage}\n\nVerwijder de helper, of laat hem staan en Spook zwijgt er verder over.\n\nSpook 👻 Je homie.",
+                        "description": "Spook heeft een geest gevonden in je helpers 👻\n\nDe helper {helper} (`{domain}`, `{entity_id}`) verwijst naar de volgende bronentiteiten, die Home Assistant niet kent:\n\n{sources}\n\nZonder zijn bronnen kan deze helper niet werken. {usage}\n\nVerwijder de helper, of laat hem staan en Spook zwijgt er verder over.\n\nSpook 👻 Je homie.",
                         "menu_options": {
                             "ignore": "Houden, zeg er niets meer over",
                             "manage": "Ik los het zelf op",
