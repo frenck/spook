@@ -429,7 +429,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "👻 Spook ha trovato un fantasma nei tuoi helper\n\nL'helper min/max {helper} combina i seguenti membri, che non sono riconosciuti da Home Assistant:\n\n{sources}\n\nRimuovili così l'helper continua con i membri che restano, oppure tienili e Spook non li menzionerà più.\n\nSpook 👻 Il tuo compare.",
+                        "description": "👻 Spook ha trovato un fantasma nei tuoi helper\n\nL'helper min/max {helper} (`{entity_id}`) combina i seguenti membri, che non sono riconosciuti da Home Assistant:\n\n{sources}\n\nRimuovili così l'helper continua con i membri che restano, oppure tienili e Spook non li menzionerà più.\n\nSpook 👻 Il tuo compare.",
                         "menu_options": {
                             "ignore": "Tienilo e non dirmelo più",
                             "manage": "Lo sistemo da solo",
@@ -474,11 +474,11 @@
             "title": "Trigger sconosciuti usati in: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "👻 Spook ha trovato un fantasma nei tuoi helper template\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente helper template:\n\n[{helper}]({edit})\n\nLa sua configurazione fa riferimento alle seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nSuccede spesso quando un'entità è stata rinominata o rimossa. Per risolvere questo errore, riconfigura l'helper template perché punti a entità esistenti.\n\nSpook 👻 Il tuo compare.",
+            "description": "👻 Spook ha trovato un fantasma nei tuoi helper template\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente helper template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nLa sua configurazione fa riferimento alle seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nSuccede spesso quando un'entità è stata rinominata o rimossa. Per risolvere questo errore, riconfigura l'helper template perché punti a entità esistenti.\n\nSpook 👻 Il tuo compare.",
             "title": "Entità sconosciute usate nell'helper template: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "👻 Spook ha trovato un fantasma nei tuoi helper template\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente helper template:\n\n[{helper}]({edit})\n\nFa riferimento alle seguenti azioni, che non sono riconosciute da Home Assistant:\n\n{services}\n\nSuccede spesso quando l'integrazione dietro un'azione è stata rimossa, o quando uno script è stato rinominato o eliminato. Per risolvere questo errore, riconfigura l'helper template perché usi azioni esistenti.\n\nSpook 👻 Il tuo compare.",
+            "description": "👻 Spook ha trovato un fantasma nei tuoi helper template\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente helper template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nFa riferimento alle seguenti azioni, che non sono riconosciute da Home Assistant:\n\n{services}\n\nSuccede spesso quando l'integrazione dietro un'azione è stata rimossa, o quando uno script è stato rinominato o eliminato. Per risolvere questo errore, riconfigura l'helper template perché usi azioni esistenti.\n\nSpook 👻 Il tuo compare.",
             "title": "Azioni sconosciute usate nell'helper template: {helper}"
         },
         "unknown_customized_entities": {
@@ -493,7 +493,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "👻 Spook ha trovato un fantasma nei tuoi helper\n\nL'helper {helper} (`{domain}`) fa riferimento alle seguenti entità di origine, che non sono riconosciute da Home Assistant:\n\n{sources}\n\nSenza le sue origini questo helper non può funzionare. {usage}\n\nRimuovi l'helper, oppure tienilo e Spook non lo menzionerà più.\n\nSpook 👻 Il tuo compare.",
+                        "description": "👻 Spook ha trovato un fantasma nei tuoi helper\n\nL'helper {helper} (`{domain}`, `{entity_id}`) fa riferimento alle seguenti entità di origine, che non sono riconosciute da Home Assistant:\n\n{sources}\n\nSenza le sue origini questo helper non può funzionare. {usage}\n\nRimuovi l'helper, oppure tienilo e Spook non lo menzionerà più.\n\nSpook 👻 Il tuo compare.",
                         "menu_options": {
                             "ignore": "Tienilo e non dirmelo più",
                             "manage": "Lo sistemo da solo",
