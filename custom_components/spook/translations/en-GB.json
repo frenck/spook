@@ -429,7 +429,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook has found a ghost in your helpers 👻\n\nThe min/max helper {helper} combines the following members, which are unknown to Home Assistant:\n\n{sources}\n\nRemove them so the helper carries on with the members that remain, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
+                        "description": "Spook has found a ghost in your helpers 👻\n\nThe min/max helper {helper} (`{entity_id}`) combines the following members, which are unknown to Home Assistant:\n\n{sources}\n\nRemove them so the helper carries on with the members that remain, or keep them and Spook will stop pointing them out.\n\nSpook 👻 Your homie.",
                         "menu_options": {
                             "ignore": "Keep them, stop telling me",
                             "manage": "Let me fix it myself",
@@ -474,11 +474,11 @@
             "title": "Unknown triggers used in: {script}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n[{helper}]({edit})\n\nIts configuration references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed. To fix this error, reconfigure the template helper to reference existing entities.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nIts configuration references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed. To fix this error, reconfigure the template helper to reference existing entities.\n\nSpook 👻 Your homie.",
             "title": "Unknown entities used in template helper: {helper}"
         },
         "template_unknown_service_references": {
-            "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n[{helper}]({edit})\n\nIt references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nThis often happens when an action provider was removed, or a script was renamed or deleted. To fix this error, reconfigure the template helper to use existing actions.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your template helpers 👻\n\nWhile floating around, Spook crossed path with the following template helper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nIt references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nThis often happens when an action provider was removed, or a script was renamed or deleted. To fix this error, reconfigure the template helper to use existing actions.\n\nSpook 👻 Your homie.",
             "title": "Unknown actions used in template helper: {helper}"
         },
         "unknown_customized_entities": {
@@ -493,7 +493,7 @@
                 },
                 "step": {
                     "init": {
-                        "description": "Spook has found a ghost in your helpers 👻\n\nThe helper {helper} (`{domain}`) references the following source entities, which are unknown to Home Assistant:\n\n{sources}\n\nWithout its sources this helper cannot work. {usage}\n\nRemove the helper, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
+                        "description": "Spook has found a ghost in your helpers 👻\n\nThe helper {helper} (`{domain}`, `{entity_id}`) references the following source entities, which are unknown to Home Assistant:\n\n{sources}\n\nWithout its sources this helper cannot work. {usage}\n\nRemove the helper, or keep it and Spook will stop pointing it out.\n\nSpook 👻 Your homie.",
                         "menu_options": {
                             "ignore": "Keep it, stop telling me",
                             "manage": "Let me fix it myself",
