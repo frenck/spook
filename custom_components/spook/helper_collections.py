@@ -16,6 +16,8 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES
 from .services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from homeassistant.core import HomeAssistant, ServiceCall, ServiceResponse
     from homeassistant.helpers.collection import DictStorageCollection
     from homeassistant.helpers.typing import VolDictType
@@ -52,6 +54,11 @@ class AbstractSpookCreateHelperService(AbstractSpookAdminService):
     service = "create"
     supports_response = SupportsResponse.OPTIONAL
     fields: VolDictType
+
+    # Checks a domain needs that its collection does not run itself before
+    # storing. A helper that fails one of those after it is stored stays
+    # behind in storage, broken, while the call reports an error.
+    validators: tuple[Callable[[dict[str, Any]], dict[str, Any]], ...] = ()
 
     def __init_subclass__(cls, **kwargs: Any) -> None:
         """Build each domain's schema from core's own fields.
@@ -90,6 +97,8 @@ class AbstractSpookCreateHelperService(AbstractSpookAdminService):
                 raise HomeAssistantError(message)
 
             try:
+                for validator in self.validators:
+                    data = validator(data)
                 item = await collection.async_create_item(data)
             except vol.Invalid as err:
                 # Some helpers check more than their fields, like a minimum

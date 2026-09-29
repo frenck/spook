@@ -312,6 +312,18 @@ Deletes input button helpers made in the UI, or with `input_button.create`. _#un
 
 `input_button.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_button.delete), [documentation](integrations/input_button#delete-an-input-button) 📚
 
+## Input datetime: Create
+
+Creates an input datetime helper without a trip to the helpers page. _#outofthinair_
+
+`input_datetime.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_datetime.create), [documentation](integrations/input_datetime#create-an-input-datetime) 📚
+
+## Input datetime: Delete
+
+Deletes input datetime helpers made in the UI, or with `input_datetime.create`. _#outoftime_
+
+`input_datetime.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_datetime.delete), [documentation](integrations/input_datetime#delete-an-input-datetime) 📚
+
 ## Input number: Create
 
 Creates an input number helper without going anywhere near the helpers page. _#outofthinair_

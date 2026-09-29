@@ -1773,6 +1773,74 @@ input_button_delete:
           filter:
             - domain: input_button
 
+input_datetime_create:
+  name: Create an input datetime 👻
+  description: >-
+    Creates a new input datetime helper on the fly, holding a date, a time, or
+    both. Returns the entity ID of the new input datetime.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input datetime.
+      required: true
+      selector:
+        text:
+    input_datetime_id:
+      name: Input datetime entity ID
+      description: >-
+        The entity ID for the new input datetime. The input_datetime. prefix is
+        added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    has_date:
+      name: Has a date
+      description: >-
+        Whether it holds a date. At least one of date and time has to be on.
+      required: false
+      selector:
+        boolean:
+    has_time:
+      name: Has a time
+      description: >-
+        Whether it holds a time. At least one of date and time has to be on.
+      required: false
+      selector:
+        boolean:
+    initial:
+      name: Initial value
+      description: >-
+        The date and/or time it starts with, like 2026-12-31, 08:30:00, or
+        2026-12-31 08:30:00. If left out, it keeps the value it had before
+        Home Assistant restarted.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: The icon for the new input datetime.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:calendar-clock
+
+input_datetime_delete:
+  name: Delete an input datetime 👻
+  description: >-
+    Deletes input datetime helpers made in the UI or with the create an input
+    datetime action. Input datetimes set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input datetime(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_datetime
+
 input_number_create:
   name: Create an input number 👻
   description: >-
