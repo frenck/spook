@@ -11,14 +11,17 @@ import pytest
 
 from homeassistant.components.input_number import DOMAIN
 from homeassistant.const import ATTR_ENTITY_ID, CONF_NAME
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.core import Context
+from homeassistant.exceptions import HomeAssistantError, Unauthorized
+from homeassistant.helpers import entity_registry as er
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.ectoplasms.input_number.services import delete
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import entity_registry as er
+
+    from tests.common import MockUser
 
 
 StorageSetup = Callable[..., Awaitable[bool]]
@@ -122,3 +125,47 @@ async def test_delete_service_rejects_yaml_input_number(
         )
 
     assert hass.states.get(entity_id) is not None
+
+
+@pytest.mark.usefixtures("input_number_delete_service")
+async def test_delete_service_needs_an_admin(
+    hass: HomeAssistant,
+    hass_read_only_user: MockUser,
+) -> None:
+    """Deleting a helper is configuration, and it used to be open to anyone.
+
+    As an entity action it had no admin check, while creating one did.
+    """
+    with pytest.raises(Unauthorized):
+        await hass.services.async_call(
+            DOMAIN,
+            "delete",
+            {ATTR_ENTITY_ID: f"{DOMAIN}.from_storage"},
+            blocking=True,
+            context=Context(user_id=hass_read_only_user.id),
+        )
+
+    assert hass.states.get(f"{DOMAIN}.from_storage") is not None
+
+
+@pytest.mark.usefixtures("input_number_delete_service")
+async def test_delete_service_takes_a_disabled_input_number(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A disabled helper is not running, but it is still there to delete.
+
+    As an entity action it could only reach running entities.
+    """
+    entity_id = f"{DOMAIN}.from_storage"
+    entity_registry.async_update_entity(
+        entity_id, disabled_by=er.RegistryEntryDisabler.USER
+    )
+    await hass.async_block_till_done()
+
+    await hass.services.async_call(
+        DOMAIN, "delete", {ATTR_ENTITY_ID: entity_id}, blocking=True
+    )
+    await hass.async_block_till_done()
+
+    assert entity_registry.async_get(entity_id) is None

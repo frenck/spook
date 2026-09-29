@@ -1904,7 +1904,8 @@ input_datetime_delete:
 input_number_create:
   name: Create an input number 👻
   description: >-
-    Create a new input number helper on the fly.
+    Create a new input number helper on the fly. Returns the entity ID of the
+    new input number.
   fields:
     name:
       name: Name
@@ -1986,12 +1987,18 @@ input_number_create:
 input_number_delete:
   name: Delete an input number 👻
   description: >-
-    Delete an input number helper. This works only with input numbers created
-    and managed via the UI. Input numbers created and managed in YAML cannot
-    be managed by Spook.
-  target:
-    entity:
-      domain: input_number
+    Deletes input number helpers made in the UI or with the create an input
+    number action. Input numbers set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input number(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_number
 
 person_add_device_tracker:
   name: Add a device tracker 👻
