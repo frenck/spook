@@ -35,6 +35,10 @@ class SpookService(AbstractSpookAdminService):
         async_check_labels_exist(self.hass, call.data["label_id"])
 
         area_registry = ar.async_get(self.hass)
+
+        # Everything is looked up before anything is written. A typo in the
+        # last one should not leave the first ones changed behind an error.
+        updates: dict[str, set[str]] = {}
         for area_id in call.data["area_id"]:
             if (area_entry := area_registry.async_get_area(area_id)) is None:
                 msg = f"Area {area_id} not found"
@@ -42,4 +46,7 @@ class SpookService(AbstractSpookAdminService):
 
             labels = area_entry.labels.copy()
             labels.difference_update(call.data["label_id"])
+            updates[area_id] = labels
+
+        for area_id, labels in updates.items():
             area_registry.async_update(area_id, labels=labels)

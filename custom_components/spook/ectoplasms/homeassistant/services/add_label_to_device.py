@@ -36,6 +36,10 @@ class SpookService(AbstractSpookAdminService):
         async_check_labels_exist(self.hass, call.data["label_id"])
 
         device_registry = dr.async_get(self.hass)
+
+        # Everything is looked up before anything is written. A typo in the
+        # last one should not leave the first ones changed behind an error.
+        updates: dict[str, set[str]] = {}
         for device_id in call.data["device_id"]:
             if (device_entry := device_registry.async_get(device_id)) is None:
                 msg = f"Device {device_id} not found"
@@ -43,4 +47,7 @@ class SpookService(AbstractSpookAdminService):
 
             labels = device_entry.labels.copy()
             labels.update(call.data["label_id"])
+            updates[device_id] = labels
+
+        for device_id, labels in updates.items():
             async_update_any_device(device_registry, device_id, labels=labels)
