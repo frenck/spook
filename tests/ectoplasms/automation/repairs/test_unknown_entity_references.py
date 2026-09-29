@@ -171,6 +171,51 @@ async def test_value_template_ignores_entity_id_suffix_string_match(
     assert await async_extract_entities_from_value(hass, template) == set()
 
 
+@pytest.mark.parametrize(
+    "template",
+    [
+        # The report in #1686, word for word.
+        (
+            "{{ [trigger.entity_id | replace('input_boolean.live_override', "
+            "'binary_sensor.live')] }}"
+        ),
+        "{{ trigger.entity_id.replace('binary_sensor.live', 'sensor.live') }}",
+        "{{ trigger.entity_id | regex_replace('binary_sensor.live', 'sensor.x') }}",
+        "{{ trigger.entity_id | regex_search('binary_sensor.live') }}",
+        "{{ trigger.entity_id | regex_match('binary_sensor.live') }}",
+        # Parentheses inside a literal do not close the call early.
+        "{{ trigger.entity_id | replace('(', '') | replace('sensor.live', '') }}",
+    ],
+)
+async def test_value_template_ignores_text_function_arguments(
+    hass: HomeAssistant,
+    template: str,
+) -> None:
+    """Text passed to replace or a regex filter is not an entity reference."""
+    assert await async_extract_entities_from_value(hass, template) == set()
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        # The literal belongs to `states`, the innermost call, not to replace.
+        "{{ states('light.kitchen') | replace('on', 'aan') }}",
+        "{{ replace(states('light.kitchen'), 'on', 'aan') }}",
+        # A replace in an earlier, closed call does not cover what follows.
+        "{{ x | replace('a', 'b') }}{{ states('light.kitchen') }}",
+        "{{ (x | replace('a', 'b')) ~ states('light.kitchen') }}",
+        # An apostrophe in the prose around a block is not a quote.
+        "It's {{ states('light.kitchen') }}, replace('it') later",
+    ],
+)
+async def test_value_template_keeps_references_next_to_text_functions(
+    hass: HomeAssistant,
+    template: str,
+) -> None:
+    """A real reference near a replace or regex filter is still found."""
+    assert await async_extract_entities_from_value(hass, template) == {"light.kitchen"}
+
+
 async def test_value_template_ignores_entity_id_in_jinja_comment(
     hass: HomeAssistant,
 ) -> None:

@@ -247,6 +247,78 @@ def _is_string_method_argument_match(template_str: str, match: re.Match[str]) ->
     return False
 
 
+# Calls whose arguments are text to look for or put in, never a reference.
+# `replace` is both Jinja's filter and the string method, and it is how a
+# template turns one entity ID into its sibling: `binary_sensor.` in, `sensor.`
+# out. Neither half is an entity. #1686.
+_TEXT_ARGUMENT_CALLS = frozenset(
+    {
+        "replace",
+        "regex_findall",
+        "regex_findall_index",
+        "regex_match",
+        "regex_replace",
+        "regex_search",
+    }
+)
+
+_CALL_NAME_PATTERN = re.compile(r"([a-z_]\w*)\s*$", re.IGNORECASE)
+
+
+def _enclosing_call_name(template_str: str, position: int) -> str | None:
+    """Return the name of the innermost call still open at a position.
+
+    Walks the Jinja block up to that point, skipping over quoted strings, so
+    a parenthesis inside a literal does not count. A bare grouping parenthesis
+    has no name and returns an empty string.
+
+    The walk starts at the block, not the top of the template: the text
+    around the blocks is prose, and the apostrophe in "it's" is not a quote.
+    """
+    block_start = max(
+        template_str.rfind("{{", 0, position),
+        template_str.rfind("{%", 0, position),
+    )
+    if block_start == -1:
+        return None
+
+    open_calls: list[str] = []
+    quote: str | None = None
+
+    for index in range(block_start, position):
+        character = template_str[index]
+
+        if quote:
+            if character == quote:
+                quote = None
+            continue
+
+        if character in "'\"":
+            quote = character
+        elif character == "(":
+            name = _CALL_NAME_PATTERN.search(template_str, block_start, index)
+            open_calls.append(name.group(1).lower() if name else "")
+        elif character == ")" and open_calls:
+            open_calls.pop()
+
+    return open_calls[-1] if open_calls else None
+
+
+def _is_text_argument_match(template_str: str, match: re.Match[str]) -> bool:
+    """Return if an entity-like literal is an argument to a text function.
+
+    Only the innermost call counts: in `replace(states('sensor.a'), ...)` the
+    literal belongs to `states`, and that one is a reference.
+    """
+    groups = match.groups()
+    if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return False
+
+    # Step back over the opening quote, which is not part of the capture.
+    literal_start = match.span(1)[0] - 1
+    return _enclosing_call_name(template_str, literal_start) in _TEXT_ARGUMENT_CALLS
+
+
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
     """Return the entity ID captured by a template regex match."""
     groups = match.groups()
@@ -275,6 +347,7 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
                 _is_concatenated_template_match(template_without_comments, match)
                 or _is_jinja_import_match(template_without_comments, match)
                 or _is_string_method_argument_match(template_without_comments, match)
+                or _is_text_argument_match(template_without_comments, match)
             ):
                 continue
 
