@@ -57,6 +57,20 @@ async def test_delete_removes_the_zones(hass: HomeAssistant) -> None:
     assert hass.states.get("zone.gym") is None
 
 
+async def test_the_same_zone_twice_is_deleted_once(hass: HomeAssistant) -> None:
+    """A duplicate in the list is not an error after the zone is gone."""
+    await hass.services.async_call(
+        DOMAIN,
+        "delete",
+        {ATTR_ENTITY_ID: ["zone.work", "zone.work"]},
+        blocking=True,
+    )
+    await hass.async_block_till_done()
+
+    assert hass.states.get("zone.work") is None
+    assert hass.states.get("zone.gym") is not None
+
+
 @pytest.mark.parametrize(
     ("bad", "message"),
     [

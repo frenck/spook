@@ -57,5 +57,7 @@ class SpookService(AbstractSpookAdminService):
             # pylint: disable-next=protected-access
             zone_ids.append(entity._config["id"])  # noqa: SLF001
 
-        for zone_id in zone_ids:
+        # The same zone twice in the list is still one zone. Deleting it a
+        # second time would fail after the first had already gone through.
+        for zone_id in dict.fromkeys(zone_ids):
             await collection.async_delete_item(zone_id)
