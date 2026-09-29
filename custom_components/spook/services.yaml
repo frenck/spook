@@ -1338,6 +1338,66 @@ select_random:
       selector:
         object:
 
+input_select_create:
+  name: Create an input select 👻
+  description: >-
+    Creates a new input select (dropdown) helper on the fly. Returns the entity
+    ID of the new input select.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input select.
+      required: true
+      selector:
+        text:
+    input_select_id:
+      name: Input select entity ID
+      description: >-
+        The entity ID for the new input select. The input_select. prefix is
+        added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    options:
+      name: Options
+      description: The options to choose from. Each option can only be in it once.
+      required: true
+      selector:
+        text:
+          multiple: true
+    initial:
+      name: Initial option
+      description: >-
+        The option it starts on, which has to be one of the options. If left
+        out, it keeps the option it had before Home Assistant restarted.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: The icon for the new input select.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:form-dropdown
+
+input_select_delete:
+  name: Delete an input select 👻
+  description: >-
+    Deletes input select helpers made in the UI or with the create an input
+    select action. Input selects set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input select(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_select
+
 input_select_random:
   name: Select random option 👻
   description: >-
