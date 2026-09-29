@@ -1,7 +1,9 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Ja... vel... nei. Greit, takk, ha det!"
+            "already_spooked": "Ja... vel... nei. Greit, takk, ha det!",
+            "enabled_existing": "Den eksisterande Spook-oppføringa er aktivert.",
+            "enable_failed": "Den eksisterande Spook-oppføringa kunne ikkje aktiverast."
         },
         "step": {
             "user": {
@@ -12,6 +14,12 @@
                 "menu_options": {
                     "restart_now": "Start på nytt no",
                     "restart_later": "Start på nytt seinare"
+                }
+            },
+            "already_configured": {
+                "description": "Spook er allereie konfigurert, men den eksisterande oppføringa er deaktivert. Vil du aktivere ho?",
+                "menu_options": {
+                    "enable_existing": "Aktiver eksisterande oppføring"
                 }
             }
         }
@@ -206,6 +214,18 @@
             },
             "repairs_active_issues": {
                 "name": "Aktiv"
+            },
+            "homeassistant_counter": {
+                "name": "Teljarar"
+            },
+            "homeassistant_group": {
+                "name": "Grupper"
+            },
+            "homeassistant_timer": {
+                "name": "Tidsur"
+            },
+            "homeassistant_todo": {
+                "name": "Gjeremålslister"
             }
         },
         "switch": {
@@ -246,7 +266,25 @@
             "title": "Unknown actions used in: {automation}"
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "Unknown group members in: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ukjende gruppemedlemmer i: {group}",
+                        "description": "Spook har funne eit spøkelse i gruppene dine 👻\n\nGruppa {group} (`{entity_id}`) har medlemmer som er ukjende for Home Assistant:\n\n{entities}\n\nFjern dei frå gruppa, eller behald dei, så sluttar Spook å påpeike dei.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern desse medlemmene",
+                            "manage": "La meg fikse det sjølv",
+                            "ignore": "Behald dei, slutt å seie ifrå"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne gruppa frå no av.",
+                    "not_editable": "Denne gruppa er sett opp i YAML, så Spook kan ikkje redigere ho. Oppdater gruppa i konfigurasjonen din i staden.",
+                    "manage": "Du kan administrere denne gruppa sjølv på [Hjelparar-sida](/config/helpers)."
+                }
+            }
         },
         "lovelace_unknown_entity_references": {
             "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
@@ -311,6 +349,1582 @@
                         "title": "Restart required",
                         "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
                     }
+                }
+            }
+        },
+        "alert_unknown_entity_references": {
+            "title": "Ukjend entitet overvaka av varsel: {alert}",
+            "description": "Spook har funne eit spøkelse i varsla dine 👻\n\nVarselet {alert} (`{entity_id}`) overvakar ein entitet som er ukjend for Home Assistant:\n\n{entities}\n\nEit varsel kan berre fyre på entiteten det overvakar, så dette kan aldri fyre igjen. Det ser likeeins ut som eit varsel som ikkje har noko å melde.\n\nFor å rette denne feilen, rediger `alert:`-seksjonen i konfigurasjonen din og pek dette varselet mot ein entitet som finst.\n\nSpook 👻 Kompisen din."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Ukjende varslarar brukt av varsel: {alert}",
+            "description": "Spook har funne eit spøkelse i varsla dine 👻\n\nVarselet {alert} (`{entity_id}`) varslar gjennom følgjande handlingar, som er ukjende for Home Assistant:\n\n{notifiers}\n\nVarselet fyrer framleis og går framleis sine rundar, men desse varsla går ingen stad. Home Assistant loggar det berre i det augeblikket varselet fyrer, som er eit dårleg augeblikk å oppdage at ingen lyttar.\n\nFor å rette denne feilen, rediger `notifiers:`-lista for dette varselet i konfigurasjonen din og fjern eller korriger desse oppføringane.\n\nSpook 👻 Kompisen din."
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook har funne eit spøkelse i automasjonane dine 👻\n\nMedan Spook sveiv rundt, kryssa han veg med følgjande automasjon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automasjonen brukar følgjande vilkår, som ikkje kan leverast av nokon integrasjon tilgjengeleg for Home Assistant:\n\n{conditions}\n\n\n\nDette skjer ofte når integrasjonen som leverte eit vilkår vart fjerna. For å rette denne feilen, [rediger automasjonen]({edit}) og fjern bruken av desse utilgjengelege vilkåra, eller gjenopprett integrasjonen som leverer dei.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende vilkår brukt i: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook har funne eit spøkelse i automasjonane dine 👻\n\nMedan Spook sveiv rundt, kryssa han veg med følgjande automasjon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automasjonen brukar følgjande utløysarar, som ikkje kan leverast av nokon integrasjon tilgjengeleg for Home Assistant:\n\n{triggers}\n\n\n\nDette skjer ofte når integrasjonen som leverte ein utløysar vart fjerna. For å rette denne feilen, [rediger automasjonen]({edit}) og fjern bruken av desse utilgjengelege utløysarane, eller gjenopprett integrasjonen som leverer dei.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende utløysarar brukt i: {automation}"
+        },
+        "empty_areas": {
+            "title": "Tomt område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tomt område: {area}",
+                        "description": "Området {area} har ingen einingar, ingen entitetar, og ingen automasjon eller skript som rettar seg mot det.\n\nFjern det, eller behald det, så sluttar Spook å påpeike det.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern dette tomme området",
+                            "ignore": "Behald den, slutt å seie ifrå",
+                            "manage": "La meg fikse det sjølv"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om dette området frå no av.",
+                    "manage": "Du kan administrere dette området sjølv på [Område-sida](/config/areas/dashboard)."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Tom etasje: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tom etasje: {floor}",
+                        "description": "Etasjen {floor} har ingen område, og ingen automasjon eller skript som rettar seg mot han.\n\nFjern han, eller behald han, så sluttar Spook å påpeike han.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern denne tomme etasjen",
+                            "ignore": "Behald den, slutt å seie ifrå",
+                            "manage": "La meg fikse det sjølv"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne etasjen frå no av.",
+                    "manage": "Du kan administrere denne etasjen sjølv på [Område-sida](/config/areas/dashboard)."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "description": "Spook har funne eit spøkelse i energidashbordet ditt 👻\n\nEnergidashbordet refererer til følgjande entitetar, som er ukjende for Home Assistant:\n\n{entities}\n\n\n\nDette skjer vanlegvis når ein entitet brukt i energikonfigurasjonen vart omdøypt eller fjerna. For å rette denne feilen, opne Innstillingar > Dashbord > Energi og oppdater eller fjern desse entitetane.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende entitetar brukt i energidashbordet"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook har funne eit spøkelse i dashborda dine 👻\n\nFølgjande dashbordressursar peikar på filer som ikkje finst:\n\n{resources}\n\n\n\nDette skjer vanlegvis når eit eigendefinert kort eller filene det blei fjerna, men ressursen blei ståande att. For å rette denne feilen, opne [Ressursar-sida](/config/lovelace/resources) og fjern eller korriger desse ressursane. Ho har inga eiga fane: på Dashboard-sida ligg ho bak dei tre prikkane øvst til høgre.\n\nSpook 👻 Kompisen din.",
+            "title": "Dashbordressursar peikar på manglande filer"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook har funne eit spøkelse i dashborda dine 👻\n\nFølgjande dashbordressursar peikar på filer som ikkje finst:\n\n{resources}\n\n\n\nDette skjer vanlegvis når eit eigendefinert kort eller filene det blei fjerna, men ressursen blei ståande att.\n\nDesse ressursane er oppførte i YAML-konfigurasjonen din, så Ressursar-sida kan ikkje endre dei. Rediger `resources:`-seksjonen i Lovelace-konfigurasjonen din og fjern eller korriger desse oppføringane.\n\nSpook 👻 Kompisen din.",
+            "title": "Dashbordressursar peikar på manglande filer"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Dashbordressurs oppført meir enn éin gong: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Dashbordressurs oppført meir enn éin gong: {resource}",
+                        "description": "Spook har funne eit spøkelse i dashborda dine 👻\n\nDenne dashbordressursen er oppført {count} gonger:\n\n{resources}\n\nDette skjer vanlegvis når eit eigendefinert kort blei oppdatert ved å leggje til ein ressurs for den nye versjonen i staden for å redigere den som allereie var der. Nettlesaren lastar begge, kortet prøver å registrere seg sjølv to gonger, og det andre forsøket mislukkast, noko som ser ut som eit øydelagt kort snarare enn ein duplisert ressurs.\n\nSpook kan fjerne dei ekstra kopiane og behalde den sist tilføydde.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern dei ekstra kopiane, behald den nyaste",
+                            "ignore": "La dei vere, slutt å seie ifrå",
+                            "manage": "La meg fikse det sjølv"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne ressursen frå no av.",
+                    "manage": "Du kan administrere dashbordressursane dine sjølv på [Ressursar-sida](/config/lovelace/resources).",
+                    "yaml": "Desse ressursane er oppførte i YAML-konfigurasjonen din, så Spook kan ikkje endre dei for deg. Rediger `resources:`-seksjonen i Lovelace-konfigurasjonen din og fjern kopiane av `{resource}` du ikkje lenger treng."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook har funne eit spøkelse i dashborda dine 👻\n\nMedan Spook sveiv rundt, kryssa han veg med følgjande dashbord:\n\n{dashboard}\n\nDette dashbordet refererer til følgjande område, som er ukjende for Home Assistant:\n\n{areas}\n\n\n\nDette skjer ofte når eit område vart omdøypt eller fjerna. For å rette denne feilen, [rediger dashbordet]({edit}) og fjern bruken av desse ikkje-eksisterande områda.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende område brukt i dashbord: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Ukjende medlemmer brukt i min/maks-hjelpar: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ukjende medlemmer brukt i min/maks-hjelpar: {helper}",
+                        "description": "Spook har funne eit spøkelse i hjelparane dine 👻\n\nMin/maks-hjelparen {helper} (`{entity_id}`) kombinerer følgjande medlemmer, som er ukjende for Home Assistant:\n\n{sources}\n\nFjern dei så hjelparen held fram med medlemmene som er att, eller behald dei, så sluttar Spook å påpeike dei.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern desse medlemmene",
+                            "manage": "La meg fikse det sjølv",
+                            "ignore": "Behald dei, slutt å seie ifrå"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne hjelparen frå no av.",
+                    "manage": "Du kan administrere denne hjelparen sjølv på [Hjelparar-sida](/config/helpers).",
+                    "too_few_members": "Ein min/maks-hjelpar treng minst to medlemmer, så å fjerne dei manglande ville gjere at det blir for få att. Konfigurer på nytt eller fjern hjelparen sjølv på [Hjelparar-sida](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook har funne eit spøkelse i varslingsgruppene dine 👻\n\nVarslingsgruppa `{group}` vidaresender til følgjande handlingar, som er ukjende for Home Assistant:\n\n{members}\n\nGruppa leverer framleis til resten av medlemmene sine, og ho rapporterer framleis suksess til det som kalla henne, så ingenting oppstrøms merkar det. Feilen dukkar berre opp som ein laus «Task exception was never retrieved» i loggen, som ikkje namngjev noka gruppe og blir lesen som ein feil. Den som stod bak det medlemmet, sluttar rett og slett å bli varsla.\n\nFor å rette denne feilen, rediger `services:`-lista for denne gruppa i konfigurasjonen din og fjern eller korriger desse oppføringane.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende medlemmer i varslingsgruppe: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Foreldrelaus langtidsstatistikk funnen",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Foreldrelaus langtidsstatistikk funnen",
+                        "description": "Spook har funne eit spøkelse i opptakaren din 👻\n\nHome Assistant tek vare på langtidsstatistikk for følgjande, men det finst ikkje lenger ein tilsvarande entitet for dei:\n\n{statistics}\n\nDette skjer vanlegvis når ein sensor vart fjerna medan statistikken vart behalden. Å fjerne han kastar den historikken bort for godt, så Spook ser etter igjen før han gjer det, og lèt vere å røre alt som har kome tilbake i mellomtida.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern denne statistikken",
+                            "manage": "La meg gjere det sjølv",
+                            "ignore": "Behald dei, slutt å seie ifrå"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne statistikken frå no av.",
+                    "manage": "Du kan fjerne desse sjølv på [Statistikk-sida](/config/tools/statistics).",
+                    "nothing_to_clear": "Ingenting på den lista treng framleis å ryddast, så ingenting er kasta. Anten har statistikken ein entitet bak seg att, eller så er han allereie borte.",
+                    "clearing_took_too_long": "Spook bad om at statistikken skulle fjernast, og opptakaren har ikkje sagt at han er ferdig. Arbeidet ligg i kø og landar høgst sannsynleg, så denne reparasjonen står til Spook har sett etter igjen."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Ukjende einingssporarar spora av: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ukjende einingssporarar spora av: {person}",
+                        "description": "Spook har funne eit spøkelse blant personane dine 👻\n\n{person} sporar følgjande einingssporarar, som er ukjende for Home Assistant:\n\n{device_trackers}\n\nDette skjer ofte når ein einingssporar vart omdøypt eller integrasjonen hans vart fjerna.\n\nFjern dei frå {person}, eller behald dei, så sluttar Spook å påpeike dei.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern desse einingssporarane",
+                            "ignore": "Behald dei, slutt å seie ifrå",
+                            "manage": "La meg fikse det sjølv"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne personen frå no av.",
+                    "not_editable": "Denne personen er sett opp i YAML, så Spook kan ikkje redigere han. Oppdater personen i konfigurasjonen din i staden.",
+                    "manage": "Du kan administrere denne personen sjølv på [Person-sida](/config/person)."
+                }
+            }
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook har funne eit spøkelse i skripta dine 👻\n\nMedan Spook sveiv rundt, kryssa han veg med følgjande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette skriptet brukar følgjande vilkår, som ikkje kan leverast av nokon integrasjon tilgjengeleg for Home Assistant:\n\n{conditions}\n\n\n\nDette skjer ofte når integrasjonen som leverte eit vilkår vart fjerna. For å rette denne feilen, [rediger skriptet]({edit}) og fjern bruken av desse utilgjengelege vilkåra, eller gjenopprett integrasjonen som leverer dei.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende vilkår brukt i: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook har funne eit spøkelse i skripta dine 👻\n\nMedan Spook sveiv rundt, kryssa han veg med følgjande skript:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette skriptet brukar følgjande utløysarar, som ikkje kan leverast av nokon integrasjon tilgjengeleg for Home Assistant:\n\n{triggers}\n\n\n\nDette skjer ofte når integrasjonen som leverte ein utløysar vart fjerna. For å rette denne feilen, [rediger skriptet]({edit}) og fjern bruken av desse utilgjengelege utløysarane, eller gjenopprett integrasjonen som leverer dei.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende utløysarar brukt i: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook har funne eit spøkelse i mal-hjelparane dine 👻\n\nMedan Spook sveiv rundt, kryssa han veg med følgjande mal-hjelpar:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nKonfigurasjonen hans refererer til følgjande entitetar, som er ukjende for Home Assistant:\n\n{entities}\n\n\n\nDette skjer ofte når ein entitet vart omdøypt eller fjerna. For å rette denne feilen, konfigurer mal-hjelparen på nytt til å referere til eksisterande entitetar.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende entitetar brukt i mal-hjelpar: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook har funne eit spøkelse i mal-hjelparane dine 👻\n\nMedan Spook sveiv rundt, kryssa han veg med følgjande mal-hjelpar:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHan refererer til følgjande handlingar, som er ukjende for Home Assistant:\n\n{services}\n\n\n\nDette skjer ofte når ein handlingsleverandør vart fjerna, eller eit skript vart omdøypt eller sletta. For å rette denne feilen, konfigurer mal-hjelparen på nytt til å bruke eksisterande handlingar.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende handlingar brukt i mal-hjelpar: {helper}"
+        },
+        "unknown_customized_entities": {
+            "description": "Spook har funne eit spøkelse i tilpassingane dine 👻\n\n`customize:`-seksjonen festar attributt på følgjande entitetar, som er ukjende for Home Assistant:\n\n{entities}\n\n\n\nDette skjer ofte når ein entitet vart omdøypt eller fjerna medan tilpassinga vart ståande att. For å rette denne feilen, rediger `customize:`-seksjonen i konfigurasjonen din og fjern desse entitetane.\n\nSpook 👻 Kompisen din.",
+            "title": "Ukjende entitetar i tilpassingane dine"
+        },
+        "unknown_helper_source_references": {
+            "title": "Ukjende kjeldeentitetar brukt i hjelpar: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ukjende kjeldeentitetar brukt i hjelpar: {helper}",
+                        "description": "Spook har funne eit spøkelse i hjelparane dine 👻\n\nHjelparen {helper} (`{domain}`, `{entity_id}`) refererer til følgjande kjeldeentitetar, som er ukjende for Home Assistant:\n\n{sources}\n\nUtan kjeldene sine kan ikkje denne hjelparen fungere. {usage}\n\nFjern hjelparen, eller behald han, så sluttar Spook å påpeike han.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern denne hjelparen",
+                            "manage": "La meg fikse det sjølv",
+                            "ignore": "Behald den, slutt å seie ifrå"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne hjelparen frå no av.",
+                    "manage": "Du kan administrere denne hjelparen sjølv på [Hjelparar-sida](/config/helpers)."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Ubrukt blueprint: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ubrukt blueprint: {blueprint}",
+                        "description": "Blueprinten {blueprint} blir ikkje brukt av nokon {domain}.\n\nFjern han, eller behald han, så sluttar Spook å påpeike han.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern denne ubrukte blueprinten",
+                            "ignore": "Behald den, slutt å seie ifrå",
+                            "manage": "La meg fikse det sjølv"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne blueprinten frå no av.",
+                    "manage": "Du kan administrere denne blueprinten sjølv på [Blueprint-sida](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Ubrukt etikett: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ubrukt etikett: {label}",
+                        "description": "Etiketten {label} er ikkje brukt på nokon entitet, eining eller område, og ingen automasjon eller skript rettar seg mot han.\n\nFjern han, eller behald han, så sluttar Spook å påpeike han.\n\nSpook 👻 Kompisen din.",
+                        "menu_options": {
+                            "remove": "Fjern denne ubrukte etiketten",
+                            "ignore": "Behald den, slutt å seie ifrå",
+                            "manage": "La meg fikse det sjølv"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook held tett om denne etiketten frå no av.",
+                    "manage": "Du kan administrere denne etiketten sjølv på [Etikett-sida](/config/labels)."
+                }
+            }
+        }
+    },
+    "triggers": {
+        "debounce": {
+            "name": "Når han roar seg",
+            "description": "Utløyser når ein utløysar har slutta å fyre ei stund, slik at ein byge av dei kjem som éin. Ein rørslesensor melder ikkje rørsle éin gong, han melder det tjue gonger.",
+            "fields": {
+                "triggers": {
+                    "name": "Utløysarar",
+                    "description": "Utløysarane det skal ventast ut. At ein av dei fyrer startar ein byge, og at ein av dei fyrer igjen held han gåande, så fleire utløysarar blir slått saman i staden for éin om gongen."
+                },
+                "for": {
+                    "name": "I",
+                    "description": "Kor lenge det må ha vore stille før dette blir utløyst. Kvar utløysing startar den ventinga på nytt, så noko som aldri sluttar å fyre, blir aldri rapportert."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Alt dette skjedde",
+            "description": "Utløyser når kvar av fleire utløysarar har fyrt innanfor det same tidsvindauget, i vilkårleg rekkefølgje. Home Assistant sine eigne utløysarar er ei liste der éin av dei er nok; dette er den andre.",
+            "fields": {
+                "triggers": {
+                    "name": "Utløysarar",
+                    "description": "Utløysarane som alle må ha fyrt. Rekkefølgje speler inga rolle, og ein utløysar som fyrer igjen erstattar sin tidlegare runde i staden for å telje to gonger."
+                },
+                "within": {
+                    "name": "Innan",
+                    "description": "Kor tett saman dei må vere. Vindauget glir, så ein utløysar som fyrte lenger tilbake enn dette, blir gløymd medan dei andre held fram med å telje."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entitet kom tilbake",
+            "description": "Utløyser når ein entitet kjem tilbake etter å ha vore utilgjengeleg ei stund, slik at ein rutar som startar på nytt ikkje blir lesen som at alt i huset kjem seg.",
+            "fields": {
+                "for": {
+                    "name": "I",
+                    "description": "Kor lenge entiteten må ha vore borte før det å komme tilbake tel. Alt kortare er eit blaff: å laste ein integrasjon på nytt tek kvar av entitetane hans gjennom utilgjengeleg og tilbake på under eit sekund."
+                }
+            }
+        },
+        "sequence": {
+            "name": "Utløysarar i rekkefølgje",
+            "description": "Utløyser når fleire utløysarar skjer etter kvarandre, i den oppgjevne rekkefølgja.",
+            "fields": {
+                "steps": {
+                    "name": "Steg",
+                    "description": "Utløysarane som må skje, i rekkefølgje. Berre den det blir venta på lyttar, så eit seinare steg som fyrer for tidleg er ikkje eit treff."
+                },
+                "timeout": {
+                    "name": "Tidsavbrot",
+                    "description": "Kor lang tid heile sekvensen kan ta, rekna frå det første steget. Utelaten ventar han i det uendelege."
+                },
+                "reset": {
+                    "name": "Tilbakestill",
+                    "description": "Utløysarar som avbryt ein sekvens som allereie er i gang, og set han tilbake til å vente på det første steget."
+                }
+            }
+        },
+        "while": {
+            "name": "Medan eit vilkår held",
+            "description": "Utløyser når eit vilkår blir sant, og held fram med å fyre med eit intervall så lenge det held seg sant.",
+            "fields": {
+                "condition": {
+                    "name": "Vilkår",
+                    "description": "Vilkåret som skal overvakast. Fyringa startar når det blir sant og stoppar når det sluttar å vere sant."
+                },
+                "every": {
+                    "name": "Kvar",
+                    "description": "Kor lenge det skal ventast mellom ei utløysing og den neste, så lenge vilkåret held."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Vakthund",
+            "description": "Utløyser når noko som var forventa å skje, ikkje skjer i tide.",
+            "fields": {
+                "arm": {
+                    "name": "Aktiver",
+                    "description": "Kva som startar overvakinga. Ventinga blir målt herfrå, og å arme på nytt medan han allereie ventar startar ventinga på nytt."
+                },
+                "expect": {
+                    "name": "Forvent",
+                    "description": "Kva som er forventa å følgje. Å komme i tide avlyser overvakinga, og ingenting fyrer."
+                },
+                "within": {
+                    "name": "Innan",
+                    "description": "Kor lenge det forventa har på seg å komme. Dette blir utløyst når den tida passerer og det ikkje har kome."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entitet vil ikkje roe seg",
+            "description": "Utløyser når ein entitet endrar tilstand oftare enn han bør innanfor eit tidsrom.",
+            "fields": {
+                "changes": {
+                    "name": "Endringar",
+                    "description": "Kor mange tilstandsendringar som skal til før dette blir utløyst. Attributtendringar tel ikkje, og det gjer heller ikkje at ein entitet dukkar opp eller forsvinn."
+                },
+                "within": {
+                    "name": "Innan",
+                    "description": "Tidsrommet dei endringane må falle innanfor. Det glir langs, så dette handlar alltid om dei nyaste endringane."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Vilkår vart sant",
+            "description": "Utløyser når eit vilkår går frå usant til sant, med dei same byggjeklossane for vilkår som elles.",
+            "fields": {
+                "condition": {
+                    "name": "Vilkår",
+                    "description": "Vilkåret som skal overvakast."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron-tidsplan",
+            "description": "Utløyser etter ein crontab-tidsplan, for tidspunkta Home Assistant sine eigne tidsutløysarar ikkje kan uttrykke, som kvar vekedag klokka sju eller den siste fredagen i månaden.",
+            "fields": {
+                "schedule": {
+                    "name": "Tidsplan",
+                    "description": "Eit crontab-uttrykk med fem felt: minutt, time, dag i månaden, månad, vekedag. Støttar intervall og steg, samt vekedag-utvidingane, slik at «MON#2» er den andre måndagen og «5L» den siste fredagen. Kallenamn som «@daily» er ikkje støtta."
+                }
+            }
+        },
+        "integration_failed": {
+            "name": "Integrasjonen klarte ikkje å setje seg opp",
+            "description": "Utløyser når ei konfigurasjonsoppføring ikkje har klart å setje seg opp på ei stund, forbi punktet der Home Assistant sine eigne nye forsøk ville ha ordna det.",
+            "fields": {
+                "for": {
+                    "name": "I",
+                    "description": "Kor lenge ei oppføring må halde fram med å feile før dette blir utløyst. Home Assistant prøver ei feilande oppføring på nytt kvart tiande minutt på det tregaste, så alt kortare enn det melder trøbbel som framleis kan ordne seg sjølv."
+                },
+                "entry_id": {
+                    "name": "Oppføringar",
+                    "description": "Avgrens dette til bestemte konfigurasjonsoppføringar. La det stå tomt for å overvake kvar einaste av dei."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Reparasjonssak oppretta",
+            "description": "Utløyser når ei ny reparasjonssak dukkar opp, slik at du kan få høyre om ei utan å vitje reparasjonssida.",
+            "fields": {
+                "domain": {
+                    "name": "Integrasjonar",
+                    "description": "Avgrens dette til saker rapporterte av bestemte integrasjonar, etter domenet deira. La det stå tomt for alle saman."
+                },
+                "severity": {
+                    "name": "Alvorsgrad",
+                    "description": "Avgrens dette til saker av ein bestemt alvorsgrad. La det stå tomt for alle saman."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Reparasjonssak løyst",
+            "description": "Utløyser når ei reparasjonssak forsvinn, anten fiksa eller ikkje lenger rapportert.",
+            "fields": {
+                "domain": {
+                    "name": "Integrasjonar",
+                    "description": "Avgrens dette til saker rapporterte av bestemte integrasjonar, etter domenet deira. La det stå tomt for alle saman."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entitet vart still",
+            "description": "Utløyser når ingenting har skrive til ein entitet på ei stund, som fangar opp ei eining som døydde stille i staden for å bli utilgjengeleg.",
+            "fields": {
+                "for": {
+                    "name": "I",
+                    "description": "Kor lenge ein entitet må halde seg still før dette blir utløyst. Ein entitet som stadig melder same verdi, er ikkje still."
+                }
+            }
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritisk",
+                "error": "Feil",
+                "warning": "Åtvaring"
+            }
+        }
+    },
+    "conditions": {
+        "repair_issue_present": {
+            "name": "Reparasjonssak utestående",
+            "description": "Passerer medan ei reparasjonssak er utestående. Saker nokon har ignorert, tel ikkje.",
+            "fields": {
+                "domain": {
+                    "name": "Integrasjonar",
+                    "description": "Avgrens dette til saker rapporterte av bestemte integrasjonar, etter domenet deira. La det stå tomt for alle saman."
+                },
+                "severity": {
+                    "name": "Alvorsgrad",
+                    "description": "Avgrens dette til saker av ein bestemt alvorsgrad. La det stå tomt for alle saman."
+                }
+            }
+        },
+        "quota": {
+            "name": "Attståande køyringar",
+            "description": "Passerer medan denne automasjonen har køyrt færre enn eit gjeve tal gonger innanfor ein gjeven periode. Skript blir ikkje talde.",
+            "fields": {
+                "limit": {
+                    "name": "Grense",
+                    "description": "Kor mange køyringar som er tillatne innanfor perioden."
+                },
+                "period": {
+                    "name": "Periode",
+                    "description": "Vindauget grensa gjeld for. Det rullar, så eit døgn betyr kva som helst tjuefire timar i staden for mellom midnatt."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Utløyst av ein automasjon",
+            "description": "Passerer når ein annan automasjon sette denne køyringa i gang, anten han gjorde det direkte eller gjennom eit skript.",
+            "fields": {
+                "automation": {
+                    "name": "Automasjonar",
+                    "description": "Avgrens dette til bestemte automasjonar. La det stå tomt for å godta kva som helst av dei."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Utløyst av ein brukar",
+            "description": "Passerer når ein person står bak det som sette dette i gang: ei tilstandsendring eller ei hending dei forårsaka, inkludert ei som fekk ein mal-utløysar til å bli sann. Ein tidsplan, sola eller ein integrasjon som handlar på eiga hand ber ingen, og det gjer heller ikkje å tvinge ei køyring med Køyr-knappen.",
+            "fields": {
+                "person": {
+                    "name": "Personar",
+                    "description": "Pass berre når ein av desse personane starta det. La stå tomt for å passe for alle. Ein person må ha ein brukarkonto knytt til seg, elles er det ingenting å matche mot."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Ikkje utløyst av ein brukar",
+            "description": "Passerer når ingen kan haldast ansvarleg for denne køyringa: ein tidsplan, sola, ein integrasjon som handlar på eiga hand, eller Køyr-knappen. Tek med vilje ingen alternativ. For å utelate bestemte personar i staden, legg «Utløyst av ein brukar» inne i eit Ikkje-vilkår."
+        },
+        "chance": {
+            "name": "Sjanse",
+            "description": "Passerer ein fast prosentdel av tida, vald tilfeldig ved kvar sjekk. Hendig for å leggje til litt variasjon i automasjonane dine.",
+            "fields": {
+                "percentage": {
+                    "name": "Prosentdel",
+                    "description": "Kor ofte dette vilkåret skal passere, i prosent."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Nedkjøling",
+            "description": "Passerer berre dersom denne automasjonen eller skriptet ikkje har køyrt innanfor den gjevne tida (eller aldri har køyrt). Ei innebygd nedkjøling, så han ikkje fyrer på nytt for ofte.",
+            "fields": {
+                "duration": {
+                    "name": "Varigheit",
+                    "description": "Kor lenge det skal ventast etter siste køyring før dette vilkåret passerer att."
+                }
+            }
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Legg til medlemmer i ei gruppe",
+            "description": "Legg entitetar til i ei gruppe som er laga via grensesnittet, medan Home Assistant køyrer. Entitetar som allereie er i gruppa, blir ståande der dei er.",
+            "fields": {
+                "group": {
+                    "name": "Gruppe",
+                    "description": "Gruppa det skal leggjast til i."
+                },
+                "members": {
+                    "name": "Medlemmer",
+                    "description": "Entitetane som skal leggjast til i gruppa."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Fjern medlemmer frå ei gruppe",
+            "description": "Tek entitetar ut av ei gruppe laga via grensesnittet, medan Home Assistant køyrer. Å namngje noko som ikkje er i gruppa gjer ingenting, så dette er òg måten du ryddar ut eit medlem som ikkje lenger finst.",
+            "fields": {
+                "group": {
+                    "name": "Gruppe",
+                    "description": "Gruppa dei skal takast ut av."
+                },
+                "members": {
+                    "name": "Medlemmer",
+                    "description": "Entitetane som skal fjernast frå gruppa."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Set medlemmene i ei gruppe",
+            "description": "Erstattar medlemmene i ei gruppe laga via grensesnittet med dei oppgjevne, medan Home Assistant køyrer.",
+            "fields": {
+                "group": {
+                    "name": "Gruppe",
+                    "description": "Gruppa som skal endrast."
+                },
+                "members": {
+                    "name": "Medlemmer",
+                    "description": "Entitetane gruppa skal halde frå no av."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Vent på eit vilkår",
+            "description": "Vent til eit vilkår er sant. Returnerer med ein gong dersom det allereie er det.",
+            "fields": {
+                "condition": {
+                    "name": "Vilkår",
+                    "description": "Vilkåret det skal ventast på."
+                },
+                "timeout": {
+                    "name": "Tidsavbrot",
+                    "description": "Kor lenge det skal ventast før ein gjev opp. Ventar i det uendelege når utelaten."
+                }
+            }
+        },
+        "boo": {
+            "name": "Bø!",
+            "description": "Å kalle denne handlinga spøkjer Home Assistant. Å utføre denne handlinga vil alltid mislukkast."
+        },
+        "random_fail": {
+            "name": "Tilfeldig feil",
+            "description": "Å utføre denne handlinga vil mislukkast tilfeldig."
+        },
+        "blueprint_import": {
+            "name": "Importer blueprint",
+            "description": "Importer ein blueprint.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "URL-en blueprinten skal importerast frå."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Slumre",
+            "description": "Slår ein automasjon av ei stund, og slår han på igjen når tida er ute.",
+            "fields": {
+                "duration": {
+                    "name": "Varigheit",
+                    "description": "Kor lenge automasjonen er av. Han kjem på att av seg sjølv når dette er ute, ein omstart av Home Assistant i mellomtida inkludert."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Slå på i",
+            "description": "Slår ein automasjon på ei stund, og slår han av igjen når tida er ute.",
+            "fields": {
+                "duration": {
+                    "name": "Varigheit",
+                    "description": "Kor lenge automasjonen er på. Han går av att av seg sjølv når dette er ute, ein omstart av Home Assistant i mellomtida inkludert."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Set lysstyrke",
+            "description": "Set lysstyrken på lys som allereie er på, og lèt dei som er av vere i fred.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Lysstyrke",
+                    "description": "Lysstyrken som skal setjast, i prosent. Grupper blir justerte lys for lys, så eit lys som er av held fram med å vere av."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Kor lang tid endringa skal ta, i sekund."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Auk lysstyrke",
+            "description": "Skrur opp lysa som allereie er på, og lèt dei som er av vere i fred.",
+            "fields": {
+                "step_pct": {
+                    "name": "Steg",
+                    "description": "Kor mykje lysare det skal gå, i prosent. Kvart lys stig frå sitt eige nivå, så ei gruppe held på forma si i staden for å jamne seg ut."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Kor lang tid endringa skal ta, i sekund."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Reduser lysstyrke",
+            "description": "Dempar ned lysa som allereie er på, og stoppar ved det svakaste dei går til i staden for å slå dei av.",
+            "fields": {
+                "step_pct": {
+                    "name": "Steg",
+                    "description": "Kor mykje dunklare det skal gå, i prosent. Kvart lys stig frå sitt eige nivå, så ei gruppe held på forma si i staden for å jamne seg ut."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Kor lang tid endringa skal ta, i sekund."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Set farge",
+            "description": "Set fargen på lys som allereie er på, og lèt dei som er av eller ikkje kan gjengje farge vere i fred.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Farge",
+                    "description": "Fargen som skal setjast. Lys som ikkje kan gjengje farge blir hoppa over i staden for å bli slått kvite."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Kor lang tid endringa skal ta, i sekund."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Set fargetemperatur",
+            "description": "Set fargetemperaturen på lys som allereie er på, kvart innanfor området det faktisk kan nå.",
+            "fields": {
+                "kelvin": {
+                    "name": "Fargetemperatur",
+                    "description": "Fargetemperaturen som skal setjast. Kvart lys blir halde til sitt eige område, sidan varmkvitt på éi lampe er eit tal ei anna ikkje kan nå."
+                },
+                "transition": {
+                    "name": "Overgang",
+                    "description": "Kor lang tid endringa skal ta, i sekund."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Set effekt",
+            "description": "Set ein effekt på lysa som allereie er på og faktisk har han.",
+            "fields": {
+                "effect": {
+                    "name": "Effekt",
+                    "description": "Namnet på effekten som skal setjast. Effektnamn varierer per produsent, så lys som ikkje har denne, blir ståande som dei er."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Opprett eit område",
+            "description": "Opprettar eit nytt område på direkten.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på området som skal opprettast."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon som skal brukast for området."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Ei liste med alias for området. Nyttig dersom du vil bruke området på eit anna språk eller med eit anna kallenamn."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Legg til eit alias på eit område",
+            "description": "Legg eit alias til på eit område.",
+            "fields": {
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en til området aliaset skal leggjast til på."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Aliaset (eller lista med alias) som skal leggjast til på området."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Fjern eit alias frå eit område",
+            "description": "Fjernar eit alias frå eit område.",
+            "fields": {
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en til området aliaset skal fjernast frå."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Aliaset (eller lista med alias) som skal fjernast frå området."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Set alias for eit område",
+            "description": "Set alias for eit område. Overskriv og fjernar eventuelle eksisterande alias, og erstattar dei heilt med dei nye.",
+            "fields": {
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en til området aliasa skal setjast for."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Aliasa som skal setjast for området."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Legg til ei eining i eit område",
+            "description": "Legg ei eining til i eit område. Merk at dersom eininga allereie er i eit område, blir ho fjerna frå det førre området.",
+            "fields": {
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en til området eininga skal leggjast til i."
+                },
+                "device_id": {
+                    "name": "Einings-ID",
+                    "description": "ID-en til eininga(ene) som skal leggjast til i området."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Fjern ei eining frå eit område",
+            "description": "Fjernar ei eining frå eit område. Sidan ei eining berre kan vere i eitt område, treng ikkje dette kallet å oppgje området.",
+            "fields": {
+                "device_id": {
+                    "name": "Einings-ID",
+                    "description": "ID-en til eininga området skal fjernast frå."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Legg til ein entitet i eit område",
+            "description": "Legg ein entitet til i eit område. Merk at dersom entiteten allereie er i eit område, blir han fjerna frå det førre området. Dette overstyrer området som eininga, som leverer denne entiteten, er i.",
+            "fields": {
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en til området entiteten skal leggjast til i."
+                },
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "ID-en til entiteten (eller entitetane) som skal leggjast til i området."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Fjern ein entitet frå eit område",
+            "description": "Fjernar ein entitet frå eit område. Sidan ein entitet berre kan vere i eitt område, treng ikkje dette kallet å oppgje området. Merk at entiteten framleis vil vere i området til eininga som leverer han, etter dette kallet.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "ID-en til entiteten (eller entitetane) området skal fjernast frå."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Slett eit område",
+            "description": "Slettar eit område på direkten.",
+            "fields": {
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en til området som skal slettast."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Deaktiver ein integrasjon",
+            "description": "Deaktiverer ei integrasjonsoppføring.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integrasjonsoppføring",
+                    "description": "Integrasjonsoppføringa som skal deaktiverast."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Aktiver ein integrasjon",
+            "description": "Aktiverer ei integrasjonsoppføring.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integrasjonsoppføring",
+                    "description": "Integrasjonsoppføringa som skal aktiverast."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Deaktiver ei eining",
+            "description": "Deaktiverer ei eining på direkten.",
+            "fields": {
+                "device_id": {
+                    "name": "Eining",
+                    "description": "Eininga(ene) som skal deaktiverast."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Aktiver ei eining",
+            "description": "Aktiverer ei eining på direkten.",
+            "fields": {
+                "device_id": {
+                    "name": "Einings-ID",
+                    "description": "Den rå einings-ID-en som skal aktiverast. Deaktiverte einingar blir ikkje viste av Home Assistant sin einingsveljar. Fleire ID-ar kan oppgjevast som ei YAML-liste."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Deaktiver ein brukar",
+            "description": "Deaktiverer ein brukarkonto, slik at brukaren ikkje kan logge inn.",
+            "fields": {
+                "user_id": {
+                    "name": "Brukar-ID",
+                    "description": "ID-en(e) til brukaren(ane) som skal deaktiverast."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Aktiver ein brukar",
+            "description": "Aktiverer ein brukarkonto, slik at brukaren kan logge inn.",
+            "fields": {
+                "user_id": {
+                    "name": "Brukar-ID",
+                    "description": "ID-en(e) til brukaren(ane) som skal aktiverast."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Oppdater ID-en til ein entitet",
+            "description": "Oppdaterer ID-en til ein entitet på direkten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entiteten(ane) som skal oppdaterast."
+                },
+                "new_entity_id": {
+                    "name": "Ny entitets-ID",
+                    "description": "Den nye ID-en for entiteten."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Deaktiver ein entitet",
+            "description": "Deaktiverer ein entitet (eller entitetar) på direkten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entiteten(ane) som skal deaktiverast."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Aktiver ein entitet",
+            "description": "Aktiverer ein entitet (eller entitetar) på direkten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entiteten(ane) som skal aktiverast."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Eksponer ein entitet for assistentar",
+            "description": "Eksponerer ein entitet (eller entitetar) for taleassistentar.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entiteten(ane) som skal eksponerast."
+                },
+                "assistants": {
+                    "name": "Assistentar",
+                    "description": "Assistenten(ane) dette skal gjelde for."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Skjul ein entitet",
+            "description": "Skjuler ein entitet (eller entitetar) på direkten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entiteten(ane) som skal skjulast."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Gje ein entitet nytt namn",
+            "description": "Gjev ein entitet (eller entitetar) nytt namn på direkten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entiteten(ane) som skal få nytt namn."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Det nye namnet for entiteten(ane)."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Slutt å eksponere ein entitet for assistentar",
+            "description": "Sluttar å eksponere ein entitet (eller entitetar) for taleassistentar.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entiteten(ane) som skal slutte å eksponerast."
+                },
+                "assistants": {
+                    "name": "Assistentar",
+                    "description": "Assistenten(ane) dette skal gjelde for."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Vis ein entitet igjen",
+            "description": "Viser ein entitet (eller entitetar) igjen på direkten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entiteten(ane) som skal visast igjen."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Opprett ein etasje",
+            "description": "Opprettar ein ny etasje på direkten.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på etasjen som skal opprettast."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon som skal brukast for etasjen."
+                },
+                "level": {
+                    "name": "Nivå",
+                    "description": "Nivået etasjen ligg på i heimen din."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Ei liste med alias for etasjen. Nyttig dersom du vil bruke etasjen på eit anna språk eller med eit anna kallenamn."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Legg til eit alias på ein etasje",
+            "description": "Legg eit alias til på ein etasje.",
+            "fields": {
+                "floor_id": {
+                    "name": "Etasje-ID",
+                    "description": "ID-en til etasjen aliaset skal leggjast til på."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Aliaset (eller lista med alias) som skal leggjast til på etasjen."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Fjern eit alias frå ein etasje",
+            "description": "Fjernar eit alias frå ein etasje.",
+            "fields": {
+                "floor_id": {
+                    "name": "Etasje-ID",
+                    "description": "ID-en til etasjen aliaset skal fjernast frå."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Aliaset (eller lista med alias) som skal fjernast frå etasjen."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Set alias for ein etasje",
+            "description": "Set alias for ein etasje. Overskriv og fjernar eventuelle eksisterande alias, og erstattar dei heilt med dei nye.",
+            "fields": {
+                "floor_id": {
+                    "name": "Etasje-ID",
+                    "description": "ID-en til etasjen aliasa skal setjast for."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Aliasa som skal setjast for etasjen."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Legg til eit område på ein etasje",
+            "description": "Legg eit område til på ein etasje. Merk at dersom området allereie er på ein etasje, blir det fjerna frå den førre etasjen.",
+            "fields": {
+                "floor_id": {
+                    "name": "Etasje-ID",
+                    "description": "ID-en til etasjen området skal leggjast til på."
+                },
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en til området/områda som skal leggjast til på etasjen."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Fjern eit område frå ein etasje",
+            "description": "Fjernar eit område frå ein etasje. Sidan eit område berre kan vere på éin etasje, treng ikkje dette kallet å oppgje etasjen.",
+            "fields": {
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en til området etasjen skal fjernast frå."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Slett ein etasje",
+            "description": "Slettar ein etasje på direkten.",
+            "fields": {
+                "floor_id": {
+                    "name": "Etasje-ID",
+                    "description": "ID-en til etasjen som skal slettast."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Opprett ein etikett",
+            "description": "Opprettar ein ny etikett på direkten.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på etiketten som skal opprettast."
+                },
+                "description": {
+                    "name": "Skildring",
+                    "description": "Skildring for etiketten."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon som skal brukast for etiketten."
+                },
+                "color": {
+                    "name": "Farge",
+                    "description": "Farge som skal brukast for etiketten. Kan vere eit fargenamn frå lista, eller ein heksadesimal fargekode (som #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Oppdater ein etikett",
+            "description": "Oppdaterer ein eksisterande etikett på direkten. Alt du utelèt held på verdien det allereie har. Skildringa, ikonet og fargen kan tømmast ved å setje dei til null.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID-en til etiketten som skal oppdaterast."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Nytt namn for etiketten."
+                },
+                "description": {
+                    "name": "Skildring",
+                    "description": "Ny skildring for etiketten."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Nytt ikon som skal brukast for etiketten."
+                },
+                "color": {
+                    "name": "Farge",
+                    "description": "Farge som skal brukast for etiketten. Kan vere eit fargenamn frå lista, eller ein heksadesimal fargekode (som #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Legg til ein etikett på eit område",
+            "description": "Legg ein etikett til på eit område. Dersom fleire etikettar eller fleire område blir oppgjevne, blir alle kombinasjonar lagde til.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID-en(e) til etiketten(ane) som skal leggjast til på området/områda."
+                },
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en(e) til området/områda etiketten(ane) skal leggjast til på."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Legg til ein etikett på ei eining",
+            "description": "Legg ein etikett til på ei eining. Dersom fleire etikettar eller fleire einingar blir oppgjevne, blir alle kombinasjonar lagde til.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID-en(e) til etiketten(ane) som skal leggjast til på eininga(ene)."
+                },
+                "device_id": {
+                    "name": "Einings-ID",
+                    "description": "ID-en(e) til eininga(ene) etiketten(ane) skal leggjast til på."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Legg til ein etikett på ein entitet",
+            "description": "Legg ein etikett til på ein entitet. Dersom fleire etikettar eller fleire entitetar blir oppgjevne, blir alle kombinasjonar lagde til.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID-en(e) til etiketten(ane) som skal leggjast til på entiteten(ane)."
+                },
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "ID-en(e) til entiteten(ane) etiketten(ane) skal leggjast til på."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Fjern ein etikett frå eit område",
+            "description": "Fjernar ein etikett frå eit område. Dersom fleire etikettar eller fleire område blir oppgjevne, blir alle kombinasjonar fjerna.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID-en(e) til etiketten(ane) som skal fjernast frå området/områda."
+                },
+                "area_id": {
+                    "name": "Område-ID",
+                    "description": "ID-en(e) til området/områda etiketten(ane) skal fjernast frå."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Fjern ein etikett frå ei eining",
+            "description": "Fjernar ein etikett frå ei eining. Dersom fleire etikettar eller fleire einingar blir oppgjevne, blir alle kombinasjonar fjerna.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID-en(e) til etiketten(ane) som skal fjernast frå eininga(ene)."
+                },
+                "device_id": {
+                    "name": "Einings-ID",
+                    "description": "ID-en(e) til eininga(ene) etiketten(ane) skal fjernast frå."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Fjern ein etikett frå ein entitet",
+            "description": "Fjernar ein etikett frå ein entitet. Dersom fleire etikettar eller fleire entitetar blir oppgjevne, blir alle kombinasjonar fjerna.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID-en(e) til etiketten(ane) som skal fjernast frå entiteten(ane)."
+                },
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "ID-en(e) til entiteten(ane) etiketten(ane) skal fjernast frå."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Slett ein etikett",
+            "description": "Slettar ein etikett på direkten.",
+            "fields": {
+                "label_id": {
+                    "name": "Etikett-ID",
+                    "description": "ID-en til etiketten som skal slettast."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Ignorer alle einingar som er oppdaga no",
+            "description": "Ignorer alle einingar som er oppdaga no og blir viste på integrasjonsdashbordet. Dette vil ikkje ignorere einingar som blir oppdaga etter dette.",
+            "fields": {
+                "domain": {
+                    "name": "Integrasjonsdomene",
+                    "description": "Integrasjonsdomenet det skal ignorerast alle oppdaga einingar for. Dersom ikkje oppgjeve, blir alle domene vurderte å bli ignorerte."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Deaktiver spørjing etter oppdateringar",
+            "description": "Deaktiverer spørjing etter oppdateringar for ei integrasjonsoppføring.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integrasjonsoppføring",
+                    "description": "Integrasjonsoppføringa spørjing skal deaktiverast for."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Aktiver spørjing etter oppdateringar",
+            "description": "Aktiverer spørjing etter oppdateringar for ei integrasjonsoppføring.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integrasjonsoppføring",
+                    "description": "Integrasjonsoppføringa spørjing skal aktiverast for."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Slett alle foreldrelause entitetar",
+            "description": "Slettar alle foreldrelause entitetar som ikkje lenger har ein integrasjon som gjer krav på / leverer dei. Merk at dersom integrasjonen nettopp vart fjerna, kan det hende Home Assistant må startast på nytt for å oppdage at dei er foreldrelause.\n**ÅTVARING** Entitetar kan ha blitt merkte som foreldrelause fordi ein integrasjon er fråkopla eller ikkje har fungert sidan Home Assistant starta. Å kalle denne handlinga vil slette dei entitetane òg."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "List opp alle foreldrelause databaseentitetar",
+            "description": "Listar opp alle foreldrelause databaseentitetar som ingen integrasjon gjer krav på."
+        },
+        "homeassistant_restart": {
+            "name": "Start på nytt",
+            "description": "Handlinga Start Home Assistant på nytt.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Sikker modus",
+                    "description": "Om omstarten skal gjerast i sikker modus. Dette vil deaktivere alle eigendefinerte integrasjonar og frontend-modular."
+                },
+                "force": {
+                    "name": "Tving omstart",
+                    "description": "Tving omstarten. ÅTVARING! Dette vil ikkje avslutte Home Assistant på ein pen måte, det vil hoppe over konfigurasjonssjekkar og ignorere pågåande databasemigreringar. Bruk dette berre dersom du veit kva du gjer."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Importer statistikk",
+            "description": "Importer langtidsstatistikk.",
+            "fields": {
+                "statistic_id": {
+                    "name": "Statistikk-ID",
+                    "description": "Statistikk-ID-en (entitets-ID-en) det skal importerast for."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på statistikken."
+                },
+                "source": {
+                    "name": "Kjelde",
+                    "description": "Kjelda til statistikkdataa."
+                },
+                "unit_of_measurement": {
+                    "name": "Måleeining",
+                    "description": "Måleeininga til statistikken."
+                },
+                "has_mean": {
+                    "name": "Har ein gjennomsnittsverdi",
+                    "description": "Om statistikken har ein gjennomsnittsverdi."
+                },
+                "has_sum": {
+                    "name": "Har ein sumverdi",
+                    "description": "Om statistikken har ein sumverdi."
+                },
+                "stats": {
+                    "name": "Statistikk",
+                    "description": "Ei liste med tilordningar/ordbøker med statistikk som skal importerast. Ordbøkene må innehalde ein «start»-nøkkel med ein dato/tid-streng. Andre gyldige val er «mean», «sum», «min», «max», «last_reset» og «state». Alle er valfrie og anten eit heiltal eller eit flyttal, bortsett frå «last_reset» som er ein dato/tid-streng."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Vel tilfeldig alternativ",
+            "description": "Vel eit tilfeldig alternativ for ein select-entitet.",
+            "fields": {
+                "options": {
+                    "name": "Alternativ",
+                    "description": "Avgrensar alternativa å velje mellom. Dersom ikkje oppgjeve, blir alle alternativa vurderte."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Vel tilfeldig alternativ",
+            "description": "Vel eit tilfeldig alternativ for ein input_select-entitet.",
+            "fields": {
+                "options": {
+                    "name": "Alternativ",
+                    "description": "Avgrensar alternativa å velje mellom. Dersom ikkje oppgjeve, blir alle alternativa vurderte."
+                }
+            }
+        },
+        "input_select_shuffle": {
+            "name": "Bland alternativ",
+            "description": "Blandar lista over valbare alternativ for ein `input_select`-entitet. Dette er ikkje vedvarande og blir angra når han blir lasta på nytt eller Home Assistant startar på nytt."
+        },
+        "input_select_sort": {
+            "name": "Sorter alternativ",
+            "description": "Sorterer lista over valbare alternativ for ein `input_select`-entitet. Dette er ikkje vedvarande og blir angra når han blir lasta på nytt eller Home Assistant startar på nytt."
+        },
+        "number_decrement": {
+            "name": "Reduser verdi",
+            "description": "Reduser verdien til ein talentitet med eit visst beløp.",
+            "fields": {
+                "amount": {
+                    "name": "Mengd",
+                    "description": "Beløpet talet skal reduserast med. Dersom ikkje oppgjeve, blir steget til talentiteten brukt."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Auk verdi",
+            "description": "Auk verdien til ein talentitet med eit visst beløp.",
+            "fields": {
+                "amount": {
+                    "name": "Mengd",
+                    "description": "Beløpet talet skal aukast med. Dersom ikkje oppgjeve, blir steget til talentiteten brukt."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Set maksimumsverdi",
+            "description": "Set ein talentitet til maksimumsverdien sin."
+        },
+        "number_min": {
+            "name": "Set minimumsverdi",
+            "description": "Set ein talentitet til minimumsverdien sin."
+        },
+        "input_number_decrement": {
+            "name": "Reduser verdi",
+            "description": "Reduser verdien til ein inndata-tal-entitet med eit visst beløp.",
+            "fields": {
+                "amount": {
+                    "name": "Mengd",
+                    "description": "Beløpet inndata-talet skal reduserast med. Dersom ikkje oppgjeve, blir steget til talentiteten brukt."
+                },
+                "cycle": {
+                    "name": "Sykle",
+                    "description": "Hald fram frå den andre enden av området i staden for å stoppe ved dette, på same måte som å velje neste alternativ blar rundt i ei nedtrekksliste."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Auk verdi",
+            "description": "Auk verdien til ein inndata-tal-entitet med eit visst beløp.",
+            "fields": {
+                "amount": {
+                    "name": "Mengd",
+                    "description": "Beløpet inndata-talet skal aukast med. Dersom ikkje oppgjeve, blir steget til talentiteten brukt."
+                },
+                "cycle": {
+                    "name": "Sykle",
+                    "description": "Hald fram frå den andre enden av området i staden for å stoppe ved dette, på same måte som å velje neste alternativ blar rundt i ei nedtrekksliste."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Set maksimumsverdi",
+            "description": "Set ein inndata-tal-entitet til maksimumsverdien sin."
+        },
+        "input_number_min": {
+            "name": "Set minimumsverdi",
+            "description": "Set ein inndata-tal-entitet til minimumsverdien sin."
+        },
+        "input_number_create": {
+            "name": "Opprett eit inndata-tal",
+            "description": "Opprett ein ny hjelpar for inndata-tal på direkten.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på den nye hjelparen for inndata-tal."
+                },
+                "input_number_id": {
+                    "name": "Entitets-ID for inndata-tal",
+                    "description": "Entitets-ID-en for den nye hjelparen for inndata-tal. Prefikset input_number. blir lagt til automatisk. Dersom ikkje oppgjeve, blir entitets-ID-en generert basert på namnet."
+                },
+                "min": {
+                    "name": "Minimum",
+                    "description": "Minimumsverdien til inndata-talet."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Maksimumsverdien til inndata-talet."
+                },
+                "initial": {
+                    "name": "Startverdi",
+                    "description": "Startverdien til inndata-talet når Home Assistant startar."
+                },
+                "step": {
+                    "name": "Stegstorleik",
+                    "description": "Stegstorleiken til inndata-talet."
+                },
+                "mode": {
+                    "name": "Visingsmodus",
+                    "description": "Visingsmodusen til inndata-talet, som kan vere anten ein glidebrytar eller eit inndatafelt."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonet som skal brukast for hjelparen for inndata-tal."
+                },
+                "unit_of_measurement": {
+                    "name": "Måleeining",
+                    "description": "Måleeininga til inndata-talet."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Slett eit inndata-tal",
+            "description": "Slett ein hjelpar for inndata-tal. Dette fungerer berre med inndata-tal som er oppretta og administrerte via grensesnittet. Inndata-tal som er oppretta og administrerte i YAML, kan ikkje administrerast av Spook."
+        },
+        "person_add_device_tracker": {
+            "name": "Legg til ein einingssporar",
+            "description": "Legg til ein einingssporar til ein person.",
+            "fields": {
+                "entity_id": {
+                    "name": "Person",
+                    "description": "Entitets-ID-en til personen einingssporaren skal leggjast til på."
+                },
+                "device_tracker": {
+                    "name": "Einingssporar",
+                    "description": "Entitets-ID-en til einingssporaren som skal leggjast til på personen."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Fjern ein einingssporar",
+            "description": "Fjern ein einingssporar frå ein person.",
+            "fields": {
+                "entity_id": {
+                    "name": "Person",
+                    "description": "Entitets-ID-en til personen einingssporaren skal fjernast frå."
+                },
+                "device_tracker": {
+                    "name": "Einingssporar",
+                    "description": "Entitets-ID-en til einingssporaren som skal fjernast frå personen."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Opprett sak",
+            "description": "Opprett og reis ei sak i Home Assistant-reparasjonar manuelt.",
+            "fields": {
+                "title": {
+                    "name": "Tittel",
+                    "description": "Tittelen på saka."
+                },
+                "description": {
+                    "name": "Skildring",
+                    "description": "Skildringa av saka. Støttar Markdown."
+                },
+                "issue_id": {
+                    "name": "Sak-ID",
+                    "description": "Saka kan ha ein identifikator, som lèt deg avbryte ho seinare med den ID-en om nødvendig. Han hindrar òg at dupliserte saker blir oppretta. Dersom ikkje oppgjeve, blir ein tilfeldig ID generert."
+                },
+                "domain": {
+                    "name": "Domene",
+                    "description": "Dette feltet kan brukast til å setje domenet til saka. Til dømes, som standard (dersom ikkje sett), blir «spook» brukt. Dette gjer at Spook blir vist i logoen/biletet til saka. Dersom du set det til «homeassistant», blir Home Assistant-logoen brukt, eller bruk «hue», «zwave_js», «mqtt» osv. for å bruke logoen til den integrasjonen."
+                },
+                "severity": {
+                    "name": "Alvorsgrad",
+                    "description": "Alvorsgraden til saka. Dette blir brukt til å bestemme prioriteten til saka. Dersom ikkje sett, blir «warning» brukt."
+                },
+                "persistent": {
+                    "name": "Vedvarande",
+                    "description": "Om saka skal vere vedvarande, som betyr at ho overlever omstartar av Home Assistant. Som standard er saker ikkje vedvarande."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Ignorer alle saker",
+            "description": "Ignorer alle saker som er reiste i Home Assistant-reparasjonar no."
+        },
+        "repairs_remove": {
+            "name": "Fjern sak",
+            "description": "Fjernar ei manuelt oppretta sak i Home Assistant-reparasjonar. Denne handlinga kan berre fjerne saker som er oppretta med `repairs_create`-handlinga.",
+            "fields": {
+                "issue_id": {
+                    "name": "Sak-ID",
+                    "description": "Sak-ID-en som skal fjernast."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Opphev ignorering av alle saker",
+            "description": "Opphev ignorering av alle saker som er reiste i Home Assistant-reparasjonar no."
+        },
+        "sensor_set_display_precision": {
+            "name": "Set visingspresisjon",
+            "description": "Set talet på desimalar som blir viste for éin eller fleire sensorar.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Sensorentiteten(ane) som skal oppdaterast."
+                },
+                "display_precision": {
+                    "name": "Visingspresisjon",
+                    "description": "Talet på desimalar som skal visast for sensoren."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Set varigheit",
+            "description": "Set varigheit for eit eksisterande tidsur.",
+            "fields": {
+                "duration": {
+                    "name": "Varigheit",
+                    "description": "Ny varigheit for tidsuret, som ein timedelta-streng."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Opprett ei sone",
+            "description": "Opprett ei ny sone i Home Assistant på direkten.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namn på sona"
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon som skal brukast for sona"
+                },
+                "latitude": {
+                    "name": "Breiddegrad",
+                    "description": "Breiddegrad for sona. Dette kan vere ein mal."
+                },
+                "longitude": {
+                    "name": "Lengdegrad",
+                    "description": "Lengdegrad for sona. Dette kan vere ein mal."
+                },
+                "radius": {
+                    "name": "Radius",
+                    "description": "Radius for sona"
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Oppdater ei sone",
+            "description": "Oppdater eigenskapane til ei sone på direkten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "ID-en til entiteten (eller entitetane) som skal oppdaterast."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Namn på sona"
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon som skal brukast for sona"
+                },
+                "latitude": {
+                    "name": "Breiddegrad",
+                    "description": "Breiddegrad for sona. Dette kan vere ein mal."
+                },
+                "longitude": {
+                    "name": "Lengdegrad",
+                    "description": "Lengdegrad for sona. Dette kan vere ein mal."
+                },
+                "radius": {
+                    "name": "Radius",
+                    "description": "Radius for sona"
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Slett ei sone",
+            "description": "Slett ei sone. Dette fungerer berre med soner som er oppretta og administrerte via grensesnittet. Soner som er oppretta og administrerte i YAML, kan ikkje administrerast av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "ID-en til entiteten (eller entitetane) som skal fjernast."
                 }
             }
         }
