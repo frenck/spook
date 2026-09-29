@@ -1528,6 +1528,88 @@
         }
       }
     },
+    "homeassistant_create_category": {
+      "name": "Create a category",
+      "description": "Creates a new category on the fly, for automations, scripts, scenes, or helpers. Returns the ID of the new category.",
+      "fields": {
+        "scope": {
+          "name": "Scope",
+          "description": "Where the category is used."
+        },
+        "name": {
+          "name": "Name",
+          "description": "The name of the category to create."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "Icon to use for the category."
+        }
+      }
+    },
+    "homeassistant_update_category": {
+      "name": "Update a category",
+      "description": "Updates an existing category on the fly. Anything you leave out keeps the value it already has. The icon can be cleared by setting it to null.",
+      "fields": {
+        "scope": {
+          "name": "Scope",
+          "description": "Where the category is used."
+        },
+        "category_id": {
+          "name": "Category",
+          "description": "The ID or the name of the category to update."
+        },
+        "name": {
+          "name": "Name",
+          "description": "The new name for the category."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "The new icon for the category."
+        }
+      }
+    },
+    "homeassistant_delete_category": {
+      "name": "Delete a category",
+      "description": "Deletes a category. Everything that was in it is left without a category.",
+      "fields": {
+        "scope": {
+          "name": "Scope",
+          "description": "Where the category is used."
+        },
+        "category_id": {
+          "name": "Category",
+          "description": "The ID or the name of the category to delete."
+        }
+      }
+    },
+    "homeassistant_add_category_to_entity": {
+      "name": "Add a category to an entity",
+      "description": "Puts an automation, script, scene, or helper in a category. It replaces the category it was in before, since each can only be in one.",
+      "fields": {
+        "category_id": {
+          "name": "Category",
+          "description": "The ID or the name of the category."
+        },
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "The automation(s), script(s), scene(s), or helper(s) to put in the category."
+        }
+      }
+    },
+    "homeassistant_remove_category_from_entity": {
+      "name": "Remove a category from an entity",
+      "description": "Takes an automation, script, scene, or helper out of a category. Anything in a different category is left alone.",
+      "fields": {
+        "category_id": {
+          "name": "Category",
+          "description": "The ID or the name of the category."
+        },
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "The automation(s), script(s), scene(s), or helper(s) to take out of the category."
+        }
+      }
+    },
     "homeassistant_delete_label": {
       "name": "Delete a label",
       "description": "Deletes a label on the fly.",

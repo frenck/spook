@@ -133,6 +133,8 @@ class AbstractSpookService(AbstractSpookServiceBase):
 class AbstractSpookAdminService(AbstractSpookServiceBase):
     """Abstract class to hold a Spook admin service."""
 
+    supports_response: SupportsResponse = SupportsResponse.NONE
+
     @final
     @callback
     def async_register(self) -> bool:
@@ -157,6 +159,7 @@ class AbstractSpookAdminService(AbstractSpookServiceBase):
             service=self.service,
             service_func=self.async_handle_service,
             schema=vol.Schema(self.schema) if self.schema else None,
+            supports_response=self.supports_response,
         )
 
         return True

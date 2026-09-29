@@ -358,6 +358,36 @@ This action can be used to enable polling for updates on an integration entry (t
 
 `homeassistant.enable_polling`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.enable_polling), [documentation](integrations#enable-polling-for-updates) 📚
 
+## Categories: Create a category
+
+Make a new category for automations, scripts, scenes, or helpers. _#FileIt_
+
+`homeassistant.create_category`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.create_category), [documentation](categories#create-a-category) 📚
+
+## Categories: Update a category
+
+Rename a category, or give it another icon, without emptying it first. _#Relabel_
+
+`homeassistant.update_category`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.update_category), [documentation](categories#update-a-category) 📚
+
+## Categories: Delete a category
+
+The category goes, and whatever was in it is left loose. _#Unfiled_
+
+`homeassistant.delete_category`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.delete_category), [documentation](categories#delete-a-category) 📚
+
+## Categories: Add a category to an entity
+
+Puts automations, scripts, scenes, or helpers in a category. _#FileIt_
+
+`homeassistant.add_category_to_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_category_to_entity), [documentation](categories#add-a-category-to-an-entity) 📚
+
+## Categories: Remove a category from an entity
+
+Takes automations, scripts, scenes, or helpers out of a category. _#Unfile_
+
+`homeassistant.remove_category_from_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_category_from_entity), [documentation](categories#remove-a-category-from-an-entity) 📚
+
 ## Labels: Create a label
 
 Instantly create a new label in your home. _#LabelMaker_
