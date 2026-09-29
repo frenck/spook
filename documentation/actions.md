@@ -276,6 +276,18 @@ Click ignore on all discovered items on the integration dashboard; optionally on
 
 `homeassistant.ignore_all_discovered`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered), [documentation](integrations#ignore-all-discovered-devices-services) 📚
 
+## Input boolean: Create
+
+Creates an input boolean helper without a trip to the helpers page. _#outofthinair_
+
+`input_boolean.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_boolean.create), [documentation](integrations/input_boolean#create-an-input-boolean) 📚
+
+## Input boolean: Delete
+
+Deletes input boolean helpers made in the UI, or with `input_boolean.create`. _#flipoff_
+
+`input_boolean.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_boolean.delete), [documentation](integrations/input_boolean#delete-an-input-boolean) 📚
+
 ## Input number: Create
 
 Creates an input number helper without going anywhere near the helpers page. _#outofthinair_
