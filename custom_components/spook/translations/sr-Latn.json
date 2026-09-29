@@ -543,7 +543,26 @@
             "title": "Nepoznati entiteti korišćeni u pomoćniku za šablone: {helper}"
         },
         "orphaned_statistics": {
-            "title": "Pronađene napuštene dugoročne statistike"
+            "title": "Pronađene napuštene dugoročne statistike",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "remove": "Obriši ovu statistiku",
+                            "ignore": "Zadrži je, ne obaveštavaj me više",
+                            "manage": "Dozvoli mi da uradim to sam"
+                        },
+                        "title": "Pronađena je napuštena dugoročna statistika",
+                        "description": "Spook je pronašao duha entitet u vašem sistemu za beleženje podataka 👻\n\nHome Assistant čuva dugoročnu statistiku za sledeće stavke, ali odgovarajući entitet više ne postoji:\n\n{statistics}\n\nOvo se obično dešava kada se senzor ukloni, a njegova statistika zadrži. Brisanje trajno uklanja tu istoriju podataka, pa Spook pre brisanja ponovo vrši proveru i ne dira ništa što se u međuvremenu ponovo pojavilo.\n\nSpook 👻 Vaš ortak."
+                    }
+                },
+                "abort": {
+                    "nothing_to_clear": "Na listi nema stavki koje treba obrisati, tako da ništa nije uklonjeno. Ili statistika ponovo ima povezane entitete, ili je već uklonjena.",
+                    "clearing_took_too_long": "Spook je zatražio brisanje statistike, ali sistem za beleženje podataka još nije potvrdio završetak. Zadatak je na čekanju i najverovatnije će se izvršiti, tako da ova popravka ostaje aktivna dok Spook ponovo ne izvrši proveru.",
+                    "issue_ignored": "Spook te od sada više neće obaveštavati o ovoj statistici.",
+                    "manage": "Ove stavke možete i sami obrisati na stranici sa [Statistika](/config/tools/statistics)."
+                }
+            }
         },
         "notify_unknown_group_members": {
             "description": "Spook je pronašao duha u vašoj grupi obaveštavanja 👻\n\nGrupa obaveštavanja `{group}` prosleđuje sledeće akcije koje su nepoznate Home Assistant‑u:\n\n{members}\n\nGrupa i dalje isporučuje obaveštenja ostalim članovima i prijavljuje uspeh onome ko ju je pozvao, pa se problem ne primećuje uzvodno. Greška se pojavljuje samo kao zalutali zapis \"Task exception was never retrieved\" u logu, bez navođenja grupe, što izgleda kao bag. Član iza tog unosa jednostavno prestaje da prima obaveštenja.\n\nDa biste ispravili ovu grešku, izmenite listu `services:` ove grupe u konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš ortak.",
