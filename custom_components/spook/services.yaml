@@ -1728,6 +1728,51 @@ input_text_delete:
           filter:
             - domain: input_text
 
+input_button_create:
+  name: Create an input button 👻
+  description: >-
+    Creates a new input button helper on the fly. Returns the entity ID of the
+    new input button.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input button.
+      required: true
+      selector:
+        text:
+    input_button_id:
+      name: Input button entity ID
+      description: >-
+        The entity ID for the new input button. The input_button. prefix is
+        added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    icon:
+      name: Icon
+      description: The icon for the new input button.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:gesture-tap-button
+
+input_button_delete:
+  name: Delete an input button 👻
+  description: >-
+    Deletes input button helpers made in the UI or with the create an input
+    button action. Input buttons set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input button(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_button
+
 input_number_create:
   name: Create an input number 👻
   description: >-

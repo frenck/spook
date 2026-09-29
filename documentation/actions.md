@@ -300,6 +300,18 @@ Deletes input boolean helpers made in the UI, or with `input_boolean.create`. _#
 
 `input_boolean.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_boolean.delete), [documentation](integrations/input_boolean#delete-an-input-boolean) 📚
 
+## Input button: Create
+
+Creates an input button helper without a trip to the helpers page. _#outofthinair_
+
+`input_button.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_button.create), [documentation](integrations/input_button#create-an-input-button) 📚
+
+## Input button: Delete
+
+Deletes input button helpers made in the UI, or with `input_button.create`. _#unpressed_
+
+`input_button.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_button.delete), [documentation](integrations/input_button#delete-an-input-button) 📚
+
 ## Input number: Create
 
 Creates an input number helper without going anywhere near the helpers page. _#outofthinair_
