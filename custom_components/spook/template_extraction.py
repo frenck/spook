@@ -6,6 +6,8 @@ from functools import lru_cache
 import re
 from typing import TYPE_CHECKING, Any
 
+from jinja2 import Environment, TemplateSyntaxError
+
 from homeassistant.const import Platform
 from homeassistant.core import valid_entity_id
 from homeassistant.helpers.template import Template
@@ -262,61 +264,77 @@ _TEXT_ARGUMENT_CALLS = frozenset(
     }
 )
 
-_CALL_NAME_PATTERN = re.compile(r"([a-z_]\w*)\s*$", re.IGNORECASE)
+# Only ever used to lex, never to render, so autoescaping has nothing to do.
+_JINJA_LEXER = Environment(autoescape=True)
+
+_OPENING_BRACKETS = frozenset("([{")
+_CLOSING_BRACKETS = frozenset(")]}")
 
 
-def _enclosing_call_name(template_str: str, position: int) -> str | None:
-    """Return the name of the innermost call still open at a position.
+def _text_argument_offsets(template_str: str) -> frozenset[int]:
+    """Return where each string literal passed to a text function starts.
 
-    Walks the Jinja block up to that point, skipping over quoted strings, so
-    a parenthesis inside a literal does not count. A bare grouping parenthesis
-    has no name and returns an empty string.
+    Jinja's own lexer does the reading, so quotes, escaped quotes and
+    delimiters inside a string are all handled the way Jinja handles them.
+    Its tokens come back raw, whitespace and prose included, so adding up
+    their lengths gives each token's offset in the template.
 
-    The walk starts at the block, not the top of the template: the text
-    around the blocks is prose, and the apostrophe in "it's" is not a quote.
+    Only the innermost named call counts, which is the one a literal is an
+    argument of: in `replace(states('sensor.a'), ...)` the literal belongs
+    to `states`, and that one is a reference. Plain grouping brackets have
+    no name of their own and are looked through.
+
+    A template Jinja cannot read yields nothing, and its literals are
+    treated as they were before: as references.
     """
-    block_start = max(
-        template_str.rfind("{{", 0, position),
-        template_str.rfind("{%", 0, position),
-    )
-    if block_start == -1:
-        return None
+    offsets: set[int] = set()
+    open_brackets: list[str | None] = []
+    previous_name: str | None = None
+    offset = 0
 
-    open_calls: list[str] = []
-    quote: str | None = None
+    try:
+        tokens = list(_JINJA_LEXER.lex(template_str))
+    except TemplateSyntaxError:
+        return frozenset()
 
-    for index in range(block_start, position):
-        character = template_str[index]
+    for _lineno, kind, value in tokens:
+        token_start = offset
+        offset += len(value)
 
-        if quote:
-            if character == quote:
-                quote = None
+        if kind == "whitespace":
             continue
 
-        if character in "'\"":
-            quote = character
-        elif character == "(":
-            name = _CALL_NAME_PATTERN.search(template_str, block_start, index)
-            open_calls.append(name.group(1).lower() if name else "")
-        elif character == ")" and open_calls:
-            open_calls.pop()
+        if kind == "operator" and value in _OPENING_BRACKETS:
+            call_name = previous_name if value == "(" else None
+            open_brackets.append(call_name)
+        elif kind == "operator" and value in _CLOSING_BRACKETS:
+            if open_brackets:
+                open_brackets.pop()
+        elif kind == "string":
+            enclosing_call = next(
+                (name for name in reversed(open_brackets) if name is not None),
+                None,
+            )
+            if enclosing_call in _TEXT_ARGUMENT_CALLS:
+                offsets.add(token_start)
+        elif kind in ("variable_end", "block_end"):
+            open_brackets.clear()
 
-    return open_calls[-1] if open_calls else None
+        previous_name = value.lower() if kind == "name" else None
+
+    return frozenset(offsets)
 
 
-def _is_text_argument_match(template_str: str, match: re.Match[str]) -> bool:
-    """Return if an entity-like literal is an argument to a text function.
-
-    Only the innermost call counts: in `replace(states('sensor.a'), ...)` the
-    literal belongs to `states`, and that one is a reference.
-    """
+def _is_text_argument_match(
+    match: re.Match[str], text_argument_offsets: frozenset[int]
+) -> bool:
+    """Return if an entity-like literal is an argument to a text function."""
     groups = match.groups()
     if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
         return False
 
     # Step back over the opening quote, which is not part of the capture.
-    literal_start = match.span(1)[0] - 1
-    return _enclosing_call_name(template_str, literal_start) in _TEXT_ARGUMENT_CALLS
+    return match.span(1)[0] - 1 in text_argument_offsets
 
 
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
@@ -338,6 +356,7 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
     the same unchanged templates over and over.
     """
     template_without_comments = _strip_jinja_comments(template_str)
+    text_argument_offsets = _text_argument_offsets(template_without_comments)
 
     entities = set()
 
@@ -347,7 +366,7 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
                 _is_concatenated_template_match(template_without_comments, match)
                 or _is_jinja_import_match(template_without_comments, match)
                 or _is_string_method_argument_match(template_without_comments, match)
-                or _is_text_argument_match(template_without_comments, match)
+                or _is_text_argument_match(match, text_argument_offsets)
             ):
                 continue
 

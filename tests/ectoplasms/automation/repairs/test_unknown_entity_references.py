@@ -185,6 +185,10 @@ async def test_value_template_ignores_entity_id_suffix_string_match(
         "{{ trigger.entity_id | regex_match('binary_sensor.live') }}",
         # Parentheses inside a literal do not close the call early.
         "{{ trigger.entity_id | replace('(', '') | replace('sensor.live', '') }}",
+        # A Jinja delimiter inside a literal does not start a new block.
+        "{{ value | replace('{{', 'sensor.live') }}",
+        # Grouping brackets are looked through to the call around them.
+        "{{ trigger.entity_id | replace(('sensor.live'), '') }}",
     ],
 )
 async def test_value_template_ignores_text_function_arguments(
@@ -204,6 +208,10 @@ async def test_value_template_ignores_text_function_arguments(
         # A replace in an earlier, closed call does not cover what follows.
         "{{ x | replace('a', 'b') }}{{ states('light.kitchen') }}",
         "{{ (x | replace('a', 'b')) ~ states('light.kitchen') }}",
+        # An escaped quote does not end the literal it sits in.
+        "{{ replace('it\\'s', 'x') ~ states('light.kitchen') }}",
+        # Grouping brackets inside a reference do not hide it.
+        "{{ states(('light.kitchen')) | replace('on', 'aan') }}",
         # An apostrophe in the prose around a block is not a quote.
         "It's {{ states('light.kitchen') }}, replace('it') later",
     ],
