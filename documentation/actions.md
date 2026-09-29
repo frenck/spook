@@ -540,7 +540,7 @@ Creates a timer helper without a trip to the helpers page. _#outofthinair_
 
 ## Timer: Delete
 
-Deletes timer helpers made in the UI. _#timesup_
+Deletes timer helpers made in the UI, or with `timer.create`. _#timesup_
 
 `timer.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.delete), [documentation](integrations/timer#delete-a-timer) 📚
 

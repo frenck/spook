@@ -80,9 +80,11 @@ class AbstractSpookCreateHelperService(AbstractSpookAdminService):
                 if id_field in call.data
                 else None
             )
+            # The state machine also holds entity IDs reserved for entities
+            # still being added, which have no state yet.
             if wanted_entity_id and (
                 entity_registry.async_get(wanted_entity_id)
-                or self.hass.states.get(wanted_entity_id)
+                or not self.hass.states.async_available(wanted_entity_id)
             ):
                 message = f"Entity ID {wanted_entity_id} is already taken"
                 raise HomeAssistantError(message)
@@ -95,9 +97,17 @@ class AbstractSpookCreateHelperService(AbstractSpookAdminService):
             # Home Assistant names the entity after the helper, as the UI does.
             # When an ID was asked for, it moves there instead.
             if wanted_entity_id and entity_id and entity_id != wanted_entity_id:
-                entity_registry.async_update_entity(
-                    entity_id, new_entity_id=wanted_entity_id
-                )
+                try:
+                    entity_registry.async_update_entity(
+                        entity_id, new_entity_id=wanted_entity_id
+                    )
+                except ValueError as err:
+                    # Taken after all, between the check and now. Leaving the
+                    # helper behind under a name nobody asked for would be a
+                    # failed call that still changed something.
+                    await collection.async_delete_item(item[CONF_ID])
+                    message = f"Entity ID {wanted_entity_id} is already taken"
+                    raise HomeAssistantError(message) from err
                 entity_id = wanted_entity_id
 
         if call.return_response:
@@ -124,18 +134,29 @@ class AbstractSpookDeleteHelperService(AbstractSpookAdminService):
         """Handle the service call."""
         component = self.hass.data[DATA_INSTANCES][self.domain]
         collection = async_get_storage_collection(self.hass, self.domain)
+        entity_registry = er.async_get(self.hass)
 
         item_ids = []
         for entity_id in call.data[CONF_ENTITY_ID]:
-            if (entity := component.get_entity(entity_id)) is None:
+            # Looked up in the registry rather than among the running
+            # entities: a disabled helper is not running, but it is still
+            # there, and still something that can be deleted.
+            entry = entity_registry.async_get(entity_id)
+            if (
+                entry is not None
+                and entry.platform == self.domain
+                and entry.unique_id in collection.data
+            ):
+                item_ids.append(entry.unique_id)
+                continue
+
+            if entry is None and component.get_entity(entity_id) is None:
                 message = f"Could not find {entity_id}"
                 raise HomeAssistantError(message)
 
-            if not entity.editable:
-                message = f"{entity_id} is set up in YAML and cannot be deleted"
-                raise HomeAssistantError(message)
-
-            item_ids.append(entity.unique_id)
+            # It exists, but not in the collection the UI keeps: YAML.
+            message = f"{entity_id} is set up in YAML and cannot be deleted"
+            raise HomeAssistantError(message)
 
         # The same helper twice in the list is still one helper. Deleting it a
         # second time would fail after the first had already gone through.

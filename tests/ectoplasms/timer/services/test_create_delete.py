@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
+from unittest.mock import patch
 
 import pytest
 
@@ -127,6 +128,63 @@ async def test_create_refuses_an_entity_id_held_only_by_the_registry(
             {"name": "Another", "timer_id": "reserved"},
             blocking=True,
         )
+
+
+async def test_create_refuses_an_entity_id_reserved_for_another(
+    hass: HomeAssistant,
+) -> None:
+    """An entity being added holds its ID before it has a state."""
+    hass.states.async_reserve("timer.on_its_way")
+
+    with pytest.raises(HomeAssistantError, match=r"timer\.on_its_way is already taken"):
+        await hass.services.async_call(
+            DOMAIN,
+            "create",
+            {"name": "Another", "timer_id": "on_its_way"},
+            blocking=True,
+        )
+
+
+async def test_a_failed_rename_leaves_no_timer_behind(hass: HomeAssistant) -> None:
+    """Taken between the check and the rename: the new timer goes again."""
+    with (
+        patch.object(
+            er.EntityRegistry,
+            "async_update_entity",
+            side_effect=ValueError("Entity is already registered"),
+        ),
+        pytest.raises(HomeAssistantError, match=r"timer\.lost is already taken"),
+    ):
+        await hass.services.async_call(
+            DOMAIN,
+            "create",
+            {"name": "Stray", "timer_id": "lost"},
+            blocking=True,
+        )
+    await hass.async_block_till_done()
+
+    assert set(async_get_storage_collection(hass, DOMAIN).data) == {"mist"}
+    assert hass.states.get("timer.stray") is None
+
+
+async def test_delete_a_disabled_timer(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """A disabled timer is not running, but it is still there to delete."""
+    entity_registry.async_update_entity(
+        "timer.mist", disabled_by=er.RegistryEntryDisabler.USER
+    )
+    await hass.async_block_till_done()
+    assert hass.states.get("timer.mist") is None
+
+    await hass.services.async_call(
+        DOMAIN, "delete", {ATTR_ENTITY_ID: "timer.mist"}, blocking=True
+    )
+    await hass.async_block_till_done()
+
+    assert "mist" not in async_get_storage_collection(hass, DOMAIN).data
+    assert entity_registry.async_get("timer.mist") is None
 
 
 async def test_delete_removes_the_timer(

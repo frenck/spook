@@ -77,7 +77,7 @@ Creates a new timer helper, the same as adding one on the helpers page. Great fo
   - `mdi:timer-outline`
 ```
 
-Without a `timer_id`, the entity ID follows the name, as it does in the UI. An entity ID that is already taken is refused, rather than quietly given a number at the end.
+Without a `timer_id`, the entity ID follows the name, as it does in the UI, and gets a number at the end if that name is already taken. With a `timer_id`, you get exactly that entity ID or an error: one that is already taken is refused, rather than quietly given a number at the end.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -98,7 +98,7 @@ The new timer's entity ID is then in `{{ created.entity_id }}`.
 
 ### Delete a timer
 
-Deletes one or more timer helpers. This only works for timers made in the UI (or with the action above). Timers set up in YAML can only be removed from the YAML.
+Deletes one or more timer helpers made in the UI or with the action above, disabled ones included. Timers set up in YAML can only be removed from the YAML.
 
 Everything in the list is checked first: if one of them cannot be deleted, none of them are.
 
