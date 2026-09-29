@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any
 from unittest.mock import patch
 
 import pytest
+import voluptuous as vol
 
 from homeassistant.components.timer import DOMAIN
 from homeassistant.const import ATTR_ENTITY_ID
@@ -185,6 +186,25 @@ async def test_delete_a_disabled_timer(
 
     assert "mist" not in async_get_storage_collection(hass, DOMAIN).data
     assert entity_registry.async_get("timer.mist") is None
+
+
+async def test_create_refusal_from_the_collection_reads_well(
+    hass: HomeAssistant,
+) -> None:
+    """A refusal from inside the collection comes back as a readable error."""
+    collection = async_get_storage_collection(hass, DOMAIN)
+
+    with (
+        patch.object(
+            collection,
+            "async_create_item",
+            side_effect=vol.Invalid("That will not do"),
+        ),
+        pytest.raises(HomeAssistantError, match="That will not do"),
+    ):
+        await hass.services.async_call(
+            DOMAIN, "create", {"name": "Refused"}, blocking=True
+        )
 
 
 async def test_delete_removes_the_timer(

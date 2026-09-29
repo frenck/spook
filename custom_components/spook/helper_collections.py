@@ -89,7 +89,13 @@ class AbstractSpookCreateHelperService(AbstractSpookAdminService):
                 message = f"Entity ID {wanted_entity_id} is already taken"
                 raise HomeAssistantError(message)
 
-            item = await collection.async_create_item(data)
+            try:
+                item = await collection.async_create_item(data)
+            except vol.Invalid as err:
+                # Some helpers check more than their fields, like a minimum
+                # length above the maximum. That refusal comes from inside the
+                # collection, and would otherwise surface as an unknown error.
+                raise HomeAssistantError(str(err)) from err
             entity_id = entity_registry.async_get_entity_id(
                 self.domain, self.domain, item[CONF_ID]
             )

@@ -356,6 +356,18 @@ Sorts the list of selectable options for an input select entity. _#12345_
 
 (integration-disable)=
 
+## Input text: Create
+
+Creates an input text helper without a trip to the helpers page. _#outofthinair_
+
+`input_text.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_text.create), [documentation](integrations/input_text#create-an-input-text) 📚
+
+## Input text: Delete
+
+Deletes input text helpers made in the UI, or with `input_text.create`. _#nomorewords_
+
+`input_text.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_text.delete), [documentation](integrations/input_text#delete-an-input-text) 📚
+
 ## Integration: Disable
 
 This action can be used to disable an integration entry (those you see on your integrations dashboard) on the fly. _#bye_
