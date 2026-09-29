@@ -13,6 +13,8 @@ from typing import TYPE_CHECKING
 
 import yaml
 
+from homeassistant.helpers.selector import TargetSelector
+
 from custom_components.spook.trigger import async_get_triggers
 
 if TYPE_CHECKING:
@@ -49,6 +51,23 @@ def test_every_trigger_field_has_translations() -> None:
         described = set((descriptor or {}).get("fields", {}))
         translated = set(translations[trigger].get("fields", {}))
         assert described == translated, trigger
+
+
+def test_every_trigger_target_offers_something_to_pick() -> None:
+    """Test no trigger target is narrowed down to nothing at all.
+
+    Home Assistant turns a bare `entity:` under `target:` into an empty list
+    of filters, and the frontend reads an empty list as "matches none". The
+    trigger still loads, but the target picker comes up empty, which is how
+    the stale trigger shipped. A bare `target:` is how core says "anything".
+    """
+    for trigger, descriptor in _descriptors().items():
+        if "target" not in (descriptor or {}):
+            continue
+
+        target = TargetSelector.CONFIG_SCHEMA(descriptor["target"] or {})
+        for kind in ("entity", "device"):
+            assert target.get(kind) != [], f"{trigger}: empty {kind} filter"
 
 
 def test_trigger_translation_names_do_not_include_ghost() -> None:
