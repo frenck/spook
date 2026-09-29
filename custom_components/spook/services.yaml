@@ -1493,6 +1493,91 @@ input_number_min:
     entity:
       domain: input_number
 
+counter_create:
+  name: Create a counter 👻
+  description: >-
+    Creates a new counter helper on the fly. Returns the entity ID of the new
+    counter.
+  fields:
+    name:
+      name: Name
+      description: The name of the new counter.
+      required: true
+      selector:
+        text:
+    counter_id:
+      name: Counter entity ID
+      description: >-
+        The entity ID for the new counter. The counter. prefix is added
+        automatically. If not provided, the entity ID will be generated based on
+        the name.
+      required: false
+      selector:
+        text:
+    initial:
+      name: Initial value
+      description: The value the counter starts at, and goes back to on a reset.
+      required: false
+      default: 0
+      selector:
+        number:
+          mode: box
+    minimum:
+      name: Minimum
+      description: The lowest value the counter can go down to. Leave out for no limit.
+      required: false
+      selector:
+        number:
+          mode: box
+    maximum:
+      name: Maximum
+      description: The highest value the counter can go up to. Leave out for no limit.
+      required: false
+      selector:
+        number:
+          mode: box
+    step:
+      name: Step
+      description: How much the counter goes up or down by each time.
+      required: false
+      default: 1
+      selector:
+        number:
+          min: 1
+          mode: box
+    restore:
+      name: Restore
+      description: >-
+        Restore the value of the counter when Home Assistant starts, rather than
+        starting over at the initial value.
+      required: false
+      default: true
+      selector:
+        boolean:
+    icon:
+      name: Icon
+      description: The icon for the new counter.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:counter
+
+counter_delete:
+  name: Delete a counter 👻
+  description: >-
+    Deletes counter helpers made in the UI or with the create a counter action.
+    Counters set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The counter(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: counter
+
 input_boolean_create:
   name: Create an input boolean 👻
   description: >-

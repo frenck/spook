@@ -28,6 +28,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/blueprint/icon.png)](integrations/blueprint)
 :::
 
+:::{card} Counter
+:footer: 📚 [Learn more](integrations/counter)
+[![](https://brands.home-assistant.io/counter/icon.png)](integrations/counter)
+:::
+
 :::{card} Dashboards / Lovelace
 :footer: 📚 [Learn more](integrations/lovelace)
 [![](https://brands.home-assistant.io/lovelace/icon.png)](integrations/lovelace)
