@@ -97,6 +97,14 @@ async def test_create_takes_the_entity_id_and_settings(hass: HomeAssistant) -> N
         key: state.attributes[key] for key in ("minimum", "maximum", "step", "icon")
     } == {"minimum": 0, "maximum": 10, "step": 2, "icon": "mdi:coffee"}
 
+    # Restore is not an attribute, so it is checked where it is kept.
+    stored = next(
+        item
+        for item in async_get_storage_collection(hass, DOMAIN).data.values()
+        if item["name"] == "Coffee cups"
+    )
+    assert stored["restore"] is False
+
 
 async def test_create_refuses_a_taken_entity_id(hass: HomeAssistant) -> None:
     """A taken ID is refused, rather than quietly getting a suffix."""
