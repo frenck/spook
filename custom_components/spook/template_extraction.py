@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import deque
 from functools import lru_cache
 import re
 from typing import TYPE_CHECKING, Any
@@ -249,11 +250,13 @@ def _is_string_method_argument_match(template_str: str, match: re.Match[str]) ->
     return False
 
 
-# Calls whose arguments are text to look for or put in, never a reference.
-# `replace` is both Jinja's filter and the string method, and it is how a
-# template turns one entity ID into its sibling: `binary_sensor.` in, `sensor.`
-# out. Neither half is an entity. #1686.
-_TEXT_ARGUMENT_CALLS = frozenset(
+# Filters, tests and methods whose arguments are text to look for or put in,
+# never a reference. `replace` is how a template turns one entity ID into its
+# sibling: `binary_sensor.` in, `sensor.` out. Neither half is an entity. #1686.
+#
+# Each only counts when called the way it exists: a bare `replace(...)` is
+# not Jinja's filter but somebody's macro, and its arguments can be anything.
+_TEXT_ARGUMENT_FILTERS = frozenset(
     {
         "replace",
         "regex_findall",
@@ -263,12 +266,33 @@ _TEXT_ARGUMENT_CALLS = frozenset(
         "regex_search",
     }
 )
+_TEXT_ARGUMENT_TESTS = frozenset({"match", "search"})
+_TEXT_ARGUMENT_METHODS = frozenset({"replace"})
 
 # Only ever used to lex, never to render, so autoescaping has nothing to do.
 _JINJA_LEXER = Environment(autoescape=True)
 
 _OPENING_BRACKETS = frozenset("([{")
 _CLOSING_BRACKETS = frozenset(")]}")
+
+_LINE_ENDINGS = re.compile(r"\r\n?")
+
+
+def _is_text_call(significant: deque[tuple[str, str]]) -> bool:
+    """Return if the tokens just before a `(` name a text filter, test or method.
+
+    The name is the last token; what comes before it says how it is called.
+    """
+    *earlier, (_kind, name) = significant
+    before = earlier[-1] if earlier else None
+
+    if before == ("operator", "|"):
+        return name in _TEXT_ARGUMENT_FILTERS
+    if before == ("operator", "."):
+        return name in _TEXT_ARGUMENT_METHODS
+    if before == ("name", "not") and len(earlier) > 1:
+        before = earlier[-2]
+    return before == ("name", "is") and name in _TEXT_ARGUMENT_TESTS
 
 
 def _text_argument_offsets(template_str: str) -> frozenset[int]:
@@ -277,19 +301,24 @@ def _text_argument_offsets(template_str: str) -> frozenset[int]:
     Jinja's own lexer does the reading, so quotes, escaped quotes and
     delimiters inside a string are all handled the way Jinja handles them.
     Its tokens come back raw, whitespace and prose included, so adding up
-    their lengths gives each token's offset in the template.
+    their lengths gives each token's offset in the template. That only holds
+    with plain newlines, which the lexer turns every line ending into, so the
+    caller hands this a template that already has them.
 
-    Only the innermost named call counts, which is the one a literal is an
-    argument of: in `replace(states('sensor.a'), ...)` the literal belongs
-    to `states`, and that one is a reference. Plain grouping brackets have
-    no name of their own and are looked through.
+    Only the innermost call counts, which is the one a literal is an argument
+    of: in `replace(states('sensor.a'), ...)` the literal belongs to `states`,
+    and that one is a reference. Plain grouping brackets are not a call and
+    are looked through.
 
     A template Jinja cannot read yields nothing, and its literals are
     treated as they were before: as references.
     """
     offsets: set[int] = set()
-    open_brackets: list[str | None] = []
-    previous_name: str | None = None
+    # Per open bracket: True for a text call, False for any other call, and
+    # None for a bracket that only groups.
+    open_brackets: list[bool | None] = []
+    # The last few tokens, enough to tell `x | replace(` from `x is match(`.
+    significant: deque[tuple[str, str]] = deque(maxlen=3)
     offset = 0
 
     try:
@@ -305,22 +334,24 @@ def _text_argument_offsets(template_str: str) -> frozenset[int]:
             continue
 
         if kind == "operator" and value in _OPENING_BRACKETS:
-            call_name = previous_name if value == "(" else None
-            open_brackets.append(call_name)
+            is_call = (
+                value == "(" and bool(significant) and significant[-1][0] == "name"
+            )
+            open_brackets.append(_is_text_call(significant) if is_call else None)
         elif kind == "operator" and value in _CLOSING_BRACKETS:
             if open_brackets:
                 open_brackets.pop()
         elif kind == "string":
-            enclosing_call = next(
-                (name for name in reversed(open_brackets) if name is not None),
-                None,
+            innermost_call = next(
+                (call for call in reversed(open_brackets) if call is not None),
+                False,
             )
-            if enclosing_call in _TEXT_ARGUMENT_CALLS:
+            if innermost_call:
                 offsets.add(token_start)
         elif kind in ("variable_end", "block_end"):
             open_brackets.clear()
 
-        previous_name = value.lower() if kind == "name" else None
+        significant.append((kind, value))
 
     return frozenset(offsets)
 
@@ -355,7 +386,10 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
     Pure in the template string, so results are cached: repairs re-inspect
     the same unchanged templates over and over.
     """
-    template_without_comments = _strip_jinja_comments(template_str)
+    # One kind of line ending, so the lexer's offsets and the regex's agree.
+    template_without_comments = _LINE_ENDINGS.sub(
+        "\n", _strip_jinja_comments(template_str)
+    )
     text_argument_offsets = _text_argument_offsets(template_without_comments)
 
     entities = set()
