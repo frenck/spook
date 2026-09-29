@@ -532,6 +532,18 @@ Sets how many decimals a sensor shows, on as many sensors as you like at once. _
 
 `sensor.set_display_precision`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=sensor.set_display_precision), [documentation](integrations/sensor#set-display-precision) 📚
 
+## Timer: Create
+
+Creates a timer helper without a trip to the helpers page. _#outofthinair_
+
+`timer.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.create), [documentation](integrations/timer#create-a-timer) 📚
+
+## Timer: Delete
+
+Deletes timer helpers made in the UI. _#timesup_
+
+`timer.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.delete), [documentation](integrations/timer#delete-a-timer) 📚
+
 ## Timer: Set duration
 
 Set the duration for a timer entity. _#timeflies_

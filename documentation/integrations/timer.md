@@ -26,6 +26,125 @@ Spook does not provide any new devices or entities for this integration.
 
 Spook adds the following new actions to your Home Assistant instance:
 
+### Create a timer
+
+Creates a new timer helper, the same as adding one on the helpers page. Great for a script that needs a timer only for itself: it can make one, and delete it again when it is done.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Timer: Create a timer 👻
+* - {term}`Action name`
+  - `timer.create`
+* - {term}`Action targets`
+  - No targets
+* - {term}`Action response`
+  - Optional, the `entity_id` of the new timer
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.create)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.create)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `name`
+  - {term}`string <string>`
+  - Yes
+  - `Greenhouse mist`
+* - `timer_id`
+  - {term}`string <string>`
+  - No
+  - `greenhouse_mist`
+* - `duration`
+  - {term}`string <string>`
+  - No
+  - `00:05:00`
+* - `restore`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
+* - `icon`
+  - {term}`string <string>`
+  - No
+  - `mdi:timer-outline`
+```
+
+Without a `timer_id`, the entity ID follows the name, as it does in the UI. An entity ID that is already taken is refused, rather than quietly given a number at the end.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: timer.create
+data:
+  name: "Greenhouse mist"
+  timer_id: greenhouse_mist
+  duration: "00:05:00"
+response_variable: created
+```
+
+The new timer's entity ID is then in `{{ created.entity_id }}`.
+
+:::
+
+### Delete a timer
+
+Deletes one or more timer helpers. This only works for timers made in the UI (or with the action above). Timers set up in YAML can only be removed from the YAML.
+
+Everything in the list is checked first: if one of them cannot be deleted, none of them are.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Timer: Delete a timer 👻
+* - {term}`Action name`
+  - `timer.delete`
+* - {term}`Action targets`
+  - No targets
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.delete)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.delete)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `timer.greenhouse_mist`
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: timer.delete
+data:
+  entity_id: timer.greenhouse_mist
+```
+
+:::
+
 ### Set duration
 
 Set the duration for a timer entity.
@@ -83,6 +202,7 @@ Spook has no repair detections for this integration.
 Some use cases for the enhancements Spook provides for this integration:
 
 - Quickly, with a single action, set the duration of a timer without having to got through the UI.
+- Let a script make the timer it needs, and clean it up again afterwards, so the helpers page only has timers you actually use.
 
 ## Blueprints & tutorials
 
