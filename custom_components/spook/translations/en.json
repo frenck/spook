@@ -1878,6 +1878,58 @@
         }
       }
     },
+    "input_text_create": {
+      "name": "Create an input text",
+      "description": "Creates a new input text helper on the fly. Returns the entity ID of the new input text.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "The name of the new input text."
+        },
+        "input_text_id": {
+          "name": "Input text entity ID",
+          "description": "The entity ID for the new input text. The input_text. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+        },
+        "initial": {
+          "name": "Initial value",
+          "description": "The text it starts with. If left out, it keeps the text it had before Home Assistant restarted."
+        },
+        "min": {
+          "name": "Minimum length",
+          "description": "The shortest the text can be."
+        },
+        "max": {
+          "name": "Maximum length",
+          "description": "The longest the text can be."
+        },
+        "pattern": {
+          "name": "Pattern",
+          "description": "A regular expression the text has to match."
+        },
+        "mode": {
+          "name": "Mode",
+          "description": "Show the text as is, or hide it like a password."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "The icon for the new input text."
+        },
+        "unit_of_measurement": {
+          "name": "Unit of measurement",
+          "description": "The unit to show next to the text."
+        }
+      }
+    },
+    "input_text_delete": {
+      "name": "Delete an input text",
+      "description": "Deletes input text helpers made in the UI or with the create an input text action. Input texts set up in YAML cannot be deleted by Spook.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "The input text(s) to delete."
+        }
+      }
+    },
     "input_number_create": {
       "name": "Create an input number",
       "description": "Create a new input number helper on the fly.",
