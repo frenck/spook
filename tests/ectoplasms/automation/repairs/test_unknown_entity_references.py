@@ -189,6 +189,11 @@ async def test_value_template_ignores_entity_id_suffix_string_match(
         "{{ value | replace('{{', 'sensor.live') }}",
         # Grouping brackets are looked through to the call around them.
         "{{ trigger.entity_id | replace(('sensor.live'), '') }}",
+        # The regex tests take a pattern too, negated or not.
+        "{{ trigger.entity_id is match('binary_sensor.live') }}",
+        "{{ trigger.entity_id is not search('binary_sensor.live') }}",
+        # A Windows line ending before it does not shift where it is.
+        "before\r\n{{ trigger.entity_id | replace('sensor.live', '') }}",
     ],
 )
 async def test_value_template_ignores_text_function_arguments(
@@ -212,6 +217,12 @@ async def test_value_template_ignores_text_function_arguments(
         "{{ replace('it\\'s', 'x') ~ states('light.kitchen') }}",
         # Grouping brackets inside a reference do not hide it.
         "{{ states(('light.kitchen')) | replace('on', 'aan') }}",
+        # A macro named replace is not the filter, and its argument can be
+        # anything, a reference included.
+        (
+            "{% macro replace(entity_id) %}{{ states(entity_id) }}{% endmacro %}"
+            "{{ replace('light.kitchen') }}"
+        ),
         # An apostrophe in the prose around a block is not a quote.
         "It's {{ states('light.kitchen') }}, replace('it') later",
     ],
