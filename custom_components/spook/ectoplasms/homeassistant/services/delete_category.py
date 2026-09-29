@@ -17,7 +17,7 @@ if TYPE_CHECKING:
 
 
 class SpookService(AbstractSpookAdminService):
-    """Home Assistant service to delete categories on the fly.
+    """Home Assistant service to delete a category on the fly.
 
     Home Assistant takes a deleted category off everything that had it, so
     there is nothing left to clean up afterwards.
