@@ -292,6 +292,38 @@ async def test_an_entity_that_does_not_exist_is_refused(
         await _call(hass, service, category_id="Lights", entity_id="automation.nope")
 
 
+@pytest.mark.parametrize(
+    "service", ["add_category_to_entity", "remove_category_from_entity"]
+)
+async def test_a_bad_entity_in_a_list_changes_none_of_them(
+    hass: HomeAssistant,
+    category_registry: cr.CategoryRegistry,
+    entity_registry: er.EntityRegistry,
+    service: str,
+) -> None:
+    """An error halfway through a list leaves nothing half done."""
+    lights = category_registry.async_create(scope="automation", name="Lights")
+    entity_id = _entity(entity_registry, "automation", "porch")
+    before = (
+        {}
+        if service == "add_category_to_entity"
+        else {"automation": lights.category_id}
+    )
+    entity_registry.async_update_entity(entity_id, categories=before)
+
+    with pytest.raises(HomeAssistantError, match="not found"):
+        await _call(
+            hass,
+            service,
+            category_id="Lights",
+            entity_id=[entity_id, "automation.nope"],
+        )
+
+    entity = entity_registry.async_get(entity_id)
+    assert entity is not None
+    assert entity.categories == before
+
+
 async def test_remove_takes_the_category_off(
     hass: HomeAssistant,
     category_registry: cr.CategoryRegistry,

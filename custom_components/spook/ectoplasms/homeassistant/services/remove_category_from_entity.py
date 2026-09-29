@@ -35,6 +35,9 @@ class SpookService(AbstractSpookAdminService):
         """Handle the service call."""
         entity_registry = er.async_get(self.hass)
 
+        # Everything is looked up before anything is written. A typo in the
+        # last entity should not leave the first ones changed behind an error.
+        updates: dict[str, dict[str, str]] = {}
         for entity_id in call.data["entity_id"]:
             if (entity_entry := entity_registry.async_get(entity_id)) is None:
                 msg = f"Entity {entity_id} not found"
@@ -48,9 +51,11 @@ class SpookService(AbstractSpookAdminService):
             if entity_entry.categories.get(scope) != category.category_id:
                 continue
 
-            categories = {
+            updates[entity_id] = {
                 key: value
                 for key, value in entity_entry.categories.items()
                 if key != scope
             }
+
+        for entity_id, categories in updates.items():
             entity_registry.async_update_entity(entity_id, categories=categories)
