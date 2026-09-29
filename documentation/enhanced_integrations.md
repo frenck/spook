@@ -70,6 +70,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/input_button/icon.png)](integrations/input_button)
 :::
 
+:::{card} Input datetime
+:footer: 📚 [Learn more](integrations/input_datetime)
+[![](https://brands.home-assistant.io/input_datetime/icon.png)](integrations/input_datetime)
+:::
+
 :::{card} Input number
 :footer: 📚 [Learn more](integrations/input_number)
 [![](https://brands.home-assistant.io/input_number/icon.png)](integrations/input_number)
