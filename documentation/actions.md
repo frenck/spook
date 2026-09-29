@@ -360,6 +360,18 @@ Set the value of an input number entity to the maximum value.
 
 `input_number.min`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min), [documentation](integrations/input_number#set-value-to-minimum) 📚
 
+## Input select: Create
+
+Creates an input select helper without a trip to the helpers page. _#outofthinair_
+
+`input_select.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.create), [documentation](integrations/input_select#create-an-input-select) 📚
+
+## Input select: Delete
+
+Deletes input select helpers made in the UI, or with `input_select.create`. _#nochoice_
+
+`input_select.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.delete), [documentation](integrations/input_select#delete-an-input-select) 📚
+
 ## Input select: Select random option
 
 This action selects a random option from the list of options of a select entity. Optionally this can be limited to a set of given options. _#shuffle_
