@@ -81,7 +81,7 @@ async def test_create_service_creates_input_number(
         "create",
         {
             CONF_NAME: "New Input",
-            create.CONF_INPUT_NUMBER_ID: "new_input",
+            "input_number_id": "new_input",
             CONF_MIN: 0,
             CONF_MAX: 20,
             CONF_INITIAL: INPUT_VALUE,
@@ -112,7 +112,7 @@ async def test_create_service_rejects_duplicate_input_number_id(
         "create",
         {
             CONF_NAME: "Existing Input",
-            create.CONF_INPUT_NUMBER_ID: "existing_id",
+            "input_number_id": "existing_id",
         },
         blocking=True,
         context=Context(user_id=hass_admin_user.id),
@@ -128,7 +128,7 @@ async def test_create_service_rejects_duplicate_input_number_id(
             "create",
             {
                 CONF_NAME: "Duplicate Input",
-                create.CONF_INPUT_NUMBER_ID: "existing_id",
+                "input_number_id": "existing_id",
             },
             blocking=True,
             context=Context(user_id=hass_admin_user.id),
@@ -157,7 +157,7 @@ async def test_create_service_rejects_yaml_input_number_id(
             "create",
             {
                 CONF_NAME: "Duplicate Input",
-                create.CONF_INPUT_NUMBER_ID: "from_yaml",
+                "input_number_id": "from_yaml",
             },
             blocking=True,
             context=Context(user_id=hass_admin_user.id),
@@ -195,3 +195,45 @@ async def test_create_service_without_input_number_id(
         )
         == entity_id
     )
+
+
+@pytest.mark.usefixtures("input_number_create_service")
+async def test_create_service_keeps_its_own_defaults(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+) -> None:
+    """Core needs a minimum and a maximum; this action never did.
+
+    It started out with 0 and 100, and calls written against that still work.
+    """
+    response = await hass.services.async_call(
+        DOMAIN,
+        "create",
+        {CONF_NAME: "Defaults"},
+        blocking=True,
+        return_response=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert response == {"entity_id": f"{DOMAIN}.defaults"}
+    state = hass.states.get(f"{DOMAIN}.defaults")
+    assert state is not None
+    assert (state.attributes[CONF_MIN], state.attributes[CONF_MAX]) == (0, 100)
+
+
+@pytest.mark.usefixtures("input_number_create_service")
+async def test_create_service_refuses_a_minimum_above_the_maximum(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+) -> None:
+    """The collection checks this, and the refusal comes back readably."""
+    with pytest.raises(HomeAssistantError, match="not greater than minimum"):
+        await hass.services.async_call(
+            DOMAIN,
+            "create",
+            {CONF_NAME: "Upside down", CONF_MIN: 10, CONF_MAX: 5},
+            blocking=True,
+            context=Context(user_id=hass_admin_user.id),
+        )
+
+    assert hass.states.get(f"{DOMAIN}.upside_down") is None

@@ -52,7 +52,7 @@ Spook adds the following new actions to your Home Assistant instance:
 * - {term}`Action targets`
   - No targets
 * - {term}`Action response`
-  - No response
+  - Optional, the `entity_id` of the new input number
 * - {term}`Spook's influence <influence of spook>`
   - Newly added action
 * - {term}`Tools`
@@ -124,9 +124,9 @@ data:
 
 ### Delete an input number
 
-:::{note}
-Input number helpers that are created and managed using manual YAML configuration cannot be deleted.
-:::
+Deletes one or more input number helpers made in the UI or with the action above, disabled ones included. Input numbers set up in YAML can only be removed from the YAML.
+
+Everything in the list is checked first: if one of them cannot be deleted, none of them are. Deleting takes an admin, the same as creating one.
 
 ```{figure} ../images/integrations/input_number/delete.png
 :alt: Screenshot of the input number delete action on the Tools page.
@@ -141,7 +141,7 @@ Input number helpers that are created and managed using manual YAML configuratio
 * - {term}`Action name`
   - `input_number.delete`
 * - {term}`Action targets`
-  - Yes, `input_number` entities
+  - No targets
 * - {term}`Action response`
   - No response
 * - {term}`Spook's influence <influence of spook>`
@@ -151,13 +151,26 @@ Input number helpers that are created and managed using manual YAML configuratio
     [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.delete)
 ```
 
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `input_number.my_counter`
+```
+
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
 action: input_number.delete
-target:
+data:
   entity_id: input_number.my_counter
 ```
 

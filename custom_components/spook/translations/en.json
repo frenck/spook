@@ -2036,7 +2036,7 @@
     },
     "input_number_create": {
       "name": "Create an input number",
-      "description": "Create a new input number helper on the fly.",
+      "description": "Create a new input number helper on the fly. Returns the entity ID of the new input number.",
       "fields": {
         "name": {
           "name": "Name",
@@ -2078,7 +2078,13 @@
     },
     "input_number_delete": {
       "name": "Delete an input number",
-      "description": "Delete an input number helper. This works only with input numbers created and managed via the UI. Input numbers created and managed in YAML cannot be managed by Spook."
+      "description": "Deletes input number helpers made in the UI or with the create an input number action. Input numbers set up in YAML cannot be deleted by Spook.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "The input number(s) to delete."
+        }
+      }
     },
     "person_add_device_tracker": {
       "name": "Add a device tracker",
