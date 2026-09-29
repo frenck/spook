@@ -156,3 +156,41 @@ async def test_user_services_raise_on_system_generated_user(
             blocking=True,
             context=Context(user_id=hass_admin_user.id),
         )
+
+
+@pytest.mark.usefixtures("user_services")
+async def test_a_bad_user_in_a_list_changes_none_of_them(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+) -> None:
+    """A refused user late in the list leaves the ones before it alone.
+
+    They used to be disabled already by the time the system-generated user
+    turned up, so the automation reported a failure with half the work done.
+    """
+    user = await hass.auth.async_create_user("Target User")
+    system_user = await hass.auth.async_create_system_user("System User")
+
+    with pytest.raises(HomeAssistantError, match="system-generated"):
+        await hass.services.async_call(
+            DOMAIN,
+            "disable_user",
+            {"user_id": [user.id, system_user.id]},
+            blocking=True,
+            context=Context(user_id=hass_admin_user.id),
+        )
+
+    assert user.is_active
+
+    await hass.auth.async_update_user(user, is_active=False)
+
+    with pytest.raises(HomeAssistantError, match="Could not find user"):
+        await hass.services.async_call(
+            DOMAIN,
+            "enable_user",
+            {"user_id": [user.id, "missing-user"]},
+            blocking=True,
+            context=Context(user_id=hass_admin_user.id),
+        )
+
+    assert not user.is_active

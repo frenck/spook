@@ -25,6 +25,9 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
+        # Everything is looked up before anything is written. A bad one late
+        # in the list should not leave the first ones changed behind an error.
+        users = []
         for user_id in call.data["user_id"]:
             user = await self.hass.auth.async_get_user(user_id)
             if user is None:
@@ -33,4 +36,7 @@ class SpookService(AbstractSpookAdminService):
             if user.system_generated:
                 message = f"Cannot disable a system-generated user: {user_id}"
                 raise HomeAssistantError(message)
+            users.append(user)
+
+        for user in users:
             await self.hass.auth.async_update_user(user, is_active=False)
