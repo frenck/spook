@@ -276,6 +276,18 @@ Click ignore on all discovered items on the integration dashboard; optionally on
 
 `homeassistant.ignore_all_discovered`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.ignore_all_discovered), [documentation](integrations#ignore-all-discovered-devices-services) 📚
 
+## Counter: Create
+
+Creates a counter helper without a trip to the helpers page. _#outofthinair_
+
+`counter.create`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=counter.create), [documentation](integrations/counter#create-a-counter) 📚
+
+## Counter: Delete
+
+Deletes counter helpers made in the UI, or with `counter.create`. _#countmeout_
+
+`counter.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=counter.delete), [documentation](integrations/counter#delete-a-counter) 📚
+
 ## Input boolean: Create
 
 Creates an input boolean helper without a trip to the helpers page. _#outofthinair_
