@@ -1934,6 +1934,42 @@
         }
       }
     },
+    "timer_create": {
+      "name": "Create a timer",
+      "description": "Creates a new timer helper on the fly. Returns the entity ID of the new timer.",
+      "fields": {
+        "name": {
+          "name": "Name",
+          "description": "The name of the new timer."
+        },
+        "timer_id": {
+          "name": "Timer entity ID",
+          "description": "The entity ID for the new timer. The timer. prefix is added automatically. If not provided, the entity ID will be generated based on the name."
+        },
+        "duration": {
+          "name": "Duration",
+          "description": "How long the timer runs when it is started."
+        },
+        "restore": {
+          "name": "Restore",
+          "description": "Restore the state of the timer when Home Assistant starts, so a running timer keeps running across a restart."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "The icon for the new timer."
+        }
+      }
+    },
+    "timer_delete": {
+      "name": "Delete a timer",
+      "description": "Deletes timer helpers made in the UI or with the create a timer action. Timers set up in YAML cannot be deleted by Spook.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity ID",
+          "description": "The timer(s) to delete."
+        }
+      }
+    },
     "timer_set_duration": {
       "name": "Set duration",
       "description": "Set duration for an existing timer.",
