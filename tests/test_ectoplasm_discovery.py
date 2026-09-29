@@ -13,7 +13,6 @@ import yaml
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.repairs import AbstractSpookRepairBase
 from custom_components.spook.services import (
-    AbstractSpookEntityComponentService,
     AbstractSpookServiceBase,
 )
 
@@ -85,13 +84,13 @@ def test_repair_modules_expose_spook_repair(module_file: Path) -> None:
     assert issubclass(module.SpookRepair, AbstractSpookRepairBase)
 
 
-def test_entity_component_services_wait_for_their_component() -> None:
-    """Every service on somebody else's entity component is waited for.
+def test_services_wait_for_their_domain() -> None:
+    """Every service on somebody else's domain is waited for.
 
-    Registering one needs that component already set up. If it is not, the
-    service is skipped with a log line and never tried again, so the action
-    is simply missing until the next restart. Naming the domain in the
-    manifest is what makes the order certain.
+    Every kind of Spook service registers only once its domain is set up. If
+    it is not, the service is skipped with a log line and never tried again,
+    so the action is simply missing until the next restart. Naming the domain
+    in the manifest is what makes the order certain.
     """
     manifest = json.loads((SPOOK_ROOT / "manifest.json").read_text())
     waited_for = {
@@ -104,15 +103,12 @@ def test_entity_component_services_wait_for_their_component() -> None:
     for module_file in SERVICE_MODULES:
         service_class = _import_module(module_file).SpookService
 
-        if not issubclass(service_class, AbstractSpookEntityComponentService):
-            continue
-
         if service_class.domain not in waited_for:
             unwaited.add(service_class.domain)
 
     assert not unwaited, (
-        f"Entity component services for {sorted(unwaited)}, which the manifest "
-        f"does not wait for. Spook may be set up first and skip them for good."
+        f"Services for {sorted(unwaited)}, which the manifest does not wait "
+        f"for. Spook may be set up first and skip them for good."
     )
 
 

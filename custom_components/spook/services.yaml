@@ -1493,6 +1493,59 @@ input_number_min:
     entity:
       domain: input_number
 
+input_boolean_create:
+  name: Create an input boolean 👻
+  description: >-
+    Creates a new input boolean (toggle) helper on the fly. Returns the entity
+    ID of the new input boolean.
+  fields:
+    name:
+      name: Name
+      description: The name of the new input boolean.
+      required: true
+      selector:
+        text:
+    input_boolean_id:
+      name: Input boolean entity ID
+      description: >-
+        The entity ID for the new input boolean. The input_boolean. prefix is
+        added automatically. If not provided, the entity ID will be generated
+        based on the name.
+      required: false
+      selector:
+        text:
+    initial:
+      name: Initial value
+      description: >-
+        The value it starts with. If left out, it keeps the value it had
+        before Home Assistant restarted.
+      required: false
+      selector:
+        boolean:
+    icon:
+      name: Icon
+      description: The icon for the new input boolean.
+      required: false
+      selector:
+        icon:
+          placeholder: mdi:toggle-switch-outline
+
+input_boolean_delete:
+  name: Delete an input boolean 👻
+  description: >-
+    Deletes input boolean helpers made in the UI or with the create an input
+    boolean action. Input booleans set up in YAML cannot be deleted by Spook.
+  fields:
+    entity_id:
+      name: Entity ID
+      description: The input boolean(s) to delete.
+      required: true
+      selector:
+        entity:
+          multiple: true
+          filter:
+            - domain: input_boolean
+
 input_number_create:
   name: Create an input number 👻
   description: >-
