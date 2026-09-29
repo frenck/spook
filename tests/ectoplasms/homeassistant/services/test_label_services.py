@@ -6,8 +6,14 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.helpers import (
+    area_registry as ar,
+    device_registry as dr,
+    entity_registry as er,
+)
 from homeassistant.setup import async_setup_component
 import pytest
+from pytest_homeassistant_custom_component.common import MockConfigEntry
 
 from custom_components.spook.ectoplasms.homeassistant.services import (
     add_label_to_area,
@@ -21,11 +27,7 @@ from custom_components.spook.ectoplasms.homeassistant.services import (
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import (
-        area_registry as ar,
-        entity_registry as er,
-        label_registry as lr,
-    )
+    from homeassistant.helpers import label_registry as lr
 
 _ADD = (add_label_to_entity, add_label_to_area, add_label_to_device)
 _REMOVE = (remove_label_from_entity, remove_label_from_area, remove_label_from_device)
@@ -106,6 +108,73 @@ async def test_a_label_that_does_not_exist_is_refused_on_removal_too(
             {"label_id": "no_such_label", field: targets[field]},
             blocking=True,
         )
+
+
+def _labels_of(hass: HomeAssistant, field: str, target: str) -> set[str]:
+    """Return the labels on an entity, area, or device."""
+    if field == "entity_id":
+        entry = er.async_get(hass).async_get(target)
+    elif field == "area_id":
+        entry = ar.async_get(hass).async_get_area(target)
+    else:
+        entry = dr.async_get(hass).async_get(target)
+    assert entry is not None
+    return set(entry.labels)
+
+
+def _labelled_target(hass: HomeAssistant, field: str, labels: set[str]) -> str:
+    """Create an entity, area, or device carrying these labels."""
+    if field == "entity_id":
+        registry = er.async_get(hass)
+        target = registry.async_get_or_create("light", "test", "1").entity_id
+        registry.async_update_entity(target, labels=labels)
+        return target
+
+    if field == "area_id":
+        area = ar.async_get(hass).async_create("Kitchen")
+        ar.async_get(hass).async_update(area.id, labels=labels)
+        return area.id
+
+    config_entry = MockConfigEntry(domain="test")
+    config_entry.add_to_hass(hass)
+    device = dr.async_get(hass).async_get_or_create(
+        config_entry_id=config_entry.entry_id, identifiers={("test", "1")}
+    )
+    dr.async_get(hass).async_update_device(device.id, labels=labels)
+    return device.id
+
+
+@pytest.mark.parametrize(
+    "module", [*_ADD, *_REMOVE], ids=lambda m: m.__name__.rsplit(".", 1)[-1]
+)
+async def test_a_bad_target_in_a_list_changes_none_of_them(
+    hass: HomeAssistant,
+    label_registry: lr.LabelRegistry,
+    module: object,
+) -> None:
+    """An error halfway through a list leaves nothing half done.
+
+    The first target used to be changed before the second one turned out not
+    to exist, so the automation reported a failure with half the work done.
+    """
+    label_registry.async_create("Ghosts")
+    await _setup(hass, module)
+
+    name = module.__name__.rsplit(".", 1)[-1]
+    field = _FIELD[name]
+    before = set() if name.startswith("add_") else {"ghosts"}
+    target = _labelled_target(hass, field, before)
+
+    service = module.SpookService  # type: ignore[attr-defined]
+    with pytest.raises(HomeAssistantError, match="not found"):
+        await hass.services.async_call(
+            "homeassistant",
+            service.service,
+            {"label_id": "ghosts", field: [target, "does_not_exist"]},
+            blocking=True,
+        )
+
+    assert _labels_of(hass, field, target) == before
 
 
 async def test_creating_a_label_whose_name_is_taken_says_so(
