@@ -2148,6 +2148,24 @@
       "name": "Ignore all issues",
       "description": "Ignore all issues currently raised in Home Assistant Repairs."
     },
+    "repairs_list": {
+      "name": "List issues",
+      "description": "Lists the issues currently raised in Home Assistant Repairs, with their titles, for an automation to act on or a dashboard to show.",
+      "fields": {
+        "include_ignored": {
+          "name": "Include ignored",
+          "description": "Also list the issues that have been ignored."
+        },
+        "domain": {
+          "name": "Domain",
+          "description": "Only list the issues raised by these integrations."
+        },
+        "severity": {
+          "name": "Severity",
+          "description": "Only list the issues with these severities."
+        }
+      }
+    },
     "repairs_remove": {
       "name": "Remove issue",
       "description": "Removes a manually created Home Assistant repairs issue. This action can only remove issues created with the `repairs_create` action.",

@@ -2117,6 +2117,40 @@ repairs_ignore_all:
   description: >-
     Ignore all issues currently raised in Home Assistant Repairs.
 
+repairs_list:
+  name: List issues 👻
+  description: >-
+    Lists the issues currently raised in Home Assistant Repairs, with their
+    titles, for an automation to act on or a dashboard to show.
+  fields:
+    include_ignored:
+      name: Include ignored
+      description: Also list the issues that have been ignored.
+      required: false
+      default: false
+      selector:
+        boolean:
+    domain:
+      name: Domain
+      description: Only list the issues raised by these integrations.
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
+    severity:
+      name: Severity
+      description: Only list the issues with these severities.
+      required: false
+      selector:
+        select:
+          multiple: true
+          translation_key: repair_issue_severity
+          options:
+            - critical
+            - error
+            - warning
+
 repairs_remove:
   name: Remove issue 👻
   description: >-
