@@ -55,11 +55,13 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 :class: dropdown
 
 - Spook is not aware of all possible configuration for all possible cards. Especially with third-party cards, configuration can sometimes differ and Spook might not be able to detect the use of an unknown entity ID in such cases.
+- Most third-party cards use the same keys as Home Assistant's own (`entity`, `entities`), and those are read on any card. Bubble Card has a few of its own, which Spook knows about: the entity that opens a pop-up (`trigger_entity`), and the numbered buttons of a horizontal buttons stack (`1_entity`, `1_pir_sensor`, and so on).
+- Entities named inside templates, or in a card's own variables, are not checked. What a template ends up pointing at cannot be known without running it.
   :::
 
 ### Unknown referenced areas
 
-Dashboards are inspected for the use of {term}`areas <area>`. An area can be referenced in more than one way: by an area card, by the area view strategy, by the areas dashboard strategy listing areas to hide or order, and by an `area_id` used as the target of an action. Spook looks for all of them and raises a repair issue naming the dashboard and the areas that are missing.
+Dashboards are inspected for the use of {term}`areas <area>`. An area can be referenced in more than one way: by an area card, by the area view strategy, by the areas dashboard strategy listing areas to hide or order, by the Mushroom template card, and by an `area_id` used as the target of an action. The word `area` on other cards is left alone, since some use it for a caption rather than an area. Spook looks for all of them and raises a repair issue naming the dashboard and the areas that are missing.
 
 What you see depends on where the reference sits, and the frontend decides that rather than Spook, so this page will not promise you a particular symptom. What Spook can tell you is which dashboard names which missing area, which is the part you need either way.
 
