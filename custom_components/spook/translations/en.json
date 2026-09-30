@@ -1274,6 +1274,62 @@
         }
       }
     },
+    "homeassistant_set_entity_icon": {
+      "name": "Set the icon of an entity",
+      "description": "Sets the icon of an entity (or entities) on the fly. Set it to null to go back to the icon the integration gives it.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity",
+          "description": "The entity/entities to set the icon of."
+        },
+        "icon": {
+          "name": "Icon",
+          "description": "The new icon, or null for the integration's own icon."
+        }
+      }
+    },
+    "homeassistant_add_alias_to_entity": {
+      "name": "Add an alias to an entity",
+      "description": "Adds one or more aliases to an entity (or entities), which voice assistants can call it by.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity",
+          "description": "The entity/entities to add the alias(es) to."
+        },
+        "alias": {
+          "name": "Alias",
+          "description": "The alias(es) to add."
+        }
+      }
+    },
+    "homeassistant_remove_alias_from_entity": {
+      "name": "Remove an alias from an entity",
+      "description": "Removes one or more aliases from an entity (or entities).",
+      "fields": {
+        "entity_id": {
+          "name": "Entity",
+          "description": "The entity/entities to remove the alias(es) from."
+        },
+        "alias": {
+          "name": "Alias",
+          "description": "The alias(es) to remove."
+        }
+      }
+    },
+    "homeassistant_set_entity_aliases": {
+      "name": "Set aliases for an entity",
+      "description": "Replaces the aliases of an entity (or entities). Whether the entity's own name counts as an alias stays as it was.",
+      "fields": {
+        "entity_id": {
+          "name": "Entity",
+          "description": "The entity/entities to set the aliases of."
+        },
+        "aliases": {
+          "name": "Aliases",
+          "description": "The aliases to set."
+        }
+      }
+    },
     "homeassistant_unexpose_entity": {
       "name": "Stop exposing an entity to assistants",
       "description": "Stops exposing an entity (or entities) to voice assistants.",
