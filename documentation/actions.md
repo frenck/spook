@@ -202,6 +202,30 @@ This action can be used to rename an entity on the fly. _#LookMaNewName_
 
 `homeassistant.rename_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.rename_entity), [documentation](entities#rename-an-entity) 📚
 
+## Entity: Set icon
+
+Give an entity another icon, or its own back. _#newlook_
+
+`homeassistant.set_entity_icon`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_entity_icon), [documentation](entities#set-the-icon-of-an-entity) 📚
+
+## Entity: Add an alias
+
+Another name a voice assistant knows an entity by. _#akaalias_
+
+`homeassistant.add_alias_to_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_entity), [documentation](entities#add-an-alias-to-an-entity) 📚
+
+## Entity: Remove an alias
+
+One name fewer for an entity to answer to. _#nevercallmethat_
+
+`homeassistant.remove_alias_from_entity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_entity), [documentation](entities#remove-an-alias-from-an-entity) 📚
+
+## Entity: Set aliases
+
+All the names an entity answers to, in one go. _#akaalias_
+
+`homeassistant.set_entity_aliases`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_entity_aliases), [documentation](entities#set-aliases-for-an-entity) 📚
+
 (entity-expose-to-assistants)=
 
 ## Entity: Expose to assistants

@@ -645,6 +645,230 @@ data:
 
 :::
 
+### Set the icon of an entity
+
+Sets the icon of one or more entities, the same setting as in the entity's settings dialog. Set it to `null` to take it away again, and the entity goes back to the icon its integration gives it.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Set the icon of an entity 👻
+* - {term}`Action name`
+  - `homeassistant.set_entity_icon`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_entity_icon)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_entity_icon)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `"light.living_room"`
+* - `icon`
+  - {term}`string <string>` or `null`
+  - Yes
+  - `"mdi:lamp"`
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.set_entity_icon
+data:
+  entity_id: light.living_room
+  icon: mdi:lamp
+```
+
+:::
+
+### Add an alias to an entity
+
+Adds one or more aliases to one or more entities. Aliases are the other names a voice assistant knows an entity by. New ones go at the end, and one the entity already has is not added twice.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Add an alias to an entity 👻
+* - {term}`Action name`
+  - `homeassistant.add_alias_to_entity`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.add_alias_to_entity)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `"light.living_room"`
+* - `alias`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `"Reading lamp"`
+```
+
+:::{note}
+New entities have their own name as an alias, which is how a voice assistant knows what to call them without any alias added. That one is not touched by these actions: it stays as it was. Turning it off is up to you in the entity's voice settings.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.add_alias_to_entity
+data:
+  entity_id: light.living_room
+  alias:
+    - Reading lamp
+    - Big light
+```
+
+:::
+
+### Remove an alias from an entity
+
+Removes one or more aliases from one or more entities.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Remove an alias from an entity 👻
+* - {term}`Action name`
+  - `homeassistant.remove_alias_from_entity`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_entity)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.remove_alias_from_entity)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `"light.living_room"`
+* - `alias`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `"Big light"`
+```
+
+:::{note}
+New entities have their own name as an alias, which is how a voice assistant knows what to call them without any alias added. That one is not touched by these actions: it stays as it was. Turning it off is up to you in the entity's voice settings.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.remove_alias_from_entity
+data:
+  entity_id: light.living_room
+  alias: Big light
+```
+
+:::
+
+### Set aliases for an entity
+
+Replaces the aliases of one or more entities with the ones given.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Set aliases for an entity 👻
+* - {term}`Action name`
+  - `homeassistant.set_entity_aliases`
+* - {term}`Action targets`
+  - No
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action.
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_entity_aliases)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=homeassistant.set_entity_aliases)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `entity_id`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `"light.living_room"`
+* - `aliases`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - Yes
+  - `["Reading lamp", "Big light"]`
+```
+
+:::{note}
+New entities have their own name as an alias, which is how a voice assistant knows what to call them without any alias added. That one is not touched by these actions: it stays as it was. Turning it off is up to you in the entity's voice settings.
+:::
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.set_entity_aliases
+data:
+  entity_id: light.living_room
+  aliases:
+    - Reading lamp
+    - Big light
+```
+
+:::
+
 ## Blueprints & tutorials
 
 There are currently no known {term}`blueprints <blueprint>` or tutorials for the enhancements Spook provides for these features. If you created one or stumbled upon one, [please let us know in our discussion forums](https://github.com/frenck/spook/discussions).
