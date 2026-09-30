@@ -784,8 +784,10 @@ class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for an area whose temperature or humidity sensor is gone.
 
     Clears the settings that point at nothing, so the area can be given a
-    new sensor. Only the ones still pointing at nothing are cleared: a sensor
-    that came back, or was set again, since the issue was raised is kept.
+    new sensor. Only the settings the issue showed, and of those only the ones
+    still pointing at nothing: a sensor that came back since is kept, and a
+    setting that broke after the issue was raised is not the one somebody
+    agreed to clear.
     """
 
     _key = "area"
@@ -803,11 +805,13 @@ class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
         if (area := area_registry.async_get_area(thing_id)) is None:
             return
 
+        offered = str((self.data or {}).get("area_sensors_fields", "")).split(",")
         known_entity_ids = async_get_all_entity_ids(self.hass)
         cleared = {
             field: None
             for field in ("temperature_entity_id", "humidity_entity_id")
-            if (entity_id := getattr(area, field))
+            if field in offered
+            and (entity_id := getattr(area, field))
             and async_filter_known_entity_ids(
                 self.hass, [entity_id], known_entity_ids=known_entity_ids
             )

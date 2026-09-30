@@ -67,9 +67,19 @@ class SpookRepair(AbstractSpookRepair):
             self.async_create_issue(
                 issue_id=area.id,
                 is_fixable=True,
-                references=set(unknown.values()),
+                # Which setting points at the entity is part of the finding:
+                # the same entity dangling from the other setting is a new
+                # problem, not one somebody already chose to ignore.
+                references={
+                    f"{field}:{entity_id}" for field, entity_id in unknown.items()
+                },
                 # The fix flow is handed the data, not the placeholders, and
-                # names the same things in its menu.
-                data={"area_sensors_area_id": area.id, **placeholders},
+                # names the same things in its menu. It clears only the
+                # settings listed here, the ones the user was shown.
+                data={
+                    "area_sensors_area_id": area.id,
+                    "area_sensors_fields": ",".join(unknown),
+                    **placeholders,
+                },
                 translation_placeholders=placeholders,
             )

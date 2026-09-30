@@ -179,7 +179,10 @@ async def test_fix_flow_clears_only_what_points_at_nothing(
     )
     assert isinstance(flow, AreaUnknownSensorsFixFlow)
     flow.hass = hass
-    flow.data = {"area_sensors_area_id": area.id}
+    flow.data = {
+        "area_sensors_area_id": area.id,
+        "area_sensors_fields": "temperature_entity_id,humidity_entity_id",
+    }
 
     result = await flow.async_step_remove()
 
@@ -214,3 +217,66 @@ async def test_fix_flow_menu_names_the_area_and_the_sensor(
     assert placeholders["area"] == "Kitchen"
     assert placeholders["sensors"] == "temperature"
     assert "sensor.kitchen_temperature" in placeholders["entities"]
+
+
+async def test_fix_flow_clears_only_the_settings_it_showed(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+) -> None:
+    """A setting that broke after the issue was raised is not cleared.
+
+    The issue showed the temperature sensor. It came back, and the humidity
+    sensor went missing, before the button was pressed. Clearing humidity
+    would be clearing something nobody was shown.
+    """
+    area = _kitchen(
+        hass,
+        area_registry,
+        temperature="sensor.kitchen_temperature",
+        humidity="sensor.kitchen_humidity",
+    )
+    hass.states.async_remove("sensor.kitchen_humidity")
+
+    flow = AreaUnknownSensorsFixFlow()
+    flow.hass = hass
+    flow.data = {
+        "area_sensors_area_id": area.id,
+        "area_sensors_fields": "temperature_entity_id",
+    }
+
+    await flow.async_step_remove()
+
+    updated = area_registry.async_get_area(area.id)
+    assert updated is not None
+    assert updated.temperature_entity_id == "sensor.kitchen_temperature"
+    assert updated.humidity_entity_id == "sensor.kitchen_humidity"
+
+
+async def test_the_same_sensor_on_the_other_setting_is_a_new_finding(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Ignoring it on one setting does not ignore it on the other.
+
+    The issue ID follows what was found, and which setting points at the
+    sensor is part of that.
+    """
+    area = _kitchen(hass, area_registry, temperature="sensor.kitchen_climate")
+    hass.states.async_remove("sensor.kitchen_climate")
+    await SpookRepair(hass).async_inspect()
+    before = async_issue_about(issue_registry, _issue_id(area))
+    assert before
+
+    hass.states.async_set("sensor.kitchen_climate", "50", {"device_class": "humidity"})
+    area_registry.async_update(
+        area.id, temperature_entity_id=None, humidity_entity_id="sensor.kitchen_climate"
+    )
+    hass.states.async_remove("sensor.kitchen_climate")
+    for issue_id in list(issue_registry.issues):
+        issue_registry.async_delete(*issue_id)
+    await SpookRepair(hass).async_inspect()
+    after = async_issue_about(issue_registry, _issue_id(area))
+
+    assert after
+    assert after.issue_id != before.issue_id
