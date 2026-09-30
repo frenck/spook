@@ -182,6 +182,8 @@ data:
 
 Adds a single action to ignore all issues currently raised in the repairs dashboard.
 
+This takes an admin when a user calls it, since it changes what every user sees on the repairs dashboard. Automations and scripts are not affected.
+
 ```{figure} ../images/integrations/repairs/ignore_all.png
 :alt: Screenshot of the repairs ignore all issues action on the Tools page.
 :align: center
@@ -347,6 +349,8 @@ data:
 ### Unignore all issues
 
 Adds a single action to unignore all repair issues currently still active (but previously ignored).
+
+This takes an admin when a user calls it, since it changes what every user sees on the repairs dashboard. Automations and scripts are not affected.
 
 ```{figure} ../images/integrations/repairs/unignore_all.png
 :alt: Screenshot of the repairs unignore all issues action on the Tools page.

@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING
 from homeassistant.components.repairs import DOMAIN
 from homeassistant.helpers import issue_registry as ir
 
-from ....services import AbstractSpookService
+from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookService):
+class SpookService(AbstractSpookAdminService):
     """Home Assistant Repairs service for ignoring all issues."""
 
     domain = DOMAIN
