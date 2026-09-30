@@ -574,6 +574,12 @@ Whatever issue is bothering you, just ignore it all, and all your problems will 
 
 `repairs.ignore_all`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all), [documentation](integrations/repairs#ignore-all-issues) 📚
 
+## Repairs: List issues
+
+What is still broken, as a list, for an automation or a dashboard of your own. _#todolist_
+
+`repairs.list`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.list), [documentation](integrations/repairs#list-issues) 📚
+
 ## Repairs: Remove issue
 
 Removes an issue from Home Assistant Repairs. Can only remove repair issues that have been created using the `repairs.create` action. _#trashit_

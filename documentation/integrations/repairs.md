@@ -221,6 +221,72 @@ action: repairs.ignore_all
 
 :::
 
+### List issues
+
+Lists the issues currently raised in the repairs dashboard, with the same titles the dashboard shows them with, in the language Home Assistant is set to. For an automation to act on them, or to show them on a dashboard of your own.
+
+The newest issue comes first. Ignored issues are left out, like on the repairs dashboard, unless you ask for them.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Repairs: List issues 👻
+* - {term}`Action name`
+  - `repairs.list`
+* - {term}`Action targets`
+  - No targets
+* - {term}`Action response`
+  - Yes, the list of issues
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.list)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.list)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `include_ignored`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `hue`
+* - `severity`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `error`
+```
+
+Each issue in the response has its `domain`, `issue_id`, `title`, `severity` (`critical`, `error`, or `warning`), `created`, `is_fixable`, `learn_more_url`, `breaks_in_ha_version`, and whether it is `ignored`.
+
+Listing issues takes an admin, the same as the repairs dashboard does.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: repairs.list
+data:
+  severity:
+    - critical
+    - error
+response_variable: repairs
+```
+
+The titles are then in `{{ repairs.issues | map(attribute='title') | list }}`.
+
+:::
+
 ### Remove issue
 
 Remove an issue from the repairs integration.
@@ -324,6 +390,7 @@ Spook has no repair detections for this integration.
 Some use cases for the enhancements Spook provides for this integration:
 
 - Creating and raising your own issues has lots of possibilities. For example, you could create an issue when a device is low on battery or when a device is offline for a long time. You could also create an issue when a device is not responding to commands or when a device is not responding to commands in a certain time frame. The possibilities are endless.
+- Show the open repairs on a dashboard of your own, or send yourself a daily summary of what still needs fixing.
 
 ## Blueprints & tutorials
 
