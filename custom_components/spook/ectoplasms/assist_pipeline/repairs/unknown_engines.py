@@ -20,8 +20,8 @@ if TYPE_CHECKING:
 
 # The built-in agent's ID, which looks like any entity's. Written out rather
 # than imported: importing anything from conversation or assist_pipeline
-# pulls in libraries only installed where Assist is used, and Spook has to
-# load everywhere.
+# pulls in libraries (like hassil) that are not there in every environment,
+# the tests' for one, and Spook has to load everywhere.
 HOME_ASSISTANT_AGENT = "conversation.home_assistant"
 
 # Each step of a pipeline, where it keeps its engine, and the domain an
@@ -39,7 +39,7 @@ def _async_get_pipelines(hass: HomeAssistant) -> list[Any]:
 
     Imported here, and only called once Assist is set up, for the same reason
     the agent's ID is written out above: the module needs libraries that are
-    only there when Assist is.
+    not there in every environment.
     """
     # pylint: disable-next=import-outside-toplevel
     from homeassistant.components.assist_pipeline.pipeline import (  # noqa: PLC0415
