@@ -340,3 +340,20 @@ def test_the_mushroom_template_card_area_is_an_area() -> None:
     }
 
     assert extract_areas_from_dashboard_node(config) == {"kitchen"}
+
+
+@pytest.mark.parametrize("card_type", [[], {"kind": "gauge"}, None, 42])
+def test_a_type_that_is_not_a_string_does_not_stop_the_walk(card_type: Any) -> None:
+    """The walk goes into any dict, and some configs have a `type` of their own.
+
+    One that is a list or a dict cannot be looked up by name, and used to end
+    the whole search for areas with an error.
+    """
+    config = {
+        "cards": [
+            {"type": card_type, "area": "garage"},
+            {"type": "area", "area": "kitchen"},
+        ],
+    }
+
+    assert extract_areas_from_dashboard_node(config) == {"kitchen"}

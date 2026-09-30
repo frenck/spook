@@ -213,7 +213,9 @@ def _walk_areas(node: Any, areas: set[str]) -> None:
     if not isinstance(node, dict):
         return
 
-    if node.get("type") in _AREA_TYPES:
+    # Checked for a string first: the walk goes into any dict in a dashboard,
+    # and a `type` that is a list or a dict cannot be looked up in a set.
+    if isinstance(card_type := node.get("type"), str) and card_type in _AREA_TYPES:
         _collect_plain(node.get("area"), areas)
     _collect_plain(node.get(_AREA_ID_KEY), areas)
 
