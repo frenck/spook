@@ -4,8 +4,8 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from typing import TYPE_CHECKING
-from unittest.mock import patch
+from typing import TYPE_CHECKING, Any
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
@@ -38,11 +38,39 @@ def _pipeline(**engines: str | None) -> SimpleNamespace:
     )
 
 
-async def _inspect(hass: HomeAssistant, *pipelines: SimpleNamespace) -> None:
+# pylint: disable-next=too-few-public-methods
+class _FakeStore:
+    """The part of Assist's pipeline store the repair uses: its listeners."""
+
+    def __init__(self) -> None:
+        """Start without listeners."""
+        self.listeners: list[Any] = []
+
+    def async_add_change_set_listener(self, listener: Any) -> Any:
+        """Remember a listener, and hand back how to forget it."""
+        self.listeners.append(listener)
+        return lambda: self.listeners.remove(listener)
+
+
+async def _inspect(
+    hass: HomeAssistant,
+    *pipelines: SimpleNamespace,
+    repair: unknown_engines.SpookRepair | None = None,
+    store: _FakeStore | None = None,
+) -> unknown_engines.SpookRepair:
     """Inspect these pipelines, with Assist set up."""
     hass.config.components.add("assist_pipeline")
-    with patch.object(unknown_engines, "_async_get_pipelines", return_value=pipelines):
-        await unknown_engines.SpookRepair(hass).async_inspect()
+    repair = repair or unknown_engines.SpookRepair(hass)
+    with (
+        patch.object(unknown_engines, "_async_get_pipelines", return_value=pipelines),
+        patch.object(
+            unknown_engines,
+            "_async_get_pipeline_store",
+            return_value=store or _FakeStore(),
+        ),
+    ):
+        await repair.async_inspect()
+    return repair
 
 
 async def test_a_removed_agent_is_reported(
@@ -139,3 +167,46 @@ async def test_nothing_happens_without_assist(
         await unknown_engines.SpookRepair(hass).async_inspect()
 
     assert not issue_registry.issues
+
+
+async def test_an_engine_named_like_an_action_is_still_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """An engine is never an action, so an action by that name proves nothing."""
+    hass.services.async_register("conversation", "process", AsyncMock())
+
+    await _inspect(hass, _pipeline(conversation_engine="conversation.process"))
+
+    assert async_issue_about(issue_registry, "unknown_engines_kitchen")
+
+
+async def test_a_pipeline_change_inspects_again(hass: HomeAssistant) -> None:
+    """Editing or deleting a pipeline fires nothing on the bus.
+
+    Without following the store, the issue for a pipeline somebody just fixed
+    would stay until something unrelated came along.
+    """
+    store = _FakeStore()
+    repair = await _inspect(hass, _pipeline(), store=store)
+    repair.inspect_debouncer = AsyncMock()
+
+    await store.listeners[0]([("updated", "kitchen", {})])
+
+    repair.inspect_debouncer.async_call.assert_awaited_once()
+
+
+async def test_the_store_is_followed_once_and_let_go_on_deactivate(
+    hass: HomeAssistant,
+) -> None:
+    """Every inspection does not add another listener, and none outlive it."""
+    store = _FakeStore()
+    repair = await _inspect(hass, _pipeline(), store=store)
+    await _inspect(hass, _pipeline(), repair=repair, store=store)
+    assert len(store.listeners) == 1
+
+    # Normally made when the repair is activated, which this test skips.
+    repair.inspect_debouncer = MagicMock()
+    await repair.async_deactivate()
+
+    assert not store.listeners

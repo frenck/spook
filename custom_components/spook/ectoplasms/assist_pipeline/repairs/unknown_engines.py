@@ -5,15 +5,17 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
-from homeassistant.core import split_entity_id, valid_entity_id
+from homeassistant.core import callback, split_entity_id, valid_entity_id
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
-from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
+from ....entity_filtering import async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from homeassistant.core import HomeAssistant
 
 # The built-in agent's ID, which looks like any entity's. Written out rather
@@ -47,6 +49,19 @@ def _async_get_pipelines(hass: HomeAssistant) -> list[Any]:
     return async_get_pipelines(hass)
 
 
+def _async_get_pipeline_store(hass: HomeAssistant) -> Any:
+    """Return the collection Assist keeps its pipelines in.
+
+    Imported here for the same reason as above.
+    """
+    # pylint: disable-next=import-outside-toplevel
+    from homeassistant.components.assist_pipeline.pipeline import (  # noqa: PLC0415
+        KEY_ASSIST_PIPELINE,
+    )
+
+    return hass.data[KEY_ASSIST_PIPELINE].pipeline_store
+
+
 class SpookRepair(AbstractSpookRepair):
     """Spook repair finds Assist pipelines using an engine that is gone.
 
@@ -69,10 +84,14 @@ class SpookRepair(AbstractSpookRepair):
     }
     automatically_clean_up_issues = True
 
+    _following_pipelines = False
+
     async def async_inspect(self) -> None:
         """Trigger an inspection."""
         if self.domain not in self.hass.config.components:
             return  # Not set up (yet); there are no pipelines to read.
+
+        self._async_follow_pipeline_changes()
 
         LOGGER.debug("Spook is inspecting: %s", self.repair)
 
@@ -90,9 +109,10 @@ class SpookRepair(AbstractSpookRepair):
                 and engine != HOME_ASSISTANT_AGENT
                 and valid_entity_id(engine)
                 and split_entity_id(engine)[0] == domain
-                and async_filter_known_entity_ids(
-                    self.hass, [engine], known_entity_ids=known_entity_ids
-                )
+                # Compared with the entities as they are. The shared filter
+                # also counts the name of any action as known, which is right
+                # for a script, but an engine is never an action.
+                and engine not in known_entity_ids
             }
             if not unknown:
                 continue
@@ -110,3 +130,25 @@ class SpookRepair(AbstractSpookRepair):
                     ),
                 },
             )
+
+    @callback
+    def _async_follow_pipeline_changes(self) -> None:
+        """Inspect again whenever a pipeline is added, changed, or deleted.
+
+        Editing or deleting a pipeline fires no event on the bus, so the
+        issue for a pipeline somebody just fixed would otherwise stay until
+        something unrelated came along. Started from the first inspection
+        that finds Assist set up, because the store does not exist before.
+        """
+        if self._following_pipelines:
+            return
+        self._following_pipelines = True
+
+        async def _pipelines_changed(_changes: Iterable[Any]) -> None:
+            await self.inspect_debouncer.async_call()
+
+        self._event_subs.add(
+            _async_get_pipeline_store(self.hass).async_add_change_set_listener(
+                _pipelines_changed
+            )
+        )
