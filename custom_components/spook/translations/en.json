@@ -797,6 +797,10 @@
       "description": "Spook has found a ghost in your customizations 👻\n\nThe `customize:` section pins attributes on the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis often happens when an entity was renamed or removed while its customization stayed behind. To fix this error, edit the `customize:` section in your configuration and remove these entities.\n\nSpook 👻 Your homie.",
       "title": "Unknown entities in your customizations"
     },
+    "unknown_engines": {
+      "title": "Assist pipeline uses engines that are gone: {pipeline}",
+      "description": "Spook has found a ghost in your voice assistants 👻\n\nThe Assist pipeline {pipeline} uses the following, which are unknown to Home Assistant:\n\n{engines}\n\nThis usually means the integration behind it was removed. The pipeline was not told, so the next time it is used it fails with an error about a missing provider or agent, and nothing before that points here.\n\nTo fix this, open the settings of this assistant under [Voice assistants](/config/voice-assistants/assistants) and pick an engine that is still around for each of these.\n\nSpook 👻 Your homie."
+    },
     "unknown_helper_source_references": {
       "title": "Unknown source entities used in helper: {helper}",
       "fix_flow": {
