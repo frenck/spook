@@ -780,6 +780,46 @@ class EmptyAreaFixFlow(_RemoveOrIgnoreFixFlow):
             registry.async_delete(thing_id)
 
 
+class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for an area whose temperature or humidity sensor is gone.
+
+    Clears the settings that point at nothing, so the area can be given a
+    new sensor. Only the settings the issue showed, and of those only the ones
+    still pointing at nothing: a sensor that came back since is kept, and a
+    setting that broke after the issue was raised is not the one somebody
+    agreed to clear.
+    """
+
+    _key = "area"
+    _id_key = "area_sensors_area_id"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """Name the area and its missing sensors in the menu step."""
+        data = self.data or {}
+        return {key: str(data.get(key, "")) for key in ("area", "sensors", "entities")}
+
+    @callback
+    def _remove(self, thing_id: str) -> None:
+        """Clear the area's sensor settings that point at nothing."""
+        area_registry = ar.async_get(self.hass)
+        if (area := area_registry.async_get_area(thing_id)) is None:
+            return
+
+        offered = str((self.data or {}).get("area_sensors_fields", "")).split(",")
+        known_entity_ids = async_get_all_entity_ids(self.hass)
+        cleared = {
+            field: None
+            for field in ("temperature_entity_id", "humidity_entity_id")
+            if field in offered
+            and (entity_id := getattr(area, field))
+            and async_filter_known_entity_ids(
+                self.hass, [entity_id], known_entity_ids=known_entity_ids
+            )
+        }
+        if cleared:
+            area_registry.async_update(thing_id, **cleared)
+
+
 class EmptyFloorFixFlow(_RemoveOrIgnoreFixFlow):
     """Handler for an empty floor: remove it, or keep it and stop nagging."""
 
@@ -1250,6 +1290,7 @@ class OrphanedStatisticsFixFlow(_RemoveOrIgnoreFixFlow):
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "empty_area_id": EmptyAreaFixFlow,
+    "area_sensors_area_id": AreaUnknownSensorsFixFlow,
     "empty_floor_id": EmptyFloorFixFlow,
     "unused_label_id": UnusedLabelFixFlow,
     "unused_blueprint_path": UnusedBlueprintFixFlow,

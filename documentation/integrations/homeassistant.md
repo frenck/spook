@@ -36,6 +36,14 @@ Some of these are broken things, and some are only untidy ones. The untidy ones 
 
 The tidiness repairs also hold off for a day, so setting something up and filling it in after lunch does not earn you a repair issue in between. A new area, floor or label is left alone for its first twenty-four hours. A blueprint is judged by when its file was last touched rather than when it first appeared, which also spares one you edited yesterday.
 
+### Unknown area sensors
+
+An {term}`area` can have a temperature and a humidity sensor of its own. That is where Assist gets the answer to "how warm is it in the kitchen?", and where area cards get their reading.
+
+Home Assistant only checks that sensor when you pick it. Remove it, or rename its entity ID, and the area keeps pointing at something that is not there anymore, while nothing says so. Spook checks each area's sensors against the entities Home Assistant knows, once it has started, so a sensor that is still loading is not mistaken for a missing one. If the sensor was renamed, the issue suggests the entity it most likely became.
+
+The raised issue is fixable: Spook can clear the setting so you can pick a sensor again, or you can pick a different one in the area's settings yourself. Clearing only takes away a setting that points at nothing, so nothing that worked stops working.
+
 ### Unknown customized entities
 
 The `customize:` section of your configuration pins attributes onto a specific entity, which is how a sensor gets a friendly name or a different icon that its integration does not offer.
