@@ -180,8 +180,8 @@ async def test_an_issue_no_longer_raised_is_left_out(
 @pytest.mark.parametrize(
     ("translation_key", "placeholders", "title"),
     [
-        # Nothing to look up: the issue ID, like the dashboard falls back to.
-        ("not_translated", {}, "no_title"),
+        # Nothing to look up: the domain and the key, like the dashboard.
+        ("not_translated", {}, "zwave_js: not_translated"),
         # A placeholder without a value stays as written.
         ("no_placeholder", {}, "Node {node} is sleeping"),
         # Braces that are not a placeholder: the text as written.

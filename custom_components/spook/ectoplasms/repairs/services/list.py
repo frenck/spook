@@ -31,12 +31,12 @@ def _title(translations: dict[str, str], issue: ir.IssueEntry) -> str:
 
     Home Assistant does not store the title, only where to find it and what
     to fill in. This looks it up the same way the frontend does, and falls
-    back to the issue ID when there is nothing to look up.
+    back the same way too, to the domain and the key it looked for.
     """
     key = issue.translation_key or issue.issue_id
     title = translations.get(f"component.{issue.domain}.issues.{key}.title")
     if title is None:
-        return issue.issue_id
+        return f"{issue.domain}: {key}"
 
     try:
         return title.format_map(
