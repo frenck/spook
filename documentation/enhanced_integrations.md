@@ -16,6 +16,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/alert/icon.png)](integrations/alert)
 :::
 
+:::{card} Assist pipeline
+:footer: 📚 [Learn more](integrations/assist_pipeline)
+[![](https://brands.home-assistant.io/assist_pipeline/icon.png)](integrations/assist_pipeline)
+:::
+
 :::{card} Automations
 :footer: 📚 [Learn more](integrations/automation)
 
