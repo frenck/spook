@@ -253,3 +253,90 @@ def test_an_area_on_anything_but_an_area_card_is_a_label() -> None:
     }
 
     assert extract_areas_from_dashboard_node(config) == {"kitchen"}
+
+
+def test_bubble_card_keys_of_its_own_are_read() -> None:
+    """Bubble Card names entities under keys no other card uses.
+
+    A pop-up can open on an entity's state, and a horizontal buttons stack
+    numbers its buttons, each with an entity and a motion sensor.
+    """
+    config = {
+        "cards": [
+            {
+                "type": "custom:bubble-card",
+                "card_type": "pop-up",
+                "hash": "#kitchen",
+                "trigger_entity": "binary_sensor.kitchen_motion",
+            },
+            {
+                "type": "custom:bubble-card",
+                "card_type": "horizontal-buttons-stack",
+                "1_link": "#kitchen",
+                "1_entity": "light.kitchen",
+                "1_pir_sensor": "binary_sensor.kitchen_motion_2",
+                "12_entity": "light.attic",
+                "2_name": "light.not_an_entity_key",
+            },
+        ],
+    }
+
+    assert extract_entities_from_dashboard_node(config) == {
+        "binary_sensor.kitchen_motion",
+        "binary_sensor.kitchen_motion_2",
+        "light.kitchen",
+        "light.attic",
+    }
+
+
+def test_bubble_card_paths_that_already_worked_stay_working() -> None:
+    """Sub-buttons, in both the old list and the newer groups, are found."""
+    config = {
+        "cards": [
+            {
+                "type": "custom:bubble-card",
+                "card_type": "button",
+                "entity": "light.living_room",
+                "sub_button": [{"entity": "sensor.old_style"}],
+            },
+            {
+                "type": "custom:bubble-card",
+                "card_type": "button",
+                "sub_button": {
+                    "main": [{"entity": "sensor.new_style"}],
+                    "bottom": [{"entity": "sensor.bottom_row"}],
+                },
+            },
+        ],
+    }
+
+    assert extract_entities_from_dashboard_node(config) == {
+        "light.living_room",
+        "sensor.old_style",
+        "sensor.new_style",
+        "sensor.bottom_row",
+    }
+
+
+def test_numbered_keys_on_another_card_are_not_bubble_cards() -> None:
+    """A key shaped like `1_entity` is only Bubble Card's on Bubble Card."""
+    config = {"type": "custom:some-other-card", "1_entity": "light.kitchen"}
+
+    assert extract_entities_from_dashboard_node(config) == set()
+
+
+def test_the_mushroom_template_card_area_is_an_area() -> None:
+    """Its `area` is the card's area, handed to its templates as an ID."""
+    config = {
+        "cards": [
+            {
+                "type": "custom:mushroom-template-card",
+                "area": "kitchen",
+                "primary": "{{ area_name(area) }}",
+            },
+            # A template is not an area ID, whatever card it is on.
+            {"type": "custom:mushroom-template-card", "area": "{{ 'kitchen' }}"},
+        ],
+    }
+
+    assert extract_areas_from_dashboard_node(config) == {"kitchen"}

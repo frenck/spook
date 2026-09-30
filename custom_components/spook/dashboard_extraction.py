@@ -14,6 +14,7 @@ so a benign string under a recognized key is dropped rather than reported.
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Any
 
 from .entity_filtering import split_comma_separated_entity_ids
@@ -112,6 +113,25 @@ def _collect_strings(value: Any, entities: set[str]) -> None:
     entities.difference_update(_CARD_PLACEHOLDERS)
 
 
+# Bubble Card names entities under keys of its own. A pop-up can open on an
+# entity's state (`trigger_entity`), and a horizontal buttons stack numbers its
+# buttons, each with an entity and a motion sensor to sort by (`1_entity`,
+# `1_pir_sensor`, and so on). Only read on Bubble Card itself: a key shaped
+# like `1_entity` on some other card is that card's business.
+_BUBBLE_CARD_TYPE = "custom:bubble-card"
+_BUBBLE_CARD_ENTITY_KEYS = frozenset({"trigger_entity"})
+_BUBBLE_CARD_NUMBERED_ENTITY_KEY = re.compile(r"\d+_(?:entity|pir_sensor)")
+
+
+def _collect_bubble_card(node: dict[str, Any], entities: set[str]) -> None:
+    """Collect the entities Bubble Card names under keys of its own."""
+    for key, value in node.items():
+        if key in _BUBBLE_CARD_ENTITY_KEYS or (
+            isinstance(key, str) and _BUBBLE_CARD_NUMBERED_ENTITY_KEY.fullmatch(key)
+        ):
+            _collect_strings(value, entities)
+
+
 def _walk(node: Any, entities: set[str]) -> None:
     """Recursively collect entity references from a configuration node."""
     if isinstance(node, list):
@@ -125,6 +145,9 @@ def _walk(node: Any, entities: set[str]) -> None:
     for key in _ENTITY_REFERENCE_KEYS:
         if key in node:
             _collect_strings(node[key], entities)
+
+    if node.get("type") == _BUBBLE_CARD_TYPE:
+        _collect_bubble_card(node, entities)
 
     for child in _worth_descending_into(node):
         _walk(child, entities)
@@ -146,7 +169,10 @@ def extract_entities_from_dashboard_node(node: Any) -> set[str]:
 # grabs, and a custom card took it: flex-horseshoe-card prints whatever is
 # under `area` as a caption beneath its gauge, so `area: Garaj` was reported
 # as an area that had gone missing. #1609.
-_AREA_TYPE = "area"
+#
+# The Mushroom template card is the exception that earns its place: its `area`
+# is the card's area, handed to its templates as a real area ID.
+_AREA_TYPES = frozenset({"area", "custom:mushroom-template-card"})
 
 # `area_id` is a service-call target, and nobody captions with one of those.
 _AREA_ID_KEY = "area_id"
@@ -155,17 +181,26 @@ _AREA_ID_KEY = "area_id"
 def _collect_plain(value: Any, out: set[str]) -> None:
     """Collect plain string IDs from a key's string or list value.
 
-    A pattern is not a name, so `area: KG/*` is left where it is.
+    A pattern is not a name, so `area: KG/*` is left where it is. Neither is
+    a template: no area ID has braces in it, and what a template turns into
+    is not something to look up ahead of time.
     """
-    if isinstance(value, str):
-        if not is_pattern_reference(value):
-            out.add(value)
-    elif isinstance(value, list):
-        out.update(
-            item
-            for item in value
-            if isinstance(item, str) and not is_pattern_reference(item)
-        )
+    values = [value] if isinstance(value, str) else value
+    if not isinstance(values, list):
+        return
+
+    out.update(
+        item
+        for item in values
+        if isinstance(item, str)
+        and not is_pattern_reference(item)
+        and not _is_template(item)
+    )
+
+
+def _is_template(value: str) -> bool:
+    """Return whether a value is a Jinja template rather than a name."""
+    return "{{" in value or "{%" in value
 
 
 def _walk_areas(node: Any, areas: set[str]) -> None:
@@ -178,7 +213,7 @@ def _walk_areas(node: Any, areas: set[str]) -> None:
     if not isinstance(node, dict):
         return
 
-    if node.get("type") == _AREA_TYPE:
+    if node.get("type") in _AREA_TYPES:
         _collect_plain(node.get("area"), areas)
     _collect_plain(node.get(_AREA_ID_KEY), areas)
 
