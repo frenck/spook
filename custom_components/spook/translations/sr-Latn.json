@@ -592,6 +592,30 @@
         "lovelace_missing_resources_yaml": {
             "title": "Resursi kontrolne table ukazuju na nepostojeće datoteke",
             "description": "Spook je pronašao duha na Vašim kontrolnim tablama 👻\n\nSledeći resursi kontrolne table ukazuju na datoteke koje ne postoje:\n\n{resources}\n\n\n\nOvo se obično dešava kada se ukloni prilagođena kartica ili njene datoteke, ali resurs ostane konfigurisan.\n\nOvi resursi su navedeni u vašoj YAML konfiguraciji, pa ih stranica „Resursi“ ne može promeniti. Uredite odeljak `resources:` u svojoj Lovelace konfiguraciji i uklonite ili ispravite ove unose.\n\nSpook 👻 Vaš ortak."
+        },
+        "unknown_engines": {
+            "title": "Pipeline-ovi asistenta koriste sisteme koji više ne postoje: {pipeline}",
+            "description": "Spook je pronašao duha u vašim glasovnim asistentima 👻\n\nPipeline asistenta {pipeline} koristi sledeće, što je nepoznato Home Assistant-u:\n\n{engines}\n\nOvo obično znači da je integracija iza toga uklonjena. Pipeline-u to nije javljeno, pa sledeći put kada se pokrene javlja grešku o nedostajućem provajderu ili agentu, a ništa pre toga ne ukazuje ovde.\n\nDa biste ovo popravili, otvorite podešavanja ovog asistenta pod Glasovni asistenti i izaberite sistem koji je još uvek dostupan za svaki od ovih.\n\nSpook 👻 Vaš ortak."
+        },
+        "unknown_area_sensors": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "remove": "Obriši podešavanje",
+                            "ignore": "Zadrži, prestani da me obaveštavaš",
+                            "manage": "Dozvoli mi da sam popravim"
+                        },
+                        "description": "Spook je pronašao duha u vašim prostorijama. 👻\n\nProstorija {area} koristi senzor {sensors} koji je nepoznat Home Assistant-u:\n\n{entities}\n\nHome Assistant proverava ovaj senzor samo kada je odabran, pa kada je uklonjen ili preimenovan, prostorija je nastavila da pokazuje na ništa. Kartice asistenta i prostorija više ne dobijaju očitavanja sa njega.\n\nObrišite podešavanje kako biste mogli ponovo da izaberete senzor, ili ga zadržite i Spook će prestati da ukazuje na to.\n\nSpook 👻 Vaš ortak.",
+                        "title": "Nepoznat {sensors} senzor za prostoriju: {area}"
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
+                    "manage": "• Možete izabrati drugi senzor u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard)."
+                }
+            },
+            "title": "Nepoznat {sensors} senzor za prostoriju: {area}"
         }
     },
     "services": {
@@ -2050,6 +2074,62 @@
                     "description": "Tajmeri koje treba obrisati."
                 }
             }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Dodaj pseudonim entitetu",
+            "description": "Dodaje jedan ili više pseudonima entitetu (ili entitetima), pomoću kojih ih glasovni asistenti mogu pozvati.",
+            "fields": {
+                "alias": {
+                    "name": "Pseudonim",
+                    "description": "Pseudonim(i) za dodavanje."
+                },
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet/entiteti kojima se dodaje(u) pseudonim(i)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "fields": {
+                "alias": {
+                    "name": "Pseudonim",
+                    "description": "Pseudonim(i) za uklanjanje."
+                },
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet/entiteti sa kojih se uklanja(ju) pseudonim(i)."
+                }
+            },
+            "name": "Ukloni pseudonim sa entiteta",
+            "description": "Uklanja jedan ili više pseudonima sa entiteta (ili entiteta)."
+        },
+        "homeassistant_set_entity_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Pseudonimi",
+                    "description": "Pseudonimi za postavljanje."
+                },
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet/entiteti za koje se postavljaju pseudonimi."
+                }
+            },
+            "description": "Zamenjuje pseudonime entiteta (ili entiteta). Da li se sopstveno ime entiteta računa kao pseudonim, ostaje nepromenjeno.",
+            "name": "Postavi pseudonime za entitet"
+        },
+        "homeassistant_set_entity_icon": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Entitet/entiteti za koje se postavlja ikona."
+                },
+                "icon": {
+                    "name": "Ikona",
+                    "description": "Nova ikona, ili „null“ za sopstvenu ikonu integracije."
+                }
+            },
+            "description": "Menja ikonu entiteta (ili entiteta) u hodu. Postavite na „null“ da biste se vratili na ikonu koju daje sama integracija.",
+            "name": "Postavi ikonu entiteta"
         }
     },
     "conditions": {
