@@ -5,7 +5,11 @@ from __future__ import annotations
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
-from ....helper_sources import SOURCE_OPTION_KEYS, async_unknown_helper_sources
+from ....helper_sources import (
+    SOURCE_OPTION_KEYS,
+    async_helper_sources,
+    async_unknown_helper_sources,
+)
 from ....repairs import AbstractSpookRepair
 
 
@@ -54,6 +58,9 @@ class SpookRepair(AbstractSpookRepair):
                     "helper_config_entry_id": entry.entry_id,
                     # What the fix checks again before removing the helper.
                     "helper_unknown_sources": ",".join(sorted(unknown)),
+                    "helper_configured_sources": ",".join(
+                        sorted(async_helper_sources(entry))
+                    ),
                     "helper": entry.title,
                     "domain": entry.domain,
                     "sources": sources,

@@ -221,6 +221,7 @@ async def test_fix_flow_remove_deletes_helper(
     flow.data = {
         "helper_config_entry_id": entry.entry_id,
         "helper_unknown_sources": "sensor.ghost",
+        "helper_configured_sources": "sensor.ghost",
     }
 
     result = await flow.async_step_remove()
@@ -327,3 +328,36 @@ async def test_a_helper_still_broken_as_shown_is_removed(
 
     assert result["type"] == "create_entry"
     assert hass.config_entries.async_get_entry(entry.entry_id) is None
+
+
+async def test_a_helper_given_another_source_since_is_kept(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a helper changed since it was shown is not the one to delete.
+
+    Still missing the source the issue named, but given a working one as
+    well. Somebody is busy with it, and deleting it would undo that.
+    """
+    hass.states.async_set("sensor.heater", "on")
+    entry = MockConfigEntry(
+        domain="generic_thermostat",
+        title="Thermostat",
+        options={"name": "Thermostat", "target_sensor": "sensor.ghost"},
+    )
+    entry.add_to_hass(hass)
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(entry))
+    assert issue
+
+    flow = HelperUnknownSourcesFixFlow()
+    flow.hass = hass
+    flow.data = issue.data
+    hass.config_entries.async_update_entry(
+        entry, options={**entry.options, "heater": "sensor.heater"}
+    )
+    result = await flow.async_step_remove()
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is not None

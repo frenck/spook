@@ -240,3 +240,39 @@ async def test_a_member_that_came_back_is_not_dropped(
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "changed"
     assert entry.options["entities"] == ["light.known", "light.gone"]
+
+
+async def test_the_fix_asks_what_is_missing_the_way_the_repair_does(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the fix does not drop what the repair would never call missing.
+
+    The repair leaves device trackers alone: one without a state is a phone
+    that has not reported in yet, not a ghost. A fix with a simpler idea of
+    "missing" would drop it from the group all the same.
+    """
+    hass.states.async_set("light.known", "on")
+    entry = MockConfigEntry(
+        domain="group",
+        options={
+            "entities": ["light.known", "device_tracker.phone"],
+            "group_type": "light",
+        },
+    )
+    entry.add_to_hass(hass)
+    reg = entity_registry.async_get_or_create(
+        "light", "group", "living", config_entry=entry
+    )
+
+    flow = GroupUnknownMembersFixFlow()
+    flow.hass = hass
+    flow.data = {
+        "group_entity_id": reg.entity_id,
+        "group_unknown_entity_ids": "device_tracker.phone",
+    }
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entities"] == ["light.known", "device_tracker.phone"]

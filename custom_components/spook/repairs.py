@@ -54,6 +54,7 @@ from .entity_suggestions import (
 )
 from .helper_sources import (
     MIN_MAX_ENTITY_IDS,
+    async_helper_sources,
     async_unknown_helper_sources,
     async_unknown_min_max_members,
 )
@@ -1187,14 +1188,15 @@ class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
             # Only the members the issue named, and of those only the ones
             # still gone. Another member missing for a moment right now, an
             # integration reloading say, is not one somebody agreed to drop.
+            # Asked the way the repair asked it: Home Assistant knows more
+            # entities than the registry and the state machine hold between
+            # them, like the time and date sensors and scenes made on the fly.
             offered = _offered(self.data, "group_unknown_entity_ids")
-            dropping = {
-                member
-                for member in members
-                if member in offered
-                and entity_registry.async_get(member) is None
-                and self.hass.states.get(member) is None
-            }
+            dropping = set(
+                async_filter_known_entity_ids(
+                    self.hass, [member for member in members if member in offered]
+                )
+            )
             if not dropping:
                 return self.async_abort(reason="changed")
 
@@ -1332,8 +1334,15 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         if (entry := self.hass.config_entries.async_get_entry(entry_id)) is None:
             return self.async_create_entry(data={})
 
+        # The helper as it was shown, sources and all. One given another
+        # source since, even a working one, is not the helper somebody saw.
         offered = _offered(self.data, "helper_unknown_sources")
-        if not offered or not offered <= async_unknown_helper_sources(self.hass, entry):
+        configured = _offered(self.data, "helper_configured_sources")
+        if (
+            not offered
+            or configured != async_helper_sources(entry)
+            or not offered <= async_unknown_helper_sources(self.hass, entry)
+        ):
             return self.async_abort(reason="changed")
 
         await self.hass.config_entries.async_remove(entry_id)

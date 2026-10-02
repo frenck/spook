@@ -71,6 +71,11 @@ def _source_values(entry: ConfigEntry) -> set[str]:
 MIN_MAX_ENTITY_IDS = "entity_ids"
 
 
+def async_helper_sources(entry: ConfigEntry) -> set[str]:
+    """Return every source reference a helper is configured with."""
+    return _source_values(entry)
+
+
 def async_unknown_helper_sources(hass: HomeAssistant, entry: ConfigEntry) -> set[str]:
     """Return the raw source references of a helper that are gone."""
     return _async_unknown(hass, _source_values(entry), as_written=False)
