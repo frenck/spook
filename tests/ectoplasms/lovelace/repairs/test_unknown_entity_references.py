@@ -242,3 +242,36 @@ async def test_one_unreadable_dashboard_does_not_stop_the_rest(
         issue_registry, "lovelace_unknown_entity_references_fine"
     ), "the dashboard after the broken one was never checked"
     assert "could not read dashboard broken" in caplog.text
+
+
+async def test_a_dashboard_added_mid_round_does_not_end_it(
+    repair: SpookRepair,
+) -> None:
+    """Test the round survives the dashboards changing while it loads one.
+
+    Loading a dashboard hands the event loop a turn, and somebody creating
+    or deleting a dashboard in that turn changed the very dictionary being
+    walked. The whole round ended in a `RuntimeError`.
+    """
+    dashboards: dict[str, Any] = {}
+
+    async def _loads_while_another_arrives(*, force: bool) -> dict[str, Any]:
+        """Load, while somebody adds a dashboard."""
+        del force
+        dashboards["new"] = SimpleNamespace(
+            url_path="new", config={"title": "New"}, async_load=_loads_fine
+        )
+        return {"title": "First"}
+
+    async def _loads_fine(*, force: bool) -> dict[str, Any]:
+        del force
+        return {"title": "Fine"}
+
+    dashboards["first"] = SimpleNamespace(
+        url_path="first",
+        config={"title": "First"},
+        async_load=_loads_while_another_arrives,
+    )
+    repair._dashboards = dashboards  # noqa: SLF001
+
+    await repair.async_inspect()

@@ -37,6 +37,7 @@ class SpookRepair(AbstractSpookRepair):
             if not (unknown := async_unknown_min_max_members(self.hass, entry)):
                 continue
 
+            sources = await async_describe_unknown_entities(self.hass, sorted(unknown))
             self.async_create_issue(
                 issue_id=entry.entry_id,
                 references=unknown,
@@ -47,14 +48,10 @@ class SpookRepair(AbstractSpookRepair):
                     # What the fix checks again before pruning anything.
                     "min_max_unknown_sources": ",".join(sorted(unknown)),
                     "helper": entry.title,
-                    "sources": async_describe_unknown_entities(
-                        self.hass, sorted(unknown)
-                    ),
+                    "sources": sources,
                 },
                 translation_placeholders={
                     "helper": entry.title,
-                    "sources": async_describe_unknown_entities(
-                        self.hass, sorted(unknown)
-                    ),
+                    "sources": sources,
                 },
             )

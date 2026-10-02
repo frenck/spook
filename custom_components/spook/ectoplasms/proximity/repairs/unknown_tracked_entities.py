@@ -54,7 +54,7 @@ class SpookRepair(AbstractSpookRepair):
                     references=unknown_entities,
                     translation_placeholders={
                         "name": coordinator.name,
-                        "entities": async_describe_unknown_entities(
+                        "entities": await async_describe_unknown_entities(
                             self.hass, sorted(unknown_entities)
                         ),
                     },

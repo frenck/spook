@@ -39,9 +39,12 @@ class SpookRepair(AbstractSpookRepair):
         if not (platforms := self.hass.data[DATA_ENTITY_PLATFORM].get(self.domain)):
             return  # Nothing to do.
 
-        for platform in platforms:
+        # Taken as a snapshot: describing what is missing can hand the event
+        # loop a turn, and a change to the live collection during it ends the
+        # inspection in a `RuntimeError`. #1558.
+        for platform in list(platforms):
             # We don't want to check the old style group platform
-            for entity in platform.entities.values():
+            for entity in list(platform.entities.values()):
                 self.possible_issue_ids.add(entity.entity_id)
                 members = []
                 if platform.domain == group.DOMAIN:
@@ -56,7 +59,7 @@ class SpookRepair(AbstractSpookRepair):
                 if unknown_entities := async_filter_known_entity_ids(
                     self.hass, entity_ids=members, known_entity_ids=known_entity_ids
                 ):
-                    described = async_describe_unknown_entities(
+                    described = await async_describe_unknown_entities(
                         self.hass, sorted(unknown_entities)
                     )
                     self.async_create_issue(

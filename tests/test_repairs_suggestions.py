@@ -175,3 +175,33 @@ async def test_a_cache_dropped_mid_flight_does_not_fall_back_to_the_loop(
 
     assert threads, "nothing was compared, so nothing was tested"
     assert threading.main_thread().name not in threads
+
+
+async def test_describing_on_its_own_also_compares_off_the_event_loop(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a repair that never warmed anything still keeps the loop free.
+
+    Most repairs describe what they found one issue at a time, without
+    gathering a round first. Each of those used to be its own stretch of
+    fuzzy matching on the event loop.
+    """
+    hass.states.async_set("sensor.living_room_temperature", "21")
+
+    threads: list[str] = []
+    original = entity_suggestions.difflib.get_close_matches
+
+    def _recording(*args: object, **kwargs: object) -> list[str]:
+        threads.append(threading.current_thread().name)
+        return original(*args, **kwargs)
+
+    monkeypatch.setattr(entity_suggestions.difflib, "get_close_matches", _recording)
+
+    described = await entity_suggestions.async_describe_unknown_entities(
+        hass, ["sensor.living_room_temperatur"]
+    )
+
+    assert "did you mean `sensor.living_room_temperature`" in described
+    assert threads, "nothing was compared, so nothing was tested"
+    assert threading.main_thread().name not in threads
