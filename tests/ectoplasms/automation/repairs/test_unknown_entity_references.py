@@ -460,6 +460,54 @@ async def test_notify_service_data_target_is_not_an_entity_reference(
     assert await async_extract_entities_from_action_config(hass, config) == set()
 
 
+async def test_a_message_that_reads_like_an_entity_id_is_just_text(
+    hass: HomeAssistant,
+) -> None:
+    """A notification saying `sensor.example` is not a reference to it.
+
+    Home Assistant sends the message exactly as written. Reporting it as an
+    unknown entity is pointing at a sentence.
+    """
+    config = {
+        "action": "persistent_notification.create",
+        "data": {"title": "light.porch", "message": "sensor.example"},
+    }
+    assert await async_extract_entities_from_action_config(hass, config) == set()
+
+
+async def test_a_field_called_message_elsewhere_is_still_read(
+    hass: HomeAssistant,
+) -> None:
+    """A script or custom action can call a field `message` and mean an entity.
+
+    Only the integrations that define these fields as text get them skipped.
+    """
+    config = {
+        "action": "script.announce_on",
+        "data": {"message": "media_player.kitchen"},
+    }
+    assert await async_extract_entities_from_action_config(hass, config) == {
+        "media_player.kitchen"
+    }
+
+
+async def test_a_template_in_a_message_still_names_what_it_reads(
+    hass: HomeAssistant,
+) -> None:
+    """A message rendering an entity's state does reference that entity."""
+    config = {
+        "action": "persistent_notification.create",
+        "data": {
+            "title": "{{ state_attr('light.porch', 'friendly_name') }}",
+            "message": "{{ states('sensor.example') }}",
+        },
+    }
+    assert await async_extract_entities_from_action_config(hass, config) == {
+        "light.porch",
+        "sensor.example",
+    }
+
+
 async def test_non_notify_action_data_target_remains_entity_reference(
     hass: HomeAssistant,
 ) -> None:

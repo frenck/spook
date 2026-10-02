@@ -156,6 +156,32 @@ def _should_skip_service_data_value(
     return service is not None and service.startswith("notify.") and key == "target"
 
 
+# Action data fields that are words for a person to read: a notification, a
+# spoken announcement, the title above either. A template in one can name an
+# entity, and that is a reference like any other. Plain text that happens to
+# look like an entity ID is still just text, and it goes out saying exactly
+# that.
+#
+# Only for the integrations that define these fields as text. Anything else,
+# a script field or a custom action without a schema, is free to call one of
+# its fields `message` and put an entity ID in it.
+_FREE_TEXT_KEYS = frozenset({"message", "title"})
+_FREE_TEXT_DOMAINS = frozenset(
+    {"assist_satellite", "notify", "persistent_notification", "tts"}
+)
+
+
+def _is_plain_text(service: str | None, key: str, value: Any) -> bool:
+    """Return whether this data value is text to read, not something to resolve."""
+    return (
+        service is not None
+        and service.split(".", 1)[0] in _FREE_TEXT_DOMAINS
+        and key in _FREE_TEXT_KEYS
+        and isinstance(value, str)
+        and not is_template_string(value)
+    )
+
+
 async def _extract_entities_from_service_data(
     hass: HomeAssistant, config: dict[str, Any], known_services: set[str]
 ) -> set[str]:
@@ -175,6 +201,8 @@ async def _extract_entities_from_service_data(
             # data field is a dictionary, process all its values
             for key, value in data_value.items():
                 if _should_skip_service_data_value(service, key):
+                    continue
+                if _is_plain_text(service, key, value):
                     continue
                 entities.update(
                     await async_extract_entities_from_value(
