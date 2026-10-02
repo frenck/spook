@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 from datetime import timedelta
 from pathlib import Path
 from types import SimpleNamespace
@@ -548,3 +550,57 @@ async def test_repairs_are_set_up_once_when_loaded_before_start(
     await hass.async_block_till_done()
 
     assert _RecordingSpookRepairManager.setups == 1
+
+
+async def test_repairs_still_starting_when_spook_unloads_are_torn_down(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test repairs set up after Spook already went are torn down at once.
+
+    Repairs start once Home Assistant has, and starting them takes a moment.
+    Disabling or reloading Spook in that moment used to finish first, and the
+    repairs carried on starting afterwards with nothing left to stop them:
+    inspecting a disabled Spook, or running twice next to the reloaded one.
+    """
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup during the lifecycle smoke test."""
+
+    starting = asyncio.Event()
+    carry_on = asyncio.Event()
+    torn_down: list[bool] = []
+
+    class _SlowSpookRepairManager(_NoopSpookRepairManager):
+        """Repair manager that takes its time to start."""
+
+        async def async_setup(self) -> None:
+            starting.set()
+            await carry_on.wait()
+
+        async def async_on_unload(self) -> None:
+            torn_down.append(True)
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_noop)
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _SlowSpookRepairManager)
+    monkeypatch.setattr(hass, "state", CoreState.starting)
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    hass.bus.async_fire(EVENT_HOMEASSISTANT_STARTED)
+    await starting.wait()
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+    carry_on.set()
+    await hass.async_block_till_done()
+
+    assert torn_down == [True]

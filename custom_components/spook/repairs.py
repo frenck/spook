@@ -148,6 +148,7 @@ class AbstractSpookRepairBase(ABC):
         self.device_registry = dr.async_get(hass)
         self.entity_registry = er.async_get(hass)
         self.issue_ids = set()
+        self._deactivated = False
 
     @final
     @callback
@@ -183,6 +184,9 @@ class AbstractSpookRepairBase(ABC):
         underneath, and the next genuinely broken thing in that script is
         hidden by a decision somebody made about something else. #1395.
         """
+        if self._deactivated:
+            return
+
         owner = issue_id
         findings = None if references is None else list(references)
         if findings is not None:
@@ -247,6 +251,9 @@ class AbstractSpookRepairBase(ABC):
         issue_id: str,
     ) -> None:
         """Remove an issue."""
+        if self._deactivated:
+            return
+
         self.issue_ids.discard(issue_id)
         ir.async_delete_issue(
             self.hass,
@@ -264,10 +271,10 @@ class AbstractSpookRepairBase(ABC):
         """Trigger a repair check."""
         raise NotImplementedError
 
-    async def async_deactivate(self) -> None:  # noqa: B027
+    async def async_deactivate(self) -> None:
         """Unregister the repair, and leave what it reported where it is.
 
-        Deliberately does nothing, and that is the point of it. Somebody
+        Deliberately takes nothing down, and that is the point of it. Somebody
         pressing "ignore" has that written on the issue itself, so deleting
         the issue takes the mark with it and the next inspection puts the same
         thing back as something nobody has ever seen. Home Assistant keeps an
@@ -280,7 +287,14 @@ class AbstractSpookRepairBase(ABC):
         when it next looks, and deletes what is no longer there, so the tidying
         this used to do happens anyway and happens later, when there is
         something to compare against. #1572.
+
+        What it does stop is a look already under way. Shutting the debouncer
+        down cancels the next one, not one waiting halfway through, and that
+        one carried on afterwards: filing what it found for a Spook that was
+        disabled, or after a reload clearing the fresh issues of the repair
+        that replaced it. From here on it changes nothing.
         """
+        self._deactivated = True
 
 
 class AbstractSpookRepair(AbstractSpookRepairBase):
