@@ -84,7 +84,7 @@ async def test_config_flow_creates_inverse_entry(
 async def test_options_flow_updates_hide_source_state(
     hass: HomeAssistant,
 ) -> None:
-    """Test options flow hides and unhides the source entity."""
+    """Test the options flow offers the right sources and hides the chosen one."""
     source_entity_id = _create_source_entity(hass, Platform.SWITCH)
     entry = MockConfigEntry(
         domain=DOMAIN,
@@ -153,4 +153,5 @@ async def test_options_flow_updates_hide_source_state(
         CONF_ENTITY_ID: source_entity_id,
         CONF_HIDE_SOURCE: False,
     }
-    assert er.async_get(hass).async_get(source_entity_id).hidden_by is None
+    # Showing it again is the update listener's to do, once it knows this
+    # inverse was the one hiding it. That is covered in test_following.py.
