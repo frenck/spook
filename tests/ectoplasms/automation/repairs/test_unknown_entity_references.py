@@ -475,6 +475,22 @@ async def test_a_message_that_reads_like_an_entity_id_is_just_text(
     assert await async_extract_entities_from_action_config(hass, config) == set()
 
 
+async def test_a_field_called_message_elsewhere_is_still_read(
+    hass: HomeAssistant,
+) -> None:
+    """A script or custom action can call a field `message` and mean an entity.
+
+    Only the integrations that define these fields as text get them skipped.
+    """
+    config = {
+        "action": "script.announce_on",
+        "data": {"message": "media_player.kitchen"},
+    }
+    assert await async_extract_entities_from_action_config(hass, config) == {
+        "media_player.kitchen"
+    }
+
+
 async def test_a_template_in_a_message_still_names_what_it_reads(
     hass: HomeAssistant,
 ) -> None:
