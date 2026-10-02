@@ -160,10 +160,15 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
         every snooze made before the upgrade is silently dropped: automations
         left off with nothing to turn them back on.
         """
+        legacy: Store[dict[str, str]] = Store(self._hass, 1, LEGACY_STORAGE_KEY)
+
         if (stored := await self._store.async_load()) is not None:
+            # The records are here, and they are the ones that count. An old
+            # file still lying about is one a take-over could not confirm,
+            # since written over by a later save, and it goes now.
+            await legacy.async_remove()
             return stored
 
-        legacy: Store[dict[str, str]] = Store(self._hass, 1, LEGACY_STORAGE_KEY)
         if (snoozes := await legacy.async_load()) is None:
             return {}
 
@@ -175,6 +180,18 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
             for entity_id, until in snoozes.items()
         }
         await self._store.async_save(taken_over)
+
+        # Home Assistant logs a failed write rather than raising it, so what
+        # landed is read back rather than assumed. Removing the old file on the
+        # strength of having asked would, on a full disk say, leave no copy at
+        # all, and every snoozed automation off for good after the next
+        # restart. Kept, the old file is simply taken over again next time.
+        written = await Store[dict[str, dict[str, str]]](
+            self._hass, STORAGE_VERSION, STORAGE_KEY
+        ).async_load()
+        if written != taken_over:
+            return taken_over
+
         await legacy.async_remove()
 
         return taken_over
