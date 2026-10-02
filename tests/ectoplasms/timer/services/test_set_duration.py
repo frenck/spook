@@ -11,6 +11,7 @@ from homeassistant.components.timer import DOMAIN
 from homeassistant.const import ATTR_ENTITY_ID
 from homeassistant.core import Context
 from homeassistant.exceptions import Unauthorized
+from homeassistant.helpers.entity_component import EntityComponent
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.ectoplasms.timer.services import set_duration
@@ -89,3 +90,34 @@ async def test_somebody_who_is_not_an_admin_cannot(
         await _set_duration(hass, Context(user_id=user.id))
 
     assert hass.states.get("timer.mist").attributes["duration"] == "0:05:00"
+
+
+async def test_it_registers_on_a_core_without_admin_only(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The oldest Home Assistant Spook runs on cannot be asked for an admin.
+
+    Its entity actions take no `admin_only`, and handing it one fails the
+    registration of every action built this way, not only this one.
+    """
+    registered: list[str] = []
+
+    def _without_admin_only(
+        _self: EntityComponent,
+        name: str,
+        schema: Any,
+        func: Any,
+        required_features: Any = None,
+        supports_response: Any = None,
+    ) -> None:
+        # Named one by one, like that version's, so anything more fails.
+        del schema, func, required_features, supports_response
+        registered.append(name)
+
+    monkeypatch.setattr(
+        EntityComponent, "async_register_entity_service", _without_admin_only
+    )
+
+    assert set_duration.SpookService(hass).async_register()
+    assert registered == ["set_duration"]
