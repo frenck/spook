@@ -271,7 +271,8 @@
                 "abort": {
                     "issue_ignored": "Spook houdt vanaf nu zijn mond over deze groep.",
                     "manage": "Je beheert deze groep zelf op [de pagina Helpers](/config/helpers).",
-                    "not_editable": "Deze groep is in YAML ingesteld, dus Spook kan hem niet bewerken. Werk de groep in plaats daarvan bij in je configuratie."
+                    "not_editable": "Deze groep is in YAML ingesteld, dus Spook kan hem niet bewerken. Werk de groep in plaats daarvan bij in je configuratie.",
+                    "changed": "De leden die deze reparatie noemde, zijn terug of veranderd sinds Spook keek, dus er is niets uit de groep verwijderd. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
                 },
                 "step": {
                     "init": {
@@ -354,7 +355,7 @@
         },
         "lovelace_missing_resources": {
             "title": "Dashboardbronnen verwijzen naar ontbrekende bestanden",
-            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nDe volgende dashboardbronnen verwijzen naar bestanden die niet bestaan:\n\n{resources}\n\nDit gebeurt meestal wanneer een custom card of de bijbehorende bestanden zijn verwijderd, terwijl de bron bleef staan. Om deze fout te verhelpen, open je Instellingen > Dashboards > Bronnen en verwijder of corrigeer je deze bronnen.\n\nSpook 👻 Je homie."
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nDe volgende dashboardbronnen verwijzen naar bestanden die niet bestaan:\n\n{resources}\n\n\n\nDit gebeurt meestal wanneer een custom card of de bijbehorende bestanden zijn verwijderd, terwijl de bron bleef staan. Om deze fout te verhelpen, open je de [pagina Bronnen](/config/lovelace/resources) en verwijder of corrigeer je deze bronnen. Die pagina heeft geen eigen tabblad: op de pagina Dashboards zit hij achter de drie puntjes rechtsboven.\n\nSpook 👻 Je homie."
         },
         "alert_unknown_entity_references": {
             "description": "Spook heeft een geest gevonden in je alerts 👻\n\nHet alert {alert} (`{entity_id}`) bewaakt een entiteit die Home Assistant niet kent:\n\n{entities}\n\nEen alert kan alleen afgaan op de entiteit die het bewaakt, dus dit alert kan nooit meer afgaan. Van buiten is dat niet te zien: het lijkt precies op een alert dat niets te melden heeft.\n\nOm deze fout te verhelpen, bewerk je de `alert:`-sectie in je configuratie en laat je dit alert naar een bestaande entiteit wijzen.\n\nSpook 👻 Je homie.",
@@ -376,7 +377,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook houdt vanaf nu zijn mond over deze ruimte.",
-                    "manage": "Je beheert deze ruimte zelf op [de pagina Ruimtes](/config/areas/dashboard)."
+                    "manage": "Je beheert deze ruimte zelf op [de pagina Ruimtes](/config/areas/dashboard).",
+                    "changed": "Deze ruimte is weer in gebruik sinds Spook keek: er zit iets in, of een automatisering of script gebruikt haar. Ze is dus met rust gelaten. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
                 },
                 "step": {
                     "init": {
@@ -396,7 +398,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook houdt vanaf nu zijn mond over deze verdieping.",
-                    "manage": "Je beheert deze verdieping zelf op [de pagina Ruimtes](/config/areas/dashboard)."
+                    "manage": "Je beheert deze verdieping zelf op [de pagina Ruimtes](/config/areas/dashboard).",
+                    "changed": "Deze verdieping is weer in gebruik sinds Spook keek: er ligt een ruimte op, of een automatisering of script gebruikt haar. Ze is dus met rust gelaten. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
                 },
                 "step": {
                     "init": {
@@ -425,7 +428,8 @@
                 "abort": {
                     "issue_ignored": "Spook houdt vanaf nu zijn mond over deze helper.",
                     "manage": "Je beheert deze helper zelf op [de pagina Helpers](/config/helpers).",
-                    "too_few_members": "Een min/max-helper heeft minstens twee leden nodig, dus als de ontbrekende eruit gaan, blijven er te weinig over. Stel de helper zelf opnieuw in of verwijder hem op [de pagina Helpers](/config/helpers)."
+                    "too_few_members": "Een min/max-helper heeft minstens twee leden nodig, dus als de ontbrekende eruit gaan, blijven er te weinig over. Stel de helper zelf opnieuw in of verwijder hem op [de pagina Helpers](/config/helpers).",
+                    "changed": "De leden die deze reparatie noemde, zijn terug of veranderd sinds Spook keek, dus er is niets uit de helper verwijderd. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
                 },
                 "step": {
                     "init": {
@@ -442,7 +446,26 @@
             "title": "Onbekende leden gebruikt in min/max-helper: {helper}"
         },
         "orphaned_statistics": {
-            "title": "Verweesde langetermijnstatistieken gevonden"
+            "title": "Verweesde langetermijnstatistieken gevonden",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Verweesde langetermijnstatistieken gevonden",
+                        "description": "Spook heeft een geest gevonden in je recorder 👻\n\nHome Assistant houdt langetermijnstatistieken bij voor het volgende, maar er is geen bijbehorende entiteit meer voor:\n\n{statistics}\n\nDit gebeurt meestal wanneer een sensor is verwijderd terwijl zijn statistieken bewaard bleven. Wissen gooit die geschiedenis voorgoed weg, dus Spook kijkt eerst nog een keer en laat alles met rust wat in de tussentijd is teruggekomen.\n\nSpook 👻 Je homie.",
+                        "menu_options": {
+                            "remove": "Deze statistieken wissen",
+                            "manage": "Laat mij het zelf doen",
+                            "ignore": "Houden, zeg er niets meer over"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook houdt vanaf nu zijn mond over deze statistieken.",
+                    "manage": "Je kunt deze zelf wissen op de [pagina Statistieken](/config/tools/statistics).",
+                    "nothing_to_clear": "Niets op die lijst hoeft nog gewist te worden, dus er is niets weggegooid. De statistieken hebben weer een entiteit, of ze zijn al weg.",
+                    "clearing_took_too_long": "Spook heeft gevraagd om de statistieken te wissen en de recorder heeft nog niet gemeld dat dit klaar is. Het werk staat in de wachtrij en wordt waarschijnlijk uitgevoerd, dus deze reparatie blijft staan tot Spook opnieuw heeft gekeken."
+                }
+            }
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -489,7 +512,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook houdt vanaf nu zijn mond over deze helper.",
-                    "manage": "Je beheert deze helper zelf op [de pagina Helpers](/config/helpers)."
+                    "manage": "Je beheert deze helper zelf op [de pagina Helpers](/config/helpers).",
+                    "changed": "De bronnen van deze helper zijn veranderd sinds Spook keek, dus de helper is met rust gelaten. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
                 },
                 "step": {
                     "init": {
@@ -529,7 +553,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook houdt vanaf nu zijn mond over dit label.",
-                    "manage": "Je beheert dit label zelf op [de pagina Labels](/config/labels)."
+                    "manage": "Je beheert dit label zelf op [de pagina Labels](/config/labels).",
+                    "changed": "Dit label is weer in gebruik sinds Spook keek: iets heeft het, of een automatisering of script gebruikt het. Het is dus met rust gelaten. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
                 },
                 "step": {
                     "init": {
@@ -569,6 +594,35 @@
                     "yaml": "Deze bronnen staan in je YAML-configuratie, dus Spook kan ze niet voor je wijzigen. Bewerk de `resources:`-sectie van je Lovelace-configuratie en verwijder de kopieën van `{resource}` die je niet meer nodig hebt."
                 }
             }
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nDe volgende dashboardbronnen verwijzen naar bestanden die niet bestaan:\n\n{resources}\n\n\n\nDit gebeurt meestal wanneer een custom card of de bijbehorende bestanden zijn verwijderd, terwijl de bron bleef staan.\n\nDeze bronnen staan in je YAML-configuratie, dus de pagina Bronnen kan ze niet wijzigen. Bewerk de sectie `resources:` van je Lovelace-configuratie en verwijder of corrigeer deze regels.\n\nSpook 👻 Je homie.",
+            "title": "Dashboardbronnen verwijzen naar ontbrekende bestanden"
+        },
+        "unknown_area_sensors": {
+            "title": "Onbekende {sensors}-sensor voor ruimte: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Onbekende {sensors}-sensor voor ruimte: {area}",
+                        "description": "Spook heeft een geest gevonden in je ruimtes 👻\n\nDe ruimte {area} gebruikt een {sensors}-sensor die Home Assistant niet kent:\n\n{entities}\n\nHome Assistant controleert deze sensor alleen wanneer hij wordt gekozen, dus toen hij werd verwijderd of hernoemd, bleef de ruimte naar niets verwijzen. Assist en ruimtekaarten krijgen er geen meetwaarde meer van.\n\nWis de instelling zodat je opnieuw een sensor kunt kiezen, of laat hem staan, dan houdt Spook op met erop wijzen.\n\nSpook 👻 Je homie.",
+                        "menu_options": {
+                            "remove": "Instelling wissen",
+                            "manage": "Ik los het zelf op",
+                            "ignore": "Houden, zeg er niets meer over"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook houdt vanaf nu zijn mond over deze ruimte.",
+                    "manage": "Je kunt een andere sensor kiezen in de instellingen van deze ruimte op de [pagina Ruimtes](/config/areas/dashboard).",
+                    "changed": "Deze sensoren zijn terug, of de instellingen verwijzen nu ergens anders naar, sinds Spook keek. Er is dus niets gewist. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
+                }
+            }
+        },
+        "unknown_engines": {
+            "title": "Assist-pipeline gebruikt engines die verdwenen zijn: {pipeline}",
+            "description": "Spook heeft een geest gevonden in je spraakassistenten 👻\n\nDe Assist-pipeline {pipeline} gebruikt het volgende, dat Home Assistant niet kent:\n\n{engines}\n\nDit betekent meestal dat de integratie erachter is verwijderd. De pipeline is daar niet van op de hoogte gebracht, dus de volgende keer dat hij wordt gebruikt, mislukt hij met een fout over een ontbrekende provider of agent, en niets daarvoor wijst hiernaartoe.\n\nOm dit op te lossen, open je de instellingen van deze assistent onder [Spraakassistenten](/config/voice-assistants/assistants) en kies je voor elk hiervan een engine die er nog is.\n\nSpook 👻 Je homie."
         }
     },
     "services": {
@@ -793,7 +847,7 @@
             }
         },
         "input_number_create": {
-            "description": "Maak een nieuwe invoerhelper in een handomdraai.",
+            "description": "Maakt in een handomdraai een nieuwe numerieke-invoerhelper aan. Geeft de entiteits-ID van de nieuwe numerieke invoer terug.",
             "name": "Maak een numerieke invoer",
             "fields": {
                 "initial": {
@@ -940,7 +994,13 @@
         },
         "input_number_delete": {
             "name": "Verwijder een numerieke invoer",
-            "description": "Verwijder een numerieke invoer helper.  Deze actie werkt enkel met numerieke invoeren gecreëerd en beheerd via de gebruikersinterface.  Numerieke invoeren gecreëerd en beheerd in YAML kunnen niet beheerd worden door Spook."
+            "description": "Verwijdert numerieke-invoerhelpers die in de gebruikersinterface of met de actie 'Een numerieke invoer aanmaken' zijn gemaakt. Numerieke invoeren die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De numerieke invoer(en) die je wilt verwijderen."
+                }
+            }
         },
         "zone_delete": {
             "name": "Verwijder een zone",
@@ -1607,6 +1667,476 @@
                     "description": "Kleur voor het label. Mag een kleurnaam uit de lijst zijn, of een hexadecimale kleurcode (zoals #FF0000)."
                 }
             }
+        },
+        "group_add_members": {
+            "name": "Leden aan een groep toevoegen",
+            "description": "Voegt entiteiten toe aan een groep die via de interface is gemaakt, terwijl Home Assistant draait. Entiteiten die al in de groep zitten, blijven waar ze zijn.",
+            "fields": {
+                "group": {
+                    "name": "Groep",
+                    "description": "De groep waaraan je wilt toevoegen."
+                },
+                "members": {
+                    "name": "Leden",
+                    "description": "De entiteiten die je aan de groep wilt toevoegen."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Leden uit een groep verwijderen",
+            "description": "Haalt entiteiten uit een groep die via de interface is gemaakt, terwijl Home Assistant draait. Iets opgeven dat niet in de groep zit, doet niets, dus zo ruim je ook een lid op dat niet meer bestaat.",
+            "fields": {
+                "group": {
+                    "name": "Groep",
+                    "description": "De groep waaruit je ze wilt halen."
+                },
+                "members": {
+                    "name": "Leden",
+                    "description": "De entiteiten die je uit de groep wilt verwijderen."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "De leden van een groep instellen",
+            "description": "Vervangt de leden van een groep die via de interface is gemaakt door de opgegeven leden, terwijl Home Assistant draait.",
+            "fields": {
+                "group": {
+                    "name": "Groep",
+                    "description": "De groep die je wilt wijzigen."
+                },
+                "members": {
+                    "name": "Leden",
+                    "description": "De entiteiten die de groep vanaf nu moet bevatten."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Het pictogram van een entiteit instellen",
+            "description": "Stelt in een handomdraai het pictogram van een entiteit (of entiteiten) in. Zet het op null om terug te gaan naar het pictogram dat de integratie eraan geeft.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) waarvan je het pictogram wilt instellen."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het nieuwe pictogram, of null voor het eigen pictogram van de integratie."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Een alias aan een entiteit toevoegen",
+            "description": "Voegt een of meer aliassen toe aan een entiteit (of entiteiten), waarmee spraakassistenten deze kunnen aanroepen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) waaraan je de alias(sen) wilt toevoegen."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias(sen) die je wilt toevoegen."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Een alias van een entiteit verwijderen",
+            "description": "Verwijdert een of meer aliassen van een entiteit (of entiteiten).",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) waarvan je de alias(sen) wilt verwijderen."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias(sen) die je wilt verwijderen."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Aliassen voor een entiteit instellen",
+            "description": "Vervangt de aliassen van een entiteit (of entiteiten). Of de eigen naam van de entiteit als alias telt, blijft zoals het was.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) waarvan je de aliassen wilt instellen."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen die je wilt instellen."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Een categorie aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe categorie aan voor automatiseringen, scripts, scènes of helpers. Geeft de ID van de nieuwe categorie terug.",
+            "fields": {
+                "scope": {
+                    "name": "Bereik",
+                    "description": "Waar de categorie wordt gebruikt."
+                },
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van de categorie die je wilt aanmaken."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Pictogram voor de categorie."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Een categorie bijwerken",
+            "description": "Werkt in een handomdraai een bestaande categorie bij. Alles wat je weglaat, houdt de waarde die het al heeft. Het pictogram kun je wissen door het op null te zetten.",
+            "fields": {
+                "scope": {
+                    "name": "Bereik",
+                    "description": "Waar de categorie wordt gebruikt."
+                },
+                "category_id": {
+                    "name": "Categorie",
+                    "description": "De ID of de naam van de categorie die je wilt bijwerken."
+                },
+                "name": {
+                    "name": "Naam",
+                    "description": "De nieuwe naam voor de categorie."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het nieuwe pictogram voor de categorie."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Een categorie verwijderen",
+            "description": "Verwijdert een categorie. Alles wat erin zat, heeft daarna geen categorie meer.",
+            "fields": {
+                "scope": {
+                    "name": "Bereik",
+                    "description": "Waar de categorie wordt gebruikt."
+                },
+                "category_id": {
+                    "name": "Categorie",
+                    "description": "De ID of de naam van de categorie die je wilt verwijderen."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Een categorie aan een entiteit toevoegen",
+            "description": "Zet een automatisering, script, scène of helper in een categorie. Dit vervangt de categorie waarin het eerst zat, want elk kan maar in één categorie zitten.",
+            "fields": {
+                "category_id": {
+                    "name": "Categorie",
+                    "description": "De ID of de naam van de categorie."
+                },
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De automatisering(en), script(s), scène(s) of helper(s) die je in de categorie wilt zetten."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Een categorie van een entiteit verwijderen",
+            "description": "Haalt een automatisering, script, scène of helper uit een categorie. Alles in een andere categorie blijft met rust.",
+            "fields": {
+                "category_id": {
+                    "name": "Categorie",
+                    "description": "De ID of de naam van de categorie."
+                },
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De automatisering(en), script(s), scène(s) of helper(s) die je uit de categorie wilt halen."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Een invoerselectie aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe invoerselectie-helper (keuzelijst) aan. Geeft de entiteits-ID van de nieuwe invoerselectie terug.",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van de nieuwe invoerselectie."
+                },
+                "input_select_id": {
+                    "name": "Entiteits-ID van invoerselectie",
+                    "description": "De entiteits-ID voor de nieuwe invoerselectie. Het voorvoegsel input_select. wordt automatisch toegevoegd. Als je niets opgeeft, wordt de entiteits-ID op basis van de naam gegenereerd."
+                },
+                "options": {
+                    "name": "Opties",
+                    "description": "De opties om uit te kiezen. Elke optie mag er maar één keer in staan."
+                },
+                "initial": {
+                    "name": "Beginoptie",
+                    "description": "De optie waarmee het begint; dit moet een van de opties zijn. Als je dit weglaat, houdt het de optie die het had voordat Home Assistant herstartte."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het pictogram voor de nieuwe invoerselectie."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Een invoerselectie verwijderen",
+            "description": "Verwijdert invoerselectie-helpers die in de gebruikersinterface of met de actie 'Een invoerselectie aanmaken' zijn gemaakt. Invoerselecties die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De invoerselectie(s) die je wilt verwijderen."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Een teller aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe tellerhelper aan. Geeft de entiteits-ID van de nieuwe teller terug.",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van de nieuwe teller."
+                },
+                "counter_id": {
+                    "name": "Entiteits-ID van teller",
+                    "description": "De entiteits-ID voor de nieuwe teller. Het voorvoegsel counter. wordt automatisch toegevoegd. Als je niets opgeeft, wordt de entiteits-ID op basis van de naam gegenereerd."
+                },
+                "initial": {
+                    "name": "Beginwaarde",
+                    "description": "De waarde waarop de teller begint en waarnaar hij teruggaat bij een reset."
+                },
+                "minimum": {
+                    "name": "Minimum",
+                    "description": "De laagste waarde die de teller kan bereiken. Laat leeg voor geen limiet."
+                },
+                "maximum": {
+                    "name": "Maximum",
+                    "description": "De hoogste waarde die de teller kan bereiken. Laat leeg voor geen limiet."
+                },
+                "step": {
+                    "name": "Stap",
+                    "description": "Met hoeveel de teller elke keer omhoog of omlaag gaat."
+                },
+                "restore": {
+                    "name": "Herstellen",
+                    "description": "Herstel de waarde van de teller wanneer Home Assistant start, in plaats van opnieuw te beginnen bij de beginwaarde."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het pictogram voor de nieuwe teller."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Een teller verwijderen",
+            "description": "Verwijdert tellerhelpers die in de gebruikersinterface of met de actie 'Een teller aanmaken' zijn gemaakt. Tellers die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De teller(s) die je wilt verwijderen."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Een invoerboolean aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe invoerboolean-helper (schakelaar) aan. Geeft de entiteits-ID van de nieuwe invoerboolean terug.",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van de nieuwe invoerboolean."
+                },
+                "input_boolean_id": {
+                    "name": "Entiteits-ID van invoerboolean",
+                    "description": "De entiteits-ID voor de nieuwe invoerboolean. Het voorvoegsel input_boolean. wordt automatisch toegevoegd. Als je niets opgeeft, wordt de entiteits-ID op basis van de naam gegenereerd."
+                },
+                "initial": {
+                    "name": "Beginwaarde",
+                    "description": "De waarde waarmee het begint. Als je dit weglaat, houdt het de waarde die het had voordat Home Assistant herstartte."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het pictogram voor de nieuwe invoerboolean."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Een invoerboolean verwijderen",
+            "description": "Verwijdert invoerboolean-helpers die in de gebruikersinterface of met de actie 'Een invoerboolean aanmaken' zijn gemaakt. Invoerbooleans die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De invoerboolean(s) die je wilt verwijderen."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Een invoertekst aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe invoertekst-helper aan. Geeft de entiteits-ID van de nieuwe invoertekst terug.",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van de nieuwe invoertekst."
+                },
+                "input_text_id": {
+                    "name": "Entiteits-ID van invoertekst",
+                    "description": "De entiteits-ID voor de nieuwe invoertekst. Het voorvoegsel input_text. wordt automatisch toegevoegd. Als je niets opgeeft, wordt de entiteits-ID op basis van de naam gegenereerd."
+                },
+                "initial": {
+                    "name": "Beginwaarde",
+                    "description": "De tekst waarmee het begint. Als je dit weglaat, houdt het de tekst die het had voordat Home Assistant herstartte."
+                },
+                "min": {
+                    "name": "Minimale lengte",
+                    "description": "De minimale lengte van de tekst."
+                },
+                "max": {
+                    "name": "Maximale lengte",
+                    "description": "De maximale lengte van de tekst."
+                },
+                "pattern": {
+                    "name": "Patroon",
+                    "description": "Een reguliere expressie waaraan de tekst moet voldoen."
+                },
+                "mode": {
+                    "name": "Modus",
+                    "description": "Toon de tekst zoals hij is, of verberg hem zoals een wachtwoord."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het pictogram voor de nieuwe invoertekst."
+                },
+                "unit_of_measurement": {
+                    "name": "Meeteenheid",
+                    "description": "De eenheid die naast de tekst wordt getoond."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Een invoertekst verwijderen",
+            "description": "Verwijdert invoertekst-helpers die in de gebruikersinterface of met de actie 'Een invoertekst aanmaken' zijn gemaakt. Invoerteksten die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De invoertekst(en) die je wilt verwijderen."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Een invoerknop aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe invoerknop-helper aan. Geeft de entiteits-ID van de nieuwe invoerknop terug.",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van de nieuwe invoerknop."
+                },
+                "input_button_id": {
+                    "name": "Entiteits-ID van invoerknop",
+                    "description": "De entiteits-ID voor de nieuwe invoerknop. Het voorvoegsel input_button. wordt automatisch toegevoegd. Als je niets opgeeft, wordt de entiteits-ID op basis van de naam gegenereerd."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het pictogram voor de nieuwe invoerknop."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Een invoerknop verwijderen",
+            "description": "Verwijdert invoerknop-helpers die in de gebruikersinterface of met de actie 'Een invoerknop aanmaken' zijn gemaakt. Invoerknoppen die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De invoerknop(pen) die je wilt verwijderen."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Een invoerdatum/-tijd aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe invoerdatum/-tijd-helper aan, met een datum, een tijd of allebei. Geeft de entiteits-ID van de nieuwe invoerdatum/-tijd terug.",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van de nieuwe invoerdatum/-tijd."
+                },
+                "input_datetime_id": {
+                    "name": "Entiteits-ID van invoerdatum/-tijd",
+                    "description": "De entiteits-ID voor de nieuwe invoerdatum/-tijd. Het voorvoegsel input_datetime. wordt automatisch toegevoegd. Als je niets opgeeft, wordt de entiteits-ID op basis van de naam gegenereerd."
+                },
+                "has_date": {
+                    "name": "Heeft een datum",
+                    "description": "Of het een datum bevat. Datum of tijd moet aan staan, of allebei."
+                },
+                "has_time": {
+                    "name": "Heeft een tijd",
+                    "description": "Of het een tijd bevat. Datum of tijd moet aan staan, of allebei."
+                },
+                "initial": {
+                    "name": "Beginwaarde",
+                    "description": "De datum en/of tijd waarmee het begint, zoals 2026-12-31, 08:30:00 of 2026-12-31 08:30:00. Als je dit weglaat, houdt het de waarde die het had voordat Home Assistant herstartte."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het pictogram voor de nieuwe invoerdatum/-tijd."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Een invoerdatum/-tijd verwijderen",
+            "description": "Verwijdert invoerdatum/-tijd-helpers die in de gebruikersinterface of met de actie 'Een invoerdatum/-tijd aanmaken' zijn gemaakt. Invoerdatum/-tijden die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De invoerdatum/-tijd(en) die je wilt verwijderen."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Problemen opsommen",
+            "description": "Somt de problemen op die nu in Home Assistant Reparaties staan, met hun titels, zodat een automatisering erop kan reageren of een dashboard ze kan tonen.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Genegeerde meenemen",
+                    "description": "Toon ook de problemen die zijn genegeerd."
+                },
+                "domain": {
+                    "name": "Domein",
+                    "description": "Toon alleen de problemen van deze integraties."
+                },
+                "severity": {
+                    "name": "Ernst",
+                    "description": "Toon alleen de problemen met deze ernst."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Een timer aanmaken",
+            "description": "Maakt in een handomdraai een nieuwe timerhelper aan. Geeft de entiteits-ID van de nieuwe timer terug.",
+            "fields": {
+                "name": {
+                    "name": "Naam",
+                    "description": "De naam van de nieuwe timer."
+                },
+                "timer_id": {
+                    "name": "Entiteits-ID van timer",
+                    "description": "De entiteits-ID voor de nieuwe timer. Het voorvoegsel timer. wordt automatisch toegevoegd. Als je niets opgeeft, wordt de entiteits-ID op basis van de naam gegenereerd."
+                },
+                "duration": {
+                    "name": "Duur",
+                    "description": "Hoe lang de timer loopt als hij wordt gestart."
+                },
+                "restore": {
+                    "name": "Herstellen",
+                    "description": "Herstel de status van de timer wanneer Home Assistant start, zodat een lopende timer blijft lopen na een herstart."
+                },
+                "icon": {
+                    "name": "Icoon",
+                    "description": "Het pictogram voor de nieuwe timer."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Een timer verwijderen",
+            "description": "Verwijdert timerhelpers die in de gebruikersinterface of met de actie 'Een timer aanmaken' zijn gemaakt. Timers die in YAML zijn ingesteld, kan Spook niet verwijderen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit-ID",
+                    "description": "De timer(s) die je wilt verwijderen."
+                }
+            }
         }
     },
     "conditions": {
@@ -1815,6 +2345,44 @@
             },
             "name": "Entiteit viel stil",
             "description": "Wordt geactiveerd wanneer er een tijd niets naar een entiteit is geschreven, wat een apparaat betrapt dat stilletjes is overleden in plaats van onbeschikbaar te worden."
+        },
+        "debounce": {
+            "name": "Zodra het tot rust komt",
+            "description": "Gaat af zodra een trigger een tijdje niet meer is afgegaan, zodat een reeks ervan als één binnenkomt. Een bewegingssensor meldt beweging niet één keer, maar twintig keer.",
+            "fields": {
+                "triggers": {
+                    "name": "Triggers",
+                    "description": "De triggers waarop je wilt wachten tot ze stil zijn. Als een ervan afgaat, begint een reeks, en elke volgende keer houdt die reeks in stand, zodat meerdere triggers samen worden genomen in plaats van één voor één."
+                },
+                "for": {
+                    "name": "Gedurende",
+                    "description": "Hoe lang het stil moet zijn geweest voordat dit afgaat. Elke keer dat er iets afgaat, begint het wachten opnieuw, dus iets dat nooit ophoudt met afgaan, wordt nooit gemeld."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Al deze dingen zijn gebeurd",
+            "description": "Gaat af wanneer elk van meerdere triggers binnen hetzelfde tijdvenster is afgegaan, in willekeurige volgorde. De eigen triggers van Home Assistant zijn een lijst waarbij één ervan genoeg is; dit is de andere variant.",
+            "fields": {
+                "triggers": {
+                    "name": "Triggers",
+                    "description": "De triggers die allemaal moeten zijn afgegaan. De volgorde maakt niet uit, en een trigger die opnieuw afgaat, vervangt zijn eerdere beurt in plaats van dubbel te tellen."
+                },
+                "within": {
+                    "name": "Binnen",
+                    "description": "Hoe dicht ze op elkaar moeten liggen. Het venster schuift mee, dus een trigger die langer geleden is afgegaan, wordt vergeten terwijl de andere blijven meetellen."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entiteit is terug",
+            "description": "Gaat af wanneer een entiteit terugkomt nadat deze een tijdje niet beschikbaar was, zodat een herstartende router er niet uitziet alsof alles in huis herstelt.",
+            "fields": {
+                "for": {
+                    "name": "Gedurende",
+                    "description": "Hoe lang de entiteit weg moet zijn geweest voordat terugkomen telt. Alles wat korter is, is een flikkering: het herladen van een integratie zet al haar entiteiten binnen een seconde op niet beschikbaar en weer terug."
+                }
+            }
         }
     },
     "selector": {
