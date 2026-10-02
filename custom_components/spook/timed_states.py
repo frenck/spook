@@ -175,6 +175,18 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
             for entity_id, until in snoozes.items()
         }
         await self._store.async_save(taken_over)
+
+        # Home Assistant logs a failed write rather than raising it, so what
+        # landed is read back rather than assumed. Removing the old file on the
+        # strength of having asked would, on a full disk say, leave no copy at
+        # all, and every snoozed automation off for good after the next
+        # restart. Kept, the old file is simply taken over again next time.
+        written = await Store[dict[str, dict[str, str]]](
+            self._hass, STORAGE_VERSION, STORAGE_KEY
+        ).async_load()
+        if written != taken_over:
+            return taken_over
+
         await legacy.async_remove()
 
         return taken_over

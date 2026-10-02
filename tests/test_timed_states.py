@@ -1706,6 +1706,38 @@ async def test_taking_over_the_old_store_writes_before_it_deletes(
     timed_states.async_stop()
 
 
+async def test_the_old_store_stays_until_the_new_one_is_written(
+    hass: HomeAssistant,
+    hass_storage: dict,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A write that did not land leaves the old file for another try.
+
+    Home Assistant logs a failed write rather than raising it. Removing the
+    old file regardless would leave the snoozes in no file at all.
+    """
+    until = dt_util.utcnow() + AN_HOUR
+    hass_storage[LEGACY_STORAGE_KEY] = {
+        "version": 1,
+        "data": {SLEEPER: until.isoformat()},
+    }
+    await _automations(hass)
+
+    async def _write_that_went_nowhere(_self: Store, _data: dict) -> None:
+        """Fail the way Home Assistant does: quietly."""
+
+    monkeypatch.setattr(Store, "async_save", _write_that_went_nowhere)
+
+    hass.set_state(CoreState.not_running)
+    timed_states = TimedStates(hass)
+    await timed_states.async_start()
+
+    assert LEGACY_STORAGE_KEY in hass_storage, "the only copy was thrown away"
+    assert timed_states.async_until(SLEEPER) is not None
+
+    timed_states.async_stop()
+
+
 async def test_records_written_before_the_other_direction_existed_still_read(
     hass: HomeAssistant,
     hass_storage: dict,
