@@ -26,6 +26,12 @@ _SAVE_DELAY = 5
 
 DATA_DISMISSALS: HassKey[Dismissals] = HassKey("spook_dismissals")
 
+# Where the orphaned statistics repair kept these before there was one place
+# for all of them. Its single issue is filed under its own name.
+_LEGACY_KEPT_STATISTICS_KEY = f"{DOMAIN}.kept_statistics"
+_LEGACY_KEPT_STATISTICS_VERSION = 1
+_ORPHANED_STATISTICS = "orphaned_statistics"
+
 
 @dataclass(frozen=True)
 class _Offered:
@@ -111,12 +117,21 @@ class Dismissals:
         if (offered := self._offered.get(issue_id)) is None:
             return
 
-        owners = self._dismissed.setdefault(offered.repair, {})
-        dismissed = owners.setdefault(offered.owner, set())
-        if offered.references <= dismissed:
+        self.async_dismiss(offered.repair, offered.owner, offered.references)
+
+    @callback
+    def async_dismiss(
+        self,
+        repair: str,
+        owner: str,
+        references: Iterable[str],
+    ) -> None:
+        """Write down that these findings are to be left alone."""
+        dismissed = self._dismissed.setdefault(repair, {}).setdefault(owner, set())
+        if set(references) <= dismissed:
             return
 
-        dismissed |= offered.references
+        dismissed.update(references)
         self._async_schedule_save()
 
     @callback
@@ -175,6 +190,11 @@ class Dismissals:
         else:
             self._taken_back.add(issue_id)
 
+    async def async_write_now(self) -> None:
+        """Write it down without waiting."""
+        if self._store is not None:
+            await self._store.async_save(self._data_to_save())
+
     @callback
     def _async_schedule_save(self) -> None:
         """Write it down, soon."""
@@ -204,6 +224,32 @@ def async_get_dismissals(hass: HomeAssistant) -> Dismissals:
     return dismissals
 
 
+async def _async_take_over_kept_statistics(
+    hass: HomeAssistant,
+    dismissals: Dismissals,
+) -> None:
+    """Carry over the statistics kept the way the orphaned statistics repair used to.
+
+    It wrote them down in a store of its own, and then let the issue go, so
+    nothing but that file still knows somebody said to keep them.
+    """
+    legacy: Store[dict[str, list[str]]] = Store(
+        hass, _LEGACY_KEPT_STATISTICS_VERSION, _LEGACY_KEPT_STATISTICS_KEY
+    )
+    if (stored := await legacy.async_load()) is None:
+        return
+
+    if statistic_ids := stored.get("statistic_ids"):
+        dismissals.async_dismiss(
+            _ORPHANED_STATISTICS, _ORPHANED_STATISTICS, statistic_ids
+        )
+
+    # On disk before the old file goes, so there is no moment where neither
+    # holds it.
+    await dismissals.async_write_now()
+    await legacy.async_remove()
+
+
 async def async_setup_dismissals(hass: HomeAssistant) -> CALLBACK_TYPE:
     """Load what was ignored before, and follow what gets ignored from now on.
 
@@ -224,6 +270,7 @@ async def async_setup_dismissals(hass: HomeAssistant) -> CALLBACK_TYPE:
         dismissals = hass.data[DATA_DISMISSALS] = Dismissals(
             hass, store, await store.async_load()
         )
+        await _async_take_over_kept_statistics(hass, dismissals)
 
     return hass.bus.async_listen(
         ir.EVENT_REPAIRS_ISSUE_REGISTRY_UPDATED,

@@ -329,3 +329,29 @@ async def test_ignoring_an_issue_that_just_went_still_counts(
     await _look(repair, {"light.a"})
 
     assert _the_one_issue(issue_registry).dismissed_version is not None
+
+
+async def test_statistics_kept_the_old_way_are_carried_over(
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test statistics kept in the old store of their own are still kept.
+
+    That store held them after the issue was gone, so nothing else knows.
+    """
+    hass_storage["spook.kept_statistics"] = {
+        "version": 1,
+        "minor_version": 1,
+        "key": "spook.kept_statistics",
+        "data": {"statistic_ids": ["sensor.ghost", "sensor.gone"]},
+    }
+
+    await _set_up(hass)
+
+    assert hass.data[DATA_DISMISSALS].async_dismissed(
+        "orphaned_statistics", "orphaned_statistics"
+    ) == {"sensor.ghost", "sensor.gone"}
+    assert hass_storage[STORAGE_KEY]["data"] == {
+        "orphaned_statistics": {"orphaned_statistics": ["sensor.ghost", "sensor.gone"]}
+    }
+    assert "spook.kept_statistics" not in hass_storage
