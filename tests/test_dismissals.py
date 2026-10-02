@@ -15,7 +15,11 @@ from homeassistant.helpers import issue_registry as ir
 from homeassistant.util import dt as dt_util
 
 from custom_components.spook.const import DOMAIN
-from custom_components.spook.dismissals import STORAGE_KEY, async_setup_dismissals
+from custom_components.spook.dismissals import (
+    DATA_DISMISSALS,
+    STORAGE_KEY,
+    async_setup_dismissals,
+)
 from custom_components.spook.repairs import AbstractSpookRepair, _RemoveOrIgnoreFixFlow
 
 if TYPE_CHECKING:
@@ -32,11 +36,13 @@ class HauntedScriptRepair(AbstractSpookRepair):
     automatically_clean_up_issues = True
 
     findings: set[str]
+    name: str
 
     def __init__(self, hass: HomeAssistant) -> None:
         """Start with nothing broken."""
         super().__init__(hass)
         self.findings = set()
+        self.name = "Haunted"
 
     async def async_inspect(self) -> None:
         """Report the findings, if there are any."""
@@ -44,7 +50,10 @@ class HauntedScriptRepair(AbstractSpookRepair):
             self.async_create_issue(
                 issue_id="script.haunted",
                 references=self.findings,
-                translation_placeholders={"entities": ", ".join(sorted(self.findings))},
+                translation_placeholders={
+                    "entities": ", ".join(sorted(self.findings)),
+                    "name": self.name,
+                },
             )
 
 
@@ -101,7 +110,7 @@ async def test_a_shorter_list_stays_ignored(
     await _look(repair, {"light.a"})
 
     issue = _the_one_issue(issue_registry)
-    assert issue.translation_placeholders == {"entities": "light.a"}
+    assert issue.translation_placeholders == {"entities": "light.a", "name": "Haunted"}
     assert issue.dismissed_version is not None, "light.a came back up"
 
 
@@ -160,7 +169,9 @@ async def test_ignoring_survives_a_restart(
         "mock_repair": {"script.haunted": ["light.a", "light.b"]}
     }
 
+    # A restart: nothing in memory, and nothing left on the issues either.
     unload()
+    hass.data.pop(DATA_DISMISSALS)
     for issue in _issues(issue_registry):
         ir.async_delete_issue(hass, DOMAIN, issue.issue_id)
     await _set_up(hass)
@@ -168,6 +179,85 @@ async def test_ignoring_survives_a_restart(
     await _look(HauntedScriptRepair(hass), {"light.b"})
 
     assert _the_one_issue(issue_registry).dismissed_version is not None
+
+
+async def test_a_reload_before_it_is_written_loses_nothing(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    hass_storage: dict[str, Any],
+) -> None:
+    """Test reloading Spook inside the save delay keeps the latest ignore.
+
+    Writing waits a few seconds. Reading the disk again on reload would start
+    from before the ignore, and the old copy writing late would race the new.
+    """
+    unload = await _set_up(hass)
+    repair = HauntedScriptRepair(hass)
+    await _look(repair, {"light.a", "light.b"})
+    await _ignore_what_is_up(hass, issue_registry)
+
+    unload()
+    for issue in _issues(issue_registry):
+        ir.async_delete_issue(hass, DOMAIN, issue.issue_id)
+    await _set_up(hass)
+    await _look(HauntedScriptRepair(hass), {"light.a"})
+
+    assert _the_one_issue(issue_registry).dismissed_version is not None
+
+    async_fire_time_changed(hass, dt_util.utcnow() + timedelta(minutes=1))
+    await hass.async_block_till_done()
+    assert hass_storage[STORAGE_KEY]["data"] == {
+        "mock_repair": {"script.haunted": ["light.a", "light.b"]}
+    }
+
+
+async def test_a_change_in_the_text_is_not_taking_it_back(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test rewriting an issue's text leaves what was ignored alone.
+
+    Home Assistant calls a renamed dashboard in an issue's text an "update",
+    the same word it uses for somebody taking their ignore back.
+    """
+    await _set_up(hass)
+    repair = HauntedScriptRepair(hass)
+    await _look(repair, {"light.a"})
+    await _ignore_what_is_up(hass, issue_registry)
+    await _look(repair, {"light.a", "light.b"})
+
+    repair.name = "Renamed"
+    await _look(repair, {"light.a", "light.b"})
+    await _look(repair, {"light.a"})
+
+    assert _the_one_issue(issue_registry).dismissed_version is not None
+
+
+async def test_taking_it_back_right_after_a_start_counts(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test un-ignoring before Spook has looked again is not undone.
+
+    In the minutes after a start an issue can be up from before, with Spook
+    not yet having said what it is about. Taking the ignore back then is
+    still somebody's choice, and the next look should not overrule it.
+    """
+    unload = await _set_up(hass)
+    repair = HauntedScriptRepair(hass)
+    await _look(repair, {"light.a"})
+    await _ignore_what_is_up(hass, issue_registry)
+
+    unload()
+    hass.data.pop(DATA_DISMISSALS)
+    await _set_up(hass)
+    ir.async_ignore_issue(
+        hass, DOMAIN, _the_one_issue(issue_registry).issue_id, ignore=False
+    )
+
+    await _look(HauntedScriptRepair(hass), {"light.a"})
+
+    assert _the_one_issue(issue_registry).dismissed_version is None
 
 
 async def test_taking_the_ignore_back_is_heard(

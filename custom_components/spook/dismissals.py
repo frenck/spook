@@ -66,6 +66,25 @@ class Dismissals:
         }
         self._offered: dict[str, _Offered] = {}
 
+        # Which issues are ignored right now, so that a change can be told
+        # from an update. Home Assistant says "update" for both somebody
+        # ignoring an issue and a dashboard being renamed in its text.
+        self._ignored = {
+            issue_id
+            for (domain, issue_id), issue in ir.async_get(hass).issues.items()
+            if domain == DOMAIN and issue.dismissed_version is not None
+        }
+
+        # Issues somebody stopped ignoring before Spook had said again what
+        # they were about, as happens in the minutes after a start. Taken
+        # back for real once it does.
+        self._taken_back: set[str] = set()
+
+    @property
+    def is_written_down(self) -> bool:
+        """Return whether this is the copy that goes to disk."""
+        return self._store is not None
+
     @callback
     def async_dismissed(self, repair: str, owner: str) -> set[str]:
         """Return what somebody ignored in this one, for this repair."""
@@ -81,6 +100,10 @@ class Dismissals:
     ) -> None:
         """Remember what an issue is about, so ignoring it can be written down."""
         self._offered[issue_id] = _Offered(repair, owner, frozenset(references))
+
+        if issue_id in self._taken_back:
+            self._taken_back.discard(issue_id)
+            self.async_undismiss_offered(issue_id)
 
     @callback
     def async_dismiss_offered(self, issue_id: str) -> None:
@@ -118,13 +141,18 @@ class Dismissals:
         self,
         event: Event[ir.EventIssueRegistryUpdatedData],
     ) -> None:
-        """Follow somebody ignoring an issue, or taking that back."""
+        """Follow somebody ignoring an issue, or taking that back.
+
+        Only a change in whether it is ignored counts. Any other update is
+        Spook rewriting the text, and reading that as somebody's choice would
+        throw away what they ignored the first time a name in it changed.
+        """
+        if event.data["domain"] != DOMAIN:
+            return
+
         issue_id = event.data["issue_id"]
-        if (
-            event.data["action"] != "update"
-            or event.data["domain"] != DOMAIN
-            or issue_id not in self._offered
-        ):
+        if event.data["action"] == "remove":
+            self._ignored.discard(issue_id)
             return
 
         if (
@@ -132,10 +160,20 @@ class Dismissals:
         ) is None:
             return
 
-        if issue.dismissed_version is not None:
+        ignored = issue.dismissed_version is not None
+        if ignored == (issue_id in self._ignored):
+            return
+
+        if ignored:
+            self._ignored.add(issue_id)
             self.async_dismiss_offered(issue_id)
-        else:
+            return
+
+        self._ignored.discard(issue_id)
+        if issue_id in self._offered:
             self.async_undismiss_offered(issue_id)
+        else:
+            self._taken_back.add(issue_id)
 
     @callback
     def _async_schedule_save(self) -> None:
@@ -171,23 +209,23 @@ async def async_setup_dismissals(hass: HomeAssistant) -> CALLBACK_TYPE:
 
     Before any repair looks, because the first thing a repair does with a
     finding is ask whether somebody already said to leave it alone.
-    """
-    store: Store[dict[str, dict[str, list[str]]]] = Store(
-        hass, STORAGE_VERSION, STORAGE_KEY
-    )
-    dismissals = hass.data[DATA_DISMISSALS] = Dismissals(
-        hass, store, await store.async_load()
-    )
 
-    unsubscribe = hass.bus.async_listen(
+    Loaded once and then kept, reloads included. Writing is put off for a few
+    seconds, and a reload inside that window that read the disk again would
+    start from before the latest ignore. Worse, the old and the new copy
+    would each write their own idea of it later, and whichever went last
+    would quietly throw away the other's.
+    """
+    dismissals = hass.data.get(DATA_DISMISSALS)
+    if dismissals is None or not dismissals.is_written_down:
+        store: Store[dict[str, dict[str, list[str]]]] = Store(
+            hass, STORAGE_VERSION, STORAGE_KEY
+        )
+        dismissals = hass.data[DATA_DISMISSALS] = Dismissals(
+            hass, store, await store.async_load()
+        )
+
+    return hass.bus.async_listen(
         ir.EVENT_REPAIRS_ISSUE_REGISTRY_UPDATED,
         dismissals.async_issue_registry_updated,
     )
-
-    @callback
-    def _unload() -> None:
-        """Stop following, and let go of what was loaded."""
-        unsubscribe()
-        hass.data.pop(DATA_DISMISSALS, None)
-
-    return _unload
