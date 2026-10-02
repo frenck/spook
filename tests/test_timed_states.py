@@ -1738,6 +1738,36 @@ async def test_the_old_store_stays_until_the_new_one_is_written(
     timed_states.async_stop()
 
 
+async def test_an_old_store_left_behind_goes_once_the_new_one_counts(
+    hass: HomeAssistant,
+    hass_storage: dict,
+) -> None:
+    """An old file a take-over could not confirm is cleared up later.
+
+    Once the new store has records, those are the ones that count, and the
+    old file would otherwise lie about for good.
+    """
+    until = dt_util.utcnow() + AN_HOUR
+    hass_storage[STORAGE_KEY] = {
+        "version": STORAGE_VERSION,
+        "data": {SLEEPER: _record(until)},
+    }
+    hass_storage[LEGACY_STORAGE_KEY] = {
+        "version": 1,
+        "data": {SLEEPER: (until - AN_HOUR).isoformat()},
+    }
+    await _automations(hass)
+
+    hass.set_state(CoreState.not_running)
+    timed_states = TimedStates(hass)
+    await timed_states.async_start()
+
+    assert LEGACY_STORAGE_KEY not in hass_storage
+    assert timed_states.async_until(SLEEPER) == until
+
+    timed_states.async_stop()
+
+
 async def test_records_written_before_the_other_direction_existed_still_read(
     hass: HomeAssistant,
     hass_storage: dict,

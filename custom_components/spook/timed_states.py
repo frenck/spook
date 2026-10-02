@@ -160,10 +160,15 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
         every snooze made before the upgrade is silently dropped: automations
         left off with nothing to turn them back on.
         """
+        legacy: Store[dict[str, str]] = Store(self._hass, 1, LEGACY_STORAGE_KEY)
+
         if (stored := await self._store.async_load()) is not None:
+            # The records are here, and they are the ones that count. An old
+            # file still lying about is one a take-over could not confirm,
+            # since written over by a later save, and it goes now.
+            await legacy.async_remove()
             return stored
 
-        legacy: Store[dict[str, str]] = Store(self._hass, 1, LEGACY_STORAGE_KEY)
         if (snoozes := await legacy.async_load()) is None:
             return {}
 
