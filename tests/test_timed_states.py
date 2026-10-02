@@ -23,6 +23,7 @@ from homeassistant.core import Context, CoreState, State, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.restore_state import RestoreEntity
 from homeassistant.helpers.storage import Store
 from homeassistant.setup import async_setup_component
 from homeassistant.util import dt as dt_util
@@ -760,31 +761,39 @@ async def test_a_state_that_goes_while_the_entity_stays_keeps_the_snooze(
     timed_states.async_stop()
 
 
-async def test_renaming_an_automation_leaves_no_record_under_either_name(
+async def test_renaming_an_automation_leaves_no_record_under_the_old_name(
     hass: HomeAssistant,
     entity_registry: er.EntityRegistry,
 ) -> None:
     """A snooze follows the automation, not the name it had that day.
 
-    Measured rather than assumed: Home Assistant brings a renamed automation
-    back on, because the new entity ID has nothing to restore from. So the
-    snooze ends there anyway, the way any other turning-on ends one. What the
-    registry buys is that nothing stays filed under the old name, counting
-    down towards an entity nobody uses.
+    What happens after the rename is Home Assistant's call. Before 2026.11 a
+    renamed automation comes back on, because the new entity ID has nothing to
+    restore from, and the snooze ends the way any other turning-on ends one.
+    From 2026.11 the restored state moves with the rename, so the automation
+    stays off and the snooze carries on under its new name. Either way nothing
+    stays filed under the old name, counting down towards an entity nobody uses.
     """
     await _automations(hass)
     timed_states = await _register(hass)
 
     await timed_states.async_hold(SLEEPER, AN_HOUR, STATE_OFF)
-    assert timed_states.async_until(SLEEPER) is not None
+    until = timed_states.async_until(SLEEPER)
+    assert until is not None
 
     renamed = "automation.now_called_this"
     entity_registry.async_update_entity(SLEEPER, new_entity_id=renamed)
     await hass.async_block_till_done()
 
-    assert hass.states.get(renamed).state == "on"
     assert timed_states.async_until(SLEEPER) is None, "a record left under the old name"
-    assert timed_states.async_until(renamed) is None
+
+    # The hook Home Assistant 2026.11 added to carry restored state across a rename.
+    if hasattr(RestoreEntity, "async_internal_entity_id_changed"):
+        assert hass.states.get(renamed).state == STATE_OFF
+        assert timed_states.async_until(renamed) == until, "the snooze fell off"
+    else:
+        assert hass.states.get(renamed).state == STATE_ON
+        assert timed_states.async_until(renamed) is None
 
     timed_states.async_stop()
 

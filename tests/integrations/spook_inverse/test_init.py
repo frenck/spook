@@ -86,7 +86,7 @@ async def test_async_migrate_entry_removes_helper_from_source_device(
         identifiers={("switch", "source-device")},
     )
     assert helper_device.id != device.id
-    assert helper_device.config_entries == {migrated_entry.entry_id}
+    assert helper_device.config_entry_id == migrated_entry.entry_id
 
     assert await hass.config_entries.async_setup(migrated_entry.entry_id)
     await hass.async_block_till_done()
