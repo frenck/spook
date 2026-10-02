@@ -282,7 +282,8 @@
                 "abort": {
                     "issue_ignored": "Spook vas od sada neće obaveštavati o ovoj grupi.",
                     "not_editable": "Ova grupa je podešena u YAML-u, tako da Spook ne može da je izmeni. Umesto toga, ažurirajte grupu u svojoj konfiguraciji.",
-                    "manage": "Ovom grupom možete sami upravljati na stranici [Pomoćnici](/config/helpers)."
+                    "manage": "Ovom grupom možete sami upravljati na stranici [Pomoćnici](/config/helpers).",
+                    "changed": "Članovi navedeni u ovoj popravci su se vratili ili promenili otkako ih je Spook proverio, tako da ništa nije uklonjeno iz grupe. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
                 }
             }
         },
@@ -399,7 +400,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook vas od sada neće obaveštavati o ovom pomoćniku.",
-                    "manage": "Ovog pomoćnika možete sami upravljati na stranici [Pomoćnici](/config/helpers)."
+                    "manage": "Ovog pomoćnika možete sami upravljati na stranici [Pomoćnici](/config/helpers).",
+                    "changed": "Izvori ovog pomoćnika su se promenili otkako ih je Spook proverio, tako da pomoćnik nije menjan. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
                 }
             },
             "title": "Nepoznati izvorni entiteti u pomoćniku: {helper}"
@@ -420,7 +422,8 @@
                 "abort": {
                     "issue_ignored": "Spook vas od sada neće obaveštavati o ovom pomoćniku.",
                     "manage": "Ovim pomoćnikom možete sami upravljati na stranici  [Pomoćnici ](/config/helpers).",
-                    "too_few_members": "Pomoćnik za minimum/maksimum zahteva najmanje dva člana, pa bi uklanjanje nedostajućih ostavilo premalo. Ponovo konfigurišite ili uklonite pomoćnika sami na stranici [Pomoćnici](/config/helpers)."
+                    "too_few_members": "Pomoćnik za minimum/maksimum zahteva najmanje dva člana, pa bi uklanjanje nedostajućih ostavilo premalo. Ponovo konfigurišite ili uklonite pomoćnika sami na stranici [Pomoćnici](/config/helpers).",
+                    "changed": "Članovi navedeni u ovoj popravci su se vratili ili promenili otkako ih je Spook proverio, tako da ništa nije uklonjeno iz pomoćnika. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
                 }
             },
             "title": "Nepoznati članovi u min/max pomoćniku: {helper}"
@@ -441,7 +444,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook vas od sada neće obaveštavati o ovoj prostoriji.",
-                    "manage": "Ovom prostorijom možete sami upravljati na stranici [Prostorije](/config/areas/dashboard)."
+                    "manage": "Ovom prostorijom možete sami upravljati na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ova prostorija se ponovo koristi otkako ju je Spook proverio: ili sadrži nešto ili je koristi neka automatizacija ili skripta. Zbog toga nije menjana. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke"
                 }
             }
         },
@@ -461,7 +465,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook vas od sada neće obaveštavati o ovom spratu.",
-                    "manage": "Ovim spratom možete sami upravljati na stranici [Prostorije](/config/areas/dashboard)."
+                    "manage": "Ovim spratom možete sami upravljati na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovaj sprat se ponovo koristi otkako ga je Spook proverio: na njemu se nalazi neka prostorija ili ga koristi neka automatizacija ili skripta. Zbog toga nije menjan. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
                 }
             }
         },
@@ -501,7 +506,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook vas od sada neće obaveštavati o ovoj oznaci.",
-                    "manage": "Ovom oznakom možete upravljati sami na stranici [Oznake](/config/labels)."
+                    "manage": "Ovom oznakom možete upravljati sami na stranici [Oznake](/config/labels).",
+                    "changed": "Ova oznaka se ponovo koristi otkako ju je Spook proverio: ili je dodeljena nečemu ili je koristi neka automatizacija ili skripta. Zbog toga nije menjana. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
                 }
             },
             "title": "Neiskorišćena oznaka: {label}"
@@ -612,7 +618,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
-                    "manage": "• Možete izabrati drugi senzor u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard)."
+                    "manage": "• Možete izabrati drugi senzor u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovi senzori su ponovo dostupni ili podešavanja sada ukazuju na drugu lokaciju otkako ih je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
                 }
             },
             "title": "Nepoznat {sensors} senzor za prostoriju: {area}"
