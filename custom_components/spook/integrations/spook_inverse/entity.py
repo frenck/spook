@@ -39,7 +39,13 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
     ) -> None:
         """Initialize an inverse entity."""
         super().__init__()
-        self._entity_id = config_entry.options[CONF_ENTITY_ID]
+        # The source can be stored as its entity registry ID, which the state
+        # machine knows nothing about. Following that would leave the inverse
+        # unavailable next to a source that is perfectly fine.
+        source = config_entry.options[CONF_ENTITY_ID]
+        self._entity_id = (
+            er.async_resolve_entity_id(er.async_get(hass), source) or source
+        )
         self._attr_name = config_entry.title
         self._attr_extra_state_attributes = {ATTR_ENTITY_ID: self._entity_id}
         self._attr_unique_id = config_entry.entry_id
@@ -87,7 +93,10 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
         if (
             state := self.hass.states.get(self._entity_id)
         ) is None or state.state == STATE_UNAVAILABLE:
+            # Written down as well, or the inverse goes on showing what it was
+            # before its source went, as if nothing happened.
             self._attr_available = False
+            self.async_write_ha_state()
             return
 
         self._attr_available = True

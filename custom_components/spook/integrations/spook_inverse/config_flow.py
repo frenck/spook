@@ -141,10 +141,17 @@ def _async_hide_source(
     source_entity_id: str,
     hidden_by: er.RegistryEntryHider | None,
 ) -> None:
-    """Hide or unhide inverse source."""
+    """Hide or unhide inverse source.
+
+    Never over somebody's own decision. A source they hid themselves in its
+    entity settings stays hidden when the inverse is told not to hide it, and
+    stays theirs when it is told to: Spook only takes back what it did.
+    """
     registry = er.async_get(hass)
     if not (entity_id := er.async_resolve_entity_id(registry, source_entity_id)):
         return
-    if entity_id not in registry.entities:
+    if (entity_entry := registry.async_get(entity_id)) is None:
+        return
+    if entity_entry.hidden_by == er.RegistryEntryHider.USER:
         return
     registry.async_update_entity(entity_id, hidden_by=hidden_by)

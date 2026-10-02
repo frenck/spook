@@ -7,7 +7,10 @@ from typing import TYPE_CHECKING
 from homeassistant.const import CONF_ENTITY_ID
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
-from homeassistant.helpers.helper_integration import async_remove_helper_devices
+from homeassistant.helpers.helper_integration import (
+    async_handle_source_entity_changes,
+    async_remove_helper_devices,
+)
 
 from .config_flow import SpookInverseConfigFlowHandler
 from .const import CONF_HIDE_SOURCE
@@ -36,6 +39,35 @@ def async_get_source_entity_device_id(
 
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up from a config entry."""
+    source = entry.options[CONF_ENTITY_ID]
+
+    # Remembered for when the options change, which is the only moment the
+    # previous source is still known. Somebody pointing the inverse at a
+    # different entity would otherwise leave the old one hidden for good.
+    entry.runtime_data = source
+
+    @callback
+    def _follow_the_source(source_entity_id: str) -> None:
+        """Keep up with the source being renamed, the way core helpers do.
+
+        The inverse listens to its source by entity ID, and a rename gives it
+        a new one: without this it keeps listening to a name nobody uses and
+        switching something that is not there.
+        """
+        hass.config_entries.async_update_entry(
+            entry, options={**entry.options, CONF_ENTITY_ID: source_entity_id}
+        )
+
+    entry.async_on_unload(
+        async_handle_source_entity_changes(
+            hass,
+            helper_config_entry_id=entry.entry_id,
+            set_source_entity_id_or_uuid=_follow_the_source,
+            source_device_id=async_get_source_entity_device_id(hass, source),
+            source_entity_id_or_uuid=source,
+        )
+    )
+
     await hass.config_entries.async_forward_entry_setups(
         entry,
         (entry.options["inverse_type"],),
@@ -46,7 +78,44 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def config_entry_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Update listener, called when the config entry options are changed."""
+    if (previous := entry.runtime_data) != entry.options[CONF_ENTITY_ID]:
+        _async_unhide_former_source(hass, entry, previous)
+
     await hass.config_entries.async_reload(entry.entry_id)
+
+
+@callback
+def _async_unhide_former_source(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    former_source: str,
+) -> None:
+    """Show a source again that this inverse hid and no longer follows.
+
+    Only if Spook hid it, and only if no other inverse still wants it hidden.
+    A rename is not this: the registry entry is the same one, and its hidden
+    state went along with it.
+    """
+    registry = er.async_get(hass)
+    if not (entity_id := er.async_resolve_entity_id(registry, former_source)):
+        return
+    if (entity_entry := registry.async_get(entity_id)) is None:
+        return
+    if entity_entry.hidden_by != er.RegistryEntryHider.INTEGRATION:
+        return
+    if entity_id == er.async_resolve_entity_id(registry, entry.options[CONF_ENTITY_ID]):
+        return
+
+    for other in hass.config_entries.async_entries(entry.domain):
+        if (
+            other.entry_id != entry.entry_id
+            and other.options.get(CONF_HIDE_SOURCE)
+            and er.async_resolve_entity_id(registry, other.options[CONF_ENTITY_ID])
+            == entity_id
+        ):
+            return
+
+    registry.async_update_entity(entity_id, hidden_by=None)
 
 
 async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
