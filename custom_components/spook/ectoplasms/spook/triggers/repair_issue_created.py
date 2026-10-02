@@ -11,7 +11,7 @@ from homeassistant.core import callback
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.trigger import Trigger
 
-from ..repair_issues import FILTER_SCHEMA, as_filter, matches, payload
+from ..repair_issues import FILTER_SCHEMA, as_filter, is_ignored, matches, payload
 
 if TYPE_CHECKING:
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
@@ -71,20 +71,35 @@ class SpookTrigger(Trigger):
         registry = ir.async_get(self._hass)
 
         @callback
-        def issue_registry_changed(event: Event) -> None:
-            """Look at what the registry just did."""
-            if event.data["action"] != "create":
+        def look_at_it(domain: str, issue_id: str) -> None:
+            """Fire for the issue, if it is still there and worth hearing about."""
+            issue = registry.async_get_issue(domain, issue_id)
+            if issue is None or is_ignored(issue):
                 return
 
-            issue = registry.async_get_issue(
-                event.data["domain"], event.data["issue_id"]
-            )
-            if issue is None or not matches(issue, self._domains, self._severities):
+            if not matches(issue, self._domains, self._severities):
                 return
 
             run_action(
                 payload(issue),
                 f"repair issue {issue.domain}/{issue.issue_id} created",
+            )
+
+        @callback
+        def issue_registry_changed(event: Event) -> None:
+            """Look at what the registry just did, a moment from now.
+
+            Not right away. Spook raises an issue whose findings somebody
+            already ignored in two steps, created and then ignored, because
+            Home Assistant has no way to do both at once. In between it looks
+            like news, and an issue that is ignored the moment it arrives is
+            not.
+            """
+            if event.data["action"] != "create":
+                return
+
+            self._hass.loop.call_soon(
+                look_at_it, event.data["domain"], event.data["issue_id"]
             )
 
         return self._hass.bus.async_listen(
