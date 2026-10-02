@@ -232,6 +232,9 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
 
     required_features: list[int] | None = None
     supports_response: SupportsResponse = SupportsResponse.NONE
+    #: For an action that changes how something is set up rather than what it
+    #: is doing, which Home Assistant keeps to admins. Automations still pass.
+    admin_only: bool = False
 
     @final
     @callback
@@ -258,6 +261,7 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
             schema=self.schema,
             required_features=self.required_features,
             supports_response=self.supports_response,
+            admin_only=self.admin_only,
         )
 
         return True

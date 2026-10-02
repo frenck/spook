@@ -28,6 +28,10 @@ class SpookService(AbstractSpookEntityComponentService[Timer]):
 
     domain = DOMAIN
     service = "set_duration"
+    # This changes the timer as it is stored, which editing it in the UI only
+    # lets an admin do. Starting or pausing it is somebody using it, this is
+    # somebody changing it.
+    admin_only = True
     schema = {
         vol.Required(CONF_DURATION): cv.time_period,
     }
