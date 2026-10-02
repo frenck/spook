@@ -181,7 +181,10 @@ async def test_fix_flow_clears_only_what_points_at_nothing(
     flow.hass = hass
     flow.data = {
         "area_sensors_area_id": area.id,
-        "area_sensors_fields": "temperature_entity_id,humidity_entity_id",
+        "area_sensors_references": (
+            "temperature_entity_id:sensor.kitchen_temperature,"
+            "humidity_entity_id:sensor.kitchen_humidity"
+        ),
     }
 
     result = await flow.async_step_remove()
@@ -241,7 +244,7 @@ async def test_fix_flow_clears_only_the_settings_it_showed(
     flow.hass = hass
     flow.data = {
         "area_sensors_area_id": area.id,
-        "area_sensors_fields": "temperature_entity_id",
+        "area_sensors_references": "temperature_entity_id:sensor.kitchen_temperature",
     }
 
     await flow.async_step_remove()
@@ -280,3 +283,38 @@ async def test_the_same_sensor_on_the_other_setting_is_a_new_finding(
 
     assert after
     assert after.issue_id != before.issue_id
+
+
+async def test_a_setting_pointed_elsewhere_since_is_not_cleared(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a replacement sensor that went missing too is not cleared.
+
+    The issue named the old temperature sensor. Somebody set a new one, which
+    is missing as well by the time the button is pressed. That setting is not
+    the one they saw.
+    """
+    async_setup_all_entity_ids_cache_invalidation(hass)
+    area = _kitchen(hass, area_registry, temperature="sensor.kitchen_temperature")
+    hass.states.async_remove("sensor.kitchen_temperature")
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(area))
+    assert issue
+
+    flow = AreaUnknownSensorsFixFlow()
+    flow.hass = hass
+    flow.data = issue.data
+    # Home Assistant only takes a sensor that exists, so it does, and then
+    # it goes missing as well.
+    _sensor(hass, "sensor.new_one", "temperature")
+    area_registry.async_update(area.id, temperature_entity_id="sensor.new_one")
+    hass.states.async_remove("sensor.new_one")
+    result = await flow.async_step_remove()
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert area_registry.async_get_area(area.id).temperature_entity_id == (
+        "sensor.new_one"
+    )

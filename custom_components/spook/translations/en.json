@@ -552,7 +552,8 @@
         },
         "abort": {
           "issue_ignored": "Spook will keep quiet about this area from now on.",
-          "manage": "You can manage this area yourself on the [Areas page](/config/areas/dashboard)."
+          "manage": "You can manage this area yourself on the [Areas page](/config/areas/dashboard).",
+          "changed": "This area is in use again since Spook looked: something is in it, or an automation or script uses it. So it has been left alone. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -572,7 +573,8 @@
         },
         "abort": {
           "issue_ignored": "Spook will keep quiet about this floor from now on.",
-          "manage": "You can manage this floor yourself on the [Areas page](/config/areas/dashboard)."
+          "manage": "You can manage this floor yourself on the [Areas page](/config/areas/dashboard).",
+          "changed": "This floor is in use again since Spook looked: an area is on it, or an automation or script uses it. So it has been left alone. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -597,7 +599,8 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about this group from now on.",
           "not_editable": "This group is set up in YAML, so Spook cannot edit it. Update the group in your configuration instead.",
-          "manage": "You can manage this group yourself on the [Helpers page](/config/helpers)."
+          "manage": "You can manage this group yourself on the [Helpers page](/config/helpers).",
+          "changed": "The members this repair listed are back, or have changed, since Spook looked, so nothing has been removed from the group. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -655,6 +658,7 @@
         "abort": {
           "issue_ignored": "Spook will keep quiet about this helper from now on.",
           "manage": "You can manage this helper yourself on the [Helpers page](/config/helpers).",
+          "changed": "The members this repair listed are back, or have changed, since Spook looked, so nothing has been removed from the helper. Spook looks again on its own and updates this repair.",
           "too_few_members": "A min/max helper needs at least two members, so removing the missing ones would leave too few. Reconfigure or remove the helper yourself on the [Helpers page](/config/helpers)."
         }
       }
@@ -789,7 +793,8 @@
         },
         "abort": {
           "issue_ignored": "Spook will keep quiet about this area from now on.",
-          "manage": "You can pick a different sensor in the settings of this area on the [Areas page](/config/areas/dashboard)."
+          "manage": "You can pick a different sensor in the settings of this area on the [Areas page](/config/areas/dashboard).",
+          "changed": "These sensors are back, or the settings now point somewhere else, since Spook looked. So nothing has been cleared. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -817,7 +822,8 @@
         },
         "abort": {
           "issue_ignored": "Spook will keep quiet about this helper from now on.",
-          "manage": "You can manage this helper yourself on the [Helpers page](/config/helpers)."
+          "manage": "You can manage this helper yourself on the [Helpers page](/config/helpers).",
+          "changed": "The sources of this helper have changed since Spook looked, so the helper has been left alone. Spook looks again on its own and updates this repair."
         }
       }
     },
@@ -857,7 +863,8 @@
         },
         "abort": {
           "issue_ignored": "Spook will keep quiet about this label from now on.",
-          "manage": "You can manage this label yourself on the [Labels page](/config/labels)."
+          "manage": "You can manage this label yourself on the [Labels page](/config/labels).",
+          "changed": "This label is in use again since Spook looked: something carries it, or an automation or script uses it. So it has been left alone. Spook looks again on its own and updates this repair."
         }
       }
     },

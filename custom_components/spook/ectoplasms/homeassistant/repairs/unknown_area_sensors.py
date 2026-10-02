@@ -78,7 +78,9 @@ class SpookRepair(AbstractSpookRepair):
                 # settings listed here, the ones the user was shown.
                 data={
                     "area_sensors_area_id": area.id,
-                    "area_sensors_fields": ",".join(unknown),
+                    "area_sensors_references": ",".join(
+                        f"{field}:{entity_id}" for field, entity_id in unknown.items()
+                    ),
                     **placeholders,
                 },
                 translation_placeholders=placeholders,

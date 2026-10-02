@@ -9,6 +9,9 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 import pytest
 
 from custom_components.spook import repairs
+from custom_components.spook.entity_filtering import (
+    async_setup_all_entity_ids_cache_invalidation,
+)
 from custom_components.spook.ectoplasms.homeassistant.repairs.unknown_helper_source_references import (
     SpookRepair,
 )
@@ -215,7 +218,11 @@ async def test_fix_flow_remove_deletes_helper(
     )
     assert isinstance(flow, HelperUnknownSourcesFixFlow)
     flow.hass = hass
-    flow.data = {"helper_config_entry_id": entry.entry_id}
+    flow.data = {
+        "helper_config_entry_id": entry.entry_id,
+        "helper_unknown_sources": "sensor.ghost",
+        "helper_configured_sources": "sensor.ghost",
+    }
 
     result = await flow.async_step_remove()
 
@@ -264,3 +271,93 @@ async def test_menu_reports_when_unused(
     menu = await flow.async_step_init()
     usage = menu["description_placeholders"]["usage"]
     assert usage == "It is not used by any automation or script."
+
+
+async def test_a_helper_whose_source_came_back_is_kept(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the button does not delete a helper that works again.
+
+    It deletes the whole helper, so it looks again first. The source being
+    back, or the helper being pointed at one that works, means it stays.
+    """
+    # Spook sets this up on start; without it the source coming back is
+    # never seen.
+    async_setup_all_entity_ids_cache_invalidation(hass)
+    entry = MockConfigEntry(
+        domain="derivative",
+        title="Ghostly",
+        options={"name": "Ghostly", "source": "sensor.ghost"},
+    )
+    entry.add_to_hass(hass)
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(entry))
+    assert issue
+
+    flow = HelperUnknownSourcesFixFlow()
+    flow.hass = hass
+    flow.data = issue.data
+    hass.states.async_set("sensor.ghost", "1")
+    result = await flow.async_step_remove()
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is not None
+
+
+async def test_a_helper_still_broken_as_shown_is_removed(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the issue carries what the fix checks, and the fix then acts."""
+    entry = MockConfigEntry(
+        domain="derivative",
+        title="Ghostly",
+        options={"name": "Ghostly", "source": "sensor.ghost"},
+    )
+    entry.add_to_hass(hass)
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(entry))
+    assert issue
+
+    flow = HelperUnknownSourcesFixFlow()
+    flow.hass = hass
+    flow.data = issue.data
+    result = await flow.async_step_remove()
+
+    assert result["type"] == "create_entry"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is None
+
+
+async def test_a_helper_given_another_source_since_is_kept(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a helper changed since it was shown is not the one to delete.
+
+    Still missing the source the issue named, but given a working one as
+    well. Somebody is busy with it, and deleting it would undo that.
+    """
+    hass.states.async_set("sensor.heater", "on")
+    entry = MockConfigEntry(
+        domain="generic_thermostat",
+        title="Thermostat",
+        options={"name": "Thermostat", "target_sensor": "sensor.ghost"},
+    )
+    entry.add_to_hass(hass)
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(entry))
+    assert issue
+
+    flow = HelperUnknownSourcesFixFlow()
+    flow.hass = hass
+    flow.data = issue.data
+    hass.config_entries.async_update_entry(
+        entry, options={**entry.options, "heater": "sensor.heater"}
+    )
+    result = await flow.async_step_remove()
+
+    assert result["type"] == "abort"
+    assert result["reason"] == "changed"
+    assert hass.config_entries.async_get_entry(entry.entry_id) is not None

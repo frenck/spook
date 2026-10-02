@@ -10,8 +10,8 @@ from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.setup import async_setup_component
 from homeassistant.helpers import area_registry as ar, floor_registry as fr
 
+from custom_components.spook import registry_usage
 from custom_components.spook.const import DOMAIN
-from custom_components.spook.ectoplasms.homeassistant.repairs import empty_floors
 from custom_components.spook.ectoplasms.homeassistant.repairs.empty_floors import (
     SpookRepair,
 )
@@ -97,7 +97,7 @@ async def test_floor_referenced_by_automation_is_not_reported(
     floor = fr.async_get(hass).async_create("First")
     freezer.tick(_AGED)
     monkeypatch.setattr(
-        empty_floors,
+        registry_usage,
         "automations_with_floor",
         lambda _hass, fid: ["automation.lights"] if fid == floor.floor_id else [],
     )
@@ -225,3 +225,20 @@ async def test_a_floor_nobody_mentions_at_all_is_still_reported(
     await SpookRepair(hass).async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, _issue_id(forgotten.floor_id))
+
+
+async def test_a_floor_that_got_an_area_since_is_left_alone(
+    hass: HomeAssistant,
+) -> None:
+    """Test the button does not delete a floor an area was put on since."""
+    floor = fr.async_get(hass).async_create("Attic")
+    flow = _flow_for(hass, floor.floor_id, "Attic")
+
+    area = ar.async_get(hass).async_create("Loft", floor_id=floor.floor_id)
+
+    result = await flow.async_step_remove()
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert fr.async_get(hass).async_get_floor(floor.floor_id) is not None
+    assert ar.async_get(hass).async_get_area(area.id).floor_id == floor.floor_id

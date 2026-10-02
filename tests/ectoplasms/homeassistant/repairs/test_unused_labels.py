@@ -14,8 +14,8 @@ from homeassistant.helpers import (
     label_registry as lr,
 )
 
+from custom_components.spook import registry_usage
 from custom_components.spook.const import DOMAIN
-from custom_components.spook.ectoplasms.homeassistant.repairs import unused_labels
 from custom_components.spook.ectoplasms.homeassistant.repairs.unused_labels import (
     SpookRepair,
 )
@@ -120,7 +120,7 @@ async def test_label_used_by_automation_is_not_reported(
     label = lr.async_get(hass).async_create("Targeted")
     freezer.tick(_AGED)
     monkeypatch.setattr(
-        unused_labels,
+        registry_usage,
         "automations_with_label",
         lambda _hass, lid: ["automation.lights"] if lid == label.label_id else [],
     )
@@ -140,7 +140,7 @@ async def test_label_used_by_script_is_not_reported(
     label = lr.async_get(hass).async_create("Targeted")
     freezer.tick(_AGED)
     monkeypatch.setattr(
-        unused_labels,
+        registry_usage,
         "scripts_with_label",
         lambda _hass, lid: ["script.lights"] if lid == label.label_id else [],
     )
@@ -268,3 +268,22 @@ async def test_a_label_nobody_mentions_at_all_is_still_reported(
     await SpookRepair(hass).async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, _issue_id(forgotten.label_id))
+
+
+async def test_a_label_put_to_use_since_is_left_alone(
+    hass: HomeAssistant,
+) -> None:
+    """Test the button does not delete a label applied to something since."""
+    label = lr.async_get(hass).async_create("Spooky")
+    flow = _flow_for(hass, label.label_id, "Spooky")
+
+    registry = er.async_get(hass)
+    entity = registry.async_get_or_create("light", "test", "lamp")
+    registry.async_update_entity(entity.entity_id, labels={label.label_id})
+
+    result = await flow.async_step_remove()
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert lr.async_get(hass).async_get_label(label.label_id) is not None
+    assert registry.async_get(entity.entity_id).labels == {label.label_id}

@@ -52,6 +52,14 @@ from .entity_suggestions import (
     async_describe_unknown_entities,
     async_warm_rename_suggestions,
 )
+from .helper_sources import (
+    MIN_MAX_ENTITY_IDS,
+    async_helper_sources,
+    async_unknown_helper_sources,
+    async_unknown_min_max_members,
+)
+from .reference_extraction import async_collect_mentioned_strings
+from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
 from .statistics_sources import async_settled_orphaned_statistic_ids
 
 if TYPE_CHECKING:
@@ -735,6 +743,15 @@ class RestartRequiredFixFlow(RepairsFlow):
         return self.async_show_form(step_id="confirm_restart")
 
 
+def _offered(data: Mapping[str, Any] | None, key: str) -> set[str]:
+    """Return what an issue put in front of somebody, from its data.
+
+    A fix acts on that and nothing else. What is broken right now can be more,
+    and acting on that would change something nobody was shown.
+    """
+    return {item for item in str((data or {}).get(key, "")).split(",") if item}
+
+
 class _RemoveOrIgnoreFixFlow(RepairsFlow):
     """Base for a leftover registry thing: remove it, or keep and stop nagging.
 
@@ -781,8 +798,16 @@ class _RemoveOrIgnoreFixFlow(RepairsFlow):
         self,
         _: dict[str, str] | None = None,
     ) -> FlowResult:
-        """Remove the thing, if it still exists."""
-        self._remove(str((self.data or {}).get(self._id_key, "")))
+        """Remove the thing, if it is still what the issue said it was.
+
+        An issue can sit there for days before somebody presses the button,
+        and something may have moved in since. Removing it anyway would take
+        that with it, so a thing that changed is left alone and the issue
+        says so. Spook looks again on its own and updates the issue.
+        """
+        if not self._remove(str((self.data or {}).get(self._id_key, ""))):
+            return self.async_abort(reason="changed")
+
         return self.async_create_entry(data={})
 
     async def async_step_ignore(
@@ -809,8 +834,12 @@ class _RemoveOrIgnoreFixFlow(RepairsFlow):
         return self.async_abort(reason="issue_ignored")
 
     @callback
-    def _remove(self, thing_id: str) -> None:
-        """Remove the thing by id. Implemented by subclasses."""
+    def _remove(self, thing_id: str) -> bool:
+        """Remove the thing by id. Implemented by subclasses.
+
+        Returns `False` when it changed since the issue was raised and was
+        left alone. Already gone counts as done.
+        """
         raise NotImplementedError
 
 
@@ -821,12 +850,22 @@ class EmptyAreaFixFlow(_RemoveOrIgnoreFixFlow):
     _id_key = "empty_area_id"
 
     @callback
-    def _remove(self, thing_id: str) -> None:
-        """Remove the area, if it still exists."""
+    def _remove(self, thing_id: str) -> bool:
+        """Remove the area, if it is still empty."""
         registry = ar.async_get(self.hass)
         # The area may already be gone if removed elsewhere meanwhile.
-        if registry.async_get_area(thing_id):
-            registry.async_delete(thing_id)
+        if not registry.async_get_area(thing_id):
+            return True
+
+        # Deleting an area unassigns everything in it, so something assigned
+        # since the issue was raised would quietly lose its area.
+        if async_area_in_use(
+            self.hass, thing_id, async_collect_mentioned_strings(self.hass)
+        ):
+            return False
+
+        registry.async_delete(thing_id)
+        return True
 
 
 class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
@@ -848,25 +887,39 @@ class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
         return {key: str(data.get(key, "")) for key in ("area", "sensors", "entities")}
 
     @callback
-    def _remove(self, thing_id: str) -> None:
-        """Clear the area's sensor settings that point at nothing."""
+    def _remove(self, thing_id: str) -> bool:
+        """Clear the area's sensor settings that still point at what was shown.
+
+        A setting is cleared only while it holds the very entity the issue
+        named and that entity is still unknown. One changed to another sensor
+        since, which then went missing too, is not the setting somebody saw.
+        """
         area_registry = ar.async_get(self.hass)
         if (area := area_registry.async_get_area(thing_id)) is None:
-            return
+            return True
 
-        offered = str((self.data or {}).get("area_sensors_fields", "")).split(",")
+        offered = dict(
+            reference.split(":", 1)
+            for reference in str(
+                (self.data or {}).get("area_sensors_references", "")
+            ).split(",")
+            if ":" in reference
+        )
         known_entity_ids = async_get_all_entity_ids(self.hass)
         cleared = {
             field: None
-            for field in ("temperature_entity_id", "humidity_entity_id")
-            if field in offered
-            and (entity_id := getattr(area, field))
+            for field, entity_id in offered.items()
+            if field in ("temperature_entity_id", "humidity_entity_id")
+            and getattr(area, field) == entity_id
             and async_filter_known_entity_ids(
                 self.hass, [entity_id], known_entity_ids=known_entity_ids
             )
         }
-        if cleared:
-            area_registry.async_update(thing_id, **cleared)
+        if not cleared:
+            return False
+
+        area_registry.async_update(thing_id, **cleared)
+        return True
 
 
 class EmptyFloorFixFlow(_RemoveOrIgnoreFixFlow):
@@ -876,12 +929,21 @@ class EmptyFloorFixFlow(_RemoveOrIgnoreFixFlow):
     _id_key = "empty_floor_id"
 
     @callback
-    def _remove(self, thing_id: str) -> None:
-        """Remove the floor, if it still exists."""
+    def _remove(self, thing_id: str) -> bool:
+        """Remove the floor, if it is still empty."""
         registry = fr.async_get(self.hass)
         # The floor may already be gone if removed elsewhere meanwhile.
-        if registry.async_get_floor(thing_id):
-            registry.async_delete(thing_id)
+        if not registry.async_get_floor(thing_id):
+            return True
+
+        # Deleting a floor takes it off every area on it.
+        if async_floor_in_use(
+            self.hass, thing_id, async_collect_mentioned_strings(self.hass)
+        ):
+            return False
+
+        registry.async_delete(thing_id)
+        return True
 
 
 class UnusedLabelFixFlow(_RemoveOrIgnoreFixFlow):
@@ -891,12 +953,21 @@ class UnusedLabelFixFlow(_RemoveOrIgnoreFixFlow):
     _id_key = "unused_label_id"
 
     @callback
-    def _remove(self, thing_id: str) -> None:
-        """Remove the label, if it still exists."""
+    def _remove(self, thing_id: str) -> bool:
+        """Remove the label, if it is still unused."""
         registry = lr.async_get(self.hass)
         # The label may already be gone if removed elsewhere meanwhile.
-        if registry.async_get_label(thing_id):
-            registry.async_delete(thing_id)
+        if not registry.async_get_label(thing_id):
+            return True
+
+        # Deleting a label strips it from everything carrying it.
+        if async_label_in_use(
+            self.hass, thing_id, async_collect_mentioned_strings(self.hass)
+        ):
+            return False
+
+        registry.async_delete(thing_id)
+        return True
 
 
 class UnusedBlueprintFixFlow(_RemoveOrIgnoreFixFlow):
@@ -1114,12 +1185,22 @@ class GroupUnknownMembersFixFlow(_RemoveOrIgnoreFixFlow):
         entry = self.hass.config_entries.async_get_entry(entry_entity.config_entry_id)
         if entry is not None:
             members = list(entry.options.get(CONF_ENTITIES) or [])
-            remaining = [
-                member
-                for member in members
-                if entity_registry.async_get(member) is not None
-                or self.hass.states.get(member) is not None
-            ]
+            # Only the members the issue named, and of those only the ones
+            # still gone. Another member missing for a moment right now, an
+            # integration reloading say, is not one somebody agreed to drop.
+            # Asked the way the repair asked it: Home Assistant knows more
+            # entities than the registry and the state machine hold between
+            # them, like the time and date sensors and scenes made on the fly.
+            offered = _offered(self.data, "group_unknown_entity_ids")
+            dropping = set(
+                async_filter_known_entity_ids(
+                    self.hass, [member for member in members if member in offered]
+                )
+            )
+            if not dropping:
+                return self.async_abort(reason="changed")
+
+            remaining = [member for member in members if member not in dropping]
             if remaining != members:
                 self.hass.config_entries.async_update_entry(
                     entry, options={**entry.options, CONF_ENTITIES: remaining}
@@ -1164,25 +1245,23 @@ class MinMaxUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         entry_id = str((self.data or {}).get("min_max_config_entry_id", ""))
         entry = self.hass.config_entries.async_get_entry(entry_id)
         if entry is not None:
-            entity_registry = er.async_get(self.hass)
-            known_entity_ids = async_get_all_entity_ids(self.hass)
-            members = list(entry.options.get("entity_ids") or [])
-            remaining = [
-                value
-                for value in members
-                if (resolved := er.async_resolve_entity_id(entity_registry, value))
-                is not None
-                and not async_filter_known_entity_ids(
-                    self.hass, [resolved], known_entity_ids=known_entity_ids
-                )
-            ]
+            members = list(entry.options.get(MIN_MAX_ENTITY_IDS) or [])
+            # Only the members the issue named, and of those only the ones
+            # still gone, asked the way the repair asked it.
+            dropping = _offered(
+                self.data, "min_max_unknown_sources"
+            ) & async_unknown_min_max_members(self.hass, entry)
+            if not dropping:
+                return self.async_abort(reason="changed")
+
+            remaining = [value for value in members if value not in dropping]
             if remaining != members:
                 if len(remaining) < _MIN_MAX_MINIMUM_MEMBERS:
                     # A min/max helper needs at least two members; pruning
                     # would leave too few and break it. Let the user decide.
                     return self.async_abort(reason="too_few_members")
                 self.hass.config_entries.async_update_entry(
-                    entry, options={**entry.options, "entity_ids": remaining}
+                    entry, options={**entry.options, MIN_MAX_ENTITY_IDS: remaining}
                 )
                 # Same as above, and here it is worse than a stale reference:
                 # the helper keeps listening to the source somebody just took
@@ -1245,10 +1324,28 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         self,
         _: dict[str, str] | None = None,
     ) -> FlowResult:
-        """Remove the whole helper, if it still exists."""
+        """Remove the whole helper, if it is still as broken as it was shown.
+
+        This deletes the helper outright, so it looks again first, the way
+        the repair looked. A source that came back, or a helper pointed at
+        something that works since, leaves the helper where it is.
+        """
         entry_id = str((self.data or {}).get("helper_config_entry_id", ""))
-        if self.hass.config_entries.async_get_entry(entry_id) is not None:
-            await self.hass.config_entries.async_remove(entry_id)
+        if (entry := self.hass.config_entries.async_get_entry(entry_id)) is None:
+            return self.async_create_entry(data={})
+
+        # The helper as it was shown, sources and all. One given another
+        # source since, even a working one, is not the helper somebody saw.
+        offered = _offered(self.data, "helper_unknown_sources")
+        configured = _offered(self.data, "helper_configured_sources")
+        if (
+            not offered
+            or configured != async_helper_sources(entry)
+            or not offered <= async_unknown_helper_sources(self.hass, entry)
+        ):
+            return self.async_abort(reason="changed")
+
+        await self.hass.config_entries.async_remove(entry_id)
         return self.async_create_entry(data={})
 
 
