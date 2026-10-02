@@ -129,23 +129,26 @@ class SpookInverseConfigFlowHandler(SchemaConfigFlowHandler, domain=DOMAIN):
         hass: HomeAssistant,
         options: Mapping[str, Any],
     ) -> None:
-        """Hide or unhide the source entity as requested."""
-        hidden_by = (
-            er.RegistryEntryHider.INTEGRATION if options[CONF_HIDE_SOURCE] else None
-        )
-        _async_hide_source(hass, options[CONF_ENTITY_ID], hidden_by)
+        """Hide the source entity if requested.
+
+        Showing it again is left to the update listener, which knows what the
+        options were before, and whether this inverse was the one hiding it.
+        """
+        if options[CONF_HIDE_SOURCE]:
+            _async_hide_source(
+                hass, options[CONF_ENTITY_ID], er.RegistryEntryHider.INTEGRATION
+            )
 
 
 def _async_hide_source(
     hass: HomeAssistant,
     source_entity_id: str,
-    hidden_by: er.RegistryEntryHider | None,
+    hidden_by: er.RegistryEntryHider,
 ) -> None:
-    """Hide or unhide inverse source.
+    """Hide inverse source.
 
-    Never over somebody's own decision. A source they hid themselves in its
-    entity settings stays hidden when the inverse is told not to hide it, and
-    stays theirs when it is told to: Spook only takes back what it did.
+    Never over somebody's own decision: a source they hid themselves in its
+    entity settings stays theirs.
     """
     registry = er.async_get(hass)
     if not (entity_id := er.async_resolve_entity_id(registry, source_entity_id)):

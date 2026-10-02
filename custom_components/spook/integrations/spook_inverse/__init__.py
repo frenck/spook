@@ -13,7 +13,7 @@ from homeassistant.helpers.helper_integration import (
 )
 
 from .config_flow import SpookInverseConfigFlowHandler
-from .const import CONF_HIDE_SOURCE
+from .const import CONF_HIDE_SOURCE, DOMAIN
 
 MIGRATION_MINOR_VERSION = SpookInverseConfigFlowHandler.MINOR_VERSION
 
@@ -42,9 +42,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     source = entry.options[CONF_ENTITY_ID]
 
     # Remembered for when the options change, which is the only moment the
-    # previous source is still known. Somebody pointing the inverse at a
-    # different entity would otherwise leave the old one hidden for good.
-    entry.runtime_data = source
+    # previous source, and whether this inverse hid it, is still known.
+    # Somebody pointing the inverse elsewhere would otherwise leave the old
+    # one hidden for good.
+    entry.runtime_data = (source, entry.options[CONF_HIDE_SOURCE])
 
     @callback
     def _follow_the_source(source_entity_id: str) -> None:
@@ -58,15 +59,19 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
             entry, options={**entry.options, CONF_ENTITY_ID: source_entity_id}
         )
 
-    entry.async_on_unload(
-        async_handle_source_entity_changes(
-            hass,
-            helper_config_entry_id=entry.entry_id,
-            set_source_entity_id_or_uuid=_follow_the_source,
-            source_device_id=async_get_source_entity_device_id(hass, source),
-            source_entity_id_or_uuid=source,
+    # A source stored as a registry ID that is gone resolves to nothing, and
+    # Home Assistant raises on following that. The inverse still sets up, and
+    # is unavailable, which is the truth about it.
+    if er.async_resolve_entity_id(er.async_get(hass), source):
+        entry.async_on_unload(
+            async_handle_source_entity_changes(
+                hass,
+                helper_config_entry_id=entry.entry_id,
+                set_source_entity_id_or_uuid=_follow_the_source,
+                source_device_id=async_get_source_entity_device_id(hass, source),
+                source_entity_id_or_uuid=source,
+            )
         )
-    )
 
     await hass.config_entries.async_forward_entry_setups(
         entry,
@@ -77,40 +82,45 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 
 async def config_entry_update_listener(hass: HomeAssistant, entry: ConfigEntry) -> None:
-    """Update listener, called when the config entry options are changed."""
-    if (previous := entry.runtime_data) != entry.options[CONF_ENTITY_ID]:
-        _async_unhide_former_source(hass, entry, previous)
+    """Update listener, called when the config entry options are changed.
+
+    Hiding happens in the options flow. Showing the source again happens
+    here, because only here are both the old options and the new ones known,
+    and showing it again is only this inverse's to do if it was the one that
+    hid it.
+    """
+    previous_source, previously_hidden = entry.runtime_data
+    if previously_hidden and (
+        previous_source != entry.options[CONF_ENTITY_ID]
+        or not entry.options[CONF_HIDE_SOURCE]
+    ):
+        async_release_source(hass, previous_source)
 
     await hass.config_entries.async_reload(entry.entry_id)
 
 
 @callback
-def _async_unhide_former_source(
-    hass: HomeAssistant,
-    entry: ConfigEntry,
-    former_source: str,
-) -> None:
-    """Show a source again that this inverse hid and no longer follows.
+def async_release_source(hass: HomeAssistant, source: str) -> None:
+    """Show a source again that this inverse hid and no longer hides.
 
-    Only if Spook hid it, and only if no other inverse still wants it hidden.
-    A rename is not this: the registry entry is the same one, and its hidden
-    state went along with it.
+    Only if Spook hid it, and only if no other inverse still wants it hidden:
+    two inverses of one source share the hiding, and one of them letting go
+    is not the other one letting go. After a rename the old name is in the
+    registry no more, and the entry that is, with its hiding, is left alone.
     """
     registry = er.async_get(hass)
-    if not (entity_id := er.async_resolve_entity_id(registry, former_source)):
+    if not (entity_id := er.async_resolve_entity_id(registry, source)):
         return
     if (entity_entry := registry.async_get(entity_id)) is None:
         return
     if entity_entry.hidden_by != er.RegistryEntryHider.INTEGRATION:
         return
-    if entity_id == er.async_resolve_entity_id(registry, entry.options[CONF_ENTITY_ID]):
-        return
 
-    for other in hass.config_entries.async_entries(entry.domain):
-        if (
-            other.entry_id != entry.entry_id
-            and other.options.get(CONF_HIDE_SOURCE)
-            and er.async_resolve_entity_id(registry, other.options[CONF_ENTITY_ID])
+    # Every inverse as it is now, this one with its new options. A removed
+    # one is already gone from the list by the time it is asked about.
+    for other in hass.config_entries.async_entries(DOMAIN):
+        if other.options.get(CONF_HIDE_SOURCE) and (
+            er.async_resolve_entity_id(registry, other.options[CONF_ENTITY_ID])
             == entity_id
         ):
             return
@@ -128,19 +138,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
 
 async def async_remove_entry(hass: HomeAssistant, entry: ConfigEntry) -> None:
     """Remove a config entry, unhide the source entity."""
-    registry = er.async_get(hass)
-    if not entry.options[CONF_HIDE_SOURCE]:
-        return
-    if not (
-        entity_id := er.async_resolve_entity_id(registry, entry.options[CONF_ENTITY_ID])
-    ):
-        return
-    if (entity_entry := registry.async_get(entity_id)) is None:
-        return
-    if entity_entry.hidden_by != er.RegistryEntryHider.INTEGRATION:
-        return
-
-    registry.async_update_entity(entity_id, hidden_by=None)
+    if entry.options[CONF_HIDE_SOURCE]:
+        async_release_source(hass, entry.options[CONF_ENTITY_ID])
 
 
 async def async_migrate_entry(hass: HomeAssistant, config_entry: ConfigEntry) -> bool:

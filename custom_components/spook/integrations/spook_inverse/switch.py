@@ -7,7 +7,6 @@ from typing import TYPE_CHECKING, Any
 from homeassistant.components.switch import DOMAIN, SwitchEntity
 from homeassistant.const import (
     ATTR_ENTITY_ID,
-    CONF_ENTITY_ID,
     SERVICE_TOGGLE,
     SERVICE_TURN_OFF,
     SERVICE_TURN_ON,
@@ -15,7 +14,6 @@ from homeassistant.const import (
     STATE_UNKNOWN,
 )
 from homeassistant.core import HomeAssistant, State, callback
-from homeassistant.helpers import entity_registry as er
 
 from .entity import InverseEntity
 
@@ -30,10 +28,8 @@ async def async_setup_entry(
     async_add_entities: AddEntitiesCallback,
 ) -> None:
     """Initialize inverse config entry."""
-    er.async_validate_entity_id(
-        er.async_get(hass),
-        config_entry.options[CONF_ENTITY_ID],
-    )
+    # The source is resolved by the entity itself, which stays unavailable
+    # rather than failing to set up when the source is not there.
     async_add_entities([InverseSwitch(hass, config_entry)])
 
 

@@ -152,3 +152,75 @@ async def test_saving_options_leaves_a_source_hidden_by_hand_alone(
     await hass.async_block_till_done()
 
     assert registry.async_get(source).hidden_by is er.RegistryEntryHider.USER
+
+
+async def test_turning_hiding_off_shows_the_source_again(
+    hass: HomeAssistant,
+) -> None:
+    """Test switching "hide source" off gives the source back."""
+    source = _source(hass, "lamp")
+    entry, _inverse_id = await _inverse(hass, source, hide_source=True)
+    registry = er.async_get(hass)
+    registry.async_update_entity(source, hidden_by=er.RegistryEntryHider.INTEGRATION)
+
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        user_input={CONF_ENTITY_ID: source, CONF_HIDE_SOURCE: False},
+    )
+    await hass.async_block_till_done()
+
+    assert registry.async_get(source).hidden_by is None
+
+
+async def test_one_inverse_letting_go_does_not_unhide_for_the_other(
+    hass: HomeAssistant,
+) -> None:
+    """Test two inverses of one source share the hiding."""
+    source = _source(hass, "lamp")
+    entry, _inverse_id = await _inverse(hass, source, hide_source=True)
+    await _inverse(hass, source, hide_source=True)
+    registry = er.async_get(hass)
+    registry.async_update_entity(source, hidden_by=er.RegistryEntryHider.INTEGRATION)
+
+    result = await hass.config_entries.options.async_init(entry.entry_id)
+    await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        user_input={CONF_ENTITY_ID: source, CONF_HIDE_SOURCE: False},
+    )
+    await hass.async_block_till_done()
+
+    assert registry.async_get(source).hidden_by is er.RegistryEntryHider.INTEGRATION
+
+
+async def test_a_source_this_inverse_never_hid_is_not_unhidden(
+    hass: HomeAssistant,
+) -> None:
+    """Test moving on from a source does not undo somebody else's hiding."""
+    first = _source(hass, "first")
+    second = _source(hass, "second")
+    entry, _inverse_id = await _inverse(hass, first, hide_source=False)
+    registry = er.async_get(hass)
+    registry.async_update_entity(first, hidden_by=er.RegistryEntryHider.INTEGRATION)
+
+    hass.config_entries.async_update_entry(
+        entry, options={**entry.options, CONF_ENTITY_ID: second}
+    )
+    await hass.async_block_till_done()
+
+    assert registry.async_get(first).hidden_by is er.RegistryEntryHider.INTEGRATION
+
+
+async def test_a_removed_source_by_registry_id_still_sets_up(
+    hass: HomeAssistant,
+) -> None:
+    """Test a source stored by a registry ID that is gone does not fail setup."""
+    source = _source(hass, "lamp")
+    registry = er.async_get(hass)
+    registry_id = registry.async_get(source).id
+    registry.async_remove(source)
+
+    entry, inverse = await _inverse(hass, registry_id)
+
+    assert entry.state.recoverable
+    assert hass.states.get(inverse).state == STATE_UNAVAILABLE
