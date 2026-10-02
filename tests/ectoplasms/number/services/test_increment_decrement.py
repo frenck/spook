@@ -7,9 +7,16 @@ from typing import Any
 from re import escape
 
 import pytest
+from homeassistant.components.number import NumberDeviceClass, NumberEntity
+from homeassistant.const import UnitOfTemperature
 from homeassistant.exceptions import HomeAssistantError
+from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
 
-from custom_components.spook.ectoplasms.number.services import decrement, increment
+from custom_components.spook.ectoplasms.number.services import (
+    async_set_shown_value,
+    decrement,
+    increment,
+)
 
 
 class MockNumberEntity:  # pylint: disable=too-few-public-methods
@@ -18,12 +25,18 @@ class MockNumberEntity:  # pylint: disable=too-few-public-methods
     entity_id = "number.test"
     max_value = 10
     min_value = 0
+    native_max_value = 10
+    native_min_value = 0
     step = 0.5
 
     def __init__(self, value: Any) -> None:
         """Initialize the mock number entity."""
         self.value = value
         self.set_value: float | None = None
+
+    def convert_to_native_value(self, value: float) -> float:
+        """Shown and native are the same units here."""
+        return value
 
     async def async_set_native_value(self, value: float) -> None:
         """Set the native value."""
@@ -104,6 +117,73 @@ async def test_number_services_raise_context_for_invalid_native_values(
 
     with pytest.raises(
         HomeAssistantError,
-        match=escape("Native value 'unavailable' for number.test is not a number"),
+        match=escape("Value 'unavailable' for number.test is not a number"),
     ):
         await service_cls(hass).async_handle_service(entity, call)
+
+
+# 20 °C, the way a house set up in US units shows it.
+_SHOWN_FAHRENHEIT = 68
+
+
+class _CelsiusShownAsFahrenheit(NumberEntity):
+    """A thermostat setpoint that keeps Celsius, in a house that reads °F."""
+
+    _attr_device_class = NumberDeviceClass.TEMPERATURE
+    _attr_native_unit_of_measurement = UnitOfTemperature.CELSIUS
+    _attr_native_min_value = 5
+    _attr_native_max_value = 30
+    _attr_native_step = 0.5
+    _attr_native_value = 20
+    entity_id = "number.setpoint"
+
+    async def async_set_native_value(self, value: float) -> None:
+        """Keep what was set, in Celsius."""
+        self._attr_native_value = value
+
+
+@pytest.mark.parametrize(
+    ("service_cls", "expected_celsius"),
+    [
+        # 68 °F up one is 69 °F, which is 20.56 °C, not 69 °C.
+        (increment.SpookService, 20.56),
+        # 68 °F down one is 67 °F, which is 19.44 °C, not 67 °C (a rise).
+        (decrement.SpookService, 19.44),
+    ],
+)
+async def test_stepping_happens_in_the_units_somebody_sees(
+    hass: Any,
+    service_cls: type[increment.SpookService | decrement.SpookService],
+    expected_celsius: float,
+) -> None:
+    """Test a step is taken in the shown units and lands in the kept ones.
+
+    The amount is what the number shows its steps in, and so is its value.
+    Handing the result over as if it were Celsius set a thermostat showing
+    68 °F to 69 °C, and a decrement to 67 °C: warmer.
+    """
+    hass.config.units = US_CUSTOMARY_SYSTEM
+    entity = _CelsiusShownAsFahrenheit()
+    entity.hass = hass
+    assert entity.value == _SHOWN_FAHRENHEIT
+
+    await service_cls(hass).async_handle_service(
+        entity, SimpleNamespace(data={"amount": 1})
+    )
+
+    assert entity.native_value == pytest.approx(expected_celsius, abs=0.01)
+
+
+async def test_a_shown_value_just_past_a_limit_lands_on_it(hass: Any) -> None:
+    """Test rounding between units cannot carry a value past a native limit.
+
+    86 °F is the top of 30 °C, but converting back can come out a hair above
+    it, which the entity would refuse.
+    """
+    hass.config.units = US_CUSTOMARY_SYSTEM
+    entity = _CelsiusShownAsFahrenheit()
+    entity.hass = hass
+
+    await async_set_shown_value(entity, 86.01)
+
+    assert entity.native_value == entity.native_max_value
