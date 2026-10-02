@@ -110,9 +110,29 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)
 
+    # Starting the repairs takes a moment, and on a normal start that moment
+    # comes after this setup is long done. Spook can be disabled or reloaded
+    # in it, and the unload that runs then has not been told about repairs
+    # that are not there yet. They finished starting afterwards with nothing
+    # left to stop them.
+    unloaded = False
+
+    @callback
+    def _note_the_unload() -> None:
+        """Remember Spook went, for repairs that were still on their way."""
+        nonlocal unloaded
+        unloaded = True
+
+    entry.async_on_unload(_note_the_unload)
+
     async def _ghost_busters(_: Event | None = None) -> None:
         """Send them in, time for some ghost chasing."""
         await repairs.async_setup()
+
+        if unloaded:
+            await repairs.async_on_unload()
+            return
+
         entry.async_on_unload(repairs.async_on_unload)
 
     if hass.state == CoreState.running:

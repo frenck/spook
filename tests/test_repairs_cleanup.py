@@ -4,6 +4,8 @@
 
 from __future__ import annotations
 
+import asyncio
+
 from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
@@ -606,3 +608,46 @@ async def test_findings_that_run_together_are_told_apart(
     await repair._async_inspect_with_cleanup()
 
     assert _the_one_issue(issue_registry).issue_id != first
+
+
+async def test_a_look_still_running_when_deactivated_leaves_the_registry_alone(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an inspection that outlives its repair neither raises nor clears.
+
+    Shutting the debouncer down stops the next look, not one already under
+    way. That one carried on after Spook was disabled or reloaded, filing
+    what it found and clearing what it did not, which after a reload can be
+    the fresh issues of the repair that replaced it.
+    """
+    halfway = asyncio.Event()
+    carry_on = asyncio.Event()
+
+    class _SlowRepair(MockFindingsRepair):
+        async def async_inspect(self) -> None:
+            halfway.set()
+            await carry_on.wait()
+            await super().async_inspect()
+
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        "mock_repair_left_by_the_new_one",
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="mock_repair",
+    )
+    repair = _SlowRepair(hass)
+    repair.findings = {"light.ghost"}
+    await repair.async_activate()
+
+    looking = hass.async_create_task(repair._async_inspect_with_cleanup())
+    await halfway.wait()
+    await repair.async_deactivate()
+    carry_on.set()
+    await looking
+
+    assert [
+        issue_id for (domain, issue_id) in issue_registry.issues if domain == DOMAIN
+    ] == ["mock_repair_left_by_the_new_one"]
