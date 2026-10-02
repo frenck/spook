@@ -29,7 +29,10 @@ async def async_dashboard_configs(
     skipped, so the caller still counts it among the things it looked at and
     can clean up issues it raised for it earlier.
     """
-    for dashboard in dashboards.values():
+    # Taken as a snapshot: loading a dashboard hands the event loop a turn,
+    # and a dashboard added or removed during it ends the whole round in a
+    # `RuntimeError`. #1558.
+    for dashboard in list(dashboards.values()):
         url_path = dashboard.url_path or "lovelace"
 
         try:

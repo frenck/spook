@@ -43,7 +43,10 @@ class SpookRepair(AbstractSpookRepair):
 
         known_entity_ids = async_get_all_entity_ids(self.hass)
 
-        for entity in scenes:
+        # Taken as a snapshot: describing what is missing can hand the event
+        # loop a turn, and a change to the live collection during it ends the
+        # inspection in a `RuntimeError`. #1558.
+        for entity in list(scenes):
             self.possible_issue_ids.add(entity.entity_id)
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass,

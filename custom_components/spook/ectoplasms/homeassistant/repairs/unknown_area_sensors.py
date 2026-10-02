@@ -43,7 +43,10 @@ class SpookRepair(AbstractSpookRepair):
 
         known_entity_ids = async_get_all_entity_ids(self.hass)
 
-        for area in ar.async_get(self.hass).async_list_areas():
+        # Taken as a snapshot: describing what is missing can hand the event
+        # loop a turn, and a change to the live collection during it ends the
+        # inspection in a `RuntimeError`. #1558.
+        for area in list(ar.async_get(self.hass).async_list_areas()):
             self.possible_issue_ids.add(area.id)
 
             unknown = {

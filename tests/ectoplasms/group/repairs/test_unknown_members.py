@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from types import SimpleNamespace
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
@@ -12,6 +12,7 @@ from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook.ectoplasms.group.repairs import unknown_members
 from custom_components.spook.ectoplasms.group.repairs.unknown_members import SpookRepair
 from custom_components.spook.repairs import (
     GroupUnknownMembersFixFlow,
@@ -21,6 +22,7 @@ from tests.repair_helpers import async_issue_about
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
+    import pytest
     from homeassistant.helpers import entity_registry as er, issue_registry as ir
 
 _ISSUE_ID = "group_unknown_members_light.living"
@@ -276,3 +278,34 @@ async def test_the_fix_asks_what_is_missing_the_way_the_repair_does(
     assert result["type"] is FlowResultType.ABORT
     assert result["reason"] == "changed"
     assert entry.options["entities"] == ["light.known", "device_tracker.phone"]
+
+
+async def test_a_group_added_mid_round_does_not_end_it(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the round survives a group arriving while it describes one.
+
+    Describing what is missing can hand the event loop a turn, and a group
+    set up in that turn changed the very dictionary being walked.
+    """
+    _install_group(hass, "light.living", ["light.gone"])
+    entities = hass.data[DATA_ENTITY_PLATFORM]["group"][0].entities
+    original = unknown_members.async_describe_unknown_entities
+
+    async def _describe_while_a_group_arrives(*args: Any, **kwargs: Any) -> str:
+        entities["light.new"] = SimpleNamespace(
+            entity_id="light.new", name="New", _entity_ids=[]
+        )
+        return await original(*args, **kwargs)
+
+    monkeypatch.setattr(
+        unknown_members,
+        "async_describe_unknown_entities",
+        _describe_while_a_group_arrives,
+    )
+
+    await SpookRepair(hass).async_inspect()
+
+    assert async_issue_about(issue_registry, _ISSUE_ID)

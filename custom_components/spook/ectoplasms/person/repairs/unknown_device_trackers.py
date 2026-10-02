@@ -89,7 +89,10 @@ class SpookRepair(AbstractSpookRepair):
             return  # Person is not set up; nothing to do.
 
         entity_registry = er.async_get(self.hass)
-        for person_entity in component.entities:
+        # Taken as a snapshot: describing what is missing can hand the event
+        # loop a turn, and a change to the live collection during it ends the
+        # inspection in a `RuntimeError`. #1558.
+        for person_entity in list(component.entities):
             self.possible_issue_ids.add(person_entity.entity_id)
 
             unknown = [
