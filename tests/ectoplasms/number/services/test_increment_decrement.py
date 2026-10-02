@@ -12,7 +12,11 @@ from homeassistant.const import UnitOfTemperature
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.util.unit_system import US_CUSTOMARY_SYSTEM
 
-from custom_components.spook.ectoplasms.number.services import decrement, increment
+from custom_components.spook.ectoplasms.number.services import (
+    async_set_shown_value,
+    decrement,
+    increment,
+)
 
 
 class MockNumberEntity:  # pylint: disable=too-few-public-methods
@@ -168,3 +172,18 @@ async def test_stepping_happens_in_the_units_somebody_sees(
     )
 
     assert entity.native_value == pytest.approx(expected_celsius, abs=0.01)
+
+
+async def test_a_shown_value_just_past_a_limit_lands_on_it(hass: Any) -> None:
+    """Test rounding between units cannot carry a value past a native limit.
+
+    86 °F is the top of 30 °C, but converting back can come out a hair above
+    it, which the entity would refuse.
+    """
+    hass.config.units = US_CUSTOMARY_SYSTEM
+    entity = _CelsiusShownAsFahrenheit()
+    entity.hass = hass
+
+    await async_set_shown_value(entity, 86.01)
+
+    assert entity.native_value == entity.native_max_value
