@@ -11,6 +11,7 @@ import voluptuous as vol
 
 from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
+    ConfigEntryChange,
     ConfigEntryState,
 )
 from homeassistant.const import CONF_FOR, CONF_OPTIONS
@@ -25,7 +26,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
     from datetime import datetime
 
-    from homeassistant.config_entries import ConfigEntry, ConfigEntryChange
+    from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import CALLBACK_TYPE, HomeAssistant
     from homeassistant.helpers.trigger import (
         TriggerActionRunner,
@@ -145,16 +146,22 @@ class _FailedEntryTracker:
     @callback
     def _entry_changed(
         self,
-        _change: ConfigEntryChange,
+        change: ConfigEntryChange,
         entry: ConfigEntry,
     ) -> None:
         """Follow one config entry through its states.
 
-        Removal needs no case of its own: an entry passes through
-        `not_loaded` on its way out, which is already a recovery as far as
-        this is concerned, so the wait is dropped there.
+        Removal gets a case of its own. Most entries pass through
+        `not_loaded` on their way out, which already drops the wait, but one
+        stuck in a state Home Assistant cannot unload from is removed as it
+        is, still failed. Read as one more failure, its wait ran on and
+        reported a deleted integration a quarter of an hour later.
         """
         if not self._is_watched(entry):
+            return
+
+        if change is ConfigEntryChange.REMOVED:
+            self._forget(entry.entry_id)
             return
 
         if entry.state in FAILED_STATES:

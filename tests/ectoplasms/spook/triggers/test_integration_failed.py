@@ -456,6 +456,40 @@ async def test_a_removed_entry_is_forgotten(
     await _detach(hass)
 
 
+@pytest.mark.parametrize(
+    "stuck", [ConfigEntryState.MIGRATION_ERROR, ConfigEntryState.FAILED_UNLOAD]
+)
+async def test_an_entry_removed_while_stuck_is_forgotten(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    stuck: ConfigEntryState,
+) -> None:
+    """Deleting an integration Home Assistant cannot unload is a fix too.
+
+    One stuck in these states is removed as it is, without passing through
+    `not_loaded` first, so the removal still reads as failed.
+    """
+    freezer.move_to(dt_util.as_utc(dt_util.parse_datetime("2026-08-28 12:00:00")))
+    entry = _entry(hass)
+
+    ran = await _automation(hass, {"for": "00:15:00"})
+
+    entry.mock_state(hass, stuck, "will not go")
+    await hass.async_block_till_done()
+
+    freezer.tick(timedelta(minutes=5))
+    await hass.config_entries.async_remove(entry.entry_id)
+    await hass.async_block_till_done()
+
+    freezer.tick(timedelta(hours=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+
+    assert not ran, "reported an entry that had been deleted"
+
+    await _detach(hass)
+
+
 async def test_only_the_named_entries_are_watched(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
