@@ -174,8 +174,7 @@ class AbstractSpookRepairBase(ABC):
         underneath, and the next genuinely broken thing in that script is
         hidden by a decision somebody made about something else. #1395.
         """
-        if references is not None:
-            issue_id = f"{issue_id}_{_fingerprint(references)}"
+        issue_id = self._issue_id_for(issue_id, references)
 
         self.issue_ids.add(issue_id)
         ir.async_create_issue(
@@ -192,6 +191,32 @@ class AbstractSpookRepairBase(ABC):
             translation_key=translation_key or self.repair,
             translation_placeholders=translation_placeholders,
         )
+
+    @final
+    @callback
+    def async_issue_is_ignored(
+        self,
+        issue_id: str,
+        *,
+        references: Iterable[str] | None = None,
+    ) -> bool:
+        """Return whether somebody ignored the issue this would create.
+
+        Keyed the same way `async_create_issue` keys it, so a repair can ask
+        about the exact issue it is about to raise.
+        """
+        issue = self.issue_registry.async_get_issue(
+            DOMAIN, f"{self.repair}_{self._issue_id_for(issue_id, references)}"
+        )
+        return issue is not None and issue.dismissed_version is not None
+
+    @staticmethod
+    def _issue_id_for(issue_id: str, references: Iterable[str] | None) -> str:
+        """Return the ID an issue is filed under, findings and all."""
+        if references is None:
+            return issue_id
+
+        return f"{issue_id}_{_fingerprint(references)}"
 
     @final
     @callback

@@ -1,12 +1,16 @@
 """Tests for the orphaned long-term statistics repair."""
 
-# pylint: disable=wrong-import-order
+# Clearing up after an inspection is where an ignored issue used to get lost,
+# and the only way in is the private method Spook runs each round through.
+# ruff: noqa: SLF001
+# pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
 from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
 from custom_components.spook import statistics_sources
@@ -19,7 +23,7 @@ if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
 
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import entity_registry as er, issue_registry as ir
+    from homeassistant.helpers import entity_registry as er
     import pytest
 
 _ISSUE_ID = "orphaned_statistics_orphaned_statistics"
@@ -302,3 +306,128 @@ async def test_the_issue_carries_what_the_fix_is_dispatched_on(
     assert issue
     assert issue.is_fixable
     assert issue.data == {"orphaned_statistic_ids": "sensor.ghost,sensor.gone"}
+
+
+async def _ignore(issue_registry: ir.IssueRegistry, repair: SpookRepair) -> None:
+    """Press "keep them, stop telling me", and look again the way Spook does."""
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
+    assert issue
+    ir.async_ignore_issue(
+        issue_registry.hass, issue.domain, issue.issue_id, ignore=True
+    )
+    await repair._async_inspect_with_cleanup()
+
+
+async def test_one_more_on_the_list_brings_back_only_that_one(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test ignoring means "not these", and not "not until the list changes".
+
+    The issue ID follows the findings, so one more statistic on the list made
+    a new issue that nobody had ignored, listing everything all over again.
+    Somebody pressing the button every day is #1699 and #1702.
+    """
+    validation = {"sensor.ghost": [SimpleNamespace(type="no_state")]}
+    _install_fake_recorder(hass, monkeypatch, validation)
+    repair = SpookRepair(hass)
+    await _inspect_until_settled(repair, freezer)
+    await _ignore(issue_registry, repair)
+
+    validation["sensor.newcomer"] = [SimpleNamespace(type="no_state")]
+    await repair._async_inspect_with_cleanup()
+    freezer.tick(_LONG_ENOUGH)
+    await repair._async_inspect_with_cleanup()
+
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
+    assert issue
+    assert issue.dismissed_version is None
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["statistics"] == "- `sensor.newcomer`"
+
+
+async def test_one_less_on_the_list_brings_nothing_back(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test clearing one of the kept statistics does not undo keeping the rest."""
+    validation = {
+        "sensor.ghost": [SimpleNamespace(type="no_state")],
+        "sensor.gone": [SimpleNamespace(type="no_state")],
+    }
+    _install_fake_recorder(hass, monkeypatch, validation)
+    repair = SpookRepair(hass)
+    await _inspect_until_settled(repair, freezer)
+    await _ignore(issue_registry, repair)
+
+    del validation["sensor.gone"]
+    freezer.tick(_LONG_ENOUGH)
+    await repair._async_inspect_with_cleanup()
+
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+
+
+async def test_keeping_them_survives_a_restart(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a restart does not put the ignored statistics back up.
+
+    After a start nothing has settled yet, so the first look finds nothing to
+    report. That used to clear the ignored issue, and its "ignore" with it,
+    and the statistics came back as new once they had settled again.
+    """
+    validation = {"sensor.ghost": [SimpleNamespace(type="no_state")]}
+    _install_fake_recorder(hass, monkeypatch, validation)
+    await _inspect_until_settled(SpookRepair(hass), freezer)
+    ir.async_ignore_issue(hass, *next(iter(issue_registry.issues)), ignore=True)
+
+    # What a restart leaves: the issue registry and the disk, but no memory
+    # of how long anything has been waiting, nor of what was kept.
+    hass.data.pop(statistics_sources.DATA_ABANDONED_SINCE, None)
+    hass.data.pop(statistics_sources.DATA_KEPT, None)
+    repair = SpookRepair(hass)
+
+    await repair._async_inspect_with_cleanup()
+
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
+    assert issue, "the ignored issue was cleared while still waiting"
+    assert issue.dismissed_version is not None
+
+    freezer.tick(_LONG_ENOUGH)
+    await repair._async_inspect_with_cleanup()
+    assert await statistics_sources.async_kept_statistic_ids(hass) == {"sensor.ghost"}
+
+    # Kept on disk now, so the next restart has nothing left to lose.
+    hass.data.pop(statistics_sources.DATA_ABANDONED_SINCE, None)
+    hass.data.pop(statistics_sources.DATA_KEPT, None)
+    repair = SpookRepair(hass)
+    await repair._async_inspect_with_cleanup()
+    freezer.tick(_LONG_ENOUGH)
+    await repair._async_inspect_with_cleanup()
+
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+
+
+async def test_a_resolved_issue_still_goes_once_nothing_is_waiting(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test holding on while waiting does not hold on to everything forever."""
+    validation = {"sensor.ghost": [SimpleNamespace(type="no_state")]}
+    _install_fake_recorder(hass, monkeypatch, validation)
+    repair = SpookRepair(hass)
+    await _inspect_until_settled(repair, freezer)
+
+    validation.clear()
+    await repair._async_inspect_with_cleanup()
+
+    assert async_issue_about(issue_registry, _ISSUE_ID) is None
