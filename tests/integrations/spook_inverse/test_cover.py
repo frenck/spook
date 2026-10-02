@@ -225,3 +225,39 @@ async def test_what_it_is_told_reaches_the_source_turned_around(
 
     assert len(calls) == 1
     assert calls[0].data == {ATTR_ENTITY_ID: _SOURCE, **expected_data}
+
+
+@pytest.mark.parametrize(
+    ("method", "expected_service"),
+    [
+        # All the way open is, upside down, closed: toggling opens it, which
+        # the source does by closing.
+        ("async_toggle", "close_cover"),
+        # Slats tilted all the way are, upside down, flat: toggling tilts them
+        # open, which the source does by tilting closed.
+        ("async_toggle_tilt", "close_cover_tilt"),
+    ],
+)
+async def test_toggling_goes_the_way_the_inverse_is_facing(
+    hass: HomeAssistant,
+    method: str,
+    expected_service: str,
+) -> None:
+    """Test a toggle is worked out from the inverse's state, not the source's.
+
+    Toggling is left to Home Assistant's own cover logic, which picks open or
+    close from what the inverse shows, and then hands that to the inverse.
+    """
+    _blinds(
+        hass,
+        CoverState.OPEN,
+        **{ATTR_CURRENT_POSITION: 100, ATTR_CURRENT_TILT_POSITION: 100},
+    )
+    inverse = await _inverse(hass, inverse_tilt=True)
+    entity = hass.data[DATA_INSTANCES]["cover"].get_entity(inverse)
+    calls = async_mock_service(hass, "cover", expected_service)
+
+    await getattr(entity, method)()
+
+    assert len(calls) == 1
+    assert calls[0].data == {ATTR_ENTITY_ID: _SOURCE}
