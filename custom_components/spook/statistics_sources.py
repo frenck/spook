@@ -2,7 +2,6 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from datetime import timedelta
 import functools
 from typing import TYPE_CHECKING
@@ -15,11 +14,8 @@ from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE, get_instance
-from homeassistant.helpers.storage import Store
 from homeassistant.util import dt as dt_util
 from homeassistant.util.hass_dict import HassKey
-
-from .const import DOMAIN
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -38,15 +34,6 @@ _ORPHAN_ISSUE_TYPE = "no_state"
 # Nothing here is urgent: statistics left behind by a sensor removed last
 # year keep just as well for another quarter of an hour.
 _SETTLING_TIME = timedelta(minutes=15)
-
-# The statistics somebody said to keep, written down so it lasts. Home
-# Assistant remembers that an issue was ignored, but only by its ID, and that
-# ID follows the findings: one statistic more or less on the list makes it a
-# different issue nobody has ignored yet. #1699, #1702.
-KEPT_STORAGE_KEY = f"{DOMAIN}.kept_statistics"
-KEPT_STORAGE_VERSION = 1
-
-DATA_KEPT: HassKey[_Kept] = HassKey("spook_statistics_kept")
 
 # When each currently abandoned statistic was first seen that way. Held per
 # instance rather than written down, so a restart starts every wait over,
@@ -175,49 +162,6 @@ def async_statistics_still_settling(hass: HomeAssistant) -> bool:
         now - first_seen < _SETTLING_TIME
         for first_seen in hass.data.get(DATA_ABANDONED_SINCE, {}).values()
     )
-
-
-@dataclass
-class _Kept:
-    """The statistics somebody said to keep, and where they are written."""
-
-    store: Store[dict[str, list[str]]]
-    ids: set[str]
-
-
-async def _async_kept(hass: HomeAssistant) -> _Kept:
-    """Return the kept statistics, loading them on first use."""
-    if (kept := hass.data.get(DATA_KEPT)) is not None:
-        return kept
-
-    store: Store[dict[str, list[str]]] = Store(
-        hass, KEPT_STORAGE_VERSION, KEPT_STORAGE_KEY
-    )
-    stored = await store.async_load() or {}
-
-    # Something else may have loaded it while this was waiting on the disk,
-    # and whatever it has kept since is not to be thrown away.
-    return hass.data.setdefault(
-        DATA_KEPT, _Kept(store, set(stored.get("statistic_ids", [])))
-    )
-
-
-async def async_kept_statistic_ids(hass: HomeAssistant) -> set[str]:
-    """Return the statistics somebody said to keep."""
-    return set((await _async_kept(hass)).ids)
-
-
-async def async_keep_statistic_ids(
-    hass: HomeAssistant,
-    statistic_ids: set[str],
-) -> None:
-    """Write down that these are to be kept, and not pointed out again."""
-    kept = await _async_kept(hass)
-    if statistic_ids <= kept.ids:
-        return
-
-    kept.ids |= statistic_ids
-    await kept.store.async_save({"statistic_ids": sorted(kept.ids)})
 
 
 async def async_abandoned_statistic_ids(hass: HomeAssistant) -> set[str]:

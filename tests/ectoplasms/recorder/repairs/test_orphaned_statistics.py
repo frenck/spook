@@ -10,10 +10,14 @@ from datetime import timedelta
 from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
+from pytest_homeassistant_custom_component.common import async_fire_time_changed
+
 from homeassistant.helpers import issue_registry as ir
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
 from custom_components.spook import statistics_sources
+from custom_components.spook.const import DOMAIN
+from custom_components.spook.dismissals import async_setup_dismissals
 from custom_components.spook.ectoplasms.recorder.repairs.orphaned_statistics import (
     SpookRepair,
 )
@@ -308,6 +312,15 @@ async def test_the_issue_carries_what_the_fix_is_dispatched_on(
     assert issue.data == {"orphaned_statistic_ids": "sensor.ghost,sensor.gone"}
 
 
+def _issues(issue_registry: ir.IssueRegistry) -> list[ir.IssueEntry]:
+    """Return every issue this repair has up, ignored or not."""
+    return [
+        entry
+        for (domain, issue_id), entry in issue_registry.issues.items()
+        if domain == DOMAIN and issue_id.startswith(_ISSUE_ID)
+    ]
+
+
 async def _ignore(issue_registry: ir.IssueRegistry, repair: SpookRepair) -> None:
     """Press "keep them, stop telling me", and look again the way Spook does."""
     issue = async_issue_about(issue_registry, _ISSUE_ID)
@@ -328,8 +341,10 @@ async def test_one_more_on_the_list_brings_back_only_that_one(
 
     The issue ID follows the findings, so one more statistic on the list made
     a new issue that nobody had ignored, listing everything all over again.
-    Somebody pressing the button every day is #1699 and #1702.
+    Somebody pressing the button every day is #1699 and #1702. The new one
+    comes up on its own, and the kept ones stay where the ignored issues are.
     """
+    await async_setup_dismissals(hass)
     validation = {"sensor.ghost": [SimpleNamespace(type="no_state")]}
     _install_fake_recorder(hass, monkeypatch, validation)
     repair = SpookRepair(hass)
@@ -341,11 +356,14 @@ async def test_one_more_on_the_list_brings_back_only_that_one(
     freezer.tick(_LONG_ENOUGH)
     await repair._async_inspect_with_cleanup()
 
-    issue = async_issue_about(issue_registry, _ISSUE_ID)
-    assert issue
-    assert issue.dismissed_version is None
-    assert issue.translation_placeholders
-    assert issue.translation_placeholders["statistics"] == "- `sensor.newcomer`"
+    listed = {
+        issue.translation_placeholders["statistics"]: issue.dismissed_version
+        for issue in _issues(issue_registry)
+        if issue.translation_placeholders
+    }
+    assert listed.keys() == {"- `sensor.newcomer`", "- `sensor.ghost`"}
+    assert listed["- `sensor.newcomer`"] is None
+    assert listed["- `sensor.ghost`"] is not None
 
 
 async def test_one_less_on_the_list_brings_nothing_back(
@@ -355,6 +373,7 @@ async def test_one_less_on_the_list_brings_nothing_back(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     """Test clearing one of the kept statistics does not undo keeping the rest."""
+    await async_setup_dismissals(hass)
     validation = {
         "sensor.ghost": [SimpleNamespace(type="no_state")],
         "sensor.gone": [SimpleNamespace(type="no_state")],
@@ -368,7 +387,10 @@ async def test_one_less_on_the_list_brings_nothing_back(
     freezer.tick(_LONG_ENOUGH)
     await repair._async_inspect_with_cleanup()
 
-    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
+    assert issue
+    assert issue.translation_placeholders == {"statistics": "- `sensor.ghost`"}
+    assert issue.dismissed_version is not None
 
 
 async def test_keeping_them_survives_a_restart(
@@ -383,36 +405,35 @@ async def test_keeping_them_survives_a_restart(
     report. That used to clear the ignored issue, and its "ignore" with it,
     and the statistics came back as new once they had settled again.
     """
+    unload = await async_setup_dismissals(hass)
     validation = {"sensor.ghost": [SimpleNamespace(type="no_state")]}
     _install_fake_recorder(hass, monkeypatch, validation)
-    await _inspect_until_settled(SpookRepair(hass), freezer)
-    ir.async_ignore_issue(hass, *next(iter(issue_registry.issues)), ignore=True)
+    repair = SpookRepair(hass)
+    await _inspect_until_settled(repair, freezer)
+    await _ignore(issue_registry, repair)
 
     # What a restart leaves: the issue registry and the disk, but no memory
-    # of how long anything has been waiting, nor of what was kept.
+    # of how long anything has been waiting.
+    freezer.tick(timedelta(minutes=1))
+    async_fire_time_changed(hass)
+    await hass.async_block_till_done()
+    unload()
     hass.data.pop(statistics_sources.DATA_ABANDONED_SINCE, None)
-    hass.data.pop(statistics_sources.DATA_KEPT, None)
+    await async_setup_dismissals(hass)
     repair = SpookRepair(hass)
 
     await repair._async_inspect_with_cleanup()
 
     issue = async_issue_about(issue_registry, _ISSUE_ID)
-    assert issue, "the ignored issue was cleared while still waiting"
+    assert issue, "the issue was cleared while everything was still waiting"
     assert issue.dismissed_version is not None
 
     freezer.tick(_LONG_ENOUGH)
     await repair._async_inspect_with_cleanup()
-    assert await statistics_sources.async_kept_statistic_ids(hass) == {"sensor.ghost"}
 
-    # Kept on disk now, so the next restart has nothing left to lose.
-    hass.data.pop(statistics_sources.DATA_ABANDONED_SINCE, None)
-    hass.data.pop(statistics_sources.DATA_KEPT, None)
-    repair = SpookRepair(hass)
-    await repair._async_inspect_with_cleanup()
-    freezer.tick(_LONG_ENOUGH)
-    await repair._async_inspect_with_cleanup()
-
-    assert async_issue_about(issue_registry, _ISSUE_ID) is None
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
+    assert issue
+    assert issue.dismissed_version is not None
 
 
 async def test_a_resolved_issue_still_goes_once_nothing_is_waiting(
