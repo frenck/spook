@@ -60,7 +60,7 @@ class SpookRepair(AbstractSpookRepair):
             placeholders = {
                 "area": area.name,
                 "sensors": " and ".join(AREA_SENSOR_FIELDS[field] for field in unknown),
-                "entities": async_describe_unknown_entities(
+                "entities": await async_describe_unknown_entities(
                     self.hass, sorted(unknown.values())
                 ),
             }

@@ -49,7 +49,7 @@ from .entity_filtering import (
     async_name_helper_in_the_registry,
 )
 from .entity_suggestions import (
-    async_describe_unknown_entities,
+    async_describe_warmed_unknown_entities,
     async_warm_rename_suggestions,
 )
 from .helper_sources import (
@@ -489,7 +489,8 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
     def _format_references(self, references: list[str]) -> str:
         """Return the bulleted reference list for the issue message."""
         if self.references_are_entities:
-            return async_describe_unknown_entities(self.hass, references)
+            # Warmed for the whole round in `async_inspect` already.
+            return async_describe_warmed_unknown_entities(self.hass, references)
         return "\n".join(f"- `{reference}`" for reference in references)
 
     async def _async_setup_inspection(self) -> None:

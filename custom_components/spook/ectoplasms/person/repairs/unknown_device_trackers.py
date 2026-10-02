@@ -108,7 +108,7 @@ class SpookRepair(AbstractSpookRepair):
                 data={
                     "person_entity_id": person_entity.entity_id,
                     "person": person_entity.name,
-                    "device_trackers": async_describe_unknown_entities(
+                    "device_trackers": await async_describe_unknown_entities(
                         self.hass, sorted(unknown)
                     ),
                     "unknown_trackers": ",".join(sorted(unknown)),

@@ -29,7 +29,7 @@ if TYPE_CHECKING:
 _RENAME_SIMILARITY_CUTOFF = 0.8
 
 
-def async_describe_unknown_entities(
+async def async_describe_unknown_entities(
     hass: HomeAssistant,
     entity_ids: Iterable[str],
     *,
@@ -39,6 +39,29 @@ def async_describe_unknown_entities(
 
     A ``note`` is appended to every line, to qualify a group of entity IDs
     that share something worth saying once per entry.
+
+    The rename suggestions are worked out in a thread first. Every repair
+    describing what it found called the inline version, and each of those
+    was its own chance to keep Home Assistant busy for seconds. A repair
+    that already did that for its whole round finds them all in the cache,
+    and this goes nowhere.
+    """
+    entity_ids = list(entity_ids)
+    await async_warm_rename_suggestions(hass, entity_ids)
+    return async_describe_warmed_unknown_entities(hass, entity_ids, note=note)
+
+
+def async_describe_warmed_unknown_entities(
+    hass: HomeAssistant,
+    entity_ids: Iterable[str],
+    *,
+    note: str | None = None,
+) -> str:
+    """Describe unknown entity IDs whose suggestions were worked out already.
+
+    For a caller that warmed the whole round at once with
+    `async_warm_rename_suggestions`. Anything it missed is compared right
+    here on the event loop, which is the stall the warming exists to avoid.
     """
     deleted_by_entity_id = async_get_deleted_entities(hass)
     known_by_domain = async_get_all_entity_ids_by_domain(hass)

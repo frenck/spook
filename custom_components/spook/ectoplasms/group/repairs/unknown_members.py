@@ -56,7 +56,7 @@ class SpookRepair(AbstractSpookRepair):
                 if unknown_entities := async_filter_known_entity_ids(
                     self.hass, entity_ids=members, known_entity_ids=known_entity_ids
                 ):
-                    described = async_describe_unknown_entities(
+                    described = await async_describe_unknown_entities(
                         self.hass, sorted(unknown_entities)
                     )
                     self.async_create_issue(

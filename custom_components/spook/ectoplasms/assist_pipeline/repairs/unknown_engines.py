@@ -123,10 +123,12 @@ class SpookRepair(AbstractSpookRepair):
                 translation_placeholders={
                     "pipeline": pipeline.name,
                     "engines": "\n".join(
-                        async_describe_unknown_entities(
-                            self.hass, [engine], note=f"the {step}"
-                        )
-                        for step, engine in unknown.items()
+                        [
+                            await async_describe_unknown_entities(
+                                self.hass, [engine], note=f"the {step}"
+                            )
+                            for step, engine in unknown.items()
+                        ]
                     ),
                 },
             )

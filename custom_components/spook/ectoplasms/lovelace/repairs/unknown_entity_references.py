@@ -105,7 +105,7 @@ class SpookRepair(AbstractSpookRepair):
                     issue_id=url_path,
                     references=unknown_entities,
                     translation_placeholders={
-                        "entities": async_describe_unknown_entities(
+                        "entities": await async_describe_unknown_entities(
                             self.hass, sorted(unknown_entities)
                         ),
                         "dashboard": title,
