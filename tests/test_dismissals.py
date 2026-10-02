@@ -17,6 +17,7 @@ from homeassistant.util import dt as dt_util
 from custom_components.spook.const import DOMAIN
 from custom_components.spook.dismissals import (
     DATA_DISMISSALS,
+    Dismissals,
     STORAGE_KEY,
     async_setup_dismissals,
 )
@@ -26,6 +27,7 @@ if TYPE_CHECKING:
     from collections.abc import Callable
 
     from homeassistant.core import HomeAssistant
+    import pytest
 
 
 class HauntedScriptRepair(AbstractSpookRepair):
@@ -355,3 +357,30 @@ async def test_statistics_kept_the_old_way_are_carried_over(
         "orphaned_statistics": {"orphaned_statistics": ["sensor.ghost", "sensor.gone"]}
     }
     assert "spook.kept_statistics" not in hass_storage
+
+
+async def test_the_old_store_stays_until_the_new_one_is_written(
+    hass: HomeAssistant,
+    hass_storage: dict[str, Any],
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a write that did not land leaves the old store for another try.
+
+    Home Assistant logs a failed write rather than raising it, so removing
+    the old file on the strength of having asked would leave no copy at all.
+    """
+    hass_storage["spook.kept_statistics"] = {
+        "version": 1,
+        "minor_version": 1,
+        "key": "spook.kept_statistics",
+        "data": {"statistic_ids": ["sensor.ghost"]},
+    }
+
+    async def _write_that_went_nowhere(_self: Dismissals) -> None:
+        """Fail the way Home Assistant does: quietly."""
+
+    monkeypatch.setattr(Dismissals, "async_write_now", _write_that_went_nowhere)
+
+    await _set_up(hass)
+
+    assert "spook.kept_statistics" in hass_storage

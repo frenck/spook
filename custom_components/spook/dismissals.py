@@ -127,11 +127,12 @@ class Dismissals:
         references: Iterable[str],
     ) -> None:
         """Write down that these findings are to be left alone."""
+        references = set(references)
         dismissed = self._dismissed.setdefault(repair, {}).setdefault(owner, set())
-        if set(references) <= dismissed:
+        if references <= dismissed:
             return
 
-        dismissed.update(references)
+        dismissed |= references
         self._async_schedule_save()
 
     @callback
@@ -239,14 +240,23 @@ async def _async_take_over_kept_statistics(
     if (stored := await legacy.async_load()) is None:
         return
 
-    if statistic_ids := stored.get("statistic_ids"):
+    if statistic_ids := set(stored.get("statistic_ids") or ()):
         dismissals.async_dismiss(
             _ORPHANED_STATISTICS, _ORPHANED_STATISTICS, statistic_ids
         )
 
-    # On disk before the old file goes, so there is no moment where neither
-    # holds it.
-    await dismissals.async_write_now()
+        # On disk before the old file goes, so there is no moment where
+        # neither holds it. Home Assistant logs a failed write rather than
+        # raising it, so what landed is read back rather than assumed, and
+        # the old file stays for another try if it is not all there.
+        await dismissals.async_write_now()
+        written = await Store[dict[str, dict[str, list[str]]]](
+            hass, STORAGE_VERSION, STORAGE_KEY
+        ).async_load()
+        landed = (written or {}).get(_ORPHANED_STATISTICS, {})
+        if not statistic_ids <= set(landed.get(_ORPHANED_STATISTICS, ())):
+            return
+
     await legacy.async_remove()
 
 
