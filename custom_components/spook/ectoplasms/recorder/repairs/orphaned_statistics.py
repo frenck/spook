@@ -8,9 +8,14 @@ from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
-from ....const import LOGGER
+from ....const import DOMAIN, LOGGER
 from ....repairs import AbstractSpookRepair
-from ....statistics_sources import async_settled_orphaned_statistic_ids
+from ....statistics_sources import (
+    async_keep_statistic_ids,
+    async_kept_statistic_ids,
+    async_settled_orphaned_statistic_ids,
+    async_statistics_still_settling,
+)
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -50,7 +55,29 @@ class SpookRepair(AbstractSpookRepair):
 
         self.possible_issue_ids.add(self.repair)
 
-        orphaned = sorted(await async_settled_orphaned_statistic_ids(self.hass))
+        settled = await async_settled_orphaned_statistic_ids(self.hass)
+
+        if not settled and async_statistics_still_settling(self.hass):
+            # Right after a start everything is still being waited on, so
+            # nothing is settled yet. That is not the same as everything
+            # being fine, and clearing the issue now would throw away the
+            # "ignore" written on it. Leave what is there until it is known.
+            prefix = f"{self.repair}_"
+            self.issue_ids.update(
+                issue_id.removeprefix(prefix)
+                for domain, issue_id in self.issue_registry.issues
+                if domain == DOMAIN and issue_id.startswith(prefix)
+            )
+            return
+
+        orphaned = sorted(settled - await async_kept_statistic_ids(self.hass))
+
+        if orphaned and self.async_issue_is_ignored(self.repair, references=orphaned):
+            # Somebody said to keep exactly these. Written down where it
+            # outlasts the issue, because the next one more or less on the
+            # list would be a new issue nobody has ignored.
+            await async_keep_statistic_ids(self.hass, set(orphaned))
+            return
 
         if orphaned:
             self.async_create_issue(
