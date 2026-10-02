@@ -11,8 +11,8 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook import registry_usage
 from custom_components.spook.const import DOMAIN
-from custom_components.spook.ectoplasms.homeassistant.repairs import empty_areas
 from custom_components.spook.ectoplasms.homeassistant.repairs.empty_areas import (
     SpookRepair,
 )
@@ -122,7 +122,7 @@ async def test_area_referenced_by_automation_is_not_reported(
     area = area_registry.async_create("Hallway")
     freezer.tick(_AGED)
     monkeypatch.setattr(
-        empty_areas,
+        registry_usage,
         "automations_with_area",
         lambda _hass, area_id: ["automation.lights"] if area_id == area.id else [],
     )
@@ -414,3 +414,27 @@ async def test_quotes_in_ordinary_text_are_not_a_mention(
     await SpookRepair(hass).async_inspect()
 
     assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id))
+
+
+async def test_an_area_that_filled_up_since_is_left_alone(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the button does not delete an area something moved into.
+
+    An issue can sit there for days. Deleting the area unassigns everything
+    in it, so whatever was put there since would quietly lose its area.
+    """
+    area = area_registry.async_create("Hallway")
+    flow = _flow_for(hass, area.id, "Hallway")
+
+    entity = entity_registry.async_get_or_create("light", "test", "hall")
+    entity_registry.async_update_entity(entity.entity_id, area_id=area.id)
+
+    result = await flow.async_step_remove()
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert area_registry.async_get_area(area.id) is not None
+    assert entity_registry.async_get(entity.entity_id).area_id == area.id

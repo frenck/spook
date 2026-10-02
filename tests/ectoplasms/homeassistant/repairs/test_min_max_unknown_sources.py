@@ -10,6 +10,9 @@ from pytest_homeassistant_custom_component.common import MockConfigEntry
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.setup import async_setup_component
 
+from custom_components.spook.entity_filtering import (
+    async_setup_all_entity_ids_cache_invalidation,
+)
 from custom_components.spook.ectoplasms.homeassistant.repairs.min_max_unknown_sources import (
     SpookRepair,
 )
@@ -103,7 +106,10 @@ async def test_fix_flow_remove_prunes_members(
     )
     assert isinstance(flow, MinMaxUnknownSourcesFixFlow)
     flow.hass = hass
-    flow.data = {"min_max_config_entry_id": entry.entry_id}
+    flow.data = {
+        "min_max_config_entry_id": entry.entry_id,
+        "min_max_unknown_sources": "sensor.gone",
+    }
 
     result = await flow.async_step_remove()
 
@@ -121,7 +127,10 @@ async def test_fix_flow_remove_keeps_minimum_members(
     flow = MinMaxUnknownSourcesFixFlow()
     flow.hass = hass
     flow.issue_id = _issue_id(entry)
-    flow.data = {"min_max_config_entry_id": entry.entry_id}
+    flow.data = {
+        "min_max_config_entry_id": entry.entry_id,
+        "min_max_unknown_sources": "sensor.gone",
+    }
 
     result = await flow.async_step_remove()
 
@@ -164,6 +173,7 @@ async def test_remove_stops_the_helper_listening(hass: HomeAssistant) -> None:
         "min_max_config_entry_id": entry.entry_id,
         "helper": "Combined",
         "sources": "- `sensor.gone`",
+        "min_max_unknown_sources": "sensor.gone",
     }
     result = await flow.async_step_remove()
     await hass.async_block_till_done()
@@ -178,3 +188,46 @@ async def test_remove_stops_the_helper_listening(hass: HomeAssistant) -> None:
     await hass.async_block_till_done()
 
     assert hass.states.get("sensor.combined").state == "20.0"
+
+
+async def test_only_the_members_the_issue_named_are_pruned(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a member missing for a moment when the button is pressed stays."""
+    # Spook sets this up on start; without it a member going away is not seen.
+    async_setup_all_entity_ids_cache_invalidation(hass)
+    for entity_id in ("sensor.one", "sensor.two", "sensor.away"):
+        hass.states.async_set(entity_id, "1")
+    entry = _entry(hass, ["sensor.one", "sensor.two", "sensor.away", "sensor.gone"])
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, _issue_id(entry))
+    assert issue
+
+    flow = MinMaxUnknownSourcesFixFlow()
+    flow.hass = hass
+    flow.data = issue.data
+    hass.states.async_remove("sensor.away")
+    await flow.async_step_remove()
+
+    assert entry.options["entity_ids"] == ["sensor.one", "sensor.two", "sensor.away"]
+
+
+async def test_a_member_that_came_back_is_not_pruned(hass: HomeAssistant) -> None:
+    """Test nothing is pruned when what the issue named is back."""
+    async_setup_all_entity_ids_cache_invalidation(hass)
+    for entity_id in ("sensor.one", "sensor.two", "sensor.gone"):
+        hass.states.async_set(entity_id, "1")
+    entry = _entry(hass, ["sensor.one", "sensor.two", "sensor.gone"])
+
+    flow = MinMaxUnknownSourcesFixFlow()
+    flow.hass = hass
+    flow.data = {
+        "min_max_config_entry_id": entry.entry_id,
+        "min_max_unknown_sources": "sensor.gone",
+    }
+    result = await flow.async_step_remove()
+
+    assert result["type"] == FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entity_ids"] == ["sensor.one", "sensor.two", "sensor.gone"]

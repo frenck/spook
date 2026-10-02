@@ -65,6 +65,10 @@ class SpookRepair(AbstractSpookRepair):
                         is_fixable=True,
                         data={
                             "group_entity_id": entity.entity_id,
+                            # What the fix checks again before dropping any.
+                            "group_unknown_entity_ids": ",".join(
+                                sorted(unknown_entities)
+                            ),
                             "group": entity.name,
                             "entities": described,
                         },

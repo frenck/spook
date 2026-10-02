@@ -4,8 +4,6 @@ from __future__ import annotations
 
 from datetime import timedelta
 
-from homeassistant.components.automation import automations_with_floor
-from homeassistant.components.script import scripts_with_floor
 from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
 from homeassistant.helpers import (
     area_registry as ar,
@@ -15,6 +13,7 @@ from homeassistant.util import dt as dt_util
 
 from ....const import LOGGER
 from ....reference_extraction import async_collect_mentioned_strings
+from ....registry_usage import async_floor_in_use
 from ....repairs import AbstractSpookRepair
 
 # Give a freshly created floor time to get areas assigned before nagging.
@@ -46,7 +45,6 @@ class SpookRepair(AbstractSpookRepair):
         mentioned = async_collect_mentioned_strings(self.hass)
 
         floor_registry = fr.async_get(self.hass)
-        area_registry = ar.async_get(self.hass)
 
         cutoff = dt_util.utcnow() - _MINIMUM_AGE
         for floor in floor_registry.async_list_floors():
@@ -55,18 +53,7 @@ class SpookRepair(AbstractSpookRepair):
             if floor.created_at > cutoff:
                 # Just created; leave time to assign areas.
                 continue
-            if ar.async_entries_for_floor(area_registry, floor.floor_id):
-                continue
-            if automations_with_floor(self.hass, floor.floor_id):
-                continue
-            if scripts_with_floor(self.hass, floor.floor_id):
-                continue
-            if floor.floor_id in mentioned:
-                # Named somewhere in an automation or script without
-                # being a target of it. That is not proof it is in use: the
-                # collector takes every string it finds and a coincidence
-                # counts the same as a reference. It is enough to stop
-                # offering to delete it, which is all this decides.
+            if async_floor_in_use(self.hass, floor.floor_id, mentioned):
                 continue
 
             self.async_create_issue(

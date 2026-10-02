@@ -88,7 +88,12 @@ async def test_fix_flow_remove_prunes_ui_group(
     )
     assert isinstance(flow, GroupUnknownMembersFixFlow)
     flow.hass = hass
-    flow.data = {"group_entity_id": reg.entity_id, "group": "Living", "entities": "x"}
+    flow.data = {
+        "group_entity_id": reg.entity_id,
+        "group": "Living",
+        "entities": "x",
+        "group_unknown_entity_ids": "light.gone",
+    }
 
     # The menu names the group and its entity id.
     menu = await flow.async_step_init()
@@ -160,6 +165,7 @@ async def test_remove_reloads_the_running_group(hass: HomeAssistant) -> None:
         "group_entity_id": "light.hallway",
         "group": "Hallway",
         "entities": "- `light.gone`",
+        "group_unknown_entity_ids": "light.gone",
     }
     result = await flow.async_step_remove()
     await hass.async_block_till_done()
@@ -167,3 +173,70 @@ async def test_remove_reloads_the_running_group(hass: HomeAssistant) -> None:
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert entry.options["entities"] == ["light.real"]
     assert hass.states.get("light.hallway").attributes["entity_id"] == ["light.real"]
+
+
+async def test_only_the_members_the_issue_named_are_dropped(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test a member missing for a moment when the button is pressed stays.
+
+    The issue named one member. Another one being away right then, its
+    integration reloading say, is not one somebody agreed to drop, and
+    dropping it would be for good.
+    """
+    hass.states.async_set("light.known", "on")
+    entry = MockConfigEntry(
+        domain="group",
+        options={
+            "entities": ["light.known", "light.gone", "light.away"],
+            "group_type": "light",
+        },
+    )
+    entry.add_to_hass(hass)
+    reg = entity_registry.async_get_or_create(
+        "light", "group", "living", config_entry=entry
+    )
+    hass.states.async_set("light.away", "on")
+    _install_group(hass, reg.entity_id, ["light.known", "light.gone", "light.away"])
+    await SpookRepair(hass).async_inspect()
+    issue = async_issue_about(issue_registry, f"group_unknown_members_{reg.entity_id}")
+    assert issue
+
+    flow = GroupUnknownMembersFixFlow()
+    flow.hass = hass
+    flow.data = issue.data
+    hass.states.async_remove("light.away")
+    await flow.async_step_remove()
+
+    assert entry.options["entities"] == ["light.known", "light.away"]
+
+
+async def test_a_member_that_came_back_is_not_dropped(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test nothing is pruned when what the issue named is back."""
+    hass.states.async_set("light.known", "on")
+    hass.states.async_set("light.gone", "on")
+    entry = MockConfigEntry(
+        domain="group",
+        options={"entities": ["light.known", "light.gone"], "group_type": "light"},
+    )
+    entry.add_to_hass(hass)
+    reg = entity_registry.async_get_or_create(
+        "light", "group", "living", config_entry=entry
+    )
+
+    flow = GroupUnknownMembersFixFlow()
+    flow.hass = hass
+    flow.data = {
+        "group_entity_id": reg.entity_id,
+        "group_unknown_entity_ids": "light.gone",
+    }
+    result = await flow.async_step_remove()
+
+    assert result["type"] is FlowResultType.ABORT
+    assert result["reason"] == "changed"
+    assert entry.options["entities"] == ["light.known", "light.gone"]
