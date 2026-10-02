@@ -47,4 +47,11 @@ class SpookService(AbstractSpookAdminService, ReplaceExistingService):
                 msg,
             )
 
-        self.hass.async_run_hass_job(self.overriden_service.job, call)
+        # Waited on, the way calling Home Assistant's own restart is. It
+        # checks the configuration first and refuses when that is broken, and
+        # without waiting that refusal went nowhere: the automation carried
+        # on as if Home Assistant was on its way back up.
+        if (
+            running := self.hass.async_run_hass_job(self.overriden_service.job, call)
+        ) is not None:
+            await running
