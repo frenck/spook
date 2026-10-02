@@ -285,6 +285,44 @@ async def test_a_late_run_does_not_work_through_what_it_missed(
     assert ran[0]["now"] == dt_util.now()
 
 
+async def test_the_hour_the_clocks_go_back_is_not_a_loop(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Set up during the repeated hour, the trigger waits for what is ahead.
+
+    When the clocks go back, 02:00 to 03:00 happens twice. Attached at the
+    second 02:15, by a restart in the night say, the next 02:30 cronsim named
+    was the first one, already gone. Booking that fired at once, and every
+    firing asked again from now and got the same answer: a run on every turn
+    of the loop until the second 02:30.
+    """
+    await hass.config.async_set_time_zone("Europe/Amsterdam")
+    # 01:15 UTC on 25 October 2026 is the second 02:15 in Amsterdam.
+    freezer.move_to("2026-10-25 01:15:00+00:00")
+    assert dt_util.now().fold == 1
+
+    booked: list[tuple[datetime, Callable[[datetime], None]]] = []
+
+    with patch(f"{CRON_MODULE}.async_track_point_in_time", _recording_tracker(booked)):
+        trigger = SpookTrigger(hass, _config("30 2 * * *"))
+        await trigger.async_attach_runner(lambda _payload, _description: None)
+
+    upcoming, _fire = booked.pop()
+    assert upcoming.timestamp() > dt_util.now().timestamp(), (
+        "booked a time that is already behind, so it fires straight away"
+    )
+    # Tomorrow's, not the second pass through today's. Once a day, the way a
+    # trigger that was running through the night goes on too, and the way
+    # cron itself treats the repeated hour.
+    assert (upcoming.month, upcoming.day, upcoming.hour, upcoming.minute) == (
+        10,
+        26,
+        2,
+        30,
+    )
+
+
 async def test_day_of_month_and_day_of_week_combine_with_or(
     hass: HomeAssistant,
 ) -> None:

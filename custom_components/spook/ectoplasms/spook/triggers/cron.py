@@ -100,14 +100,21 @@ class SpookTrigger(Trigger):
         """Return the next time this schedule comes round, if it ever does.
 
         Validation already turned away the expressions that never come round,
-        so in practice this returns a time. The guard stays because exhausting
-        an iterator is a thing iterators do, and a trigger that raises rather
-        than going quiet would take the automation down with it.
+        so in practice this returns a time. Running out of times ends the loop
+        quietly rather than raising, because a trigger that raises would take
+        the automation down with it.
+
+        Compared as instants, not as clock readings. In the hour the clocks go
+        back every reading happens twice, and asked from the second 02:15,
+        cronsim answers with the first 02:30, which is already behind. Booked
+        anyway, that fires at once, asks again from now, gets the same answer,
+        and goes round like that until the clock reaches the second 02:30.
         """
-        try:
-            return next(CronSim(self._schedule, after))
-        except StopIteration:
-            return None
+        for upcoming in CronSim(self._schedule, after):
+            if upcoming.timestamp() > after.timestamp():
+                return upcoming
+
+        return None
 
     async def async_attach_runner(
         self,
