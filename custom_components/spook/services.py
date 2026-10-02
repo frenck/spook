@@ -20,6 +20,7 @@ from homeassistant.core import (
     SupportsResponse,
     callback,
 )
+from homeassistant.exceptions import Unauthorized, UnknownUser
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
@@ -232,6 +233,9 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
 
     required_features: list[int] | None = None
     supports_response: SupportsResponse = SupportsResponse.NONE
+    #: For an action that changes how something is set up rather than what it
+    #: is doing, which Home Assistant keeps to admins. Automations still pass.
+    admin_only: bool = False
 
     @final
     @callback
@@ -254,13 +258,38 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
 
         component.async_register_entity_service(
             name=self.service,
-            func=self.async_handle_service,
+            func=(
+                self._async_handle_service_as_admin
+                if self.admin_only
+                else self.async_handle_service
+            ),
             schema=self.schema,
             required_features=self.required_features,
             supports_response=self.supports_response,
         )
 
         return True
+
+    async def _async_handle_service_as_admin(
+        self,
+        entity: _EntityT,
+        call: ServiceCall,
+    ) -> ServiceResponse:
+        """Handle the call, if whoever made it may change how things are set up.
+
+        The same check Home Assistant does for an admin-only entity action. It
+        is done here rather than asked of Home Assistant, because the option
+        to ask arrived in a later version than the oldest one Spook runs on,
+        and passing it there fails registering every one of these actions.
+        """
+        if call.context.user_id:
+            user = await self.hass.auth.async_get_user(call.context.user_id)
+            if user is None:
+                raise UnknownUser(context=call.context)
+            if not user.is_admin:
+                raise Unauthorized(context=call.context)
+
+        return await self.async_handle_service(entity, call)
 
     @abstractmethod
     async def async_handle_service(
