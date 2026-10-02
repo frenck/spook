@@ -18,6 +18,7 @@ from homeassistant.helpers import issue_registry as ir
 
 from .automation_runs import async_setup_automation_runs
 from .const import DOMAIN, LOGGER, PLATFORMS
+from .dismissals import async_setup_dismissals
 from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
 from .integration_linking import link_sub_integrations, unlink_sub_integrations
 from .listeners import async_listen_once_tracked
@@ -101,6 +102,10 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # watcher registered afterwards would already have missed the beginning
     # of what it is meant to be watching.
     entry.async_on_unload(async_setup_abandoned_statistics_watching(hass))
+
+    # Loaded before any repair looks, because the first thing a repair does
+    # with what it finds is check whether somebody already said to leave it.
+    entry.async_on_unload(await async_setup_dismissals(hass))
 
     # Who you gonna call? SpookRepairManager!
     repairs = SpookRepairManager(hass)

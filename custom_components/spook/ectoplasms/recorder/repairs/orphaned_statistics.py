@@ -9,10 +9,9 @@ from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.recorder import DATA_INSTANCE
 
 from ....const import DOMAIN, LOGGER
+from ....dismissals import async_get_dismissals
 from ....repairs import AbstractSpookRepair
 from ....statistics_sources import (
-    async_keep_statistic_ids,
-    async_kept_statistic_ids,
     async_settled_orphaned_statistic_ids,
     async_statistics_still_settling,
 )
@@ -60,8 +59,8 @@ class SpookRepair(AbstractSpookRepair):
         if not settled and async_statistics_still_settling(self.hass):
             # Right after a start everything is still being waited on, so
             # nothing is settled yet. That is not the same as everything
-            # being fine, and clearing the issue now would throw away the
-            # "ignore" written on it. Leave what is there until it is known.
+            # being fine, and clearing what is up now would only put it back
+            # a quarter of an hour later. Leave it until it is known.
             prefix = f"{self.repair}_"
             self.issue_ids.update(
                 issue_id.removeprefix(prefix)
@@ -70,28 +69,29 @@ class SpookRepair(AbstractSpookRepair):
             )
             return
 
-        orphaned = sorted(settled - await async_kept_statistic_ids(self.hass))
+        # Reported apart: what is new on an issue of its own, and what
+        # somebody already said to keep on another that is ignored from the
+        # start. One statistic turning up should not bring back the couple of
+        # hundred somebody already decided about. #1699, #1702.
+        kept = async_get_dismissals(self.hass).async_dismissed(self.repair, self.repair)
+        for orphaned in (settled - kept, settled & kept):
+            if orphaned:
+                self._async_report(sorted(orphaned))
 
-        if orphaned and self.async_issue_is_ignored(self.repair, references=orphaned):
-            # Somebody said to keep exactly these. Written down where it
-            # outlasts the issue, because the next one more or less on the
-            # list would be a new issue nobody has ignored.
-            await async_keep_statistic_ids(self.hass, set(orphaned))
-            return
-
-        if orphaned:
-            self.async_create_issue(
-                issue_id=self.repair,
-                references=orphaned,
-                is_fixable=True,
-                # Handed to the fix so it knows what was offered. It looks
-                # again before clearing anything and keeps the two answers
-                # in common, so nothing goes that somebody was not shown and
-                # nothing goes that has since come back.
-                data={"orphaned_statistic_ids": ",".join(orphaned)},
-                translation_placeholders={
-                    "statistics": "\n".join(
-                        f"- `{statistic_id}`" for statistic_id in orphaned
-                    ),
-                },
-            )
+    def _async_report(self, orphaned: list[str]) -> None:
+        """Raise an issue listing these statistics."""
+        self.async_create_issue(
+            issue_id=self.repair,
+            references=orphaned,
+            is_fixable=True,
+            # Handed to the fix so it knows what was offered. It looks again
+            # before clearing anything and keeps the two answers in common,
+            # so nothing goes that somebody was not shown and nothing goes
+            # that has since come back.
+            data={"orphaned_statistic_ids": ",".join(orphaned)},
+            translation_placeholders={
+                "statistics": "\n".join(
+                    f"- `{statistic_id}`" for statistic_id in orphaned
+                ),
+            },
+        )

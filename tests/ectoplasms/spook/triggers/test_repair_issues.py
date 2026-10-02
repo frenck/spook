@@ -164,6 +164,24 @@ async def test_ignoring_an_issue_does_not_fire(hass: HomeAssistant) -> None:
     assert len(ran) == 1
 
 
+async def test_an_issue_ignored_as_it_arrives_does_not_fire(
+    hass: HomeAssistant,
+) -> None:
+    """Spook raises an issue that was ignored before in two steps.
+
+    Created, then ignored straight after, because Home Assistant cannot do
+    both at once. In between it looks new, and firing then would be an
+    automation going off for something somebody already said to leave alone.
+    """
+    ran = await _automation(hass, [{"platform": "spook.repair_issue_created"}])
+
+    _raise(hass)
+    ir.async_ignore_issue(hass, "demo", "boiler", ignore=True)
+    await hass.async_block_till_done()
+
+    assert ran == []
+
+
 async def test_it_fires_when_an_issue_goes_away(hass: HomeAssistant) -> None:
     """Removal sets the other trigger off."""
     _raise(hass)

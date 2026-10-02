@@ -42,6 +42,7 @@ from homeassistant.util.async_ import create_eager_task
 
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
+from .dismissals import async_get_dismissals
 from .entity_filtering import (
     async_filter_known_entity_ids,
     async_get_all_entity_ids,
@@ -174,7 +175,10 @@ class AbstractSpookRepairBase(ABC):
         underneath, and the next genuinely broken thing in that script is
         hidden by a decision somebody made about something else. #1395.
         """
-        issue_id = self._issue_id_for(issue_id, references)
+        owner = issue_id
+        findings = None if references is None else list(references)
+        if findings is not None:
+            issue_id = f"{issue_id}_{_fingerprint(findings)}"
 
         self.issue_ids.add(issue_id)
         ir.async_create_issue(
@@ -192,31 +196,41 @@ class AbstractSpookRepairBase(ABC):
             translation_placeholders=translation_placeholders,
         )
 
+        if findings is not None:
+            self._async_carry_over_dismissal(
+                f"{self.repair}_{issue_id}", owner, findings
+            )
+
     @final
     @callback
-    def async_issue_is_ignored(
+    def _async_carry_over_dismissal(
         self,
         issue_id: str,
-        *,
-        references: Iterable[str] | None = None,
-    ) -> bool:
-        """Return whether somebody ignored the issue this would create.
+        owner: str,
+        findings: list[str],
+    ) -> None:
+        """Keep an issue ignored when what it reports was ignored already.
 
-        Keyed the same way `async_create_issue` keys it, so a repair can ask
-        about the exact issue it is about to raise.
+        An issue filed under its findings is a new issue whenever they change,
+        and Home Assistant only remembers an ignore on the issue it was
+        pressed on. So a list that got shorter, or one that came back after
+        an automation reloaded, arrived as something nobody had ever seen.
+        Spook writes the decision down itself, and anything it reports that
+        was all ignored before is ignored again from the start. Anything new
+        on the list makes it news, and it comes up as usual.
         """
-        issue = self.issue_registry.async_get_issue(
-            DOMAIN, f"{self.repair}_{self._issue_id_for(issue_id, references)}"
-        )
-        return issue is not None and issue.dismissed_version is not None
+        dismissals = async_get_dismissals(self.hass)
+        dismissals.async_offer(issue_id, self.repair, owner, findings)
 
-    @staticmethod
-    def _issue_id_for(issue_id: str, references: Iterable[str] | None) -> str:
-        """Return the ID an issue is filed under, findings and all."""
-        if references is None:
-            return issue_id
+        issue = self.issue_registry.async_get_issue(DOMAIN, issue_id)
+        if issue is not None and issue.dismissed_version is not None:
+            # Ignored, but perhaps from before Spook wrote these down, or by a
+            # route it did not see. Either way it is a decision to keep.
+            dismissals.async_dismiss_offered(issue_id)
+            return
 
-        return f"{issue_id}_{_fingerprint(references)}"
+        if set(findings) <= dismissals.async_dismissed(self.repair, owner):
+            ir.async_ignore_issue(self.hass, DOMAIN, issue_id, ignore=True)
 
     @final
     @callback
@@ -780,8 +794,18 @@ class _RemoveOrIgnoreFixFlow(RepairsFlow):
         Aborting (rather than creating an entry) keeps the issue so the
         ignore sticks; a completed fix flow would delete it and it would
         just come back on the next inspection.
+
+        The issue can be gone by the time somebody chooses: its findings
+        changed while the menu was open, or it was cleared for a moment while
+        something reloaded. Home Assistant raises on ignoring an issue that is
+        not there, so the decision is written down directly instead, and it
+        still holds when the issue comes back.
         """
-        ir.async_ignore_issue(self.hass, DOMAIN, self.issue_id, ignore=True)
+        if ir.async_get(self.hass).async_get_issue(DOMAIN, self.issue_id) is None:
+            async_get_dismissals(self.hass).async_dismiss_offered(self.issue_id)
+        else:
+            ir.async_ignore_issue(self.hass, DOMAIN, self.issue_id, ignore=True)
+
         return self.async_abort(reason="issue_ignored")
 
     @callback
