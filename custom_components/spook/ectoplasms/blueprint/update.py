@@ -1509,6 +1509,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # saying an update is waiting for a version that had just been
         # installed.
         self._one_at_a_time = asyncio.Lock()
+        self._checking = False
 
         self._attr_name = said.name
         self._attr_title = said.name
@@ -1572,17 +1573,39 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # over while one is running is of a file being replaced as it arrives.
         # Taking it would leave the entity carrying the name, the address and
         # the version of what has just been written over.
-        if self._one_at_a_time.locked():
+        if self._one_at_a_time.locked() and not self._checking:
             LOGGER.debug(
                 "Spook is dropping a reading of %s taken while installing",
                 self.blueprint_path,
             )
             return
 
+        content_changed = said.fingerprint != self._said.fingerprint
+        source_changed = said.source_url != self._said.source_url
+        check_source = source_changed or (content_changed and self._latest_from_source)
+
+        # The previous installed copy is no longer a useful comparison after
+        # an external change. A different offer still stands, including one
+        # just imported, in case the source cannot be reached this time.
+        discard_offer = source_changed or (
+            content_changed and self._attr_latest_version == self._said.fingerprint
+        )
+        offer_installed = (
+            content_changed and said.fingerprint == self._attr_latest_version
+        )
         self._said = said
         self._attr_name = said.name
         self._attr_title = said.name
         self._attr_installed_version = said.fingerprint
+
+        if discard_offer:
+            self._fetched = None
+            self._set_aside = None
+            self._latest_from_source = False
+            self._attr_latest_version = said.fingerprint
+        elif offer_installed:
+            # Keep the source's word, but not a payload installed elsewhere.
+            self._fetched = None
 
         # With nothing heard from the source, the latest version was only ever
         # this file, and it goes along with it. Left as it was, an edit by hand
@@ -1597,6 +1620,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # The reading is still kept, for the check that follows.
         if self.hass is not None:
             self.async_write_ha_state()
+            if check_source and not self._checking:
+                # A local edit and an external import look alike on disk.
+                # Ask the source now instead of waiting for the daily round.
+                self.hass.async_create_task(self.async_check())
 
     def version_is_newer(self, latest_version: str, installed_version: str) -> bool:
         """Return whether the source says something other than what is here.
@@ -1610,14 +1637,25 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
     async def async_check(self) -> None:
         """See whether the source still says what this blueprint says."""
         async with self._one_at_a_time:
-            await self._async_check()
+            self._checking = True
+            try:
+                while not await self._async_check():
+                    # A reading changed during the fetch. Ask again before
+                    # releasing the lock to anybody waiting to install.
+                    pass
+            finally:
+                self._checking = False
 
-    async def _async_check(self) -> None:
-        """Fetch and compare, with the blueprint to ourselves."""
-        source_url = self._said.source_url
+    async def _async_check(self) -> bool:
+        """Fetch and compare, returning whether the reading still stands."""
+        said = self._said
+        source_url = said.source_url
         try:
             fetched = await self._async_fetch()
         except HomeAssistantError as err:
+            if said != self._said:
+                return False
+
             # Leave the last answer standing. A source that is down for an
             # afternoon should not take the update it was offering with it.
             # The reason is kept so the dialog can say why nothing happens
@@ -1635,13 +1673,17 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 self.blueprint_path,
                 err,
             )
-            return
+            return True
+
+        if said != self._said:
+            return False
 
         self._set_aside = None
         self._fetched = fetched
         self._attr_latest_version = _fingerprint(fetched)
         self._latest_from_source = True
         self.async_write_ha_state()
+        return True
 
     async def async_install(
         self,

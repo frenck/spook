@@ -3929,8 +3929,209 @@ async def test_a_note_about_an_address_given_up_does_not_name_it(
         MOTION_LIGHT,
         source="https://example.com/moved_to/somewhere_else.yaml",
     )
-    await _reconcile(hass)
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _reconcile(hass)
 
     alert = (await _entity(hass).async_release_notes()).split("</ha-alert>")[0]
     assert SOURCE not in alert
     assert "the address it was imported from" in alert
+
+
+async def test_external_import_does_not_offer_the_previous_blueprint(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an external import is compared with the current source immediately."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "off"
+
+    with _source_says(MOTION_LIGHT_CHANGED) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["installed_version"] == _fingerprint_of(
+        MOTION_LIGHT_CHANGED
+    )
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+
+    await _entity(hass).async_install(None, backup=False)
+    assert hass.states.get(_ENTITY).state == "off"
+    file = Path(hass.config.path("blueprints/automation/motion.yaml"))
+    raw = await hass.async_add_executor_job(file.read_text)
+    assert _fingerprint_of(raw) == _fingerprint_of(MOTION_LIGHT_CHANGED)
+    fetch.assert_called_once()
+
+
+async def test_external_import_of_an_offer_preserves_it_after_a_local_edit(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an imported source offer is checked again after a later local edit."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+
+    with _source_says(MOTION_LIGHT_CHANGED) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+    fetch.assert_called_once()
+
+
+async def test_local_edit_is_compared_with_the_source_immediately(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a local edit offers the source copy without a daily check."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    with _source_says(MOTION_LIGHT) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["installed_version"] == _fingerprint_of(
+        MOTION_LIGHT_CHANGED
+    )
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT)
+    fetch.assert_called_once()
+
+
+async def test_external_import_does_not_offer_a_stale_copy_while_offline(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an unreachable source cannot offer the previous installed copy."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+
+
+@pytest.mark.parametrize("raw", [MOTION_LIGHT, MOTION_LIGHT_CHANGED])
+async def test_a_changed_source_cannot_install_the_old_sources_offer(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    raw: str,
+) -> None:
+    """Test changing the source invalidates its old offer even without edits."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED_AGAIN):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    source = "https://example.com/new-source.yaml"
+    with patch(_FETCH, side_effect=aiohttp.ClientError()) as fetch:
+        async_write_blueprint(hass, "automation", "motion.yaml", raw, source=source)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+        fetch.assert_called_once()
+        assert fetch.call_args.args[-1] == source
+        before = await hass.async_add_executor_job(file.read_text)
+        with pytest.raises(HomeAssistantError):
+            await _entity(hass).async_install(None, backup=False)
+        assert await hass.async_add_executor_job(file.read_text) == before
+
+
+async def test_an_externally_installed_offer_requires_a_fresh_install_payload(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a direct install cannot reuse an offer imported while offline."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+        before = await hass.async_add_executor_job(file.read_text)
+        with pytest.raises(HomeAssistantError):
+            await _entity(hass).async_install(None, backup=False)
+        assert await hass.async_add_executor_job(file.read_text) == before
+
+
+@pytest.mark.parametrize("source_changed", [False, True])
+async def test_a_reading_during_a_check_prevents_installing_its_stale_result(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    *,
+    source_changed: bool,
+) -> None:
+    """Test a concurrent external import is applied before an offer is published."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    started = asyncio.Event()
+    let_go = asyncio.Event()
+    source = "https://example.com/reimported.yaml" if source_changed else SOURCE
+    calls: list[str] = []
+
+    async def _fetch(_hass: HomeAssistant, url: str):  # noqa: ANN202
+        calls.append(url)
+        if len(calls) == 1:
+            started.set()
+            await let_go.wait()
+            return imported_from(MOTION_LIGHT_CHANGED)
+        return imported_from(MOTION_LIGHT_CHANGED_AGAIN, source=source)
+
+    with patch(_FETCH, side_effect=_fetch):
+        checking = hass.async_create_task(_entity(hass).async_check())
+        await started.wait()
+        async_write_blueprint(
+            hass,
+            "automation",
+            "motion.yaml",
+            MOTION_LIGHT_CHANGED_AGAIN,
+            source=source,
+        )
+        _entity(hass).async_seen(
+            _OnDisk(
+                name="Spooky motion light",
+                source_url=source,
+                fingerprint=_fingerprint_of(MOTION_LIGHT_CHANGED_AGAIN),
+            ),
+        )
+        let_go.set()
+        await checking
+        state = hass.states.get(_ENTITY)
+        assert state.state == "off"
+        assert state.attributes["installed_version"] == _fingerprint_of(
+            MOTION_LIGHT_CHANGED_AGAIN
+        )
+        assert state.attributes["latest_version"] == _fingerprint_of(
+            MOTION_LIGHT_CHANGED_AGAIN
+        )
+        assert calls == [SOURCE, source]
+        await _entity(hass).async_install(None, backup=False)
+        raw = await hass.async_add_executor_job(file.read_text)
+        assert _fingerprint_of(raw) == _fingerprint_of(MOTION_LIGHT_CHANGED_AGAIN)
