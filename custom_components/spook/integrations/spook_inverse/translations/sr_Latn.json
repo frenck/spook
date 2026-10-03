@@ -18,10 +18,27 @@
                 "title": "Invertuj 👻"
             },
             "user": {
-                "description": "Ovaj pomoćnik vam omogućava da izvrnete ponašanje entiteta. Na primer, da obrnete stanja otvoreno/zatvoreno ili uključeno/isključeno za binarne senzore i prekidače.",
+                "description": "Ovaj pomoćnik vam omogućava da obrnete ponašanje entiteta. Na primer, da preokrenete stanje otvoreno/zatvoreno ili uključeno/isključeno za binarne senzore, roletne, prekidače i ventile.",
                 "menu_options": {
                     "binary_sensor": "Invertuj binarni senzor",
                     "switch": "Invertuj prekidač"
+                },
+                "title": "Invertuj 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Izvorni entitet",
+                    "hide_source": "Sakrij izvorni entitet",
+                    "inverse_position": "Invertuj otvaranje, zatvaranje i poziciju",
+                    "inverse_tilt": "Invertuj nagib",
+                    "name": "Naziv"
+                },
+                "title": "Invertuj 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Izvorni entitet",
+                    "hide_source": "Sakrij izvorni entitet"
                 },
                 "title": "Invertuj 👻"
             }
@@ -42,6 +59,20 @@
                     "name": "Naziv",
                     "entity_id": "Izvorni entitet",
                     "hide_source": "Sakrij izvorni entitet"
+                },
+                "title": "Invertuj 👻"
+            },
+            "cover": {
+                "data": {
+                    "hide_source": "Sakrij izvorni entitet",
+                    "entity_id": "Izvorni entitet"
+                },
+                "title": "Invertuj 👻"
+            },
+            "valve": {
+                "data": {
+                    "hide_source": "Sakrij izvorni entitet",
+                    "entity_id": "Izvorni entitet"
                 },
                 "title": "Invertuj 👻"
             }
