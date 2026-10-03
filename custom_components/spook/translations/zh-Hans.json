@@ -573,6 +573,18 @@
         "lovelace_missing_resources_yaml": {
             "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n以下仪表盘资源指向了不存在的文件：\n\n{resources}\n\n\n\n这通常发生在自定义卡片或其文件被移除，但资源条目仍保留在系统中的情况。\n\n这些资源列在你的 YAML 配置中，因此资源页面无法修改它们。请编辑 Lovelace 配置中的 `resources:` 部分，移除或修正这些条目。\n\nSpook 👻 你的好哥们。",
             "title": "仪表盘资源指向缺失的文件"
+        },
+        "lovelace_unknown_service_references": {
+            "title": "仪表盘 {dashboard} 中使用了未知动作",
+            "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下仪表盘：\n\n[{dashboard}]({edit})\n\n该仪表盘执行了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n\n\n使用这些动作的按钮或卡片在点击时不会有任何反应。这通常发生在脚本被重命名或删除，或者某个集成被删除之后。要修复此错误，请[编辑该仪表盘]({edit})并移除或替换这些不存在的动作。\n\nSpook 👻 你的好哥们。"
+        },
+        "homekit_unknown_entity_references": {
+            "title": "HomeKit 桥接器 {bridge} 中使用了未知实体",
+            "description": "Spook 在你的 HomeKit 桥接器中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下 HomeKit 桥接器：\n\n{bridge}\n\n该桥接器列出了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\nHomeKit 不会跟随被重命名的实体。被包含的实体在重命名或删除后会从“家庭”App 中消失。被排除的实体在重命名后会重新出现在其中。\n\n要修复此错误，请前往 [HomeKit Bridge 集成](/config/integrations/integration/homekit)，在此桥接器上选择**配置**，然后重新选择实体。\n\nSpook 👻 你的好哥们。"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "HomeKit 桥接器 {bridge} 中使用了未知实体",
+            "description": "Spook 在你的 HomeKit 桥接器中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下 HomeKit 桥接器：\n\n{bridge}\n\n该桥接器列出了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\nHomeKit 不会跟随被重命名的实体。被包含的实体在重命名或删除后会从“家庭”App 中消失。被排除的实体在重命名后会重新出现在其中。\n\n此桥接器是在你的 YAML 配置中设置的。要修复此错误，请编辑 `homekit:` 下此桥接器的 `filter`，并移除或更正这些实体。\n\nSpook 👻 你的好哥们。"
         }
     },
     "services": {
