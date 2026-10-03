@@ -1911,6 +1911,22 @@
                     "description": "实体必须离开多长时间后回来才算数。比这更短的只是闪一下：重新加载集成会在一秒内让它的所有实体经历不可用再恢复。"
                 }
             }
+        },
+        "user_added": {
+            "name": "用户已添加",
+            "description": "当有人获得 Home Assistant 的登录账户时触发。Home Assistant 为自身集成创建的用户不计算在内。"
+        },
+        "integration_added": {
+            "name": "集成已添加",
+            "description": "当有集成被添加到 Home Assistant 时触发，无论是谁或什么添加的。"
+        },
+        "device_added": {
+            "name": "设备已添加",
+            "description": "当有新设备被添加到 Home Assistant 时触发，例如刚刚配对的插座。"
+        },
+        "device_discovered": {
+            "name": "设备已发现",
+            "description": "当 Home Assistant 发现可以设置的新事物时触发，例如刚刚出现在你网络中的设备。"
         }
     },
     "selector": {
