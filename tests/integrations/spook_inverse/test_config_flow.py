@@ -35,7 +35,9 @@ def _create_source_entity(hass: HomeAssistant, domain: str) -> str:
     return entity_entry.entity_id
 
 
-@pytest.mark.parametrize("platform", [Platform.BINARY_SENSOR, Platform.SWITCH])
+@pytest.mark.parametrize(
+    "platform", [Platform.BINARY_SENSOR, Platform.SWITCH, Platform.VALVE]
+)
 async def test_config_flow_creates_inverse_entry(
     hass: HomeAssistant,
     platform: Platform,
@@ -53,6 +55,7 @@ async def test_config_flow_creates_inverse_entry(
         Platform.BINARY_SENSOR,
         Platform.COVER,
         Platform.SWITCH,
+        Platform.VALVE,
     ]
 
     result = await hass.config_entries.flow.async_configure(

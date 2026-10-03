@@ -7,6 +7,7 @@ PLATFORMS = [
     Platform.BINARY_SENSOR,
     Platform.COVER,
     Platform.SWITCH,
+    Platform.VALVE,
 ]
 
 CONF_HIDE_SOURCE = "hide_source"
