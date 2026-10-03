@@ -11,6 +11,14 @@ This can be helpful if you use a switch or binary sensor in a non-standard way, 
 
 It not just inverts the state of the source {term}`entity <entity>`, but also does all {term}`actions <performing actions>` in reverse. So if you have an automation performing the turn on action on a switch, it will instead perform the turn off action on the inverted switch.
 
+## What can be inverted
+
+- An inverted **switch** can be made of a switch, an on/off toggle helper (`input_boolean`), or a light. Turning the inverted switch on turns the source off, with the source's own actions: a light is turned off as a light.
+- An inverted **binary sensor** can read a binary sensor, an on/off toggle helper, or a light.
+- An inverted **cover** or **valve** is made of a cover or a valve, as explained below.
+
+A light inverted as a switch is only on or off: its brightness, colors and effects stay with the light itself.
+
 ## Inverting a cover
 
 A cover can be backwards in two ways, and the inverse helper lets you turn around either one, or both:
