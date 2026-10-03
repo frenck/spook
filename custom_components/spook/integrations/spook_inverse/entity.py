@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from enum import IntFlag
 from typing import TYPE_CHECKING
 
 from homeassistant.const import (
@@ -24,6 +25,24 @@ from homeassistant.helpers.start import async_at_start
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
+
+
+def swapped_features[FeatureT: IntFlag](
+    features: FeatureT,
+    one: FeatureT,
+    other: FeatureT,
+) -> FeatureT:
+    """Return the features with these two traded places.
+
+    Something that can only be opened is, upside down, something that can
+    only be closed.
+    """
+    swapped = features & ~(one | other)
+    if features & one:
+        swapped |= other
+    if features & other:
+        swapped |= one
+    return swapped
 
 
 class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes

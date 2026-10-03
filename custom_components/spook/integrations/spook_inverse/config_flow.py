@@ -112,6 +112,10 @@ CONFIG_FLOW = {
         config_schema(Platform.SWITCH),
         validate_user_input=set_inverse_type(Platform.SWITCH),
     ),
+    Platform.VALVE: SchemaFlowFormStep(
+        config_schema(Platform.VALVE),
+        validate_user_input=set_inverse_type(Platform.VALVE),
+    ),
 }
 
 
@@ -122,6 +126,7 @@ OPTIONS_FLOW = {
     ),
     Platform.COVER: SchemaFlowFormStep(partial(options_schema, Platform.COVER)),
     Platform.SWITCH: SchemaFlowFormStep(partial(options_schema, Platform.SWITCH)),
+    Platform.VALVE: SchemaFlowFormStep(partial(options_schema, Platform.VALVE)),
 }
 
 

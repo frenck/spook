@@ -5,7 +5,7 @@ subtitle: Stranger Things, the upside down 🙃
 date: 2023-08-21T21:29:00+02:00
 ---
 
-The inverse {term}`helper <helper>` allows you to invert the behavior of a {term}`switch <switch>`, {term}`binary sensor <binary sensor>`, or cover entity. On becomes off, and off becomes on. Open becomes closed. The world is upside down!
+The inverse {term}`helper <helper>` allows you to invert the behavior of a {term}`switch <switch>`, {term}`binary sensor <binary sensor>`, cover, or valve entity. On becomes off, and off becomes on. Open becomes closed. The world is upside down!
 
 This can be helpful if you use a switch or binary sensor in a non-standard way, or when the manufacturer of a device has decided to use the opposite logic for it (Yeah... they exist... 🤦‍♂️). Blinds with the motor mounted on the other side, a projector screen that opens by coming down: same story.
 
@@ -20,9 +20,13 @@ A cover can be backwards in two ways, and the inverse helper lets you turn aroun
 
 The position decides whether the inverted cover is closed, not the state of the source. A cover counts as closed only at exactly 0%, and as open at anything above that. So the inverted cover is closed only when the source is all the way open. A cover that cannot report its position only knows open or closed, and has just that turned around.
 
+## Inverting a valve
+
+A valve works the same way as a cover, without the tilt: opening becomes closing, a position becomes its opposite, and the inverted valve is closed only when the source is all the way open. There are no extra options, as a valve only moves one way.
+
 ## Inverting the behavior of an entity
 
-The inverse helper can be used to invert the behavior of a switch, binary sensor, or cover entity.
+The inverse helper can be used to invert the behavior of a switch, binary sensor, cover, or valve entity.
 
 Don't worry! This is really easy and all fully done via the Home Assistant user interface.
 

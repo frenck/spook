@@ -26,7 +26,7 @@ from homeassistant.const import ATTR_ENTITY_ID, ATTR_SUPPORTED_FEATURES
 from homeassistant.core import HomeAssistant, State, callback
 
 from .const import CONF_INVERSE_POSITION, CONF_INVERSE_TILT
-from .entity import InverseEntity
+from .entity import InverseEntity, swapped_features
 
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
@@ -55,24 +55,6 @@ async def async_setup_entry(
     # The source is resolved by the entity itself, which stays unavailable
     # rather than failing to set up when the source is not there.
     async_add_entities([InverseCover(hass, config_entry)])
-
-
-def _swapped(
-    features: CoverEntityFeature,
-    one: CoverEntityFeature,
-    other: CoverEntityFeature,
-) -> CoverEntityFeature:
-    """Return the features with these two traded places.
-
-    A cover that can only be opened is, upside down, one that can only be
-    closed.
-    """
-    swapped = features & ~(one | other)
-    if features & one:
-        swapped |= other
-    if features & other:
-        swapped |= one
-    return swapped
 
 
 class InverseCover(InverseEntity, CoverEntity):  # pylint: disable=too-many-instance-attributes
@@ -111,7 +93,7 @@ class InverseCover(InverseEntity, CoverEntity):  # pylint: disable=too-many-inst
             closed = False
 
         if self._inverse_position:
-            features = _swapped(
+            features = swapped_features(
                 features, CoverEntityFeature.OPEN, CoverEntityFeature.CLOSE
             )
             opening, closing = closing, opening
@@ -122,7 +104,7 @@ class InverseCover(InverseEntity, CoverEntity):  # pylint: disable=too-many-inst
                 closed = not closed
 
         if self._inverse_tilt:
-            features = _swapped(
+            features = swapped_features(
                 features, CoverEntityFeature.OPEN_TILT, CoverEntityFeature.CLOSE_TILT
             )
             if tilt is not None:
