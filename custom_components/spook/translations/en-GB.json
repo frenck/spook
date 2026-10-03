@@ -1840,6 +1840,22 @@
                     "name": "For"
                 }
             }
+        },
+        "user_added": {
+            "name": "User added",
+            "description": "Fires when somebody is given a login to Home Assistant. Users Home Assistant creates for its own integrations are left out."
+        },
+        "integration_added": {
+            "name": "Integration added",
+            "description": "Fires when an integration is added to Home Assistant, whoever or whatever added it."
+        },
+        "device_added": {
+            "name": "Device added",
+            "description": "Fires when a new device is added to Home Assistant, like a plug that was just paired."
+        },
+        "device_discovered": {
+            "name": "Device discovered",
+            "description": "Fires when Home Assistant discovers something new it could set up, like a device that just turned up on your network."
         }
     },
     "selector": {
