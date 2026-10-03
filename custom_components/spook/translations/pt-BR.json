@@ -569,6 +569,18 @@
                     "yaml": "Estes recursos estão na sua configuração YAML, então o Spook não pode mudá-los por você. Edite a seção `resources:` da sua configuração Lovelace e tire as cópias de `{resource}` que você não precisa mais."
                 }
             }
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Ações desconhecidas usadas no painel: {dashboard}",
+            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nEnquanto flutuava, Spook cruzou o caminho com o seguinte painel:\n\n[{dashboard}]({edit})\n\nEste painel executa as seguintes ações, que são desconhecidas do Home Assistant:\n\n{services}\n\nUm botão ou cartão que use uma delas não faz nada quando tocado. Isso costuma acontecer quando um script foi renomeado ou removido, ou quando uma integração foi removida. Para corrigir esse erro, [edite o painel]({edit}) e remova ou substitua essas ações inexistentes.\n\nSpook 👻 Seu mano."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Entidades desconhecidas usadas na ponte HomeKit: {bridge}",
+            "description": "Spook encontrou um fantasma em sua ponte HomeKit 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte ponte HomeKit:\n\n{bridge}\n\nEsta ponte cita as seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nO HomeKit não acompanha uma entidade que é renomeada. Uma entidade incluída que foi renomeada ou removida some do app Casa. Uma entidade excluída que foi renomeada volta a aparecer nele.\n\nPara corrigir esse erro, acesse [a integração HomeKit Bridge](/config/integrations/integration/homekit), selecione **Configurar** nesta ponte e escolha as entidades novamente.\n\nSpook 👻 Seu mano."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Entidades desconhecidas usadas na ponte HomeKit: {bridge}",
+            "description": "Spook encontrou um fantasma em sua ponte HomeKit 👻\n\nEnquanto flutuava, Spook cruzou o caminho com a seguinte ponte HomeKit:\n\n{bridge}\n\nEsta ponte cita as seguintes entidades, que são desconhecidas do Home Assistant:\n\n{entities}\n\nO HomeKit não acompanha uma entidade que é renomeada. Uma entidade incluída que foi renomeada ou removida some do app Casa. Uma entidade excluída que foi renomeada volta a aparecer nele.\n\nEsta ponte está definida na sua configuração YAML. Para corrigir esse erro, edite o `filter` desta ponte em `homekit:` e remova ou corrija essas entidades.\n\nSpook 👻 Seu mano."
         }
     },
     "conditions": {
