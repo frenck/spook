@@ -16,4 +16,11 @@ Inverts the behavior of a switch or binary sensor entities. On becomes off, and 
 
 :::
 
+:::{card} Time in state
+:footer: 📚 [Learn more](helpers/time_in_state)
+
+Since when has the door been closed? When did motion last go on? A moment that survives a restart, and a hiccup.
+
+:::
+
 ::::
