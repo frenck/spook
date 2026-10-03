@@ -337,6 +337,57 @@ options:
 
 :::
 
+### Device added
+
+Fires when a new device is added to Home Assistant.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Device added 👻
+* - Trigger name
+  - `spook.device_added`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+This trigger has no options.
+
+Home Assistant announces a new device on its event bus and nowhere else. A plug paired by somebody else in the house, or a Zigbee device that joined the network on its own, goes unnoticed until somebody browses the device list. This trigger tells you right away.
+
+When it fires, `trigger.device_id` is the new device's identifier, `trigger.name` its name, `trigger.manufacturer` and `trigger.model` what it is, `trigger.area_id` the area it was put in, if any, and `trigger.integration` the integration it belongs to. A device that is part of another one, like one outlet of a power strip, has no make or model of its own, so those are empty for it.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+trigger: spook.device_added
+```
+
+Only for devices joining your Zigbee network:
+
+```{code-block} yaml
+:linenos:
+triggers:
+  - trigger: spook.device_added
+conditions:
+  - condition: template
+    value_template: "{{ trigger.integration == 'zha' }}"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Nothing fires while Home Assistant starts. Integrations register the devices they already had at that moment, and none of those are new to your house.
+- Adding an integration while Home Assistant runs can bring many devices along at once, a bridge with everything behind it for one. Each of them is a new device, and each fires the trigger.
+- A device added while the automation is not loaded, or while Home Assistant is down, is not reported afterwards.
+
+:::
+
 ### Entity fell silent
 
 Fires when nothing has written to an entity for a while.
