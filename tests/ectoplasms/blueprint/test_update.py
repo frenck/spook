@@ -4076,3 +4076,62 @@ async def test_an_externally_installed_offer_requires_a_fresh_install_payload(
         with pytest.raises(HomeAssistantError):
             await _entity(hass).async_install(None, backup=False)
         assert await hass.async_add_executor_job(file.read_text) == before
+
+
+@pytest.mark.parametrize("source_changed", [False, True])
+async def test_a_reading_during_a_check_prevents_installing_its_stale_result(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    *,
+    source_changed: bool,
+) -> None:
+    """Test a concurrent external import is applied before an offer is published."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    started = asyncio.Event()
+    let_go = asyncio.Event()
+    source = "https://example.com/reimported.yaml" if source_changed else SOURCE
+    calls: list[str] = []
+
+    async def _fetch(_hass: HomeAssistant, url: str):  # noqa: ANN202
+        calls.append(url)
+        if len(calls) == 1:
+            started.set()
+            await let_go.wait()
+            return imported_from(MOTION_LIGHT_CHANGED)
+        return imported_from(MOTION_LIGHT_CHANGED_AGAIN, source=source)
+
+    with patch(_FETCH, side_effect=_fetch):
+        checking = hass.async_create_task(_entity(hass).async_check())
+        await started.wait()
+        async_write_blueprint(
+            hass,
+            "automation",
+            "motion.yaml",
+            MOTION_LIGHT_CHANGED_AGAIN,
+            source=source,
+        )
+        _entity(hass).async_seen(
+            _OnDisk(
+                name="Spooky motion light",
+                source_url=source,
+                fingerprint=_fingerprint_of(MOTION_LIGHT_CHANGED_AGAIN),
+            ),
+        )
+        let_go.set()
+        await checking
+        state = hass.states.get(_ENTITY)
+        assert state.state == "off"
+        assert state.attributes["installed_version"] == _fingerprint_of(
+            MOTION_LIGHT_CHANGED_AGAIN
+        )
+        assert state.attributes["latest_version"] == _fingerprint_of(
+            MOTION_LIGHT_CHANGED_AGAIN
+        )
+        assert calls == [SOURCE, source]
+        await _entity(hass).async_install(None, backup=False)
+        raw = await hass.async_add_executor_job(file.read_text)
+        assert _fingerprint_of(raw) == _fingerprint_of(MOTION_LIGHT_CHANGED_AGAIN)

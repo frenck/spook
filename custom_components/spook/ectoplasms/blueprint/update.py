@@ -1509,6 +1509,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # saying an update is waiting for a version that had just been
         # installed.
         self._one_at_a_time = asyncio.Lock()
+        self._checking = False
 
         self._attr_name = said.name
         self._attr_title = said.name
@@ -1572,7 +1573,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # over while one is running is of a file being replaced as it arrives.
         # Taking it would leave the entity carrying the name, the address and
         # the version of what has just been written over.
-        if self._one_at_a_time.locked():
+        if self._one_at_a_time.locked() and not self._checking:
             LOGGER.debug(
                 "Spook is dropping a reading of %s taken while installing",
                 self.blueprint_path,
@@ -1619,7 +1620,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # The reading is still kept, for the check that follows.
         if self.hass is not None:
             self.async_write_ha_state()
-            if check_source:
+            if check_source and not self._checking:
                 # A local edit and an external import look alike on disk.
                 # Ask the source now instead of waiting for the daily round.
                 self.hass.async_create_task(self.async_check())
@@ -1636,14 +1637,25 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
     async def async_check(self) -> None:
         """See whether the source still says what this blueprint says."""
         async with self._one_at_a_time:
-            await self._async_check()
+            self._checking = True
+            try:
+                while not await self._async_check():
+                    # A reading changed during the fetch. Ask again before
+                    # releasing the lock to anybody waiting to install.
+                    pass
+            finally:
+                self._checking = False
 
-    async def _async_check(self) -> None:
-        """Fetch and compare, with the blueprint to ourselves."""
-        source_url = self._said.source_url
+    async def _async_check(self) -> bool:
+        """Fetch and compare, returning whether the reading still stands."""
+        said = self._said
+        source_url = said.source_url
         try:
             fetched = await self._async_fetch()
         except HomeAssistantError as err:
+            if said != self._said:
+                return False
+
             # Leave the last answer standing. A source that is down for an
             # afternoon should not take the update it was offering with it.
             # The reason is kept so the dialog can say why nothing happens
@@ -1661,13 +1673,17 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 self.blueprint_path,
                 err,
             )
-            return
+            return True
+
+        if said != self._said:
+            return False
 
         self._set_aside = None
         self._fetched = fetched
         self._attr_latest_version = _fingerprint(fetched)
         self._latest_from_source = True
         self.async_write_ha_state()
+        return True
 
     async def async_install(
         self,
