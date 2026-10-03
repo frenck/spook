@@ -217,6 +217,46 @@ light_set_effect:
       selector:
         text:
 
+calendar_delete_event:
+  name: Delete event 👻
+  description: >-
+    Deletes events from a calendar, found by their title or uid in a stretch
+    of time.
+  target:
+    entity:
+      domain: calendar
+      supported_features:
+        - calendar.CalendarEntityFeature.DELETE_EVENT
+  fields:
+    summary:
+      required: false
+      example: Dentist
+      selector:
+        text:
+    uid:
+      required: false
+      selector:
+        text:
+    start_date_time:
+      required: false
+      example: "2026-10-04 08:00:00"
+      selector:
+        datetime:
+    end_date_time:
+      required: false
+      example: "2026-10-04 20:00:00"
+      selector:
+        datetime:
+    duration:
+      required: false
+      selector:
+        duration:
+    whole_series:
+      required: false
+      default: false
+      selector:
+        boolean:
+
 homeassistant_create_area:
   name: Create an area 👻
   description: >-
