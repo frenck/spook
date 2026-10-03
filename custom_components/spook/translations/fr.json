@@ -1827,6 +1827,22 @@
                     "description": "Combien de temps une entité doit rester muette avant que ceci se déclenche. Une entité qui continue de signaler la même valeur n'est pas muette."
                 }
             }
+        },
+        "user_added": {
+            "name": "Utilisateur ajouté",
+            "description": "Se déclenche lorsque quelqu'un reçoit un accès à Home Assistant. Les utilisateurs que Home Assistant crée pour ses propres intégrations ne comptent pas."
+        },
+        "integration_added": {
+            "name": "Intégration ajoutée",
+            "description": "Se déclenche lorsqu'une intégration est ajoutée à Home Assistant, quel que soit qui ou quoi l'a ajoutée."
+        },
+        "device_added": {
+            "name": "Appareil ajouté",
+            "description": "Se déclenche lorsqu'un nouvel appareil est ajouté à Home Assistant, comme une prise qui vient d'être appairée."
+        },
+        "device_discovered": {
+            "name": "Appareil découvert",
+            "description": "Se déclenche lorsque Home Assistant découvre quelque chose de nouveau qu'il pourrait configurer, comme un appareil qui vient d'apparaître sur votre réseau."
         }
     },
     "selector": {
