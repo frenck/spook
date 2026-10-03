@@ -9,13 +9,13 @@ from homeassistant.helpers import area_registry as ar
 
 from ....entity_filtering import async_filter_known_area_ids, async_get_all_area_ids
 from ....reference_extraction import extract_targets_from_config
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
     from typing import Any
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced areas in automations."""
 
     domain = automation.DOMAIN

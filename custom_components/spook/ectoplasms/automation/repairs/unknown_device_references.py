@@ -9,8 +9,8 @@ from homeassistant.helpers import device_registry as dr
 
 from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
 from ....reference_extraction import extract_targets_from_config
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import extract_device_ids_from_config
+from . import AbstractSpookAutomationReferencesRepair
 
 
 def extract_event_data_device_ids_from_trigger_config(
@@ -46,7 +46,7 @@ def extract_event_data_device_ids_from_trigger_config(
     return device_ids
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced devices in automations."""
 
     domain = automation.DOMAIN

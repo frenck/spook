@@ -9,13 +9,13 @@ from homeassistant.helpers import floor_registry as fr
 
 from ....entity_filtering import async_filter_known_floor_ids, async_get_all_floor_ids
 from ....reference_extraction import extract_targets_from_config
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
     from typing import Any
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced floors in automations."""
 
     domain = automation.DOMAIN
