@@ -1911,6 +1911,22 @@
                     "description": "El tiempo que la entidad haya permanecido ausente antes de regresar es un factor relevante. Cualquier periodo inferior se considera un parpadeo: al recargar una integración, todas sus entidades pasan por un estado de falta de disponibilidad y se restablecen en cuestión de un segundo."
                 }
             }
+        },
+        "user_added": {
+            "name": "Usuario añadido",
+            "description": "Se activa cuando alguien recibe un acceso a Home Assistant. Los usuarios que Home Assistant crea para sus propias integraciones no cuentan."
+        },
+        "integration_added": {
+            "name": "Integración añadida",
+            "description": "Se activa cuando se añade una integración a Home Assistant, la añada quien o lo que la añada."
+        },
+        "device_added": {
+            "name": "Dispositivo añadido",
+            "description": "Se activa cuando se añade un dispositivo nuevo a Home Assistant, como un enchufe que se acaba de emparejar."
+        },
+        "device_discovered": {
+            "name": "Dispositivo descubierto",
+            "description": "Se activa cuando Home Assistant descubre algo nuevo que podría configurar, como un dispositivo que acaba de aparecer en tu red."
         }
     },
     "selector": {
