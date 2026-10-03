@@ -21,7 +21,9 @@
                 "description": "Ovaj pomoćnik vam omogućava da obrnete ponašanje entiteta. Na primer, da preokrenete stanje otvoreno/zatvoreno ili uključeno/isključeno za binarne senzore, roletne, prekidače i ventile.",
                 "menu_options": {
                     "binary_sensor": "Invertuj binarni senzor",
-                    "switch": "Invertuj prekidač"
+                    "switch": "Invertuj prekidač",
+                    "cover": "Invertuj zastor",
+                    "valve": "Invertuj ventil"
                 },
                 "title": "Invertuj 👻"
             },
@@ -38,7 +40,8 @@
             "valve": {
                 "data": {
                     "entity_id": "Izvorni entitet",
-                    "hide_source": "Sakrij izvorni entitet"
+                    "hide_source": "Sakrij izvorni entitet",
+                    "name": "Naziv"
                 },
                 "title": "Invertuj 👻"
             }
@@ -65,14 +68,18 @@
             "cover": {
                 "data": {
                     "hide_source": "Sakrij izvorni entitet",
-                    "entity_id": "Izvorni entitet"
+                    "entity_id": "Izvorni entitet",
+                    "inverse_position": "Invertuj otvaranje, zatvaranje i poziciju",
+                    "inverse_tilt": "Inverutuj nagib",
+                    "name": "Naziv"
                 },
                 "title": "Invertuj 👻"
             },
             "valve": {
                 "data": {
                     "hide_source": "Sakrij izvorni entitet",
-                    "entity_id": "Izvorni entitet"
+                    "entity_id": "Izvorni entitet",
+                    "name": "Naziv"
                 },
                 "title": "Invertuj 👻"
             }
