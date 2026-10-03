@@ -21,6 +21,12 @@ Fires on a crontab schedule, for the times Home Assistant's own time triggers ca
 
 `spook.cron`, [documentation](other-features#cron-schedule) 📚
 
+## Device discovered
+
+Fires when Home Assistant discovers something new it could set up, like a device that just turned up on your network. _#discovery_ _#device_ _#new_ _#network_
+
+`spook.device_discovered`, [documentation](other-features#device-discovered) 📚
+
 ## Entity came back
 
 Fires when an entity returns after having been unavailable for a while, so a router rebooting does not read as everything in the house recovering. _#recovered_ _#back_ _#unavailable_
