@@ -94,9 +94,10 @@ async def test_an_occurrence_is_deleted_on_its_own(hass: HomeAssistant) -> None:
         event("Standup", 26, "s", recurrence_id="2"),
     ]
 
-    await _delete(hass, summary="Standup", duration={"hours": 12})
+    result = await _delete(hass, summary="Standup", duration={"hours": 12})
 
     assert agenda.deleted == [("s", "1")]
+    assert result["events"][0]["recurrence_id"] == "1"
     assert [kept.recurrence_id for kept in agenda.events] == ["2"]
 
 
@@ -113,8 +114,11 @@ async def test_the_whole_series_goes_once(hass: HomeAssistant) -> None:
     )
 
     assert agenda.deleted == [("s", None)]
-    assert len(result["events"]) == 1
     assert agenda.events == []
+
+    # The series is what went, so that is what is handed back.
+    assert len(result["events"]) == 1
+    assert result["events"][0]["recurrence_id"] is None
 
 
 async def test_which_events_has_to_be_said(hass: HomeAssistant) -> None:
