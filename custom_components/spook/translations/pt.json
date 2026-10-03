@@ -1911,6 +1911,22 @@
                     "description": "O tempo que a entidade tem de permanecer ausente antes de retornar é relevante. Qualquer período inferior a isso é apenas uma oscilação momentânea: ao recarregar uma integração, todas as suas entidades passam pelo estado de indisponibilidade e retornam em menos de um segundo."
                 }
             }
+        },
+        "user_added": {
+            "name": "Utilizador adicionado",
+            "description": "Dispara quando alguém recebe um acesso ao Home Assistant. Os utilizadores que o Home Assistant cria para as suas próprias integrações não contam."
+        },
+        "integration_added": {
+            "name": "Integração adicionada",
+            "description": "Dispara quando uma integração é adicionada ao Home Assistant, seja por quem ou pelo que for."
+        },
+        "device_added": {
+            "name": "Dispositivo adicionado",
+            "description": "Dispara quando um novo dispositivo é adicionado ao Home Assistant, como uma tomada que acabou de ser emparelhada."
+        },
+        "device_discovered": {
+            "name": "Dispositivo descoberto",
+            "description": "Dispara quando o Home Assistant descobre algo novo que poderia configurar, como um dispositivo que acabou de aparecer na tua rede."
         }
     },
     "selector": {
