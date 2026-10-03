@@ -177,3 +177,40 @@ async def test_an_entity_that_shows_up_late_clears_the_issue(
         issue_registry, f"homekit_unknown_entity_references_{entry.entry_id}"
     )
     assert SpookRepair.inspect_on_entity_added_or_removed
+
+
+async def test_moving_an_entity_to_the_other_list_is_a_new_finding(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test an included entity that becomes an excluded one is reported anew.
+
+    Ignoring "this bridge misses an entity" is no answer to "this bridge
+    shows an entity you wanted hidden", even when it is the same name.
+    """
+    entry = _bridge(hass, include=["light.renamed_away"])
+    repair = SpookRepair(hass)
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    included = async_issue_about(
+        issue_registry, f"homekit_unknown_entity_references_{entry.entry_id}"
+    )
+
+    hass.config_entries.async_update_entry(
+        entry,
+        options={
+            "filter": {
+                "include_domains": [],
+                "include_entities": [],
+                "exclude_domains": [],
+                "exclude_entities": ["light.renamed_away"],
+            },
+        },
+    )
+    await repair._async_inspect_with_cleanup()  # noqa: SLF001
+    excluded = async_issue_about(
+        issue_registry, f"homekit_unknown_entity_references_{entry.entry_id}"
+    )
+
+    assert included
+    assert excluded
+    assert included.issue_id != excluded.issue_id

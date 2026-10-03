@@ -87,7 +87,11 @@ class SpookRepair(AbstractSpookRepair):
                     if entry.source == SOURCE_IMPORT
                     else self.repair
                 ),
-                references=unknown_included | unknown_excluded,
+                # Excluded ones carry their role along. Moving an entity from
+                # one list to the other turns the warning around, and an
+                # "ignore" given to the one is no answer to the other.
+                references=unknown_included
+                | {f"excluded:{entity_id}" for entity_id in unknown_excluded},
                 translation_placeholders={
                     "bridge": entry.title,
                     "entities": "\n".join(descriptions),
