@@ -1911,6 +1911,22 @@
                     "description": "實體必須離開多長時間後回來才算數。比這更短的只是閃一下：重新載入整合會在一秒內讓它的所有實體經歷無法使用再恢復。"
                 }
             }
+        },
+        "user_added": {
+            "name": "使用者已新增",
+            "description": "當有人獲得 Home Assistant 的登入帳號時觸發。Home Assistant 為自身整合建立的使用者不計算在內。"
+        },
+        "integration_added": {
+            "name": "整合已新增",
+            "description": "當有整合被新增到 Home Assistant 時觸發，無論是誰或什麼新增的。"
+        },
+        "device_added": {
+            "name": "裝置已新增",
+            "description": "當有新裝置被新增到 Home Assistant 時觸發，例如剛剛配對的插座。"
+        },
+        "device_discovered": {
+            "name": "裝置已發現",
+            "description": "當 Home Assistant 發現可以設定的新事物時觸發，例如剛剛出現在您網路中的裝置。"
         }
     },
     "selector": {
