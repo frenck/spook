@@ -14,7 +14,7 @@ from homeassistant.const import (
     CONF_ENTITY_ID,
     STATE_UNAVAILABLE,
 )
-from homeassistant.core import Event, HomeAssistant, State, callback
+from homeassistant.core import Event, HomeAssistant, State, callback, split_entity_id
 from homeassistant.helpers import device_registry as dr, entity_registry as er
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.event import (
@@ -119,9 +119,19 @@ class InverseEntity(Entity):  # pylint: disable=too-many-instance-attributes
             return
 
         self._attr_available = True
-        self._attr_supported_features = state.attributes.get(ATTR_SUPPORTED_FEATURES)
-        self._attr_device_class = state.attributes.get(ATTR_DEVICE_CLASS)
         self._attr_icon = state.attributes.get(ATTR_ICON)
+
+        # Only from a source of its own kind. A light's features are not a
+        # switch's, and a device class means something else for every domain:
+        # taken across, they claim things this entity cannot do or be.
+        if split_entity_id(self._entity_id)[0] == split_entity_id(self.entity_id)[0]:
+            self._attr_supported_features = state.attributes.get(
+                ATTR_SUPPORTED_FEATURES
+            )
+            self._attr_device_class = state.attributes.get(ATTR_DEVICE_CLASS)
+        else:
+            self._attr_supported_features = None
+            self._attr_device_class = None
 
         self.async_update_state(state)
 

@@ -17,6 +17,7 @@ from custom_components.spook.integrations.spook_inverse.const import (
     CONF_INVERSE_POSITION,
     CONF_INVERSE_TILT,
     DOMAIN,
+    SOURCE_DOMAINS,
 )
 
 if TYPE_CHECKING:
@@ -153,7 +154,7 @@ async def test_options_flow_updates_hide_source_state(
     assert result["step_id"] == Platform.SWITCH
     schema = result["data_schema"].schema
     entity_selector = schema[next(iter(schema))]
-    assert entity_selector.config["domain"] == [Platform.SWITCH]
+    assert entity_selector.config["domain"] == SOURCE_DOMAINS[Platform.SWITCH]
     assert entity_selector.config["exclude_entities"] == [own_entity_id]
 
     result = await hass.config_entries.options.async_configure(

@@ -25,6 +25,7 @@ from .const import (
     CONF_INVERSE_TILT,
     DOMAIN,
     PLATFORMS,
+    SOURCE_DOMAINS,
 )
 
 if TYPE_CHECKING:
@@ -41,7 +42,7 @@ COVER_SCHEMA = {
 
 
 async def options_schema(
-    domain: str | list[str],
+    domain: str,
     handler: SchemaCommonFlowHandler,
 ) -> vol.Schema:
     """Generate options schema."""
@@ -49,7 +50,7 @@ async def options_schema(
         {
             vol.Required(CONF_ENTITY_ID): entity_selector_without_own_entities(
                 cast(SchemaOptionsFlowHandler, handler.parent_handler),
-                selector.EntitySelectorConfig(domain=domain),
+                selector.EntitySelectorConfig(domain=SOURCE_DOMAINS[domain]),
             ),
             vol.Required(CONF_HIDE_SOURCE, default=False): selector.BooleanSelector(),
         },
@@ -59,13 +60,13 @@ async def options_schema(
     return schema
 
 
-def config_schema(domain: str | list[str]) -> vol.Schema:
+def config_schema(domain: str) -> vol.Schema:
     """Generate config schema."""
     schema = vol.Schema(
         {
             vol.Required(CONF_NAME): selector.TextSelector(),
             vol.Required(CONF_ENTITY_ID): selector.EntitySelector(
-                selector.EntitySelectorConfig(domain=domain),
+                selector.EntitySelectorConfig(domain=SOURCE_DOMAINS[domain]),
             ),
             vol.Required(CONF_HIDE_SOURCE, default=False): selector.BooleanSelector(),
         },

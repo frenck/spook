@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.components.switch import DOMAIN, SwitchEntity
+from homeassistant.components.switch import SwitchEntity
 from homeassistant.const import (
     ATTR_ENTITY_ID,
     SERVICE_TOGGLE,
@@ -13,7 +13,7 @@ from homeassistant.const import (
     STATE_ON,
     STATE_UNKNOWN,
 )
-from homeassistant.core import HomeAssistant, State, callback
+from homeassistant.core import HomeAssistant, State, callback, split_entity_id
 
 from .entity import InverseEntity
 
@@ -34,7 +34,11 @@ async def async_setup_entry(
 
 
 class InverseSwitch(InverseEntity, SwitchEntity):
-    """Inverse switch."""
+    """Inverse switch.
+
+    Its source can be an on/off helper or a light as well, so it is told what
+    to do in its own terms: a light is turned off with the light actions.
+    """
 
     @callback
     def async_update_state(self, state: State) -> None:
@@ -47,7 +51,7 @@ class InverseSwitch(InverseEntity, SwitchEntity):
     async def async_turn_on(self, **_: Any) -> None:
         """Turn the entity on."""
         await self.hass.services.async_call(
-            DOMAIN,
+            split_entity_id(self._entity_id)[0],
             SERVICE_TURN_OFF,
             {ATTR_ENTITY_ID: self._entity_id},
             blocking=True,
@@ -57,7 +61,7 @@ class InverseSwitch(InverseEntity, SwitchEntity):
     async def async_turn_off(self, **_: Any) -> None:
         """Turn the entity off."""
         await self.hass.services.async_call(
-            DOMAIN,
+            split_entity_id(self._entity_id)[0],
             SERVICE_TURN_ON,
             {ATTR_ENTITY_ID: self._entity_id},
             blocking=True,
@@ -67,7 +71,7 @@ class InverseSwitch(InverseEntity, SwitchEntity):
     async def async_toggle(self, **_: Any) -> None:
         """Toggle the entity."""
         await self.hass.services.async_call(
-            DOMAIN,
+            split_entity_id(self._entity_id)[0],
             SERVICE_TOGGLE,
             {ATTR_ENTITY_ID: self._entity_id},
             blocking=True,
