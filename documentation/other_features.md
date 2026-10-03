@@ -356,7 +356,7 @@ This trigger has no options.
 
 Home Assistant announces a new device on its event bus and nowhere else. A plug paired by somebody else in the house, or a Zigbee device that joined the network on its own, goes unnoticed until somebody browses the device list. This trigger tells you right away.
 
-When it fires, `trigger.device_id` is the new device's identifier, `trigger.name` its name, `trigger.manufacturer` and `trigger.model` what it is, `trigger.area_id` the area it was put in, if any, and `trigger.integrations` the integrations it belongs to.
+When it fires, `trigger.device_id` is the new device's identifier, `trigger.name` its name, `trigger.manufacturer` and `trigger.model` what it is, `trigger.area_id` the area it was put in, if any, and `trigger.integration` the integration it belongs to. A device that is part of another one, like one outlet of a power strip, has no make or model of its own, so those are empty for it.
 
 :::{seealso} Example trigger in {term}`YAML`
 :class: dropdown
@@ -374,7 +374,7 @@ triggers:
   - trigger: spook.device_added
 conditions:
   - condition: template
-    value_template: "{{ 'zha' in trigger.integrations }}"
+    value_template: "{{ trigger.integration == 'zha' }}"
 ```
 
 :::

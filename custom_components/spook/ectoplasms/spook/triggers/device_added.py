@@ -11,6 +11,8 @@ from homeassistant.core import CoreState, callback
 from homeassistant.helpers import device_registry as dr
 from homeassistant.helpers.trigger import Trigger
 
+from ....core_compat import async_is_child_device
+
 if TYPE_CHECKING:
     from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
     from homeassistant.helpers.trigger import (
@@ -70,20 +72,26 @@ class SpookTrigger(Trigger):
             if (device := registry.async_get(event.data["device_id"])) is None:
                 return
 
+            # A child device, part of another one, has no make or model of
+            # its own, and asking it for one is deprecated.
+            child = async_is_child_device(device)
+
+            # One integration per device, now that a device is no longer
+            # shared between them: `config_entries` is on its way out.
+            entry = (
+                self._hass.config_entries.async_get_entry(device.config_entry_id)
+                if device.config_entry_id
+                else None
+            )
+
             run_action(
                 {
                     "device_id": device.id,
                     "name": device.name,
-                    "manufacturer": device.manufacturer,
-                    "model": device.model,
+                    "manufacturer": None if child else device.manufacturer,
+                    "model": None if child else device.model,
                     "area_id": device.area_id,
-                    "integrations": sorted(
-                        entry.domain
-                        for entry_id in device.config_entries
-                        if (
-                            entry := self._hass.config_entries.async_get_entry(entry_id)
-                        )
-                    ),
+                    "integration": entry.domain if entry else None,
                 },
                 f"device {device.name} added",
                 event.context,
