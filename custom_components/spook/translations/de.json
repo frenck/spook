@@ -1918,6 +1918,22 @@
             },
             "name": "Entität ist zurückgekehrt",
             "description": "Löst aus, wenn eine Entität zurückkehrt, nachdem sie eine Weile nicht verfügbar war, sodass ein neu startender Router nicht so aussieht, als würde alles im Haus gleichzeitig wieder verfügbar."
+        },
+        "user_added": {
+            "name": "Benutzer hinzugefügt",
+            "description": "Wird ausgelöst, wenn jemand einen Zugang zu Home Assistant bekommt. Benutzer, die Home Assistant selbst für seine eigenen Integrationen anlegt, zählen nicht."
+        },
+        "integration_added": {
+            "name": "Integration hinzugefügt",
+            "description": "Wird ausgelöst, wenn eine Integration zu Home Assistant hinzugefügt wird, egal wer oder was sie hinzugefügt hat."
+        },
+        "device_added": {
+            "name": "Gerät hinzugefügt",
+            "description": "Wird ausgelöst, wenn ein neues Gerät zu Home Assistant hinzugefügt wird, etwa eine gerade gekoppelte Steckdose."
+        },
+        "device_discovered": {
+            "name": "Gerät entdeckt",
+            "description": "Wird ausgelöst, wenn Home Assistant etwas Neues entdeckt, das es einrichten könnte, etwa ein Gerät, das gerade in deinem Netzwerk aufgetaucht ist."
         }
     },
     "selector": {
