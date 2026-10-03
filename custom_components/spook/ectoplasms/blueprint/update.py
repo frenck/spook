@@ -1553,7 +1553,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             is not None
         ):
             self._attr_latest_version = offered
-            self._latest_from_source = True
+            # Only an offer proves the source said something. Until it first
+            # answers, the file is written down as both versions, so the same
+            # value on both sides says nothing about where it came from.
+            self._latest_from_source = offered != self._attr_installed_version
 
     @callback
     def async_seen(self, said: _OnDisk) -> None:
@@ -1611,6 +1614,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
     async def _async_check(self) -> None:
         """Fetch and compare, with the blueprint to ourselves."""
+        source_url = self._said.source_url
         try:
             fetched = await self._async_fetch()
         except HomeAssistantError as err:
@@ -1618,7 +1622,14 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             # afternoon should not take the update it was offering with it.
             # The reason is kept so the dialog can say why nothing happens
             # here, rather than looking simply idle.
-            self._set_aside = str(err)
+            #
+            # Named as the link below the note names it, with the address
+            # that was actually tried. The note escapes what it is given, which
+            # put backslashes in an address, and the blueprint can have been
+            # pointed elsewhere by the time the note is read.
+            self._set_aside = str(err).replace(
+                source_url, "the address it was imported from"
+            )
             LOGGER.debug(
                 "Spook could not check blueprint %s: %s",
                 self.blueprint_path,
@@ -1842,17 +1853,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             # name and the address it came from, and it is about to sit inside
             # an alert of Spook's. An author who closes that alert and opens
             # one of their own gets to say anything they like in Spook's voice.
-            #
-            # The address is named by the link right under it instead. Run
-            # through that escaping, an underscore in it came out with a
-            # backslash in front, as a link that goes nowhere.
             aside.append(
                 "<ha-alert alert-type='info'>"
-                + _as_words(
-                    self._set_aside.replace(
-                        self._said.source_url, "the address it was imported from"
-                    )
-                )
+                + _as_words(self._set_aside)
                 + (
                     ""
                     if nothing_on_offer

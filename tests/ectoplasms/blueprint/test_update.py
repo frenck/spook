@@ -3873,3 +3873,64 @@ async def test_an_unreachable_source_is_named_by_the_link_below_it(
     alert = notes.split("</ha-alert>")[0]
     assert "Could not reach the address it was imported from." in alert
     assert SOURCE not in alert
+
+
+async def test_an_edit_after_a_restart_with_the_source_down_is_no_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A restored state with nothing on offer says nothing about the source.
+
+    Before the source has ever answered, the file is written down as both
+    versions. Brought back after a restart, that is still only the file, and
+    an edit by hand must not turn it into an update.
+    """
+    installed = _fingerprint_of(MOTION_LIGHT)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "off",
+                {"installed_version": installed, "latest_version": installed},
+            ),
+        ],
+    )
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+
+    assert hass.states.get(_ENTITY).state == "off", "offered the edit back"
+
+
+async def test_a_note_about_an_address_given_up_does_not_name_it(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The address that could not be reached is left out as it is tried.
+
+    Pointed elsewhere after the failure, the note would otherwise name the
+    old address, escaped, while the link below it names the new one.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    async_write_blueprint(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT,
+        source="https://example.com/moved_to/somewhere_else.yaml",
+    )
+    await _reconcile(hass)
+
+    alert = (await _entity(hass).async_release_notes()).split("</ha-alert>")[0]
+    assert SOURCE not in alert
+    assert "the address it was imported from" in alert
