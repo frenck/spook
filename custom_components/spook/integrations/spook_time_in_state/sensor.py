@@ -17,7 +17,7 @@ from homeassistant.helpers.event import (
     EventStateChangedData,
     async_track_state_change_event,
 )
-from homeassistant.helpers.restore_state import RestoreEntity
+from homeassistant.helpers.restore_state import RestoredExtraData, RestoreEntity
 from homeassistant.helpers.start import async_at_start
 from homeassistant.util import dt as dt_util
 
@@ -71,12 +71,21 @@ class TimeInStateSensor(SensorEntity, RestoreEntity):  # pylint: disable=too-man
         self._attr_name = config_entry.title
         self._attr_unique_id = config_entry.entry_id
 
+        source_entry = registry.async_get(self._source)
         if (
-            (source_entry := registry.async_get(self._source))
+            source_entry
             and source_entry.device_id
             and (device := dr.async_get(hass).async_get(source_entry.device_id))
         ):
             self.device_entry = device
+
+        # What the moment is about. The source by its registry ID, which a
+        # rename keeps, so a renamed source keeps its moment, while another
+        # source or other states to count start over.
+        self._following = {
+            "source": source_entry.id if source_entry else self._source,
+            "states": sorted(self._states),
+        }
 
         self._since: datetime | None = None
         self._source_state: str | None = None
@@ -102,13 +111,21 @@ class TimeInStateSensor(SensorEntity, RestoreEntity):  # pylint: disable=too-man
             ATTR_OBSERVED: self._observed,
         }
 
+    @property
+    def extra_restore_state_data(self) -> RestoredExtraData:
+        """Return what the moment is about, to check on the way back in."""
+        return RestoredExtraData(self._following)
+
     async def async_added_to_hass(self) -> None:
         """Pick up where the last run left off, and start following."""
         await super().async_added_to_hass()
 
-        if (last := await self.async_get_last_state()) is not None and (
-            since := dt_util.parse_datetime(last.state)
-        ) is not None:
+        if (
+            (last := await self.async_get_last_state()) is not None
+            and (extra := await self.async_get_last_extra_data()) is not None
+            and extra.as_dict() == self._following
+            and (since := dt_util.parse_datetime(last.state)) is not None
+        ):
             self._since = since
             self._source_state = last.attributes.get(ATTR_SOURCE_STATE)
             self._observed = bool(last.attributes.get(ATTR_OBSERVED))
@@ -134,6 +151,7 @@ class TimeInStateSensor(SensorEntity, RestoreEntity):  # pylint: disable=too-man
         or back from being unavailable, it may well have changed somewhere in
         between, and the moment of arriving is not when.
         """
+        self.async_set_context(event.context)
         old_state = event.data["old_state"]
         self._async_take(
             event.data["new_state"],

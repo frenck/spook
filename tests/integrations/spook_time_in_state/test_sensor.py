@@ -7,7 +7,7 @@ from typing import TYPE_CHECKING
 
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
-    mock_restore_cache,
+    mock_restore_cache_with_extra_data,
 )
 
 from homeassistant import config_entries
@@ -18,7 +18,7 @@ from homeassistant.const import (
     STATE_ON,
     STATE_UNAVAILABLE,
 )
-from homeassistant.core import State
+from homeassistant.core import Context, State
 from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.util import dt as dt_util
 
@@ -33,6 +33,7 @@ if TYPE_CHECKING:
     from freezegun.api import FrozenDateTimeFactory
 
     from homeassistant.core import HomeAssistant
+    from homeassistant.helpers import entity_registry as er
 
 _SOURCE = "binary_sensor.front_door"
 _SENSOR = "sensor.front_door_since"
@@ -52,6 +53,29 @@ async def _set_up(hass: HomeAssistant, states: list[str] | None = None) -> None:
     await hass.async_block_till_done()
 
 
+def _restore(
+    hass: HomeAssistant,
+    since: str,
+    *,
+    source: str,
+    states: list[str] | None = None,
+) -> None:
+    """Leave a moment behind from a previous run, following ``source``."""
+    mock_restore_cache_with_extra_data(
+        hass,
+        [
+            (
+                State(
+                    _SENSOR,
+                    since,
+                    {ATTR_SOURCE_STATE: STATE_OFF, ATTR_OBSERVED: True},
+                ),
+                {"source": source, "states": states or []},
+            )
+        ],
+    )
+
+
 def _since(hass: HomeAssistant) -> str:
     """Return what the sensor says, as the moment it holds."""
     return hass.states.get(_SENSOR).state
@@ -67,13 +91,15 @@ async def test_it_tells_since_when_the_source_changed(
     assert hass.states.get(_SENSOR).attributes[ATTR_OBSERVED] is False
 
     freezer.tick(timedelta(minutes=5))
-    hass.states.async_set(_SOURCE, STATE_ON)
+    context = Context()
+    hass.states.async_set(_SOURCE, STATE_ON, context=context)
     await hass.async_block_till_done()
 
     state = hass.states.get(_SENSOR)
     assert state.state == dt_util.utcnow().isoformat(timespec="seconds")
     assert state.attributes[ATTR_SOURCE_STATE] == STATE_ON
     assert state.attributes[ATTR_OBSERVED] is True
+    assert state.context.id == context.id
 
 
 async def test_a_moment_away_is_not_a_change(
@@ -148,22 +174,54 @@ async def test_the_moment_outlasts_a_restart(hass: HomeAssistant) -> None:
     start. This is the whole point of the helper.
     """
     long_ago = (dt_util.utcnow() - timedelta(days=3)).isoformat(timespec="seconds")
-    mock_restore_cache(
-        hass,
-        [
-            State(
-                _SENSOR,
-                long_ago,
-                {ATTR_SOURCE_STATE: STATE_OFF, ATTR_OBSERVED: True},
-            )
-        ],
-    )
+    _restore(hass, long_ago, source=_SOURCE)
     hass.states.async_set(_SOURCE, STATE_OFF)
     await _set_up(hass)
 
     state = hass.states.get(_SENSOR)
     assert state.state == long_ago
     assert state.attributes[ATTR_OBSERVED] is True
+
+
+async def test_other_states_to_count_start_over(hass: HomeAssistant) -> None:
+    """Test a moment kept for other states is not taken as this one.
+
+    "Last on" is no answer to "last off", even with the source still in the
+    state it was left in.
+    """
+    long_ago = (dt_util.utcnow() - timedelta(days=3)).isoformat(timespec="seconds")
+    _restore(hass, long_ago, source=_SOURCE, states=[STATE_ON])
+    hass.states.async_set(_SOURCE, STATE_OFF)
+    await _set_up(hass, states=[STATE_OFF])
+
+    state = hass.states.get(_SENSOR)
+    assert state.state != long_ago
+    assert state.attributes[ATTR_OBSERVED] is False
+
+
+async def test_a_renamed_source_keeps_its_moment(
+    hass: HomeAssistant,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test the moment is about the source, whatever it is called."""
+    source = entity_registry.async_get_or_create(
+        "binary_sensor", "test", "door", suggested_object_id="front_door"
+    )
+    long_ago = (dt_util.utcnow() - timedelta(days=3)).isoformat(timespec="seconds")
+    _restore(hass, long_ago, source=source.id)
+    hass.states.async_set(_SOURCE, STATE_OFF)
+    await _set_up(hass)
+    assert _since(hass) == long_ago
+
+    entity_registry.async_update_entity(
+        _SOURCE, new_entity_id="binary_sensor.back_door"
+    )
+    hass.states.async_set("binary_sensor.back_door", STATE_OFF)
+    await hass.async_block_till_done()
+
+    entry = hass.config_entries.async_entries(DOMAIN)[0]
+    assert entry.options[CONF_ENTITY_ID] == "binary_sensor.back_door"
+    assert _since(hass) == long_ago
 
 
 async def test_a_change_while_home_assistant_was_down_is_not_made_up(
@@ -175,16 +233,7 @@ async def test_a_change_while_home_assistant_was_down_is_not_made_up(
     was noticed is the honest answer, marked as not seen happening.
     """
     long_ago = (dt_util.utcnow() - timedelta(days=3)).isoformat(timespec="seconds")
-    mock_restore_cache(
-        hass,
-        [
-            State(
-                _SENSOR,
-                long_ago,
-                {ATTR_SOURCE_STATE: STATE_OFF, ATTR_OBSERVED: True},
-            )
-        ],
-    )
+    _restore(hass, long_ago, source=_SOURCE)
     hass.states.async_set(_SOURCE, STATE_ON)
     await _set_up(hass)
 

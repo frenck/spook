@@ -1,1 +1,1 @@
-"""Tests for the Spook inverse integration."""
+"""Tests for the Spook time in state integration."""
