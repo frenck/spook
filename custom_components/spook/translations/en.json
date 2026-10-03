@@ -1083,6 +1083,36 @@
         }
       }
     },
+    "calendar_delete_event": {
+      "name": "Delete event",
+      "description": "Deletes events from a calendar, found by their title or uid in a stretch of time. Hands back what it deleted, uid included.",
+      "fields": {
+        "summary": {
+          "name": "Summary",
+          "description": "The title of the events to delete, exactly as it is in the calendar."
+        },
+        "uid": {
+          "name": "UID",
+          "description": "The identifier of the event to delete, for when you have it."
+        },
+        "start_date_time": {
+          "name": "Start date and time",
+          "description": "Where to start looking. Defaults to now."
+        },
+        "end_date_time": {
+          "name": "End date and time",
+          "description": "Where to stop looking. Give this or a duration."
+        },
+        "duration": {
+          "name": "Duration",
+          "description": "How far to look from the start. Give this or an end date and time."
+        },
+        "whole_series": {
+          "name": "Whole series",
+          "description": "For a recurring event, delete the whole series rather than only the occurrence that was found."
+        }
+      }
+    },
     "homeassistant_create_area": {
       "name": "Create an area",
       "description": "Creates a new area on the fly.",

@@ -82,6 +82,12 @@ Downloads and imports an automation/script blueprint, directly from the URL you 
 
 `blueprint.import`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=blueprint.import), [documentation](integrations/blueprint#import-blueprint) 📚
 
+## Calendar: Delete event
+
+Deletes events from a calendar, found by their title or uid in a stretch of time, and hands back what it deleted. _#calendar_ _#tidyup_
+
+`calendar.delete_event`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=calendar.delete_event), [documentation](integrations/calendar#delete-event) 📚
+
 ## Group: Add members
 
 Adds entities to a group while the house is running, which the interface only lets you do by hand. _#roomforonemore_
