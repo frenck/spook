@@ -233,3 +233,58 @@ def extract_areas_from_dashboard_node(node: Any) -> set[str]:
     areas: set[str] = set()
     _walk_areas(node, areas)
     return areas
+
+
+# The two kinds of action that call one. `call-service` is the old name for
+# `perform-action`, and the frontend runs both the same way: the action named
+# under `perform_action`, or failing that under `service`. Read exactly like
+# that, so what is reported is what a tap would have tried to run.
+_PERFORM_ACTION_TYPES = frozenset({"perform-action", "call-service"})
+_PERFORM_ACTION_KEYS = ("perform_action", "service")
+
+# What `||` in JavaScript passes over. Not Python's idea of empty: an empty
+# list or dict is truthy over there, so the frontend stops at it and never
+# gets to `service`. Compared with `==`, which keeps an unhashable value out
+# of trouble and lets `0.0` count as the `0` it is.
+_JAVASCRIPT_FALSY = (None, "", 0, False)
+
+# Only a plain `domain.action` is a name to look up. A custom card can put a
+# template there, button-card's `[[[ ... ]]]` for one, and a half-filled
+# editor leaves it empty; neither is an action that went missing.
+_ACTION_NAME = re.compile(r"[a-z0-9_]+\.[a-z0-9_]+")
+
+
+def _walk_actions(node: Any, actions: set[str]) -> None:
+    """Recursively collect the actions a configuration node performs."""
+    if isinstance(node, list):
+        for item in node:
+            _walk_actions(item, actions)
+        return
+
+    if not isinstance(node, dict):
+        return
+
+    # Read off the action itself rather than the key it sits under:
+    # `tap_action`, `hold_action` and the rest are the frontend's, and custom
+    # cards add their own names for the same shape. Checked for a string
+    # first, like the area walk: a list or a dict cannot be looked up in a set.
+    if (
+        isinstance(action_type := node.get("action"), str)
+        and action_type in _PERFORM_ACTION_TYPES
+    ):
+        for key in _PERFORM_ACTION_KEYS:
+            if (name := node.get(key)) in _JAVASCRIPT_FALSY:
+                continue
+            if isinstance(name, str) and _ACTION_NAME.fullmatch(name):
+                actions.add(name)
+            break
+
+    for child in _worth_descending_into(node):
+        _walk_actions(child, actions)
+
+
+def extract_actions_from_dashboard_node(node: Any) -> set[str]:
+    """Return the actions performed anywhere in a dashboard node."""
+    actions: set[str] = set()
+    _walk_actions(node, actions)
+    return actions

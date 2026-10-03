@@ -7,6 +7,7 @@ from typing import Any
 import pytest
 
 from custom_components.spook.dashboard_extraction import (
+    extract_actions_from_dashboard_node,
     extract_areas_from_dashboard_node,
     extract_entities_from_dashboard_node,
 )
@@ -357,3 +358,122 @@ def test_a_type_that_is_not_a_string_does_not_stop_the_walk(card_type: Any) -> N
     }
 
     assert extract_areas_from_dashboard_node(config) == {"kitchen"}
+
+
+def test_actions_are_read_off_the_action_not_its_key() -> None:
+    """Test every tap, hold and custom card action that performs one is read."""
+    node = {
+        "cards": [
+            {
+                "type": "button",
+                "tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "script.goodnight",
+                },
+                "hold_action": {"action": "call-service", "service": "light.toggle"},
+            },
+            {
+                "type": "custom:mushroom-entity-card",
+                "icon_tap_action": {
+                    "action": "perform-action",
+                    "perform_action": "scene.turn_on",
+                },
+            },
+            {"type": "tile", "tap_action": {"action": "more-info"}},
+        ],
+    }
+
+    assert extract_actions_from_dashboard_node(node) == {
+        "script.goodnight",
+        "light.toggle",
+        "scene.turn_on",
+    }
+
+
+def test_an_action_is_named_like_the_frontend_reads_it() -> None:
+    """Test `perform_action` wins, and `service` is read when it is missing.
+
+    The frontend runs `perform_action || service` for both kinds, so a
+    `call-service` written with the new key performs that one.
+    """
+    node = [
+        {
+            "action": "perform-action",
+            "perform_action": "script.new",
+            "service": "script.old",
+        },
+        {"action": "call-service", "perform_action": "script.migrated"},
+        {"action": "perform-action", "service": "script.legacy_key"},
+    ]
+
+    assert extract_actions_from_dashboard_node(node) == {
+        "script.new",
+        "script.migrated",
+        "script.legacy_key",
+    }
+
+
+@pytest.mark.parametrize("empty", [None, "", 0, False])
+def test_what_the_frontend_passes_over_falls_back_to_service(empty: Any) -> None:
+    """Test `service` is read when `perform_action` is empty to JavaScript."""
+    node = {
+        "action": "perform-action",
+        "perform_action": empty,
+        "service": "script.fallback",
+    }
+
+    assert extract_actions_from_dashboard_node(node) == {"script.fallback"}
+
+
+@pytest.mark.parametrize("not_empty", [[], {}, ["script.a_list"]])
+def test_what_the_frontend_stops_at_does_not_fall_back(not_empty: Any) -> None:
+    """Test an empty list or dict stops the lookup, as it does in JavaScript.
+
+    Python calls those empty, JavaScript does not: the frontend takes them,
+    fails to perform them, and never gets to `service`.
+    """
+    node = {
+        "action": "perform-action",
+        "perform_action": not_empty,
+        "service": "script.never_reached",
+    }
+
+    assert extract_actions_from_dashboard_node(node) == set()
+
+
+@pytest.mark.parametrize(
+    "name",
+    [
+        "",
+        None,
+        "[[[ return 'script.' + entity.state ]]]",
+        "{{ 'script.' ~ states('input_select.mode') }}",
+        "not_an_action",
+        ["script.a_list"],
+    ],
+)
+def test_what_is_not_an_action_name_is_left_alone(name: Any) -> None:
+    """Test templates, half-filled editors and other shapes are not names."""
+    node = {"action": "perform-action", "perform_action": name}
+
+    assert extract_actions_from_dashboard_node(node) == set()
+
+
+def test_an_action_key_on_something_else_is_not_an_action() -> None:
+    """Test `service` only counts on an action that performs one."""
+    node = {"type": "custom:some-card", "service": "script.not_performed"}
+
+    assert extract_actions_from_dashboard_node(node) == set()
+
+
+@pytest.mark.parametrize("action_type", [["perform-action"], {"type": "x"}])
+def test_an_action_that_is_not_a_string_does_not_stop_the_walk(
+    action_type: Any,
+) -> None:
+    """Test an odd `action` is passed over, and the walk carries on."""
+    node = [
+        {"action": action_type, "perform_action": "script.odd"},
+        {"action": "perform-action", "perform_action": "script.after"},
+    ]
+
+    assert extract_actions_from_dashboard_node(node) == {"script.after"}
