@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Bronentiteit",
+                    "name": "Naam",
+                    "offset": "Offset",
+                    "factor": "Factor"
+                },
+                "data_description": {
+                    "offset": "Wordt opgeteld bij de waarde van de bron. Een sensor die 1,5 graad te hoog meet, krijgt -1,5. In de eenheid waarin de bron rapporteert.",
+                    "factor": "De waarde van de bron wordt hier eerst mee vermenigvuldigd. Laat op 1 staan om alleen de offset op te tellen."
+                },
+                "description": "Deze helper corrigeert een sensor die afwijkt: een temperatuur die een graad te hoog is, een luchtvochtigheid die een paar procent te laag is. Hij toont de waarde van de bron maal de factor, plus de offset.",
+                "title": "Kalibratie 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Bronentiteit",
+                    "offset": "Offset",
+                    "factor": "Factor"
+                },
+                "data_description": {
+                    "offset": "Wordt opgeteld bij de waarde van de bron. Een sensor die 1,5 graad te hoog meet, krijgt -1,5. In de eenheid waarin de bron rapporteert.",
+                    "factor": "De waarde van de bron wordt hier eerst mee vermenigvuldigd. Laat op 1 staan om alleen de offset op te tellen."
+                },
+                "title": "Kalibratie 👻"
+            }
+        }
+    },
+    "title": "Kalibratie 👻"
+}
