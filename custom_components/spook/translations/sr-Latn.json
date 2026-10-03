@@ -623,6 +623,18 @@
                 }
             },
             "title": "Nepoznat {sensors} senzor za prostoriju: {area}"
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook je pronašao duha u vašem HomeKit mostu 👻\n\nDok je lebdeo uokolo, Spook je naišao na sledeći HomeKit most:\n\n{bridge}\n\nOvaj most navodi sledeće entitete koji su nepoznati sistemu Home Assistant:\n\n{entities}\n\n\n\nHomeKit ne prati entitete koji su preimenovani. Entitet koji je bio uključen, pa preimenovan ili uklonjen, nestaje iz aplikacije Home; entitet koji je bio isključen, pa preimenovan, ponovo će se pojaviti u njoj.\n\nDa biste rešili ovu grešku, idite na integraciju HomeKit Bridge, izaberite Konfiguriši na ovom mostu i ponovo izaberite entitete.\n\nSpook 👻 Vaš ortak.",
+            "title": "Nepoznati entiteti se koriste u HomeKit mostu: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook je pronašao duha u vašem HomeKit mostu 👻\n\nDok je lebdeo uokolo, Spook je naišao na sledeći HomeKit most:\n\n{bridge}\n\nOvaj most navodi sledeće entitete koji su nepoznati sistemu Home Assistant:\n\n{entities}\n\n\n\nHomeKit ne prati entitete koji su preimenovani. Entitet koji je bio uključen, pa preimenovan ili uklonjen, nestaje iz aplikacije Home; entitet koji je bio isključen, pa preimenovan, ponovo će se pojaviti u njoj.\n\nOvaj most je konfigurisan u vašoj YAML datoteci. Da biste rešili ovu grešku, uredite filter ovog mosta pod stavkom homekit: i uklonite ili ispravite ove entitete.\n\nSpook 👻 Vaš ortak.",
+            "title": "Nepoznati entiteti se koriste u HomeKit mostu: {bridge}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo uokolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla pokreće sledeće akcije koje su nepoznate sistemu Home Assistant:\n\n{services}\n\n\n\nDugme ili kartica који користе неку од ових акција неће урадити ништа када се притисну. Ово се најчешће дешава када је скрипта преименована или уклоњена, или када је избрисана цела интеграција. Да бисте решили ову грешку, уредите контролну таблу и уклоните или замените ове акције које више не постоје.\n\nSpook 👻 Vaš ortak.",
+            "title": "Nepoznate akcije se koriste u kontrolnoj tabli: {dashboard}"
         }
     },
     "services": {
@@ -2383,6 +2395,14 @@
                 }
             },
             "name": "Kada se stanje stabilizuje"
+        },
+        "integration_added": {
+            "name": "Integracija je dodata",
+            "description": "Aktivira se kada se integracija doda u Home Assistant, bez obzira na to ko ju je ili šta dodalo."
+        },
+        "user_added": {
+            "name": "Korisnik je dodat",
+            "description": "Aktivira se kada se nekom odobri pristup sistemu Home Assistant. Korisnici koje Home Assistant kreira za sopstvene integracije su izuzeti."
         }
     },
     "selector": {
