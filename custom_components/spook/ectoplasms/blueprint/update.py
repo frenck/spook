@@ -1580,13 +1580,17 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             return
 
         content_changed = said.fingerprint != self._said.fingerprint
-        check_source = content_changed and self._latest_from_source
+        source_changed = said.source_url != self._said.source_url
+        check_source = source_changed or (content_changed and self._latest_from_source)
 
         # The previous installed copy is no longer a useful comparison after
         # an external change. A different offer still stands, including one
         # just imported, in case the source cannot be reached this time.
-        discard_offer = (
+        discard_offer = source_changed or (
             content_changed and self._attr_latest_version == self._said.fingerprint
+        )
+        offer_installed = (
+            content_changed and said.fingerprint == self._attr_latest_version
         )
         self._said = said
         self._attr_name = said.name
@@ -1598,6 +1602,9 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             self._set_aside = None
             self._latest_from_source = False
             self._attr_latest_version = said.fingerprint
+        elif offer_installed:
+            # Keep the source's word, but not a payload installed elsewhere.
+            self._fetched = None
 
         # With nothing heard from the source, the latest version was only ever
         # this file, and it goes along with it. Left as it was, an edit by hand

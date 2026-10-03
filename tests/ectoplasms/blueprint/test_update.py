@@ -3929,7 +3929,8 @@ async def test_a_note_about_an_address_given_up_does_not_name_it(
         MOTION_LIGHT,
         source="https://example.com/moved_to/somewhere_else.yaml",
     )
-    await _reconcile(hass)
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _reconcile(hass)
 
     alert = (await _entity(hass).async_release_notes()).split("</ha-alert>")[0]
     assert SOURCE not in alert
@@ -4029,3 +4030,49 @@ async def test_external_import_does_not_offer_a_stale_copy_while_offline(
     state = hass.states.get(_ENTITY)
     assert state.state == "off"
     assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+
+
+@pytest.mark.parametrize("raw", [MOTION_LIGHT, MOTION_LIGHT_CHANGED])
+async def test_a_changed_source_cannot_install_the_old_sources_offer(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    raw: str,
+) -> None:
+    """Test changing the source invalidates its old offer even without edits."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED_AGAIN):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    source = "https://example.com/new-source.yaml"
+    with patch(_FETCH, side_effect=aiohttp.ClientError()) as fetch:
+        async_write_blueprint(hass, "automation", "motion.yaml", raw, source=source)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+        fetch.assert_called_once()
+        assert fetch.call_args.args[-1] == source
+        before = await hass.async_add_executor_job(file.read_text)
+        with pytest.raises(HomeAssistantError):
+            await _entity(hass).async_install(None, backup=False)
+        assert await hass.async_add_executor_job(file.read_text) == before
+
+
+async def test_an_externally_installed_offer_requires_a_fresh_install_payload(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a direct install cannot reuse an offer imported while offline."""
+    file = async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+        before = await hass.async_add_executor_job(file.read_text)
+        with pytest.raises(HomeAssistantError):
+            await _entity(hass).async_install(None, backup=False)
+        assert await hass.async_add_executor_job(file.read_text) == before
