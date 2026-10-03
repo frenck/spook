@@ -5,8 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components import automation
-from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
-from homeassistant.core import Event, callback
+from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import (
@@ -22,8 +21,6 @@ from ....template_extraction import (
 from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
     from homeassistant.core import HomeAssistant
 
 
@@ -271,6 +268,7 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
     }
     inspect_config_entry_changed = True
     inspect_on_reload = True
+    inspect_on_entity_added_or_removed = True
 
     unavailable_entity_class = automation.UnavailableAutomationEntity
     entity_label = "automation"
@@ -280,31 +278,6 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
 
     _known_entity_ids: set[str]
     _known_services: set[str]
-
-    async def async_activate(self) -> None:
-        """Activate the repair."""
-        await super().async_activate()
-
-        @callback
-        def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
-            """Return if a state entity was added or removed."""
-            return (
-                event_data.get("old_state") is None
-                or event_data.get("new_state") is None
-            )
-
-        @callback
-        def _async_call_inspect_debouncer(_: Event) -> None:
-            """Trigger an inspection when a state entity is added or removed."""
-            self.inspect_debouncer.async_schedule_call()
-
-        self._event_subs.add(
-            self.hass.bus.async_listen(
-                EVENT_STATE_CHANGED,
-                _async_call_inspect_debouncer,
-                event_filter=_state_entity_changed,
-            ),
-        )
 
     async def _async_setup_inspection(self) -> None:
         """Cache what every automation in this cycle needs looked up.

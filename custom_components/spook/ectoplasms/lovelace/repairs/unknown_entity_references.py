@@ -8,9 +8,8 @@ from homeassistant.components.lovelace import DOMAIN
 from homeassistant.const import (
     EVENT_COMPONENT_LOADED,
     EVENT_LOVELACE_UPDATED,
-    EVENT_STATE_CHANGED,
 )
-from homeassistant.core import Event, callback
+from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
@@ -21,8 +20,6 @@ from ....repairs import AbstractSpookRepair
 from ..dashboards import async_dashboard_configs
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
     from homeassistant.components.lovelace.dashboard import (
         LovelaceStorage,
         LovelaceYAML,
@@ -41,6 +38,7 @@ class SpookRepair(AbstractSpookRepair):
     }
     inspect_config_entry_changed = True
     inspect_on_reload = True
+    inspect_on_entity_added_or_removed = True
     automatically_clean_up_issues = True
 
     _dashboards: dict[str | None, LovelaceStorage | LovelaceYAML]
@@ -49,27 +47,6 @@ class SpookRepair(AbstractSpookRepair):
         """Handle the activating a repair."""
         self._dashboards = self.hass.data["lovelace"].dashboards
         await super().async_activate()
-
-        @callback
-        def _state_entity_changed(event_data: Mapping[str, Any]) -> bool:
-            """Return if a state entity was added or removed."""
-            return (
-                event_data.get("old_state") is None
-                or event_data.get("new_state") is None
-            )
-
-        @callback
-        def _async_call_inspect_debouncer(_: Event) -> None:
-            """Trigger an inspection when a state entity is added or removed."""
-            self.inspect_debouncer.async_schedule_call()
-
-        self._event_subs.add(
-            self.hass.bus.async_listen(
-                EVENT_STATE_CHANGED,
-                _async_call_inspect_debouncer,
-                event_filter=_state_entity_changed,
-            ),
-        )
 
     async def async_inspect(self) -> None:
         """Trigger a inspection."""
