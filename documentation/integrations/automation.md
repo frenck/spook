@@ -211,6 +211,8 @@ data:
 
 While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
 
+Automations that are turned off are left alone. An automation that is off does nothing, so nothing in it can go wrong yet, and it is often turned off exactly because something in it is broken. As soon as you turn it back on, Spook looks at it again and reports what it finds.
+
 ### Unknown referenced areas
 
 Automations are inspected for the use of areas. If an automation is targeting an area in one of its actions that do not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the area that is referenced but not found.

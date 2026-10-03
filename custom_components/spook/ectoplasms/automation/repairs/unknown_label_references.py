@@ -9,13 +9,13 @@ from homeassistant.helpers import label_registry as lr
 
 from ....entity_filtering import async_filter_known_label_ids, async_get_all_label_ids
 from ....reference_extraction import extract_targets_from_config
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
+from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
     from typing import Any
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced labels in automations."""
 
     domain = automation.DOMAIN

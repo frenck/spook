@@ -14,12 +14,12 @@ from ....action_extraction import (
     async_extract_entities_from_value,
 )
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
-from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import (
     KNOWN_DOMAINS,
     async_extract_entities_from_config,
     async_filter_known_entity_ids_with_templates,
 )
+from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
     from collections.abc import Mapping
@@ -260,7 +260,7 @@ async def extract_entities_from_condition_config(
     return entities
 
 
-class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
+class SpookRepair(AbstractSpookAutomationReferencesRepair):
     """Spook repair tries to find unknown referenced entity in automations."""
 
     domain = automation.DOMAIN
@@ -317,10 +317,6 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             self.hass, include_all_none=True
         )
         self._known_services = async_get_all_services(self.hass)
-
-    def _should_inspect_entity(self, entity: Any) -> bool:
-        """Skip disabled automations."""
-        return entity.enabled
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
