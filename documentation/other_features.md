@@ -294,8 +294,8 @@ trigger: spook.device_discovered
 :::{attention} Known limitations
 :class: dropdown
 
-- A device that was found and never set up is found again after every restart, as Home Assistant does not remember what it found. Whatever turns up while Home Assistant starts is noted and not reported. Something found again later than that, like a device that only shows itself once it renews its network address, is reported again. Ignoring a discovery you do not want stops it coming back, here and in Home Assistant alike.
-- Each device is reported once for as long as the automation is loaded. Found again within that time, it stays quiet.
+- A device that was found and never set up is found again after every restart, as Home Assistant does not remember what it found. Whatever turns up while Home Assistant starts is noted and not reported, then or later. A device that does not show itself until after the start, like one that only announces itself when it renews its network address, is reported, even when Home Assistant had found it before the restart. Ignoring a discovery you do not want stops it coming back, here and in Home Assistant alike.
+- Each device is reported once for as long as the automation is loaded. Found again within that time, it stays quiet. That takes the integration giving the device an identifier of its own, which nearly all do. One that does not is reported on every discovery.
 - Anything already on the **Discovered** list when the automation loads is not reported.
 - Moving a configuration from YAML into the interface is not a discovery, and does not fire this trigger.
 

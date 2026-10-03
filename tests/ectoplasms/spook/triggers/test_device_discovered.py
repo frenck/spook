@@ -103,6 +103,9 @@ async def _automation(hass: HomeAssistant) -> list[dict]:
                                 "source": "{{ trigger.source }}",
                                 "name": "{{ trigger.name }}",
                                 "unique_id": "{{ trigger.unique_id }}",
+                                "title_placeholders": (
+                                    "{{ trigger.title_placeholders }}"
+                                ),
                             },
                         }
                     ],
@@ -127,6 +130,7 @@ async def test_a_new_discovery_is_reported(hass: HomeAssistant) -> None:
             "source": SOURCE_ZEROCONF,
             "name": "Desk gadget",
             "unique_id": "AB12",
+            "title_placeholders": {"name": "Desk gadget"},
         }
     ]
 

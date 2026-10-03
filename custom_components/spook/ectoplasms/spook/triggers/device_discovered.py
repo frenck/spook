@@ -31,7 +31,8 @@ def _what_it_is(flow: dict[str, Any]) -> tuple[str, str]:
     """Return what tells this discovery apart from another one.
 
     The unique ID where the integration gave one, which is the device itself.
-    One found again gets a new flow, but the same unique ID.
+    One found again gets a new flow, but the same unique ID. Without one there
+    is nothing to know the device by, and each discovery is its own.
     """
     context = flow.get("context") or {}
     return flow["handler"], context.get("unique_id") or flow["flow_id"]
