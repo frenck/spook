@@ -68,11 +68,15 @@ class SpookService(AbstractSpookEntityComponentService[CalendarEntity]):
                     continue
                 series_done.add(event.uid)
                 await entity.async_delete_event(event.uid)
-            else:
-                await entity.async_delete_event(
-                    event.uid, recurrence_id=event.recurrence_id
-                )
 
+                # Handed back as the series it was, not as the occurrence
+                # that happened to lead to it.
+                deleted.append({**describe(event), "recurrence_id": None})
+                continue
+
+            await entity.async_delete_event(
+                event.uid, recurrence_id=event.recurrence_id
+            )
             deleted.append(describe(event))
 
         return {"events": deleted}
