@@ -1,3 +1,4 @@
+# pylint: disable=duplicate-code  # Mirrors spook_time_in_state by design: sub-integrations cannot share code.
 """Spook - Your homie."""
 
 from __future__ import annotations
