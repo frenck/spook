@@ -1827,6 +1827,22 @@
                     "description": "Quanto tempo uma entidade precisa ficar calada antes de isto ser acionado. Uma entidade que continua informando o mesmo valor não está calada."
                 }
             }
+        },
+        "user_added": {
+            "name": "Usuário adicionado",
+            "description": "É acionado quando alguém recebe um acesso ao Home Assistant. Os usuários que o Home Assistant cria para suas próprias integrações não contam."
+        },
+        "integration_added": {
+            "name": "Integração adicionada",
+            "description": "É acionado quando uma integração é adicionada ao Home Assistant, não importa quem ou o que a adicionou."
+        },
+        "device_added": {
+            "name": "Dispositivo adicionado",
+            "description": "É acionado quando um novo dispositivo é adicionado ao Home Assistant, como uma tomada que acabou de ser pareada."
+        },
+        "device_discovered": {
+            "name": "Dispositivo descoberto",
+            "description": "É acionado quando o Home Assistant descobre algo novo que poderia configurar, como um dispositivo que acabou de aparecer na sua rede."
         }
     },
     "selector": {
