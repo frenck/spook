@@ -639,6 +639,56 @@ options:
 
 :::
 
+### User added
+
+Fires when somebody is given a login to Home Assistant.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - User added 👻
+* - Trigger name
+  - `spook.user_added`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+This trigger has no options.
+
+A new person able to log in to your house is something you would rather hear about than stumble upon. Home Assistant does announce it, but only as an event on its bus: no notification, nothing on a page you visit.
+
+When it fires, `trigger.user_id` is the new user's identifier, `trigger.name` their name, and `trigger.is_admin` whether they were made an administrator.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+trigger: spook.user_added
+```
+
+Only for new administrators:
+
+```{code-block} yaml
+:linenos:
+triggers:
+  - trigger: spook.user_added
+conditions:
+  - condition: template
+    value_template: "{{ trigger.is_admin }}"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Users Home Assistant makes for itself are left out. An integration that acts on its own, like Supervisor or Home Assistant Cloud, is given a user of its own when it is set up, and nobody can log in as one of those.
+- A user added while the automation is not loaded, or while Home Assistant is down, is not reported afterwards.
+
+:::
+
 ## Conditions
 
 Spook offers the following conditions that are not tied to a specific integration:
