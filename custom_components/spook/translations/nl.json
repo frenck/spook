@@ -2395,6 +2395,22 @@
                     "description": "Hoe lang de entiteit weg moet zijn geweest voordat terugkomen telt. Alles wat korter is, is een flikkering: het herladen van een integratie zet al haar entiteiten binnen een seconde op niet beschikbaar en weer terug."
                 }
             }
+        },
+        "user_added": {
+            "name": "Gebruiker toegevoegd",
+            "description": "Wordt geactiveerd wanneer iemand een login voor Home Assistant krijgt. Gebruikers die Home Assistant zelf aanmaakt voor zijn eigen integraties tellen niet mee."
+        },
+        "integration_added": {
+            "name": "Integratie toegevoegd",
+            "description": "Wordt geactiveerd wanneer een integratie aan Home Assistant wordt toegevoegd, wie of wat die ook toevoegde."
+        },
+        "device_added": {
+            "name": "Apparaat toegevoegd",
+            "description": "Wordt geactiveerd wanneer een nieuw apparaat aan Home Assistant wordt toegevoegd, zoals een stekker die net is gekoppeld."
+        },
+        "device_discovered": {
+            "name": "Apparaat ontdekt",
+            "description": "Wordt geactiveerd wanneer Home Assistant iets nieuws ontdekt dat het kan instellen, zoals een apparaat dat net op je netwerk is opgedoken."
         }
     },
     "selector": {
