@@ -1905,6 +1905,22 @@
         },
         "all_of": {
             "name": "Alla dessa inträffade"
+        },
+        "user_added": {
+            "name": "Användare tillagd",
+            "description": "Utlöses när någon får en inloggning till Home Assistant. Användare som Home Assistant skapar för sina egna integrationer räknas inte."
+        },
+        "integration_added": {
+            "name": "Integration tillagd",
+            "description": "Utlöses när en integration läggs till i Home Assistant, oavsett vem eller vad som lade till den."
+        },
+        "device_added": {
+            "name": "Enhet tillagd",
+            "description": "Utlöses när en ny enhet läggs till i Home Assistant, till exempel ett uttag som just parkopplats."
+        },
+        "device_discovered": {
+            "name": "Enhet upptäckt",
+            "description": "Utlöses när Home Assistant upptäcker något nytt som det kan konfigurera, till exempel en enhet som just dykt upp i ditt nätverk."
         }
     },
     "selector": {
