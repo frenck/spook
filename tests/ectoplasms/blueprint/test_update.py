@@ -3934,3 +3934,98 @@ async def test_a_note_about_an_address_given_up_does_not_name_it(
     alert = (await _entity(hass).async_release_notes()).split("</ha-alert>")[0]
     assert SOURCE not in alert
     assert "the address it was imported from" in alert
+
+
+async def test_external_import_does_not_offer_the_previous_blueprint(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an external import is compared with the current source immediately."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "off"
+
+    with _source_says(MOTION_LIGHT_CHANGED) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["installed_version"] == _fingerprint_of(
+        MOTION_LIGHT_CHANGED
+    )
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+
+    await _entity(hass).async_install(None, backup=False)
+    assert hass.states.get(_ENTITY).state == "off"
+    file = Path(hass.config.path("blueprints/automation/motion.yaml"))
+    raw = await hass.async_add_executor_job(file.read_text)
+    assert _fingerprint_of(raw) == _fingerprint_of(MOTION_LIGHT_CHANGED)
+    fetch.assert_called_once()
+
+
+async def test_external_import_of_an_offer_preserves_it_after_a_local_edit(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an imported source offer is checked again after a later local edit."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off"
+
+    with _source_says(MOTION_LIGHT_CHANGED) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+    fetch.assert_called_once()
+
+
+async def test_local_edit_is_compared_with_the_source_immediately(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a local edit offers the source copy without a daily check."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    with _source_says(MOTION_LIGHT) as fetch:
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["installed_version"] == _fingerprint_of(
+        MOTION_LIGHT_CHANGED
+    )
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT)
+    fetch.assert_called_once()
+
+
+async def test_external_import_does_not_offer_a_stale_copy_while_offline(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an unreachable source cannot offer the previous installed copy."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)

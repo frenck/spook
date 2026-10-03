@@ -1579,10 +1579,25 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             )
             return
 
+        content_changed = said.fingerprint != self._said.fingerprint
+        check_source = content_changed and self._latest_from_source
+
+        # The previous installed copy is no longer a useful comparison after
+        # an external change. A different offer still stands, including one
+        # just imported, in case the source cannot be reached this time.
+        discard_offer = (
+            content_changed and self._attr_latest_version == self._said.fingerprint
+        )
         self._said = said
         self._attr_name = said.name
         self._attr_title = said.name
         self._attr_installed_version = said.fingerprint
+
+        if discard_offer:
+            self._fetched = None
+            self._set_aside = None
+            self._latest_from_source = False
+            self._attr_latest_version = said.fingerprint
 
         # With nothing heard from the source, the latest version was only ever
         # this file, and it goes along with it. Left as it was, an edit by hand
@@ -1597,6 +1612,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # The reading is still kept, for the check that follows.
         if self.hass is not None:
             self.async_write_ha_state()
+            if check_source:
+                # A local edit and an external import look alike on disk.
+                # Ask the source now instead of waiting for the daily round.
+                self.hass.async_create_task(self.async_check())
 
     def version_is_newer(self, latest_version: str, installed_version: str) -> bool:
         """Return whether the source says something other than what is here.
