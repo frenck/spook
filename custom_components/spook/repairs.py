@@ -21,7 +21,7 @@ from homeassistant.config_entries import (
     ConfigEntry,
     ConfigEntryChange,
 )
-from homeassistant.const import CONF_ENTITIES
+from homeassistant.const import CONF_ENTITIES, EVENT_STATE_CHANGED
 from homeassistant.core import Event, HomeAssistant, callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
@@ -310,6 +310,12 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
     #: time alone (e.g. something going stale), not in response to an event.
     inspect_interval: timedelta | None = None
 
+    #: Re-run the inspection when an entity appears or goes. Needed by repairs
+    #: about entity references, as plenty of entities never touch the entity
+    #: registry: one set by a script or a template without a unique ID arrives
+    #: as a state and nothing else, often well after Home Assistant started.
+    inspect_on_entity_added_or_removed: bool = False
+
     automatically_clean_up_issues: bool = False
     possible_issue_ids: set[str]
 
@@ -406,6 +412,28 @@ class AbstractSpookRepair(AbstractSpookRepairBase):
                     self.hass,
                     _async_call_inspect_debouncer_interval,
                     self.inspect_interval,
+                ),
+            )
+
+        if self.inspect_on_entity_added_or_removed:
+
+            @callback
+            def _entity_added_or_removed(event_data: Mapping[str, Any]) -> bool:
+                """Return whether an entity appeared or went, not just changed."""
+                return (
+                    event_data.get("old_state") is None
+                    or event_data.get("new_state") is None
+                )
+
+            @callback
+            def _async_entity_added_or_removed(_: Event) -> None:
+                self.inspect_debouncer.async_schedule_call()
+
+            self._event_subs.add(
+                self.hass.bus.async_listen(
+                    EVENT_STATE_CHANGED,
+                    _async_entity_added_or_removed,
+                    event_filter=_entity_added_or_removed,
                 ),
             )
 

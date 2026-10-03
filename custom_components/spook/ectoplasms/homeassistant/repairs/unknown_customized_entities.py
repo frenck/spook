@@ -28,6 +28,10 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_CORE_CONFIG_UPDATE,
         er.EVENT_ENTITY_REGISTRY_UPDATED,
     }
+    # An entity a script sets after startup never reaches the registry, so
+    # without this its customization stayed reported long after it arrived.
+    # #1622.
+    inspect_on_entity_added_or_removed = True
     automatically_clean_up_issues = True
 
     async def async_inspect(self) -> None:
