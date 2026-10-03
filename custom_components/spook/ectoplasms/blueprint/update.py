@@ -1579,10 +1579,23 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             )
             return
 
+        # An external import can replace the copy we last fetched, or install
+        # an outstanding offer. Neither cached payload is still an update.
+        # Keep a genuinely different offer while its source is unavailable.
+        discard_offer = (
+            said.fingerprint != self._said.fingerprint
+            and self._attr_latest_version in (self._said.fingerprint, said.fingerprint)
+        )
         self._said = said
         self._attr_name = said.name
         self._attr_title = said.name
         self._attr_installed_version = said.fingerprint
+
+        if discard_offer:
+            self._fetched = None
+            self._set_aside = None
+            self._latest_from_source = False
+            self._attr_latest_version = said.fingerprint
 
         # With nothing heard from the source, the latest version was only ever
         # this file, and it goes along with it. Left as it was, an edit by hand

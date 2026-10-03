@@ -3934,3 +3934,51 @@ async def test_a_note_about_an_address_given_up_does_not_name_it(
     alert = (await _entity(hass).async_release_notes()).split("</ha-alert>")[0]
     assert SOURCE not in alert
     assert "the address it was imported from" in alert
+
+
+async def test_external_import_does_not_offer_the_previous_blueprint(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A previously fetched installed copy is not an update after an import."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "off"
+
+    write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+    await _reconcile(hass)
+
+    entity = _entity(hass)
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["installed_version"] == _fingerprint_of(
+        MOTION_LIGHT_CHANGED
+    )
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+    assert entity._fetched is None  # noqa: SLF001
+
+    # Even a direct install must fetch again, rather than write the old copy.
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await entity.async_install(None, backup=False)
+    assert hass.states.get(_ENTITY).state == "off"
+    assert _entity(hass)._said.fingerprint == _fingerprint_of(MOTION_LIGHT_CHANGED)  # noqa: SLF001
+
+
+async def test_external_import_of_an_offered_version_discards_the_cached_offer(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An offer installed outside Spook no longer needs its cached payload."""
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+    await _reconcile(hass)
+    assert hass.states.get(_ENTITY).state == "off"
+    assert _entity(hass)._fetched is None  # noqa: SLF001
