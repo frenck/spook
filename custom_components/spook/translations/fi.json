@@ -573,6 +573,18 @@
         "lovelace_missing_resources_yaml": {
             "title": "Kojelaudan resurssit viittaavat puuttuvaan tiedostoon",
             "description": "Spook on löytänyt kummituksen hälytyksistäsi 👻\n\nSeuraavat kojelautaresurssit viittaavat tiedostoihin joita ei ole enää olemassa:\n\n{resources}\n\nTämä tapahtuu yleensä, kun mukautettu kortti tai sen tiedostot on poistettu, mutta resurssi on yhä määriteltynä.\n\nNämä resurssit on listattu YAML-määrityksessä, joten niitä ei voi muokata resurssisivulla. Korjataksesi ongelman, mene `resources:`-osioon konfiguraatiossasi ja poista tai muokkaa näitä määrityksiä.\n\nSpook 👻 Kamusi."
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Tuntemattomia toimintoja kojelaudalla: {dashboard}",
+            "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan kojelautaan:\n\n[{dashboard}]({edit})\n\nTämä kojelauta suorittaa seuraavia toimintoja, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\n\n\nPainike tai kortti, joka käyttää jotakin näistä, ei tee mitään, kun sitä napautetaan. Näin käy usein, kun skripti on nimetty uudelleen tai poistettu, tai kun integraatio on poistettu. Korjataksesi tämän ongelman, [muokkaa kojelautaa]({edit}) ja poista tai korvaa nämä olemattomat toiminnot.\n\nSpook 👻 Kamusi."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Tuntemattomia entiteettejä HomeKit-sillassa: {bridge}",
+            "description": "Spook on löytänyt kummituksen HomeKit-sillastasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan HomeKit-siltaan:\n\n{bridge}\n\nTämä silta mainitsee seuraavat entiteetit, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nHomeKit ei seuraa entiteettiä, joka nimetään uudelleen. Mukaan otettu entiteetti, joka on nimetty uudelleen tai poistettu, katoaa Koti-apista. Pois jätetty entiteetti, joka on nimetty uudelleen, ilmestyy sinne takaisin.\n\nKorjataksesi tämän ongelman, siirry [HomeKit Bridge -integraatioon](/config/integrations/integration/homekit), valitse tämän sillan kohdalla **Määritä** ja valitse entiteetit uudelleen.\n\nSpook 👻 Kamusi."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Tuntemattomia entiteettejä HomeKit-sillassa: {bridge}",
+            "description": "Spook on löytänyt kummituksen HomeKit-sillastasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan HomeKit-siltaan:\n\n{bridge}\n\nTämä silta mainitsee seuraavat entiteetit, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nHomeKit ei seuraa entiteettiä, joka nimetään uudelleen. Mukaan otettu entiteetti, joka on nimetty uudelleen tai poistettu, katoaa Koti-apista. Pois jätetty entiteetti, joka on nimetty uudelleen, ilmestyy sinne takaisin.\n\nTämä silta on määritetty YAML-määrityksissäsi. Korjataksesi tämän ongelman, muokkaa tämän sillan `filter`-asetusta kohdassa `homekit:` ja poista tai korjaa nämä entiteetit.\n\nSpook 👻 Kamusi."
         }
     },
     "services": {
