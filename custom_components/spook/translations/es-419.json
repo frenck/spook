@@ -1827,6 +1827,22 @@
                     "description": "Cuánto tiempo tiene que quedarse callada una entidad antes de que esto se active. Una entidad que sigue informando el mismo valor no está callada."
                 }
             }
+        },
+        "user_added": {
+            "name": "Usuario añadido",
+            "description": "Se activa cuando alguien recibe un acceso a Home Assistant. Los usuarios que Home Assistant crea para sus propias integraciones no cuentan."
+        },
+        "integration_added": {
+            "name": "Integración añadida",
+            "description": "Se activa cuando se añade una integración a Home Assistant, la añada quien o lo que la añada."
+        },
+        "device_added": {
+            "name": "Dispositivo añadido",
+            "description": "Se activa cuando se añade un dispositivo nuevo a Home Assistant, como un enchufe que se acaba de emparejar."
+        },
+        "device_discovered": {
+            "name": "Dispositivo descubierto",
+            "description": "Se activa cuando Home Assistant descubre algo nuevo que podría configurar, como un dispositivo que acaba de aparecer en tu red."
         }
     },
     "selector": {
