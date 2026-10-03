@@ -242,6 +242,12 @@ def extract_areas_from_dashboard_node(node: Any) -> set[str]:
 _PERFORM_ACTION_TYPES = frozenset({"perform-action", "call-service"})
 _PERFORM_ACTION_KEYS = ("perform_action", "service")
 
+# What `||` in JavaScript passes over. Not Python's idea of empty: an empty
+# list or dict is truthy over there, so the frontend stops at it and never
+# gets to `service`. Compared with `==`, which keeps an unhashable value out
+# of trouble and lets `0.0` count as the `0` it is.
+_JAVASCRIPT_FALSY = (None, "", 0, False)
+
 # Only a plain `domain.action` is a name to look up. A custom card can put a
 # template there, button-card's `[[[ ... ]]]` for one, and a half-filled
 # editor leaves it empty; neither is an action that went missing.
@@ -267,10 +273,11 @@ def _walk_actions(node: Any, actions: set[str]) -> None:
         and action_type in _PERFORM_ACTION_TYPES
     ):
         for key in _PERFORM_ACTION_KEYS:
-            if name := node.get(key):
-                if isinstance(name, str) and _ACTION_NAME.fullmatch(name):
-                    actions.add(name)
-                break
+            if (name := node.get(key)) in _JAVASCRIPT_FALSY:
+                continue
+            if isinstance(name, str) and _ACTION_NAME.fullmatch(name):
+                actions.add(name)
+            break
 
     for child in _worth_descending_into(node):
         _walk_actions(child, actions)

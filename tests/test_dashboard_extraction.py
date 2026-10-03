@@ -413,6 +413,34 @@ def test_an_action_is_named_like_the_frontend_reads_it() -> None:
     }
 
 
+@pytest.mark.parametrize("empty", [None, "", 0, False])
+def test_what_the_frontend_passes_over_falls_back_to_service(empty: Any) -> None:
+    """Test `service` is read when `perform_action` is empty to JavaScript."""
+    node = {
+        "action": "perform-action",
+        "perform_action": empty,
+        "service": "script.fallback",
+    }
+
+    assert extract_actions_from_dashboard_node(node) == {"script.fallback"}
+
+
+@pytest.mark.parametrize("not_empty", [[], {}, ["script.a_list"]])
+def test_what_the_frontend_stops_at_does_not_fall_back(not_empty: Any) -> None:
+    """Test an empty list or dict stops the lookup, as it does in JavaScript.
+
+    Python calls those empty, JavaScript does not: the frontend takes them,
+    fails to perform them, and never gets to `service`.
+    """
+    node = {
+        "action": "perform-action",
+        "perform_action": not_empty,
+        "service": "script.never_reached",
+    }
+
+    assert extract_actions_from_dashboard_node(node) == set()
+
+
 @pytest.mark.parametrize(
     "name",
     [
