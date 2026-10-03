@@ -57,6 +57,12 @@ Fires when a repair issue goes away, either fixed or no longer reported. _#repai
 
 `spook.repair_issue_removed`, [documentation](other-features#repair-issue-resolved) 📚
 
+## User added
+
+Fires when somebody is given a login to Home Assistant, which an admin would rather hear about than stumble upon. _#user_ _#account_ _#security_
+
+`spook.user_added`, [documentation](other-features#user-added) 📚
+
 ## Condition turned true
 
 Fires when a condition goes from false to true, using the same condition building blocks as anywhere else. _#condition_ _#template_
