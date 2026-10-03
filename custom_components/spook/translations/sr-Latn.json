@@ -1951,7 +1951,7 @@
                     "description": "Da li sadrži datum. Najmanje jedna opcija (datum ili vreme) mora biti uključena."
                 },
                 "has_time": {
-                    "name": "Sadrži datum",
+                    "name": "Sadrži vreme",
                     "description": "Da li sadrži vreme. Najmanje jedna opcija (datum ili vreme) mora biti uključena."
                 },
                 "icon": {
@@ -2403,6 +2403,14 @@
         "user_added": {
             "name": "Korisnik je dodat",
             "description": "Aktivira se kada se nekom odobri pristup sistemu Home Assistant. Korisnici koje Home Assistant kreira za sopstvene integracije su izuzeti."
+        },
+        "device_added": {
+            "name": "Uređaj je dodat",
+            "description": "Aktivira se kada se novi uređaj doda u Home Assistant, poput pametne utičnice koja je upravo uparena."
+        },
+        "device_discovered": {
+            "name": "Uređaj je otkriven",
+            "description": "Aktivira se kada Home Assistant otkrije nešto novo što bi mogao da podesi, poput uređaja koji se upravo pojavio na vašoj mreži."
         }
     },
     "selector": {
