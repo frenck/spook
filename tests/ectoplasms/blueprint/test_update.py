@@ -3789,3 +3789,148 @@ async def test_a_deleted_blueprint_is_reported_before_anything_else_is(
     assert "no longer here" in str(caught.value)
     assert hass.states.get(_ENTITY) is None
     assert entity_registry.async_get(_ENTITY) is None
+
+
+async def _reconcile(hass: HomeAssistant) -> None:
+    """Let the folder be looked at again, the way it is on its own."""
+    async_fire_time_changed(
+        hass,
+        dt_util.utcnow() + _RECONCILE_INTERVAL + timedelta(seconds=1),
+    )
+    await hass.async_block_till_done(wait_background_tasks=True)
+
+
+async def test_an_edit_to_a_blueprint_nobody_can_fetch_is_no_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An edit by hand to a blueprint from nowhere is not an update.
+
+    Its source was never read, so all there was to offer was the file itself.
+    Edited by hand, it kept offering the version from before the edit, as an
+    update that could never install, since the source cannot be reached. A
+    blueprint of somebody's own, with an address that goes nowhere, did that
+    after every change they made to it. #1653.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+        assert hass.states.get(_ENTITY).state == "off"
+
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+        assert hass.states.get(_ENTITY).state == "off", "offered the edit back"
+
+        await _check(hass, freezer)
+        assert hass.states.get(_ENTITY).state == "off"
+
+
+async def test_an_offer_from_the_source_survives_an_edit_while_it_is_down(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """What the source said still stands when the file changes meanwhile.
+
+    The source being down for an afternoon does not take back what it said
+    the last time it answered, and an edit here does not either.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    assert hass.states.get(_ENTITY).state == "on"
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_WITH_NEW_INPUT)
+        await _reconcile(hass)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT_CHANGED)
+
+
+async def test_an_unreachable_source_is_named_by_the_link_below_it(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The dialog does not put the address through its own escaping.
+
+    Escaped, an address with an underscore in it came out with backslashes
+    in it, as a link that goes nowhere. The address is linked properly right
+    under it already.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    notes = await _entity(hass).async_release_notes()
+    alert = notes.split("</ha-alert>")[0]
+    assert "Could not reach the address it was imported from." in alert
+    assert SOURCE not in alert
+
+
+async def test_an_edit_after_a_restart_with_the_source_down_is_no_update(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """A restored state with nothing on offer says nothing about the source.
+
+    Before the source has ever answered, the file is written down as both
+    versions. Brought back after a restart, that is still only the file, and
+    an edit by hand must not turn it into an update.
+    """
+    installed = _fingerprint_of(MOTION_LIGHT)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "off",
+                {"installed_version": installed, "latest_version": installed},
+            ),
+        ],
+    )
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+        write_by_hand(hass, "automation", "motion.yaml", MOTION_LIGHT_CHANGED)
+        await _reconcile(hass)
+
+    assert hass.states.get(_ENTITY).state == "off", "offered the edit back"
+
+
+async def test_a_note_about_an_address_given_up_does_not_name_it(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """The address that could not be reached is left out as it is tried.
+
+    Pointed elsewhere after the failure, the note would otherwise name the
+    old address, escaped, while the link below it names the new one.
+    """
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    async_write_blueprint(
+        hass,
+        "automation",
+        "motion.yaml",
+        MOTION_LIGHT,
+        source="https://example.com/moved_to/somewhere_else.yaml",
+    )
+    await _reconcile(hass)
+
+    alert = (await _entity(hass).async_release_notes()).split("</ha-alert>")[0]
+    assert SOURCE not in alert
+    assert "the address it was imported from" in alert

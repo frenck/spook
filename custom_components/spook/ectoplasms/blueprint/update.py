@@ -1515,6 +1515,11 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._attr_installed_version = said.fingerprint
         self._attr_latest_version = said.fingerprint
 
+        # Whether the latest version is the source's word, or only the file
+        # standing in until the source has answered. Only the source's word
+        # survives the file changing underneath it. #1653.
+        self._latest_from_source = False
+
         # Deliberately no `release_url`. Home Assistant would put it in the
         # state attributes, which every signed-in person can read, and it lets
         # a blueprint be imported from an address carrying a token or a
@@ -1548,6 +1553,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             is not None
         ):
             self._attr_latest_version = offered
+            # Only an offer proves the source said something. Until it first
+            # answers, the file is written down as both versions, so the same
+            # value on both sides says nothing about where it came from.
+            self._latest_from_source = offered != self._attr_installed_version
 
     @callback
     def async_seen(self, said: _OnDisk) -> None:
@@ -1575,6 +1584,15 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._attr_title = said.name
         self._attr_installed_version = said.fingerprint
 
+        # With nothing heard from the source, the latest version was only ever
+        # this file, and it goes along with it. Left as it was, an edit by hand
+        # turned the version from before the edit into an update, offered for
+        # ever by a source that cannot be reached to install it from: what a
+        # blueprint of somebody's own, with an address that goes nowhere, did
+        # after every change they made. #1653.
+        if not self._latest_from_source:
+            self._attr_latest_version = said.fingerprint
+
         # A disabled entity was never added, so there is no state to write.
         # The reading is still kept, for the check that follows.
         if self.hass is not None:
@@ -1596,6 +1614,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
     async def _async_check(self) -> None:
         """Fetch and compare, with the blueprint to ourselves."""
+        source_url = self._said.source_url
         try:
             fetched = await self._async_fetch()
         except HomeAssistantError as err:
@@ -1603,7 +1622,14 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             # afternoon should not take the update it was offering with it.
             # The reason is kept so the dialog can say why nothing happens
             # here, rather than looking simply idle.
-            self._set_aside = str(err)
+            #
+            # Named as the link below the note names it, with the address
+            # that was actually tried. The note escapes what it is given, which
+            # put backslashes in an address, and the blueprint can have been
+            # pointed elsewhere by the time the note is read.
+            self._set_aside = str(err).replace(
+                source_url, "the address it was imported from"
+            )
             LOGGER.debug(
                 "Spook could not check blueprint %s: %s",
                 self.blueprint_path,
@@ -1614,6 +1640,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._set_aside = None
         self._fetched = fetched
         self._attr_latest_version = _fingerprint(fetched)
+        self._latest_from_source = True
         self.async_write_ha_state()
 
     async def async_install(
@@ -1728,6 +1755,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
 
         self._attr_installed_version = _fingerprint(fetched)
         self._attr_latest_version = self._attr_installed_version
+        self._latest_from_source = True
         self.async_write_ha_state()
 
     @callback
