@@ -573,6 +573,18 @@
         "lovelace_missing_resources_yaml": {
             "description": "Spook ha encontrado un fantasma en tus paneles 👻\n\nLos siguientes recursos de panel hacen referencia a archivos que no existen:\n\n{resources}\n\n\n\nEsto suele ocurrir cuando se elimina una tarjeta personalizada o sus archivos, pero el recurso permanece.\n\nThe Estos recursos figuran en tu configuración YAML, por lo que no es posible modificarlos desde la página de Recursos. Edita la sección `resources:` de tu configuración de Lovelace y elimina o corrige estas entradas.\n\nSpook 👻 Your homie.",
             "title": "Los recursos del panel apuntan a archivos inexistentes"
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Acciones desconocidas usadas en el panel: {dashboard}",
+            "description": "Spook ha encontrado un fantasma en tus paneles de control 👻\n\nMientras flotaba, Spook se cruzó con el siguiente panel de control:\n\n[{dashboard}]({edit})\n\nEste panel de control ejecuta las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\n\n\nUn botón o una tarjeta que use alguna de ellas no hace nada al pulsarlo. Esto suele ocurrir cuando un script se ha renombrado o eliminado, o cuando se ha eliminado una integración. Para solucionar este error, [edita el panel de control]({edit}) y elimina o sustituye estas acciones que no existen.\n\nSpook 👻 Tu colega."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Entidades desconocidas usadas en el puente de HomeKit: {bridge}",
+            "description": "Spook ha encontrado un fantasma en tu puente de HomeKit 👻\n\nMientras flotaba, Spook se cruzó con el siguiente puente de HomeKit:\n\n{bridge}\n\nEste puente menciona las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\n\n\nHomeKit no sigue a una entidad cuando se renombra. Una entidad incluida que se ha renombrado o eliminado desaparece de la app Casa. Una entidad excluida que se ha renombrado vuelve a aparecer en ella.\n\nPara solucionar este error, ve a [la integración HomeKit Bridge](/config/integrations/integration/homekit), selecciona **Configurar** en este puente y vuelve a elegir las entidades.\n\nSpook 👻 Tu colega."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Entidades desconocidas usadas en el puente de HomeKit: {bridge}",
+            "description": "Spook ha encontrado un fantasma en tu puente de HomeKit 👻\n\nMientras flotaba, Spook se cruzó con el siguiente puente de HomeKit:\n\n{bridge}\n\nEste puente menciona las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\n\n\nHomeKit no sigue a una entidad cuando se renombra. Una entidad incluida que se ha renombrado o eliminado desaparece de la app Casa. Una entidad excluida que se ha renombrado vuelve a aparecer en ella.\n\nEste puente está definido en tu configuración YAML. Para solucionar este error, edita el `filter` de este puente en `homekit:` y elimina o corrige estas entidades.\n\nSpook 👻 Tu colega."
         }
     },
     "conditions": {
