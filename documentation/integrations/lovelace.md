@@ -67,6 +67,21 @@ What you see depends on where the reference sits, and the frontend decides that 
 
 To resolve the raised issue, you can either remove the reference to the non-existing area or fix the referenced area. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Unknown actions
+
+Dashboards are inspected for the {term}`actions <performing actions>` their buttons and cards perform. A tap, hold or double tap action set to perform an action that does not exist does nothing when used, and says nothing either: the button just sits there. Spook raises a repair issue naming the dashboard and the actions that are missing.
+
+This usually happens when a script was renamed or removed, or when the integration providing the action was removed. Spook looks again when an integration loads and when actions come and go, so an integration that takes a while to start does not leave a repair issue behind.
+
+To resolve the raised issue, edit the dashboard and remove or replace the actions that no longer exist. Spook will automatically remove the repair issue once the issue is fixed.
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Spook reads every action set to perform an action, under whatever name a card gives it, so third-party cards using the same shape as Home Assistant's own are covered too.
+- An action that is a template, like the JavaScript templates of button-card, is not checked. What it ends up performing cannot be known without running it.
+  :::
+
 ### Missing dashboard resources
 
 Dashboard resources tell Home Assistant which extra JavaScript and CSS files to load, which is how custom cards get there. Spook checks the ones it can: a resource served from `/local/` or `/hacsfiles/` maps to a file on disk, so Spook can see whether that file is there. If it is not, it will raise a repair issue listing the resources in question.

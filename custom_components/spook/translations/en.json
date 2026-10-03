@@ -641,6 +641,10 @@
       "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
       "title": "Unknown entities used in: {dashboard}"
     },
+    "lovelace_unknown_service_references": {
+      "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard performs the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nA button or card using one of these does nothing when tapped. This often happens when a script was renamed or removed, or an integration was removed. To fix this error, [edit the dashboard]({edit}) and remove or replace these non-existing actions.\n\nSpook 👻 Your homie.",
+      "title": "Unknown actions used in dashboard: {dashboard}"
+    },
     "min_max_unknown_sources": {
       "title": "Unknown members used in min/max helper: {helper}",
       "fix_flow": {
