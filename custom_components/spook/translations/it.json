@@ -1827,6 +1827,22 @@
                     "description": "Per quanto tempo un'entità deve restare in silenzio prima che questo si attivi. Un'entità che continua a segnalare lo stesso valore non è in silenzio."
                 }
             }
+        },
+        "user_added": {
+            "name": "Utente aggiunto",
+            "description": "Si attiva quando qualcuno riceve un accesso a Home Assistant. Gli utenti che Home Assistant crea per le proprie integrazioni non contano."
+        },
+        "integration_added": {
+            "name": "Integrazione aggiunta",
+            "description": "Si attiva quando un'integrazione viene aggiunta a Home Assistant, chiunque o qualunque cosa l'abbia aggiunta."
+        },
+        "device_added": {
+            "name": "Dispositivo aggiunto",
+            "description": "Si attiva quando un nuovo dispositivo viene aggiunto a Home Assistant, come una presa appena associata."
+        },
+        "device_discovered": {
+            "name": "Dispositivo rilevato",
+            "description": "Si attiva quando Home Assistant rileva qualcosa di nuovo che potrebbe configurare, come un dispositivo appena comparso sulla tua rete."
         }
     },
     "selector": {
