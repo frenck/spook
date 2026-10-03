@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Bronentiteit",
+                    "name": "Naam",
+                    "states": "Alleen overgangen naar deze statussen tellen"
+                },
+                "data_description": {
+                    "states": "Laat leeg om te zien sinds wanneer de bron in zijn huidige status is. Vul bijvoorbeeld `on` in om te zien wanneer hij voor het laatst die status kreeg; dat moment blijft staan als hij daarna weer verandert."
+                },
+                "description": "Deze helper vertelt sinds wanneer een entiteit in zijn status is, en onthoudt dat ook na een herstart. Een entiteit die even onbeschikbaar is, telt niet als verandering.",
+                "title": "Tijd in status 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Bronentiteit",
+                    "states": "Alleen overgangen naar deze statussen tellen"
+                },
+                "data_description": {
+                    "states": "Laat leeg om te zien sinds wanneer de bron in zijn huidige status is. Vul bijvoorbeeld `on` in om te zien wanneer hij voor het laatst die status kreeg; dat moment blijft staan als hij daarna weer verandert."
+                },
+                "title": "Tijd in status 👻"
+            }
+        }
+    },
+    "title": "Tijd in status 👻"
+}
