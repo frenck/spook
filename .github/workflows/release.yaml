@@ -33,6 +33,9 @@ jobs:
           yq e -P -o=json \
             -i ".version = \"${version}\"" \
             "${{ github.workspace }}/custom_components/spook/integrations/spook_inverse/manifest.json"
+          yq e -P -o=json \
+            -i ".version = \"${version}\"" \
+            "${{ github.workspace }}/custom_components/spook/integrations/spook_time_in_state/manifest.json"
 
       - name: 📦 Created zipped release package
         shell: bash
