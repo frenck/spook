@@ -412,6 +412,45 @@ options:
 
 :::
 
+### Integration added
+
+Fires when an integration is added to Home Assistant.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Integration added 👻
+* - Trigger name
+  - `spook.integration_added`
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+This trigger has no options.
+
+Fires for every integration added to Home Assistant, whether you added it, another admin did, or Home Assistant set one up by itself, like when a configuration in YAML is imported for the first time. Integrations that were already there when Home Assistant started are not added, so a restart stays quiet.
+
+When it fires, `trigger.domain` is the integration, `trigger.title` the name of the new entry, `trigger.entry_id` its identifier, and `trigger.source` how it came to be: `user` for somebody adding it by hand, `zeroconf` or `dhcp` or another discovery for one that was found on the network, `import` for one from YAML.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+trigger: spook.integration_added
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Ignoring a discovered device is stored as an integration entry too, so it is not offered again. Nothing is set up by that, so it does not fire this trigger.
+- An integration added while the automation is not loaded, or while Home Assistant is down, is not reported afterwards.
+
+:::
+
 ### Integration failed to set up
 
 Fires when a configuration entry has been unable to set itself up for a while.

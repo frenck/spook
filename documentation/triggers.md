@@ -33,6 +33,12 @@ Fires when nothing has written to an entity for a while, which catches the devic
 
 `spook.stale`, [documentation](other-features#entity-fell-silent) 📚
 
+## Integration added
+
+Fires when an integration is added to Home Assistant, by you, by somebody else, or by Home Assistant itself. _#integration_ _#config-entry_ _#new_
+
+`spook.integration_added`, [documentation](other-features#integration-added) 📚
+
 ## Integration failed to set up
 
 Fires when a configuration entry has been unable to set itself up for a while, past the point where Home Assistant's own retries would have sorted it out. _#integration_ _#broken_ _#config-entry_
