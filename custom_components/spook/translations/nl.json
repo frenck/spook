@@ -623,6 +623,18 @@
         "unknown_engines": {
             "title": "Assist-pipeline gebruikt engines die verdwenen zijn: {pipeline}",
             "description": "Spook heeft een geest gevonden in je spraakassistenten 👻\n\nDe Assist-pipeline {pipeline} gebruikt het volgende, dat Home Assistant niet kent:\n\n{engines}\n\nDit betekent meestal dat de integratie erachter is verwijderd. De pipeline is daar niet van op de hoogte gebracht, dus de volgende keer dat hij wordt gebruikt, mislukt hij met een fout over een ontbrekende provider of agent, en niets daarvoor wijst hiernaartoe.\n\nOm dit op te lossen, open je de instellingen van deze assistent onder [Spraakassistenten](/config/voice-assistants/assistants) en kies je voor elk hiervan een engine die er nog is.\n\nSpook 👻 Je homie."
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Onbekende acties gebruikt in dashboard: {dashboard}",
+            "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n[{dashboard}]({edit})\n\nDit dashboard voert de volgende acties uit, die Home Assistant niet kent:\n\n{services}\n\n\n\nEen knop of kaart die een van deze gebruikt, doet niets als je erop tikt. Dit gebeurt vaak als een script is hernoemd of verwijderd, of als een integratie is verwijderd. Om deze fout te verhelpen, [bewerk je het dashboard]({edit}) en verwijder of vervang je deze niet-bestaande acties.\n\nSpook 👻 Je homie."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Onbekende entiteiten gebruikt in HomeKit-bridge: {bridge}",
+            "description": "Spook heeft een geest gevonden in je HomeKit-bridge 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende HomeKit-bridge tegen:\n\n{bridge}\n\nDeze bridge noemt de volgende entiteiten, die Home Assistant niet kent:\n\n{entities}\n\n\n\nHomeKit volgt een entiteit niet als die wordt hernoemd. Een opgenomen entiteit die is hernoemd of verwijderd, verdwijnt uit de Woning-app. Een uitgesloten entiteit die is hernoemd, verschijnt er weer in.\n\nOm deze fout te verhelpen, ga je naar [de HomeKit Bridge-integratie](/config/integrations/integration/homekit), kies je **Configureren** bij deze bridge en selecteer je de entiteiten opnieuw.\n\nSpook 👻 Je homie."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Onbekende entiteiten gebruikt in HomeKit-bridge: {bridge}",
+            "description": "Spook heeft een geest gevonden in je HomeKit-bridge 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende HomeKit-bridge tegen:\n\n{bridge}\n\nDeze bridge noemt de volgende entiteiten, die Home Assistant niet kent:\n\n{entities}\n\n\n\nHomeKit volgt een entiteit niet als die wordt hernoemd. Een opgenomen entiteit die is hernoemd of verwijderd, verdwijnt uit de Woning-app. Een uitgesloten entiteit die is hernoemd, verschijnt er weer in.\n\nDeze bridge is ingesteld in je YAML-configuratie. Om deze fout te verhelpen, pas je de `filter` van deze bridge onder `homekit:` aan en verwijder of corrigeer je deze entiteiten.\n\nSpook 👻 Je homie."
         }
     },
     "services": {
