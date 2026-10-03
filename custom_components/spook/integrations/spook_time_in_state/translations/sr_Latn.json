@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "title": "Trajanje stanja 👻",
+                "data_description": {
+                    "states": "Ostavite prazno da biste pratili vreme od trenutnog aktuelnog stanja. Unesite konkretnu vrednost (npr. on) ako želite da merite vreme od poslednjeg prelaska u to specifično stanje, koje se neće resetovati nakon nove promene."
+                },
+                "description": "Ovaj pomoćnik prati koliko dugo je entitet u određenom stanju i čuva taj podatak nakon ponovnog pokretanja sistema. Kratkotrajna nedostupnost entiteta se ne računa kao promena stanja.",
+                "data": {
+                    "states": "Prati prelazak samo u sledeća stanja",
+                    "name": "Naziv",
+                    "entity_id": "Izvorni entitet"
+                }
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "title": "Trajanje stanja 👻",
+                "data_description": {
+                    "states": "Ostavite prazno da biste pratili vreme od trenutnog aktuelnog stanja. Unesite konkretnu vrednost (npr. on) ako želite da merite vreme od poslednjeg prelaska u to specifično stanje, koje se neće resetovati nakon nove promene."
+                },
+                "data": {
+                    "states": "Prati prelazak samo u sledeća stanja",
+                    "entity_id": "Izvorni entitet"
+                }
+            }
+        }
+    },
+    "title": "Trajanje stanja 👻"
+}
