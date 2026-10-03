@@ -1,0 +1,37 @@
+{
+    "title": "Kalibracija👻",
+    "options": {
+        "step": {
+            "init": {
+                "title": "Kalibracija👻",
+                "data": {
+                    "offset": "Одступање",
+                    "factor": "Faktor",
+                    "entity_id": "Izvorni entitet"
+                },
+                "data_description": {
+                    "offset": "Dodaje se na vrednost izvora. Senzor koji pokazuje 1,5 stepeni više dobija -1,5. Koristi se merna jedinica koju prijavljuje izvor.",
+                    "factor": "Vrednost izvora se prvo množi ovim brojem. Ostavite 1 ako želite da dodate samo odstupanje."
+                }
+            }
+        }
+    },
+    "config": {
+        "step": {
+            "user": {
+                "title": "Kalibracija👻",
+                "data": {
+                    "offset": "Odstupanje",
+                    "name": "Naziv",
+                    "factor": "Faktor",
+                    "entity_id": "Izvorni entitet"
+                },
+                "data_description": {
+                    "offset": "Dodaje se na vrednost izvora. Senzor koji pokazuje 1,5 stepeni više dobija -1,5. Koristi se merna jedinica koju prijavljuje izvor.",
+                    "factor": "Vrednost izvora se prvo množi ovim brojem. Ostavite 1 ako želite da dodate samo odstupanje."
+                },
+                "description": "Ovaj pomoćnik ispravlja senzor koji loše očitava: temperaturu koja je za stepen previsoka ili vlažnost koja je nekoliko procenata preniska. Prikazuje vrednost izvora pomnoženu sa faktorom, plus odstupanje."
+            }
+        }
+    }
+}

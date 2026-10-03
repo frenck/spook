@@ -569,6 +569,18 @@
                     "yaml": "Queste risorse si trovano nella tua configurazione YAML, quindi Spook non può cambiarle al posto tuo. Modifica la sezione `resources:` della tua configurazione Lovelace e togli le copie di `{resource}` che non ti servono più."
                 }
             }
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Azioni sconosciute usate nella dashboard: {dashboard}",
+            "description": "👻 Spook ha trovato un fantasma nelle tue dashboard\n\nMentre fluttuava qua e là, Spook ha incrociato la seguente dashboard:\n\n[{dashboard}]({edit})\n\nQuesta dashboard esegue le seguenti azioni, che non sono riconosciute da Home Assistant:\n\n{services}\n\nUn pulsante o una scheda che usa una di queste non fa nulla quando viene toccato. Succede spesso quando uno script è stato rinominato o rimosso, oppure un'integrazione è stata rimossa. Per risolvere questo errore, [modifica la dashboard]({edit}) e rimuovi o sostituisci queste azioni inesistenti.\n\nSpook 👻 Il tuo compare."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Entità sconosciute usate nel bridge HomeKit: {bridge}",
+            "description": "👻 Spook ha trovato un fantasma nel tuo bridge HomeKit\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente bridge HomeKit:\n\n{bridge}\n\nQuesto bridge indica le seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nHomeKit non segue un'entità che viene rinominata. Un'entità inclusa che è stata rinominata o rimossa sparisce dall'app Casa. Un'entità esclusa che è stata rinominata vi ricompare.\n\nPer risolvere questo errore, vai all'[integrazione HomeKit Bridge](/config/integrations/integration/homekit), seleziona **Configura** su questo bridge e scegli di nuovo le entità.\n\nSpook 👻 Il tuo compare."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Entità sconosciute usate nel bridge HomeKit: {bridge}",
+            "description": "👻 Spook ha trovato un fantasma nel tuo bridge HomeKit\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente bridge HomeKit:\n\n{bridge}\n\nQuesto bridge indica le seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nHomeKit non segue un'entità che viene rinominata. Un'entità inclusa che è stata rinominata o rimossa sparisce dall'app Casa. Un'entità esclusa che è stata rinominata vi ricompare.\n\nQuesto bridge è definito nella tua configurazione YAML. Per risolvere questo errore, modifica il `filter` di questo bridge sotto `homekit:` e rimuovi o correggi queste entità.\n\nSpook 👻 Il tuo compare."
         }
     },
     "conditions": {

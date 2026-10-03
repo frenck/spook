@@ -1,0 +1,37 @@
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entité d'origine",
+                    "name": "Nom",
+                    "offset": "Décalage",
+                    "factor": "Facteur"
+                },
+                "data_description": {
+                    "offset": "Ajouté à la valeur de l'entité d'origine. Un capteur qui mesure 1,5 degré de trop reçoit -1,5. Dans l'unité de l'entité d'origine.",
+                    "factor": "La valeur de l'entité d'origine est d'abord multipliée par ce facteur. Laisser à 1 pour n'ajouter que le décalage."
+                },
+                "description": "Cette entrée corrige un capteur qui se trompe, comme une température trop haute d'un degré ou une humidité trop basse de quelques pour cent. Elle affiche la valeur de l'entité d'origine multipliée par le facteur, plus le décalage.",
+                "title": "Étalonnage 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entité d'origine",
+                    "offset": "Décalage",
+                    "factor": "Facteur"
+                },
+                "data_description": {
+                    "offset": "Ajouté à la valeur de l'entité d'origine. Un capteur qui mesure 1,5 degré de trop reçoit -1,5. Dans l'unité de l'entité d'origine.",
+                    "factor": "La valeur de l'entité d'origine est d'abord multipliée par ce facteur. Laisser à 1 pour n'ajouter que le décalage."
+                },
+                "title": "Étalonnage 👻"
+            }
+        }
+    },
+    "title": "Étalonnage 👻"
+}

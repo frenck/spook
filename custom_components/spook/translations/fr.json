@@ -569,6 +569,18 @@
                     "yaml": "Ces ressources figurent dans votre configuration YAML, Spook ne peut donc pas les modifier pour vous. Modifiez la section `resources:` de votre configuration Lovelace et retirez les copies de `{resource}` dont vous n'avez plus besoin."
                 }
             }
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Actions inconnues utilisées dans le tableau de bord : {dashboard}",
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nEn flottant dans les parages, Spook est tombé sur le tableau de bord suivant :\n\n[{dashboard}]({edit})\n\nCe tableau de bord exécute les actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\n\n\nUn bouton ou une carte qui utilise l'une d'elles ne fait rien quand on appuie dessus. Cela arrive souvent quand un script a été renommé ou supprimé, ou qu'une intégration a été supprimée. Pour résoudre cette erreur, [modifiez le tableau de bord]({edit}) et supprimez ou remplacez ces actions inexistantes.\n\nSpook 👻 Votre pote."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Entités inconnues utilisées dans la passerelle HomeKit : {bridge}",
+            "description": "Spook a trouvé un fantôme dans votre passerelle HomeKit 👻\n\nEn flottant dans les parages, Spook est tombé sur la passerelle HomeKit suivante :\n\n{bridge}\n\nCette passerelle désigne les entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nHomeKit ne suit pas une entité renommée. Une entité incluse qui a été renommée ou supprimée disparaît de l'app Maison. Une entité exclue qui a été renommée y réapparaît.\n\nPour résoudre cette erreur, allez dans [l'intégration HomeKit Bridge](/config/integrations/integration/homekit), sélectionnez **Configurer** sur cette passerelle et choisissez à nouveau les entités.\n\nSpook 👻 Votre pote."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Entités inconnues utilisées dans la passerelle HomeKit : {bridge}",
+            "description": "Spook a trouvé un fantôme dans votre passerelle HomeKit 👻\n\nEn flottant dans les parages, Spook est tombé sur la passerelle HomeKit suivante :\n\n{bridge}\n\nCette passerelle désigne les entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nHomeKit ne suit pas une entité renommée. Une entité incluse qui a été renommée ou supprimée disparaît de l'app Maison. Une entité exclue qui a été renommée y réapparaît.\n\nCette passerelle est définie dans votre configuration YAML. Pour résoudre cette erreur, modifiez le `filter` de cette passerelle sous `homekit:` et supprimez ou corrigez ces entités.\n\nSpook 👻 Votre pote."
         }
     },
     "services": {
