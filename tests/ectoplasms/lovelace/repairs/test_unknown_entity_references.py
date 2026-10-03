@@ -275,3 +275,62 @@ async def test_a_dashboard_added_mid_round_does_not_end_it(
     repair._dashboards = dashboards  # noqa: SLF001
 
     await repair.async_inspect()
+
+
+def _dashboard_with(url_path: str | None, entity_id: str) -> SimpleNamespace:
+    """Return a stored dashboard with one card showing this entity."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {
+            "views": [
+                {"path": "home", "cards": [{"type": "entity", "entity": entity_id}]}
+            ]
+        }
+
+    return SimpleNamespace(url_path=url_path, config=None, async_load=_loads)
+
+
+async def test_the_old_default_dashboard_left_behind_is_not_read(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """The default dashboard moved to an entry of its own; the old one is left.
+
+    Home Assistant keeps the old default under no name, reading a file that
+    can outlive the move. Read, it was reported as the Overview with entities
+    nobody could find on any dashboard they can open. #1593.
+    """
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        None: _dashboard_with(None, "light.from_february"),
+        "lovelace": _dashboard_with("lovelace", "light.porch"),
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert {"light.from_february"} not in reported
+    assert reported == [{"light.porch"}]
+
+
+async def test_the_default_dashboard_is_still_read_before_the_move(
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Without an entry called `lovelace`, the one under no name is the default."""
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {None: _dashboard_with(None, "light.porch")}  # noqa: SLF001
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert reported == [{"light.porch"}]

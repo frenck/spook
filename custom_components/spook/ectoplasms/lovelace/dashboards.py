@@ -21,7 +21,7 @@ type Dashboard = LovelaceStorage | LovelaceYAML
 
 
 async def async_dashboard_configs(
-    dashboards: Mapping[str, Dashboard],
+    dashboards: Mapping[str | None, Dashboard],
 ) -> AsyncIterator[tuple[Dashboard, str, dict[str, Any] | None]]:
     """Yield every dashboard, its URL path, and its config where there is one.
 
@@ -32,7 +32,16 @@ async def async_dashboard_configs(
     # Taken as a snapshot: loading a dashboard hands the event loop a turn,
     # and a dashboard added or removed during it ends the whole round in a
     # `RuntimeError`. #1558.
-    for dashboard in list(dashboards.values()):
+    for key, dashboard in list(dashboards.items()):
+        # Home Assistant always keeps the old default dashboard under no name,
+        # reading `.storage/lovelace`. Since the default became a dashboard
+        # entry of its own, called `lovelace`, that old one is only a leftover
+        # nobody can open, and its file can outlive the move. Read anyway, it
+        # was reported as the Overview, under the same name as the real one,
+        # the two of them taking turns with lists nobody could find. #1593.
+        if key is None and "lovelace" in dashboards:
+            continue
+
         url_path = dashboard.url_path or "lovelace"
 
         try:
