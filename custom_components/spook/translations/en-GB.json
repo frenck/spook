@@ -569,6 +569,18 @@
                     "yaml": "These resources are listed in your YAML configuration, so Spook cannot change them for you. Edit the `resources:` section of your Lovelace configuration and remove the copies of `{resource}` you no longer need."
                 }
             }
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Unknown actions used in dashboard: {dashboard}",
+            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard performs the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nA button or card using one of these does nothing when tapped. This often happens when a script was renamed or removed, or an integration was removed. To fix this error, [edit the dashboard]({edit}) and remove or replace these non-existing actions.\n\nSpook 👻 Your homie."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Unknown entities used in HomeKit bridge: {bridge}",
+            "description": "Spook has found a ghost in your HomeKit bridge 👻\n\nWhile floating around, Spook crossed path with the following HomeKit bridge:\n\n{bridge}\n\nThis bridge names the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nHomeKit does not follow an entity that is renamed. An included entity that was renamed or removed is gone from the Home app; an excluded entity that was renamed shows up in it again.\n\nTo fix this error, go to [the HomeKit Bridge integration](/config/integrations/integration/homekit), select **Configure** on this bridge, and pick the entities again.\n\nSpook 👻 Your homie."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Unknown entities used in HomeKit bridge: {bridge}",
+            "description": "Spook has found a ghost in your HomeKit bridge 👻\n\nWhile floating around, Spook crossed path with the following HomeKit bridge:\n\n{bridge}\n\nThis bridge names the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nHomeKit does not follow an entity that is renamed. An included entity that was renamed or removed is gone from the Home app; an excluded entity that was renamed shows up in it again.\n\nThis bridge is set up in your YAML configuration. To fix this error, edit the `filter` of this bridge under `homekit:` and remove or correct these entities.\n\nSpook 👻 Your homie."
         }
     },
     "conditions": {
