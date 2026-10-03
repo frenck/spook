@@ -96,7 +96,8 @@ class CalibrationSensor(SensorEntity):  # pylint: disable=too-many-instance-attr
         """Correct the source's value, or be unavailable without one.
 
         Unavailable, unknown or not a number: there is nothing to correct,
-        and making a number up would be worse than saying so.
+        and making a number up would be worse than saying so. The same goes
+        for a correction that comes out as no number.
         """
         if state is None:
             self._attr_available = False
@@ -108,12 +109,15 @@ class CalibrationSensor(SensorEntity):  # pylint: disable=too-many-instance-attr
             self._attr_available = False
             return
 
-        if not math.isfinite(value):
+        # On the result, not the value: a source at 1e308 times two is a
+        # finite number going in and infinity coming out.
+        corrected = value * self._factor + self._offset
+        if not math.isfinite(corrected):
             self._attr_available = False
             return
 
         self._attr_available = True
-        self._attr_native_value = value * self._factor + self._offset
+        self._attr_native_value = corrected
         self._attr_native_unit_of_measurement = state.attributes.get(
             ATTR_UNIT_OF_MEASUREMENT
         )

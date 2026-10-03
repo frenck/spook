@@ -109,6 +109,16 @@ async def test_without_a_number_there_is_nothing_to_correct(
     assert hass.states.get(_SENSOR).state == "19.8"
 
 
+async def test_a_correction_that_is_no_number_is_unavailable(
+    hass: HomeAssistant,
+) -> None:
+    """Test a finite value corrected into infinity is not published."""
+    hass.states.async_set(_SOURCE, "1e308", _TEMPERATURE)
+    await _set_up(hass, factor=2)
+
+    assert hass.states.get(_SENSOR).state == STATE_UNAVAILABLE
+
+
 async def test_a_missing_source_is_unavailable(hass: HomeAssistant) -> None:
     """Test a source that is not there yet makes no number up."""
     await _set_up(hass, offset=-1.5)

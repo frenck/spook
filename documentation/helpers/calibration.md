@@ -15,7 +15,7 @@ The helper takes the value of the source sensor, multiplies it by the **factor**
 corrected = value × factor + offset
 ```
 
-Most of the time, an offset is all you need. A sensor showing 21.3 °C while it is really 19.8 °C gets an offset of `-1.5`, and leaves the factor at `1`. The factor is for sensors that are off by a percentage instead: a plug measuring 10% too much gets a factor of `0.9`.
+Most of the time, an offset is all you need. A sensor showing 21.3 °C while it is really 19.8 °C gets an offset of `-1.5`, and leaves the factor at `1`. The factor is for sensors that are off by a percentage instead: a plug showing 110 W while it really uses 100 W gets a factor of 100 ÷ 110, so `0.909`. Divide what it really is by what the sensor shows.
 
 - The new sensor takes the unit, device class and state class of the source. Graphs and long-term statistics work the same as for the source.
 - When the source is unavailable, unknown, or not a number, the calibrated sensor is unavailable. It does not make up a number.
