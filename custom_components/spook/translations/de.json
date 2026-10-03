@@ -580,6 +580,18 @@
         "lovelace_missing_resources_yaml": {
             "title": "Die Ressourcen im Dashboard verweisen auf fehlende Dateien",
             "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nDie folgenden Dashboard-Ressourcen verweisen auf Dateien, die nicht existieren:\n\n{resources}\n\nDas passiert meist, wenn eine benutzerdefinierte Karte oder ihre Dateien entfernt wurden, die Ressource aber zurückgeblieben ist.\n\nDiese Ressourcen sind in deiner YAML-Konfiguration eingetragen, daher kann die Ressourcen-Seite sie nicht ändern. Bearbeite den Abschnitt resources: deiner Lovelace-Konfiguration und entferne oder korrigiere diese Einträge.\n\nSpook 👻 Dein Kumpel."
+        },
+        "lovelace_unknown_service_references": {
+            "title": "Unbekannte Aktionen im Dashboard verwendet: {dashboard}",
+            "description": "Spook hat einen Geist in deinen Dashboards gefunden 👻\n\nBeim Herumschweben begegnete Spook dem folgenden Dashboard:\n\n[{dashboard}]({edit})\n\nDieses Dashboard führt die folgenden Aktionen aus, die Home Assistant unbekannt sind:\n\n{services}\n\n\n\nEine Schaltfläche oder Karte, die eine davon verwendet, tut beim Antippen nichts. Das passiert oft, wenn ein Skript umbenannt oder entfernt wurde oder eine Integration entfernt wurde. Um diesen Fehler zu beheben, [bearbeite das Dashboard]({edit}) und entferne oder ersetze diese nicht existierenden Aktionen.\n\nSpook 👻 Dein Kumpel."
+        },
+        "homekit_unknown_entity_references": {
+            "title": "Unbekannte Entitäten in HomeKit-Bridge verwendet: {bridge}",
+            "description": "Spook hat einen Geist in deiner HomeKit-Bridge gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden HomeKit-Bridge:\n\n{bridge}\n\nDiese Bridge nennt die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nHomeKit folgt einer Entität nicht, wenn sie umbenannt wird. Eine eingeschlossene Entität, die umbenannt oder entfernt wurde, verschwindet aus der Home-App. Eine ausgeschlossene Entität, die umbenannt wurde, taucht dort wieder auf.\n\nUm diesen Fehler zu beheben, öffne [die HomeKit-Bridge-Integration](/config/integrations/integration/homekit), wähle bei dieser Bridge **Konfigurieren** und wähle die Entitäten neu aus.\n\nSpook 👻 Dein Kumpel."
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "title": "Unbekannte Entitäten in HomeKit-Bridge verwendet: {bridge}",
+            "description": "Spook hat einen Geist in deiner HomeKit-Bridge gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden HomeKit-Bridge:\n\n{bridge}\n\nDiese Bridge nennt die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nHomeKit folgt einer Entität nicht, wenn sie umbenannt wird. Eine eingeschlossene Entität, die umbenannt oder entfernt wurde, verschwindet aus der Home-App. Eine ausgeschlossene Entität, die umbenannt wurde, taucht dort wieder auf.\n\nDiese Bridge ist in deiner YAML-Konfiguration eingerichtet. Um diesen Fehler zu beheben, bearbeite den `filter` dieser Bridge unter `homekit:` und entferne oder korrigiere diese Entitäten.\n\nSpook 👻 Dein Kumpel."
         }
     },
     "services": {
