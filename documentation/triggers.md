@@ -21,6 +21,12 @@ Fires on a crontab schedule, for the times Home Assistant's own time triggers ca
 
 `spook.cron`, [documentation](other-features#cron-schedule) 📚
 
+## Device added
+
+Fires when a new device is added to Home Assistant, like a plug that was just paired, whoever paired it. _#device_ _#new_ _#paired_
+
+`spook.device_added`, [documentation](other-features#device-added) 📚
+
 ## Device discovered
 
 Fires when Home Assistant discovers something new it could set up, like a device that just turned up on your network. _#discovery_ _#device_ _#new_ _#network_
