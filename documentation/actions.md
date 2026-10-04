@@ -736,6 +736,12 @@ Set the duration for a timer entity. _#timeflies_
 
 `timer.set_duration`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=timer.set_duration), [documentation](integrations/timer#set-duration) 📚
 
+## To-do list: Move item
+
+Moves an item in a to-do list to the top, the bottom, or after another item, the way dragging it in the interface does. _#todo_ _#reorder_
+
+`todo.move_item`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=todo.move_item), [documentation](integrations/todo#move-item) 📚
+
 ++(user-disable)=
 
 ## User: Disable

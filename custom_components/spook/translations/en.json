@@ -194,6 +194,12 @@
         "error": "Error",
         "warning": "Warning"
       }
+    },
+    "todo_move_position": {
+      "options": {
+        "top": "Top",
+        "bottom": "Bottom"
+      }
     }
   },
   "conditions": {
@@ -2618,6 +2624,24 @@
         "step": {
           "name": "Step",
           "description": "How many percent to change the volume by."
+        }
+      }
+    },
+    "todo_move_item": {
+      "name": "Move item",
+      "description": "Moves an item in a to-do list to the top, the bottom, or after another item.",
+      "fields": {
+        "item": {
+          "name": "Item",
+          "description": "The title or uid of the item to move."
+        },
+        "after": {
+          "name": "After",
+          "description": "The title or uid of the item to put it after. Give this or a position."
+        },
+        "position": {
+          "name": "Position",
+          "description": "Move it to the top or the bottom of the list. Give this or an item to put it after."
         }
       }
     }
