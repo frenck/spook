@@ -16,6 +16,7 @@ from homeassistant.components.climate import (
     SERVICE_SET_TEMPERATURE,
     ClimateEntity,
     ClimateEntityFeature,
+    HVACMode,
 )
 from homeassistant.const import ATTR_ENTITY_ID, ATTR_TEMPERATURE, UnitOfTemperature
 
@@ -79,34 +80,27 @@ class AbstractStepTemperatureService(
         lowest = attributes.get(ATTR_MIN_TEMP)
         highest = attributes.get(ATTR_MAX_TEMP)
 
-        changes: dict[str, Any]
-        if (target := attributes.get(ATTR_TEMPERATURE)) is not None:
-            moved = _within(target + step, lowest, highest)
-            if not self._goes_our_way(moved - target):
-                return
-            changes = {ATTR_TEMPERATURE: moved}
+        target = attributes.get(ATTR_TEMPERATURE)
+        low = attributes.get(ATTR_TARGET_TEMP_LOW)
+        high = attributes.get(ATTR_TARGET_TEMP_HIGH)
 
-        elif (low := attributes.get(ATTR_TARGET_TEMP_LOW)) is not None and (
-            high := attributes.get(ATTR_TARGET_TEMP_HIGH)
-        ) is not None:
-            # Both move by the same amount, so the band between them keeps
-            # its width. One that reaches its limit stops the other too:
-            # squeezing the band against a limit would leave a thermostat
-            # heating and cooling a degree apart.
-            if highest is not None:
-                step = min(step, highest - high)
-            if lowest is not None:
-                step = max(step, lowest - low)
-            if not self._goes_our_way(step):
-                return
-            changes = {
-                ATTR_TARGET_TEMP_LOW: round(low + step, _DECIMALS),
-                ATTR_TARGET_TEMP_HIGH: round(high + step, _DECIMALS),
-            }
-
+        changes: dict[str, Any] | None
+        # Heating and cooling to a band is what a thermostat does in
+        # `heat_cool`, even one that reports a single setpoint as well.
+        if (
+            low is not None
+            and high is not None
+            and (target is None or state.state == HVACMode.HEAT_COOL)
+        ):
+            changes = _moved_band(low, high, step, lowest, highest)
+        elif target is not None:
+            changes = _moved_setpoint(target, step, lowest, highest)
         else:
             # No setpoint to move: a thermostat in a mode without one, like
             # fan only, or one that has not reported yet.
+            return
+
+        if not changes:
             return
 
         await self.hass.services.async_call(
@@ -117,20 +111,60 @@ class AbstractStepTemperatureService(
             context=call.context,
         )
 
-    def _goes_our_way(self, change: float) -> bool:
-        """Return whether a change is a step in the asked direction.
 
-        Not just whether it is a change: a thermostat already past one of
-        its limits, which some integrations report, would be pulled back to
-        it, and "warmer" would make it colder.
-        """
-        return change * self.direction > 0
+def _inside(value: float, lowest: float | None, highest: float | None) -> bool:
+    """Return whether a setpoint is within the limits that are known."""
+    return (lowest is None or value >= lowest) and (highest is None or value <= highest)
 
 
-def _within(value: float, lowest: float | None, highest: float | None) -> float:
-    """Return the value, kept between the limits that are known."""
+def _moved_setpoint(
+    target: float, step: float, lowest: float | None, highest: float | None
+) -> dict[str, Any] | None:
+    """Return the one setpoint a step on, stopping at a limit.
+
+    A setpoint already past a limit, which some integrations report, is left
+    where it is. Pulled back inside instead, "warmer" could make it colder,
+    or jump it further than the step that was asked for.
+    """
+    if not _inside(target, lowest, highest):
+        return None
+
+    moved = target + step
     if highest is not None:
-        value = min(value, highest)
+        moved = min(moved, highest)
     if lowest is not None:
-        value = max(value, lowest)
-    return round(value, _DECIMALS)
+        moved = max(moved, lowest)
+    moved = round(moved, _DECIMALS)
+
+    if moved == target:
+        return None
+    return {ATTR_TEMPERATURE: moved}
+
+
+def _moved_band(
+    low: float,
+    high: float,
+    step: float,
+    lowest: float | None,
+    highest: float | None,
+) -> dict[str, Any] | None:
+    """Return both setpoints a step on, the band between them kept whole.
+
+    One that reaches its limit stops the other too: squeezing the band
+    against a limit would leave a thermostat heating and cooling ever closer
+    together. A band already past a limit is left where it is.
+    """
+    if not (_inside(low, lowest, highest) and _inside(high, lowest, highest)):
+        return None
+
+    if highest is not None:
+        step = min(step, highest - high)
+    if lowest is not None:
+        step = max(step, lowest - low)
+    if not step:
+        return None
+
+    return {
+        ATTR_TARGET_TEMP_LOW: round(low + step, _DECIMALS),
+        ATTR_TARGET_TEMP_HIGH: round(high + step, _DECIMALS),
+    }

@@ -88,6 +88,22 @@ class FakeRangeThermostat(FakeThermostat):
         self._attr_target_temperature_high = high
 
 
+class FakeDualThermostat(FakeThermostat):
+    """A thermostat that does a single setpoint and a band, by mode."""
+
+    _attr_supported_features = (
+        ClimateEntityFeature.TARGET_TEMPERATURE
+        | ClimateEntityFeature.TARGET_TEMPERATURE_RANGE
+    )
+    _attr_hvac_modes = [HVACMode.OFF, HVACMode.HEAT, HVACMode.HEAT_COOL]
+
+    def __init__(self, name: str, hvac_mode: HVACMode) -> None:
+        """Initialize the thermostat, with all three setpoints reported."""
+        super().__init__(name, 21.0, hvac_mode=hvac_mode, step=1.0)
+        self._attr_target_temperature_low = 19.0
+        self._attr_target_temperature_high = 23.0
+
+
 class FakeFan(FakeThermostat):
     """A climate device with nothing but a fan, and no setpoint at all."""
 
@@ -252,3 +268,61 @@ async def test_a_device_without_setpoints_refuses(hass: HomeAssistant) -> None:
 
     with pytest.raises(ServiceNotSupported):
         await _step(hass, "increase_temperature", "climate.fan")
+
+
+@pytest.mark.parametrize(
+    ("hvac_mode", "expected"),
+    [
+        (HVACMode.HEAT_COOL, {"target_temp_low": 20.0, "target_temp_high": 24.0}),
+        (HVACMode.HEAT, {ATTR_TEMPERATURE: 22.0}),
+    ],
+)
+async def test_the_band_moves_in_heat_cool_mode(
+    hass: HomeAssistant, hvac_mode: HVACMode, expected: dict[str, float]
+) -> None:
+    """Test a thermostat reporting both moves the one its mode uses."""
+    both = FakeDualThermostat("both", hvac_mode)
+    await _setup(hass, both)
+
+    await _step(hass, "increase_temperature", "climate.both")
+
+    assert both.told == [expected]
+
+
+@pytest.mark.parametrize(
+    ("service", "target"),
+    [("increase_temperature", 5.0), ("decrease_temperature", 28.0)],
+)
+async def test_a_setpoint_past_a_limit_is_left_alone(
+    hass: HomeAssistant, service: str, target: float
+) -> None:
+    """Test a setpoint outside the limits is not jumped back inside.
+
+    Five turned up by one, with a minimum of seven, would be sent seven.
+    """
+    outside = FakeThermostat("outside", target, step=1.0)
+    await _setup(hass, outside)
+
+    await _step(hass, service, "climate.outside")
+
+    assert not outside.told
+
+
+@pytest.mark.parametrize(
+    ("service", "low", "high"),
+    [("increase_temperature", 6.0, 25.0), ("decrease_temperature", 7.0, 26.0)],
+)
+async def test_a_band_past_a_limit_is_left_alone(
+    hass: HomeAssistant, service: str, low: float, high: float
+) -> None:
+    """Test a band already outside the limits is not pushed further out.
+
+    With limits of seven to twenty-five, turning up six to twenty-five would
+    otherwise send seven to twenty-six.
+    """
+    outside = FakeRangeThermostat("outside", low, high)
+    await _setup(hass, outside)
+
+    await _step(hass, service, "climate.outside")
+
+    assert not outside.told

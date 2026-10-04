@@ -64,12 +64,14 @@ Turn up a thermostat's setpoint a step, within the limits it reports.
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
-````{code-block} yaml
+```{code-block} yaml
 :linenos:
 action: climate.increase_temperature
 target:
   entity_id: climate.living_room
-data:\n  step: 1\n```
+data:
+  step: 1
+```
 
 :::
 
@@ -93,7 +95,7 @@ Turn down a thermostat's setpoint a step, within the limits it reports.
 * - {term}`Tools`
   - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=climate.decrease_temperature)
     [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=climate.decrease_temperature)
-````
+```
 
 ```{list-table}
 :header-rows: 2
@@ -123,7 +125,7 @@ target:
 Both actions work the same way:
 
 - The step is the one you give, or the thermostat's own step, or half a degree (one degree in Fahrenheit) when it has none, the same fallback the Home Assistant interface uses.
-- A thermostat with one setpoint has it moved. A thermostat that heats below one setpoint and cools above another has both moved, so the band between them keeps its width.
+- A thermostat with one setpoint has it moved. A thermostat that heats below one setpoint and cools above another has both moved, so the band between them keeps its width. In heat and cool mode, the band is what moves, also on a thermostat that reports a single setpoint as well.
 - The setpoint stays within the minimum and maximum the thermostat reports. A step that would cross one stops at it, and a band stops whole when either side reaches a limit.
 - Adjusting is not switching. A thermostat that is off gets its setpoint moved and stays off.
 
@@ -132,7 +134,7 @@ Both actions work the same way:
 
 - A thermostat without a setpoint, like one that only does fan speeds, cannot be targeted.
 - A thermostat in a mode without a setpoint at that moment, or that has not reported one yet, is left alone.
-- A thermostat already past one of its own limits, which some integrations report, is left where it is rather than pulled back, so turning it up never makes it colder.
+- A setpoint already past one of the thermostat's own limits, which some integrations report, is left where it is rather than pulled back, so turning it up never makes it colder or jumps it further than the step.
 
 :::
 
