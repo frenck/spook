@@ -200,6 +200,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/timer/icon.png)](integrations/timer)
 :::
 
+:::{card} To-do list
+:footer: 📚 [Learn more](integrations/todo)
+[![](https://brands.home-assistant.io/todo/icon.png)](integrations/todo)
+:::
+
 :::{card} Trend
 :footer: 📚 [Learn more](integrations/trend)
 [![](https://brands.home-assistant.io/trend/icon.png)](integrations/trend)

@@ -2898,3 +2898,33 @@ media_player_decrease_volume:
           step: 0.5
           unit_of_measurement: "%"
           mode: box
+
+todo_move_item:
+  name: Move item 👻
+  description: >-
+    Moves an item in a to-do list to the top, the bottom, or after another
+    item.
+  target:
+    entity:
+      domain: todo
+      supported_features:
+        - todo.TodoListEntityFeature.MOVE_TODO_ITEM
+  fields:
+    item:
+      required: true
+      example: Take out the bins
+      selector:
+        text:
+    after:
+      required: false
+      example: Do the dishes
+      selector:
+        text:
+    position:
+      required: false
+      selector:
+        select:
+          translation_key: todo_move_position
+          options:
+            - top
+            - bottom
