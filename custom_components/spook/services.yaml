@@ -2872,9 +2872,9 @@ media_player_increase_volume:
       example: 5
       selector:
         number:
-          min: 1
+          min: 0.5
           max: 100
-          step: 1
+          step: 0.5
           unit_of_measurement: "%"
           mode: box
 
@@ -2893,8 +2893,8 @@ media_player_decrease_volume:
       example: 5
       selector:
         number:
-          min: 1
+          min: 0.5
           max: 100
-          step: 1
+          step: 0.5
           unit_of_measurement: "%"
           mode: box

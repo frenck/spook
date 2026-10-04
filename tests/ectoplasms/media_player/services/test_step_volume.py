@@ -175,3 +175,29 @@ async def test_one_at_a_time_platforms_are_not_held_up(hass: HomeAssistant) -> N
         await _step(hass, "increase_volume", "media_player.kitchen", step=10)
 
     assert kitchen.told == [0.5]
+
+
+async def test_the_step_is_kept_from_any_volume(hass: HomeAssistant) -> None:
+    """Test a step from a volume between whole percents is the step asked for.
+
+    Rounded to two decimals, 0.456 up 5 percent would land on 0.51.
+    """
+    kitchen = FakeSpeaker("kitchen", 0.456)
+    await _setup(hass, kitchen)
+
+    await _step(hass, "increase_volume", "media_player.kitchen", step=5)
+    await _step(hass, "decrease_volume", "media_player.kitchen", step=10)
+
+    assert kitchen.told == [0.506, 0.406]
+
+
+async def test_a_step_of_part_of_a_percent_is_taken_as_asked(
+    hass: HomeAssistant,
+) -> None:
+    """Test 2.5 percent is 2.5 percent, not cut down to 2."""
+    kitchen = FakeSpeaker("kitchen", 0.4)
+    await _setup(hass, kitchen)
+
+    await _step(hass, "increase_volume", "media_player.kitchen", step=2.5)
+
+    assert kitchen.told == [0.425]

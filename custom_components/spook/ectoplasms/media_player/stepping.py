@@ -22,6 +22,11 @@ _SILENT = 0.0
 _FULL = 1.0
 _PERCENT = 100
 
+# A volume runs from 0 to 1, so two decimals would be whole percents, and a
+# step from 0.456 would land on 0.51. Four keeps the step as asked, and still
+# rounds away float noise.
+_DECIMALS = 4
+
 
 class AbstractStepVolumeService(AbstractSpookEntityComponentService[MediaPlayerEntity]):
     """Shared half of stepping a media player's volume up and down.
@@ -29,13 +34,16 @@ class AbstractStepVolumeService(AbstractSpookEntityComponentService[MediaPlayerE
     Home Assistant's own `media_player.volume_up` takes the step the player
     decides on, or presses the player's own button, so how far it goes is
     not up to whoever asks. Here it is: the step is required, in percent,
-    like the light actions' brightness steps.
+    like the light actions' brightness steps. Not only whole ones: a volume
+    is no whole number, and 2.5 percent is a fine step to ask for.
     """
 
     domain = DOMAIN
     required_features = [MediaPlayerEntityFeature.VOLUME_SET]
     schema = {
-        vol.Required(CONF_STEP): vol.All(vol.Coerce(int), vol.Range(min=1, max=100)),
+        vol.Required(CONF_STEP): vol.All(
+            vol.Coerce(float), vol.Range(min=0, max=100, min_included=False)
+        ),
     }
 
     #: Which way this one goes.
@@ -51,7 +59,11 @@ class AbstractStepVolumeService(AbstractSpookEntityComponentService[MediaPlayerE
             return
 
         moved = moved_setpoint(
-            volume, self.direction * call.data[CONF_STEP] / _PERCENT, _SILENT, _FULL
+            volume,
+            self.direction * call.data[CONF_STEP] / _PERCENT,
+            _SILENT,
+            _FULL,
+            _DECIMALS,
         )
         if moved is None:
             return

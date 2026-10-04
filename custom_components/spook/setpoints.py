@@ -64,9 +64,17 @@ def inside(value: float, lowest: float | None, highest: float | None) -> bool:
 
 
 def moved_setpoint(
-    value: float, step: float, lowest: float | None, highest: float | None
+    value: float,
+    step: float,
+    lowest: float | None,
+    highest: float | None,
+    decimals: int = _DECIMALS,
 ) -> float | None:
     """Return a setpoint a step on, stopping at a limit, or None for no move.
+
+    Rounded to `decimals`, which is about float noise and nothing else: two
+    is finer than any temperature goes, but a volume from 0 to 1 needs more
+    to keep a step of 5 percent from 0.456 at 0.506.
 
     A setpoint already past a limit, which some integrations report, is left
     where it is. Pulled back inside instead, "warmer" could make it colder,
@@ -80,7 +88,7 @@ def moved_setpoint(
         moved = min(moved, highest)
     if lowest is not None:
         moved = max(moved, lowest)
-    moved = round(moved, _DECIMALS)
+    moved = round(moved, decimals)
 
     return None if moved == value else moved
 
