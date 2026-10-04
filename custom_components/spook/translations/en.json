@@ -2560,6 +2560,26 @@
           "description": "How many percent to change it by. Leave it out to use the humidifier's own step, or one percent when it has none."
         }
       }
+    },
+    "cover_increase_position": {
+      "name": "Increase position",
+      "description": "Moves a cover a step further open, stopping at fully open.",
+      "fields": {
+        "step": {
+          "name": "Step",
+          "description": "How many percent to move it by. Ten percent when left out."
+        }
+      }
+    },
+    "cover_decrease_position": {
+      "name": "Decrease position",
+      "description": "Moves a cover a step further closed, stopping at fully closed.",
+      "fields": {
+        "step": {
+          "name": "Step",
+          "description": "How many percent to move it by. Ten percent when left out."
+        }
+      }
     }
   }
 }
