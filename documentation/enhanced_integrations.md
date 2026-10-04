@@ -205,6 +205,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/utility_meter/icon.png)](integrations/utility_meter)
 :::
 
+:::{card} Valve
+:footer: 📚 [Learn more](integrations/valve)
+[![](https://brands.home-assistant.io/valve/icon.png)](integrations/valve)
+:::
+
 :::{card} Water heater
 :footer: 📚 [Learn more](integrations/water_heater)
 [![](https://brands.home-assistant.io/water_heater/icon.png)](integrations/water_heater)

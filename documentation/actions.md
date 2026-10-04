@@ -172,6 +172,18 @@ Sets an effect on the lights that are already on and actually have it. _#light_ 
 
 `light.set_effect`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect), [documentation](integrations/light#set-effect) 📚
 
+## Valve: Increase position
+
+Moves a valve a step further open, stopping at fully open. _#valve_ _#open_
+
+`valve.increase_position`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=valve.increase_position), [documentation](integrations/valve#increase-position) 📚
+
+## Valve: Decrease position
+
+Moves a valve a step further closed, stopping at fully closed. _#valve_ _#close_
+
+`valve.decrease_position`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=valve.decrease_position), [documentation](integrations/valve#decrease-position) 📚
+
 ## Water heater: Increase temperature
 
 Turns a water heater's setpoint up a step, within its limits. _#water_heater_ _#warmer_

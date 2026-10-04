@@ -2814,3 +2814,45 @@ cover_decrease_position:
           step: 1
           unit_of_measurement: "%"
           mode: box
+
+valve_increase_position:
+  name: Increase position 👻
+  description: >-
+    Moves a valve a step further open.
+  target:
+    entity:
+      domain: valve
+      supported_features:
+        - valve.ValveEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+valve_decrease_position:
+  name: Decrease position 👻
+  description: >-
+    Moves a valve a step further closed.
+  target:
+    entity:
+      domain: valve
+      supported_features:
+        - valve.ValveEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
