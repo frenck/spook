@@ -13,16 +13,18 @@ from homeassistant.components.climate import (
     ATTR_TARGET_TEMP_LOW,
     ATTR_TARGET_TEMP_STEP,
     DOMAIN,
-    SERVICE_SET_TEMPERATURE,
     ClimateEntity,
     ClimateEntityFeature,
     HVACMode,
 )
-from homeassistant.const import ATTR_ENTITY_ID, ATTR_TEMPERATURE, UnitOfTemperature
+from homeassistant.const import ATTR_TEMPERATURE, UnitOfTemperature
+from homeassistant.util.unit_conversion import TemperatureConverter
 
 from ...services import AbstractSpookEntityComponentService
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from homeassistant.core import ServiceCall
 
 CONF_STEP = "step"
@@ -72,10 +74,11 @@ class AbstractStepTemperatureService(
             return
 
         attributes = state.attributes
+        unit = self.hass.config.units.temperature_unit
         step = self.direction * (
             call.data.get(CONF_STEP)
-            or attributes.get(ATTR_TARGET_TEMP_STEP)
-            or _DEFAULT_STEP[self.hass.config.units.temperature_unit]
+            or self._own_step(entity, attributes, unit)
+            or _DEFAULT_STEP[unit]
         )
         lowest = attributes.get(ATTR_MIN_TEMP)
         highest = attributes.get(ATTR_MAX_TEMP)
@@ -103,12 +106,32 @@ class AbstractStepTemperatureService(
         if not changes:
             return
 
-        await self.hass.services.async_call(
-            DOMAIN,
-            SERVICE_SET_TEMPERATURE,
-            {ATTR_ENTITY_ID: entity.entity_id, **changes},
-            blocking=True,
-            context=call.context,
+        # Straight to the thermostat, not through `climate.set_temperature`.
+        # This action already holds the platform's lock for this thermostat,
+        # and on a platform that does one call at a time, that action would
+        # wait for it for ever. What that action adds is turning the values
+        # into the thermostat's own unit, which is done here instead.
+        await entity.async_set_temperature(
+            **{
+                key: TemperatureConverter.convert(value, unit, entity.temperature_unit)
+                for key, value in changes.items()
+            }
+        )
+
+    @staticmethod
+    def _own_step(
+        entity: ClimateEntity, attributes: Mapping[str, Any], unit: str
+    ) -> float | None:
+        """Return the thermostat's own step, in Home Assistant's unit.
+
+        Home Assistant shows every temperature of a thermostat in its own
+        unit, except the step, which stays in the thermostat's. A step of one
+        degree Fahrenheit, read as one degree Celsius, would be nearly two.
+        """
+        if (step := attributes.get(ATTR_TARGET_TEMP_STEP)) is None:
+            return None
+        return TemperatureConverter.convert_interval(
+            step, entity.temperature_unit, unit
         )
 
 
