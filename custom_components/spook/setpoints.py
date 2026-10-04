@@ -8,6 +8,7 @@ back, and get the limits wrong in its own way.
 
 from __future__ import annotations
 
+from decimal import Decimal
 from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
@@ -37,24 +38,45 @@ _DEFAULT_TEMPERATURE_STEP = {
 _DECIMALS = 2
 
 
-def whole_number(value: Any) -> int:
-    """Validate a step that has to be a whole number, and refuse a fraction.
+_LEAST_PERCENT = 1
+_MOST_PERCENT = 100
+
+
+def whole_percent(value: Any) -> int:
+    """Validate a step in whole percents, and refuse a fraction or a guess.
 
     For a position or a humidity, which a device takes in whole percents.
     Cutting 5.9 down to 5 quietly would be a different step than was asked
-    for; "5" and 5.0 are still 5.
+    for; "5" and 5.0 are still 5. The same care as the quota condition's
+    limit: nothing rounds its way through a float.
     """
+    message = f"The step must be a whole percentage, got '{value}'"
+
+    # Decimal rather than float, and from the text rather than the value.
+    # `float("5.0000000000000001")` is exactly 5.0, so a fraction would round
+    # its way through, and a large enough integer raises OverflowError on the
+    # way in rather than being refused for being too large. The text also
+    # turns `True` away, which as an int would have been a step of one.
     try:
-        number = float(value)
-    except (TypeError, ValueError) as err:
-        msg = f"Expected a number, got {value!r}"
-        raise vol.Invalid(msg) from err
+        as_decimal = Decimal(str(value))
+    except (ArithmeticError, TypeError, ValueError) as err:
+        raise vol.Invalid(message) from err
 
-    if not number.is_integer():
-        msg = f"Expected a whole number, got {value}"
-        raise vol.Invalid(msg)
+    # Infinity and not-a-number are both "integral" as far as Decimal is
+    # concerned, and only fall over on the way to an int.
+    if not as_decimal.is_finite() or as_decimal != as_decimal.to_integral_value():
+        raise vol.Invalid(message)
 
-    return int(number)
+    # Checked while still a Decimal: "1e1000000000" is a few characters of
+    # config and a billion digits of integer, and building that only to find
+    # it too large is the whole cost.
+    if not _LEAST_PERCENT <= as_decimal <= _MOST_PERCENT:
+        message = (
+            f"The step must be between {_LEAST_PERCENT} and {_MOST_PERCENT} percent"
+        )
+        raise vol.Invalid(message)
+
+    return int(as_decimal)
 
 
 def temperature_step(
