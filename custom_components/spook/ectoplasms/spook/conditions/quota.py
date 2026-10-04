@@ -39,21 +39,28 @@ def _limit(value: Any) -> int:
     already refused, because truncating it lands below the minimum. An
     allowance is a number of runs, so it has to be a whole one.
     """
-    message = f"The limit must be a whole number of runs, got '{value}'"
-
     # A bool is an int as far as Python is concerned, and `True` would sail
     # through everything below as a limit of one.
     if isinstance(value, bool):
+        message = f"The limit must be a whole number of runs, got '{value}'"
         raise vol.Invalid(message)
 
     # Decimal rather than float, and from the text rather than the value.
     # `float("5.0000000000000001")` is exactly 5.0, so a fractional limit would
     # round its way through, and a large enough integer raises OverflowError on
     # the way in rather than being refused for being too large.
+    #
+    # Even the text can fail: Python refuses to write out an integer of more
+    # than a few thousand digits, so it is made in here, and the message
+    # only quotes the value once the value could be written out at all.
     try:
-        as_decimal = Decimal(str(value))
+        text = str(value)
+        as_decimal = Decimal(text)
     except (ArithmeticError, TypeError, ValueError) as err:
+        message = "The limit must be a whole number of runs"
         raise vol.Invalid(message) from err
+
+    message = f"The limit must be a whole number of runs, got '{text}'"
 
     # Infinity and not-a-number are both "integral" as far as Decimal is
     # concerned, and only fall over on the way to an int.
