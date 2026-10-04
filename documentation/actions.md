@@ -106,6 +106,18 @@ Turns a thermostat's setpoint down a step, within its limits, both setpoints for
 
 `climate.decrease_temperature`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=climate.decrease_temperature), [documentation](integrations/climate#decrease-temperature) 📚
 
+## Cover: Increase position
+
+Moves a cover a step further open, stopping at fully open. _#cover_ _#blinds_ _#open_
+
+`cover.increase_position`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=cover.increase_position), [documentation](integrations/cover#increase-position) 📚
+
+## Cover: Decrease position
+
+Moves a cover a step further closed, stopping at fully closed. _#cover_ _#blinds_ _#close_
+
+`cover.decrease_position`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=cover.decrease_position), [documentation](integrations/cover#decrease-position) 📚
+
 ## Group: Add members
 
 Adds entities to a group while the house is running, which the interface only lets you do by hand. _#roomforonemore_

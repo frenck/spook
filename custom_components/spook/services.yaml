@@ -2772,3 +2772,45 @@ humidifier_decrease_humidity:
           step: 1
           unit_of_measurement: "%"
           mode: box
+
+cover_increase_position:
+  name: Increase position 👻
+  description: >-
+    Moves a cover a step further open.
+  target:
+    entity:
+      domain: cover
+      supported_features:
+        - cover.CoverEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+cover_decrease_position:
+  name: Decrease position 👻
+  description: >-
+    Moves a cover a step further closed.
+  target:
+    entity:
+      domain: cover
+      supported_features:
+        - cover.CoverEntityFeature.SET_POSITION
+  fields:
+    step:
+      required: false
+      default: 10
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
