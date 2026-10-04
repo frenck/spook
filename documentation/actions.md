@@ -172,6 +172,18 @@ Sets an effect on the lights that are already on and actually have it. _#light_ 
 
 `light.set_effect`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect), [documentation](integrations/light#set-effect) 📚
 
+## Media player: Increase volume
+
+Turns a media player's volume up by exactly the step you give, stopping at full volume. _#media_player_ _#louder_
+
+`media_player.increase_volume`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=media_player.increase_volume), [documentation](integrations/media_player#increase-volume) 📚
+
+## Media player: Decrease volume
+
+Turns a media player's volume down by exactly the step you give, stopping at silent. _#media_player_ _#quieter_
+
+`media_player.decrease_volume`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=media_player.decrease_volume), [documentation](integrations/media_player#decrease-volume) 📚
+
 ## Valve: Increase position
 
 Moves a valve a step further open, stopping at fully open. _#valve_ _#open_

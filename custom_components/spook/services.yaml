@@ -2856,3 +2856,45 @@ valve_decrease_position:
           step: 1
           unit_of_measurement: "%"
           mode: box
+
+media_player_increase_volume:
+  name: Increase volume 👻
+  description: >-
+    Turns a media player's volume up by the step you give.
+  target:
+    entity:
+      domain: media_player
+      supported_features:
+        - media_player.MediaPlayerEntityFeature.VOLUME_SET
+  fields:
+    step:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+media_player_decrease_volume:
+  name: Decrease volume 👻
+  description: >-
+    Turns a media player's volume down by the step you give.
+  target:
+    entity:
+      domain: media_player
+      supported_features:
+        - media_player.MediaPlayerEntityFeature.VOLUME_SET
+  fields:
+    step:
+      required: true
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
