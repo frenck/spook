@@ -10,19 +10,18 @@ from homeassistant.components.light import (
     ATTR_EFFECT,
     ATTR_EFFECT_LIST,
     DOMAIN,
-    LightEntity,
 )
 from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_ON
 from homeassistant.helpers import config_validation as cv
 
-from ....services import AbstractSpookEntityComponentService
 from .. import async_lights_that_are_on
+from ..adjusting import AbstractAdjustLightService
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
-class SpookService(AbstractSpookEntityComponentService[LightEntity]):
+class SpookService(AbstractAdjustLightService):
     """Light service that sets an effect on what is already lit.
 
     Only on lights that have the effect asked for. Effect names are per
@@ -30,21 +29,16 @@ class SpookService(AbstractSpookEntityComponentService[LightEntity]):
     know "Colorloop" and lights that have never heard of it.
     """
 
-    domain = DOMAIN
     service = "set_effect"
-    schema = {vol.Required(ATTR_EFFECT): cv.string}
+    schema = cv.make_entity_service_schema({vol.Required(ATTR_EFFECT): cv.string})
 
-    async def async_handle_service(
-        self,
-        entity: LightEntity,
-        call: ServiceCall,
-    ) -> None:
-        """Handle the service call."""
+    async def async_adjust(self, entity_id: str, call: ServiceCall) -> None:
+        """Adjust the lights behind one target."""
         effect = call.data[ATTR_EFFECT]
 
         lights = [
             light
-            for light in async_lights_that_are_on(self.hass, entity.entity_id)
+            for light in async_lights_that_are_on(self.hass, entity_id)
             if effect in (light.attributes.get(ATTR_EFFECT_LIST) or ())
         ]
         if not lights:
