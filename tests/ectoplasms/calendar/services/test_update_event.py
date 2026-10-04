@@ -3,8 +3,10 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.components.calendar import CalendarEvent
 from homeassistant.exceptions import ServiceNotSupported, ServiceValidationError
 from homeassistant.setup import async_setup_component
 import pytest
@@ -206,3 +208,38 @@ async def test_a_time_without_a_zone_is_read_as_local(hass: HomeAssistant) -> No
     )
 
     assert (agenda.events[0].start, agenda.events[0].end) == (at(2), at(4))
+
+
+async def test_the_response_keeps_its_time_zones(hass: HomeAssistant) -> None:
+    """Test what is handed back is not what the calendar did to its copy.
+
+    Local Calendar strips the time zones off the event it is given, in place.
+    """
+    agenda = await _setup(hass)
+    agenda.events = [an_event("Dentist", 2, "a")]
+
+    result = await _update(hass, summary="Dentist", shift={"hours": 1})
+
+    assert result["events"][0]["start"] == at(3).isoformat()
+
+
+async def test_a_day_long_event_moves_by_whole_days_only(
+    hass: HomeAssistant,
+) -> None:
+    """Test part of a day on a day-long event is refused, not dropped.
+
+    A date silently drops any hours added to it, so the event would stay
+    where it was while the action said it moved.
+    """
+    agenda = await _setup(hass)
+    holiday = CalendarEvent(
+        start=at(2).date(), end=at(2).date() + timedelta(days=1), summary="Off", uid="h"
+    )
+    agenda.events = [holiday]
+
+    with pytest.raises(ServiceValidationError):
+        await _update(hass, summary="Off", shift={"hours": 1})
+    assert agenda.updated == []
+
+    await _update(hass, summary="Off", shift={"days": 1})
+    assert agenda.events[0].start == holiday.start + timedelta(days=1)
