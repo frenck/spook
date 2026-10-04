@@ -2694,3 +2694,43 @@ group_set_members:
       selector:
         entity:
           multiple: true
+
+water_heater_increase_temperature:
+  name: Increase temperature 👻
+  description: >-
+    Turns a water heater's setpoint up a step.
+  target:
+    entity:
+      domain: water_heater
+      supported_features:
+        - water_heater.WaterHeaterEntityFeature.TARGET_TEMPERATURE
+  fields:
+    step:
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
+
+water_heater_decrease_temperature:
+  name: Decrease temperature 👻
+  description: >-
+    Turns a water heater's setpoint down a step.
+  target:
+    entity:
+      domain: water_heater
+      supported_features:
+        - water_heater.WaterHeaterEntityFeature.TARGET_TEMPERATURE
+  fields:
+    step:
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.1
+          max: 10
+          step: 0.1
+          mode: box
