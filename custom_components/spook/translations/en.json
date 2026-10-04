@@ -1163,6 +1163,26 @@
         }
       }
     },
+    "climate_increase_temperature": {
+      "name": "Increase temperature",
+      "description": "Turns a thermostat's setpoint up a step, both setpoints for one that heats and cools. A thermostat that is off stays off.",
+      "fields": {
+        "step": {
+          "name": "Step",
+          "description": "How much to change it by. Leave it out to use the thermostat's own step, or half a degree (one in Fahrenheit) when it has none."
+        }
+      }
+    },
+    "climate_decrease_temperature": {
+      "name": "Decrease temperature",
+      "description": "Turns a thermostat's setpoint down a step, both setpoints for one that heats and cools. A thermostat that is off stays off.",
+      "fields": {
+        "step": {
+          "name": "Step",
+          "description": "How much to change it by. Leave it out to use the thermostat's own step, or half a degree (one in Fahrenheit) when it has none."
+        }
+      }
+    },
     "homeassistant_create_area": {
       "name": "Create an area",
       "description": "Creates a new area on the fly.",
