@@ -80,6 +80,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/homekit/icon.png)](integrations/homekit)
 :::
 
+:::{card} Humidifier
+:footer: 📚 [Learn more](integrations/humidifier)
+[![](https://brands.home-assistant.io/humidifier/icon.png)](integrations/humidifier)
+:::
+
 :::{card} Input boolean
 :footer: 📚 [Learn more](integrations/input_boolean)
 [![](https://brands.home-assistant.io/input_boolean/icon.png)](integrations/input_boolean)

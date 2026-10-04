@@ -2540,6 +2540,26 @@
           "description": "How much to change it by. Leave it out to use the water heater's own step, or half a degree (one in Fahrenheit) when it has none."
         }
       }
+    },
+    "humidifier_increase_humidity": {
+      "name": "Increase humidity",
+      "description": "Turns a humidifier's target humidity up a step, within its limits.",
+      "fields": {
+        "step": {
+          "name": "Step",
+          "description": "How many percent to change it by. Leave it out to use the humidifier's own step, or one percent when it has none."
+        }
+      }
+    },
+    "humidifier_decrease_humidity": {
+      "name": "Decrease humidity",
+      "description": "Turns a humidifier's target humidity down a step, within its limits.",
+      "fields": {
+        "step": {
+          "name": "Step",
+          "description": "How many percent to change it by. Leave it out to use the humidifier's own step, or one percent when it has none."
+        }
+      }
     }
   }
 }
