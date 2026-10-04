@@ -38,6 +38,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/calendar/icon.png)](integrations/calendar)
 :::
 
+:::{card} Climate
+:footer: 📚 [Learn more](integrations/climate)
+[![](https://brands.home-assistant.io/climate/icon.png)](integrations/climate)
+:::
+
 :::{card} Counter
 :footer: 📚 [Learn more](integrations/counter)
 [![](https://brands.home-assistant.io/counter/icon.png)](integrations/counter)

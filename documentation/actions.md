@@ -94,6 +94,18 @@ Changes events in a calendar, found by their title or uid in a stretch of time: 
 
 `calendar.update_event`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=calendar.update_event), [documentation](integrations/calendar#update-event) 📚
 
+## Climate: Increase temperature
+
+Turns a thermostat's setpoint up a step, within its limits, both setpoints for one that heats and cools. _#climate_ _#warmer_
+
+`climate.increase_temperature`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=climate.increase_temperature), [documentation](integrations/climate#increase-temperature) 📚
+
+## Climate: Decrease temperature
+
+Turns a thermostat's setpoint down a step, within its limits, both setpoints for one that heats and cools. _#climate_ _#colder_
+
+`climate.decrease_temperature`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=climate.decrease_temperature), [documentation](integrations/climate#decrease-temperature) 📚
+
 ## Group: Add members
 
 Adds entities to a group while the house is running, which the interface only lets you do by hand. _#roomforonemore_
