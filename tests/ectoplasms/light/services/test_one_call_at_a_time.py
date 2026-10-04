@@ -6,6 +6,8 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING, Any
 
+from homeassistant.core import Context
+from homeassistant.exceptions import Unauthorized
 from homeassistant.setup import async_setup_component
 import pytest
 
@@ -21,6 +23,8 @@ from custom_components.spook.ectoplasms.light.services import (
 from .conftest import BRIGHT, COLOUR, DIM, WHITES, async_set_up_lights
 
 if TYPE_CHECKING:
+    from pytest_homeassistant_custom_component.common import MockUser
+
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import (
         area_registry as ar,
@@ -115,3 +119,66 @@ async def test_all_reaches_every_light_that_is_on(hass: HomeAssistant) -> None:
 
     assert hass.states.get(DIM).attributes["brightness"] == _FULL
     assert hass.states.get(BRIGHT).attributes["brightness"] == _FULL
+
+
+async def test_rights_are_checked_before_anything_changes(
+    hass: HomeAssistant, hass_read_only_user: MockUser
+) -> None:
+    """Test somebody who may not control a light gets refused, up front.
+
+    As an entity action, Home Assistant checked every target first. Done one
+    light at a time, the allowed ones would already have changed by the time
+    one that is not refused the lot.
+    """
+    await _setup(hass)
+    # Allowed the bright light, and not the dim one.
+    hass_read_only_user.mock_policy({"entities": {"entity_ids": {BRIGHT: True}}})
+
+    with pytest.raises(Unauthorized):
+        await hass.services.async_call(
+            "light",
+            "set_brightness",
+            {"entity_id": [BRIGHT, DIM], "brightness_pct": 50},
+            blocking=True,
+            context=Context(user_id=hass_read_only_user.id),
+        )
+
+    assert hass.states.get(BRIGHT).attributes["brightness"] == _FULL
+    assert hass.states.get(DIM).attributes["brightness"] == _DIM_LEVEL
+
+
+async def test_all_is_what_somebody_may_control(
+    hass: HomeAssistant, hass_read_only_user: MockUser
+) -> None:
+    """Test `all` passes over lights somebody may not control, not refuses."""
+    await _setup(hass)
+    hass_read_only_user.mock_policy({"entities": {"entity_ids": {BRIGHT: True}}})
+
+    await hass.services.async_call(
+        "light",
+        "set_brightness",
+        {"entity_id": "all", "brightness_pct": 50},
+        blocking=True,
+        context=Context(user_id=hass_read_only_user.id),
+    )
+
+    # The one they may control is set, the other left alone.
+    assert hass.states.get(BRIGHT).attributes["brightness"] == _HALF
+    assert hass.states.get(DIM).attributes["brightness"] == _DIM_LEVEL
+
+
+async def test_an_administrator_may_control_everything(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test an administrator's call goes through as before."""
+    await _setup(hass)
+
+    await hass.services.async_call(
+        "light",
+        "set_brightness",
+        {"entity_id": BRIGHT, "brightness_pct": 50},
+        blocking=True,
+        context=Context(user_id=hass_admin_user.id),
+    )
+
+    assert hass.states.get(BRIGHT).attributes["brightness"] == _HALF
