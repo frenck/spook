@@ -56,7 +56,7 @@ Turn a media player's volume up by exactly the step you give, stopping at full v
   - Required
   - Default / Example
 * - `step`
-  - {term}`integer <integer>`
+  - {term}`float <float>`
   - Yes
   - `5`
 ```
@@ -105,7 +105,7 @@ Turn a media player's volume down by exactly the step you give, stopping at sile
   - Required
   - Default / Example
 * - `step`
-  - {term}`integer <integer>`
+  - {term}`float <float>`
   - Yes
   - `5`
 ```
@@ -126,7 +126,7 @@ data:
 
 Both actions work the same way:
 
-- The step is required, in percent of full volume. A step that would go past full volume or silence stops there.
+- The step is required, in percent of full volume, and need not be a whole one: 2.5 is a fine step. A step that would go past full volume or silence stops there.
 - Home Assistant's own `media_player.volume_up` and `media_player.volume_down` remain for when the player's own step will do.
 - Muting is left alone: turning the volume of a muted player changes the level it comes back at.
 
