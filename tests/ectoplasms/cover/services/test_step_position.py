@@ -24,6 +24,7 @@ from pytest_homeassistant_custom_component.common import (
     mock_platform,
 )
 import pytest
+import voluptuous as vol
 
 from custom_components.spook.ectoplasms.cover.services.decrease_position import (
     SpookService as DecreaseService,
@@ -167,3 +168,11 @@ async def test_one_at_a_time_platforms_are_not_held_up(hass: HomeAssistant) -> N
         await _step(hass, "increase_position", "cover.blind")
 
     assert blind.told == [60]
+
+
+async def test_a_step_with_a_fraction_is_refused(hass: HomeAssistant) -> None:
+    """Test 5.9 is refused, rather than quietly taken as 5."""
+    await _setup(hass, FakeBlind("blind", 50))
+
+    with pytest.raises(vol.Invalid):
+        await _step(hass, "increase_position", "cover.blind", step=5.9)

@@ -9,7 +9,7 @@ import voluptuous as vol
 from homeassistant.components.humidifier import DOMAIN, HumidifierEntity
 
 from ...services import AbstractSpookEntityComponentService
-from ...setpoints import CONF_STEP, moved_setpoint
+from ...setpoints import CONF_STEP, moved_setpoint, whole_number
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -31,7 +31,7 @@ class AbstractStepHumidityService(
 
     domain = DOMAIN
     schema = {
-        vol.Optional(CONF_STEP): vol.All(vol.Coerce(int), vol.Range(min=1, max=100)),
+        vol.Optional(CONF_STEP): vol.All(whole_number, vol.Range(min=1, max=100)),
     }
 
     #: Which way this one goes.

@@ -8,7 +8,7 @@ back, and get the limits wrong in its own way.
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 
@@ -35,6 +35,26 @@ _DEFAULT_TEMPERATURE_STEP = {
 # Steps like 0.1 add up to 20.600000000000001 in floats, which no device
 # wants to be sent. Two decimals is finer than any of them goes.
 _DECIMALS = 2
+
+
+def whole_number(value: Any) -> int:
+    """Validate a step that has to be a whole number, and refuse a fraction.
+
+    For a position or a humidity, which a device takes in whole percents.
+    Cutting 5.9 down to 5 quietly would be a different step than was asked
+    for; "5" and 5.0 are still 5.
+    """
+    try:
+        number = float(value)
+    except (TypeError, ValueError) as err:
+        msg = f"Expected a number, got {value!r}"
+        raise vol.Invalid(msg) from err
+
+    if not number.is_integer():
+        msg = f"Expected a whole number, got {value}"
+        raise vol.Invalid(msg)
+
+    return int(number)
 
 
 def temperature_step(
