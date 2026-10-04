@@ -354,7 +354,9 @@ async def test_a_step_in_fahrenheit_is_one_in_fahrenheit(hass: HomeAssistant) ->
 
     await _step(hass, "increase_temperature", "climate.american")
 
-    assert american.told[0][ATTR_TEMPERATURE] == pytest.approx(69.0, abs=0.05)
+    # Exactly, not 69.008: worked out in Fahrenheit, never turned into
+    # Celsius and back.
+    assert american.told == [{ATTR_TEMPERATURE: 69.0}]
 
 
 async def test_one_at_a_time_platforms_are_not_held_up(hass: HomeAssistant) -> None:
@@ -371,3 +373,29 @@ async def test_one_at_a_time_platforms_are_not_held_up(hass: HomeAssistant) -> N
         await _step(hass, "increase_temperature", "climate.living")
 
     assert living.told == [{ATTR_TEMPERATURE: 21.0}]
+
+
+async def test_a_fahrenheit_limit_is_kept_exactly(hass: HomeAssistant) -> None:
+    """Test a thermostat's own limit is met, not missed by rounding.
+
+    Through Celsius, a minimum of 45 comes back as 44.996, just past a limit
+    the thermostat may refuse.
+    """
+    american = FakeFahrenheitThermostat("american", 45.5, step=1.0)
+    await _setup(hass, american)
+
+    await _step(hass, "decrease_temperature", "climate.american")
+
+    assert american.told == [{ATTR_TEMPERATURE: 45.0}]
+
+
+async def test_a_step_asked_for_is_in_home_assistants_unit(
+    hass: HomeAssistant,
+) -> None:
+    """Test a step given in Celsius moves a Fahrenheit thermostat as far."""
+    american = FakeFahrenheitThermostat("american", 68.0, step=1.0)
+    await _setup(hass, american)
+
+    await _step(hass, "increase_temperature", "climate.american", step=1)
+
+    assert american.told == [{ATTR_TEMPERATURE: 69.8}]

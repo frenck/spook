@@ -7,11 +7,8 @@ from typing import TYPE_CHECKING, Any
 import voluptuous as vol
 
 from homeassistant.components.climate import (
-    ATTR_MAX_TEMP,
-    ATTR_MIN_TEMP,
     ATTR_TARGET_TEMP_HIGH,
     ATTR_TARGET_TEMP_LOW,
-    ATTR_TARGET_TEMP_STEP,
     DOMAIN,
     ClimateEntity,
     ClimateEntityFeature,
@@ -23,8 +20,6 @@ from homeassistant.util.unit_conversion import TemperatureConverter
 from ...services import AbstractSpookEntityComponentService
 
 if TYPE_CHECKING:
-    from collections.abc import Mapping
-
     from homeassistant.core import ServiceCall
 
 CONF_STEP = "step"
@@ -69,23 +64,42 @@ class AbstractStepTemperatureService(
         entity: ClimateEntity,
         call: ServiceCall,
     ) -> None:
-        """Handle the service call."""
-        if (state := self.hass.states.get(entity.entity_id)) is None:
-            return
+        """Handle the service call.
 
-        attributes = state.attributes
-        unit = self.hass.config.units.temperature_unit
-        step = self.direction * (
-            call.data.get(CONF_STEP)
-            or self._own_step(entity, attributes, unit)
-            or _DEFAULT_STEP[unit]
+        Worked out in the thermostat's own unit, from the thermostat itself.
+        Home Assistant shows its temperatures in Home Assistant's unit,
+        rounded, and turning those back would send 69.008 degrees Fahrenheit
+        for a step from 68, or a minimum of 45 as 44.996, just past a limit
+        the thermostat may well refuse. A step given in the call is in Home
+        Assistant's unit, and is the one thing turned into the thermostat's.
+        """
+        unit = entity.temperature_unit
+        if (step := call.data.get(CONF_STEP)) is not None:
+            step = TemperatureConverter.convert_interval(
+                step, self.hass.config.units.temperature_unit, unit
+            )
+        else:
+            step = entity.target_temperature_step or _DEFAULT_STEP.get(
+                unit, _DEFAULT_STEP[UnitOfTemperature.CELSIUS]
+            )
+        step *= self.direction
+
+        lowest = entity.min_temp
+        highest = entity.max_temp
+
+        # Read only what the thermostat says it has, the way Home Assistant
+        # does: a thermostat without a band need not have its setpoints at
+        # all, and asking for them raises rather than answering nothing.
+        features = entity.supported_features
+        target = (
+            entity.target_temperature
+            if features & ClimateEntityFeature.TARGET_TEMPERATURE
+            else None
         )
-        lowest = attributes.get(ATTR_MIN_TEMP)
-        highest = attributes.get(ATTR_MAX_TEMP)
-
-        target = attributes.get(ATTR_TEMPERATURE)
-        low = attributes.get(ATTR_TARGET_TEMP_LOW)
-        high = attributes.get(ATTR_TARGET_TEMP_HIGH)
+        low = high = None
+        if features & ClimateEntityFeature.TARGET_TEMPERATURE_RANGE:
+            low = entity.target_temperature_low
+            high = entity.target_temperature_high
 
         changes: dict[str, Any] | None
         # Heating and cooling to a band is what a thermostat does in
@@ -93,7 +107,7 @@ class AbstractStepTemperatureService(
         if (
             low is not None
             and high is not None
-            and (target is None or state.state == HVACMode.HEAT_COOL)
+            and (target is None or entity.hvac_mode == HVACMode.HEAT_COOL)
         ):
             changes = _moved_band(low, high, step, lowest, highest)
         elif target is not None:
@@ -109,30 +123,8 @@ class AbstractStepTemperatureService(
         # Straight to the thermostat, not through `climate.set_temperature`.
         # This action already holds the platform's lock for this thermostat,
         # and on a platform that does one call at a time, that action would
-        # wait for it for ever. What that action adds is turning the values
-        # into the thermostat's own unit, which is done here instead.
-        await entity.async_set_temperature(
-            **{
-                key: TemperatureConverter.convert(value, unit, entity.temperature_unit)
-                for key, value in changes.items()
-            }
-        )
-
-    @staticmethod
-    def _own_step(
-        entity: ClimateEntity, attributes: Mapping[str, Any], unit: str
-    ) -> float | None:
-        """Return the thermostat's own step, in Home Assistant's unit.
-
-        Home Assistant shows every temperature of a thermostat in its own
-        unit, except the step, which stays in the thermostat's. A step of one
-        degree Fahrenheit, read as one degree Celsius, would be nearly two.
-        """
-        if (step := attributes.get(ATTR_TARGET_TEMP_STEP)) is None:
-            return None
-        return TemperatureConverter.convert_interval(
-            step, entity.temperature_unit, unit
-        )
+        # wait for it for ever.
+        await entity.async_set_temperature(**changes)
 
 
 def _inside(value: float, lowest: float | None, highest: float | None) -> bool:
