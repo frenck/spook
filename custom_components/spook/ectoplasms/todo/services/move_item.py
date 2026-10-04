@@ -80,7 +80,11 @@ class SpookService(AbstractSpookEntityComponentService[TodoListEntity]):
             others = [other for other in items if other.uid != item.uid]
             if not others:
                 return
-            previous_uid = others[-1].uid
+            # Without a uid the last item cannot be named, and naming nothing
+            # is the top: the opposite end of where it was asked to go.
+            if (previous_uid := others[-1].uid) is None:
+                msg = f"The last item in {entity.entity_id} cannot be moved after"
+                raise ServiceValidationError(msg)
         elif call.data.get(ATTR_POSITION) == POSITION_TOP:
             previous_uid = None
         else:
