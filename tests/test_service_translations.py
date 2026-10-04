@@ -217,3 +217,99 @@ def test_service_translation_names_do_not_include_ghost() -> None:
     assert all(
         "👻" not in service["name"] for service in translations["services"].values()
     )
+
+
+class MockSpookSelectorService(AbstractSpookService):
+    """Mock Spook service in another domain, with a translated selector."""
+
+    domain = "repairs"
+    service = "list"
+
+    async def async_handle_service(self, call: ServiceCall) -> None:
+        """Handle the service call."""
+
+
+_SEVERITY_SCHEMA = {
+    "repairs_list": {
+        "fields": {
+            "severity": {
+                "selector": {"select": {"translation_key": "repair_issue_severity"}}
+            }
+        }
+    }
+}
+
+
+async def test_selector_labels_are_injected_for_the_actions_domain(
+    hass: HomeAssistant,
+) -> None:
+    """Test a selector's option labels are found under the action's domain.
+
+    Home Assistant looks them up under the domain the action is in, and Spook
+    keeps them under its own: without this they show as their raw values.
+    """
+    manager = SpookServiceManager(hass)
+    manager._services.add(MockSpookSelectorService(hass))
+    manager._service_schemas = _SEVERITY_SCHEMA
+
+    await manager.async_inject_service_translations()
+
+    translations = async_get_cached_translations(hass, "en", "selector", "repairs")
+    assert (
+        translations[
+            "component.repairs.selector.repair_issue_severity.options.critical"
+        ]
+        == "Critical"
+    )
+
+    manager.async_clear_service_translation_overrides()
+
+    translations = async_get_cached_translations(hass, "en", "selector", "repairs")
+    assert not any("repair_issue_severity" in key for key in translations)
+
+
+async def test_selector_labels_already_there_are_put_back(
+    hass: HomeAssistant,
+) -> None:
+    """Test a label the domain had of its own is restored, not removed."""
+    key = "component.repairs.selector.repair_issue_severity.options.critical"
+    cache = _async_get_translations_cache(hass).cache_data.cache
+    cache.setdefault("en", {}).setdefault("selector", {}).setdefault("repairs", {})[
+        key
+    ] = "Its own"
+    manager = SpookServiceManager(hass)
+    manager._services.add(MockSpookSelectorService(hass))
+    manager._service_schemas = _SEVERITY_SCHEMA
+
+    await manager.async_inject_service_translations()
+    assert (
+        async_get_cached_translations(hass, "en", "selector", "repairs")[key]
+        == "Critical"
+    )
+
+    manager.async_clear_service_translation_overrides()
+
+    assert (
+        async_get_cached_translations(hass, "en", "selector", "repairs")[key]
+        == "Its own"
+    )
+
+
+def test_every_selector_translation_key_is_translated() -> None:
+    """Test each selector translation key an action uses has its labels.
+
+    Otherwise the injection has nothing to inject, and the options show as
+    their raw values all the same.
+    """
+    descriptors = yaml.safe_load((SPOOK_ROOT / "services.yaml").read_text())
+    translations = json.loads((SPOOK_ROOT / "translations" / "en.json").read_text())
+    used = {
+        selector_config["translation_key"]
+        for descriptor in descriptors.values()
+        for field_schema in ((descriptor or {}).get("fields") or {}).values()
+        for selector_config in ((field_schema or {}).get("selector") or {}).values()
+        if isinstance(selector_config, dict) and "translation_key" in selector_config
+    }
+
+    assert used
+    assert used <= set(translations.get("selector", {}))
