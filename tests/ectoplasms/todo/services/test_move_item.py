@@ -128,6 +128,7 @@ async def _move(
     [
         ({"position": "top"}, ["Dishes", "Bins", "Laundry"]),
         ({"position": "bottom"}, ["Bins", "Laundry", "Dishes"]),
+        ({"position": "bottom", "item": "Bins"}, ["Laundry", "Dishes", "Bins"]),
         ({"after": "Bins"}, ["Bins", "Dishes", "Laundry"]),
     ],
 )
@@ -138,7 +139,7 @@ async def test_an_item_goes_where_it_is_told(
     chores = FakeList("chores", "Bins", "Laundry", "Dishes")
     await _setup(hass, chores)
 
-    await _move(hass, item="Dishes", **where)
+    await _move(hass, **{"item": "Dishes", **where})
 
     assert chores.order == order
 
@@ -191,3 +192,20 @@ async def test_a_list_that_cannot_be_reordered_refuses(hass: HomeAssistant) -> N
 
     with pytest.raises(ServiceNotSupported):
         await _move(hass, item="Dishes", position="top")
+
+
+async def test_the_bottom_needs_a_last_item_to_go_after(hass: HomeAssistant) -> None:
+    """Test a last item without a uid is refused, not read as the top.
+
+    Moving after nothing is moving to the top, the opposite of what was asked.
+    """
+    chores = FakeList("chores", "Bins", "Dishes")
+    chores._attr_todo_items.append(  # noqa: SLF001  # pylint: disable=protected-access
+        TodoItem(summary="Laundry", uid=None, status=TodoItemStatus.NEEDS_ACTION)
+    )
+    await _setup(hass, chores)
+
+    with pytest.raises(ServiceValidationError):
+        await _move(hass, item="Bins", position="bottom")
+
+    assert chores.order == ["Bins", "Dishes", "Laundry"]
