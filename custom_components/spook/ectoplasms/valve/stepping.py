@@ -13,7 +13,7 @@ from homeassistant.components.valve import (
 )
 
 from ...services import AbstractSpookEntityComponentService
-from ...setpoints import CONF_STEP, moved_setpoint
+from ...setpoints import CONF_STEP, moved_setpoint, whole_number
 
 if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
@@ -38,7 +38,7 @@ class AbstractStepPositionService(AbstractSpookEntityComponentService[ValveEntit
     required_features = [ValveEntityFeature.SET_POSITION]
     schema = {
         vol.Optional(CONF_STEP, default=_DEFAULT_STEP): vol.All(
-            vol.Coerce(int), vol.Range(min=1, max=100)
+            whole_number, vol.Range(min=1, max=100)
         ),
     }
 

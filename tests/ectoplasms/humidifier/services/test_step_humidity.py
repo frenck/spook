@@ -10,6 +10,9 @@ from homeassistant.components.humidifier import HumidifierEntity
 from homeassistant.config_entries import ConfigEntry, ConfigFlow
 from homeassistant.const import Platform
 from homeassistant.setup import async_setup_component
+import pytest
+import voluptuous as vol
+
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     MockModule,
@@ -186,3 +189,11 @@ async def test_one_at_a_time_platforms_are_not_held_up(hass: HomeAssistant) -> N
         await _step(hass, "increase_humidity", "humidifier.bedroom")
 
     assert bedroom.told == [46]
+
+
+async def test_a_step_with_a_fraction_is_refused(hass: HomeAssistant) -> None:
+    """Test 5.9 is refused, rather than quietly taken as 5."""
+    await _setup(hass, FakeHumidifier("bedroom", 45))
+
+    with pytest.raises(vol.Invalid):
+        await _step(hass, "increase_humidity", "humidifier.bedroom", step=5.9)
