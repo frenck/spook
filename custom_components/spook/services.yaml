@@ -257,6 +257,68 @@ calendar_delete_event:
       selector:
         boolean:
 
+calendar_update_event:
+  name: Update event 👻
+  description: >-
+    Changes events in a calendar, found by their title or uid in a stretch of
+    time.
+  target:
+    entity:
+      domain: calendar
+      supported_features:
+        - calendar.CalendarEntityFeature.UPDATE_EVENT
+  fields:
+    summary:
+      required: false
+      example: Dentist
+      selector:
+        text:
+    uid:
+      required: false
+      selector:
+        text:
+    start_date_time:
+      required: false
+      example: "2026-10-04 08:00:00"
+      selector:
+        datetime:
+    end_date_time:
+      required: false
+      example: "2026-10-04 20:00:00"
+      selector:
+        datetime:
+    duration:
+      required: false
+      selector:
+        duration:
+    new_summary:
+      required: false
+      example: Orthodontist
+      selector:
+        text:
+    description:
+      required: false
+      selector:
+        text:
+          multiline: true
+    location:
+      required: false
+      selector:
+        text:
+    new_start:
+      required: false
+      selector:
+        datetime:
+    new_end:
+      required: false
+      selector:
+        datetime:
+    shift:
+      required: false
+      selector:
+        duration:
+          allow_negative: true
+
 homeassistant_create_area:
   name: Create an area 👻
   description: >-

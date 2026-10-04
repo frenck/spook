@@ -39,11 +39,12 @@ def at(hours: float) -> datetime:
     return now + timedelta(hours=hours)
 
 
-def event(
+def an_event(
     summary: str,
     start_hours: float,
     uid: str,
     recurrence_id: str | None = None,
+    **details: str,
 ) -> CalendarEvent:
     """Return an hour-long event starting this many hours from now."""
     return CalendarEvent(
@@ -52,6 +53,7 @@ def event(
         summary=summary,
         uid=uid,
         recurrence_id=recurrence_id,
+        **details,
     )
 
 
@@ -69,6 +71,7 @@ class FakeCalendar(CalendarEntity):
         self._attr_unique_id = name
         self.events: list[CalendarEvent] = []
         self.deleted: list[tuple[str, str | None]] = []
+        self.updated: list[tuple[str, str | None, dict[str, Any]]] = []
 
     @property
     def event(self) -> CalendarEvent | None:
@@ -104,6 +107,31 @@ class FakeCalendar(CalendarEntity):
             for event in self.events
             if event.uid != uid
             or (recurrence_id is not None and event.recurrence_id != recurrence_id)
+        ]
+
+    async def async_update_event(
+        self,
+        uid: str,
+        event: dict[str, Any],
+        recurrence_id: str | None = None,
+        recurrence_range: str | None = None,
+    ) -> None:
+        """Replace an event, or one occurrence of it, with what was given."""
+        del recurrence_range
+        self.updated.append((uid, recurrence_id, event))
+        self.events = [
+            CalendarEvent(
+                start=event["dtstart"],
+                end=event["dtend"],
+                summary=event["summary"],
+                description=event.get("description"),
+                location=event.get("location"),
+                uid=uid,
+                recurrence_id=kept.recurrence_id,
+            )
+            if kept.uid == uid and kept.recurrence_id == recurrence_id
+            else kept
+            for kept in self.events
         ]
 
 

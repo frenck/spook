@@ -13,7 +13,7 @@ from custom_components.spook.ectoplasms.calendar.services.delete_event import (
     SpookService,
 )
 
-from .conftest import AGENDA, READ_ONLY, async_set_up_calendars, event
+from .conftest import AGENDA, READ_ONLY, an_event, async_set_up_calendars
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
@@ -51,9 +51,9 @@ async def test_events_are_found_by_their_title_in_a_window(
     """
     agenda = await _setup(hass)
     agenda.events = [
-        event("Dentist", 2, "a"),
-        event("Dinner", 3, "b"),
-        event("Dentist", 48, "c"),
+        an_event("Dentist", 2, "a"),
+        an_event("Dinner", 3, "b"),
+        an_event("Dentist", 48, "c"),
     ]
 
     result = await _delete(hass, summary="Dentist", duration={"hours": 24})
@@ -65,7 +65,7 @@ async def test_events_are_found_by_their_title_in_a_window(
 async def test_an_event_is_found_by_its_uid(hass: HomeAssistant) -> None:
     """Test a uid alone is enough to say which event."""
     agenda = await _setup(hass)
-    agenda.events = [event("Dentist", 2, "a"), event("Dentist", 3, "b")]
+    agenda.events = [an_event("Dentist", 2, "a"), an_event("Dentist", 3, "b")]
 
     await _delete(hass, uid="b", duration={"hours": 24})
 
@@ -78,7 +78,7 @@ async def test_nothing_to_delete_is_not_an_error(hass: HomeAssistant) -> None:
     "Delete it if it is there" is how an automation tidies up after itself.
     """
     agenda = await _setup(hass)
-    agenda.events = [event("Dinner", 3, "b")]
+    agenda.events = [an_event("Dinner", 3, "b")]
 
     result = await _delete(hass, summary="Dentist", duration={"hours": 24})
 
@@ -90,8 +90,8 @@ async def test_an_occurrence_is_deleted_on_its_own(hass: HomeAssistant) -> None:
     """Test an occurrence of a series is deleted, and the rest stays."""
     agenda = await _setup(hass)
     agenda.events = [
-        event("Standup", 2, "s", recurrence_id="1"),
-        event("Standup", 26, "s", recurrence_id="2"),
+        an_event("Standup", 2, "s", recurrence_id="1"),
+        an_event("Standup", 26, "s", recurrence_id="2"),
     ]
 
     result = await _delete(hass, summary="Standup", duration={"hours": 12})
@@ -105,8 +105,8 @@ async def test_the_whole_series_goes_once(hass: HomeAssistant) -> None:
     """Test asking for the whole series deletes it once, not per occurrence."""
     agenda = await _setup(hass)
     agenda.events = [
-        event("Standup", 2, "s", recurrence_id="1"),
-        event("Standup", 26, "s", recurrence_id="2"),
+        an_event("Standup", 2, "s", recurrence_id="1"),
+        an_event("Standup", 26, "s", recurrence_id="2"),
     ]
 
     result = await _delete(
@@ -124,7 +124,7 @@ async def test_the_whole_series_goes_once(hass: HomeAssistant) -> None:
 async def test_which_events_has_to_be_said(hass: HomeAssistant) -> None:
     """Test a window alone is refused: that empties a calendar by accident."""
     agenda = await _setup(hass)
-    agenda.events = [event("Dinner", 3, "b")]
+    agenda.events = [an_event("Dinner", 3, "b")]
 
     with pytest.raises(ServiceValidationError):
         await _delete(hass, duration={"hours": 24})
@@ -175,7 +175,7 @@ async def test_an_event_without_a_uid_is_left_alone(hass: HomeAssistant) -> None
     Without one there is no telling the calendar which event is meant.
     """
     agenda = await _setup(hass)
-    agenda.events = [event("Dentist", 2, None)]  # type: ignore[arg-type]
+    agenda.events = [an_event("Dentist", 2, None)]  # type: ignore[arg-type]
 
     result = await _delete(hass, summary="Dentist", duration={"hours": 24})
 
