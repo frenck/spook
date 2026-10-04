@@ -3,6 +3,8 @@
 # pylint: disable=wrong-import-order
 from __future__ import annotations
 
+import asyncio
+
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.components.climate import (
@@ -42,9 +44,9 @@ class FakeThermostat(ClimateEntity):  # pylint: disable=too-many-instance-attrib
     """A thermostat with one setpoint, that remembers what it was told."""
 
     _attr_should_poll = False
-    _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_supported_features = ClimateEntityFeature.TARGET_TEMPERATURE
     _attr_hvac_modes = [HVACMode.OFF, HVACMode.HEAT]
+    _attr_temperature_unit = UnitOfTemperature.CELSIUS
     _attr_min_temp = 7
     _attr_max_temp = 25
 
@@ -73,6 +75,14 @@ class FakeThermostat(ClimateEntity):  # pylint: disable=too-many-instance-attrib
             self._attr_target_temperature_low = kwargs["target_temp_low"]
             self._attr_target_temperature_high = kwargs["target_temp_high"]
         self.async_write_ha_state()
+
+
+class FakeFahrenheitThermostat(FakeThermostat):
+    """A thermostat that works in Fahrenheit, in a house set to Celsius."""
+
+    _attr_temperature_unit = UnitOfTemperature.FAHRENHEIT
+    _attr_min_temp = 45
+    _attr_max_temp = 86
 
 
 class FakeRangeThermostat(FakeThermostat):
@@ -112,7 +122,9 @@ class FakeFan(FakeThermostat):
     _attr_fan_mode = "low"
 
 
-async def _setup(hass: HomeAssistant, *thermostats: ClimateEntity) -> None:
+async def _setup(
+    hass: HomeAssistant, *thermostats: ClimateEntity, parallel_updates: int = 0
+) -> None:
     """Set up these thermostats and both actions."""
     assert await async_setup_component(hass, "homeassistant", {})
 
@@ -129,7 +141,10 @@ async def _setup(hass: HomeAssistant, *thermostats: ClimateEntity) -> None:
 
     mock_integration(hass, MockModule("fake", async_setup_entry=_setup_entry))
     mock_platform(hass, "fake.config_flow")
-    mock_platform(hass, "fake.climate", MockPlatform(async_setup_entry=_setup_platform))
+    platform = MockPlatform(async_setup_entry=_setup_platform)
+    if parallel_updates:
+        platform.PARALLEL_UPDATES = parallel_updates  # type: ignore[attr-defined]
+    mock_platform(hass, "fake.climate", platform)
 
     class _Flow(ConfigFlow, domain="fake"):
         """A config flow that does nothing."""
@@ -326,3 +341,33 @@ async def test_a_band_past_a_limit_is_left_alone(
     await _step(hass, service, "climate.outside")
 
     assert not outside.told
+
+
+async def test_a_step_in_fahrenheit_is_one_in_fahrenheit(hass: HomeAssistant) -> None:
+    """Test a thermostat's own step is taken in its own unit.
+
+    Home Assistant shows every temperature in its own unit, except the step.
+    One degree Fahrenheit read as one degree Celsius would be nearly two.
+    """
+    american = FakeFahrenheitThermostat("american", 68.0, step=1.0)
+    await _setup(hass, american)
+
+    await _step(hass, "increase_temperature", "climate.american")
+
+    assert american.told[0][ATTR_TEMPERATURE] == pytest.approx(69.0, abs=0.05)
+
+
+async def test_one_at_a_time_platforms_are_not_held_up(hass: HomeAssistant) -> None:
+    """Test a platform that updates one entity at a time still gets the step.
+
+    The action hands the change on to `climate.set_temperature`. Home
+    Assistant only holds a platform's update lock while polling, not while
+    running an action, so that call does not wait on the action around it.
+    """
+    living = FakeThermostat("living", 20.0, step=1.0)
+    await _setup(hass, living, parallel_updates=1)
+
+    async with asyncio.timeout(5):
+        await _step(hass, "increase_temperature", "climate.living")
+
+    assert living.told == [{ATTR_TEMPERATURE: 21.0}]
