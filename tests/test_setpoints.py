@@ -44,3 +44,13 @@ def test_anything_else_is_refused_not_cut_down(value: Any) -> None:
     """
     with pytest.raises(vol.Invalid):
         whole_percent(value)
+
+
+def test_an_integer_too_long_to_write_out_is_refused() -> None:
+    """Test an integer Python will not even turn into text is refused cleanly.
+
+    Python stops at a few thousand digits, with a ValueError of its own, and
+    that is not the validator's to let through.
+    """
+    with pytest.raises(vol.Invalid):
+        whole_percent(10**5000)
