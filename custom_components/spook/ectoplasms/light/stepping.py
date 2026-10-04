@@ -11,13 +11,12 @@ from homeassistant.components.light import (
     ATTR_BRIGHTNESS,
     ATTR_TRANSITION,
     DOMAIN,
-    LightEntity,
 )
 from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_ON
 from homeassistant.helpers import config_validation as cv
 
-from ...services import AbstractSpookEntityComponentService
 from . import async_lights_that_are_on
+from .adjusting import AbstractAdjustLightService
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -33,7 +32,7 @@ _FULL = 255
 _DIMMEST = 1
 
 
-class AbstractStepBrightnessService(AbstractSpookEntityComponentService[LightEntity]):
+class AbstractStepBrightnessService(AbstractAdjustLightService):
     """Shared half of stepping brightness up and down.
 
     The whole point is doing it per light. Stepping a group entity has Home
@@ -42,23 +41,20 @@ class AbstractStepBrightnessService(AbstractSpookEntityComponentService[LightEnt
     100% ends up with both at 65% after asking for a little more light.
     """
 
-    domain = DOMAIN
-    schema = {
-        vol.Required(CONF_STEP_PCT): vol.All(
-            vol.Coerce(int), vol.Range(min=1, max=100)
-        ),
-        vol.Optional(ATTR_TRANSITION): cv.positive_float,
-    }
+    schema = cv.make_entity_service_schema(
+        {
+            vol.Required(CONF_STEP_PCT): vol.All(
+                vol.Coerce(int), vol.Range(min=1, max=100)
+            ),
+            vol.Optional(ATTR_TRANSITION): cv.positive_float,
+        }
+    )
 
     #: Which way this one goes.
     direction: int
 
-    async def async_handle_service(
-        self,
-        entity: LightEntity,
-        call: ServiceCall,
-    ) -> None:
-        """Handle the service call."""
+    async def async_adjust(self, entity_id: str, call: ServiceCall) -> None:
+        """Step the lights behind one target."""
         step = round(_FULL * call.data[CONF_STEP_PCT] / 100) * self.direction
         transition = call.data.get(ATTR_TRANSITION)
 
@@ -86,7 +82,7 @@ class AbstractStepBrightnessService(AbstractSpookEntityComponentService[LightEnt
         await asyncio.gather(
             *(
                 _call(light)
-                for light in async_lights_that_are_on(self.hass, entity.entity_id)
+                for light in async_lights_that_are_on(self.hass, entity_id)
                 if light.attributes.get(ATTR_BRIGHTNESS) is not None
             )
         )

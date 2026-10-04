@@ -14,14 +14,13 @@ from homeassistant.components.light import (
     ATTR_SUPPORTED_COLOR_MODES,
     ATTR_TRANSITION,
     DOMAIN,
-    LightEntity,
     color_temp_supported,
 )
 from homeassistant.const import ATTR_ENTITY_ID, SERVICE_TURN_ON
 from homeassistant.helpers import config_validation as cv
 
-from ....services import AbstractSpookEntityComponentService
 from .. import async_lights_that_are_on
+from ..adjusting import AbstractAdjustLightService
 
 if TYPE_CHECKING:
     from collections.abc import Coroutine
@@ -31,26 +30,23 @@ if TYPE_CHECKING:
 CONF_KELVIN = "kelvin"
 
 
-class SpookService(AbstractSpookEntityComponentService[LightEntity]):
+class SpookService(AbstractAdjustLightService):
     """Light service that sets colour temperature on what is already lit.
 
     Kept inside each light's own range, because warm white on one lamp is a
     number another one cannot reach, and a group is rarely all the same model.
     """
 
-    domain = DOMAIN
     service = "set_color_temperature"
-    schema = {
-        vol.Required(CONF_KELVIN): vol.All(vol.Coerce(int), vol.Range(min=1)),
-        vol.Optional(ATTR_TRANSITION): cv.positive_float,
-    }
+    schema = cv.make_entity_service_schema(
+        {
+            vol.Required(CONF_KELVIN): vol.All(vol.Coerce(int), vol.Range(min=1)),
+            vol.Optional(ATTR_TRANSITION): cv.positive_float,
+        }
+    )
 
-    async def async_handle_service(
-        self,
-        entity: LightEntity,
-        call: ServiceCall,
-    ) -> None:
-        """Handle the service call."""
+    async def async_adjust(self, entity_id: str, call: ServiceCall) -> None:
+        """Adjust the lights behind one target."""
         kelvin = call.data[CONF_KELVIN]
         transition = call.data.get(ATTR_TRANSITION)
 
@@ -76,7 +72,7 @@ class SpookService(AbstractSpookEntityComponentService[LightEntity]):
         await asyncio.gather(
             *(
                 _call(light)
-                for light in async_lights_that_are_on(self.hass, entity.entity_id)
+                for light in async_lights_that_are_on(self.hass, entity_id)
                 if color_temp_supported(
                     light.attributes.get(ATTR_SUPPORTED_COLOR_MODES)
                 )

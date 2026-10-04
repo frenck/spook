@@ -176,8 +176,12 @@ class SetGroupLight(FakeLight):
         return {"entity_id": self._members}
 
 
-async def async_set_up_lights(hass: HomeAssistant) -> None:
-    """Set up three lights: one dim, one bright, one off."""
+async def async_set_up_lights(hass: HomeAssistant, parallel_updates: int = 0) -> None:
+    """Set up three lights: one dim, one bright, one off.
+
+    With `parallel_updates`, the platform does that many calls at a time, the
+    way plenty of integrations with a slow or fragile connection do.
+    """
 
     async def _setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
         await hass.config_entries.async_forward_entry_setups(entry, [Platform.LIGHT])
@@ -204,7 +208,10 @@ async def async_set_up_lights(hass: HomeAssistant) -> None:
 
     mock_integration(hass, MockModule("fake", async_setup_entry=_setup_entry))
     mock_platform(hass, "fake.config_flow")
-    mock_platform(hass, "fake.light", MockPlatform(async_setup_entry=_setup_platform))
+    platform = MockPlatform(async_setup_entry=_setup_platform)
+    if parallel_updates:
+        platform.PARALLEL_UPDATES = parallel_updates  # type: ignore[attr-defined]
+    mock_platform(hass, "fake.light", platform)
 
     class _Flow(ConfigFlow, domain="fake"):
         """A config flow that does nothing."""
