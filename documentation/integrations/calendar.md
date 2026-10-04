@@ -225,6 +225,7 @@ data:
 
 - Something to change is required: a new summary, description, location, or new times.
 - A `shift` together with a new start or end is refused. Say how to move an event one way.
+- An event that lasts whole days moves by whole days only. Shifting it by an hour is refused rather than quietly leaving it where it was.
 - An event of a repeating series is changed on its own, never the whole series. Changing a series means changing its first event, and the times of whichever occurrence was found would move the series start along with them.
 - Only calendars that can change events can be targeted. A read-only calendar, like a holiday feed, refuses the action.
 - An event the calendar gives no uid cannot be told apart from any other, so it is left alone.

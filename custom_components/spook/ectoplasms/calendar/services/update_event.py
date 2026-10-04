@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from datetime import timedelta
 from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
@@ -111,8 +112,11 @@ class SpookService(AbstractSpookEntityComponentService[CalendarEntity]):
                 continue
 
             changed = self._changed(event, call.data)
+
+            # A copy: Local Calendar strips the time zones off what it is
+            # handed, in place, and the response is read from this one.
             await entity.async_update_event(
-                event.uid, changed, recurrence_id=event.recurrence_id
+                event.uid, dict(changed), recurrence_id=event.recurrence_id
             )
             updated.append(
                 {
@@ -136,6 +140,15 @@ class SpookService(AbstractSpookEntityComponentService[CalendarEntity]):
         start = _local(event.start)
         end = _local(event.end)
         if (shift := data.get(ATTR_SHIFT)) is not None:
+            # A day-long event has dates, and a date silently drops any part
+            # of a day added to it: an hour later would change nothing, and
+            # still be reported as done.
+            if not hasattr(start, "tzinfo") and shift % timedelta(days=1):
+                msg = (
+                    f"{event.summary} lasts whole days, so it can only be "
+                    "moved by whole days"
+                )
+                raise ServiceValidationError(msg)
             start, end = start + shift, end + shift
         if (new_start := data.get(ATTR_NEW_START)) is not None:
             new_start = _local(new_start)

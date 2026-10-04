@@ -57,6 +57,13 @@ def an_event(
     )
 
 
+def _aware(moment: Any) -> Any:
+    """Put the local time zone back on a time, the way a calendar reads it."""
+    if isinstance(moment, datetime) and moment.tzinfo is None:
+        return moment.replace(tzinfo=dt_util.get_default_time_zone())
+    return moment
+
+
 class FakeCalendar(CalendarEntity):
     """A calendar that keeps its events in a list, and what it was asked."""
 
@@ -118,7 +125,18 @@ class FakeCalendar(CalendarEntity):
     ) -> None:
         """Replace an event, or one occurrence of it, with what was given."""
         del recurrence_range
-        self.updated.append((uid, recurrence_id, event))
+        self.updated.append((uid, recurrence_id, dict(event)))
+
+        # What Local Calendar does to what it is handed: the time zones go,
+        # in place, in the caller's own dictionary.
+        for key in ("dtstart", "dtend"):
+            if isinstance(event[key], datetime):
+                event[key] = dt_util.as_local(event[key]).replace(tzinfo=None)
+        event = {
+            **event,
+            "dtstart": _aware(event["dtstart"]),
+            "dtend": _aware(event["dtend"]),
+        }
         self.events = [
             CalendarEvent(
                 start=event["dtstart"],
