@@ -75,6 +75,12 @@ Fires when a repair issue goes away, either fixed or no longer reported. _#repai
 
 `spook.repair_issue_removed`, [documentation](other-features#repair-issue-resolved) 📚
 
+## Update installed
+
+Fires when an update entity reports a different installed version, whether somebody pressed install, the device updated itself, or it was updated outside of Home Assistant. _#update_ _#firmware_ _#installed_
+
+`spook.update_installed`, [documentation](other-features#update-installed) 📚
+
 ## User added
 
 Fires when somebody is given a login to Home Assistant, which an admin would rather hear about than stumble upon. _#user_ _#account_ _#security_

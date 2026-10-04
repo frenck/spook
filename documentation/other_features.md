@@ -731,6 +731,74 @@ options:
 
 :::
 
+### Update installed
+
+Fires when an update entity reports a different installed version.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Update installed 👻
+* - Trigger name
+  - `spook.update_installed`
+* - Targets
+  - Update {term}`entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+This trigger has no options.
+
+Home Assistant tells you when an update is available, but not when one went in. This one fires when it did, and it does not care how: somebody pressed install, the device updated itself overnight, or it was updated with the app of whoever made it. A rollback is a different version too, and fires the same way.
+
+The installed version is the only thing it reads. Whether an install is in progress says little: plenty of integrations never report it, and a device that reboots into its new firmware drops off before it can say it is done. The last version seen is remembered while the entity is unavailable, so a device that goes away mid-install and comes back on the new version is reported when it comes back.
+
+When it fires, `trigger.entity_id` names the update entity, `trigger.from_version` is the version it was on, and `trigger.to_version` the version it is on now.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Everything with an update entity in the garage:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.update_installed
+target:
+  area_id: garage
+```
+
+One plug, telling you what it went to:
+
+```{code-block} yaml
+:linenos:
+triggers:
+  - trigger: spook.update_installed
+    target:
+      entity_id: update.plug_firmware
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        The plug went from {{ trigger.from_version }}
+        to {{ trigger.to_version }}.
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A version that changed while Home Assistant was down is not reported. That includes Home Assistant itself: it is updated by restarting, so its own new version is already there when the trigger starts watching.
+- Nothing is remembered until Home Assistant has finished starting. Integrations fill in their versions as they set up, some first from what they restored and then from the device, and none of that is an install.
+- An entity that reports its version for the first time has not installed it. The first version seen is where it starts.
+- An install that fails is not reported: the version stays the same, and that is all this trigger looks at.
+- Only update entities are watched. A device, area, floor or label is narrowed down to the update entities in it.
+- A target that names nothing is refused. An empty target is valid as far as the fields go, and would sit there watching no entities at all.
+- Unlike most triggers that take a target, a device, area or floor also covers its configuration and diagnostic entities. Update entities nearly always are one, so leaving them out would leave out almost every update there is. Hidden entities are still left out.
+
+:::
+
 ### User added
 
 Fires when somebody is given a login to Home Assistant.
