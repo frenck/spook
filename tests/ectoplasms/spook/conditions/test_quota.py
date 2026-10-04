@@ -205,6 +205,20 @@ async def test_a_limit_beyond_what_is_remembered_is_refused(
         )
 
 
+async def test_an_integer_too_long_to_write_out_is_refused(
+    hass: HomeAssistant,
+) -> None:
+    """Python will not turn this into text at all, and that is refused cleanly.
+
+    It stops at a few thousand digits with a ValueError of its own, which the
+    limit used to trip over while quoting the value in its message.
+    """
+    with pytest.raises(vol.Invalid, match="whole number"):
+        await SpookCondition.async_validate_config(
+            hass, {"options": {"limit": 10**5000, "period": "01:00:00"}}
+        )
+
+
 async def test_exponent_notation_still_works_for_a_sensible_limit(
     hass: HomeAssistant,
 ) -> None:
