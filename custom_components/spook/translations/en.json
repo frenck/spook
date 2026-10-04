@@ -2520,6 +2520,26 @@
           "description": "The ID of the entity (or entities) to remove."
         }
       }
+    },
+    "water_heater_increase_temperature": {
+      "name": "Increase temperature",
+      "description": "Turns a water heater's setpoint up a step, within its limits.",
+      "fields": {
+        "step": {
+          "name": "Step",
+          "description": "How much to change it by. Leave it out to use the water heater's own step, or half a degree (one in Fahrenheit) when it has none."
+        }
+      }
+    },
+    "water_heater_decrease_temperature": {
+      "name": "Decrease temperature",
+      "description": "Turns a water heater's setpoint down a step, within its limits.",
+      "fields": {
+        "step": {
+          "name": "Step",
+          "description": "How much to change it by. Leave it out to use the water heater's own step, or half a degree (one in Fahrenheit) when it has none."
+        }
+      }
     }
   }
 }

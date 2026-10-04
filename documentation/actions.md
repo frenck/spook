@@ -160,6 +160,18 @@ Sets an effect on the lights that are already on and actually have it. _#light_ 
 
 `light.set_effect`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=light.set_effect), [documentation](integrations/light#set-effect) 📚
 
+## Water heater: Increase temperature
+
+Turns a water heater's setpoint up a step, within its limits. _#water_heater_ _#warmer_
+
+`water_heater.increase_temperature`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=water_heater.increase_temperature), [documentation](integrations/water_heater#increase-temperature) 📚
+
+## Water heater: Decrease temperature
+
+Turns a water heater's setpoint down a step, within its limits. _#water_heater_ _#colder_
+
+`water_heater.decrease_temperature`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=water_heater.decrease_temperature), [documentation](integrations/water_heater#decrease-temperature) 📚
+
 ## Wait for a condition
 
 Waits until a condition is true, and carries on straight away if it already is. Takes the ordinary condition building blocks, so it needs no template. _#wait_ _#condition_
