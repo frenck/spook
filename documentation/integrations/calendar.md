@@ -16,7 +16,7 @@ date: 2026-10-03T21:00:00+02:00
 
 The calendar {term}`integration <integration>` brings calendars into {term}`Home Assistant`: a local calendar, CalDAV, Google Calendar, and more.
 
-An automation can put an event in a calendar with `calendar.create_event`, and that is where it ends. Calendars that can delete an event do so only when asked from the calendar panel. Spook adds the action to take an event out again.
+An automation can put an event in a calendar with `calendar.create_event`, and that is where it ends. Calendars that can delete an event do so only when asked from the calendar panel. Spook adds the actions to change an event, and to take it out again.
 
 Deleting an event goes by its uid, an identifier every event has, and `calendar.get_events` leaves that out of what it returns. So Spook finds events the way an automation can: by their title, in a stretch of time.
 
@@ -115,6 +115,118 @@ data:
 - A `summary` or a `uid` is required. A stretch of time alone would delete everything in it, which is how a calendar gets emptied by accident.
 - The title has to match exactly, including capitals.
 - Only calendars that can delete events can be targeted. A read-only calendar, like a holiday feed, refuses the action.
+- An event the calendar gives no uid cannot be told apart from any other, so it is left alone.
+
+:::
+
+### Update event
+
+Change events in a calendar, found by their title or their uid in a stretch of time: a new title, a new place, or new times.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Calendar: Update event 👻
+* - {term}`Action name`
+  - `calendar.update_event`
+* - {term}`Action targets`
+  - Yes, `calendar` entities that can change events
+* - {term}`Action response`
+  - Optional, the events changed
+* - {term}`Spook's influence <influence of spook>`
+  - Added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=calendar.update_event)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=calendar.update_event)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `summary`
+  - {term}`string <string>`
+  - No, but this or `uid`
+  - Dentist
+* - `uid`
+  - {term}`string <string>`
+  - No, but this or `summary`
+  -
+* - `start_date_time`
+  - {term}`datetime <datetime>`
+  - No
+  - Now
+* - `end_date_time`
+  - {term}`datetime <datetime>`
+  - No, but this or `duration`
+  - 2026-10-04 20:00:00
+* - `duration`
+  - {term}`time period <time period>`
+  - No, but this or `end_date_time`
+  - `{"hours": 24}`
+* - `new_summary`
+  - {term}`string <string>`
+  - No
+  - Orthodontist
+* - `description`
+  - {term}`string <string>`
+  - No
+  -
+* - `location`
+  - {term}`string <string>`
+  - No
+  -
+* - `new_start`
+  - {term}`datetime <datetime>`
+  - No
+  - 2026-10-04 15:00:00
+* - `new_end`
+  - {term}`datetime <datetime>`
+  - No
+  - 2026-10-04 16:30:00
+* - `shift`
+  - {term}`time period <time period>`
+  - No
+  - `{"hours": -1}`
+```
+
+Events are found exactly the way [delete event](#delete-event) finds them. Every event found gets the changes you ask for, and keeps everything else it had: Home Assistant hands the calendar a whole event to update, so Spook carries over what you did not change.
+
+To move an event, give it a `new_start`, and it keeps its length, or a `new_start` and a `new_end`, or a `new_end` alone to make it longer or shorter. Or move it by a `shift`, later, or earlier when negative. A time written without a time zone is read as Home Assistant's own.
+
+The response lists every event changed, for each calendar, with its `uid` and its new `summary`, `start` and `end`.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+The dentist runs late again, so move today's appointment an hour on:
+
+```{code-block} yaml
+:linenos:
+action: calendar.update_event
+target:
+  entity_id: calendar.family
+data:
+  summary: Dentist
+  duration:
+    hours: 24
+  shift:
+    hours: 1
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Something to change is required: a new summary, description, location, or new times.
+- A `shift` together with a new start or end is refused. Say how to move an event one way.
+- An event of a repeating series is changed on its own, never the whole series. Changing a series means changing its first event, and the times of whichever occurrence was found would move the series start along with them.
+- Only calendars that can change events can be targeted. A read-only calendar, like a holiday feed, refuses the action.
 - An event the calendar gives no uid cannot be told apart from any other, so it is left alone.
 
 :::

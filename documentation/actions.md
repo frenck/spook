@@ -88,6 +88,12 @@ Deletes events from a calendar, found by their title or uid in a stretch of time
 
 `calendar.delete_event`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=calendar.delete_event), [documentation](integrations/calendar#delete-event) 📚
 
+## Calendar: Update event
+
+Changes events in a calendar, found by their title or uid in a stretch of time: rename, move, or give them a place. Hands back what it changed. _#calendar_ _#reschedule_
+
+`calendar.update_event`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=calendar.update_event), [documentation](integrations/calendar#update-event) 📚
+
 ## Group: Add members
 
 Adds entities to a group while the house is running, which the interface only lets you do by hand. _#roomforonemore_
