@@ -303,16 +303,24 @@ def test_every_selector_translation_key_is_translated() -> None:
     """
     descriptors = yaml.safe_load((SPOOK_ROOT / "services.yaml").read_text())
     translations = json.loads((SPOOK_ROOT / "translations" / "en.json").read_text())
-    used = {
-        selector_config["translation_key"]: {
-            option["value"] if isinstance(option, dict) else option
-            for option in selector_config.get("options", [])
-        }
-        for descriptor in descriptors.values()
-        for field_schema in ((descriptor or {}).get("fields") or {}).values()
-        for selector_config in ((field_schema or {}).get("selector") or {}).values()
-        if isinstance(selector_config, dict) and "translation_key" in selector_config
-    }
+    # Collected per key, as several fields can share one translation key.
+    used: dict[str, set[str]] = {}
+    for descriptor in descriptors.values():
+        for field_schema in ((descriptor or {}).get("fields") or {}).values():
+            for selector_config in (
+                (field_schema or {}).get("selector") or {}
+            ).values():
+                if (
+                    not isinstance(selector_config, dict)
+                    or "translation_key" not in selector_config
+                ):
+                    continue
+
+                used.setdefault(selector_config["translation_key"], set()).update(
+                    option["value"] if isinstance(option, dict) else option
+                    for option in selector_config.get("options", [])
+                )
+
     translated = {
         key: set(selector.get("options", {}))
         for key, selector in translations.get("selector", {}).items()
