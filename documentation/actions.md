@@ -348,6 +348,18 @@ Deletes counter helpers made in the UI, or with `counter.create`. _#countmeout_
 
 `counter.delete`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=counter.delete), [documentation](integrations/counter#delete-a-counter) 📚
 
+## Humidifier: Increase humidity
+
+Turns a humidifier's target humidity up a step, within its limits. _#humidifier_ _#wetter_
+
+`humidifier.increase_humidity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=humidifier.increase_humidity), [documentation](integrations/humidifier#increase-humidity) 📚
+
+## Humidifier: Decrease humidity
+
+Turns a humidifier's target humidity down a step, within its limits. _#humidifier_ _#drier_
+
+`humidifier.decrease_humidity`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=humidifier.decrease_humidity), [documentation](integrations/humidifier#decrease-humidity) 📚
+
 ## Input boolean: Create
 
 Creates an input boolean helper without a trip to the helpers page. _#outofthinair_

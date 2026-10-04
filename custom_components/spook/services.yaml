@@ -2734,3 +2734,41 @@ water_heater_decrease_temperature:
           max: 10
           step: 0.1
           mode: box
+
+humidifier_increase_humidity:
+  name: Increase humidity 👻
+  description: >-
+    Turns a humidifier's target humidity up a step.
+  target:
+    entity:
+      domain: humidifier
+  fields:
+    step:
+      required: false
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
+
+humidifier_decrease_humidity:
+  name: Decrease humidity 👻
+  description: >-
+    Turns a humidifier's target humidity down a step.
+  target:
+    entity:
+      domain: humidifier
+  fields:
+    step:
+      required: false
+      example: 5
+      selector:
+        number:
+          min: 1
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: box
