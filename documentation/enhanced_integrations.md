@@ -125,6 +125,11 @@ Spook enhances the following {term}`Home Assistant` {term}`integrations <integra
 [![](https://brands.home-assistant.io/light/icon.png)](integrations/light)
 :::
 
+:::{card} Media player
+:footer: 📚 [Learn more](integrations/media_player)
+[![](https://brands.home-assistant.io/media_player/icon.png)](integrations/media_player)
+:::
+
 :::{card} Notify
 :footer: 📚 [Learn more](integrations/notify)
 [![](https://brands.home-assistant.io/notify/icon.png)](integrations/notify)
