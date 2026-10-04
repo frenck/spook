@@ -2149,6 +2149,86 @@
             },
             "description": "Menja ikonu entiteta (ili entiteta) u hodu. Postavite na „null“ da biste se vratili na ikonu koju daje sama integracija.",
             "name": "Postavi ikonu entiteta"
+        },
+        "calendar_update_event": {
+            "description": "Menja događaje u kalendaru pronađene na osnovu njihovog naslova ili UID-a u određenom vremenskom periodu. Vraća izmenjene podatke, uključujući UID.",
+            "fields": {
+                "description": {
+                    "name": "Opis",
+                    "description": "Opis koji se dodeljuje događajima."
+                },
+                "duration": {
+                    "name": "Trajanje",
+                    "description": "Koliko daleko tražiti od početka. Unesite ovo ili datum i vreme završetka."
+                },
+                "end_date_time": {
+                    "name": "Datum i vreme završetka",
+                    "description": "Gde zaustaviti pretragu. Unesite ovo ili trajanje."
+                },
+                "location": {
+                    "name": "Lokacija",
+                    "description": "Lokacija koja se dodeljuje događajima."
+                },
+                "shift": {
+                    "description": "Pomerite događaje za ovoliko (kasnije, ili ranije ako je vrednost negativna), umesto unosa novog početka ili završetka.",
+                    "name": "Pomeranje"
+                },
+                "new_end": {
+                    "name": "Novi završetak",
+                    "description": "Kada se događaji umesto toga završavaju."
+                },
+                "new_start": {
+                    "name": "Novi početak",
+                    "description": "Kada događaji umesto toga počinju. Zadržavaju svoje trajanje, osim ako nije naveden i novi završetak."
+                },
+                "new_summary": {
+                    "name": "Novi naslov",
+                    "description": "Naslov koji se dodeljuje događajima."
+                },
+                "start_date_time": {
+                    "name": "Datum i vreme početka",
+                    "description": "Odakle početi pretragu. Podrazumevana vrednost je trenutno vreme."
+                },
+                "summary": {
+                    "name": "Naslov",
+                    "description": "Naslov događaja koji se menjaju, tačno onako kako je naveden u kalendaru."
+                },
+                "uid": {
+                    "description": "Identifikator događaja koji se menja, ako ga posedujete.",
+                    "name": "UID"
+                }
+            },
+            "name": "Ažuriraj događaj"
+        },
+        "calendar_delete_event": {
+            "name": "Obriši događaj",
+            "description": "Briše događaje iz kalendara pronađene na osnovu njihovog naslova ili UID-a u određenom vremenskom periodu. Vraća obrisane podatke, uključujući UID.",
+            "fields": {
+                "duration": {
+                    "name": "Trajanje",
+                    "description": "Koliko daleko tražiti od početka. Unesite ovo ili datum i vreme završetka."
+                },
+                "end_date_time": {
+                    "name": "Datum i vreme završetka",
+                    "description": "Gde zaustaviti pretragu. Unesite ovo ili trajanje."
+                },
+                "whole_series": {
+                    "description": "Za ponavljajući događaj, obrišite celu seriju umesto samo pronađenog pojedinačnog pojavljivanja.",
+                    "name": "Cela serija"
+                },
+                "start_date_time": {
+                    "name": "Datum i vreme početka",
+                    "description": "Odakle početi pretragu. Podrazumevana vrednost je trenutno vreme."
+                },
+                "summary": {
+                    "name": "Naslov",
+                    "description": "Naslov događaja koji se brišu, tačno onako kako je naveden u kalendaru."
+                },
+                "uid": {
+                    "description": "Identifikator događaja koji se briše, ako ga posedujete.",
+                    "name": "UID"
+                }
+            }
         }
     },
     "conditions": {
