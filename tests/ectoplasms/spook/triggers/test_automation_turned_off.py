@@ -11,6 +11,7 @@ from homeassistant.core import Context
 from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
 import pytest
+import voluptuous as vol
 
 from custom_components.spook.ectoplasms.spook.triggers.automation_turned_off import (
     SpookTrigger,
@@ -63,14 +64,32 @@ async def test_the_trigger_is_discovered(hass: HomeAssistant) -> None:
     assert "automation_turned_off" in await async_get_triggers(hass)
 
 
-@pytest.mark.parametrize("config", [{}, {"target": {}}, {"target": None}])
+@pytest.mark.parametrize("config", [{}, {"target": {}}])
 async def test_no_target_means_every_automation(
     hass: HomeAssistant, config: dict
 ) -> None:
-    """Leaving the target out, or empty as the editor does, watches them all."""
-    validated = await SpookTrigger.async_validate_config(hass, config)
+    """Leaving the target out, or empty as the editor does, watches them all.
+
+    Through the whole trigger, the way Home Assistant validates it.
+    """
+    validated = await SpookTrigger.async_validate_complete_config(
+        hass, {"platform": "spook.automation_turned_off", **config}
+    )
 
     assert validated.get("target") is None
+
+
+@pytest.mark.parametrize("target", [None, False, [], "automation.lights"])
+async def test_something_that_is_not_a_target_is_refused(
+    hass: HomeAssistant, target: object
+) -> None:
+    """Only an empty target means every automation, not anything that looks empty.
+
+    Read as everything, a typo would quietly widen the automation to every
+    automation in the house.
+    """
+    with pytest.raises(vol.Invalid):
+        await SpookTrigger.async_validate_config(hass, {"target": target})
 
 
 async def test_turning_an_automation_off_fires(hass: HomeAssistant) -> None:

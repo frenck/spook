@@ -42,9 +42,10 @@ def _target_or_everything(value: Any) -> ConfigType | None:
     Every automation in the house is the question an admin asks most, and
     labelling each one just to be able to ask it would be a chore. The editor
     hands over an empty target when nothing is picked, so that has to mean
-    the same as leaving it out.
+    the same as leaving it out. Anything that is not a target at all is
+    refused, the same as Home Assistant does before this ever gets to see it.
     """
-    target: ConfigType = _TARGET_SCHEMA(value or {})
+    target: ConfigType = _TARGET_SCHEMA(value)
     return target if TargetSelection(target).has_any_target else None
 
 
