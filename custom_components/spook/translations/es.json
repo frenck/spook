@@ -271,7 +271,8 @@
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre este grupo.",
                     "manage": "Puedes gestionar este grupo tú mismo en la [página de Asistentes](/config/helpers).",
-                    "not_editable": "Este grupo está configurado en YAML, así que Spook no puede editarlo. Actualiza el grupo en tu configuración."
+                    "not_editable": "Este grupo está configurado en YAML, así que Spook no puede editarlo. Actualiza el grupo en tu configuración.",
+                    "changed": "Los miembros que figuraban en esta reparación han vuelto, o han cambiado, desde que Spook la revisó, así que no se ha quitado nada del grupo. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
                 },
                 "step": {
                     "init": {
@@ -372,7 +373,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre esta área.",
-                    "manage": "Puedes gestionar esta área tú mismo en la [página de Áreas](/config/areas/dashboard)."
+                    "manage": "Puedes gestionar esta área tú mismo en la [página de Áreas](/config/areas/dashboard).",
+                    "changed": "Esta área vuelve a estar en uso desde que Spook la revisó: contiene algo, o una automatización o un script la utiliza. Por eso se ha dejado en paz. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
                 },
                 "step": {
                     "init": {
@@ -392,7 +394,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre esta planta.",
-                    "manage": "Puedes gestionar esta planta tú mismo en la [página de Áreas](/config/areas/dashboard)."
+                    "manage": "Puedes gestionar esta planta tú mismo en la [página de Áreas](/config/areas/dashboard).",
+                    "changed": "Esta planta vuelve a estar en uso desde que Spook la revisó: tiene un área, o una automatización o un script la utiliza. Por eso se ha dejado en paz. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
                 },
                 "step": {
                     "init": {
@@ -425,13 +428,14 @@
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre este asistente.",
                     "manage": "Puedes gestionar este asistente tú mismo en la [página de Asistentes](/config/helpers).",
-                    "too_few_members": "Un asistente mín/máx necesita al menos dos miembros, así que quitar los que faltan dejaría muy pocos. Reconfigura o quita el asistente tú mismo en la [página de Asistentes](/config/helpers)."
+                    "too_few_members": "Un asistente mín/máx necesita al menos dos miembros, así que quitar los que faltan dejaría muy pocos. Reconfigura o quita el asistente tú mismo en la [página de Asistentes](/config/helpers).",
+                    "changed": "Los miembros que figuraban en esta reparación han vuelto, o han cambiado, desde que Spook la revisó, así que no se ha quitado nada del helper. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
                 },
                 "step": {
                     "init": {
                         "description": "Spook ha encontrado un fantasma en tus asistentes 👻\n\nEl asistente mín/máx {helper} (`{entity_id}`) combina los siguientes miembros, que son desconocidos para Home Assistant:\n\n{sources}\n\nQuítalos para que el asistente siga con los miembros que quedan, o quédatelos y Spook no volverá a mencionarlos.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
+                            "ignore": "Conservarlas, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar estos miembros"
                         },
@@ -442,7 +446,20 @@
             "title": "Miembros desconocidos usados en el asistente mín/máx: {helper}"
         },
         "orphaned_statistics": {
-            "title": "Se han encontrado estadísticas a largo plazo huérfanas"
+            "title": "Se han encontrado estadísticas a largo plazo huérfanas",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Se han encontrado estadísticas a largo plazo huérfanas",
+                        "description": "Hay un fantasma en tu recorder 👻\n\nHome Assistant está guardando estadísticas a largo plazo de lo siguiente, pero ya no existe ninguna entidad que coincida:\n\n{statistics}\n\nEsto suele pasar cuando se eliminó un sensor pero se conservaron sus estadísticas. Borrarlas tira ese historial a la basura para siempre, así que Spook vuelve a comprobarlo antes de hacerlo y deja en paz todo lo que haya vuelto mientras tanto.\n\nSpook 👻 Tu colega.",
+                        "menu_options": {
+                            "remove": "Borrar estas estadísticas",
+                            "manage": "Lo hago yo mismo",
+                            "ignore": "Conservarlas, no me avises más"
+                        }
+                    }
+                }
+            }
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -455,7 +472,7 @@
                     "init": {
                         "description": "Spook ha encontrado un fantasma en tus personas 👻\n\n{person} sigue los siguientes rastreadores de dispositivo, que son desconocidos para Home Assistant:\n\n{device_trackers}\n\nEsto suele pasar cuando se ha renombrado un rastreador de dispositivo o se ha quitado su integración.\n\nQuítalos de {person}, o quédatelos y Spook no volverá a mencionarlos.\n\nSpook 👻 Tu colega.",
                         "menu_options": {
-                            "ignore": "Quedárselo y no volver a avisarme",
+                            "ignore": "Conservarlas, no me avises más",
                             "manage": "Lo arreglo yo mismo",
                             "remove": "Quitar estos rastreadores de dispositivo"
                         },
@@ -1935,6 +1952,12 @@
                 "critical": "Crítico",
                 "error": "Error",
                 "warning": "Advertencia"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Abajo",
+                "top": "Arriba"
             }
         }
     }
