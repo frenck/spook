@@ -6,7 +6,7 @@ from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
-from typing import TYPE_CHECKING, Any, Generic, TypeVar, cast, final
+from typing import TYPE_CHECKING, Any, Generic, TypeVar, final
 
 import voluptuous as vol
 
@@ -26,7 +26,6 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityCompone
 from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 from homeassistant.helpers.service import (
     SERVICE_DESCRIPTION_CACHE,
-    _load_services_file,
     async_register_admin_service,
     async_set_service_schema,
 )
@@ -38,6 +37,7 @@ from homeassistant.helpers.translation import (
 from homeassistant.loader import async_get_integration
 
 from .const import DOMAIN, LOGGER
+from .core_compat import load_service_descriptions
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -329,12 +329,9 @@ class SpookServiceManager:
 
         # Load service schemas
         integration = await async_get_integration(self.hass, DOMAIN)
-        self._service_schemas = cast(
-            dict[str, Any],
-            await self.hass.async_add_executor_job(
-                _load_services_file,
-                integration,
-            ),
+        self._service_schemas = await self.hass.async_add_executor_job(
+            load_service_descriptions,
+            integration,
         )
 
         modules: list[ModuleType] = []

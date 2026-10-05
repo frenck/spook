@@ -3,12 +3,48 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from typing import TYPE_CHECKING, Any
+from typing import TYPE_CHECKING, Any, cast
 
+from homeassistant.const import MAJOR_VERSION, MINOR_VERSION
 from homeassistant.core import callback
+from homeassistant.helpers.service import _load_services_file
+from homeassistant.util.yaml import load_yaml_dict
 
 if TYPE_CHECKING:
     from homeassistant.helpers import device_registry as dr
+    from homeassistant.loader import Integration
+
+# From here, a service description registered in code has its target validated
+# again (home-assistant/core#180556).
+_TARGETS_VALIDATED_AGAIN = (2026, 10)
+
+
+def load_service_descriptions(integration: Integration) -> dict[str, Any]:
+    """Return an integration's services.yaml, the way Core takes it in code.
+
+    Home Assistant's own loader validates each target, which turns
+    `supported_features` into the numbers they stand for. Up to Core 2026.9
+    that is the form a description registered in code has to be in. From
+    2026.10 that description is validated once more, which only takes a
+    target as written: handed the numbers, Core warns and leaves the target
+    out, and the action's entity picker then offers every entity there is.
+    Once Spook requires Core 2026.10 or later, the targets are always the
+    written ones and the version check can go.
+    """
+    descriptions = cast("dict[str, Any]", _load_services_file(integration))
+    if (MAJOR_VERSION, MINOR_VERSION) < _TARGETS_VALIDATED_AGAIN:
+        return descriptions
+
+    written = load_yaml_dict(str(integration.file_path / "services.yaml"))
+    for key, description in descriptions.items():
+        # Read off the same file, so the two always agree. Should they ever
+        # not, the loaded target stays: setting up has to survive it, since
+        # failing here would take every one of Spook's actions down with it.
+        written_description = written.get(key) or {}
+        if description and "target" in description and "target" in written_description:
+            description["target"] = written_description["target"]
+
+    return descriptions
 
 
 @callback

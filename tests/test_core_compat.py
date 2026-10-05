@@ -8,12 +8,20 @@ from typing import TYPE_CHECKING, Any
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from homeassistant.helpers.service import (
+    async_get_cached_service_description,
+    async_set_service_schema,
+)
+from homeassistant.loader import async_get_integration
+
+from custom_components.spook import core_compat
 from custom_components.spook.core_compat import (
     async_get_child_device_ids,
     async_get_child_devices_for_parent,
     async_get_device_entries,
     async_is_child_device,
     async_update_any_device,
+    load_service_descriptions,
 )
 
 if TYPE_CHECKING:
@@ -187,3 +195,95 @@ def test_a_registered_device_is_updated(
     async_update_any_device(device_registry, device.id, labels={"a-label"})
 
     assert device_registry.async_get(device.id).labels == {"a-label"}
+
+
+async def test_every_target_survives_being_registered(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test Core keeps the target of every action Spook describes in code.
+
+    From Core 2026.10 the target is validated again when it is registered,
+    and one it does not take is dropped with a warning. The action's entity
+    picker then offers every entity there is, with no hint which can do it.
+    """
+    integration = await async_get_integration(hass, "spook")
+    descriptions = await hass.async_add_executor_job(
+        load_service_descriptions, integration
+    )
+    targeted = {
+        key: description
+        for key, description in descriptions.items()
+        if description and "target" in description
+    }
+    assert targeted
+
+    for key, description in targeted.items():
+        # The domain does not matter to Core here, the action has to exist.
+        hass.services.async_register("probe", key, lambda _call: None)
+        async_set_service_schema(hass, "probe", key, description)
+
+        cached = async_get_cached_service_description(hass, "probe", key)
+        assert cached is not None
+        assert "target" in cached, key
+
+    assert "Invalid target" not in caplog.text
+
+
+async def test_cover_position_keeps_its_feature_filter(hass: HomeAssistant) -> None:
+    """Test the target is not only kept, but kept meaning what it meant."""
+    integration = await async_get_integration(hass, "spook")
+    descriptions = await hass.async_add_executor_job(
+        load_service_descriptions, integration
+    )
+    hass.services.async_register("cover", "increase_position", lambda _call: None)
+    async_set_service_schema(
+        hass, "cover", "increase_position", descriptions["cover_increase_position"]
+    )
+
+    cached = async_get_cached_service_description(hass, "cover", "increase_position")
+    assert cached is not None
+    assert cached["target"] == {
+        "entity": [{"domain": ["cover"], "supported_features": [4]}]
+    }
+
+
+async def test_before_2026_10_targets_are_handed_over_as_loaded(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test older Cores get the targets the way their own loader made them.
+
+    Those do not validate a target registered in code, and serve it as it
+    was given. Written, its features would reach the frontend as text.
+    """
+    monkeypatch.setattr(core_compat, "MAJOR_VERSION", 2026)
+    monkeypatch.setattr(core_compat, "MINOR_VERSION", 9)
+    integration = await async_get_integration(hass, "spook")
+    descriptions = await hass.async_add_executor_job(
+        load_service_descriptions, integration
+    )
+
+    assert descriptions["cover_increase_position"]["target"] == {
+        "entity": [{"domain": ["cover"], "supported_features": [4]}]
+    }
+
+
+async def test_a_description_missing_from_the_file_keeps_its_loaded_target(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a mismatch between the two reads does not stop Spook setting up.
+
+    Both read the same file and agree. Should they ever not, failing here
+    would take every one of Spook's actions down with it.
+    """
+    monkeypatch.setattr(core_compat, "load_yaml_dict", lambda _path: {})
+    integration = await async_get_integration(hass, "spook")
+    descriptions = await hass.async_add_executor_job(
+        load_service_descriptions, integration
+    )
+
+    assert descriptions["cover_increase_position"]["target"] == {
+        "entity": [{"domain": ["cover"], "supported_features": [4]}]
+    }
