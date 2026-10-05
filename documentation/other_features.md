@@ -754,7 +754,7 @@ Home Assistant tells you when an update is available, but not when one went in. 
 
 The installed version is the only thing it reads. Whether an install is in progress says little: plenty of integrations never report it, and a device that reboots into its new firmware drops off before it can say it is done. The last version seen is remembered while the entity is unavailable, so a device that goes away mid-install and comes back on the new version is reported when it comes back.
 
-When it fires, `trigger.entity_id` names the update entity, `trigger.from_version` is the version it was on, and `trigger.to_version` the version it is on now.
+When it fires, `trigger.entity_id` names the update entity, `trigger.from_version` is the version it was on, and `trigger.to_version` the version it is on now. `trigger.from_state` and `trigger.to_state` hold the entity's state just before and after the change. On a device that went away mid-install, `trigger.from_state` is that of it being unavailable, which is why the versions are given separately.
 
 :::{seealso} Example trigger in {term}`YAML`
 :class: dropdown
