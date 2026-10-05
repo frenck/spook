@@ -39,6 +39,7 @@ from homeassistant.setup import ATTR_COMPONENT
 
 from .const import DOMAIN, LOGGER
 from .core_compat import load_service_descriptions
+from .module import python_module_path
 
 if TYPE_CHECKING:
     import asyncio
@@ -357,9 +358,7 @@ class SpookServiceManager:
             ):
                 if module_file.name == "__init__.py":
                     continue
-                module_path = str(module_file.relative_to(Path(__file__).parent))[
-                    :-3
-                ].replace("/", ".")
+                module_path = python_module_path(module_file)
                 modules.append(importlib.import_module(f".{module_path}", __package__))
 
         await self.hass.async_add_import_executor_job(_load_all_service_modules)
