@@ -5,6 +5,9 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from homeassistant.helpers.service import async_get_cached_service_description
+from homeassistant.helpers.translation import async_get_cached_translations
+from homeassistant.setup import async_setup_component
 import pytest
 
 from custom_components.spook.services import (
@@ -61,18 +64,66 @@ def test_missing_platform_says_so_in_one_sentence(hass: HomeAssistant) -> None:
     assert str(caught.value).startswith("Could not find platform")
 
 
-def test_missing_component_says_so_in_one_sentence(hass: HomeAssistant) -> None:
-    """Test the error names the component, as a sentence rather than a tuple."""
-    service = _ComponentService(hass)
+def test_a_component_that_is_not_loaded_is_not_an_error(hass: HomeAssistant) -> None:
+    """Test a missing component means not yet, rather than failing.
 
-    with pytest.raises(RuntimeError) as caught:
-        service.async_register()
+    Home Assistant loads calendar and todo only once an integration brings
+    one along, which can be after Spook or never at all. Raising here logged
+    a traceback on every start for everybody without a calendar.
+    """
+    assert _ComponentService(hass).async_register() is False
+    assert not hass.services.has_service("not_loaded", "do_something")
 
-    assert caught.value.args[0] == (
-        "Could not find entity component not_loaded to register service:"
-        " not_loaded.do_something"
-    )
-    assert str(caught.value).startswith("Could not find entity component")
+
+async def test_a_component_loaded_later_gets_its_actions(hass: HomeAssistant) -> None:
+    """Test an action waits for its component, and is there once it loads.
+
+    With its description and its translated name, the same as an action
+    registered the moment Spook set up.
+    """
+    manager = SpookServiceManager(hass)
+    await manager.async_setup()
+
+    assert not hass.services.has_service("todo", "move_item")
+
+    assert await async_setup_component(hass, "todo", {})
+    await hass.async_block_till_done()
+
+    assert hass.services.has_service("todo", "move_item")
+    description = async_get_cached_service_description(hass, "todo", "move_item")
+    assert description is not None
+    assert "position" in description["fields"]
+    translations = async_get_cached_translations(hass, "en", "services", "todo")
+    assert translations["component.todo.services.move_item.name"] == "Move item 👻"
+
+    manager.async_on_unload()
+
+
+async def test_a_component_never_loaded_logs_nothing(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test nobody without a calendar is told to report a bug about it."""
+    manager = SpookServiceManager(hass)
+    await manager.async_setup()
+
+    assert "failed to set up" not in caplog.text
+
+    manager.async_on_unload()
+
+
+async def test_a_component_loaded_after_unloading_gets_nothing(
+    hass: HomeAssistant,
+) -> None:
+    """Test Spook stops waiting once it is unloaded itself."""
+    manager = SpookServiceManager(hass)
+    await manager.async_setup()
+    manager.async_on_unload()
+
+    assert await async_setup_component(hass, "todo", {})
+    await hass.async_block_till_done()
+
+    assert not hass.services.has_service("todo", "move_item")
 
 
 async def test_a_service_for_an_unloaded_domain_is_not_registered(
