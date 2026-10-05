@@ -87,10 +87,10 @@ def test_repair_modules_expose_spook_repair(module_file: Path) -> None:
 def test_services_wait_for_their_domain() -> None:
     """Every service on somebody else's domain is waited for.
 
-    Every kind of Spook service registers only once its domain is set up. If
-    it is not, the service is skipped with a log line and never tried again,
-    so the action is simply missing until the next restart. Naming the domain
-    in the manifest is what makes the order certain.
+    Every kind of Spook service registers only once its domain is set up.
+    Most wait for a domain that turns up later, but naming it in the manifest
+    is what has it there from the start, so the action is in place before
+    anything calls it. One on Spook's own platforms does not wait at all.
     """
     manifest = json.loads((SPOOK_ROOT / "manifest.json").read_text())
     waited_for = {

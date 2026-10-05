@@ -91,10 +91,14 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     # spanned a restart would be a disable nobody remembers making.
     entry.async_on_unload(await async_setup_timed_states(hass))
 
-    # Set up services
+    # Set up services. Unloading is registered first: setting up starts
+    # listening before it is done, and Home Assistant runs these callbacks
+    # when a setup fails or is cancelled too. Registered afterwards, a failed
+    # setup would leave the manager listening and registering actions for a
+    # Spook that never loaded.
     services = SpookServiceManager(hass)
-    await services.async_setup()
     entry.async_on_unload(services.async_on_unload)
+    await services.async_setup()
 
     # Watching before anything can start a wait it has to observe. A repair
     # can put a statistic on the clock the first time it looks, and on the

@@ -89,6 +89,25 @@ class _RegisterCheckingServiceManager:
         """Unload no services."""
 
 
+class _FailingSpookServiceManager:
+    """Service manager that fails halfway through setting up."""
+
+    unloads = 0
+
+    def __init__(self, hass: HomeAssistant) -> None:
+        """Initialize the failing service manager."""
+        self.hass = hass
+
+    async def async_setup(self) -> None:
+        """Fail, as an injection that raised would."""
+        msg = "Boo! Halfway through"
+        raise RuntimeError(msg)
+
+    def async_on_unload(self) -> None:
+        """Record that it was torn down."""
+        type(self).unloads += 1
+
+
 class _RecordingSpookRepairManager:
     """Repair manager that records whether it was set up."""
 
@@ -165,6 +184,39 @@ async def test_setup_entry_loads_and_unloads(
     await hass.async_block_till_done()
 
     assert entry.state is ConfigEntryState.NOT_LOADED
+
+
+async def test_a_service_setup_that_fails_is_torn_down(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test services that fail to set up are unloaded again.
+
+    By then the manager is already listening for components that load later.
+    Left like that, it would go on registering actions for a Spook that
+    never loaded.
+    """
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup."""
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_noop)
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _FailingSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+
+    assert not await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    assert entry.state is ConfigEntryState.SETUP_ERROR
+    assert _FailingSpookServiceManager.unloads == 1
 
 
 async def test_setup_entry_starts_and_stops_the_automation_run_register(
