@@ -11,10 +11,12 @@
                 "title": "Umkehren 👻"
             },
             "user": {
-                "description": "Dieser Helfer ermöglicht es Ihnen, das Verhalten einer Entität umzukehren. Zum Beispiel können Sie den Zustand von binären Sensoren und Schaltern umkehren, wie z.B. Öffnen/Schließen oder Ein/Aus.",
+                "description": "Dieser Helfer ermöglicht es, das Verhalten einer Entität zu invertieren. So lassen sich beispielsweise die Zustände „offen/geschlossen“ oder „ein/aus“ von binären Sensoren, Abdeckungen, Schaltern und Ventilen invertieren.",
                 "menu_options": {
                     "switch": "Einen Schalter umkehren",
-                    "binary_sensor": "Einen binären Sensor umkehren"
+                    "binary_sensor": "Einen binären Sensor umkehren",
+                    "cover": "Abdeckung invertieren",
+                    "valve": "Ein Ventil invertieren"
                 },
                 "title": "Umkehren 👻"
             },
@@ -25,6 +27,24 @@
                     "entity_id": "Quell-Entität"
                 },
                 "title": "Umkehren 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Quell-Entität",
+                    "hide_source": "Quell-Entität verbergen",
+                    "inverse_tilt": "Neigung invertieren",
+                    "name": "Name",
+                    "inverse_position": "Invertiert offen, geschlossen und Position"
+                },
+                "title": "Invertieren 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Quell-Entität",
+                    "hide_source": "Quell-Entität verbergen",
+                    "name": "Name"
+                },
+                "title": "Invertieren 👻"
             }
         }
     },
@@ -45,6 +65,24 @@
                     "hide_source": "Quell-Entität verbergen",
                     "entity_id": "Quell-Entität"
                 }
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Quell-Entität",
+                    "hide_source": "Quell-Entität verbergen",
+                    "name": "Name",
+                    "inverse_tilt": "Neigung invertieren",
+                    "inverse_position": "Invertiert öffnen, schliessen und Position"
+                },
+                "title": "Invertieren 👻"
+            },
+            "valve": {
+                "data": {
+                    "hide_source": "Quell-Entität verbergen",
+                    "name": "Name",
+                    "entity_id": "Quell-Entität"
+                },
+                "title": "Invertieren 👻"
             }
         }
     }
