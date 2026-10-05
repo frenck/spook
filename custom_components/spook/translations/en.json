@@ -200,6 +200,16 @@
       "name": "Update installed",
       "description": "Fires when an update entity reports a different installed version, whether somebody pressed install, the device updated itself, or it was updated outside of Home Assistant."
     },
+    "position_reached": {
+      "name": "Position reached",
+      "description": "Fires when a cover or valve gets to a position, or moves past it. One that is already there, or comes back from unavailable at it, does not count.",
+      "fields": {
+        "position": {
+          "name": "Position",
+          "description": "The position to reach, from 0 (closed) to 100 (open)."
+        }
+      }
+    },
     "script_started": {
       "name": "Script started",
       "description": "Fires when a script starts a run. A run the script refuses, because it is already running, does not count. Leave the target empty to watch every script."

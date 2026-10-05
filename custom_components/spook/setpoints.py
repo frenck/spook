@@ -50,6 +50,20 @@ def whole_percent(value: Any) -> int:
     for; "5" and 5.0 are still 5. The same care as the quota condition's
     limit: nothing rounds its way through a float.
     """
+    return _whole_percent(value, what="step", least=_LEAST_PERCENT)
+
+
+def whole_position(value: Any) -> int:
+    """Validate a position in whole percents, from closed to open.
+
+    The same care as a step, where zero is a place to be rather than no step
+    at all.
+    """
+    return _whole_percent(value, what="position", least=0)
+
+
+def _whole_percent(value: Any, *, what: str, least: int) -> int:
+    """Validate a whole percentage from least to a hundred."""
     # Decimal rather than float, and from the text rather than the value.
     # `float("5.0000000000000001")` is exactly 5.0, so a fraction would round
     # its way through, and a large enough integer raises OverflowError on the
@@ -63,10 +77,10 @@ def whole_percent(value: Any) -> int:
         text = str(value)
         as_decimal = Decimal(text)
     except (ArithmeticError, TypeError, ValueError) as err:
-        message = "The step must be a whole percentage"
+        message = f"The {what} must be a whole percentage"
         raise vol.Invalid(message) from err
 
-    message = f"The step must be a whole percentage, got '{text}'"
+    message = f"The {what} must be a whole percentage, got '{text}'"
 
     # Infinity and not-a-number are both "integral" as far as Decimal is
     # concerned, and only fall over on the way to an int.
@@ -76,10 +90,8 @@ def whole_percent(value: Any) -> int:
     # Checked while still a Decimal: "1e1000000000" is a few characters of
     # config and a billion digits of integer, and building that only to find
     # it too large is the whole cost.
-    if not _LEAST_PERCENT <= as_decimal <= _MOST_PERCENT:
-        message = (
-            f"The step must be between {_LEAST_PERCENT} and {_MOST_PERCENT} percent"
-        )
+    if not least <= as_decimal <= _MOST_PERCENT:
+        message = f"The {what} must be between {least} and {_MOST_PERCENT} percent"
         raise vol.Invalid(message)
 
     return int(as_decimal)

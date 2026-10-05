@@ -678,6 +678,68 @@ options:
 
 :::
 
+### Position reached
+
+Fires when a cover or valve gets to a position, or moves past it.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Position reached 👻
+* - Trigger name
+  - `spook.position_reached`
+* - Targets
+  - Cover and valve {term}`entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `position`
+  - {term}`integer <integer>`
+  - Yes
+  - `30`
+```
+
+Home Assistant tells you a cover opened or closed. Everything in between, the blinds at a third or the valve half open, is a position it reports but never announces.
+
+It fires when the reported position gets to the one you asked for, from either side. Moving past it counts too: a cover moving quickly can report 20 and then 40 without ever reporting the 30 in between. Already being there is not reaching it, and it does not fire again until the cover has left and come back. The position is a whole percentage, from 0 (closed) to 100 (fully open).
+
+When it fires, `trigger.entity_id` names the cover or valve, `trigger.position` is the position you asked for, and `trigger.from_state` and `trigger.to_state` hold its state just before and after.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+The blinds are at a third:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.position_reached
+target:
+  entity_id: cover.blinds
+options:
+  position: 30
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A cover or valve that can only open and close reports no position, and never fires.
+- Coming back from unavailable at the position does not count: there is no position before it to compare with. That includes the start of Home Assistant, when a cover is restored with the position it had before the restart.
+- A position reached while Home Assistant is down, or while this trigger is not loaded, is not reported afterwards.
+- There is no trigger for a cover that got stuck on its way. The position somebody asked for is not in the cover's state, so a cover stopped on purpose looks the same from the outside.
+
+:::
+
 ### Repair issue created
 
 Fires when a new repair issue turns up.
