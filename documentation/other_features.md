@@ -799,6 +799,65 @@ actions:
 
 :::
 
+### Script started
+
+Fires when a script starts a run.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Script started 👻
+* - Trigger name
+  - `spook.script_started`
+* - Targets
+  - Script {term}`entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels. Optional: without one, every script is watched.
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+This trigger has no options.
+
+Home Assistant does announce every script run, as a `script_started` event. Using it means knowing that event exists, and typing its name and the script into an event trigger by hand: no picker, no area or label, nothing in the list of triggers. It also announces runs the script refuses straight after, like a second one for a script that may only run once at a time.
+
+This one sits in the list of triggers with a target picker, and only fires for a run that is let through. Leave the target out to hear about every script.
+
+When it fires, `trigger.entity_id` names the script, and `trigger.from_state` and `trigger.to_state` hold its state just before and after. Whoever started it is on the context, so `spook.triggered_by_user` and `spook.not_triggered_by_user` work with it.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Every script in the kitchen:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.script_started
+target:
+  area_id: kitchen
+```
+
+One script:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.script_started
+target:
+  entity_id: script.movie_night
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A run that is refused does not count: the script is already running and may only run once, has as many runs as it may, or would start itself in a way that is not allowed.
+- A run of a queued script counts when it joins the queue. That is when Home Assistant lets it through; it starts once the one before it is done.
+- A restarted script counts: the new run is a start, even though the old one is stopped for it.
+- There is no trigger for a script finishing. Whether a run finished or was stopped, by a reload or by Home Assistant shutting down, cannot be told apart from the outside, and a trigger that cannot tell them apart would fire on every reload.
+- A script started while Home Assistant was down, or while this trigger was not loaded, is not reported afterwards.
+
+:::
+
 ### User added
 
 Fires when somebody is given a login to Home Assistant.

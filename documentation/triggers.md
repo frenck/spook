@@ -75,6 +75,12 @@ Fires when a repair issue goes away, either fixed or no longer reported. _#repai
 
 `spook.repair_issue_removed`, [documentation](other-features#repair-issue-resolved) 📚
 
+## Script started
+
+Fires when a script starts a run, picked in the editor rather than typed into an event trigger, and only for a run the script lets through. _#script_ _#run_ _#started_
+
+`spook.script_started`, [documentation](other-features#script-started) 📚
+
 ## Update installed
 
 Fires when an update entity reports a different installed version, whether somebody pressed install, the device updated itself, or it was updated outside of Home Assistant. _#update_ _#firmware_ _#installed_
