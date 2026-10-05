@@ -15,6 +15,12 @@ Fires when every one of several triggers has fired inside the same window of tim
 
 `spook.all_of`, [documentation](other-features#all-of-these-happened) 📚
 
+## Automation turned off
+
+Fires when an automation is turned off, by somebody or by something, so the one switched off while chasing a problem does not stay off unnoticed. _#automation_ _#disabled_ _#off_
+
+`spook.automation_turned_off`, [documentation](other-features#automation-turned-off) 📚
+
 ## Cron schedule
 
 Fires on a crontab schedule, for the times Home Assistant's own time triggers cannot express, like every weekday at seven or the last Friday of the month. _#crontab_

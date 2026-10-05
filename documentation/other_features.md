@@ -189,6 +189,69 @@ Give up after five minutes, and do something else about it:
 
 Spook offers the following triggers that are not tied to a specific integration:
 
+### Automation turned off
+
+Fires when an automation is turned off.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Automation turned off 👻
+* - Trigger name
+  - `spook.automation_turned_off`
+* - Targets
+  - Automation {term}`entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels. Optional: without one, every automation is watched.
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+This trigger has no options.
+
+An automation that is off does nothing, and does not say so either. Turning one off while chasing a problem and forgetting to turn it back on is how a house quietly stops doing things. This trigger tells you the moment it happens, whoever or whatever did it: somebody in the editor, an automation, or a snooze.
+
+Leave the target out to hear about every automation in the house. That is usually the question, and it saves labelling all of them just to be able to ask it.
+
+When it fires, `trigger.entity_id` names the automation, and `trigger.from_state` and `trigger.to_state` hold its state just before and after. Whoever turned it off is on the context, so `spook.triggered_by_user` and `spook.not_triggered_by_user` can tell a person from an automation.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Every automation:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.automation_turned_off
+```
+
+Only when a person did it, with a reminder:
+
+```{code-block} yaml
+:linenos:
+triggers:
+  - trigger: spook.automation_turned_off
+conditions:
+  - condition: spook.triggered_by_user
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        {{ state_attr(trigger.entity_id, 'friendly_name') }} was turned off.
+        Remember to turn it back on.
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Only turning an automation off counts. Reloading automations, changing an automation's entity ID, or disabling it in the entity registry takes it away and puts it back (or not) without turning it off, and none of that fires.
+- An automation that starts out off, like one with `initial_state: false`, was never turned off and does not fire either.
+- One that becomes unavailable, because its configuration no longer validates, has not been turned off. The repairs Spook raises for broken automations are the place for that.
+- An automation turned off while Home Assistant was down, or while this trigger was not loaded, is not reported afterwards.
+
+:::
+
 ### Cron schedule
 
 Fires on a crontab schedule.
