@@ -12,6 +12,7 @@ from homeassistant.helpers.trigger import TriggerConfig
 from homeassistant.setup import async_setup_component
 import pytest
 from pytest_homeassistant_custom_component.common import async_capture_events
+import voluptuous as vol
 
 from custom_components.spook.ectoplasms.spook.triggers.script_started import (
     SpookTrigger,
@@ -105,12 +106,30 @@ async def test_the_trigger_is_discovered(hass: HomeAssistant) -> None:
     assert "script_started" in await async_get_triggers(hass)
 
 
-@pytest.mark.parametrize("config", [{}, {"target": {}}, {"target": None}])
+@pytest.mark.parametrize("config", [{}, {"target": {}}])
 async def test_no_target_means_every_script(hass: HomeAssistant, config: dict) -> None:
-    """Leaving the target out, or empty as the editor does, watches them all."""
-    validated = await SpookTrigger.async_validate_config(hass, config)
+    """Leaving the target out, or empty as the editor does, watches them all.
+
+    Through the whole trigger, the way Home Assistant validates it.
+    """
+    validated = await SpookTrigger.async_validate_complete_config(
+        hass, {"platform": "spook.script_started", **config}
+    )
 
     assert validated.get("target") is None
+
+
+@pytest.mark.parametrize("target", [None, False, [], "script.kettle"])
+async def test_something_that_is_not_a_target_is_refused(
+    hass: HomeAssistant, target: object
+) -> None:
+    """Only an empty target means every script, not anything that looks empty.
+
+    Read as everything, a typo would quietly widen the automation to every
+    script in the house.
+    """
+    with pytest.raises(vol.Invalid):
+        await SpookTrigger.async_validate_config(hass, {"target": target})
 
 
 async def test_a_run_starting_fires(hass: HomeAssistant) -> None:
