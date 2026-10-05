@@ -282,7 +282,8 @@
                 "abort": {
                     "issue_ignored": "Spook wird ab jetzt nichts mehr zu dieser Gruppe berichten.",
                     "not_editable": "Diese Gruppe ist in YAML definiert, daher kann Spook sie nicht bearbeiten. Passe die Gruppe stattdessen in deiner Konfiguration an.",
-                    "manage": "Du kannst diese Gruppe selbst auf der [Seite „Helfer“](/config/helpers) verwalten."
+                    "manage": "Du kannst diese Gruppe selbst auf der [Seite „Helfer“](/config/helpers) verwalten.",
+                    "changed": "Die in dieser Reparaturliste aufgeführten Mitglieder sind wieder dabei oder haben sich seit Spooks letzter Überprüfung verändert, sodass niemand aus der Gruppe entfernt wurde. Spook überprüft die Liste erneut selbstständig und aktualisiert diese Reparaturliste."
                 }
             }
         },
@@ -428,7 +429,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook wird zu diesem Bereich nichts mehr sagen.",
-                    "manage": "Du kannst diesen Bereich selbst auf der [Seite „Bereiche“](/config/areas/dashboard) verwalten."
+                    "manage": "Du kannst diesen Bereich selbst auf der [Seite „Bereiche“](/config/areas/dashboard) verwalten.",
+                    "changed": "Dieser Bereich wird wieder genutzt, seit Spook ihn überprüft hat: Entweder befindet sich etwas darin, oder er wird von einer Automatisierung oder einem Skript verwendet. Daher wurde er nicht verändert. Spook überprüft ihn erneut selbstständig und aktualisiert diesen Reparaturvorgang."
                 }
             }
         },
@@ -456,7 +458,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook wird ab jetzt zu dieser Etage nichts mehr berichten.",
-                    "manage": "Du kannst diese Etage selbst auf der [Seite „Bereiche“](/config/areas/dashboard) verwalten."
+                    "manage": "Du kannst diese Etage selbst auf der [Seite „Bereiche“](/config/areas/dashboard) verwalten.",
+                    "changed": "Diese Etage wird seit Spooks letzter Überprüfung wieder genutzt: Es befindet sich ein Bereich darauf, oder eine Automatisierung bzw. ein Skript nutzt sie. Daher wurde sie nicht verändert. Spook überprüft sie erneut von selbst und aktualisiert diese Reparatur."
                 }
             }
         },
@@ -465,7 +468,8 @@
                 "abort": {
                     "too_few_members": "Ein Min/Max-Helfer benötigt mindestens zwei Elemente; würden die fehlenden entfernt, wären zu wenige übrig. Passe den Helfer selbst auf der [Seite „Helfers“](/config/helpers) an oder entferne ihn.",
                     "issue_ignored": "Spook wird ab jetzt nichts mehr zu diesem Helfer berichten.",
-                    "manage": "Du kannst diesen Helper selbst auf der [Seite „Helpers“](/config/helpers) verwalten."
+                    "manage": "Du kannst diesen Helper selbst auf der [Seite „Helpers“](/config/helpers) verwalten.",
+                    "changed": "Die in dieser Reparaturliste aufgeführten Mitglieder sind wieder da oder haben sich seit Spooks letzter Überprüfung geändert, daher wurde nichts aus dem Helfer entfernt. Spook überprüft die Liste erneut selbstständig und aktualisiert diese Reparaturliste."
                 },
                 "step": {
                     "init": {
@@ -486,8 +490,17 @@
             "fix_flow": {
                 "step": {
                     "init": {
-                        "title": "Verwaiste Langzeitstatistiken gefunden"
+                        "title": "Verwaiste Langzeitstatistiken gefunden",
+                        "menu_options": {
+                            "manage": "Lass es mich selbst beheben",
+                            "remove": "Diese Statistiken leeren"
+                        },
+                        "description": "Spook hat einen Geist in deinem Aufzeichnungsgerät gefunden 👻\n\nHome Assistant führt Langzeitstatistiken für die folgenden Elemente, aber es gibt keine entsprechenden Entitäten mehr dafür:\n\n{statistics}\n\nDas passiert normalerweise, wenn ein Sensor entfernt wurde, während seine Statistiken weiterhin gespeichert wurden. Durch das Löschen dieser Statistiken wird der Verlauf endgültig verworfen. Deshalb schaut Spook noch einmal nach, bevor es das tut, und lässt alles in Ruhe, was in der Zwischenzeit wieder aufgetaucht ist.\n\nSpook 👻 Dein Kumpel."
                     }
+                },
+                "abort": {
+                    "manage": "Du kannst dies selbst auf der [Seite „Statistiken“] (/config/tools/statistics) löschen.",
+                    "clearing_took_too_long": "Spook hat darum gebeten, die Statistiken zu löschen, und der Recorder hat noch nicht bestätigt, dass dies geschehen ist. Der Vorgang steht in der Warteschlange und wird höchstwahrscheinlich ausgeführt, daher bleibt diese Korrektur bestehen, bis Spook sich die Sache erneut angesehen hat."
                 }
             }
         },
@@ -592,6 +605,22 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "Unbekannte Entitäten in HomeKit-Bridge verwendet: {bridge}",
             "description": "Spook hat einen Geist in deiner HomeKit-Bridge gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden HomeKit-Bridge:\n\n{bridge}\n\nDiese Bridge nennt die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nHomeKit folgt einer Entität nicht, wenn sie umbenannt wird. Eine eingeschlossene Entität, die umbenannt oder entfernt wurde, verschwindet aus der Home-App. Eine ausgeschlossene Entität, die umbenannt wurde, taucht dort wieder auf.\n\nDiese Bridge ist in deiner YAML-Konfiguration eingerichtet. Um diesen Fehler zu beheben, bearbeite den `filter` dieser Bridge unter `homekit:` und entferne oder korrigiere diese Entitäten.\n\nSpook 👻 Dein Kumpel."
+        },
+        "unknown_area_sensors": {
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "menu_options": {
+                            "manage": "Lass es mich selbst beheben"
+                        },
+                        "description": "Spook hat in deinen Bereichen einen Geist entdeckt 👻\n\nDer Bereich {area} verwendet einen {sensors}-Sensor, der Home Assistant unbekannt ist:\n\n{entities}\n\nHome Assistant überprüft diesen Sensor nur, wenn er ausgewählt ist. Als er entfernt oder umbenannt wurde, zeigte der Bereich daher ins Leere. Assist- und Bereichskarten erhalten keine Messwerte mehr von ihm.\n\nLösche die Einstellung, damit du wieder einen Sensor auswählen kannst, oder behalte sie bei – dann wird Spook nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel."
+                    }
+                }
+            }
+        },
+        "unknown_engines": {
+            "title": "Die „Assist“-Pipeline verwendet Engines, die nicht mehr verfügbar sind: {pipeline}",
+            "description": "Die Assist-Pipeline {pipeline} verwendet Folgendes, was Home Assistant nicht bekannt ist:\n\n{engines}\n\nDas bedeutet in der Regel, dass die dahinterstehende Integration entfernt wurde. Die Pipeline wurde nicht darüber informiert, sodass sie bei der nächsten Verwendung mit einer Fehlermeldung über einen fehlenden Anbieter oder Agenten fehlschlägt, und nichts zuvor weist darauf hin.\n\nUm dies zu beheben, öffne die Einstellungen dieses Assistenten unter [Sprachassistenten](/config/voice-assistants/assistants) und wähle für jeden dieser Einträge eine Engine aus, die noch verfügbar ist.\n\nSpook 👻 Dein Kumpel."
         }
     },
     "services": {
@@ -790,7 +819,7 @@
                     "description": "Die Maßeinheit der Eingabezahl."
                 }
             },
-            "description": "Legt einen neuen Eingabezahl-Helfer direkt an.",
+            "description": "Erstellt direkt einen neuen Eingabezahlen-Helfer. Gibt die Entitäts-ID der neuen Eingabezahl zurück.",
             "name": "Erstelle eine Zahleneingabe"
         },
         "timer_set_duration": {
@@ -1405,7 +1434,12 @@
         },
         "input_number_delete": {
             "name": "Löscht eine Zahleneingabe",
-            "description": "Einen Eingabezahl-Helfer löschen. Dies funktioniert nur mit Eingabezahlen, die über die Benutzeroberfläche erstellt und verwaltet wurden. Eingabezahlen, die in YAML erstellt und verwaltet wurden, können von Spook nicht verwaltet werden."
+            "description": "Einen Eingabezahl-Helfer löschen. Dies funktioniert nur mit Eingabezahlen, die über die Benutzeroberfläche erstellt und verwaltet wurden. Eingabezahlen, die in YAML erstellt und verwaltet wurden, können von Spook nicht verwaltet werden.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
         },
         "zone_delete": {
             "name": "Löscht eine Zone",
@@ -1672,6 +1706,411 @@
             },
             "description": "Ersetzt die Mitglieder einer über die Oberfläche erstellten Gruppe durch die angegebenen, während Home Assistant läuft.",
             "name": "Lege die Mitglieder einer Gruppe fest"
+        },
+        "homeassistant_add_alias_to_entity": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                },
+                "entity_id": {
+                    "name": "Entität"
+                }
+            },
+            "description": "Fügt einer Entität (oder mehreren Entitäten) einen oder mehrere Aliase hinzu, unter denen Sprachassistenten sie aufrufen können."
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "fields": {
+                "alias": {
+                    "name": "Alias"
+                },
+                "entity_id": {
+                    "name": "Entität"
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "fields": {
+                "aliases": {
+                    "name": "Aliase"
+                },
+                "entity_id": {
+                    "name": "Entität"
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "fields": {
+                "category_id": {
+                    "name": "Kategorie"
+                },
+                "icon": {
+                    "name": "Symbol"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "fields": {
+                "category_id": {
+                    "name": "Kategorie"
+                }
+            },
+            "name": "Löscht eine Kategorie"
+        },
+        "homeassistant_add_category_to_entity": {
+            "fields": {
+                "category_id": {
+                    "name": "Kategorie"
+                },
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            },
+            "name": "Eine Kategorie einer Entität zuweisen"
+        },
+        "homeassistant_remove_category_from_entity": {
+            "fields": {
+                "category_id": {
+                    "name": "Kategorie"
+                },
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Luftfeuchtigkeit verringern",
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Position verringern",
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Position verringern",
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Temperatur verringern",
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Temperatur verringern",
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Lautstärke verringern",
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Löscht einen Zähler",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "calendar_update_event": {
+            "fields": {
+                "description": {
+                    "name": "Beschreibung"
+                },
+                "duration": {
+                    "name": "Dauer"
+                },
+                "shift": {
+                    "name": "Verschieben"
+                },
+                "summary": {
+                    "name": "Zusammenfassung"
+                },
+                "start_date_time": {
+                    "description": "Wo soll die Suche beginnen? Standardmäßig ab dem aktuellen Zeitpunkt."
+                },
+                "end_date_time": {
+                    "description": "Wo soll die Suche enden? Gib dies oder eine Dauer an."
+                }
+            },
+            "description": "Ändert Ereignisse in einem Kalender, die anhand ihres Titels oder ihrer UID innerhalb eines bestimmten Zeitraums gefunden wurden. Gibt die geänderten Elemente zurück, einschließlich ihrer UIDs."
+        },
+        "timer_create": {
+            "fields": {
+                "duration": {
+                    "name": "Dauer"
+                },
+                "icon": {
+                    "name": "Symbol"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "fields": {
+                "duration": {
+                    "name": "Dauer"
+                },
+                "summary": {
+                    "name": "Zusammenfassung"
+                },
+                "start_date_time": {
+                    "description": "Wo soll die Suche beginnen? Standardmäßig ab dem aktuellen Zeitpunkt."
+                },
+                "end_date_time": {
+                    "description": "Wo soll die Suche enden? Gib dies oder eine Dauer an."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entität"
+                },
+                "icon": {
+                    "name": "Symbol"
+                }
+            }
+        },
+        "input_select_delete": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "input_text_delete": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "input_button_delete": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "timer_delete": {
+            "fields": {
+                "entity_id": {
+                    "name": "Entitäts-ID"
+                }
+            }
+        },
+        "input_datetime_create": {
+            "fields": {
+                "has_date": {
+                    "name": "Hat ein Datum",
+                    "description": "Ob ein Datum angegeben ist. Entweder das Datum oder die Uhrzeit muss angegeben sein."
+                },
+                "has_time": {
+                    "name": "Hat eine Uhrzeit",
+                    "description": "Ob eine Uhrzeit gespeichert ist. Entweder das Datum oder die Uhrzeit muss mindestens angegeben sein."
+                },
+                "icon": {
+                    "name": "Symbol"
+                },
+                "initial": {
+                    "name": "Startwert"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "fields": {
+                "icon": {
+                    "name": "Symbol"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            },
+            "name": "Kategorie anlegen"
+        },
+        "input_select_create": {
+            "fields": {
+                "icon": {
+                    "name": "Symbol"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "counter_create": {
+            "fields": {
+                "icon": {
+                    "name": "Symbol"
+                },
+                "initial": {
+                    "name": "Startwert"
+                },
+                "maximum": {
+                    "name": "Maximum"
+                },
+                "minimum": {
+                    "name": "Minimum"
+                },
+                "name": {
+                    "name": "Name"
+                },
+                "step": {
+                    "name": "Schritt"
+                }
+            },
+            "name": "Zähler anlegen"
+        },
+        "input_boolean_create": {
+            "fields": {
+                "icon": {
+                    "name": "Symbol"
+                },
+                "initial": {
+                    "name": "Startwert"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "input_text_create": {
+            "fields": {
+                "icon": {
+                    "name": "Symbol"
+                },
+                "initial": {
+                    "name": "Startwert"
+                },
+                "max": {
+                    "name": "Maximale Länge"
+                },
+                "min": {
+                    "name": "Minimale Länge"
+                },
+                "mode": {
+                    "name": "Modus"
+                },
+                "name": {
+                    "name": "Name"
+                },
+                "pattern": {
+                    "description": "Ein regulärer Ausdruck, dem der Text entsprechen muss."
+                }
+            }
+        },
+        "input_button_create": {
+            "fields": {
+                "icon": {
+                    "name": "Symbol"
+                },
+                "name": {
+                    "name": "Name"
+                }
+            }
+        },
+        "repairs_list": {
+            "fields": {
+                "severity": {
+                    "name": "Schweregrad"
+                },
+                "include_ignored": {
+                    "description": "Liste auch die Probleme auf, die bisher außer Acht gelassen wurden."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "cover_increase_position": {
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "valve_increase_position": {
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "fields": {
+                "step": {
+                    "name": "Schritt"
+                }
+            }
+        },
+        "todo_move_item": {
+            "fields": {
+                "after": {
+                    "name": "Danach"
+                }
+            }
         }
     },
     "conditions": {
@@ -1934,6 +2373,10 @@
         "device_discovered": {
             "name": "Gerät entdeckt",
             "description": "Wird ausgelöst, wenn Home Assistant etwas Neues entdeckt, das es einrichten könnte, etwa ein Gerät, das gerade in deinem Netzwerk aufgetaucht ist."
+        },
+        "update_installed": {
+            "name": "Update installiert",
+            "description": "Wird ausgelöst, wenn eine Update-Entität eine andere installierte Version meldet – unabhängig davon, ob jemand auf „Installieren“ geklickt hat, das Gerät sich selbst aktualisiert hat oder die Aktualisierung außerhalb von Home Assistant erfolgte."
         }
     },
     "selector": {
@@ -1942,6 +2385,12 @@
                 "critical": "Kritisch",
                 "error": "Fehler",
                 "warning": "Warnung"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Ende",
+                "top": "Anfang"
             }
         }
     }
