@@ -2229,6 +2229,144 @@
                     "name": "UID"
                 }
             }
+        },
+        "climate_increase_temperature": {
+            "name": "Povećaj temperaturu",
+            "description": "Povećava zadatu temperaturu termostata za jedan korak, odnosno obe zadate vrednosti ako termostat ima režim i za grejanje i za hlađenje. Termostat koji je isključen ostaje isključen.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko promeniti temperaturu. Izostavite ovaj parametar da biste koristili podrazumevani korak samog termostata, ili pola stepena (jedan stepen u Farenhajtiem) kada termostat nema definisan sopstveni korak."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Smanji temperaturu",
+            "description": "Smanjuje zadatu temperaturu termostata za jedan korak, odnosno obe zadate vrednosti ako termostat ima režim i za grejanje i za hlađenje. Termostat koji je isključen ostaje isključen.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko promeniti temperaturu. Izostavite ovaj parametar da biste koristili podrazumevani korak samog termostata, ili pola stepena (jedan stepen u Farenhajtiem) kada termostat nema definisan sopstveni korak."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Povećaj temperaturu",
+            "description": "Povećava zadatu temperaturu bojlera za jedan korak, u okviru njegovih ograničenja.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko promeniti temperaturu. Izostavite ovaj parametar da biste koristili podrazumevani korak samog bojlera, ili pola stepena (jedan stepen u Farenhajtima) kada bojler nema definisan sopstveni korak."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Smanji temperaturu",
+            "description": "Smanjuje zadatu temperaturu bojlera za jedan korak, u okviru njegovih ograničenja.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko promeniti temperaturu. Izostavite ovaj parametar da biste koristili podrazumevani korak samog bojlera, ili pola stepena (jedan stepen u Farenhajtima) kada bojler nema definisan sopstveni korak."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Povećaj vlažnost",
+            "description": "Povećava ciljanu vlažnost vazduha na ovlaživaču za jedan korak, u okviru njegovih ograničenja.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata promeniti vlažnost. Izostavite ovaj parametar da biste koristili podrazumevani korak samog ovlaživača, ili jedan procenat kada uređaj nema definisan sopstveni korak."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Smanji vlažnost",
+            "description": "Smanjuje ciljanu vlažnost vazduha na ovlaživaču za jedan korak, u okviru njegovih ograničenja.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata promeniti vlažnost. Izostavite ovaj parametar da biste koristili podrazumevani korak samog ovlaživača, ili jedan procenat kada uređaj nema definisan sopstveni korak."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Povećaj otvorenost",
+            "description": "Otvara roletnu za jedan korak, zaustavljajući se kada se potpuno otvori.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata je pomeriti. Ukoliko se izostavi, pomera se za deset procenata."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Smanji otvorenost",
+            "description": "Zatvara roletnu za jedan korak, zaustavljajući se kada se potpuno zatvori.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata je pomeriti. Ukoliko se izostavi, pomera se za deset procenata."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Povećaj otvorenost",
+            "description": "Otvara ventil za jedan korak, zaustavljajući se kada se potpuno otvori.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata ga pomeriti. Ukoliko se izostavi, pomera se za deset procenata."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Smanji otvorenost",
+            "description": "Zatvara ventil za jedan korak, zaustavljajući se kada se potpuno zatvori.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata ga pomeriti. Ukoliko se izostavi, pomera se za deset procenata."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Pojačaj zvuk",
+            "description": "Pojačava zvuk medijskog plejera za uneti korak, zaustavljajući se na maksimalnoj jačini zvuka.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata promeniti jačinu zvuka."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Smanji zvuk",
+            "description": "Smanjuje zvuk medijskog plejera za uneti korak, zaustavljajući se kada se potpuno utiša.",
+            "fields": {
+                "step": {
+                    "name": "Korak",
+                    "description": "Za koliko procenata promeniti jačinu zvuka."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Premesti stavku",
+            "description": "Premešta stavku na listi zadataka na vrh, na dno ili nakon neke druge stavke.",
+            "fields": {
+                "item": {
+                    "name": "Stavka",
+                    "description": "Naslov ili UID stavke koju treba premestiti."
+                },
+                "after": {
+                    "name": "Posle",
+                    "description": "Naslov ili UID stavke nakon koje je treba staviti. Navedite ovo ili poziciju."
+                },
+                "position": {
+                    "name": "Pozicija",
+                    "description": "Premestite je na vrh ili na dno liste. Navedite ovo ili stavku nakon koje je treba staviti."
+                }
+            }
         }
     },
     "conditions": {
@@ -2491,6 +2629,10 @@
         "device_discovered": {
             "name": "Uređaj je otkriven",
             "description": "Aktivira se kada Home Assistant otkrije nešto novo što bi mogao da podesi, poput uređaja koji se upravo pojavio na vašoj mreži."
+        },
+        "update_installed": {
+            "name": "Ažuriranje instalirano",
+            "description": "Aktivira se kada entitet ažuriranja prijavi drugačiju instaliranu verziju, bez obzira na to da li je neko pritisnuo dugme za instalaciju, da li se uređaj sam ažurirao ili je ažuriran van Home Assistant-a."
         }
     },
     "selector": {
@@ -2499,6 +2641,12 @@
                 "critical": "Kritično",
                 "error": "Greška",
                 "warning": "Upozorenje"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Dole",
+                "top": "Gore"
             }
         }
     }
