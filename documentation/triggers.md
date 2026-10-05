@@ -87,6 +87,12 @@ Fires when a script starts a run, picked in the editor rather than typed into an
 
 `spook.script_started`, [documentation](other-features#script-started) 📚
 
+## Target temperature reached
+
+Fires when the temperature of a thermostat or water heater reaches its target: the bathroom is warm, the water is hot. _#climate_ _#thermostat_ _#temperature_
+
+`spook.target_temperature_reached`, [documentation](other-features#target-temperature-reached) 📚
+
 ## Update installed
 
 Fires when an update entity reports a different installed version, whether somebody pressed install, the device updated itself, or it was updated outside of Home Assistant. _#update_ _#firmware_ _#installed_

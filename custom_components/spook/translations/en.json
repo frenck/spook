@@ -186,6 +186,16 @@
         }
       }
     },
+    "target_temperature_reached": {
+      "name": "Target temperature reached",
+      "description": "Fires when the temperature of a thermostat or water heater reaches its target, or jumps past it. Changing the target does not count, and neither does a device that is off.",
+      "fields": {
+        "tolerance": {
+          "name": "Tolerance",
+          "description": "How close to the target still counts as there, in the device's unit. For a thermostat that settles just short of its setpoint. Zero means the target itself."
+        }
+      }
+    },
     "update_installed": {
       "name": "Update installed",
       "description": "Fires when an update entity reports a different installed version, whether somebody pressed install, the device updated itself, or it was updated outside of Home Assistant."

@@ -1,0 +1,302 @@
+"""Spook - Your homie."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+import math
+from typing import TYPE_CHECKING, Any
+
+import voluptuous as vol
+
+from homeassistant.components.climate import (
+    ATTR_CURRENT_TEMPERATURE,
+    ATTR_TARGET_TEMP_HIGH,
+    ATTR_TARGET_TEMP_LOW,
+    DOMAIN as CLIMATE_DOMAIN,
+    HVACMode,
+)
+from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
+from homeassistant.const import (
+    ATTR_TEMPERATURE,
+    CONF_OPTIONS,
+    CONF_TARGET,
+    STATE_OFF,
+    STATE_UNAVAILABLE,
+    STATE_UNKNOWN,
+)
+from homeassistant.core import callback, split_entity_id
+from homeassistant.helpers.event import async_track_state_change_event
+from homeassistant.helpers.target import TargetEntityChangeTracker, TargetSelection
+from homeassistant.helpers.trigger import Trigger
+
+from ....target_watching import watchable_target
+
+if TYPE_CHECKING:
+    from collections.abc import Callable
+
+    from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, State
+    from homeassistant.helpers.event import EventStateChangedData
+    from homeassistant.helpers.trigger import (
+        TriggerActionRunner,
+        TriggerConfig,
+        TriggerNotTriggeredReporter,
+    )
+    from homeassistant.helpers.typing import ConfigType
+
+CONF_TOLERANCE = "tolerance"
+
+_DOMAINS = (CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
+
+# A device that is off, or not there, has a setpoint it is not working
+# towards. The temperature drifting onto it is not the device reaching it.
+_NOT_WORKING = (STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN)
+
+
+def _tolerance(value: Any) -> float:
+    """Validate the tolerance, a distance from the target that still counts."""
+    tolerance = float(vol.Coerce(float)(value))
+    if not math.isfinite(tolerance) or tolerance < 0:
+        message = "The tolerance must be zero or more"
+        raise vol.Invalid(message)
+    return tolerance
+
+
+_TRIGGER_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_TARGET): watchable_target,
+        vol.Optional(CONF_OPTIONS, default=dict): {
+            vol.Optional(CONF_TOLERANCE, default=0.0): _tolerance,
+        },
+    }
+)
+
+
+@dataclass(frozen=True, slots=True)
+class _Reading:
+    """Where a device is, and where it is heading."""
+
+    current: float
+    low: float
+    high: float
+
+    def at_target(self, tolerance: float) -> bool:
+        """Tell whether the temperature is at the target, give or take."""
+        return self.low - tolerance <= self.current <= self.high + tolerance
+
+    def same_target(self, other: _Reading) -> bool:
+        """Tell whether both readings were heading to the same place."""
+        return self.low == other.low and self.high == other.high
+
+
+def _number(value: Any) -> float | None:
+    """Return a finite number, or None for anything else."""
+    try:
+        number = float(value)
+    except TypeError, ValueError:
+        return None
+    return number if math.isfinite(number) else None
+
+
+def _reading(state: State | None) -> _Reading | None:
+    """Read the current temperature and the target off a state.
+
+    One setpoint is a target of one temperature. A range, as heating and
+    cooling to a band does, is reached anywhere inside it.
+
+    A thermostat that can do both reports both, whatever mode it is in. In
+    `heat_cool` the band is what it works towards, in any other mode the one
+    setpoint is, if it has one.
+    """
+    if state is None or state.state in _NOT_WORKING:
+        return None
+
+    attributes = state.attributes
+    if (current := _number(attributes.get(ATTR_CURRENT_TEMPERATURE))) is None:
+        return None
+
+    setpoint = _number(attributes.get(ATTR_TEMPERATURE))
+    low = _number(attributes.get(ATTR_TARGET_TEMP_LOW))
+    high = _number(attributes.get(ATTR_TARGET_TEMP_HIGH))
+
+    if (
+        low is not None
+        and high is not None
+        and (setpoint is None or state.state == HVACMode.HEAT_COOL)
+    ):
+        return _Reading(current, low, high)
+    if setpoint is not None:
+        return _Reading(current, setpoint, setpoint)
+    return None
+
+
+def _reached(before: _Reading, after: _Reading, tolerance: float) -> bool:
+    """Tell whether the temperature moving from before to after reached it.
+
+    Getting there counts, and so does jumping past it: a sensor that reports
+    in whole degrees, or a room that overshoots, can go from below the target
+    to above it without ever reporting it.
+    """
+    if before.at_target(tolerance):
+        return False
+    if after.at_target(tolerance):
+        return True
+    return (before.current < after.low and after.current > after.high) or (
+        before.current > after.high and after.current < after.low
+    )
+
+
+def _only_climate_and_water_heaters(entity_ids: set[str]) -> set[str]:
+    """Keep what has a target temperature, as an area holds all sorts."""
+    return {
+        entity_id
+        for entity_id in entity_ids
+        if split_entity_id(entity_id)[0] in _DOMAINS
+    }
+
+
+# Everything here is called by the base class or by an event, so there is
+# nothing public to count.
+# pylint: disable-next=too-few-public-methods
+class _TemperatureTracker(TargetEntityChangeTracker):
+    """Watch a target's devices for the temperature reaching its target."""
+
+    def __init__(
+        self,
+        hass: HomeAssistant,
+        target_selection: TargetSelection,
+        tolerance: float,
+        on_reached: Callable[[Event[EventStateChangedData]], None],
+    ) -> None:
+        """Initialize the tracker."""
+        super().__init__(
+            hass, target_selection, entity_filter=_only_climate_and_water_heaters
+        )
+        self._tolerance = tolerance
+        self._on_reached = on_reached
+        self._tracked: set[str] = set()
+        self._unsub_changes: list[CALLBACK_TYPE] = []
+
+    @callback
+    def _handle_entities_update(self, tracked_entities: set[str]) -> None:
+        """Re-aim at the entities the target now covers.
+
+        The base class re-expands the target on every entity, device and area
+        registry event anywhere in the system, and almost none of those move
+        this target.
+        """
+        if tracked_entities == self._tracked:
+            return
+
+        self._tracked = tracked_entities
+        self._relisten()
+
+    @callback
+    def _relisten(self) -> None:
+        """Listen for changes to exactly the entities being tracked.
+
+        The new listener goes on before the old one comes off. Home Assistant
+        keeps one shared tracker per event type: drop the last subscriber and
+        it is torn down, taking with it events that have fired but not been
+        dispatched yet.
+        """
+        previous = self._unsub_changes
+        self._unsub_changes = []
+
+        if self._tracked:
+            self._unsub_changes = [
+                async_track_state_change_event(
+                    self._hass, list(self._tracked), self._entity_changed
+                )
+            ]
+
+        for unsub in previous:
+            unsub()
+
+    @callback
+    def _entity_changed(self, event: Event[EventStateChangedData]) -> None:
+        """Compare where the temperature was with where it is now."""
+        before = _reading(event.data["old_state"])
+        after = _reading(event.data["new_state"])
+
+        # Without a reading on both sides there is no movement to judge: a
+        # device coming back, or switched on, did not just get somewhere.
+        if before is None or after is None:
+            return
+
+        # A new setpoint is somebody moving the target, not the temperature
+        # getting to it. Set onto the temperature it already is, nothing was
+        # reached; the next move is judged against the new target.
+        if not before.same_target(after):
+            return
+
+        if _reached(before, after, self._tolerance):
+            self._on_reached(event)
+
+    def _unsubscribe(self) -> None:
+        """Unsubscribe from everything, the base class' listeners included."""
+        super()._unsubscribe()
+
+        for unsub in self._unsub_changes:
+            unsub()
+        self._unsub_changes.clear()
+        self._tracked = set()
+
+
+class SpookTrigger(Trigger):
+    """Spook trigger that fires when a temperature reaches its target.
+
+    A thermostat or water heater knows where it is heading and where it is.
+    Home Assistant can tell you when either one changes, but not when the one
+    arrives at the other, which is the moment that matters: the bathroom is
+    warm, the water is hot.
+    """
+
+    trigger = "target_temperature_reached"
+
+    _target: ConfigType
+    _tolerance: float
+
+    @classmethod
+    async def async_validate_config(
+        cls,
+        hass: HomeAssistant,  # noqa: ARG003
+        config: ConfigType,
+    ) -> ConfigType:
+        """Validate the trigger config."""
+        return _TRIGGER_SCHEMA(config)  # type: ignore[no-any-return]
+
+    def __init__(self, hass: HomeAssistant, config: TriggerConfig) -> None:
+        """Initialize the trigger."""
+        super().__init__(hass, config)
+        options: dict[str, Any] = config.options or {}
+        self._tolerance = options.get(CONF_TOLERANCE, 0.0)
+        self._target = config.target or {}
+
+    async def async_attach_runner(
+        self,
+        run_action: TriggerActionRunner,
+        did_not_trigger: TriggerNotTriggeredReporter | None = None,  # noqa: ARG002
+    ) -> CALLBACK_TYPE:
+        """Attach the trigger to an action runner."""
+
+        @callback
+        def target_reached(event: Event[EventStateChangedData]) -> None:
+            """Run the action for the device that got there."""
+            entity_id = event.data["entity_id"]
+            to_state = event.data["new_state"]
+            payload: dict[str, Any] = {
+                "entity_id": entity_id,
+                "from_state": event.data["old_state"],
+                "to_state": to_state,
+                "tolerance": self._tolerance,
+            }
+            run_action(
+                payload,
+                f"{entity_id} reached its target temperature",
+                to_state.context if to_state else None,
+            )
+
+        tracker = _TemperatureTracker(
+            self._hass, TargetSelection(self._target), self._tolerance, target_reached
+        )
+        return await tracker.async_setup()

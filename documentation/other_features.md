@@ -794,6 +794,82 @@ options:
 
 :::
 
+### Target temperature reached
+
+Fires when the temperature of a thermostat or water heater reaches its target.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Target temperature reached 👻
+* - Trigger name
+  - `spook.target_temperature_reached`
+* - Targets
+  - Climate and water heater {term}`entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `tolerance`
+  - {term}`float <float>`
+  - No
+  - `0` / `0.5`
+```
+
+A thermostat or water heater knows where it is heading and where it is. Home Assistant tells you when either one changes, but not when the one arrives at the other, which is the moment that matters.
+
+It fires when the measured temperature gets to the target, coming from either side. Jumping past it counts too: a sensor that reports in whole degrees can go from below the target to above it without ever reporting the target itself. Once there, it does not fire again until the temperature has left and come back.
+
+Heating and cooling to a band, in `heat_cool`, is there anywhere inside the band. A thermostat that can do both reports a setpoint and a band whatever mode it is in; in `heat_cool` the band counts, in any other mode the setpoint.
+
+The `tolerance` is how close still counts as there, in the device's own unit. Some thermostats settle just short of their setpoint and stay there; a tolerance of half a degree catches those. Zero, the default, means the target itself.
+
+When it fires, `trigger.entity_id` names the device, and `trigger.from_state` and `trigger.to_state` hold its state just before and after.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+The bathroom is warm:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.target_temperature_reached
+target:
+  entity_id: climate.bathroom
+```
+
+Every thermostat upstairs, close enough:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.target_temperature_reached
+target:
+  floor_id: upstairs
+options:
+  tolerance: 0.5
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- Changing the target does not count. Moving the setpoint onto the temperature the room already is did not make the room get anywhere. The next trip is judged against the new target.
+- A device that is off reaches nothing: the room drifting onto the setpoint of a heater that is off is weather. Switching it on while the room is already there does not count either.
+- A device coming back from unavailable has no temperature before it to compare with, so arriving back at the target does not count.
+- A water heater that does not report its current temperature, and many do not, can never be seen reaching anything.
+- A temperature that reaches its target while Home Assistant is down, or while this trigger is not loaded, is not reported afterwards.
+
+:::
+
 ### Update installed
 
 Fires when an update entity reports a different installed version.
