@@ -8,6 +8,7 @@ from homeassistant.components import script
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
+from ....action_extraction import async_extract_entities_from_action_config
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import (
@@ -74,18 +75,12 @@ async def extract_template_entities_from_script_entity(
     ``known_services`` is built once per inspection and handed down, because
     building it flattens every service Home Assistant has and every script
     with a template in it needs the same answer.
-    """
-    # Get the script configuration
-    config = None
-    if hasattr(entity, "script"):
-        # Try to get configuration safely
-        if hasattr(entity.script, "config"):
-            config = entity.script.config
-        elif hasattr(entity.script, "_config"):
-            # Fallback to _config if needed
-            config = getattr(entity.script, "_config", None)
 
-    if not config:
+    Read from the configuration as written, like the automation repair does.
+    The script helper underneath keeps no configuration of its own, so this
+    used to find nothing at all.
+    """
+    if not (config := getattr(entity, "raw_config", None)):
         return set()
 
     return await async_extract_entities_from_config(hass, config, known_services)
@@ -122,7 +117,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         ):
             return entities
 
-        config = getattr(entity, "_config", None)
+        config = getattr(entity, "raw_config", None)
         if not config or not isinstance(config, dict) or "use_blueprint" not in config:
             return entities
 
@@ -159,6 +154,19 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
 
         # Check for blueprint trigger inputs
         all_entities.update(self._get_blueprint_trigger_entities(entity))
+
+        # Home Assistant's own list leaves out entities handed over as action
+        # data, like `entity: light.kitchen` in a call to another script. The
+        # automation repair reads those from the configuration as written, and
+        # so does this one.
+        if isinstance(raw_config := getattr(entity, "raw_config", None), dict):
+            all_entities.update(
+                await async_extract_entities_from_action_config(
+                    self.hass,
+                    raw_config.get("sequence") or [],
+                    known_services=self._known_services,
+                )
+            )
 
         # Extract entities from Template objects within the script entity
         all_entities.update(
