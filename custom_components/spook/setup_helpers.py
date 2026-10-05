@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 from .const import LOGGER
+from .module import python_module_path
 
 if TYPE_CHECKING:
     from types import ModuleType
@@ -30,12 +31,7 @@ async def async_forward_setup_entry(
     def _load_all_ectoplasm_modules() -> None:
         """Load all Spook ectoplasm modules."""
         for module_file in Path(__file__).parent.rglob("ectoplasms/*/__init__.py"):
-            module_path = str(module_file.relative_to(Path(__file__).parent))[
-                :-3
-            ].replace(
-                "/",
-                ".",
-            )
+            module_path = python_module_path(module_file)
             LOGGER.debug("Loading Spook ectoplasm: %s", module_path)
             module = importlib.import_module(f".{module_path}", __package__)
             if hasattr(module, "async_setup_entry"):
@@ -83,12 +79,7 @@ async def async_forward_platform_entry_setups_to_ectoplasm(
     def _load_all_ectoplasm_platform_modules() -> None:
         """Load all Spook ectoplasm platform modules."""
         for module_file in Path(__file__).parent.rglob(f"ectoplasms/*/{platform}.py"):
-            module_path = str(module_file.relative_to(Path(__file__).parent))[
-                :-3
-            ].replace(
-                "/",
-                ".",
-            )
+            module_path = python_module_path(module_file)
             LOGGER.debug("Loading Spook %s from ectoplasm: %s", platform, module_path)
             modules.append(importlib.import_module(f".{module_path}", __package__))
             LOGGER.debug("Setting up Spook ectoplasm %s: %s", platform, module_path)
