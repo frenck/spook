@@ -225,6 +225,20 @@
     }
   },
   "conditions": {
+    "is_at_target_temperature": {
+      "name": "Temperature at its target",
+      "description": "Passes when the temperature of a thermostat or water heater is at its target. A device that is off is not at its target, and one that is unavailable is left out.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior",
+          "description": "Whether any of the devices being there is enough, or all of them have to be."
+        },
+        "tolerance": {
+          "name": "Tolerance",
+          "description": "How close to the target still counts as there, in the device's unit. For a thermostat that settles just short of its setpoint. Zero means the target itself."
+        }
+      }
+    },
     "repair_issue_present": {
       "name": "Repair issue outstanding",
       "description": "Passes while a repair issue is outstanding. Issues somebody has ignored do not count.",

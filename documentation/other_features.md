@@ -1382,6 +1382,80 @@ options:
 
 :::
 
+### Temperature at its target
+
+Passes when the temperature of a thermostat or water heater is at its target.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - Condition
+  - Temperature at its target 👻
+* - Condition name
+  - `spook.is_at_target_temperature`
+* - Targets
+  - Climate and water heater {term}`entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `behavior`
+  - {term}`string <string>`
+  - No
+  - `any` / `all`
+* - `tolerance`
+  - {term}`float <float>`
+  - No
+  - `0` / `0.5`
+```
+
+The question [`spook.target_temperature_reached`](#target-temperature-reached) answers once, asked whenever you like: is the bathroom warm yet, is the water hot. It reads the devices the same way the trigger does, so the two never disagree.
+
+With several devices, `any` passes when one of them is there and `all` when every one is. A band, in `heat_cool`, counts anywhere inside it, and the `tolerance` is how close still counts as there, in the device's own unit.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+Only when the bathroom is warm:
+
+```{code-block} yaml
+:linenos:
+condition: spook.is_at_target_temperature
+target:
+  entity_id: climate.bathroom
+```
+
+Every room upstairs, close enough:
+
+```{code-block} yaml
+:linenos:
+condition: spook.is_at_target_temperature
+target:
+  floor_id: upstairs
+options:
+  behavior: all
+  tolerance: 0.5
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A device that is off is not at its target: it is not working towards one.
+- A device that is unavailable is left out, the same as Home Assistant's own conditions do. With nothing left to ask, it does not pass, `all` included: a bathroom whose thermostat is unavailable is not known to be warm.
+- A water heater that does not report its current temperature, and many do not, is never at its target.
+- There is no `for` option yet. Home Assistant's own entity conditions have one; it needs history from the recorder to be right after a restart, which is a job of its own.
+
+:::
+
 ### Run allowance left
 
 Passes while this automation has runs to spare.
