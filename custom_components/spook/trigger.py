@@ -8,6 +8,8 @@ from typing import TYPE_CHECKING
 
 from homeassistant.util.hass_dict import HassKey
 
+from .module import python_module_path
+
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers.trigger import Trigger
@@ -36,9 +38,7 @@ async def async_get_triggers(
         for module_file in Path(__file__).parent.rglob("ectoplasms/*/triggers/*.py"):
             if module_file.name == "__init__.py":
                 continue
-            module_path = str(module_file.relative_to(Path(__file__).parent))[
-                :-3
-            ].replace("/", ".")
+            module_path = python_module_path(module_file)
             module = importlib.import_module(f".{module_path}", __package__)
             triggers[module.SpookTrigger.trigger] = module.SpookTrigger
 
