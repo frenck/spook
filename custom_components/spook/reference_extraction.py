@@ -18,13 +18,15 @@ from dataclasses import dataclass, field
 import re
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.const import ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
+from homeassistant.const import CONF_ENABLED, ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
 from homeassistant.core import callback
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .template_extraction import is_template_string
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from homeassistant.core import HomeAssistant
 
 # Direct reference keys, mapped to their reference type.
@@ -144,6 +146,40 @@ def extract_targets_from_config(config: Any) -> ExtractedTargets:
     targets = ExtractedTargets()
     _walk(config, targets)
     return targets
+
+
+def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
+    """Return a copy of ``config`` without its disabled steps.
+
+    A step, trigger or condition carrying ``enabled: false`` sits in a list,
+    and is left out of the copy. Nothing under a ``data`` key is touched:
+    service data is arbitrary payload, and a dict in there with an
+    ``enabled`` key of its own is not a step. The same rule the action
+    extractor follows.
+    """
+    if isinstance(config, list):
+        return [
+            without_disabled_steps(item, in_payload=in_payload)
+            for item in config
+            if in_payload
+            or not (isinstance(item, dict) and item.get(CONF_ENABLED) is False)
+        ]
+    if isinstance(config, dict):
+        return {
+            key: without_disabled_steps(value, in_payload=in_payload or key == "data")
+            for key, value in config.items()
+        }
+    return config
+
+
+def only_in_disabled_steps(config: Any, extract: Callable[[Any], set[str]]) -> set[str]:
+    """Return what ``extract`` finds in ``config`` only in disabled steps.
+
+    A disabled step does nothing, and people disable one on purpose to park
+    it. What only such a step names cannot break a run, so it is not worth a
+    repair; what a step that runs names as well still is.
+    """
+    return extract(config) - extract(without_disabled_steps(config))
 
 
 # Additional keys whose subtree carries payload or opaque data when

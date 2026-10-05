@@ -8,7 +8,10 @@ from homeassistant.components import automation
 from homeassistant.helpers import label_registry as lr
 
 from ....entity_filtering import async_filter_known_label_ids, async_get_all_label_ids
-from ....reference_extraction import extract_targets_from_config
+from ....reference_extraction import (
+    extract_targets_from_config,
+    only_in_disabled_steps,
+)
 from . import AbstractSpookAutomationReferencesRepair
 
 if TYPE_CHECKING:
@@ -44,6 +47,10 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         # references nested in some step types, like repeat sequences.
         if raw_config := getattr(entity, "raw_config", None):
             label_ids.update(extract_targets_from_config(raw_config).label_ids)
+            # A disabled step does nothing, so what only it names is left out.
+            label_ids -= only_in_disabled_steps(
+                raw_config, lambda found: extract_targets_from_config(found).label_ids
+            )
 
         return async_filter_known_label_ids(
             self.hass,
