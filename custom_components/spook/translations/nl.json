@@ -2151,7 +2151,202 @@
             }
         },
         "calendar_delete_event": {
-            "name": "Afspraak verwijderen"
+            "name": "Afspraak verwijderen",
+            "description": "Verwijdert gebeurtenissen uit een agenda op basis van hun titel of uid binnen een bepaald tijdsbestek. Geeft de verwijderde gebeurtenissen terug, inclusief hun uid.",
+            "fields": {
+                "duration": {
+                    "name": "Duur",
+                    "description": "Hoe ver moet er vanaf het begin worden gekeken? Geef dit op, of een einddatum en -tijdstip."
+                },
+                "end_date_time": {
+                    "name": "Einddatum en -tijd"
+                },
+                "whole_series": {
+                    "description": "Bij een terugkerende gebeurtenis, verwijder de volledige reeks, ipv enkel de gebeurtenis die gevonden werd."
+                },
+                "start_date_time": {
+                    "name": "Startdatum en -tijd"
+                },
+                "summary": {
+                    "name": "Samenvatting",
+                    "description": "De titel van de gebeurtenissen die moeten worden verwijderd, precies zoals die in de kalender staat."
+                },
+                "uid": {
+                    "description": "De identificatiecode van de gebeurtenis die je wilt verwijderen, voor het geval je die hebt."
+                }
+            }
+        },
+        "todo_move_item": {
+            "fields": {
+                "position": {
+                    "description": "Plaats het boven- of onderaan de lijst. Vermeld dit, of een ander item om het achter te plaatsen.",
+                    "name": "Positie"
+                },
+                "after": {
+                    "name": "Na"
+                },
+                "item": {
+                    "name": "Item",
+                    "description": "De titel of uid van het item dat verplaatst moet worden."
+                }
+            },
+            "description": "Plaatst een item in een to-do lijst bovenaan, onderaan of achter een ander item.",
+            "name": "Verplaats een item"
+        },
+        "cover_decrease_position": {
+            "description": "Beweegt de verduistering een stap verder gesloten, stopt wanneer volledig dicht.",
+            "name": "Verlaag positie",
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel procent moet het worden aangepast? Tien procent wanneer niet ingevuld.",
+                    "name": "Stap"
+                }
+            }
+        },
+        "cover_increase_position": {
+            "description": "Beweegt een verduistering een stap verder open, stoppend wanneer volledig open.",
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel procent moet het worden aangepast? Tien procent wanneer niet ingevuld.",
+                    "name": "Stap"
+                }
+            },
+            "name": "Verhoog positie"
+        },
+        "valve_decrease_position": {
+            "description": "Draait een klep een stap verder dicht, stoppend wanneer volledig dicht.",
+            "name": "Verlaag positie",
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel procent moet het worden aangepast? Tien procent wanneer niet ingevuld.",
+                    "name": "Stap"
+                }
+            }
+        },
+        "valve_increase_position": {
+            "description": "Draait een klep verder open, stoppend wanneer volledig open.",
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel procent moet het worden aangepast? Tien procent wanneer niet ingevuld.",
+                    "name": "Stap"
+                }
+            },
+            "name": "Verhoog positie"
+        },
+        "calendar_update_event": {
+            "fields": {
+                "new_summary": {
+                    "name": "Nieuwe samenvatting"
+                },
+                "description": {
+                    "name": "Omschrijving",
+                    "description": "De omschrijving voor de gebeurtenissen"
+                },
+                "duration": {
+                    "name": "Duur",
+                    "description": "Hoe ver moet er vanaf het begin worden gekeken? Geef dit op, of een einddatum en -tijdstip."
+                },
+                "end_date_time": {
+                    "name": "Enddatum en -tijd"
+                },
+                "location": {
+                    "name": "Locatie",
+                    "description": "De locatie voor de gebeurtenissen"
+                },
+                "shift": {
+                    "description": "Verschuif de gebeurtenissen met deze tijd, later of – bij een negatieve waarde – eerder. In plaats van een nieuw begin- of eindtijdstip.",
+                    "name": "Verschuif"
+                },
+                "new_end": {
+                    "name": "Nieuw einde"
+                },
+                "new_start": {
+                    "name": "Nieuwe start"
+                },
+                "start_date_time": {
+                    "name": "Startdatum en -tijd"
+                },
+                "summary": {
+                    "name": "Samenvatting",
+                    "description": "De titel van de gebeurtenissen die moeten worden aangepast, precies zoals die in de kalender staat."
+                },
+                "uid": {
+                    "description": "De identificatiecode van de gebeurtenis die je wilt wijzigen, voor het geval je die hebt."
+                }
+            },
+            "description": "Wijzigt gebeurtenissen in een kalender, die op basis van hun titel of uid binnen een bepaald tijdsbestek worden gevonden. Geeft de gewijzigde gegevens terug, inclusief de uid."
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Verlaag vochtigheid",
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel procent moet de waarde worden aangepast? Laat dit veld leeg om de standaardinstelling van de luchtbevochtiger te gebruiken, of vul 1 procent in als er geen standaardinstelling is.",
+                    "name": "Stap"
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Verlaag temperatuur",
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel moet je het aanpassen? Laat leegf om de eigen instelling van de thermostaat te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
+                    "name": "Stap"
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Verlaag temperatuur",
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel moet je het aanpassen? Laat leegf om de eigen instelling van de ketel te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
+                    "name": "Stap"
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Verlaag volume",
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel procent moet het volume worden aangepast?",
+                    "name": "Stap"
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel procent moet de waarde worden aangepast? Laat dit veld leeg om de standaardinstelling van de luchtbevochtiger te gebruiken, of vul 1 procent in als er geen standaardinstelling is.",
+                    "name": "Stap"
+                }
+            },
+            "name": "Verhoog vochtigheid"
+        },
+        "media_player_increase_volume": {
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel procent moet het volume worden aangepast?",
+                    "name": "Stap"
+                }
+            },
+            "name": "Verhoog volume"
+        },
+        "climate_increase_temperature": {
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel moet je het aanpassen? Laat leegf om de eigen instelling van de thermostaat te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
+                    "name": "Stap"
+                }
+            },
+            "name": "Verhoog temperatuur"
+        },
+        "water_heater_increase_temperature": {
+            "fields": {
+                "step": {
+                    "description": "Met hoeveel moet je het aanpassen? Laat leegf om de eigen instelling van de ketel te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
+                    "name": "Stap"
+                }
+            },
+            "name": "Verhoog temperatuur"
         }
     },
     "conditions": {
