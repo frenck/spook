@@ -58,6 +58,7 @@ from .helper_sources import (
     async_unknown_helper_sources,
     async_unknown_min_max_members,
 )
+from .module import python_module_path
 from .reference_extraction import async_collect_mentioned_strings
 from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
 from .statistics_sources import async_settled_orphaned_statistic_ids
@@ -113,7 +114,7 @@ def _fingerprint(references: Iterable[str]) -> str:
     Each one is written down with its length in front of it, so that the
     digest reads two different sets two different ways. Joining them with a
     separator does not: a reference holding that separator borrows the one
-    next to it, and `{"a\nb", "c"}` and `{"a", "b\nc"}` come out identical.
+    next to it, and {"a\nb", "c"} and {"a", "b\nc"} come out identical.
     Entity IDs cannot do that, but resource URLs, notifier names and
     customize keys are whatever somebody typed.
     """
@@ -686,9 +687,7 @@ class SpookRepairManager:
             for module_file in Path(__file__).parent.rglob("ectoplasms/*/repairs/*.py"):
                 if module_file.name == "__init__.py":
                     continue
-                module_path = str(module_file.relative_to(Path(__file__).parent))[
-                    :-3
-                ].replace("/", ".")
+                module_path = python_module_path(module_file)
                 modules.append(importlib.import_module(f".{module_path}", __package__))
 
         await self.hass.async_add_import_executor_job(_load_all_repair_modules)
