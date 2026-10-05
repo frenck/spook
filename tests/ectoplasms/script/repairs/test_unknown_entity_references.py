@@ -263,3 +263,53 @@ async def test_a_script_with_only_known_entities_is_clean(hass: HomeAssistant) -
     }
 
     assert await _unknown_in_script(hass, scripts, "evening") == set()
+
+
+async def test_an_entity_only_a_disabled_step_names_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """A disabled step does nothing, so what only it names is not a problem.
+
+    People disable a step on purpose, to park it. Reporting what it names is
+    the noise discussion #1093 asks to be rid of.
+    """
+    scripts = {
+        "evening": {
+            "sequence": [
+                {
+                    "enabled": False,
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.xparked"},
+                    "data": {
+                        "brightness": "{{ state_attr('light.xtemplated', 'level') }}"
+                    },
+                },
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.fireplace_pots"},
+                },
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == set()
+
+
+async def test_an_entity_a_running_step_names_too_is_still_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Named by a step that runs as well, it can still break the script."""
+    scripts = {
+        "evening": {
+            "sequence": [
+                {
+                    "enabled": False,
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.xbroken"},
+                },
+                {"action": "light.turn_off", "target": {"entity_id": "light.xbroken"}},
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == {"light.xbroken"}

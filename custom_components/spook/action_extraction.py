@@ -236,6 +236,40 @@ async def _extract_entities_from_nested_configs(
     return entities
 
 
+async def async_extract_entities_only_in_disabled_steps(
+    hass: HomeAssistant,
+    configs: list[Any],
+    *,
+    known_services: set[str] | None = None,
+) -> set[str]:
+    """Return the entities nothing but a disabled step references.
+
+    A step, trigger or condition carrying ``enabled: false`` does nothing, and
+    people disable one on purpose to park it. An entity that only such a step
+    names cannot break a run, so it is not worth a repair. One that a step
+    that runs names as well still is.
+
+    Each item in ``configs`` is a list of steps, triggers or conditions, read
+    with and without the disabled ones; what only the first read finds is the
+    answer.
+    """
+    if known_services is None:
+        known_services = async_get_all_services(hass)
+
+    everything: set[str] = set()
+    running: set[str] = set()
+    for config in configs:
+        if not config:
+            continue
+        everything |= await async_extract_entities_from_action_config(
+            hass, config, known_services=known_services
+        )
+        running |= await async_extract_entities_from_action_config(
+            hass, config, include_disabled=False, known_services=known_services
+        )
+    return everything - running
+
+
 async def async_extract_entities_from_value(
     hass: HomeAssistant,
     value: Any,

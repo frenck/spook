@@ -8,7 +8,10 @@ from homeassistant.components import script
 from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.helpers import entity_registry as er
 
-from ....action_extraction import async_extract_entities_from_action_config
+from ....action_extraction import (
+    async_extract_entities_from_action_config,
+    async_extract_entities_only_in_disabled_steps,
+)
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import (
@@ -174,6 +177,15 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
                 self.hass, entity, self._known_services
             )
         )
+
+        # Home Assistant's own list includes disabled steps too. A step parked
+        # that way does nothing, so what only it names is left out.
+        if isinstance(raw_config, dict):
+            all_entities -= await async_extract_entities_only_in_disabled_steps(
+                self.hass,
+                [raw_config.get("sequence")],
+                known_services=self._known_services,
+            )
 
         return await async_filter_known_entity_ids_with_templates(
             self.hass,

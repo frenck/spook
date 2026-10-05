@@ -11,6 +11,7 @@ from homeassistant.helpers import entity_registry as er
 from ....action_extraction import (
     async_extract_entities_from_action_config,
     async_extract_entities_from_value,
+    async_extract_entities_only_in_disabled_steps,
 )
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....template_extraction import (
@@ -313,6 +314,26 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
                 self.hass, entity, self._known_services
             )
         )
+
+        # Home Assistant's own list includes disabled steps, triggers and
+        # conditions too. Something parked that way does nothing, so what only
+        # it names is left out of the report.
+        if isinstance(raw_config := getattr(entity, "raw_config", None), dict):
+            all_entities -= await async_extract_entities_only_in_disabled_steps(
+                self.hass,
+                [
+                    raw_config.get(key)
+                    for key in (
+                        "trigger",
+                        "triggers",
+                        "condition",
+                        "conditions",
+                        "action",
+                        "actions",
+                    )
+                ],
+                known_services=self._known_services,
+            )
 
         return await async_filter_known_entity_ids_with_templates(
             self.hass,
