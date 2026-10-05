@@ -11,6 +11,7 @@ import pytest
 import yaml
 
 from custom_components.spook.const import DOMAIN
+from custom_components.spook.module import python_module_path
 from custom_components.spook.repairs import AbstractSpookRepairBase
 from custom_components.spook.services import (
     AbstractSpookServiceBase,
@@ -62,6 +63,24 @@ def _service_schema_key(service_class: type[Any]) -> str:
     if service_class.domain == DOMAIN:
         return service_class.service
     return f"{service_class.domain}_{service_class.service}"
+
+
+@pytest.mark.parametrize(
+    ("path", "expected"),
+    [
+        (
+            SPOOK_ROOT / "ectoplasms" / "alert" / "__init__.py",
+            "ectoplasms.alert",
+        ),
+        (
+            SPOOK_ROOT / "ectoplasms" / "example" / "services" / "test.py",
+            "ectoplasms.example.services.test",
+        ),
+    ],
+)
+def test_python_module_path(path: Path, expected: str) -> None:
+    """Test filesystem paths are converted to Python module paths."""
+    assert python_module_path(path) == expected
 
 
 @pytest.mark.parametrize("module_file", SERVICE_MODULES, ids=_module_name)
