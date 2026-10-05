@@ -585,7 +585,6 @@ sequence:
 mode: single
 ```
 
-That template will find the area ID of the area with the name "Living room".
 :::
 
 ### Rename an entity

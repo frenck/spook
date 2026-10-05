@@ -214,9 +214,13 @@ Decrease an input number entity value by a certain amount.
   - {term}`integer <integer>`
   - No
   - Defaults to configured step value
+* - `cycle`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
 ```
 
-This action already exists but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the action will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
+This action already exists but is extended by Spook to add the `amount` and `cycle` attributes. If the `amount` attribute is not provided, the action will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value. With `cycle`, going past the end of the range carries on from the other end, the same way selecting the next option cycles a select.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -270,9 +274,13 @@ Increase an input number entity value by a certain amount.
   - {term}`integer <integer>`
   - No
   - Defaults to configured step value
+* - `cycle`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
 ```
 
-This action already exists but is extended by Spook to add the `amount` attribute. If the `amount` attribute is not provided, the action will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value.
+This action already exists but is extended by Spook to add the `amount` and `cycle` attributes. If the `amount` attribute is not provided, the action will use the step value of the input number entity. The `amount` attribute must be a multiple of the step value. With `cycle`, going past the end of the range carries on from the other end, the same way selecting the next option cycles a select.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
