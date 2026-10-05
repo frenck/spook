@@ -257,7 +257,28 @@ async def test_before_2026_10_targets_are_handed_over_as_loaded(
     Those do not validate a target registered in code, and serve it as it
     was given. Written, its features would reach the frontend as text.
     """
+    monkeypatch.setattr(core_compat, "MAJOR_VERSION", 2026)
     monkeypatch.setattr(core_compat, "MINOR_VERSION", 9)
+    integration = await async_get_integration(hass, "spook")
+    descriptions = await hass.async_add_executor_job(
+        load_service_descriptions, integration
+    )
+
+    assert descriptions["cover_increase_position"]["target"] == {
+        "entity": [{"domain": ["cover"], "supported_features": [4]}]
+    }
+
+
+async def test_a_description_missing_from_the_file_keeps_its_loaded_target(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a mismatch between the two reads does not stop Spook setting up.
+
+    Both read the same file and agree. Should they ever not, failing here
+    would take every one of Spook's actions down with it.
+    """
+    monkeypatch.setattr(core_compat, "load_yaml_dict", lambda _path: {})
     integration = await async_get_integration(hass, "spook")
     descriptions = await hass.async_add_executor_job(
         load_service_descriptions, integration

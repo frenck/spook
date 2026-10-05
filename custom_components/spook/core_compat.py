@@ -37,8 +37,12 @@ def load_service_descriptions(integration: Integration) -> dict[str, Any]:
 
     written = load_yaml_dict(str(integration.file_path / "services.yaml"))
     for key, description in descriptions.items():
-        if description and "target" in description:
-            description["target"] = written[key]["target"]
+        # Read off the same file, so the two always agree. Should they ever
+        # not, the loaded target stays: setting up has to survive it, since
+        # failing here would take every one of Spook's actions down with it.
+        written_description = written.get(key) or {}
+        if description and "target" in description and "target" in written_description:
+            description["target"] = written_description["target"]
 
     return descriptions
 
