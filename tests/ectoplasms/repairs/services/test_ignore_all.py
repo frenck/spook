@@ -93,3 +93,40 @@ async def test_only_an_admin_can_change_what_everybody_sees(
         )
 
     assert _ignored(hass) == {"second"}
+
+
+async def test_a_domain_narrows_both_down(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+) -> None:
+    """Named integrations only: the rest is left as it was.
+
+    Discussion #316: getting rid of HACS asking for a restart after every
+    update, without ignoring everything else along with it.
+    """
+    ir.async_create_issue(
+        hass,
+        "hacs",
+        "restart_required",
+        is_fixable=False,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="restart_required",
+    )
+    context = Context(user_id=hass_admin_user.id)
+
+    await hass.services.async_call(
+        DOMAIN, "ignore_all", {"domain": "hacs"}, blocking=True, context=context
+    )
+    assert _ignored(hass) == {"restart_required"}
+
+    await hass.services.async_call(
+        DOMAIN, "ignore_all", {}, blocking=True, context=context
+    )
+    await hass.services.async_call(
+        DOMAIN,
+        "unignore_all",
+        {"domain": ["hacs", "not_raising_anything"]},
+        blocking=True,
+        context=context,
+    )
+    assert _ignored(hass) == {"first", "second"}
