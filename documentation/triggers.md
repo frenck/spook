@@ -69,6 +69,12 @@ Fires once a trigger has stopped firing for a while, so a burst of them arrives 
 
 `spook.debounce`, [documentation](other-features#once-it-settles) 📚
 
+## Position reached
+
+Fires when a cover or valve gets to a position, or moves past it: the blinds at a third, the valve half open. _#cover_ _#valve_ _#position_
+
+`spook.position_reached`, [documentation](other-features#position-reached) 📚
+
 ## Repair issue created
 
 Fires when a new repair issue turns up, so you hear about one without visiting the repairs page. Can be narrowed by integration and severity. _#repairs_ _#issue_

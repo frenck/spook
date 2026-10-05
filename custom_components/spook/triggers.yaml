@@ -17,6 +17,22 @@ stale:
         duration:
 
 device_added:
+position_reached:
+  target:
+    entity:
+      - domain: cover
+      - domain: valve
+  fields:
+    position:
+      required: true
+      example: 30
+      selector:
+        number:
+          min: 0
+          max: 100
+          step: 1
+          unit_of_measurement: "%"
+          mode: slider
 script_started:
   target:
     entity:
