@@ -99,6 +99,39 @@ async def test_a_component_loaded_later_gets_its_actions(hass: HomeAssistant) ->
     manager.async_on_unload()
 
 
+async def test_a_component_loaded_while_spook_sets_up_gets_its_actions(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a component that loads while Spook is still setting up counts.
+
+    Setting up waits on the translations after the services are parked. A
+    component that finishes loading right then is announced before a
+    listener set up after that wait could hear it, and its actions would
+    wait for good.
+    """
+    manager = SpookServiceManager(hass)
+    inject = manager.async_inject_service_translations
+    loaded = False
+
+    async def _todo_loads_meanwhile() -> None:
+        nonlocal loaded
+        if not loaded:
+            loaded = True
+            assert await async_setup_component(hass, "todo", {})
+        await inject()
+
+    monkeypatch.setattr(
+        manager, "async_inject_service_translations", _todo_loads_meanwhile
+    )
+    await manager.async_setup()
+    await hass.async_block_till_done()
+
+    assert hass.services.has_service("todo", "move_item")
+
+    manager.async_on_unload()
+
+
 async def test_a_component_never_loaded_logs_nothing(
     hass: HomeAssistant,
     caplog: pytest.LogCaptureFixture,

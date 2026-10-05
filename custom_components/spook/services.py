@@ -364,10 +364,10 @@ class SpookServiceManager:
 
         await self.hass.async_add_import_executor_job(_load_all_service_modules)
 
-        for module in modules:
-            self._async_setup_service_module(module)
-
-        await self.async_inject_service_translations()
+        # Listening starts before anything is parked, and nothing between here
+        # and the end of the loop below waits on anything. A domain that loads
+        # in the meantime is either there for the loop to register straight
+        # away, or loads afterwards with the listener already in place.
         self._listeners = [
             self.hass.bus.async_listen(
                 EVENT_COMPONENT_LOADED,
@@ -378,6 +378,11 @@ class SpookServiceManager:
                 self._async_core_config_updated,
             ),
         ]
+
+        for module in modules:
+            self._async_setup_service_module(module)
+
+        await self.async_inject_service_translations()
 
     @callback
     def _async_setup_service_module(self, module: ModuleType) -> None:
