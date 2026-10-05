@@ -41,6 +41,7 @@ from homeassistant.setup import ATTR_COMPONENT
 from .const import DOMAIN, LOGGER
 
 if TYPE_CHECKING:
+    import asyncio
     from collections.abc import Callable
     from types import ModuleType
 
@@ -328,7 +329,9 @@ class SpookServiceManager:
     _waiting_for_domain: dict[str, list[AbstractSpookService]] = field(
         default_factory=dict
     )
-    _listeners: list[Callable[[], None]] = field(default_factory=list)
+    # Everything to undo on unload: the listeners, and any translation
+    # injection still on its way.
+    _on_unload: list[Callable[[], None]] = field(default_factory=list)
 
     def __post_init__(self) -> None:
         """Post initialization."""
@@ -368,7 +371,7 @@ class SpookServiceManager:
         # and the end of the loop below waits on anything. A domain that loads
         # in the meantime is either there for the loop to register straight
         # away, or loads afterwards with the listener already in place.
-        self._listeners = [
+        self._on_unload = [
             self.hass.bus.async_listen(
                 EVENT_COMPONENT_LOADED,
                 self._async_component_loaded,
@@ -463,10 +466,30 @@ class SpookServiceManager:
 
         # The descriptions went in with the registration, the translations did
         # not: those are injected for every registered service in one go.
-        self.hass.async_create_task(
+        self._async_reinject_service_translations()
+
+    @callback
+    def _async_reinject_service_translations(self) -> None:
+        """Inject the translations again, in a task unloading cancels.
+
+        Injecting waits on loading translations before it writes anything.
+        Left running through an unload, it would write Spook's strings back
+        for actions that were just taken away, after unload put the originals
+        back.
+        """
+        task = self.hass.async_create_task(
             self.async_inject_service_translations(),
             "Inject Spook service translations",
         )
+        self._on_unload.append(task.cancel)
+
+        @callback
+        def _finished(_task: asyncio.Task[None]) -> None:
+            # Already gone when unloading cleared the list and cancelled it.
+            if task.cancel in self._on_unload:
+                self._on_unload.remove(task.cancel)
+
+        task.add_done_callback(_finished)
 
     @callback
     def async_register_service(self, service: AbstractSpookService) -> bool:
@@ -710,11 +733,12 @@ class SpookServiceManager:
                 cached_spook_selector_translations,
             )
 
-    async def _async_core_config_updated(self, event: Event) -> None:
+    @callback
+    def _async_core_config_updated(self, event: Event) -> None:
         """Re-inject service translations when the language changes."""
         if "language" not in event.data:
             return
-        await self.async_inject_service_translations()
+        self._async_reinject_service_translations()
 
     @callback
     def async_clear_service_translation_overrides(self) -> None:
@@ -749,9 +773,10 @@ class SpookServiceManager:
     def async_on_unload(self) -> None:
         """Tear down the Spook services."""
         LOGGER.debug("Tearing down Spook services")
-        for unsub in self._listeners:
-            unsub()
-        self._listeners.clear()
+        # A copy, as cancelling a finished injection takes it off the list.
+        for undo in list(self._on_unload):
+            undo()
+        self._on_unload.clear()
         self._waiting_for_domain.clear()
 
         for service in self._services:

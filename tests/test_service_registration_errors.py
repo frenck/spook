@@ -3,13 +3,15 @@
 # pylint: disable=protected-access,wrong-import-order
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import asyncio
+from typing import TYPE_CHECKING, Any
 
 from homeassistant.helpers.service import async_get_cached_service_description
 from homeassistant.helpers.translation import async_get_cached_translations
 from homeassistant.setup import async_setup_component
 import pytest
 
+from custom_components.spook import services
 from custom_components.spook.services import (
     AbstractSpookEntityComponentService,
     AbstractSpookEntityService,
@@ -130,6 +132,39 @@ async def test_a_component_loaded_while_spook_sets_up_gets_its_actions(
     assert hass.services.has_service("todo", "move_item")
 
     manager.async_on_unload()
+
+
+async def test_an_injection_still_running_at_unload_writes_nothing(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test unloading stops a translation injection that is still under way.
+
+    Injecting waits on loading translations before it writes. Left to finish
+    after unload put the originals back, it would write Spook's strings again
+    for an action that was just taken away.
+    """
+    gate = asyncio.Event()
+    gate.set()
+    load = services.async_get_translations
+
+    async def _held_up(*args: Any, **kwargs: Any) -> dict[str, str]:
+        await gate.wait()
+        return await load(*args, **kwargs)
+
+    monkeypatch.setattr(services, "async_get_translations", _held_up)
+
+    manager = SpookServiceManager(hass)
+    await manager.async_setup()
+
+    gate.clear()
+    assert await async_setup_component(hass, "todo", {})
+    manager.async_on_unload()
+    gate.set()
+    await hass.async_block_till_done()
+
+    translations = async_get_cached_translations(hass, "en", "services", "todo")
+    assert "component.todo.services.move_item.name" not in translations
 
 
 async def test_a_component_never_loaded_logs_nothing(
