@@ -1,5 +1,5 @@
 {
-    "title": "Inverso 👻",
+    "title": "Invertir 👻",
     "config": {
         "step": {
             "switch": {
@@ -8,15 +8,17 @@
                     "hide_source": "Ocultar entidad origen",
                     "entity_id": "Entidad origen"
                 },
-                "title": "Inverso 👻"
+                "title": "Invertir 👻"
             },
             "user": {
                 "description": "Este ayudante te permite invertir el comportamiento de una entidad. Por ejemplo, invertir abrir/cerrar o encender/apagar de sensores binarios, e interruptores.",
                 "menu_options": {
                     "switch": "Invertir un interruptor",
-                    "binary_sensor": "Invertir un sensor binario"
+                    "binary_sensor": "Invertir un sensor binario",
+                    "cover": "Invertir una persiana",
+                    "valve": "Invertir una válvula"
                 },
-                "title": "Inverso 👻"
+                "title": "Invertir 👻"
             },
             "binary_sensor": {
                 "data": {
@@ -24,7 +26,24 @@
                     "name": "Nombre",
                     "entity_id": "Entidad origen"
                 },
-                "title": "Inverso 👻"
+                "title": "Invertir 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Entidad origen",
+                    "inverse_position": "Invertir apertura, cierre y poisición",
+                    "inverse_tilt": "Invertir inclinación",
+                    "name": "Nombre"
+                },
+                "title": "Invertir 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Entidad origen",
+                    "hide_source": "Ocultar entidad origen",
+                    "name": "Nombre"
+                },
+                "title": "Invertir 👻"
             }
         }
     },
@@ -36,15 +55,33 @@
                     "entity_id": "Entidad origen",
                     "name": "Nombre"
                 },
-                "title": "Inverso 👻"
+                "title": "Invertir 👻"
             },
             "binary_sensor": {
-                "title": "Inverso 👻",
+                "title": "Invertir 👻",
                 "data": {
                     "name": "Nombre",
                     "hide_source": "Ocultar entidad origen",
                     "entity_id": "Entidad origen"
                 }
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Entidad origen",
+                    "hide_source": "Ocultar entidad origen",
+                    "inverse_position": "Invertir apertura, cierre y posición",
+                    "inverse_tilt": "Invertir inclinación",
+                    "name": "Nombre"
+                },
+                "title": "Invertir 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Entidad origen",
+                    "hide_source": "Ocultar entidad origen",
+                    "name": "Nombre"
+                },
+                "title": "Invertir 👻"
             }
         }
     }
