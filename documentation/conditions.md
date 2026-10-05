@@ -45,6 +45,12 @@ Passes while a repair issue is outstanding, for holding something back until the
 
 `spook.repair_issue_present`, [documentation](other-features#repair-issue-outstanding) 📚
 
+## Temperature at its target
+
+Passes when the temperature of a thermostat or water heater is at its target: only if the bathroom is already warm. _#climate_ _#thermostat_ _#temperature_
+
+`spook.is_at_target_temperature`, [documentation](other-features#temperature-at-its-target) 📚
+
 ## Run allowance left
 
 Passes while this automation has run fewer than a given number of times within a given period. The counterpart to Cooldown: that one spaces runs out, this one caps them. _#quota_ _#ratelimit_

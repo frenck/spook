@@ -2,39 +2,29 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
-import math
 from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 
-from homeassistant.components.climate import (
-    ATTR_CURRENT_TEMPERATURE,
-    ATTR_TARGET_TEMP_HIGH,
-    ATTR_TARGET_TEMP_LOW,
-    DOMAIN as CLIMATE_DOMAIN,
-    HVACMode,
-)
-from homeassistant.components.water_heater import DOMAIN as WATER_HEATER_DOMAIN
-from homeassistant.const import (
-    ATTR_TEMPERATURE,
-    CONF_OPTIONS,
-    CONF_TARGET,
-    STATE_OFF,
-    STATE_UNAVAILABLE,
-    STATE_UNKNOWN,
-)
-from homeassistant.core import callback, split_entity_id
+from homeassistant.const import CONF_OPTIONS, CONF_TARGET
+from homeassistant.core import callback
 from homeassistant.helpers.event import async_track_state_change_event
 from homeassistant.helpers.target import TargetEntityChangeTracker, TargetSelection
 from homeassistant.helpers.trigger import Trigger
 
 from ....target_watching import watchable_target
+from ....temperature_targets import (
+    CONF_TOLERANCE,
+    Reading,
+    only_climate_and_water_heaters,
+    reading,
+    validate_tolerance,
+)
 
 if TYPE_CHECKING:
     from collections.abc import Callable
 
-    from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant, State
+    from homeassistant.core import CALLBACK_TYPE, Event, HomeAssistant
     from homeassistant.helpers.event import EventStateChangedData
     from homeassistant.helpers.trigger import (
         TriggerActionRunner,
@@ -43,115 +33,30 @@ if TYPE_CHECKING:
     )
     from homeassistant.helpers.typing import ConfigType
 
-CONF_TOLERANCE = "tolerance"
-
-_DOMAINS = (CLIMATE_DOMAIN, WATER_HEATER_DOMAIN)
-
-# A device that is off, or not there, has a setpoint it is not working
-# towards. The temperature drifting onto it is not the device reaching it.
-_NOT_WORKING = (STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN)
-
-
-def _tolerance(value: Any) -> float:
-    """Validate the tolerance, a distance from the target that still counts."""
-    tolerance = float(vol.Coerce(float)(value))
-    if not math.isfinite(tolerance) or tolerance < 0:
-        message = "The tolerance must be zero or more"
-        raise vol.Invalid(message)
-    return tolerance
-
-
 _TRIGGER_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_TARGET): watchable_target,
         vol.Optional(CONF_OPTIONS, default=dict): {
-            vol.Optional(CONF_TOLERANCE, default=0.0): _tolerance,
+            vol.Optional(CONF_TOLERANCE, default=0.0): validate_tolerance,
         },
     }
 )
 
 
-@dataclass(frozen=True, slots=True)
-class _Reading:
-    """Where a device is, and where it is heading."""
-
-    current: float
-    low: float
-    high: float
-
-    def at_target(self, tolerance: float) -> bool:
-        """Tell whether the temperature is at the target, give or take."""
-        return self.low - tolerance <= self.current <= self.high + tolerance
-
-    def same_target(self, other: _Reading) -> bool:
-        """Tell whether both readings were heading to the same place."""
-        return self.low == other.low and self.high == other.high
-
-
-def _number(value: Any) -> float | None:
-    """Return a finite number, or None for anything else."""
-    try:
-        number = float(value)
-    except TypeError, ValueError:
-        return None
-    return number if math.isfinite(number) else None
-
-
-def _reading(state: State | None) -> _Reading | None:
-    """Read the current temperature and the target off a state.
-
-    One setpoint is a target of one temperature. A range, as heating and
-    cooling to a band does, is reached anywhere inside it.
-
-    A thermostat that can do both reports both, whatever mode it is in. In
-    `heat_cool` the band is what it works towards, in any other mode the one
-    setpoint is, if it has one.
-    """
-    if state is None or state.state in _NOT_WORKING:
-        return None
-
-    attributes = state.attributes
-    if (current := _number(attributes.get(ATTR_CURRENT_TEMPERATURE))) is None:
-        return None
-
-    setpoint = _number(attributes.get(ATTR_TEMPERATURE))
-    low = _number(attributes.get(ATTR_TARGET_TEMP_LOW))
-    high = _number(attributes.get(ATTR_TARGET_TEMP_HIGH))
-
-    if (
-        low is not None
-        and high is not None
-        and (setpoint is None or state.state == HVACMode.HEAT_COOL)
-    ):
-        return _Reading(current, low, high)
-    if setpoint is not None:
-        return _Reading(current, setpoint, setpoint)
-    return None
-
-
-def _reached(before: _Reading, after: _Reading, tolerance: float) -> bool:
+def _reached(before: Reading, after: Reading, distance: float) -> bool:
     """Tell whether the temperature moving from before to after reached it.
 
     Getting there counts, and so does jumping past it: a sensor that reports
     in whole degrees, or a room that overshoots, can go from below the target
     to above it without ever reporting it.
     """
-    if before.at_target(tolerance):
+    if before.at_target(distance):
         return False
-    if after.at_target(tolerance):
+    if after.at_target(distance):
         return True
     return (before.current < after.low and after.current > after.high) or (
         before.current > after.high and after.current < after.low
     )
-
-
-def _only_climate_and_water_heaters(entity_ids: set[str]) -> set[str]:
-    """Keep what has a target temperature, as an area holds all sorts."""
-    return {
-        entity_id
-        for entity_id in entity_ids
-        if split_entity_id(entity_id)[0] in _DOMAINS
-    }
 
 
 # Everything here is called by the base class or by an event, so there is
@@ -169,7 +74,7 @@ class _TemperatureTracker(TargetEntityChangeTracker):
     ) -> None:
         """Initialize the tracker."""
         super().__init__(
-            hass, target_selection, entity_filter=_only_climate_and_water_heaters
+            hass, target_selection, entity_filter=only_climate_and_water_heaters
         )
         self._tolerance = tolerance
         self._on_reached = on_reached
@@ -215,8 +120,8 @@ class _TemperatureTracker(TargetEntityChangeTracker):
     @callback
     def _entity_changed(self, event: Event[EventStateChangedData]) -> None:
         """Compare where the temperature was with where it is now."""
-        before = _reading(event.data["old_state"])
-        after = _reading(event.data["new_state"])
+        before = reading(event.data["old_state"])
+        after = reading(event.data["new_state"])
 
         # Without a reading on both sides there is no movement to judge: a
         # device coming back, or switched on, did not just get somewhere.
