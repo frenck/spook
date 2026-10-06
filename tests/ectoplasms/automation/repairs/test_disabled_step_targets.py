@@ -83,3 +83,48 @@ async def test_only_what_a_running_step_names_is_reported(
     _key, _parked, broken = _KINDS[kind]
 
     assert await _unknown(hass, domain, kind) == {broken}
+
+
+async def test_a_variable_that_says_enabled_false_is_not_parked(
+    hass: HomeAssistant,
+) -> None:
+    """A running variable with an `enabled: false` key of its own is in use.
+
+    It is not a step, so what it names is not "only in a disabled step".
+    """
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": {
+                "id": "parked",
+                "alias": "parked",
+                "variables": {
+                    "settings": {
+                        "enabled": False,
+                        "lamps": "{{ device_entities('0000000000000000000000000000beef') }}",
+                    }
+                },
+                "triggers": [{"trigger": "event", "event_type": "go"}],
+                "actions": [
+                    {
+                        "enabled": False,
+                        "action": "light.turn_on",
+                        "target": {"device_id": "0000000000000000000000000000beef"},
+                    }
+                ],
+            }
+        },
+    )
+    await hass.async_block_till_done()
+
+    module = importlib.import_module(
+        "custom_components.spook.ectoplasms.automation.repairs.unknown_device_references"
+    )
+    entity = hass.data["automation"].get_entity("automation.parked")
+    repair = module.SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {
+        "0000000000000000000000000000beef"
+    }

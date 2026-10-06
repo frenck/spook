@@ -293,3 +293,23 @@ sequence:
     }
 
     assert await _unknown_in_script(hass, scripts, "evening") == {"light.xgone"}
+
+
+async def test_a_template_in_a_disabled_step_is_left_out(hass: HomeAssistant) -> None:
+    """A parked `wait_template` is parked too, like any other part of the step."""
+    scripts = {
+        "evening": {
+            "sequence": [
+                {
+                    "enabled": False,
+                    "wait_template": "{{ is_state('light.xmissing', 'on') }}",
+                },
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.fireplace_pots"},
+                },
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == set()

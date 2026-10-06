@@ -364,3 +364,19 @@ def test_without_disabled_steps_leaves_out_a_single_parked_step() -> None:
     assert without_disabled_steps(config) == {
         "triggers": {"trigger": "state", "entity_id": "light.a"}
     }
+
+
+def test_without_disabled_steps_leaves_variables_alone() -> None:
+    """Variables are payload: an `enabled` key in there is not a parked step."""
+    config = {
+        "variables": {
+            "settings": {"enabled": False, "lamp": "light.kitchen"},
+            "items": [{"enabled": False, "value": "{{ states('light.hall') }}"}],
+        },
+        "actions": [{"enabled": False, "action": "light.turn_on"}],
+    }
+
+    assert without_disabled_steps(config) == {
+        "variables": config["variables"],
+        "actions": [],
+    }
