@@ -8,10 +8,12 @@ import voluptuous as vol
 
 from homeassistant.components.zone import (
     DOMAIN,
+    ENTITY_ID_HOME,
     UPDATE_FIELDS,
     Zone,
     ZoneStorageCollection,
 )
+from homeassistant.const import CONF_LATITUDE, CONF_LONGITUDE, CONF_RADIUS
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityComponent
@@ -23,7 +25,7 @@ if TYPE_CHECKING:
 
 
 class SpookService(AbstractSpookAdminService):
-    """Zone service to update a zone on the fly."""
+    """Zone service to update a zone on the fly, the home zone included."""
 
     domain = DOMAIN
     service = "update"
@@ -50,6 +52,10 @@ class SpookService(AbstractSpookAdminService):
             message = f"Could not find entity_id: {call.data['entity_id']}"
             raise HomeAssistantError(message)
 
+        if call.data["entity_id"] == ENTITY_ID_HOME:
+            await self._async_update_home(call)
+            return
+
         # pylint: disable-next=protected-access
         if not entity.editable or "id" not in entity._config:  # noqa: SLF001
             message = f"This zone is not editable: {call.data['entity_id']}"
@@ -60,3 +66,35 @@ class SpookService(AbstractSpookAdminService):
 
         # pylint: disable-next=protected-access
         await collection.async_update_item(entity._config["id"], data)  # noqa: SLF001
+
+    async def _async_update_home(self, call: ServiceCall) -> None:
+        """Move or resize the home zone.
+
+        It is not a stored zone: Home Assistant draws it from the location
+        set for the whole house, and redraws it when that changes. So this
+        changes the location, the same way Home Assistant's own
+        `homeassistant.set_location` does, and the radius along with it.
+
+        Only those. Its name is the name of the whole house, and a home zone
+        is never passive.
+        """
+        data = dict(call.data)
+        data.pop("entity_id")
+
+        if unsupported := set(data) - {CONF_LATITUDE, CONF_LONGITUDE, CONF_RADIUS}:
+            message = (
+                "The home zone only takes a latitude, longitude and radius, "
+                f"not: {', '.join(sorted(unsupported))}"
+            )
+            raise HomeAssistantError(message)
+
+        # Home Assistant keeps the radius of the house in whole meters.
+        # Cutting a fraction off quietly would be a different zone than was
+        # asked for.
+        if CONF_RADIUS in data:
+            if data[CONF_RADIUS] != int(data[CONF_RADIUS]):
+                message = "The home zone takes its radius in whole meters"
+                raise HomeAssistantError(message)
+            data[CONF_RADIUS] = int(data[CONF_RADIUS])
+
+        await self.hass.config.async_update(**data)
