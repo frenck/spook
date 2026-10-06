@@ -73,6 +73,8 @@ Dashboards are inspected for the {term}`actions <performing actions>` their butt
 
 This usually happens when a script was renamed or removed, or when the integration providing the action was removed. Spook looks again when an integration loads and when actions come and go, so an integration that takes a while to start does not leave a repair issue behind.
 
+Actions of an integration you disabled are not reported: switched off on purpose is not gone. Once you enable the integration again, they are checked as usual.
+
 To resolve the raised issue, edit the dashboard and remove or replace the actions that no longer exist. Spook will automatically remove the repair issue once the issue is fixed.
 
 :::{attention} Known limitations

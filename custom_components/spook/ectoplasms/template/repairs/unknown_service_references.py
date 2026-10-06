@@ -31,7 +31,10 @@ class SpookRepair(AbstractSpookRepair):
         EVENT_SERVICE_REGISTERED,
         EVENT_SERVICE_REMOVED,
     }
-    inspect_config_entry_changed = "template"
+    # Any integration, not just template: whether an action counts as missing
+    # depends on whether the integration providing it is disabled, and that
+    # can change without an action coming or going.
+    inspect_config_entry_changed = True
     inspect_on_reload = "template"
     automatically_clean_up_issues = True
 

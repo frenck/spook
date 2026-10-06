@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING
 
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
+from homeassistant.config_entries import ConfigEntryDisabler
 from homeassistant.helpers import (
     config_validation as cv,
     device_registry as dr,
@@ -95,6 +96,46 @@ async def test_templated_action_names_are_not_reported_unknown(
     found = async_find_services_in_sequence(sequence)
 
     assert async_filter_known_services(hass, services=found) == {"notify.ghost"}
+
+
+def test_actions_of_a_disabled_integration_are_not_unknown(
+    hass: HomeAssistant,
+) -> None:
+    """Switched off on purpose is not gone.
+
+    Disabling an integration takes its actions with it, and an automation
+    calling one is not broken: it is waiting for the integration to come back.
+    """
+    MockConfigEntry(domain="webostv", disabled_by=ConfigEntryDisabler.USER).add_to_hass(
+        hass
+    )
+
+    assert async_filter_known_services(
+        hass, services={"webostv.button", "notify.ghost"}
+    ) == {"notify.ghost"}
+
+
+def test_one_enabled_entry_keeps_the_integration_counted(
+    hass: HomeAssistant,
+) -> None:
+    """With another entry still on, a missing action is really missing."""
+    MockConfigEntry(domain="webostv", disabled_by=ConfigEntryDisabler.USER).add_to_hass(
+        hass
+    )
+    MockConfigEntry(domain="webostv").add_to_hass(hass)
+
+    assert async_filter_known_services(hass, services={"webostv.button"}) == {
+        "webostv.button"
+    }
+
+
+def test_an_integration_without_entries_is_not_disabled(
+    hass: HomeAssistant,
+) -> None:
+    """No config entries at all is not a choice someone made."""
+    assert async_filter_known_services(hass, services={"webostv.button"}) == {
+        "webostv.button"
+    }
 
 
 def test_registered_device_ids_are_known(

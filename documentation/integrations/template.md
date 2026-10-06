@@ -41,6 +41,7 @@ helper and the unavailable action.
 To resolve the issue, open the linked helper, update the action to one provided
 by Home Assistant, or restore the integration or script that provided it.
 Templated action names are ignored because their value is determined at runtime.
+Actions of an integration you disabled are ignored too, until you enable it again.
 Spook automatically removes the repair issue once it is fixed.
 
 ## Feature requests, ideas, and support

@@ -5,8 +5,16 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
+from types import SimpleNamespace
 
-from pytest_homeassistant_custom_component.common import MockConfigEntry
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    MockModule,
+    mock_integration,
+)
+
+from homeassistant.config_entries import ConfigEntryDisabler
+from homeassistant.setup import async_setup_component
 
 from custom_components.spook.ectoplasms.template.repairs.unknown_service_references import (
     SpookRepair,
@@ -279,3 +287,73 @@ async def test_issue_clears_once_the_action_exists(
     await repair._async_inspect_with_cleanup()
 
     assert async_issue_about(issue_registry, _issue_id(entry)) is None
+
+
+def _tv_button(hass: HomeAssistant) -> MockConfigEntry:
+    """Add a template button pressing the button of a TV."""
+    entry = MockConfigEntry(
+        domain="template",
+        title="Mute the TV",
+        options={
+            "name": "Mute the TV",
+            "template_type": "button",
+            "press": [{"action": "tv_remote.button"}],
+        },
+    )
+    entry.add_to_hass(hass)
+    return entry
+
+
+async def test_an_action_of_a_disabled_integration_is_not_reported(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """Test the action shows up again once the integration is gone for real."""
+    entry = _tv_button(hass)
+    mock_integration(hass, MockModule("tv_remote"))
+    tv = MockConfigEntry(domain="tv_remote", disabled_by=ConfigEntryDisabler.USER)
+    tv.add_to_hass(hass)
+
+    repair = SpookRepair(hass)
+    await repair._async_inspect_with_cleanup()
+    assert async_issue_about(issue_registry, _issue_id(entry)) is None
+
+    await hass.config_entries.async_remove(tv.entry_id)
+    await repair._async_inspect_with_cleanup()
+
+    assert async_issue_about(issue_registry, _issue_id(entry))
+
+
+async def test_removing_a_disabled_integration_is_looked_at(
+    hass: HomeAssistant,
+) -> None:
+    """Test removing a disabled integration schedules an inspection.
+
+    Its actions were gone already, so no action event comes along to tell
+    the repair that they are now missing for real. The integration is loaded
+    up front, as it would be, so loading it is no reason to look either.
+    """
+    mock_integration(hass, MockModule("tv_remote"))
+    assert await async_setup_component(hass, "tv_remote", {})
+    tv = MockConfigEntry(domain="tv_remote", disabled_by=ConfigEntryDisabler.USER)
+    tv.add_to_hass(hass)
+
+    repair = SpookRepair(hass)
+    await repair.async_activate()
+    repair.inspect_debouncer.async_shutdown()
+    calls = 0
+
+    async def async_call() -> None:
+        """Capture scheduled inspections."""
+        nonlocal calls
+        calls += 1
+
+    repair.inspect_debouncer = SimpleNamespace(
+        async_call=async_call, async_shutdown=lambda: None
+    )
+
+    await hass.config_entries.async_remove(tv.entry_id)
+    await hass.async_block_till_done()
+    await repair.async_deactivate()
+
+    assert calls
