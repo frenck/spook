@@ -132,6 +132,56 @@ async def test_area_referenced_by_automation_is_not_reported(
     assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id)) is None
 
 
+def _map_to_vacuum(
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+    area_name: str,
+) -> str:
+    """Map the rooms of a vacuum to a new area, as its settings do."""
+    area = area_registry.async_create(area_name)
+    vacuum = entity_registry.async_get_or_create("vacuum", "roborock", "robot")
+    entity_registry.async_update_entity_options(
+        vacuum.entity_id, "vacuum", {"area_mapping": {area.id: ["16"]}}
+    )
+    return area.id
+
+
+async def test_area_a_vacuum_cleans_is_not_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test an area mapped to rooms of a vacuum is left alone.
+
+    Nothing lives in it, but cleaning it by name needs it to be there.
+    """
+    area_id = _map_to_vacuum(area_registry, entity_registry, "Bedroom")
+    freezer.tick(_AGED)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area_id)) is None
+
+
+async def test_a_vacuum_cleaning_elsewhere_does_not_count(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+    issue_registry: ir.IssueRegistry,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Test a vacuum only keeps the areas it is mapped to."""
+    _map_to_vacuum(area_registry, entity_registry, "Attic")
+    area = area_registry.async_create("Ghost Room")
+    freezer.tick(_AGED)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert issue_registry.async_get_issue(DOMAIN, _issue_id(area.id))
+
+
 def _flow_for(hass: HomeAssistant, area_id: str, area_name: str) -> EmptyAreaFixFlow:
     """Build an empty-area fix flow as the framework would wire it up."""
     flow = EmptyAreaFixFlow()
