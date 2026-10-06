@@ -40,7 +40,11 @@ _Default {term}`entity ID <Entity ID>`: `sensor.entities`_
 
 The total number of entities in your system (including this one).
 
-This counts every entity that has a state, whether it is in the entity registry or not, so entities from YAML, zones and the sun are in there too. Disabled entities have no state, so they are not. The entities page in Home Assistant filters some entities out by default, so its count can differ.
+This counts every entity that has a state, whether it is in the entity registry or not.
+
+- Entities from YAML, zones and the sun are counted too.
+- Disabled entities have no state, so they are not counted.
+- The entities page in Home Assistant filters some entities out by default, so its count can differ.
 
 #### Total number of entities per entity type
 
@@ -97,7 +101,7 @@ But wait, there are more counters! The following sensors are also added:
 - Number of areas (`sensor.areas`)
 - Number of automations (`sensor.automations`)
 - Number of custom integrations in use (`sensor.custom_integrations`)
-- Number of devices (`sensor.devices`), every device in the device registry, disabled ones included. The devices page filters some devices out by default, like disabled ones, so its count can be lower.
+- Number of devices (`sensor.devices`)
 - Number of integrations in use (`sensor.integrations`)
 - Number of persistent notifications (`sensor.persistent_notifications`)
 - Number of persons (`sensor.persons`)
@@ -105,6 +109,8 @@ But wait, there are more counters! The following sensors are also added:
 - Number of scripts (`sensor.scripts`)
 - Number of suns (`sensor.suns`)
 - Number of zones (`sensor.zones`)
+
+The number of devices counts every device in the device registry, disabled ones included. The devices page in Home Assistant filters some out by default, like disabled ones, so its count can be lower.
 
 ## Blueprints & tutorials
 
