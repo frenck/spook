@@ -16,9 +16,24 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
+@pytest.fixture(name="hass_with_yaml_home")
+async def hass_with_yaml_home_fixture(hass: HomeAssistant) -> HomeAssistant:
+    """Set up zones with one from YAML named Home, and register the action."""
+    assert await async_setup_component(
+        hass,
+        DOMAIN,
+        {DOMAIN: [{"name": "Home", "latitude": 1.0, "longitude": 1.0}]},
+    )
+    await hass.async_block_till_done()
+    update.SpookService(hass).async_register()
+    return hass
+
+
 @pytest.fixture(autouse=True)
-async def _zones(hass: HomeAssistant) -> None:
+async def _zones(request: pytest.FixtureRequest, hass: HomeAssistant) -> None:
     """Set up zones, the home zone included, and register the action."""
+    if "hass_with_yaml_home" in request.fixturenames:
+        return
     assert await async_setup_component(hass, DOMAIN, {})
     await hass.async_block_till_done()
     update.SpookService(hass).async_register()
@@ -86,3 +101,34 @@ async def test_a_fraction_of_a_meter_is_refused(hass: HomeAssistant) -> None:
         )
 
     assert hass.config.radius == before
+
+
+async def test_a_negative_radius_is_refused(hass: HomeAssistant) -> None:
+    """The house's location is stored without its usual checks, so this one is."""
+    before = hass.config.radius
+
+    with pytest.raises(HomeAssistantError, match="zero or more"):
+        await hass.services.async_call(
+            DOMAIN, "update", {"entity_id": "zone.home", "radius": -1}, blocking=True
+        )
+
+    assert hass.config.radius == before
+
+
+async def test_a_yaml_zone_named_home_is_not_the_house(
+    hass_with_yaml_home: HomeAssistant,
+) -> None:
+    """A zone from YAML named Home takes `zone.home`, and stays an ordinary one.
+
+    Moving the house would not move it, so it is refused like any other YAML
+    zone, and the house stays where it is.
+    """
+    hass = hass_with_yaml_home
+    before = (hass.config.latitude, hass.config.longitude, hass.config.radius)
+
+    with pytest.raises(HomeAssistantError, match="not editable"):
+        await hass.services.async_call(
+            DOMAIN, "update", {"entity_id": "zone.home", "radius": 250}, blocking=True
+        )
+
+    assert (hass.config.latitude, hass.config.longitude, hass.config.radius) == before

@@ -24,6 +24,22 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
+def _is_the_house(entity: Zone) -> bool:
+    """Tell whether a zone is the home zone drawn from the house's location.
+
+    Home Assistant only draws it when no zone has taken `zone.home` already:
+    zones from YAML and storage are set up first, and one named Home gets that
+    entity ID. Those are ordinary zones, and moving the house would not move
+    them. The drawn one is the only editable zone without a stored ID.
+    """
+    return (
+        entity.entity_id == ENTITY_ID_HOME
+        and entity.editable
+        # pylint: disable-next=protected-access
+        and "id" not in entity._config  # noqa: SLF001
+    )
+
+
 class SpookService(AbstractSpookAdminService):
     """Zone service to update a zone on the fly, the home zone included."""
 
@@ -52,7 +68,7 @@ class SpookService(AbstractSpookAdminService):
             message = f"Could not find entity_id: {call.data['entity_id']}"
             raise HomeAssistantError(message)
 
-        if call.data["entity_id"] == ENTITY_ID_HOME:
+        if _is_the_house(entity):
             await self._async_update_home(call)
             return
 
@@ -88,13 +104,15 @@ class SpookService(AbstractSpookAdminService):
             )
             raise HomeAssistantError(message)
 
-        # Home Assistant keeps the radius of the house in whole meters.
-        # Cutting a fraction off quietly would be a different zone than was
-        # asked for.
+        # Home Assistant keeps the radius of the house in whole meters, and
+        # never below zero. Cutting a fraction off quietly would be a
+        # different zone than was asked for, and the location is stored
+        # without going through the checks its configuration normally does.
         if CONF_RADIUS in data:
-            if data[CONF_RADIUS] != int(data[CONF_RADIUS]):
-                message = "The home zone takes its radius in whole meters"
+            radius = data[CONF_RADIUS]
+            if radius != int(radius) or radius < 0:
+                message = "The home zone takes its radius in whole meters, zero or more"
                 raise HomeAssistantError(message)
-            data[CONF_RADIUS] = int(data[CONF_RADIUS])
+            data[CONF_RADIUS] = int(radius)
 
         await self.hass.config.async_update(**data)
