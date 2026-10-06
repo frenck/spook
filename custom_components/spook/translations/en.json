@@ -1355,21 +1355,29 @@
     },
     "homeassistant_disable_config_entry": {
       "name": "Disable an integration",
-      "description": "Disables an integration entry.",
+      "description": "Disables integration entries, by entry or every entry of an integration.",
       "fields": {
         "config_entry_id": {
           "name": "Integration entry",
           "description": "The integration entry to disable."
+        },
+        "domain": {
+          "name": "Integration",
+          "description": "Disable every entry of these integrations, the ones added later included."
         }
       }
     },
     "homeassistant_enable_config_entry": {
       "name": "Enable an integration",
-      "description": "Enables an integration entry.",
+      "description": "Enables integration entries, by entry or every entry of an integration.",
       "fields": {
         "config_entry_id": {
           "name": "Integration entry",
           "description": "The integration entry to enable."
+        },
+        "domain": {
+          "name": "Integration",
+          "description": "Enable every entry of these integrations, the ones added later included."
         }
       }
     },
