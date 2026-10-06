@@ -123,6 +123,8 @@ Updates properties of an existing zone.
 Zones that are created and managed using manual YAML configuration cannot be updated.
 :::
 
+The home zone (`zone.home`) can be moved and resized too, with `latitude`, `longitude` and `radius`. It is drawn from the location of your whole Home Assistant instance, so that is what changes: the same location Home Assistant's own `homeassistant.set_location` sets, and the one everything else that uses your location follows. Its name and icon cannot be changed this way, its radius is in whole meters, and it is never passive.
+
 ```{figure} ../images/integrations/zone/update.png
 :alt: Screenshot of the zone update action on the Tools page.
 :align: center
@@ -194,6 +196,16 @@ action: zone.update
 data:
   entity_id: zone.statue_of_liberty
   name: "Statue of Liberty, New York"
+  radius: 250
+```
+
+Resizing the home zone:
+
+```{code-block} yaml
+:linenos:
+action: zone.update
+data:
+  entity_id: zone.home
   radius: 250
 ```
 
