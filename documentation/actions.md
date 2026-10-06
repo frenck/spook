@@ -468,6 +468,12 @@ Set the value of an input number entity to the maximum value.
 
 `input_number.min`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.min), [documentation](integrations/input_number#set-value-to-minimum) 📚
 
+## Input number: Set range
+
+Changes the minimum, maximum or step of an input number made in the UI, the same as editing it, so a slider can follow what it measures. _#min_ _#max_ _#slider_
+
+`input_number.set_range`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.set_range), [documentation](integrations/input_number#set-range) 📚
+
 ## Input select: Create
 
 Creates an input select helper without a trip to the helpers page. _#outofthinair_
