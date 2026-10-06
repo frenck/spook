@@ -39,6 +39,8 @@ Spook does not provide action enhancements for this integration.
 
 While Spook is floating around in your Home Assistant instance, it will raise repairs issues if it has found something that is not right.
 
+An entity, device, area, floor or label that only disabled steps (`enabled: false`) name is left alone. A disabled step does nothing, and is usually parked on purpose. Anything a running step names as well is still reported.
+
 ### Unknown referenced areas
 
 Scripts are inspected for the use of areas. If a script is targeting an area in one of its actions that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the area that is referenced but not found.

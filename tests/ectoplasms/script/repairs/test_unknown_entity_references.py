@@ -180,6 +180,80 @@ async def test_a_script_with_only_known_entities_is_clean(hass: HomeAssistant) -
     assert await _unknown_in_script(hass, scripts, "evening") == set()
 
 
+async def test_an_entity_only_a_disabled_step_names_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """A disabled step does nothing, so what only it names is not a problem.
+
+    People disable a step on purpose, to park it. Reporting what it names is
+    the noise discussion #1093 asks to be rid of.
+    """
+    scripts = {
+        "evening": {
+            "sequence": [
+                {
+                    "enabled": False,
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.xparked"},
+                    "data": {
+                        "brightness": "{{ state_attr('light.xtemplated', 'level') }}"
+                    },
+                },
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.fireplace_pots"},
+                },
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == set()
+
+
+async def test_an_entity_a_running_step_names_too_is_still_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Named by a step that runs as well, it can still break the script."""
+    scripts = {
+        "evening": {
+            "sequence": [
+                {
+                    "enabled": False,
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.xbroken"},
+                },
+                {"action": "light.turn_off", "target": {"entity_id": "light.xbroken"}},
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == {"light.xbroken"}
+
+
+async def test_a_running_variable_still_reports_what_a_parked_step_names(
+    hass: HomeAssistant,
+) -> None:
+    """The script's own variables run regardless of any parked step."""
+    scripts = {
+        "evening": {
+            "variables": {"level": "{{ state_attr('light.xbroken', 'brightness') }}"},
+            "sequence": [
+                {
+                    "enabled": False,
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.xbroken"},
+                },
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.fireplace_pots"},
+                },
+            ],
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == {"light.xbroken"}
+
+
 async def test_a_blueprint_script_is_read_as_filled_in(
     hass: HomeAssistant, tmp_path: Path
 ) -> None:
@@ -219,3 +293,23 @@ sequence:
     }
 
     assert await _unknown_in_script(hass, scripts, "evening") == {"light.xgone"}
+
+
+async def test_a_template_in_a_disabled_step_is_left_out(hass: HomeAssistant) -> None:
+    """A parked `wait_template` is parked too, like any other part of the step."""
+    scripts = {
+        "evening": {
+            "sequence": [
+                {
+                    "enabled": False,
+                    "wait_template": "{{ is_state('light.xmissing', 'on') }}",
+                },
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.fireplace_pots"},
+                },
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == set()

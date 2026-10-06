@@ -18,13 +18,15 @@ from dataclasses import dataclass, field
 import re
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.const import ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
+from homeassistant.const import CONF_ENABLED, ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
 from homeassistant.core import callback
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from .template_extraction import is_template_string
 
 if TYPE_CHECKING:
+    from collections.abc import Callable
+
     from homeassistant.core import HomeAssistant
 
 # Direct reference keys, mapped to their reference type.
@@ -144,6 +146,53 @@ def extract_targets_from_config(config: Any) -> ExtractedTargets:
     targets = ExtractedTargets()
     _walk(config, targets)
     return targets
+
+
+# Keys whose value is payload, not steps: service data, variables and event
+# data hold whatever somebody put there, and an `enabled: false` in them is
+# theirs, not a parked step.
+_PAYLOAD_KEYS = _EXCLUDED_KEYS | frozenset({"data", "data_template", "service_data"})
+
+
+def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
+    """Return a copy of ``config`` without its disabled steps.
+
+    A step, trigger or condition carrying ``enabled: false`` is left out of
+    the copy, whether it sits in a list or is written on its own. Nothing
+    under a payload key is touched: service data, variables and event data
+    are arbitrary, and a dict in there with an ``enabled`` key of its own is
+    not a step.
+    """
+    if isinstance(config, list):
+        return [
+            without_disabled_steps(item, in_payload=in_payload)
+            for item in config
+            if in_payload
+            or not (isinstance(item, dict) and item.get(CONF_ENABLED) is False)
+        ]
+    if isinstance(config, dict):
+        # A single step can also be written without a list, as the value of
+        # a key like `actions` or `then`. Parked like that, the key goes.
+        return {
+            key: without_disabled_steps(
+                value, in_payload=in_payload or key in _PAYLOAD_KEYS
+            )
+            for key, value in config.items()
+            if in_payload
+            or key in _PAYLOAD_KEYS
+            or not (isinstance(value, dict) and value.get(CONF_ENABLED) is False)
+        }
+    return config
+
+
+def only_in_disabled_steps(config: Any, extract: Callable[[Any], set[str]]) -> set[str]:
+    """Return what ``extract`` finds in ``config`` only in disabled steps.
+
+    A disabled step does nothing, and people disable one on purpose to park
+    it. What only such a step names cannot break a run, so it is not worth a
+    repair; what a step that runs names as well still is.
+    """
+    return extract(config) - extract(without_disabled_steps(config))
 
 
 # Additional keys whose subtree carries payload or opaque data when

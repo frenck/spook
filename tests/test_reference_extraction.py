@@ -10,6 +10,8 @@ from custom_components.spook.template_extraction import extract_device_ids_from_
 from custom_components.spook.reference_extraction import (
     extract_platform_keys_from_config,
     extract_targets_from_config,
+    only_in_disabled_steps,
+    without_disabled_steps,
 )
 
 
@@ -301,3 +303,80 @@ def test_a_real_device_id_in_action_data_is_still_a_reference() -> None:
     )
 
     assert targets.device_ids == {"abcdef0123456789abcdef0123456789"}
+
+
+def test_without_disabled_steps_leaves_out_what_is_parked() -> None:
+    """Disabled list items go, however deep; everything else stays."""
+    config = {
+        "triggers": [
+            {"trigger": "state", "entity_id": "light.a"},
+            {"enabled": False, "trigger": "state", "entity_id": "light.b"},
+        ],
+        "actions": [
+            {
+                "if": [],
+                "then": [
+                    {"enabled": False, "action": "light.turn_on"},
+                    {"action": "light.turn_off"},
+                ],
+            }
+        ],
+    }
+
+    assert without_disabled_steps(config) == {
+        "triggers": [{"trigger": "state", "entity_id": "light.a"}],
+        "actions": [{"if": [], "then": [{"action": "light.turn_off"}]}],
+    }
+
+
+def test_without_disabled_steps_leaves_service_data_alone() -> None:
+    """Service data is payload: an `enabled` key in there is not a step."""
+    config = [
+        {
+            "action": "script.turn_on",
+            "data": {"items": [{"enabled": False, "area_id": "kitchen"}]},
+        }
+    ]
+
+    assert without_disabled_steps(config) == config
+
+
+def test_only_in_disabled_steps() -> None:
+    """What only a parked step names, and nothing a running one names too."""
+    config = [
+        {"enabled": False, "action": "light.turn_on", "target": {"area_id": "attic"}},
+        {"enabled": False, "action": "light.turn_on", "target": {"area_id": "hall"}},
+        {"action": "light.turn_off", "target": {"area_id": "hall"}},
+    ]
+
+    assert only_in_disabled_steps(
+        config, lambda found: extract_targets_from_config(found).area_ids
+    ) == {"attic"}
+
+
+def test_without_disabled_steps_leaves_out_a_single_parked_step() -> None:
+    """One step written without a list is parked all the same."""
+    config = {
+        "triggers": {"trigger": "state", "entity_id": "light.a"},
+        "actions": {"enabled": False, "action": "light.turn_on"},
+    }
+
+    assert without_disabled_steps(config) == {
+        "triggers": {"trigger": "state", "entity_id": "light.a"}
+    }
+
+
+def test_without_disabled_steps_leaves_variables_alone() -> None:
+    """Variables are payload: an `enabled` key in there is not a parked step."""
+    config = {
+        "variables": {
+            "settings": {"enabled": False, "lamp": "light.kitchen"},
+            "items": [{"enabled": False, "value": "{{ states('light.hall') }}"}],
+        },
+        "actions": [{"enabled": False, "action": "light.turn_on"}],
+    }
+
+    assert without_disabled_steps(config) == {
+        "variables": config["variables"],
+        "actions": [],
+    }

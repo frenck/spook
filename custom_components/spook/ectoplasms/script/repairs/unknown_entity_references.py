@@ -10,6 +10,7 @@ from homeassistant.helpers import entity_registry as er
 
 from ....action_extraction import async_extract_entities_from_action_config
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
+from ....reference_extraction import without_disabled_steps
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import (
     async_extract_entities_from_config,
@@ -88,6 +89,25 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         )
         self._known_services = async_get_all_services(self.hass)
 
+    async def _async_named_in(self, config: dict[str, Any]) -> set[str]:
+        """Return the entities a configuration names, the way this repair reads it.
+
+        The same reading the report is built from, the steps and templates
+        alike, so comparing it with and without the disabled steps leaves out
+        exactly what only those name.
+        """
+        steps = config.get("sequence") or []
+        named = await async_extract_entities_from_action_config(
+            self.hass,
+            # A single step can be written without a list.
+            [steps] if isinstance(steps, dict) else steps,
+            known_services=self._known_services,
+        )
+        named |= await async_extract_entities_from_config(
+            self.hass, config, self._known_services
+        )
+        return named
+
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
         # Get all referenced entities from the script
@@ -112,6 +132,15 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
                 self.hass, entity, self._known_services
             )
         )
+
+        # Home Assistant's own list includes disabled steps too. A step parked
+        # that way does nothing, so what only it names is left out: whatever
+        # this repair finds in the configuration, and no longer finds once
+        # those are pruned.
+        if isinstance(raw_config, dict):
+            named = await self._async_named_in(raw_config)
+            still_named = await self._async_named_in(without_disabled_steps(raw_config))
+            all_entities -= named - still_named
 
         return await async_filter_known_entity_ids_with_templates(
             self.hass,
