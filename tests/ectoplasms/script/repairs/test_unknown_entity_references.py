@@ -313,3 +313,27 @@ async def test_an_entity_a_running_step_names_too_is_still_reported(
     }
 
     assert await _unknown_in_script(hass, scripts, "evening") == {"light.xbroken"}
+
+
+async def test_a_running_variable_still_reports_what_a_parked_step_names(
+    hass: HomeAssistant,
+) -> None:
+    """The script's own variables run regardless of any parked step."""
+    scripts = {
+        "evening": {
+            "variables": {"level": "{{ state_attr('light.xbroken', 'brightness') }}"},
+            "sequence": [
+                {
+                    "enabled": False,
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.xbroken"},
+                },
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.fireplace_pots"},
+                },
+            ],
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == {"light.xbroken"}

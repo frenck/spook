@@ -11,6 +11,7 @@ from .const import LOGGER
 from .entity_filtering import NEVER_AN_ENTITY_PREFIXES, async_get_all_services
 from .template_extraction import (
     ENTITY_ID_PATTERN,
+    async_extract_entities_from_config,
     async_extract_entities_from_template_string,
     is_template_string,
 )
@@ -238,7 +239,8 @@ async def _extract_entities_from_nested_configs(
 
 async def async_extract_entities_only_in_disabled_steps(
     hass: HomeAssistant,
-    configs: list[Any],
+    config: dict[str, Any],
+    step_keys: tuple[str, ...],
     *,
     known_services: set[str] | None = None,
 ) -> set[str]:
@@ -249,24 +251,38 @@ async def async_extract_entities_only_in_disabled_steps(
     names cannot break a run, so it is not worth a repair. One that a step
     that runs names as well still is.
 
-    Each item in ``configs`` is a list of steps, triggers or conditions, read
-    with and without the disabled ones; what only the first read finds is the
-    answer.
+    ``config`` is an automation or script configuration as written, and
+    ``step_keys`` the keys in it that hold steps, triggers or conditions:
+    a list of them, or a single one written without a list. Those are read
+    with and without the disabled ones. Everything else in it, like the
+    configuration's own ``variables``, runs regardless, so an entity a
+    template there names is never only in a disabled step.
     """
     if known_services is None:
         known_services = async_get_all_services(hass)
 
     everything: set[str] = set()
     running: set[str] = set()
-    for config in configs:
-        if not config:
+    for key in step_keys:
+        if not (steps := config.get(key)):
             continue
+
+        # `enabled` only counts on list members, so a single step written
+        # without a list is made into one; otherwise its `enabled: false`
+        # would go unnoticed.
+        if isinstance(steps, dict):
+            steps = [steps]
+
         everything |= await async_extract_entities_from_action_config(
-            hass, config, known_services=known_services
+            hass, steps, known_services=known_services
         )
         running |= await async_extract_entities_from_action_config(
-            hass, config, include_disabled=False, known_services=known_services
+            hass, steps, include_disabled=False, known_services=known_services
         )
+
+    outside = {key: value for key, value in config.items() if key not in step_keys}
+    running |= await async_extract_entities_from_config(hass, outside, known_services)
+
     return everything - running
 
 

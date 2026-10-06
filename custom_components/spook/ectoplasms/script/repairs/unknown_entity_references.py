@@ -183,7 +183,8 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         if isinstance(raw_config, dict):
             all_entities -= await async_extract_entities_only_in_disabled_steps(
                 self.hass,
-                [raw_config.get("sequence")],
+                raw_config,
+                ("sequence",),
                 known_services=self._known_services,
             )
 

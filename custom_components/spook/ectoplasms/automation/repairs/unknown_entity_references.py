@@ -321,17 +321,15 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
         if isinstance(raw_config := getattr(entity, "raw_config", None), dict):
             all_entities -= await async_extract_entities_only_in_disabled_steps(
                 self.hass,
-                [
-                    raw_config.get(key)
-                    for key in (
-                        "trigger",
-                        "triggers",
-                        "condition",
-                        "conditions",
-                        "action",
-                        "actions",
-                    )
-                ],
+                raw_config,
+                (
+                    "trigger",
+                    "triggers",
+                    "condition",
+                    "conditions",
+                    "action",
+                    "actions",
+                ),
                 known_services=self._known_services,
             )
 

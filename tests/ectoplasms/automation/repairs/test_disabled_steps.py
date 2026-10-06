@@ -112,3 +112,43 @@ async def test_a_running_step_still_reports(hass: HomeAssistant) -> None:
     }
 
     assert await _unknown_in_automation(hass, config) == {"light.xbroken"}
+
+
+async def test_a_single_disabled_step_without_a_list_is_left_out(
+    hass: HomeAssistant,
+) -> None:
+    """One step written as a mapping rather than a list is parked all the same."""
+    config = {
+        "triggers": {"trigger": "state", "entity_id": "binary_sensor.door"},
+        "actions": {
+            "enabled": False,
+            "action": "light.turn_on",
+            "target": {"entity_id": "light.xparked"},
+        },
+    }
+
+    assert await _unknown_in_automation(hass, config) == set()
+
+
+async def test_a_running_template_outside_the_steps_still_reports(
+    hass: HomeAssistant,
+) -> None:
+    """An automation's own variables run regardless of any parked step.
+
+    An entity a disabled step names and a template in those variables names
+    too is still in use, so it is still reported.
+    """
+    config = {
+        "variables": {"level": "{{ state_attr('light.xbroken', 'brightness') }}"},
+        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.door"}],
+        "actions": [
+            {
+                "enabled": False,
+                "action": "light.turn_on",
+                "target": {"entity_id": "light.xbroken"},
+            },
+            {"action": "light.turn_on", "target": {"entity_id": "light.kitchen"}},
+        ],
+    }
+
+    assert await _unknown_in_automation(hass, config) == {"light.xbroken"}
