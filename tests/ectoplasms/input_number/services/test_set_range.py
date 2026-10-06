@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 import pytest
+import voluptuous as vol
 
 from homeassistant.auth.const import GROUP_ID_USER
 from homeassistant.components.input_number import DOMAIN
@@ -94,8 +95,21 @@ async def test_a_maximum_not_above_the_minimum_is_refused(
     hass: HomeAssistant,
 ) -> None:
     """Home Assistant's own check, refused with nothing stored."""
-    with pytest.raises(ServiceValidationError, match="not greater than"):
+    with pytest.raises(ServiceValidationError, match="has to be above"):
         await _set_range(hass, max=0)
+
+    assert hass.states.get(SLIDER).attributes["max"] == 10000  # noqa: PLR2004
+
+
+@pytest.mark.parametrize(
+    "data", [{"max": "inf"}, {"min": "-inf"}, {"max": "nan"}, {"step": "inf"}]
+)
+async def test_a_range_that_is_not_a_number_is_refused(
+    hass: HomeAssistant, data: dict
+) -> None:
+    """Home Assistant would store these as nothing, and fail to load them."""
+    with pytest.raises(vol.Invalid, match="finite"):
+        await _set_range(hass, **data)
 
     assert hass.states.get(SLIDER).attributes["max"] == 10000  # noqa: PLR2004
 

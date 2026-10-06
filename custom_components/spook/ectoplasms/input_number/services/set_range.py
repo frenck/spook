@@ -2,7 +2,8 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+import math
+from typing import TYPE_CHECKING, Any
 
 import voluptuous as vol
 
@@ -23,6 +24,19 @@ if TYPE_CHECKING:
     from homeassistant.core import ServiceCall
 
 
+def _finite(value: Any) -> float:
+    """Validate a number that is an actual number.
+
+    `float` takes "inf" and "nan" happily, and Home Assistant stores those as
+    nothing, which leaves a helper with a range it cannot load again.
+    """
+    number = float(vol.Coerce(float)(value))
+    if not math.isfinite(number):
+        message = "The range has to be made of finite numbers"
+        raise vol.Invalid(message)
+    return number
+
+
 class SpookService(AbstractSpookEntityComponentService[InputNumber]):
     """Input number entity service, changing its range: min, max and step.
 
@@ -37,9 +51,9 @@ class SpookService(AbstractSpookEntityComponentService[InputNumber]):
     # somebody changing it.
     admin_only = True
     schema = {
-        vol.Optional(CONF_MIN): vol.Coerce(float),
-        vol.Optional(CONF_MAX): vol.Coerce(float),
-        vol.Optional(CONF_STEP): vol.All(vol.Coerce(float), vol.Range(min=1e-9)),
+        vol.Optional(CONF_MIN): _finite,
+        vol.Optional(CONF_MAX): _finite,
+        vol.Optional(CONF_STEP): vol.All(_finite, vol.Range(min=1e-9)),
     }
 
     async def async_handle_service(
@@ -71,9 +85,19 @@ class SpookService(AbstractSpookEntityComponentService[InputNumber]):
         updates = {**collection.data[item_id], **changes}
         updates.pop(CONF_ID, None)
 
+        # Home Assistant checks this too, but which library raises for it
+        # differs between versions, so it is checked here first, and said
+        # plainly.
+        if updates[CONF_MAX] <= updates[CONF_MIN]:
+            message = (
+                f"The maximum ({updates[CONF_MAX]}) has to be above "
+                f"the minimum ({updates[CONF_MIN]})"
+            )
+            raise ServiceValidationError(message)
+
         try:
             await collection.async_update_item(item_id, updates)
         except vol.Invalid as err:
-            # A maximum that is not above the minimum, for example: refused by
-            # Home Assistant's own check, and nothing is stored.
+            # Anything else Home Assistant's own check refuses, with nothing
+            # stored.
             raise ServiceValidationError(str(err)) from err
