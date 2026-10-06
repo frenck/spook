@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.setup import async_setup_component
@@ -313,3 +314,54 @@ async def test_an_entity_a_running_step_names_too_is_still_reported(
     }
 
     assert await _unknown_in_script(hass, scripts, "evening") == {"light.xbroken"}
+
+
+async def test_a_running_variable_still_reports_what_a_parked_step_names(
+    hass: HomeAssistant,
+) -> None:
+    """The script's own variables run regardless of any parked step."""
+    scripts = {
+        "evening": {
+            "variables": {"level": "{{ state_attr('light.xbroken', 'brightness') }}"},
+            "sequence": [
+                {
+                    "enabled": False,
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.xbroken"},
+                },
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.fireplace_pots"},
+                },
+            ],
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "evening") == {"light.xbroken"}
+
+
+async def test_triggers_in_blueprint_inputs_are_read(hass: HomeAssistant) -> None:
+    """A trigger handed to a script blueprint as input is read, through the repair.
+
+    This read a configuration attribute the script entity does not have, and
+    so never found anything. A stand-in entity is enough here: setting up a
+    real script blueprint takes a blueprint file, and the repair only reads
+    what the entity exposes.
+    """
+    entity = SimpleNamespace(
+        referenced_blueprint="blueprints/script/frenck/parked.yaml",
+        raw_config={
+            "use_blueprint": {
+                "path": "frenck/parked.yaml",
+                "input": {
+                    "discard_when": [
+                        {"trigger": "state", "entity_id": "binary_sensor.xmotion"}
+                    ]
+                },
+            }
+        },
+    )
+
+    assert SpookRepair(hass)._get_blueprint_trigger_entities(entity) == {
+        "binary_sensor.xmotion"
+    }
