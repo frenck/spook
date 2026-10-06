@@ -2580,6 +2580,15 @@ zone_create:
           max: 999999999999
           unit_of_measurement: m
           mode: box
+    passive:
+      name: Passive
+      description: >-
+        A passive zone is only there for automations: it is not shown on the
+        map, and does not change where people and device trackers are.
+      required: false
+      default: false
+      selector:
+        boolean:
 
 zone_update:
   name: Update a zone 👻
@@ -2631,6 +2640,14 @@ zone_update:
           step: any
           unit_of_measurement: m
           mode: box
+    passive:
+      name: Passive
+      description: >-
+        A passive zone is only there for automations: it is not shown on the
+        map, and does not change where people and device trackers are.
+      required: false
+      selector:
+        boolean:
 
 zone_delete:
   name: Delete a zone 👻
