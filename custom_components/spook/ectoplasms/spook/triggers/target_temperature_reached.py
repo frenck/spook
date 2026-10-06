@@ -8,11 +8,10 @@ import voluptuous as vol
 
 from homeassistant.const import CONF_OPTIONS, CONF_TARGET
 from homeassistant.core import callback
-from homeassistant.helpers.event import async_track_state_change_event
-from homeassistant.helpers.target import TargetEntityChangeTracker, TargetSelection
+from homeassistant.helpers.target import TargetSelection
 from homeassistant.helpers.trigger import Trigger
 
-from ....target_watching import watchable_target
+from ....target_watching import StateChangeWatcher, watchable_target
 from ....temperature_targets import (
     CONF_TOLERANCE,
     Reading,
@@ -62,7 +61,7 @@ def _reached(before: Reading, after: Reading, distance: float) -> bool:
 # Everything here is called by the base class or by an event, so there is
 # nothing public to count.
 # pylint: disable-next=too-few-public-methods
-class _TemperatureTracker(TargetEntityChangeTracker):
+class _TemperatureTracker(StateChangeWatcher):
     """Watch a target's devices for the temperature reaching its target."""
 
     def __init__(
@@ -78,44 +77,6 @@ class _TemperatureTracker(TargetEntityChangeTracker):
         )
         self._tolerance = tolerance
         self._on_reached = on_reached
-        self._tracked: set[str] = set()
-        self._unsub_changes: list[CALLBACK_TYPE] = []
-
-    @callback
-    def _handle_entities_update(self, tracked_entities: set[str]) -> None:
-        """Re-aim at the entities the target now covers.
-
-        The base class re-expands the target on every entity, device and area
-        registry event anywhere in the system, and almost none of those move
-        this target.
-        """
-        if tracked_entities == self._tracked:
-            return
-
-        self._tracked = tracked_entities
-        self._relisten()
-
-    @callback
-    def _relisten(self) -> None:
-        """Listen for changes to exactly the entities being tracked.
-
-        The new listener goes on before the old one comes off. Home Assistant
-        keeps one shared tracker per event type: drop the last subscriber and
-        it is torn down, taking with it events that have fired but not been
-        dispatched yet.
-        """
-        previous = self._unsub_changes
-        self._unsub_changes = []
-
-        if self._tracked:
-            self._unsub_changes = [
-                async_track_state_change_event(
-                    self._hass, list(self._tracked), self._entity_changed
-                )
-            ]
-
-        for unsub in previous:
-            unsub()
 
     @callback
     def _entity_changed(self, event: Event[EventStateChangedData]) -> None:
@@ -136,15 +97,6 @@ class _TemperatureTracker(TargetEntityChangeTracker):
 
         if _reached(before, after, self._tolerance):
             self._on_reached(event)
-
-    def _unsubscribe(self) -> None:
-        """Unsubscribe from everything, the base class' listeners included."""
-        super()._unsubscribe()
-
-        for unsub in self._unsub_changes:
-            unsub()
-        self._unsub_changes.clear()
-        self._tracked = set()
 
 
 class SpookTrigger(Trigger):
