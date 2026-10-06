@@ -2413,7 +2413,13 @@
     },
     "repairs_ignore_all": {
       "name": "Ignore all issues",
-      "description": "Ignore all issues currently raised in Home Assistant Repairs."
+      "description": "Ignore all issues currently raised in Home Assistant Repairs, or only those raised by particular integrations.",
+      "fields": {
+        "domain": {
+          "name": "Domain",
+          "description": "Only ignore the issues raised by these integrations."
+        }
+      }
     },
     "repairs_list": {
       "name": "List issues",
@@ -2445,7 +2451,13 @@
     },
     "repairs_unignore_all": {
       "name": "Unignore all issues",
-      "description": "Unignore all issues currently raised in Home Assistant Repairs."
+      "description": "Unignore all issues currently raised in Home Assistant Repairs, or only those raised by particular integrations.",
+      "fields": {
+        "domain": {
+          "name": "Domain",
+          "description": "Only unignore the issues raised by these integrations."
+        }
+      }
     },
     "sensor_set_display_precision": {
       "name": "Set display precision",

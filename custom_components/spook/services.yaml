@@ -2341,7 +2341,17 @@ repairs_create:
 repairs_ignore_all:
   name: Ignore all issues 👻
   description: >-
-    Ignore all issues currently raised in Home Assistant Repairs.
+    Ignore all issues currently raised in Home Assistant Repairs, or only
+    those raised by particular integrations.
+  fields:
+    domain:
+      name: Domain
+      description: Only ignore the issues raised by these integrations.
+      required: false
+      example: hacs
+      selector:
+        text:
+          multiple: true
 
 repairs_list:
   name: List issues 👻
@@ -2394,7 +2404,17 @@ repairs_remove:
 repairs_unignore_all:
   name: Unignore all issues 👻
   description: >-
-    Unignore all issues currently raised in Home Assistant Repairs.
+    Unignore all issues currently raised in Home Assistant Repairs, or only
+    those raised by particular integrations.
+  fields:
+    domain:
+      name: Domain
+      description: Only unignore the issues raised by these integrations.
+      required: false
+      example: hacs
+      selector:
+        text:
+          multiple: true
 
 sensor_set_display_precision:
   name: Set display precision 👻

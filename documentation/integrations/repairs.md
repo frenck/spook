@@ -180,7 +180,7 @@ data:
 
 ### Ignore all issues
 
-Adds a single action to ignore all issues currently raised in the repairs dashboard.
+Adds a single action to ignore all issues currently raised in the repairs dashboard, or only the ones particular integrations raised.
 
 This takes an admin when a user calls it, since it changes what every user sees on the repairs dashboard. Automations and scripts are not affected.
 
@@ -207,6 +207,21 @@ This takes an admin when a user calls it, since it changes what every user sees 
     [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.ignore_all)
 ```
 
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - Defaults to every integration / `hacs`
+```
+
+Leave `domain` out to ignore every issue. Name one or more integrations, and only the issues those raised are ignored.
+
 :::{tip}
 This might sometimes seem helpful; however, ignoring an issue is not a solution. It is better to fix the issue, remove the integration that is causing it, or report a bug.
 
@@ -219,6 +234,15 @@ Every issue raised by Home Assistant (and also Spook) should be solvable. If not
 ```{code-block} yaml
 :linenos:
 action: repairs.ignore_all
+```
+
+Only the issues HACS raises, like the restart it asks for after every update:
+
+```{code-block} yaml
+:linenos:
+action: repairs.ignore_all
+data:
+  domain: hacs
 ```
 
 :::
@@ -348,7 +372,7 @@ data:
 
 ### Unignore all issues
 
-Adds a single action to unignore all repair issues currently still active (but previously ignored).
+Adds a single action to unignore all repair issues currently still active (but previously ignored), or only the ones particular integrations raised.
 
 This takes an admin when a user calls it, since it changes what every user sees on the repairs dashboard. Automations and scripts are not affected.
 
@@ -375,12 +399,36 @@ This takes an admin when a user calls it, since it changes what every user sees 
     [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=repairs.unignore_all)
 ```
 
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - Defaults to every integration / `hacs`
+```
+
+Leave `domain` out to unignore every issue. Name one or more integrations, and only the issues those raised are unignored.
+
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
 
 ```{code-block} yaml
 :linenos:
 action: repairs.unignore_all
+```
+
+Only the issues HACS raises:
+
+```{code-block} yaml
+:linenos:
+action: repairs.unignore_all
+data:
+  domain: hacs
 ```
 
 :::
