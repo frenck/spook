@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 import pytest
+import voluptuous as vol
 
 from homeassistant.components.repairs import DOMAIN
 from homeassistant.core import Context
@@ -130,3 +131,25 @@ async def test_a_domain_narrows_both_down(
         context=context,
     )
     assert _ignored(hass) == {"first", "second"}
+
+
+@pytest.mark.parametrize("action", ["ignore_all", "unignore_all"])
+async def test_an_empty_domain_list_is_refused(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    action: str,
+) -> None:
+    """An empty list is a filter that names nothing, not every issue.
+
+    A template that found no integrations would otherwise (un)ignore it all.
+    """
+    with pytest.raises(vol.Invalid):
+        await hass.services.async_call(
+            DOMAIN,
+            action,
+            {"domain": []},
+            blocking=True,
+            context=Context(user_id=hass_admin_user.id),
+        )
+
+    assert _ignored(hass) == set()
