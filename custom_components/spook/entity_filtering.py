@@ -661,16 +661,44 @@ def async_get_all_services(hass: HomeAssistant) -> set[str]:
 
 
 @callback
+def async_get_disabled_integrations(hass: HomeAssistant) -> set[str]:
+    """Return the integrations whose config entries are all disabled.
+
+    Turning off an integration takes its actions with it. Its config entries
+    are still there, which is how this tells "switched off on purpose" apart
+    from "gone".
+    """
+    entries = hass.config_entries.async_entries()
+    with_entries = {entry.domain for entry in entries}
+    with_enabled_entries = {
+        entry.domain for entry in entries if entry.disabled_by is None
+    }
+
+    return with_entries - with_enabled_entries
+
+
+@callback
 def async_filter_known_services(
     hass: HomeAssistant, *, services: set[str], known_services: set[str] | None = None
 ) -> set[str]:
-    """Filter out known services."""
+    """Filter out known services.
+
+    An action of an integration that is disabled is not unknown, it is
+    switched off, sometimes by Spook's own `homeassistant.disable_config_entry`.
+    Those are left out too. A typo in such an action only shows up once the
+    integration is enabled again, which is when it would break anyway.
+    """
     if known_services is None:
         known_services = async_get_all_services(hass)
+
+    disabled_integrations = async_get_disabled_integrations(hass)
+
     return {
         service.lower()
         for service in services - known_services
-        if isinstance(service, str) and service
+        if isinstance(service, str)
+        and service
+        and service.lower().split(".", 1)[0] not in disabled_integrations
     }
 
 

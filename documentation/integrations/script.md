@@ -89,6 +89,8 @@ To resolve the raised issue, you can either remove the reference to the non-exis
 
 Scripts are inspected for the use of actions. If a script is using an action that does not exist, Spook will raise a repair issue. The repairs issue raised will contain the name of the script and the action that is referenced but not found.
 
+Actions of an integration you disabled are not reported: switched off on purpose is not gone. Once you enable the integration again, they are checked as usual.
+
 To resolve the raised issue, you can either remove the reference to the non-existing action or restore the integration that provides the action. Spook will automatically remove the repair issue once the issue is fixed.
 
 ### Unknown referenced floors
