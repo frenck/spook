@@ -14,6 +14,7 @@ from homeassistant.components.script import (
     scripts_with_floor,
     scripts_with_label,
 )
+from homeassistant.components.vacuum import DOMAIN as VACUUM_DOMAIN
 from homeassistant.helpers import (
     area_registry as ar,
     device_registry as dr,
@@ -36,18 +37,32 @@ if TYPE_CHECKING:
 # enough to stop offering to delete something, which is all this decides.
 
 
+def _vacuum_cleans_area(hass: HomeAssistant, area_id: str) -> bool:
+    """Return whether a vacuum has rooms of its own mapped to this area.
+
+    That mapping is made by hand, and it is how cleaning an area by name
+    works, from an action or by voice. An area that only a vacuum knows is
+    still a room someone asks to have cleaned.
+    """
+    return any(
+        area_id in (entry.options.get(VACUUM_DOMAIN, {}).get("area_mapping") or {})
+        for entry in er.async_get(hass).entities.values()
+    )
+
+
 def async_area_in_use(
     hass: HomeAssistant,
     area_id: str,
     mentioned: Container[str],
 ) -> bool:
-    """Return whether anything lives in, targets or names this area."""
+    """Return whether anything lives in, targets, names or cleans this area."""
     return bool(
         dr.async_entries_for_area(dr.async_get(hass), area_id)
         or er.async_entries_for_area(er.async_get(hass), area_id)
         or automations_with_area(hass, area_id)
         or scripts_with_area(hass, area_id)
         or area_id in mentioned
+        or _vacuum_cleans_area(hass, area_id)
     )
 
 

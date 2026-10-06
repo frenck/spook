@@ -70,9 +70,11 @@ This one is fixable by pruning rather than removing: Spook can drop the missing 
 
 ### Empty areas
 
-An {term}`area` with no devices, no entities, and no mention anywhere in an automation or script is not doing anything.
+An {term}`area` with no devices, no entities, no vacuum cleaning it, and no mention anywhere in an automation or script is not doing anything.
 
 Spook checks references as well as contents, so an area that is deliberately empty because something uses it is left alone. Being mentioned is enough: it does not have to be _targeted_. An area listed in a `repeat` block's `for_each` is the target of nothing, and Home Assistant does not report it as a reference, but a script plainly needs it. Since this issue offers to delete the area, anything naming it is reason enough to leave it be.
+
+An area a vacuum has its rooms mapped to is left alone too. Nothing may live there, but cleaning it by name, from an action or by voice, needs it to exist.
 
 The raised issue is fixable: Spook can remove the area for you.
 
