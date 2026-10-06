@@ -5,6 +5,7 @@
 
 from __future__ import annotations
 
+from types import SimpleNamespace
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.setup import async_setup_component
@@ -263,3 +264,30 @@ async def test_a_script_with_only_known_entities_is_clean(hass: HomeAssistant) -
     }
 
     assert await _unknown_in_script(hass, scripts, "evening") == set()
+
+
+async def test_triggers_in_blueprint_inputs_are_read(hass: HomeAssistant) -> None:
+    """A trigger handed to a script blueprint as input is read, through the repair.
+
+    This read a configuration attribute the script entity does not have, and
+    so never found anything. A stand-in entity is enough here: setting up a
+    real script blueprint takes a blueprint file, and the repair only reads
+    what the entity exposes.
+    """
+    entity = SimpleNamespace(
+        referenced_blueprint="blueprints/script/frenck/parked.yaml",
+        raw_config={
+            "use_blueprint": {
+                "path": "frenck/parked.yaml",
+                "input": {
+                    "discard_when": [
+                        {"trigger": "state", "entity_id": "binary_sensor.xmotion"}
+                    ]
+                },
+            }
+        },
+    )
+
+    assert SpookRepair(hass)._get_blueprint_trigger_entities(entity) == {
+        "binary_sensor.xmotion"
+    }
