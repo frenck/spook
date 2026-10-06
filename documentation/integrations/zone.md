@@ -89,9 +89,15 @@ Adds a new zone to your Home Assistant instance.
   - {term}`float <float>`
   - No
   - 100
+* - `passive`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
 ```
 
 The `radius` attribute must be entered in meters.
+
+A passive zone is only there for automations: it is not shown on the map, and does not change where people and device trackers are. Handy for a zone an automation creates for itself, like the spot you parked, and deletes again once it is done with it.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
@@ -171,9 +177,13 @@ Zones that are created and managed using manual YAML configuration cannot be upd
   - {term}`float <float>`
   - No
   - 100
+* - `passive`
+  - {term}`boolean <boolean>`
+  - No
+  - `true`
 ```
 
-The `radius` attribute must be entered in meters. Only the parameters that are provided will be updated. Other parameters will remain unchanged.
+The `radius` attribute must be entered in meters. Only the parameters that are provided will be updated. Other parameters will remain unchanged. Set `passive` to make a zone only there for automations, or to make a passive zone an ordinary one again.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
 :class: dropdown
