@@ -151,11 +151,11 @@ def extract_targets_from_config(config: Any) -> ExtractedTargets:
 def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
     """Return a copy of ``config`` without its disabled steps.
 
-    A step, trigger or condition carrying ``enabled: false`` sits in a list,
-    and is left out of the copy. Nothing under a ``data`` key is touched:
-    service data is arbitrary payload, and a dict in there with an
-    ``enabled`` key of its own is not a step. The same rule the action
-    extractor follows.
+    A step, trigger or condition carrying ``enabled: false`` is left out of
+    the copy, whether it sits in a list or is written on its own. Nothing
+    under a ``data`` key is touched: service data is arbitrary payload, and a
+    dict in there with an ``enabled`` key of its own is not a step. The same
+    rule the action extractor follows.
     """
     if isinstance(config, list):
         return [
@@ -165,9 +165,14 @@ def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
             or not (isinstance(item, dict) and item.get(CONF_ENABLED) is False)
         ]
     if isinstance(config, dict):
+        # A single step can also be written without a list, as the value of
+        # a key like `actions` or `then`. Parked like that, the key goes.
         return {
             key: without_disabled_steps(value, in_payload=in_payload or key == "data")
             for key, value in config.items()
+            if in_payload
+            or key == "data"
+            or not (isinstance(value, dict) and value.get(CONF_ENABLED) is False)
         }
     return config
 

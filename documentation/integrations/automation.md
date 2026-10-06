@@ -213,7 +213,7 @@ While Spook is floating around in your Home Assistant instance, it will raise re
 
 Automations that are turned off are left alone. An automation that is off does nothing, so nothing in it can go wrong yet, and it is often turned off exactly because something in it is broken. As soon as you turn it back on, Spook looks at it again and reports what it finds.
 
-The same goes for an entity, device, area, floor or label that only a disabled step, trigger or condition (`enabled: false`) names. A disabled step does nothing either, and is usually parked on purpose. One that a step that runs names as well is still reported.
+The same goes for an entity, device, area, floor or label that only disabled steps, triggers or conditions (`enabled: false`) name. A disabled step does nothing either, and is usually parked on purpose. Anything a running step names as well is still reported.
 
 ### Unknown referenced areas
 

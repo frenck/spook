@@ -352,3 +352,15 @@ def test_only_in_disabled_steps() -> None:
     assert only_in_disabled_steps(
         config, lambda found: extract_targets_from_config(found).area_ids
     ) == {"attic"}
+
+
+def test_without_disabled_steps_leaves_out_a_single_parked_step() -> None:
+    """One step written without a list is parked all the same."""
+    config = {
+        "triggers": {"trigger": "state", "entity_id": "light.a"},
+        "actions": {"enabled": False, "action": "light.turn_on"},
+    }
+
+    assert without_disabled_steps(config) == {
+        "triggers": {"trigger": "state", "entity_id": "light.a"}
+    }
