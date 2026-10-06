@@ -1809,6 +1809,44 @@ input_number_min:
     entity:
       domain: input_number
 
+input_number_set_range:
+  name: Set range 👻
+  description: >-
+    Changes the minimum, maximum or step of an input number made in the UI,
+    the same as editing it. A value outside the new range is moved inside it.
+  target:
+    entity:
+      domain: input_number
+  fields:
+    min:
+      name: Minimum
+      description: The new minimum value.
+      required: false
+      example: 0
+      selector:
+        number:
+          mode: box
+          step: any
+    max:
+      name: Maximum
+      description: The new maximum value.
+      required: false
+      example: 3600
+      selector:
+        number:
+          mode: box
+          step: any
+    step:
+      name: Step
+      description: The new step size.
+      required: false
+      example: 1
+      selector:
+        number:
+          min: 0.000000001
+          mode: box
+          step: any
+
 counter_create:
   name: Create a counter 👻
   description: >-

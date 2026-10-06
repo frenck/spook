@@ -374,6 +374,69 @@ target:
 
 :::
 
+### Set range
+
+Changes the minimum, maximum or step of an input number, the same as editing it in the UI.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Input number: Set range 👻
+* - {term}`Action name`
+  - `input_number.set_range`
+* - {term}`Action targets`
+  - Yes, `input_number` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.set_range)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_number.set_range)
+```
+
+```{list-table}
+:header-rows: 2
+* - Action data parameters
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `min`
+  - {term}`float <float>`
+  - No
+  - `0`
+* - `max`
+  - {term}`float <float>`
+  - No
+  - `3600`
+* - `step`
+  - {term}`float <float>`
+  - No
+  - `1`
+```
+
+Give at least one of them; what is left out stays as it is. The change is stored, so it survives a restart, like editing the helper does. A value that falls outside the new range is moved inside it. The maximum has to stay above the minimum.
+
+This takes an admin when a user calls it, since it changes how the helper is set up. Automations and scripts are not affected. Only input numbers made in the UI can be changed; one set up in YAML is refused.
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+A slider that fits a track of whatever length was just loaded:
+
+```{code-block} yaml
+:linenos:
+action: input_number.set_range
+target:
+  entity_id: input_number.track_position
+data:
+  max: "{{ states('sensor.track_length_seconds') }}"
+```
+
+:::
+
 ## Repairs
 
 Spook has no repair detections for this integration.

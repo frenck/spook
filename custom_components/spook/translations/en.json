@@ -2113,6 +2113,24 @@
       "name": "Set minimum value",
       "description": "Set an input number entity to its minimum value."
     },
+    "input_number_set_range": {
+      "name": "Set range",
+      "description": "Changes the minimum, maximum or step of an input number made in the UI, the same as editing it. A value outside the new range is moved inside it.",
+      "fields": {
+        "min": {
+          "name": "Minimum",
+          "description": "The new minimum value."
+        },
+        "max": {
+          "name": "Maximum",
+          "description": "The new maximum value."
+        },
+        "step": {
+          "name": "Step",
+          "description": "The new step size."
+        }
+      }
+    },
     "counter_create": {
       "name": "Create a counter",
       "description": "Creates a new counter helper on the fly. Returns the entity ID of the new counter.",
