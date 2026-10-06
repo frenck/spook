@@ -13,13 +13,47 @@ from homeassistant.components.homeassistant.exposed_entities import (
     async_expose_entity,
 )
 from homeassistant.const import ATTR_ENTITY_ID
-from homeassistant.exceptions import HomeAssistantError
+from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 from homeassistant.helpers import config_validation as cv, entity_registry as er
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant, ServiceCall
 
 CONF_ASSISTANTS = "assistants"
+CONF_CONFIG_ENTRY_ID = "config_entry_id"
+CONF_DOMAIN = "domain"
+
+CONFIG_ENTRY_SERVICE_SCHEMA = {
+    vol.Optional(CONF_CONFIG_ENTRY_ID): vol.All(cv.ensure_list, [cv.string]),
+    # Every entry of these integrations: the ones added later included, which
+    # a list of entry IDs written down today would miss.
+    vol.Optional(CONF_DOMAIN): vol.All(cv.ensure_list, [cv.string]),
+}
+
+
+def async_config_entry_ids(hass: HomeAssistant, call: ServiceCall) -> list[str]:
+    """Return the integration entries an action asks for, by ID and by domain.
+
+    A domain without any entries is refused rather than skipped: a typo in it
+    would otherwise do nothing, and say nothing about it either.
+    """
+    entry_ids: list[str] = list(call.data.get(CONF_CONFIG_ENTRY_ID, []))
+    domains: list[str] = call.data.get(CONF_DOMAIN, [])
+
+    if not entry_ids and not domains:
+        msg = "Name the integration entries to change, or their integration"
+        raise ServiceValidationError(msg)
+
+    for domain in domains:
+        if not (entries := hass.config_entries.async_entries(domain)):
+            msg = f"The {domain} integration has no entries"
+            raise ServiceValidationError(msg)
+        entry_ids.extend(
+            entry.entry_id for entry in entries if entry.entry_id not in entry_ids
+        )
+
+    return entry_ids
+
 
 EXPOSURE_SERVICE_SCHEMA = {
     vol.Required(ATTR_ENTITY_ID): cv.entity_ids,

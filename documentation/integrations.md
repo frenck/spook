@@ -13,7 +13,7 @@ The following integration management actions are added to your Home Assistant in
 
 ### Disable an integration
 
-Disable a single instance of an integration by its {term}`integration entry <integration entry>`.
+Disable a single instance of an integration by its {term}`integration entry <integration entry>`, or every instance of an integration at once.
 
 ```{figure} ./images/integration/disable_config_entry.png
 :alt: Screenshot of the Home Assistant disable config entry action on the Tools page.
@@ -47,9 +47,15 @@ Disable a single instance of an integration by its {term}`integration entry <int
   - Default / Example
 * - `config_entry_id`
   - {term}`string <string>` | {term}`list of strings <list>`
-  - Yes
+  - No
   - `dc23e666e6100f184e642a0ac345d3eb`
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `hue`
 ```
+
+Give one or both. A `domain` takes every entry of that integration, including entries added after the automation was written. A domain without any entries is refused, so a typo does not quietly do nothing.
 
 :::{tip} Finding the config entry ID
 :class: dropdown
@@ -69,6 +75,15 @@ data:
   config_entry_id: "dc23e666e6100f184e642a0ac345d3eb"
 ```
 
+Every entry of an integration:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.disable_config_entry
+data:
+  domain: hue
+```
+
 Or multiple at once:
 
 ```{code-block} yaml
@@ -84,7 +99,7 @@ data:
 
 ### Enable an integration
 
-Enable a single instance of an integration by its {term}`integration entry <integration entry>`.
+Enable a single instance of an integration by its {term}`integration entry <integration entry>`, or every instance of an integration at once.
 
 ```{figure} ./images/integration/enable_config_entry.png
 :alt: Screenshot of the Home Assistant enable config entry action on the Tools page.
@@ -118,9 +133,15 @@ Enable a single instance of an integration by its {term}`integration entry <inte
   - Default / Example
 * - `config_entry_id`
   - {term}`string <string>` | {term}`list of strings <list>`
-  - Yes
+  - No
   - `dc23e666e6100f184e642a0ac345d3eb`
+* - `domain`
+  - {term}`string <string>` | {term}`list of strings <list>`
+  - No
+  - `hue`
 ```
+
+Give one or both. A `domain` takes every entry of that integration, including entries added after the automation was written. A domain without any entries is refused, so a typo does not quietly do nothing.
 
 :::{tip} Finding the config entry ID
 :class: dropdown
@@ -138,6 +159,15 @@ Use this action in the Actions tool, in the UI select the integration you want t
 action: homeassistant.enable_config_entry
 data:
   config_entry_id: "dc23e666e6100f184e642a0ac345d3eb"
+```
+
+Every entry of an integration:
+
+```{code-block} yaml
+:linenos:
+action: homeassistant.enable_config_entry
+data:
+  domain: hue
 ```
 
 Or multiple at once:

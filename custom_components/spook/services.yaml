@@ -527,26 +527,46 @@ homeassistant_delete_area:
 homeassistant_disable_config_entry:
   name: Disable an integration 👻
   description: >-
-    Disables an integration entry.
+    Disables integration entries, by entry or every entry of an integration.
   fields:
     config_entry_id:
       name: Integration entry
       description: The integration entry to disable.
-      required: true
+      required: false
       selector:
         config_entry:
+    domain:
+      name: Integration
+      description: >-
+        Disable every entry of these integrations, the ones added later
+        included.
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
 
 homeassistant_enable_config_entry:
   name: Enable an integration 👻
   description: >-
-    Enables an integration entry.
+    Enables integration entries, by entry or every entry of an integration.
   fields:
     config_entry_id:
       name: Integration entry
       description: The integration entry to enable.
-      required: true
+      required: false
       selector:
         config_entry:
+    domain:
+      name: Integration
+      description: >-
+        Enable every entry of these integrations, the ones added later
+        included.
+      required: false
+      example: hue
+      selector:
+        text:
+          multiple: true
 
 homeassistant_disable_device:
   name: Disable a device 👻
