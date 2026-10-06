@@ -152,3 +152,70 @@ async def test_a_running_template_outside_the_steps_still_reports(
     }
 
     assert await _unknown_in_automation(hass, config) == {"light.xbroken"}
+
+
+async def test_a_disabled_template_condition_is_left_out(hass: HomeAssistant) -> None:
+    """Templates in a parked condition are parked too.
+
+    The report reads templates as well as structure, so what is left out has
+    to be read the same way.
+    """
+    config = {
+        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.door"}],
+        "conditions": [
+            {
+                "enabled": False,
+                "condition": "template",
+                "value_template": "{{ is_state('light.xparked', 'on') }}",
+            }
+        ],
+        "actions": [
+            {"action": "light.turn_on", "target": {"entity_id": "light.kitchen"}}
+        ],
+    }
+
+    assert await _unknown_in_automation(hass, config) == set()
+
+
+async def test_a_running_template_condition_still_reports(hass: HomeAssistant) -> None:
+    """Named by a running template condition and a parked step, it is in use."""
+    config = {
+        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.door"}],
+        "conditions": [
+            {
+                "condition": "template",
+                "value_template": "{{ is_state('light.xbroken', 'on') }}",
+            }
+        ],
+        "actions": [
+            {
+                "enabled": False,
+                "action": "light.turn_on",
+                "target": {"entity_id": "light.xbroken"},
+            },
+            {"action": "light.turn_on", "target": {"entity_id": "light.kitchen"}},
+        ],
+    }
+
+    assert await _unknown_in_automation(hass, config) == {"light.xbroken"}
+
+
+async def test_a_running_zone_condition_still_reports(hass: HomeAssistant) -> None:
+    """A zone a running condition names is in use, whatever a parked step says."""
+    hass.states.async_set("person.anne", "home")
+    config = {
+        "triggers": [{"trigger": "state", "entity_id": "binary_sensor.door"}],
+        "conditions": [
+            {"condition": "zone", "entity_id": "person.anne", "zone": "zone.xgone"}
+        ],
+        "actions": [
+            {
+                "enabled": False,
+                "action": "zone.update",
+                "target": {"entity_id": "zone.xgone"},
+            },
+            {"action": "light.turn_on", "target": {"entity_id": "light.kitchen"}},
+        ],
+    }
+
+    assert await _unknown_in_automation(hass, config) == {"zone.xgone"}
