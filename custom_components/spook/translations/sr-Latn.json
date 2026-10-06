@@ -2441,6 +2441,20 @@
         "not_triggered_by_user": {
             "name": "Pokretač aktiviran bez učešća korisnika",
             "description": "Uslov je ispunjen kada niko nije odgovoran za ovo pokretanje: vremenski raspored, položaj sunca, automatska integracija ili pritisak na dugme „Pokreni“. Namerno nema dodatnih opcija. Ako umesto toga želiš da isključiš konkretne osobe, stavi uslov „Pokrenuto od strane korisnika“ unutar „Nije“ (Not) uslova."
+        },
+        "is_at_target_temperature": {
+            "fields": {
+                "behavior": {
+                    "name": "Ponašanje",
+                    "description": "Da li je dovoljno da bilo koji od uređaja bude u tom stanju, ili moraju svi."
+                },
+                "tolerance": {
+                    "description": "Koliko blizu cilju se i dalje smatra postignutim rezultatom, izraženo u jedinici mere uređaja. Koristi se za termostat koji se stabilizuje neposredno pre zadate tačke. Nula označava sam cilj.",
+                    "name": "Tolerancija"
+                }
+            },
+            "name": "Temperatura je na ciljnoj vrednosti",
+            "description": "Odobrava se kada je temperatura termostata ili bojlera na ciljnoj vrednosti. Za uređaj koji je isključen smatra se da nije na cilju, dok se nedostupni uređaji izuzimaju."
         }
     },
     "triggers": {
@@ -2633,6 +2647,34 @@
         "update_installed": {
             "name": "Ažuriranje instalirano",
             "description": "Aktivira se kada entitet ažuriranja prijavi drugačiju instaliranu verziju, bez obzira na to da li je neko pritisnuo dugme za instalaciju, da li se uređaj sam ažurirao ili je ažuriran van Home Assistant-a."
+        },
+        "automation_turned_off": {
+            "name": "Automatizacija isključena",
+            "description": "Aktivira se kada neko ili nešto isključi automatizaciju. Ostavite polje za cilj prazno kako biste pratili sve automatizacije."
+        },
+        "position_reached": {
+            "description": "Aktivira se kada pametna roletna/tenda ili ventil dostignu određeni položaj ili prođu pored njega. Položaj u kojem se uređaj već nalazi, kao i povratak u taj položaj nakon što je bio nedostupan, se ne računaju.",
+            "fields": {
+                "position": {
+                    "description": "Položaj koji treba dostići, od 0 (zatvoreno) do 100 (otvoreno).",
+                    "name": "Položaj"
+                }
+            },
+            "name": "Položaj je dostignut"
+        },
+        "script_started": {
+            "description": "Aktivira se kada skripta pokrene izvršavanje. Pokretanje koje skripta odbije zato što se već izvršava se ne računa. Ostavite polje za cilj prazno kako biste pratili sve skripte.",
+            "name": "Skripta je pokrenuta"
+        },
+        "target_temperature_reached": {
+            "description": "Aktivira se kada temperatura termostata ili bojlera dostigne ciljnu vrednost ili je prekorači. Promena ciljne vrednosti se ne računa, kao ni uređaj koji je isključen.",
+            "fields": {
+                "tolerance": {
+                    "description": "Koliko blizu cilju se i dalje smatra postignutim rezultatom, izraženo u jedinici mere uređaja. Koristi se za termostat koji se stabilizuje neposredno pre zadate tačke. Nula označava sam cilj.",
+                    "name": "Tolerancija"
+                }
+            },
+            "name": "Ciljna temperatura je dostignuta"
         }
     },
     "selector": {
