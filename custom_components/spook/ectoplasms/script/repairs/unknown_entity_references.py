@@ -21,37 +21,6 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
-def extract_entities_from_trigger_config(config: dict[str, Any] | list) -> set[str]:
-    """Extract entity IDs from a trigger config."""
-    entities = set()
-
-    if not config:
-        return entities
-
-    if isinstance(config, list):
-        for item in config:
-            entities.update(extract_entities_from_trigger_config(item))
-        return entities
-
-    if not isinstance(config, dict):
-        return entities
-
-    # Extract entity_id from trigger config
-    if "entity_id" in config:
-        entity_id = config["entity_id"]
-        if isinstance(entity_id, str):
-            entities.add(entity_id)
-        elif isinstance(entity_id, list):
-            entities.update([e for e in entity_id if isinstance(e, str)])
-
-    # Recursively process nested configs
-    for value in config.values():
-        if isinstance(value, (dict, list)):
-            entities.update(extract_entities_from_trigger_config(value))
-
-    return entities
-
-
 def extract_referenced_entities_from_script(entity: script.ScriptEntity) -> set[str]:
     """Return entity references from a script entity."""
     try:
@@ -108,34 +77,6 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
     _known_entity_ids: set[str]
     _known_services: set[str]
 
-    def _get_blueprint_trigger_entities(self, entity: script.ScriptEntity) -> set[str]:
-        """Extract entity references from blueprint trigger inputs."""
-        entities = set()
-
-        if (
-            not hasattr(entity, "referenced_blueprint")
-            or not entity.referenced_blueprint
-        ):
-            return entities
-
-        config = getattr(entity, "raw_config", None)
-        if not config or not isinstance(config, dict) or "use_blueprint" not in config:
-            return entities
-
-        blueprint_config = config["use_blueprint"]
-        if "input" not in blueprint_config:
-            return entities
-
-        input_config = blueprint_config["input"]
-        # Look for inputs that might contain triggers (like discard_when)
-        for value in input_config.values():
-            if isinstance(value, (dict, list)) and "trigger" in str(value):
-                trigger_entities = extract_entities_from_trigger_config(value)
-                if trigger_entities:
-                    entities.update(trigger_entities)
-
-        return entities
-
     async def _async_setup_inspection(self) -> None:
         """Cache what every script in this cycle needs looked up.
 
@@ -171,9 +112,6 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
         # Get all referenced entities from the script
         all_entities = extract_referenced_entities_from_script(entity)
-
-        # Check for blueprint trigger inputs
-        all_entities.update(self._get_blueprint_trigger_entities(entity))
 
         # Home Assistant's own list leaves out entities handed over as action
         # data, like `entity: light.kitchen` in a call to another script. The
