@@ -226,6 +226,46 @@ data:
 
 :::
 
+### Reverse options
+
+Reverses the order of the available options in the input select, back to front, and keeps the current option selected.
+
+This is not a sort: the options keep the order they were in, turned around. A list that grows at the end, like a play history, then has its newest entry at the top.
+
+```{list-table}
+:header-rows: 1
+* - Action properties
+* - {term}`Action`
+  - Input select: Reverse options 👻
+* - {term}`Action name`
+  - `input_select.reverse`
+* - {term}`Action targets`
+  - Yes, `input_select` entities
+* - {term}`Action response`
+  - No response
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added action
+* - {term}`Tools`
+  - [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.reverse)
+    [![Open your Home Assistant instance and show the Actions tool with a specific action selected.](https://my.home-assistant.io/badges/developer_call_service.svg)](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.reverse)
+```
+
+:::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
+:class: dropdown
+
+```{code-block} yaml
+:linenos:
+action: input_select.reverse
+target:
+  entity_id: input_select.play_history
+```
+
+:::
+
+:::{attention}
+Reversing is not persistent and will be undone once reloaded or Home Assistant restarts.
+:::
+
 ### Shuffle options
 
 Shuffles the list of available options in the input select and keeps the current
