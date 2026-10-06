@@ -1661,6 +1661,16 @@ input_select_random:
       selector:
         object:
 
+input_select_reverse:
+  name: Reverse options 👻
+  description: >-
+    Reverses the order of the selectable options for an `input_select`
+    entity, back to front. This is not persistent and will be undone once
+    reloaded or Home Assistant restarts.
+  target:
+    entity:
+      domain: input_select
+
 input_select_shuffle:
   name: Shuffle options 👻
   description: >-

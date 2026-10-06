@@ -486,6 +486,12 @@ This action selects a random option from the list of options of a select entity.
 
 `input_select.random`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.random), [documentation](integrations/input_select#select-random-option) 📚
 
+## Input select: Reverse options
+
+Reverses the order of the selectable options for an input select entity, back to front, so a list that grows at the end has its newest at the top. _#reverse_ _#order_
+
+`input_select.reverse`, [Try this action](https://my.home-assistant.io/redirect/developer_call_service/?service=input_select.reverse), [documentation](integrations/input_select#reverse-options) 📚
+
 ## Input select: Shuffle options
 
 Shuffles the list of selectable options for an input select entity. _#31254_
