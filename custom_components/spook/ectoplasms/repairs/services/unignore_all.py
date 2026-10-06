@@ -24,8 +24,10 @@ class SpookService(AbstractSpookAdminService):
     schema = {
         # Left out, every issue. Named, only the issues those integrations
         # raised: HACS nagging for a restart after every update, for example,
-        # without taking anything else down with it.
-        vol.Optional("domain"): vol.All(cv.ensure_list, [cv.string]),
+        # without taking anything else down with it. Named, it has to name
+        # something: an empty list from a template that found nothing must
+        # not turn into every issue there is.
+        vol.Optional("domain"): vol.All(cv.ensure_list, [cv.string], vol.Length(min=1)),
     }
 
     async def async_handle_service(self, call: ServiceCall) -> None:
