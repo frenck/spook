@@ -217,6 +217,92 @@
     "user_added": {
       "name": "User added",
       "description": "Fires when somebody is given a login to Home Assistant. Users Home Assistant creates for its own integrations are left out."
+    },
+    "state_changed": {
+      "name": "Spook's state trigger",
+      "description": "Fires when an entity changes state, for everything a target covers: entities, devices, areas, floors and labels. Narrow it down by domain, integration or device class, or leave the target empty and let those pick the entities from everything. Exclude things again, and decide how long a change has to hold before it counts.",
+      "fields": {
+        "domain": {
+          "name": "Domains",
+          "description": "Only entities of these domains, like binary_sensor or cover. Without a target, picks them from everything."
+        },
+        "integration": {
+          "name": "Integrations",
+          "description": "Only entities provided by these integrations, like zha or hue. Without a target, picks them from everything."
+        },
+        "config_entry": {
+          "name": "Integration entry",
+          "description": "Only entities of this integration entry. Without a target, picks them from everything."
+        },
+        "device_class": {
+          "name": "Device classes",
+          "description": "Only entities of these device classes, like door or window. Without a target, picks them from everything."
+        },
+        "exclude_target": {
+          "name": "Exclude",
+          "description": "Entities, devices, areas, floors or labels to exclude. Everything in them is excluded, the diagnostic entities too."
+        },
+        "exclude_domain": {
+          "name": "Exclude domains",
+          "description": "Exclude entities of these domains. With nothing in Exclude, this applies to everything the target covers."
+        },
+        "exclude_integration": {
+          "name": "Exclude integrations",
+          "description": "Exclude entities provided by these integrations."
+        },
+        "exclude_config_entry": {
+          "name": "Exclude integration entry",
+          "description": "Exclude the entities of this integration entry."
+        },
+        "exclude_device_class": {
+          "name": "Exclude device classes",
+          "description": "Exclude entities of these device classes."
+        },
+        "attribute": {
+          "name": "Attribute",
+          "description": "Follow this attribute instead of the state."
+        },
+        "from": {
+          "name": "From",
+          "description": "Only changes coming from one of these states."
+        },
+        "not_from": {
+          "name": "Not from",
+          "description": "Only changes not coming from one of these states."
+        },
+        "to": {
+          "name": "To",
+          "description": "Only changes going to one of these states."
+        },
+        "not_to": {
+          "name": "Not to",
+          "description": "Only changes not going to one of these states."
+        },
+        "ignore_unavailable": {
+          "name": "Ignore unavailable and unknown",
+          "description": "Leave out changes from or to unavailable and unknown, so a restart or a router reboot does not fire for everything. Turn off to use them in From or To."
+        },
+        "attribute_changes": {
+          "name": "Count attribute changes",
+          "description": "Also fire when only an attribute changed and the state stayed the same. Does nothing while following an attribute."
+        },
+        "behavior": {
+          "name": "Behavior",
+          "description": "Fire for each entity, for the first one of the target to get there, or once all of them are there."
+        },
+        "for": {
+          "name": "For",
+          "description": "Only fire once the new state has held for this long. Any other change in between calls it off."
+        },
+        "blip_tolerance": {
+          "name": "Blip tolerance",
+          "description": "While waiting out For, going unavailable or unknown and coming back as it was within this time does not start the wait over. Only works together with For."
+        },
+        "delay": {
+          "name": "Delay",
+          "description": "Wait this long before firing, whatever happens in between. Like a delay at the start of the actions."
+        }
+      }
     }
   },
   "selector": {
