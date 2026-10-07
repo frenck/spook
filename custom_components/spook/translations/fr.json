@@ -1619,6 +1619,13 @@
                     "description": "Couleur à utiliser pour l'étiquette. Peut être un nom de couleur de la liste ou un code couleur hexadécimal (comme #FF0000)."
                 }
             }
+        },
+        "todo_move_item": {
+            "fields": {
+                "position": {
+                    "name": "Position"
+                }
+            }
         }
     },
     "conditions": {
@@ -1693,6 +1700,13 @@
         "not_triggered_by_user": {
             "name": "Non déclenché par un utilisateur",
             "description": "Est satisfait lorsque personne ne peut être tenu pour responsable de cette exécution : une planification, le soleil, une intégration agissant d'elle-même ou le bouton Exécuter. Sans options, volontairement. Pour exclure des personnes précises, placez plutôt \"Déclenché par un utilisateur\" dans une condition Non."
+        },
+        "is_at_target_temperature": {
+            "fields": {
+                "tolerance": {
+                    "name": "Tolérance"
+                }
+            }
         }
     },
     "triggers": {
@@ -1843,6 +1857,72 @@
         "device_discovered": {
             "name": "Appareil découvert",
             "description": "Se déclenche lorsque Home Assistant découvre quelque chose de nouveau qu'il pourrait configurer, comme un appareil qui vient d'apparaître sur votre réseau."
+        },
+        "automation_turned_off": {
+            "name": "Automatisation désactivée",
+            "description": "Se déclenche quand quelqu'un, ou quelque chose, désactive une automatisation. Laisser la cible vide pour surveiller toutes les automatisations."
+        },
+        "debounce": {
+            "name": "Une fois stabilisé",
+            "description": "Se déclenche une fois qu'un déclencheur a cessé de se déclencher pendant un certain temps, ainsi une salve survient d'un seul tenant. Un détecteur de mouvement ne signale pas un mouvement une seule fois, il le signale vingt fois.",
+            "fields": {
+                "triggers": {
+                    "name": "Déclencheurs",
+                    "description": "Les déclencheurs à attendre. L'activation de l'un d'eux lance une salve, et une nouvelle activation de l'un d'eux la prolonge ; ainsi, plusieurs déclencheurs sont regroupés plutôt que traités un par un."
+                },
+                "for": {
+                    "name": "Pendant",
+                    "description": "La durée de silence requise avant que cela ne se déclenche. Chaque déclenchement réinitialise ce délai d'attente ; par conséquent, un événement qui se déclenche en continu ne fait jamais l'objet d'un signalement."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Tout cela s'est produit",
+            "description": "Se déclenche lorsque chacun des différents déclencheurs s'est activé au sein d'une même fenêtre temporelle, quel que soit l'ordre. Les déclencheurs classiques de Home Assistant fonctionnent sur le principe qu'un seul d'entre eux suffit ; celui-ci est l'autre cas de figure.",
+            "fields": {
+                "triggers": {
+                    "name": "Déclencheurs",
+                    "description": "Les déclencheurs qui doivent tous s'être activés. L'ordre n'a pas d'importance, et une nouvelle activation d'un déclencheur remplace sa précédente occurrence au lieu de compter deux fois."
+                },
+                "within": {
+                    "name": "En moins de",
+                    "description": "À quelle proximité ils doivent se trouver. La fenêtre glisse ; ainsi, un signal déclenché il y a plus longtemps est oublié, tandis que les autres continuent de compter."
+                }
+            }
+        },
+        "recovered": {
+            "name": "L'entité est revenue",
+            "description": "Se déclenche lorsqu'une entité redevient disponible après une période d'indisponibilité ; ainsi, le redémarrage d'un routeur n'est pas interprété comme le rétablissement de tous les équipements de la maison.",
+            "fields": {
+                "for": {
+                    "name": "Pendant",
+                    "description": "La durée d'absence de l'entité avant son retour a de l'importance. Tout ce qui est plus court n'est qu'un scintillement : le rechargement d'une intégration rend chacune de ses entités indisponible puis de nouveau disponible en moins d'une seconde."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Température cible atteinte",
+            "description": "Se déclenche lorsque la température d'un thermostat ou d'un chauffe-eau atteint ou dépasse sa valeur cible. La modification de la valeur cible ne compte pas, pas plus qu'un appareil éteint.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolérance",
+                    "description": "Définit la proximité de la cible encore considérée comme étant « sur » celle-ci, exprimée dans l'unité de l'appareil. Par exemple un thermostat qui se stabilise juste en dessous de sa température de consigne. La valeur zéro correspond à la cible elle-même."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Mise à jour installée",
+            "description": "Se déclenche lorsqu'une entité de mise à jour signale une version installée différente, que ce soit parce que quelqu'un a appuyé sur installer, que l'appareil s'est mis à jour automatiquement ou qu'il a été mis à jour en dehors de Home Assistant."
+        },
+        "position_reached": {
+            "name": "Position atteinte",
+            "description": "Se déclenche lorsqu'un ouvrant ou une vanne atteint une position ou la dépasse. Une situation où l'élément est déjà en place, ou y revient après avoir été indisponible, ne compte pas.",
+            "fields": {
+                "position": {
+                    "name": "Position",
+                    "description": "La position à atteindre, de 0 (fermé) à 100 (ouvert)."
+                }
+            }
         }
     },
     "selector": {
