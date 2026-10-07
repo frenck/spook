@@ -498,6 +498,9 @@ class _StateWatcher(StateChangeWatcher):
         # can take the only match of a first with it.
         group_key = self._settings.behavior
         if (waiting := self._waiting.get(group_key)) is not None:
+            # One that left the target while away is not coming back to it,
+            # so its blip is no reason to keep waiting.
+            waiting.away &= tracked_entities
             self._settle(group_key, waiting)
 
     def _count(self, away: Container[str] = ()) -> tuple[int, int]:
@@ -594,7 +597,11 @@ class _StateWatcher(StateChangeWatcher):
             # here too. For each it is simply away again; for first and all
             # it was not holding a moment ago, and the target, still counting
             # it as there, carries on below.
-            if self._settings.timing.blip_tolerance and self._was_holding(old):
+            if (
+                self._settings.timing.blip_tolerance
+                and self._was_holding(old)
+                and not self._asked_for(new)
+            ):
                 waiting.away.add(entity_id)
                 self._start_blip(key, waiting)
                 return True
@@ -610,6 +617,15 @@ class _StateWatcher(StateChangeWatcher):
             self._waiting.pop(key)
             waiting.cancel()
         return False
+
+    def _asked_for(self, new: State) -> bool:
+        """Return whether going quiet is a state the options name in `to`.
+
+        Then it is what somebody wants to hear about, not a blip. Passing a
+        filter is not enough: without `to`, every state passes.
+        """
+        to_values = self._settings.rules.to_values
+        return to_values is not None and new.state in to_values
 
     def _was_holding(self, old: State | None) -> bool:
         """Return whether an entity that just went quiet was holding.

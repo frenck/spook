@@ -1767,6 +1767,31 @@ async def test_going_away_is_not_a_new_change_when_unavailable_counts(
     assert [p["to_state"].state for p, _ in handed] == ["on"]
 
 
+async def test_going_away_is_a_change_when_to_names_it(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Asked for by name, unavailable is wanted, not a blip to sit out."""
+    await _set(hass, FRONT, "off")
+    handed, unsub = await _attach(
+        hass,
+        to=["on", STATE_UNAVAILABLE],
+        ignore_unavailable=False,
+        blip_tolerance="00:00:30",
+        **{"for": "00:01:00"},
+    )
+
+    await _set(hass, FRONT, "on")
+    await _later(hass, freezer, 20)
+    await _set(hass, FRONT, STATE_UNAVAILABLE)
+    await _later(hass, freezer, 59)
+    assert handed == []
+
+    await _later(hass, freezer, 1)
+    unsub()
+
+    assert [p["to_state"].state for p, _ in handed] == [STATE_UNAVAILABLE]
+
+
 async def test_two_blips_each_get_the_full_tolerance(
     hass: HomeAssistant, freezer: FrozenDateTimeFactory
 ) -> None:
@@ -2423,6 +2448,42 @@ async def test_after_a_blip_runs_out_the_away_one_no_longer_counts(
     unsub()
 
     assert _fired_for(handed) == [BACK]
+
+
+async def test_one_leaving_the_target_while_away_ends_its_blip(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+    entity_registry: er.EntityRegistry,
+    label_registry: lr.LabelRegistry,
+) -> None:
+    """Due, and the rest holds: the one that left is no reason to wait."""
+    label = label_registry.async_create("Doors")
+    front = entity_registry.async_get_or_create("binary_sensor", "demo", "front")
+    back = entity_registry.async_get_or_create("binary_sensor", "demo", "back")
+    for entry in (front, back):
+        entity_registry.async_update_entity(entry.entity_id, labels={label.label_id})
+        await _set(hass, entry.entity_id, "off")
+    handed, unsub = await _attach(
+        hass,
+        {"label_id": label.label_id},
+        to="on",
+        behavior="first",
+        blip_tolerance="00:00:10",
+        **{"for": "00:01:00"},
+    )
+
+    await _set(hass, front.entity_id, "on")
+    await _later(hass, freezer, 55)
+    await _set(hass, front.entity_id, STATE_UNAVAILABLE)
+    await _later(hass, freezer, 7)
+    await _set(hass, back.entity_id, "on")
+    assert handed == []
+
+    entity_registry.async_update_entity(front.entity_id, labels=set())
+    await hass.async_block_till_done()
+    unsub()
+
+    assert _fired_for(handed) == [front.entity_id]
 
 
 async def test_another_door_opening_during_a_blip_is_not_first(
