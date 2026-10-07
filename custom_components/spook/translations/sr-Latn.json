@@ -1173,6 +1173,10 @@
                 "latitude": {
                     "description": "Geografska širina zone. Ovo može biti šablon.",
                     "name": "Geografska širina"
+                },
+                "passive": {
+                    "description": "Pasivna zona služi samo za automatizacije: ne prikazuje se na mapi i ne utiče na lokaciju ljudi i uređaja za praćenje.",
+                    "name": "Pasivno"
                 }
             },
             "description": "Ažurira svojstva zone u hodu.",
@@ -1375,6 +1379,10 @@
                 "latitude": {
                     "description": "Geografska širina zone. Ovo može biti šablon.",
                     "name": "Geografska širina"
+                },
+                "passive": {
+                    "description": "Pasivna zona služi samo za automatizacije: ne prikazuje se na mapi i ne utiče na lokaciju ljudi i uređaja za praćenje.",
+                    "name": "Pasivno"
                 }
             },
             "description": "Kreiraj novu zonu u Home Assistant‑u u hodu.",
@@ -1392,11 +1400,15 @@
         },
         "homeassistant_enable_config_entry": {
             "name": "Omogući integraciju",
-            "description": "Omogućava unos integracije.",
+            "description": "Omogućava unose integracije, pojedinačno ili svaki unos integracije.",
             "fields": {
                 "config_entry_id": {
                     "name": "Unos integracije",
                     "description": "Stavka integracije koju treba omogućiti."
+                },
+                "domain": {
+                    "description": "Omogući svaki unos ovih integracija, uključujući i one koje budu dodate kasnije.",
+                    "name": "Integracija"
                 }
             }
         },
@@ -1446,9 +1458,13 @@
                 "config_entry_id": {
                     "name": "Unos integracije",
                     "description": "Unos integracije koji treba onemogućiti."
+                },
+                "domain": {
+                    "description": "Onemogući svaki unos ovih integracija, uključujući i one koje budu dodate kasnije.",
+                    "name": "Integracija"
                 }
             },
-            "description": "Onemogućava unos integracije."
+            "description": "Onemogućava unose integracije, pojedinačno ili svaki unos integracije."
         },
         "random_fail": {
             "name": "Slučajni neuspeh",
@@ -1476,7 +1492,13 @@
         },
         "repairs_ignore_all": {
             "name": "Zanemari sve probleme",
-            "description": "Zanemari sve probleme koji su trenutno prijavljeni u odeljku Home Assistant Popravke."
+            "description": "Zanemari sve probleme koji su trenutno pokrenuti u Home Assistant Popravkama, ili samo one koje su pokrenule određene integracije.",
+            "fields": {
+                "domain": {
+                    "name": "Domen",
+                    "description": "Zanemari samo probleme koje su pokrenule ove integracije."
+                }
+            }
         },
         "number_increment": {
             "description": "Povećavanje vrednosti entiteta broja za određeni iznos.",
@@ -1513,8 +1535,14 @@
             }
         },
         "repairs_unignore_all": {
-            "description": "Poništi zanemarivanje svih problema koji su trenutno prijavljeni u Home Assistant Popravkama.",
-            "name": "Poništi zanemarivanje svih problema"
+            "description": "Prestani sa zanemarivanjem svih problema koji su trenutno pokrenuti u Home Assistant Popravkama, ili samo onih koje su pokrenule određene integracije.",
+            "name": "Poništi zanemarivanje svih problema",
+            "fields": {
+                "domain": {
+                    "name": "Domen",
+                    "description": "Prestani sa zanemarivanjem samo onih problema koje su pokrenule ove integracije."
+                }
+            }
         },
         "homeassistant_list_orphaned_database_entities": {
             "name": "Prikaži sve napuštene entitete baze podataka",
@@ -2367,6 +2395,28 @@
                     "description": "Premestite je na vrh ili na dno liste. Navedite ovo ili stavku nakon koje je treba staviti."
                 }
             }
+        },
+        "input_number_set_range": {
+            "description": "Menja minimum, maksimum ili korak ulaznog broja u korisničkom interfejsu, isto kao i njegovo uređivanje. Vrednost izvan novog opsega biće pomerena unutar njega.",
+            "fields": {
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Nova maksimalna vrednost."
+                },
+                "min": {
+                    "name": "Minimum",
+                    "description": "Nova minimalna vrednost."
+                },
+                "step": {
+                    "name": "Korak",
+                    "description": "Nova veličina koraka."
+                }
+            },
+            "name": "Postavi opseg"
+        },
+        "input_select_reverse": {
+            "name": "Obrni opcije",
+            "description": "Obrće redosled dostupnih opcija za `input_select` entitet, od poslednje ka prvoj. Ovo nije trajno i biće poništeno nakon ponovnog učitavanja ili ponovnog pokretanja Home Assistant-a."
         }
     },
     "conditions": {
