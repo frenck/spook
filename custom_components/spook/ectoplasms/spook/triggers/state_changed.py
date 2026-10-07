@@ -89,8 +89,9 @@ def _no_contradictions(options: dict[str, Any]) -> dict[str, Any]:
             raise vol.Invalid(message)
 
     # Listing unavailable while ignoring it would be a trigger that loads and
-    # then quietly never fires for exactly the case it names.
-    if options[CONF_IGNORE_UNAVAILABLE]:
+    # then quietly never fires for exactly the case it names. Following an
+    # attribute, from and to are its values, and "unknown" is a fine one.
+    if options[CONF_IGNORE_UNAVAILABLE] and CONF_ATTRIBUTE not in options:
         for key in (CONF_FROM, CONF_TO):
             if named := _NOT_A_VALUE.intersection(options.get(key, [])):
                 message = (
@@ -600,7 +601,7 @@ class _StateWatcher(StateChangeWatcher):
             if (
                 self._settings.timing.blip_tolerance
                 and self._was_holding(old)
-                and not self._asked_for(new)
+                and not self._asked_for(old, new)
             ):
                 waiting.away.add(entity_id)
                 self._start_blip(key, waiting)
@@ -618,14 +619,22 @@ class _StateWatcher(StateChangeWatcher):
             waiting.cancel()
         return False
 
-    def _asked_for(self, new: State) -> bool:
-        """Return whether going quiet is a state the options name in `to`.
+    def _asked_for(self, old: State | None, new: State) -> bool:
+        """Return whether going quiet is a change the options ask for by name.
 
         Then it is what somebody wants to hear about, not a blip. Passing a
-        filter is not enough: without `to`, every state passes.
+        filter is not enough: without `to`, every state passes. It has to be
+        named in `to`, and come from where `from` or `not_from` allow.
+        Following an attribute, `to` names its values, not the entity's state.
         """
-        to_values = self._settings.rules.to_values
-        return to_values is not None and new.state in to_values
+        rules = self._settings.rules
+        return (
+            rules.attribute is None
+            and rules.to_values is not None
+            and new.state in rules.to_values
+            and old is not None
+            and rules.left(old)
+        )
 
     def _was_holding(self, old: State | None) -> bool:
         """Return whether an entity that just went quiet was holding.

@@ -1792,6 +1792,59 @@ async def test_going_away_is_a_change_when_to_names_it(
     assert [p["to_state"].state for p, _ in handed] == [STATE_UNAVAILABLE]
 
 
+async def test_going_away_from_where_from_does_not_allow_is_still_a_blip(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Named in to, but on to unavailable does not come from off."""
+    await _set(hass, FRONT, "off")
+    handed, unsub = await _attach(
+        hass,
+        to=["on", STATE_UNAVAILABLE],
+        **{"from": "off"},
+        ignore_unavailable=False,
+        blip_tolerance="00:00:10",
+        **{"for": "00:01:00"},
+    )
+
+    await _set(hass, FRONT, "on")
+    await _later(hass, freezer, 20)
+    await _set(hass, FRONT, STATE_UNAVAILABLE)
+    await _later(hass, freezer, 5)
+    await _set(hass, FRONT, "on")
+    await _later(hass, freezer, 34)
+    assert handed == []
+
+    await _later(hass, freezer, 1)
+    unsub()
+
+    assert [p["to_state"].state for p, _ in handed] == ["on"]
+
+
+async def test_an_attribute_named_unavailable_is_no_reason_to_skip_a_blip(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Following an attribute, to names its values, not the lamp going away."""
+    await _set(hass, LAMP, "on", {"effect": "none"})
+    handed, unsub = await _attach(
+        hass,
+        {"entity_id": LAMP},
+        attribute="effect",
+        to=["rainbow", STATE_UNAVAILABLE],
+        blip_tolerance="00:00:10",
+        **{"for": "00:01:00"},
+    )
+
+    await _set(hass, LAMP, "on", {"effect": "rainbow"})
+    await _later(hass, freezer, 20)
+    await _set(hass, LAMP, STATE_UNAVAILABLE, {"effect": "rainbow"})
+    await _later(hass, freezer, 5)
+    await _set(hass, LAMP, "on", {"effect": "rainbow"})
+    await _later(hass, freezer, 35)
+    unsub()
+
+    assert len(handed) == 1
+
+
 async def test_two_blips_each_get_the_full_tolerance(
     hass: HomeAssistant, freezer: FrozenDateTimeFactory
 ) -> None:
@@ -3396,6 +3449,24 @@ async def test_what_counts_as_another_attribute_value(
     unsub()
 
     assert len(handed) == int(fires)
+
+
+@pytest.mark.parametrize("value", [STATE_UNKNOWN, STATE_UNAVAILABLE])
+async def test_an_attribute_value_can_be_called_unknown(
+    hass: HomeAssistant, value: str
+) -> None:
+    """Following an attribute, unknown is a value like any, ignoring or not."""
+    validated = await _validate(hass, {"attribute": "effect", "to": value})
+    await _set(hass, LAMP, "on", {"effect": "none"})
+    handed, unsub = await _attach(
+        hass, {"entity_id": LAMP}, attribute="effect", to=value
+    )
+
+    await _set(hass, LAMP, "on", {"effect": value})
+    unsub()
+
+    assert validated["options"]["ignore_unavailable"] is True
+    assert len(handed) == 1
 
 
 async def test_to_the_text_none_is_not_a_missing_value(hass: HomeAssistant) -> None:

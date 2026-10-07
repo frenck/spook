@@ -1171,7 +1171,7 @@ Home Assistant's state trigger takes entities, one by one. This one takes a targ
 
 **Which changes.** A different state, from any state to any state, unless you narrow it down with `from` or `not_from`, and `to` or `not_to`. An attribute that changes while the state stays the same does not count, unless you turn on `attribute_changes`. With `attribute`, it follows that attribute instead of the state, and `attribute_changes` has nothing to add. Values are compared as text, so a brightness of `255` and a `"255"` typed into the editor are the same thing.
 
-Unavailable and unknown are ignored on both sides: a router rebooting does not take every door through a change. Turn off `ignore_unavailable` to trigger on them. Naming them in `from` or `to` while they are ignored is refused, since that trigger could never fire.
+Unavailable and unknown are ignored on both sides: a router rebooting does not take every door through a change. Turn off `ignore_unavailable` to trigger on them. Naming them in `from` or `to` while they are ignored is refused, since that trigger could never fire. Following an `attribute`, `from` and `to` are its values, so an attribute that says `unknown` is fine to ask for.
 
 **How many.** `behavior` works like it does on Home Assistant's own entity triggers. `each` fires for every entity on its own. `first` fires when the first one of the target gets there, and not again until none of them are. `all` fires the moment the last one gets there. Both are about getting to a state, so they need `to` or `not_to`. While unavailable and unknown are ignored, entities in those states do not take part: a door that is not answering does not keep `all` from firing.
 
