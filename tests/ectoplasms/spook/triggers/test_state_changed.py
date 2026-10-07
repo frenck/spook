@@ -233,9 +233,50 @@ async def test_values_become_lists_of_text(
 @pytest.mark.parametrize("behavior", ["each", "first", "all"])
 async def test_the_behaviors_are_taken(hass: HomeAssistant, behavior: str) -> None:
     """The three of Home Assistant's own entity triggers."""
-    validated = await _validate(hass, {"behavior": behavior})
+    validated = await _validate(hass, {"behavior": behavior, "to": "on"})
 
     assert validated["options"]["behavior"] == behavior
+
+
+@pytest.mark.parametrize("behavior", ["first", "all"])
+@pytest.mark.parametrize(
+    "options", [{}, {"from": "off"}, {"not_from": "off"}, {"attribute": "x"}]
+)
+async def test_first_and_all_need_somewhere_to_get_to(
+    hass: HomeAssistant, behavior: str, options: dict[str, Any]
+) -> None:
+    """Without to or not_to every state is already there: a dead trigger."""
+    with pytest.raises(vol.Invalid, match="needs to or not_to"):
+        await _validate(hass, {"behavior": behavior, **options})
+
+
+@pytest.mark.parametrize("behavior", ["first", "all"])
+@pytest.mark.parametrize("options", [{"to": "on"}, {"not_to": "off"}])
+async def test_first_and_all_take_to_or_not_to(
+    hass: HomeAssistant, behavior: str, options: dict[str, Any]
+) -> None:
+    """Either one gives the target somewhere to get to."""
+    await _validate(hass, {"behavior": behavior, **options})
+
+
+async def test_each_needs_nowhere_to_get_to(hass: HomeAssistant) -> None:
+    """For each entity on its own, any change is a change."""
+    await _validate(hass, {"behavior": "each"})
+
+
+async def test_first_with_not_to_fires(hass: HomeAssistant) -> None:
+    """The first door that is no longer closed."""
+    for door in (FRONT, BACK):
+        await _set(hass, door, "off")
+    handed, unsub = await _attach(
+        hass, {"entity_id": [FRONT, BACK]}, not_to="off", behavior="first"
+    )
+
+    await _set(hass, BACK, "on")
+    await _set(hass, FRONT, "on")
+    unsub()
+
+    assert _fired_for(handed) == [BACK]
 
 
 # Which changes
@@ -1690,6 +1731,40 @@ async def test_a_real_change_is_not_a_blip(
     unsub()
 
     assert len(handed) == 1
+
+
+async def test_going_away_is_not_a_new_change_when_unavailable_counts(
+    hass: HomeAssistant, freezer: FrozenDateTimeFactory
+) -> None:
+    """Without a to, unavailable would pass as a state of its own.
+
+    The blip takes that change for itself, so it neither starts a wait for
+    unavailable nor throws away the one for on.
+    """
+    await _set(hass, FRONT, "off")
+    handed, unsub = await _attach(
+        hass,
+        ignore_unavailable=False,
+        blip_tolerance="00:00:10",
+        **{"for": "00:01:00"},
+    )
+
+    await _set(hass, FRONT, "on")
+    await _later(hass, freezer, 20)
+    await _set(hass, FRONT, STATE_UNAVAILABLE)
+    await _later(hass, freezer, 5)
+    await _set(hass, FRONT, "on")
+    await _later(hass, freezer, 34)
+    assert handed == []
+
+    # On time, counted from the first on: the blip did not start it over.
+    await _later(hass, freezer, 1)
+    assert [p["to_state"].state for p, _ in handed] == ["on"]
+
+    await _later(hass, freezer, 120)
+    unsub()
+
+    assert [p["to_state"].state for p, _ in handed] == ["on"]
 
 
 async def test_two_blips_each_get_the_full_tolerance(

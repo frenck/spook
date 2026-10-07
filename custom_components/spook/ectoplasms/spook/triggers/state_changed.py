@@ -110,6 +110,17 @@ def _no_contradictions(options: dict[str, Any]) -> dict[str, Any]:
             key: value for key, value in options.items() if key != CONF_EXCLUDE_TARGET
         }
 
+    # First and all are about getting somewhere. Without a state to get to,
+    # every state is already there, and the trigger could never fire.
+    if options[CONF_BEHAVIOR] != BEHAVIOR_EACH and not (
+        CONF_TO in options or CONF_NOT_TO in options
+    ):
+        message = (
+            f"{CONF_BEHAVIOR} {options[CONF_BEHAVIOR]} needs {CONF_TO} or "
+            f"{CONF_NOT_TO}: a state for the target to get to"
+        )
+        raise vol.Invalid(message)
+
     if CONF_BLIP_TOLERANCE in options and CONF_FOR not in options:
         message = f"{CONF_BLIP_TOLERANCE} only means something together with {CONF_FOR}"
         raise vol.Invalid(message)
@@ -569,9 +580,9 @@ class _StateWatcher(StateChangeWatcher):
     ) -> bool:
         """Keep, pause or drop what is waiting out a duration.
 
-        Returns whether this change was an entity coming back from a blip as
-        it was, which carries on what was already waiting rather than being a
-        new change to start counting from.
+        Returns whether the wait took this change for its own: going away
+        inside the tolerance, or coming back from it as it was. Neither is a
+        new change to start counting from, even where unavailable counts.
         """
         behavior = self._settings.behavior
         key = entity_id if behavior == BEHAVIOR_EACH else behavior
@@ -586,7 +597,7 @@ class _StateWatcher(StateChangeWatcher):
             if self._settings.timing.blip_tolerance and self._was_holding(old):
                 waiting.away.add(entity_id)
                 self._start_blip(key, waiting)
-                return False
+                return True
         elif entity_id in waiting.away:
             waiting.away.discard(entity_id)
             if self._holds(waiting, new):
