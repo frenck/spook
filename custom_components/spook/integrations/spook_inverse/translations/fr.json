@@ -20,10 +20,26 @@
             "user": {
                 "menu_options": {
                     "binary_sensor": "Inverser un capteur binaire",
-                    "switch": "Inverser un commutateur"
+                    "switch": "Inverser un commutateur",
+                    "valve": "Inverser une vanne"
                 },
                 "title": "Inverser 👻",
                 "description": "Cette entrée permet d'inverser l'état d'une entité. Par exemple, inverser l'état ouvert/fermé ou allumé/éteint de capteurs binaires, ou de commutateurs."
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Entité d'origine",
+                    "hide_source": "Cacher l'entité d'origine"
+                },
+                "title": "Inverser 👻"
+            },
+            "valve": {
+                "title": "Inverser 👻",
+                "data": {
+                    "hide_source": "Cacher l'entité d'origine",
+                    "entity_id": "Entité d'origine",
+                    "name": "Nom"
+                }
             }
         }
     },
@@ -42,6 +58,23 @@
                     "hide_source": "Cacher l'entité d'origine",
                     "name": "Nom",
                     "entity_id": "Entité d'origine"
+                },
+                "title": "Inverser 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Entité d'origine",
+                    "name": "Nom",
+                    "hide_source": "Cacher l'entité d'origine",
+                    "inverse_position": "Inverser l'ouverture, la fermeture et la position",
+                    "inverse_tilt": "Inclinaison inversée"
+                }
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Entité d'origine",
+                    "hide_source": "Cacher l'entité d'origine",
+                    "name": "Nom"
                 },
                 "title": "Inverser 👻"
             }
