@@ -294,7 +294,7 @@ The newest issue comes first. Ignored issues are left out, like on the repairs d
 
 Each issue in the response has its `domain`, `issue_id`, `title`, `severity` (`critical`, `error`, or `warning`), `created`, `is_fixable`, `learn_more_url`, `breaks_in_ha_version`, and whether it is `ignored`.
 
-Please be aware, that `repairs.create` automatically adds a `user_` prefix to given `issue_id`'s to prevent them from colliding with id's from Spooks own repairs and that the response from `repairs.list` shows the raw id's including the `user_` prefix. If you want to query or use an `issue_id` returned from `repairs.list`, you need to manually add or remove the `user_` prefix accordingly.
+Please be aware that `repairs.create` and `repairs.remove` expect an unprefixed `issue_id` and add the `user_` prefix internally. The response from `repairs.list` includes the prefixed ID. Remove one `user_` prefix before passing a listed ID to `repairs.remove` or reusing it with `repairs.create`.
 
 Also note, that the `domain` of user's repairs is always `spook`, no matter what has been used in the prior `repairs.create` action. Thus, when searching for user's repairs with `repairs.list`, you always need to provide the domain `spook` (or omit that attribute) for the `repairs.list` call. 
 
