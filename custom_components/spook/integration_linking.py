@@ -11,11 +11,11 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
-def link_sub_integrations(hass: HomeAssistant) -> bool:
-    """Link Spook sub integrations."""
+def link_sub_integrations(hass: HomeAssistant) -> set[str]:
+    """Link Spook sub integrations, and return the ones newly linked."""
     LOGGER.debug("Linking up Spook sub integrations")
 
-    changes = False
+    linked: set[str] = set()
     for manifest in Path(__file__).parent.rglob("integrations/*/manifest.json"):
         LOGGER.debug("Linking Spook sub integration: %s", manifest.parent.name)
         dest = Path(hass.config.config_dir) / "custom_components" / manifest.parent.name
@@ -28,8 +28,8 @@ def link_sub_integrations(hass: HomeAssistant) -> bool:
                 / manifest.parent.name
             )
             dest.symlink_to(src)
-            changes = True
-    return changes
+            linked.add(manifest.parent.name)
+    return linked
 
 
 def unlink_sub_integrations(hass: HomeAssistant) -> None:

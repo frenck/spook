@@ -6,15 +6,22 @@ import asyncio
 
 from datetime import timedelta
 from pathlib import Path
+from textwrap import dedent
 from types import SimpleNamespace
 from typing import TYPE_CHECKING
 from unittest.mock import AsyncMock
+import json
 import logging
+import sys
 
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry
 
-from homeassistant.config_entries import ConfigEntryState
+from homeassistant.config_entries import (
+    SOURCE_USER,
+    ConfigEntryDisabler,
+    ConfigEntryState,
+)
 from homeassistant.const import (
     EVENT_HOMEASSISTANT_START,
     EVENT_HOMEASSISTANT_STARTED,
@@ -22,8 +29,15 @@ from homeassistant.const import (
 )
 from homeassistant.components.automation import EVENT_AUTOMATION_TRIGGERED
 from homeassistant.core import Context, CoreState
+from homeassistant.data_entry_flow import FlowResultType
 from homeassistant.helpers import issue_registry as ir
+from homeassistant.loader import (
+    IntegrationNotFound,
+    async_get_custom_components,
+    async_get_integration,
+)
 
+import custom_components
 from custom_components import spook
 from custom_components.spook.automation_runs import async_get_automation_runs
 from custom_components.spook.const import DOMAIN
@@ -35,7 +49,7 @@ from custom_components.spook.integration_linking import (
 )
 
 if TYPE_CHECKING:
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterator
 
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
@@ -144,14 +158,14 @@ def _create_sub_integration_sources(config_dir: Path) -> None:
         )
 
 
-def _link_sub_integrations_changed(_hass: HomeAssistant) -> bool:
-    """Pretend sub-integration symlink creation changed the config dir."""
-    return True
-
-
-def _link_sub_integrations_noop(_hass: HomeAssistant) -> bool:
+def _link_sub_integrations_noop(_hass: HomeAssistant) -> set[str]:
     """Skip sub-integration symlink creation during lifecycle tests."""
-    return False
+    return set()
+
+
+def _link_spook_inverse(_hass: HomeAssistant) -> set[str]:
+    """Pretend the inverse sub integration was linked again."""
+    return {"spook_inverse"}
 
 
 async def test_setup_entry_loads_and_unloads(
@@ -402,7 +416,7 @@ def test_link_sub_integrations_creates_links_idempotently_and_unlinks(
     fake_hass = SimpleNamespace(config=SimpleNamespace(config_dir=tmp_path))
     _create_sub_integration_sources(tmp_path)
 
-    assert link_sub_integrations(fake_hass) is True
+    assert link_sub_integrations(fake_hass) == set(_sub_integration_names())
 
     for name in _sub_integration_names():
         link = tmp_path / "custom_components" / name
@@ -411,7 +425,7 @@ def test_link_sub_integrations_creates_links_idempotently_and_unlinks(
             tmp_path / "custom_components" / DOMAIN / "integrations" / name
         )
 
-    assert link_sub_integrations(fake_hass) is False
+    assert link_sub_integrations(fake_hass) == set()
 
     unlink_sub_integrations(fake_hass)
 
@@ -426,7 +440,7 @@ async def test_remove_entry_unlinks_sub_integrations(tmp_path: Path) -> None:
         async_add_executor_job=AsyncMock(side_effect=lambda func, *args: func(*args)),
     )
     _create_sub_integration_sources(tmp_path)
-    assert link_sub_integrations(fake_hass) is True
+    assert link_sub_integrations(fake_hass)
 
     await spook.async_remove_entry(fake_hass, MockConfigEntry(domain=DOMAIN, data={}))
 
@@ -434,31 +448,147 @@ async def test_remove_entry_unlinks_sub_integrations(tmp_path: Path) -> None:
         assert not (tmp_path / "custom_components" / name).exists()
 
 
-@pytest.mark.parametrize(
-    ("state", "restart_choice"),
-    [
-        (CoreState.not_running, "later"),
-        (CoreState.starting, "later"),
-        (CoreState.running, "later"),
-        (CoreState.not_running, "now"),
-    ],
-)
-async def test_setup_entry_restart_required_paths(
+_FRESH_SUB_INTEGRATION = "spook_freshly_linked"
+
+
+@pytest.fixture(name="fresh_sub_integration")
+def fixture_fresh_sub_integration(
+    hass: HomeAssistant,
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> Iterator[Callable[[], None]]:
+    """Return a callable that links a sub integration nothing has seen yet.
+
+    The test config dir is shared, and other tests leave the real sub
+    integrations linked in it. A name of its own keeps this one new to the
+    loader, which is the point.
+    """
+    source = tmp_path / _FRESH_SUB_INTEGRATION
+    source.mkdir()
+    (source / "manifest.json").write_text(
+        json.dumps(
+            {
+                "domain": _FRESH_SUB_INTEGRATION,
+                "name": "Spook freshly linked",
+                "codeowners": [],
+                "config_flow": True,
+                "documentation": "https://spook.boo",
+                "integration_type": "helper",
+                "iot_class": "calculated",
+                "version": "0.0.0",
+            }
+        )
+    )
+    (source / "__init__.py").write_text('"""Spook freshly linked."""\n')
+    (source / "config_flow.py").write_text(
+        dedent(
+            f"""\
+            \"\"\"Config flow for a freshly linked sub integration.\"\"\"
+
+            from homeassistant.config_entries import ConfigFlow
+
+
+            class FreshlyLinkedConfigFlow(ConfigFlow, domain="{_FRESH_SUB_INTEGRATION}"):
+                \"\"\"Show one form.\"\"\"
+
+                async def async_step_user(self, user_input=None):
+                    \"\"\"Show the form.\"\"\"
+                    return self.async_show_form(step_id="user")
+            """
+        )
+    )
+
+    custom_components_dir = Path(hass.config.config_dir) / "custom_components"
+    custom_components_dir.mkdir(exist_ok=True)
+    monkeypatch.setattr(
+        custom_components,
+        "__path__",
+        [*custom_components.__path__, str(custom_components_dir)],
+    )
+    link = custom_components_dir / _FRESH_SUB_INTEGRATION
+
+    def link_fresh_sub_integration() -> None:
+        """Link it in, the way Spook does on a fresh install."""
+        link.symlink_to(source, target_is_directory=True)
+
+    yield link_fresh_sub_integration
+
+    link.unlink(missing_ok=True)
+    sys.modules.pop(f"custom_components.{_FRESH_SUB_INTEGRATION}", None)
+    sys.modules.pop(f"custom_components.{_FRESH_SUB_INTEGRATION}.config_flow", None)
+
+
+async def test_setup_entry_loads_freshly_linked_sub_integration(
     hass: HomeAssistant,
     monkeypatch: pytest.MonkeyPatch,
-    state: CoreState,
-    restart_choice: str,
+    fresh_sub_integration: Callable[[], None],
 ) -> None:
-    """Test setup behavior when sub-integration linking requires a restart."""
-    restart_now = restart_choice == "now"
-    original_async_stop = hass.async_stop
+    """Test a sub integration linked during setup loads without a restart.
 
-    async def async_cleanup_hass() -> None:
-        """Stop Home Assistant after the restart request is asserted."""
-        monkeypatch.setattr(hass, "state", CoreState.running)
-        await original_async_stop()
+    The loader scans custom_components once and keeps that list. A sub
+    integration linked in after the scan is unknown to it, which is why Spook
+    used to ask for a restart. Spook now has the loader scan again.
+    """
 
-    async_stop = AsyncMock()
+    def link_and_report_a_change(_hass: HomeAssistant) -> set[str]:
+        """Link the fresh sub integration, and report it."""
+        fresh_sub_integration()
+        return {_FRESH_SUB_INTEGRATION}
+
+    async def async_forward_no_platforms(
+        _hass: HomeAssistant,
+        _entry: ConfigEntry,
+    ) -> None:
+        """Forward no ectoplasm setup."""
+
+    monkeypatch.setattr(spook, "PLATFORMS", [])
+    monkeypatch.setattr(spook, "async_forward_setup_entry", async_forward_no_platforms)
+    monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
+    monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
+    monkeypatch.setattr(spook, "link_sub_integrations", link_and_report_a_change)
+
+    # The scan has happened, as it has on any running Home Assistant.
+    assert _FRESH_SUB_INTEGRATION not in await async_get_custom_components(hass)
+
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+    integration = await async_get_integration(hass, _FRESH_SUB_INTEGRATION)
+    assert integration.config_flow
+    assert ir.async_get(hass).async_get_issue(DOMAIN, "restart_required") is None
+
+    result = await hass.config_entries.flow.async_init(
+        _FRESH_SUB_INTEGRATION,
+        context={"source": SOURCE_USER},
+    )
+    assert result["type"] is FlowResultType.FORM
+
+    assert await hass.config_entries.async_unload(entry.entry_id)
+
+
+async def test_freshly_linked_sub_integration_unknown_without_rescan(
+    hass: HomeAssistant,
+    fresh_sub_integration: Callable[[], None],
+) -> None:
+    """Test the loader misses a sub integration linked after its scan.
+
+    This is the premise the rescan in setup rests on. Should the loader ever
+    look again by itself, this fails, and the rescan can go.
+    """
+    await async_get_custom_components(hass)
+    fresh_sub_integration()
+
+    with pytest.raises(IntegrationNotFound):
+        await async_get_integration(hass, _FRESH_SUB_INTEGRATION)
+
+
+def _patch_setup_for_restart_tests(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Strip setup down to the sub integration linking."""
 
     async def async_forward_no_platforms(
         _hass: HomeAssistant,
@@ -485,50 +615,107 @@ async def test_setup_entry_restart_required_paths(
     )
     monkeypatch.setattr(spook, "SpookServiceManager", _NoopSpookServiceManager)
     monkeypatch.setattr(spook, "SpookRepairManager", _NoopSpookRepairManager)
-    monkeypatch.setattr(spook, "link_sub_integrations", _link_sub_integrations_changed)
+    monkeypatch.setattr(spook, "link_sub_integrations", _link_spook_inverse)
     monkeypatch.setattr(
         spook,
         "async_setup_all_entity_ids_cache_invalidation",
         setup_cache_invalidation_noop,
     )
+
+
+@pytest.mark.parametrize(
+    "state",
+    [CoreState.not_running, CoreState.starting, CoreState.running],
+)
+async def test_setup_entry_restarts_for_helpers_left_without_their_link(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    state: CoreState,
+) -> None:
+    """Test a helper whose sub integration link went missing gets a restart.
+
+    Home Assistant found nothing to set the helper up with when it started,
+    and does not try again. Linking and rescanning is too late for it.
+    """
+    _patch_setup_for_restart_tests(hass, monkeypatch)
+    original_async_stop = hass.async_stop
+    async_stop = AsyncMock()
     monkeypatch.setattr(hass, "async_stop", async_stop)
     monkeypatch.setattr(hass, "state", state)
-    if restart_now:
-        hass.data[DOMAIN] = "Boo!"
 
+    MockConfigEntry(domain="spook_inverse", data={}).add_to_hass(hass)
     entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
     entry.add_to_hass(hass)
 
     result = await spook.async_setup_entry(hass, entry)
 
-    if state == CoreState.running and not restart_now:
-        assert result is True
-    else:
-        assert result is False
-
-    if restart_now or state == CoreState.starting:
-        await hass.async_block_till_done()
-        hass.async_stop.assert_awaited_once_with(RESTART_EXIT_CODE)
-        assert ir.async_get(hass).async_get_issue(DOMAIN, "restart_required") is None
-        await async_cleanup_hass()
-        return
+    assert result is (state == CoreState.running)
 
     if state == CoreState.not_running:
-        hass.async_stop.assert_not_called()
-
+        async_stop.assert_not_called()
         hass.bus.async_fire(EVENT_HOMEASSISTANT_START)
-        await hass.async_block_till_done()
 
-        hass.async_stop.assert_awaited_once_with(RESTART_EXIT_CODE)
-        assert ir.async_get(hass).async_get_issue(DOMAIN, "restart_required") is None
-        await async_cleanup_hass()
+    await hass.async_block_till_done()
+
+    if state == CoreState.running:
+        async_stop.assert_not_called()
+        issue = ir.async_get(hass).async_get_issue(DOMAIN, "restart_required")
+        assert issue is not None
+        assert issue.severity is ir.IssueSeverity.WARNING
+        assert issue.translation_key == "restart_required"
+        await original_async_stop()
         return
 
-    hass.async_stop.assert_not_called()
-    issue = ir.async_get(hass).async_get_issue(DOMAIN, "restart_required")
-    assert issue is not None
-    assert issue.severity is ir.IssueSeverity.WARNING
-    assert issue.translation_key == "restart_required"
+    async_stop.assert_awaited_once_with(RESTART_EXIT_CODE)
+    assert ir.async_get(hass).async_get_issue(DOMAIN, "restart_required") is None
+    monkeypatch.setattr(hass, "state", CoreState.running)
+    await original_async_stop()
+
+
+@pytest.mark.parametrize(
+    ("entry_state", "disabled_by"),
+    [
+        (ConfigEntryState.LOADED, None),
+        (ConfigEntryState.SETUP_RETRY, None),
+        (ConfigEntryState.SETUP_ERROR, None),
+        (ConfigEntryState.NOT_LOADED, ConfigEntryDisabler.USER),
+    ],
+)
+async def test_setup_entry_does_not_restart_for_helpers_not_waiting(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+    entry_state: ConfigEntryState,
+    disabled_by: ConfigEntryDisabler | None,
+) -> None:
+    """Test a helper that is not left waiting is no reason to restart.
+
+    A loaded one runs on code already in memory, the link is only back for
+    the next start. One that failed or retries had its code found and run, a
+    restart changes nothing for it. A disabled one is not meant to be set up
+    at all.
+    """
+    _patch_setup_for_restart_tests(hass, monkeypatch)
+    original_async_stop = hass.async_stop
+    async_stop = AsyncMock()
+    monkeypatch.setattr(hass, "async_stop", async_stop)
+    monkeypatch.setattr(hass, "state", CoreState.starting)
+
+    MockConfigEntry(
+        domain="spook_inverse",
+        data={},
+        state=entry_state,
+        disabled_by=disabled_by,
+    ).add_to_hass(hass)
+    entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
+    entry.add_to_hass(hass)
+
+    assert await spook.async_setup_entry(hass, entry) is True
+    await hass.async_block_till_done()
+
+    async_stop.assert_not_called()
+    assert ir.async_get(hass).async_get_issue(DOMAIN, "restart_required") is None
+
+    monkeypatch.setattr(hass, "state", CoreState.running)
     await original_async_stop()
 
 

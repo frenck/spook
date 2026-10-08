@@ -90,7 +90,7 @@ async def test_automation_with_dangling_references_creates_issue(
         """Skip ectoplasm setup; this test targets the repair manager."""
 
     monkeypatch.setattr(spook, "PLATFORMS", [])
-    monkeypatch.setattr(spook, "link_sub_integrations", lambda _: False)
+    monkeypatch.setattr(spook, "link_sub_integrations", lambda _: set())
     monkeypatch.setattr(
         spook, "async_forward_setup_entry", _async_forward_no_ectoplasms
     )

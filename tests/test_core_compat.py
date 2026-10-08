@@ -12,10 +12,12 @@ from homeassistant.helpers.service import (
     async_get_cached_service_description,
     async_set_service_schema,
 )
+from homeassistant import loader
 from homeassistant.loader import async_get_integration
 
 from custom_components.spook import core_compat
 from custom_components.spook.core_compat import (
+    async_clear_custom_components_cache,
     async_get_child_device_ids,
     async_get_child_devices_for_parent,
     async_get_device_entries,
@@ -287,3 +289,40 @@ async def test_a_description_missing_from_the_file_keeps_its_loaded_target(
     assert descriptions["cover_increase_position"]["target"] == {
         "entity": [{"domain": ["cover"], "supported_features": [4]}]
     }
+
+
+async def test_custom_components_cache_cleared_by_core_when_it_can(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test Core's own helper does the clearing once Core has one.
+
+    Core 2026.11 added it. Going through it keeps working should Core ever
+    change what it keeps the list in.
+    """
+    cleared: list[HomeAssistant] = []
+    monkeypatch.setattr(
+        loader,
+        "async_clear_custom_components_cache",
+        cleared.append,
+        raising=False,
+    )
+    await loader.async_get_custom_components(hass)
+
+    async_clear_custom_components_cache(hass)
+
+    assert cleared == [hass]
+    assert loader.DATA_CUSTOM_COMPONENTS in hass.data
+
+
+async def test_custom_components_cache_cleared_before_core_could(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the list is dropped by hand on Core 2026.10 and older."""
+    monkeypatch.delattr(loader, "async_clear_custom_components_cache", raising=False)
+    await loader.async_get_custom_components(hass)
+
+    async_clear_custom_components_cache(hass)
+
+    assert loader.DATA_CUSTOM_COMPONENTS not in hass.data

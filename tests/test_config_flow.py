@@ -32,46 +32,20 @@ async def test_config_flow_shows_initial_form(hass: HomeAssistant) -> None:
     assert result["errors"] is None
 
 
-async def test_config_flow_can_create_entry_with_restart_later(
+async def test_config_flow_creates_entry_without_asking_for_a_restart(
     hass: HomeAssistant,
 ) -> None:
-    """Test the config flow can create an entry using restart later."""
+    """Test the config flow creates the entry straight away."""
     result = await hass.config_entries.flow.async_init(
         DOMAIN,
         context={"source": config_entries.SOURCE_USER},
         data={},
-    )
-
-    assert result["type"] is FlowResultType.MENU
-    assert result["step_id"] == "choice_restart"
-
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        user_input={"next_step_id": "restart_later"},
     )
 
     assert result["type"] is FlowResultType.CREATE_ENTRY
     assert result["title"] == "Your homie"
     assert result["data"] == {}
-
-
-async def test_config_flow_restart_now_sets_setup_restart_flag(
-    hass: HomeAssistant,
-) -> None:
-    """Test restart now stores the setup restart flag."""
-    result = await hass.config_entries.flow.async_init(
-        DOMAIN,
-        context={"source": config_entries.SOURCE_USER},
-        data={},
-    )
-
-    result = await hass.config_entries.flow.async_configure(
-        result["flow_id"],
-        user_input={"next_step_id": "restart_now"},
-    )
-
-    assert result["type"] is FlowResultType.CREATE_ENTRY
-    assert hass.data[DOMAIN] == "Boo!"
+    assert DOMAIN not in hass.data
 
 
 async def test_config_flow_aborts_when_spook_is_already_configured(
