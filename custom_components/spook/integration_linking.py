@@ -40,3 +40,14 @@ def unlink_sub_integrations(hass: HomeAssistant) -> None:
         dest = Path(hass.config.config_dir) / "custom_components" / manifest.parent.name
         if dest.exists():
             dest.unlink()
+
+
+def sub_integration_links(hass: HomeAssistant) -> dict[str, bool]:
+    """Return each Spook sub integration, and whether it is linked."""
+    custom_components = Path(hass.config.config_dir) / "custom_components"
+    return {
+        manifest.parent.name: (custom_components / manifest.parent.name).exists()
+        for manifest in sorted(
+            Path(__file__).parent.rglob("integrations/*/manifest.json")
+        )
+    }
