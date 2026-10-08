@@ -79,24 +79,33 @@ def test_system_health_registers_with_a_link_to_spook() -> None:
 
 
 def test_sub_integration_links(tmp_path: Path) -> None:
-    """Test a missing link shows as missing, not just a full set."""
+    """Test only a link to Spook's own copy counts as linked."""
+    spook = Path(system_health.__file__).parent
+    custom_components = tmp_path / "custom_components"
+    custom_components.mkdir()
+    # Installed the way Spook is, so its links lead to the real thing.
+    (custom_components / DOMAIN).symlink_to(spook, target_is_directory=True)
     fake_hass = SimpleNamespace(config=SimpleNamespace(config_dir=tmp_path))
     names = sorted(
         manifest.parent.name
-        for manifest in (Path(system_health.__file__).parent / "integrations").glob(
-            "*/manifest.json"
-        )
+        for manifest in (spook / "integrations").glob("*/manifest.json")
     )
-    for name in names:
-        (tmp_path / "custom_components" / DOMAIN / "integrations" / name).mkdir(
-            parents=True
-        )
 
     assert sub_integration_links(fake_hass) == dict.fromkeys(names, False)
 
     link_sub_integrations(fake_hass)
-    (tmp_path / "custom_components" / names[0]).unlink()
 
-    assert sub_integration_links(fake_hass) == {
-        name: name != names[0] for name in names
-    }
+    assert sub_integration_links(fake_hass) == dict.fromkeys(names, True)
+
+    # A copy where the link was, and a link that leads somewhere else, both
+    # load code that is not Spook's.
+    copied, elsewhere, *_ = names
+    (custom_components / copied).unlink()
+    (custom_components / copied).mkdir()
+    (custom_components / elsewhere).unlink()
+    (custom_components / elsewhere).symlink_to(tmp_path, target_is_directory=True)
+
+    links = sub_integration_links(fake_hass)
+    assert links[copied] is False
+    assert links[elsewhere] is False
+    assert all(links[name] for name in names if name not in (copied, elsewhere))
