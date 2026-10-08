@@ -294,6 +294,10 @@ The newest issue comes first. Ignored issues are left out, like on the repairs d
 
 Each issue in the response has its `domain`, `issue_id`, `title`, `severity` (`critical`, `error`, or `warning`), `created`, `is_fixable`, `learn_more_url`, `breaks_in_ha_version`, and whether it is `ignored`.
 
+Please be aware, that `repairs.create` automatically adds a `user_` prefix to given `issue_id`'s to prevent them from colliding with id's from Spooks own repairs and that the response from `repairs.list` shows the raw id's including the `user_` prefix. If you want to query or use an `issue_id` returned from `repairs.list`, you need to manually add or remove the `user_` prefix accordingly.
+
+Also note, that the `domain` of user's repairs is always `spook`, no matter what has been used in the prior `repairs.create` action. Thus, when searching for user's repairs with `repairs.list`, you always need to provide the domain `spook` (or omit that attribute) for the `repairs.list` call. 
+
 Listing issues takes an admin, the same as the repairs dashboard does.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
