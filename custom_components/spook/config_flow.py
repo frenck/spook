@@ -12,8 +12,9 @@ from homeassistant.config_entries import (
     ConfigFlow,
     ConfigFlowResult,
 )
+from homeassistant.loader import async_get_integration
 
-from .const import DOMAIN
+from .const import DOMAIN, NEWSLETTER_URL, REPOSITORY_URL, SPONSOR_URL
 
 
 class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
@@ -42,15 +43,32 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
             if self._disabled_entry is not None:
                 return self.async_show_menu(
                     step_id="already_configured",
-                    menu_options=["enable_existing"],
+                    menu_options=["enable_existing", "keep_sleeping"],
                 )
 
             return self.async_abort(reason="already_spooked")
 
+        integration = await async_get_integration(self.hass, DOMAIN)
         if user_input is not None:
-            return self.async_create_entry(title="Your homie", data={})
+            return self.async_create_entry(
+                title="Your homie",
+                data={},
+                description="spooked",
+                description_placeholders={
+                    "documentation_url": str(integration.documentation),
+                    "newsletter_url": NEWSLETTER_URL,
+                    "repository_url": REPOSITORY_URL,
+                    "sponsor_url": SPONSOR_URL,
+                },
+            )
 
-        return self.async_show_form(step_id="user", data_schema=vol.Schema({}))
+        return self.async_show_form(
+            step_id="user",
+            data_schema=vol.Schema({}),
+            description_placeholders={
+                "issue_tracker_url": str(integration.issue_tracker),
+            },
+        )
 
     async def async_step_already_configured(
         self,
@@ -63,7 +81,7 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
 
         return self.async_show_menu(
             step_id="already_configured",
-            menu_options=["enable_existing"],
+            menu_options=["enable_existing", "keep_sleeping"],
         )
 
     async def async_step_enable_existing(
@@ -82,3 +100,10 @@ class UptimeConfigFlow(ConfigFlow, domain=DOMAIN):
             return self.async_abort(reason="enabled_existing")
 
         return self.async_abort(reason="enable_failed")
+
+    async def async_step_keep_sleeping(
+        self,
+        _: dict[str, Any] | None = None,
+    ) -> ConfigFlowResult:
+        """Leave the existing disabled Spook config entry alone."""
+        return self.async_abort(reason="kept_sleeping")
