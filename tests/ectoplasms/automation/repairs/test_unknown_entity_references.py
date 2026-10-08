@@ -585,6 +585,38 @@ async def test_a_notification_tag_nested_under_data_is_just_text(
     }
 
 
+async def test_a_service_field_in_notify_data_stays_payload(
+    hass: HomeAssistant,
+) -> None:
+    """A `service` key inside notify data is a field, not the action.
+
+    The outer notify action still owns the payload, so a `tag` beside that
+    field, and one nested under `data`, stay plain text. A real `entity_id`
+    in there is still a reference, and so is a service value that reads like
+    an entity id.
+    """
+    flat = {
+        "action": "notify.mobile_app_phone",
+        "data": {"service": "script.run", "tag": "notify.example"},
+    }
+    nested = {
+        "action": "notify.mobile_app_phone",
+        "data": {
+            "service": "script.run",
+            "data": {
+                "tag": "notify.example",
+                "target": "notify.old_tablet",
+                "entity_id": "light.kitchen",
+            },
+        },
+    }
+    assert await async_extract_entities_from_action_config(hass, flat) == {"script.run"}
+    assert await async_extract_entities_from_action_config(hass, nested) == {
+        "light.kitchen",
+        "script.run",
+    }
+
+
 async def test_a_template_in_a_notification_tag_still_names_what_it_reads(
     hass: HomeAssistant,
 ) -> None:

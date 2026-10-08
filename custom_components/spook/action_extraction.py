@@ -31,6 +31,7 @@ async def async_extract_entities_from_action_config(
     known_services: set[str] | None = None,
     _in_sequence: bool = False,
     _in_payload: bool = False,
+    _is_payload: bool = False,
     _service: str | None = None,
 ) -> set[str]:
     """Extract entity IDs from action configuration.
@@ -52,9 +53,9 @@ async def async_extract_entities_from_action_config(
     configuration.
 
     A service named on the action decides which of its data fields are plain
-    text, and whether a ``target`` in there belongs to notify. A dict nested
-    under ``data`` names no service of its own, so the one resolved further
-    out is handed down and used when this dict names none.
+    text, and whether a ``target`` in there belongs to notify. The value of
+    ``data`` is payload, not an action: a ``service`` key there is a field,
+    so the service resolved further out still judges the fields beside it.
     """
     entities = set()
 
@@ -74,6 +75,7 @@ async def async_extract_entities_from_action_config(
                     known_services=known_services,
                     _in_sequence=True,
                     _in_payload=_in_payload,
+                    _is_payload=_is_payload,
                     _service=_service,
                 )
             )
@@ -90,9 +92,9 @@ async def async_extract_entities_from_action_config(
     ):
         return entities
 
-    # The action's own name wins. A dict under `data` has none, and the
-    # service from further out is what its fields are judged by.
-    service = _get_action_service(config) or _service
+    # The action's own name wins. A `service` key on the `data` payload is a
+    # field, not a new action, so the name from further out still applies.
+    service = _get_action_service(config, is_payload=_is_payload) or _service
 
     # Extract entity IDs from direct fields
     entities.update(
@@ -154,8 +156,12 @@ async def _extract_entities_from_target(
     return entities
 
 
-def _get_action_service(config: dict[str, Any]) -> str | None:
-    """Return the service/action name configured for an action."""
+def _get_action_service(
+    config: dict[str, Any], *, is_payload: bool = False
+) -> str | None:
+    """Return the action's service name, ignoring a payload ``service`` field."""
+    if is_payload:
+        return None
     service = config.get("service", config.get("action"))
     return service if isinstance(service, str) else None
 
@@ -253,6 +259,7 @@ async def _extract_entities_from_nested_configs(
                     include_disabled=include_disabled,
                     known_services=known_services,
                     _in_payload=in_payload or key == "data",
+                    _is_payload=key == "data",
                     _service=_service,
                 )
             )
