@@ -1,20 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook já está configurado.",
-            "enable_failed": "Não foi possível ativar a entrada existente do Spook.",
-            "enabled_existing": "A entrada existente do Spook foi ativada."
+            "already_spooked": "O Spook já está assombrando este lugar 👻\n\nUm fantasma por casa é mais do que suficiente. Você encontra o Spook em [Dispositivos e serviços](/config/integrations/integration/spook).",
+            "enable_failed": "O Spook não quis acordar 👻\n\nTente ligá-lo de novo você mesmo em [Dispositivos e serviços](/config/integrations/integration/spook).",
+            "enabled_existing": "O Spook acordou de novo 👻\n\nDê a ele um momento para dar uma olhada. Tudo o que ele encontrar aparece em [Reparos](/config/repairs).",
+            "kept_sleeping": "O Spook continua dormindo 👻\n\nSentiu falta dele? Você pode acordá-lo a qualquer momento em [Dispositivos e serviços](/config/integrations/integration/spook)."
         },
         "step": {
             "user": {
-                "description": "Você leu o readme? Você leu a licença? Tem certeza mesmo?"
+                "description": "O Spook flutua pelo seu Home Assistant procurando fantasmas: referências a coisas que não existem mais e restos que ninguém limpou. Tudo o que ele encontra, ele relata em Reparos.\n\nEle também amplia o que suas automações e scripts podem fazer, com ações, acionadores, condições e auxiliares extras, para automações ainda mais poderosas.\n\nAviso justo: o Spook não faz parte do Home Assistant. É uma integração personalizada que se mete em lugares para onde nunca foi convidada. Se algo estranho acontecer, desconfie primeiro do Spook e [avise a gente]({issue_tracker_url}).\n\nPronto para ser assombrado?",
+                "title": "Bu! Conheça o Spook, seu mano 👻"
             },
             "already_configured": {
-                "description": "O Spook já está configurado, mas a entrada existente está desativada. Você quer ativá-la?",
+                "description": "O Spook já está configurado, mas alguém o desligou. Acordá-lo?",
                 "menu_options": {
-                    "enable_existing": "Ativar a entrada existente"
-                }
+                    "enable_existing": "Acordar o Spook",
+                    "keep_sleeping": "Deixar dormir"
+                },
+                "title": "O Spook está dormindo 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "O Spook está flutuando por aí 👻\n\nDê a ele um momento para dar uma olhada. Tudo o que ele encontrar aparece em [Reparos](/config/repairs).\n\nAs ações, acionadores e condições extras estão esperando por você nos editores de automações e scripts. Curioso para saber o que mais o Spook sabe fazer? A [documentação]({documentation_url}) tem tudo.\n\nCurtindo o Spook? 👻 Uma ⭐ no [GitHub]({repository_url}) mostra para os outros que o Spook é, na verdade, bem incrível. [Patrocinar o Frenck]({sponsor_url}) mantém este fantasma bem alimentado. E a [newsletter]({newsletter_url}) gratuita e quinzenal dele mantém o seu fantasma interior bem alimentado."
         }
     },
     "entity": {
@@ -340,7 +347,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Reinicie necessário",
-                        "description": "Para Spook . terminar a configuração, o Home Assistant precisa ser reiniciado.\n\nSelecione submeter para reiniciar assistente de casa agora."
+                        "description": "Para o Spook 👻 terminar a configuração, o Home Assistant precisa ser reiniciado.\n\nSelecione enviar para reiniciar o Home Assistant agora.\n\nSpook 👻 Seu mano."
                     }
                 }
             }
@@ -1845,6 +1852,14 @@
                 "error": "Erro",
                 "warning": "Aviso"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Fantasmas encontrados",
+            "ghosts_ignored": "Fantasmas ignorados",
+            "helpers_linked": "Auxiliares vinculados",
+            "version": "Versão"
         }
     }
 }
