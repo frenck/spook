@@ -1,20 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook is al geconfigureerd.",
-            "enabled_existing": "De bestaande Spook ingave werd geactiveerd",
-            "enable_failed": "De bestaande Spook ingave kon niet worden geactiveerd."
+            "already_spooked": "Spook spookt hier al rond 👻\n\nEén spook per huis is meer dan genoeg. Je vindt Spook onder [Apparaten & diensten](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook is weer wakker 👻\n\nGeef het even de tijd om rond te kijken. Alles wat het vindt, verschijnt onder [Reparaties](/config/repairs).",
+            "enable_failed": "Spook wilde niet wakker worden 👻\n\nProbeer het zelf weer aan te zetten onder [Apparaten & diensten](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook slaapt verder 👻\n\nMis je het? Je kunt het altijd wakker maken onder [Apparaten & diensten](/config/integrations/integration/spook)."
         },
         "step": {
             "user": {
-                "description": "Heb je de readme gelezen? Heb je de licentie gelezen? Weet je het heel zeker?"
+                "description": "Spook zweeft door je Home Assistant op zoek naar spoken: verwijzingen naar dingen die niet meer bestaan, en restjes die niemand heeft opgeruimd. Wat het vindt, meldt het onder Reparaties.\n\nDaarnaast breidt het uit wat je automatiseringen en scripts kunnen, met extra acties, triggers, voorwaarden en helpers, voor nog krachtigere automatiseringen.\n\nEerlijk is eerlijk: Spook is geen onderdeel van Home Assistant. Het is een custom integratie die komt op plekken waar het nooit voor is uitgenodigd. Gebeurt er iets vreemds, verdenk dan eerst Spook, en [laat het ons weten]({issue_tracker_url}).\n\nKlaar om gespookt te worden?",
+                "title": "Boe! Maak kennis met Spook, je homie 👻"
             },
             "already_configured": {
-                "description": "Spook is al geconfigureerd, maar de bestaande instantie is uitgeschakeld. Wil je hem inschakelen?",
+                "description": "Spook is al ingesteld, maar iemand heeft het uitgezet. Wakker maken?",
                 "menu_options": {
-                    "enable_existing": "Bestaande ingave activeren"
-                }
+                    "enable_existing": "Spook wakker maken",
+                    "keep_sleeping": "Laat het slapen"
+                },
+                "title": "Spook slaapt 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "Spook zweeft rond 👻\n\nGeef het even de tijd om rond te kijken. Alles wat het vindt, verschijnt onder [Reparaties](/config/repairs).\n\nDe extra acties, triggers en voorwaarden staan voor je klaar in de automatiserings- en scripteditor. Benieuwd wat Spook nog meer kan? In de [documentatie]({documentation_url}) staat alles.\n\nVind je Spook leuk? 👻 Een ⭐ op [GitHub]({repository_url}) laat anderen weten dat Spook eigenlijk best tof is. [Frenck sponsoren]({sponsor_url}) houdt dit spook goed gevoed. En zijn gratis tweewekelijkse [nieuwsbrief]({newsletter_url}) houdt je innerlijke spook goed gevoed."
         }
     },
     "entity": {
@@ -341,7 +348,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Herstart vereist",
-                        "description": "Om de instelling van Spook af te ronden moet Home Assistant worden herstart.\n\nDruk Bevestigen om Home Assistant nu te herstarten."
+                        "description": "Om de instelling van Spook af te ronden moet Home Assistant worden herstart.\n\nDruk Bevestigen om Home Assistant nu te herstarten.\n\nSpook 👻 Je homie."
                     }
                 }
             }
@@ -2611,6 +2618,14 @@
                 "error": "Fout",
                 "warning": "Waarschuwing"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Spoken gevonden",
+            "ghosts_ignored": "Spoken genegeerd",
+            "helpers_linked": "Helpers gekoppeld",
+            "version": "Versie"
         }
     }
 }
