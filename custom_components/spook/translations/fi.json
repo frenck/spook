@@ -1,20 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook on jo konfiguroitu.",
-            "enabled_existing": "Olemassa oleva Spook-asennus on otettu käyttöön.",
-            "enable_failed": "Olemassa olevaa Spook-asennusta ei saatu otettua käyttöön."
+            "already_spooked": "Spook kummittelee täällä jo 👻\n\nYksi kummitus taloa kohden riittää. Löydät Spookin kohdasta [Laitteet ja palvelut](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook on taas hereillä 👻\n\nAnna sille hetki aikaa katsella ympärilleen. Kaikki, mitä se löytää, näkyy kohdassa [Korjaukset](/config/repairs).",
+            "enable_failed": "Spook ei suostunut heräämään 👻\n\nKokeile kytkeä se itse takaisin päälle kohdassa [Laitteet ja palvelut](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook jatkaa uniaan 👻\n\nIkävä sitä? Voit herättää sen milloin tahansa kohdassa [Laitteet ja palvelut](/config/integrations/integration/spook)."
         },
         "step": {
             "user": {
-                "description": "Luitko readme-osion? Luitko lisenssiehdot? Oletko aivan varma?"
+                "description": "Spook leijailee Home Assistantissasi ja etsii kummituksia: viittauksia asioihin, joita ei enää ole, ja jämiä, joita kukaan ei ole siivonnut. Kaiken löytämänsä se ilmoittaa kohdassa Korjaukset.\n\nSe myös laajentaa sitä, mihin automaatiosi ja skriptisi pystyvät, lisätoiminnoilla, -laukaisimilla, -ehdoilla ja -apureilla, entistä tehokkaampia automaatioita varten.\n\nReilu varoitus: Spook ei ole osa Home Assistantia. Se on mukautettu integraatio, joka tunkeutuu paikkoihin, joihin sitä ei koskaan kutsuttu. Jos jotain outoa tapahtuu, epäile ensin Spookia ja [kerro meille]({issue_tracker_url}).\n\nValmiina kummitteluun?",
+                "title": "Pöö! Tutustu Spookiin, kamuusi 👻"
             },
             "already_configured": {
-                "description": "Spook on jo konfiguroitu, mutta olemassa oleva asennus ei ole käytössä. Haluatko ottaa sen käyttöön?",
+                "description": "Spook on jo määritetty, mutta joku on kytkenyt sen pois päältä. Herätetäänkö se?",
                 "menu_options": {
-                    "enable_existing": "Ota olemassa oleva asennus käyttöön"
-                }
+                    "enable_existing": "Herätä Spook",
+                    "keep_sleeping": "Anna sen nukkua"
+                },
+                "title": "Spook nukkuu 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "Spook leijailee ympäriinsä 👻\n\nAnna sille hetki aikaa katsella ympärilleen. Kaikki, mitä se löytää, näkyy kohdassa [Korjaukset](/config/repairs).\n\nLisätoiminnot, -laukaisimet ja -ehdot odottavat sinua automaatio- ja skriptieditorissa. Haluatko tietää, mitä muuta Spook osaa? [Dokumentaatiosta]({documentation_url}) löytyy kaikki.\n\nPidätkö Spookista? 👻 Tähti ⭐ [GitHubissa]({repository_url}) kertoo muille, että Spook on oikeasti aika mahtava. [Frenckin sponsorointi]({sponsor_url}) pitää tämän kummituksen hyvin ruokittuna. Ja hänen ilmainen, joka toinen viikko ilmestyvä [uutiskirjeensä]({newsletter_url}) pitää sisäisen kummituksesi hyvin ruokittuna."
         }
     },
     "entity": {
@@ -340,7 +347,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Uudelleenkäynnistys vaaditaan",
-                        "description": "Jotta Spook👻 pystyy suorittamaan käyttöönoton loppuun, tulee Home Assistant käynnistää uudelleen.\n\nValitse lähetä, jotta Home Assistant käynnistyy uudelleen nyt."
+                        "description": "Jotta Spook👻 pystyy suorittamaan käyttöönoton loppuun, tulee Home Assistant käynnistää uudelleen.\n\nValitse lähetä, jotta Home Assistant käynnistyy uudelleen nyt.\n\nSpook 👻 Kamusi."
                     }
                 }
             }
@@ -1929,6 +1936,14 @@
                 "error": "Virhe",
                 "warning": "Varoitus"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Löydetyt kummitukset",
+            "ghosts_ignored": "Ohitetut kummitukset",
+            "helpers_linked": "Linkitetyt apurit",
+            "version": "Versio"
         }
     }
 }
