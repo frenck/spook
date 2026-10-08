@@ -31,6 +31,7 @@ async def async_extract_entities_from_action_config(
     known_services: set[str] | None = None,
     _in_sequence: bool = False,
     _in_payload: bool = False,
+    _service: str | None = None,
 ) -> set[str]:
     """Extract entity IDs from action configuration.
 
@@ -49,6 +50,11 @@ async def async_extract_entities_from_action_config(
     this walks past. A caller that inspects one configuration after another
     should build it once and pass it in, or it pays for a rebuild per
     configuration.
+
+    A service named on the action decides which of its data fields are plain
+    text, and whether a ``target`` in there belongs to notify. A dict nested
+    under ``data`` names no service of its own, so the one resolved further
+    out is handed down and used when this dict names none.
     """
     entities = set()
 
@@ -68,6 +74,7 @@ async def async_extract_entities_from_action_config(
                     known_services=known_services,
                     _in_sequence=True,
                     _in_payload=_in_payload,
+                    _service=_service,
                 )
             )
         return entities
@@ -83,6 +90,10 @@ async def async_extract_entities_from_action_config(
     ):
         return entities
 
+    # The action's own name wins. A dict under `data` has none, and the
+    # service from further out is what its fields are judged by.
+    service = _get_action_service(config) or _service
+
     # Extract entity IDs from direct fields
     entities.update(
         await _extract_entities_from_action_fields(hass, config, known_services)
@@ -93,7 +104,7 @@ async def async_extract_entities_from_action_config(
 
     # Extract entities from service data
     entities.update(
-        await _extract_entities_from_service_data(hass, config, known_services)
+        await _extract_entities_from_service_data(hass, config, known_services, service)
     )
 
     # Extract from nested configs (like if/then/else, repeat, etc.)
@@ -104,6 +115,7 @@ async def async_extract_entities_from_action_config(
             known_services,
             include_disabled=include_disabled,
             in_payload=_in_payload,
+            _service=service,
         )
     )
 
@@ -156,34 +168,44 @@ def _should_skip_service_data_value(
     return service is not None and service.startswith("notify.") and key == "target"
 
 
-# Action data fields that are words for a person to read: a notification, a
-# spoken announcement, the title above either. A template in one can name an
+# Action data fields that are words for a person to read, or an identifier
+# the service keeps as text: a notification, a spoken announcement, the title
+# above either, the tag a phone uses to replace an earlier notification, the
+# logger name a log line is filed under. A template in one can name an
 # entity, and that is a reference like any other. Plain text that happens to
 # look like an entity ID is still just text, and it goes out saying exactly
 # that.
 #
-# Only for the integrations that define these fields as text. Anything else,
-# a script field or a custom action without a schema, is free to call one of
-# its fields `message` and put an entity ID in it.
-_FREE_TEXT_KEYS = frozenset({"message", "title"})
-_FREE_TEXT_DOMAINS = frozenset(
-    {"assist_satellite", "notify", "persistent_notification", "tts"}
-)
+# Which fields those are depends on the integration. Notify treats
+# `message`, `title` and `tag` as text; assist_satellite,
+# persistent_notification and tts treat `message` and `title` that way;
+# system_log treats `logger` and `message` that way. Anything else, a script
+# field or a custom action without a schema, is free to call one of its
+# fields `message` or `tag` and put an entity ID in it.
+_FREE_TEXT_FIELDS: dict[str, frozenset[str]] = {
+    "assist_satellite": frozenset({"message", "title"}),
+    "notify": frozenset({"message", "tag", "title"}),
+    "persistent_notification": frozenset({"message", "title"}),
+    "system_log": frozenset({"logger", "message"}),
+    "tts": frozenset({"message", "title"}),
+}
 
 
 def _is_plain_text(service: str | None, key: str, value: Any) -> bool:
-    """Return whether this data value is text to read, not something to resolve."""
+    """Return whether this data value is plain text, not something to resolve."""
     return (
         service is not None
-        and service.split(".", 1)[0] in _FREE_TEXT_DOMAINS
-        and key in _FREE_TEXT_KEYS
+        and key in _FREE_TEXT_FIELDS.get(service.split(".", 1)[0], ())
         and isinstance(value, str)
         and not is_template_string(value)
     )
 
 
 async def _extract_entities_from_service_data(
-    hass: HomeAssistant, config: dict[str, Any], known_services: set[str]
+    hass: HomeAssistant,
+    config: dict[str, Any],
+    known_services: set[str],
+    service: str | None,
 ) -> set[str]:
     """Extract entities from service data."""
     entities = set()
@@ -197,7 +219,6 @@ async def _extract_entities_from_service_data(
                 )
             )
         elif isinstance(data_value, dict):
-            service = _get_action_service(config)
             # data field is a dictionary, process all its values
             for key, value in data_value.items():
                 if _should_skip_service_data_value(service, key):
@@ -219,6 +240,7 @@ async def _extract_entities_from_nested_configs(
     *,
     include_disabled: bool = True,
     in_payload: bool = False,
+    _service: str | None = None,
 ) -> set[str]:
     """Extract entities from nested configurations."""
     entities = set()
@@ -231,6 +253,7 @@ async def _extract_entities_from_nested_configs(
                     include_disabled=include_disabled,
                     known_services=known_services,
                     _in_payload=in_payload or key == "data",
+                    _service=_service,
                 )
             )
     return entities

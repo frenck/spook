@@ -521,6 +521,162 @@ async def test_non_notify_action_data_target_remains_entity_reference(
     }
 
 
+async def test_a_notification_tag_is_just_text(hass: HomeAssistant) -> None:
+    """A notify tag is an id a phone uses to replace an earlier notification.
+
+    It is free text, even when it reads like an entity id. A template in the
+    message still names the entity it reads. `notify.send_message` is the same
+    domain, so a tag there is text too.
+    """
+    config = {
+        "action": "notify.mobile_app_redmi_note_11s",
+        "data": {
+            "tag": "notify.waterkoker_inschakelen_notificatie",
+            "message": "{{ states('sensor.temperature') }}",
+        },
+    }
+    assert await async_extract_entities_from_action_config(hass, config) == {
+        "sensor.temperature"
+    }
+    send_message = {
+        "action": "notify.send_message",
+        "data": {"tag": "notify.waterkoker_inschakelen_notificatie"},
+    }
+    assert await async_extract_entities_from_action_config(hass, send_message) == set()
+
+
+async def test_a_notification_tag_on_a_service_is_just_text(
+    hass: HomeAssistant,
+) -> None:
+    """The legacy `service` key names the same notify action as `action`."""
+    config = {
+        "service": "notify.mobile_app_redmi_note_11s",
+        "data": {
+            "tag": "notify.waterkoker_inschakelen_notificatie",
+            "message": "{{ states('sensor.temperature') }}",
+        },
+    }
+    assert await async_extract_entities_from_action_config(hass, config) == {
+        "sensor.temperature"
+    }
+
+
+async def test_a_notification_tag_nested_under_data_is_just_text(
+    hass: HomeAssistant,
+) -> None:
+    """Mobile app puts the tag under `data.data`, which names no action.
+
+    The notify service from outside still applies, so the tag, a plain
+    message, and `target` are not entity references. An `entity_id` there is.
+    """
+    config = {
+        "action": "notify.mobile_app_redmi_note_11s",
+        "data": {
+            "data": {
+                "tag": "notify.waterkoker_inschakelen_notificatie",
+                "message": "sensor.example",
+                "entity_id": "light.kitchen",
+                "target": "notify.old_tablet",
+            }
+        },
+    }
+    assert await async_extract_entities_from_action_config(hass, config) == {
+        "light.kitchen"
+    }
+
+
+async def test_a_template_in_a_notification_tag_still_names_what_it_reads(
+    hass: HomeAssistant,
+) -> None:
+    """A tag rendered from an entity's state does reference that entity.
+
+    The same for a tag on the action data and one nested in the mobile app
+    payload, which has no action name of its own.
+    """
+    flat = {
+        "action": "notify.mobile_app_phone",
+        "data": {"tag": "{{ states('sensor.example') }}"},
+    }
+    nested = {
+        "action": "notify.mobile_app_phone",
+        "data": {"data": {"tag": "{{ states('sensor.example') }}"}},
+    }
+    assert await async_extract_entities_from_action_config(hass, flat) == {
+        "sensor.example"
+    }
+    assert await async_extract_entities_from_action_config(hass, nested) == {
+        "sensor.example"
+    }
+
+
+async def test_a_field_called_tag_elsewhere_is_still_read(
+    hass: HomeAssistant,
+) -> None:
+    """`tag` is text for notify alone.
+
+    A script can call a field `tag` and mean an entity. So can tts, which
+    shares the message and title exception but not this one.
+    """
+    script = {
+        "action": "script.announce_on",
+        "data": {"tag": "media_player.kitchen"},
+    }
+    tts = {
+        "action": "tts.speak",
+        "data": {"tag": "media_player.kitchen"},
+    }
+    assert await async_extract_entities_from_action_config(hass, script) == {
+        "media_player.kitchen"
+    }
+    assert await async_extract_entities_from_action_config(hass, tts) == {
+        "media_player.kitchen"
+    }
+
+
+async def test_a_logger_name_is_just_text(hass: HomeAssistant) -> None:
+    """`system_log.write` files a line under a logger name, which is text.
+
+    So is the message. The next action in the same list is a different
+    service, and the entity it names is still a reference.
+    """
+    assert (
+        await async_extract_entities_from_action_config(
+            hass,
+            {
+                "action": "system_log.write",
+                "data": {
+                    "logger": "automation.debug",
+                    "message": "sensor.example",
+                },
+            },
+        )
+        == set()
+    )
+    sequence = [
+        {
+            "action": "system_log.write",
+            "data": {"logger": "automation.debug", "message": "sensor.example"},
+        },
+        {"action": "light.turn_on", "entity_id": "light.kitchen"},
+    ]
+    assert await async_extract_entities_from_action_config(hass, sequence) == {
+        "light.kitchen"
+    }
+
+
+async def test_a_template_in_a_logger_name_still_names_what_it_reads(
+    hass: HomeAssistant,
+) -> None:
+    """A logger name rendered from an entity's state does reference that entity."""
+    config = {
+        "action": "system_log.write",
+        "data": {"logger": "{{ states('sensor.example') }}"},
+    }
+    assert await async_extract_entities_from_action_config(hass, config) == {
+        "sensor.example"
+    }
+
+
 async def test_action_data_as_template_string(hass: HomeAssistant) -> None:
     """A template string assigned directly to ``data`` is parsed."""
     config = {
