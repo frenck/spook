@@ -37,9 +37,14 @@ if TYPE_CHECKING:
 
 
 def _has_entries_waiting(hass: HomeAssistant, domains: set[str]) -> bool:
-    """Return if a config entry of these domains is waiting to be set up."""
+    """Return if a config entry of these domains is waiting to be set up.
+
+    One Home Assistant could not find the integration for at startup was never
+    tried, and is left not loaded. Any other state means its code was found
+    and ran, so a restart would not change a thing.
+    """
     return any(
-        entry.state is not ConfigEntryState.LOADED
+        entry.state is ConfigEntryState.NOT_LOADED
         for domain in domains
         for entry in hass.config_entries.async_entries(domain, include_disabled=False)
     )

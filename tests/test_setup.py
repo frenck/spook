@@ -676,6 +676,8 @@ async def test_setup_entry_restarts_for_helpers_left_without_their_link(
     ("entry_state", "disabled_by"),
     [
         (ConfigEntryState.LOADED, None),
+        (ConfigEntryState.SETUP_RETRY, None),
+        (ConfigEntryState.SETUP_ERROR, None),
         (ConfigEntryState.NOT_LOADED, ConfigEntryDisabler.USER),
     ],
 )
@@ -685,10 +687,12 @@ async def test_setup_entry_does_not_restart_for_helpers_not_waiting(
     entry_state: ConfigEntryState,
     disabled_by: ConfigEntryDisabler | None,
 ) -> None:
-    """Test a loaded or disabled helper is no reason to restart.
+    """Test a helper that is not left waiting is no reason to restart.
 
     A loaded one runs on code already in memory, the link is only back for
-    the next start. A disabled one is not meant to be set up at all.
+    the next start. One that failed or retries had its code found and run, a
+    restart changes nothing for it. A disabled one is not meant to be set up
+    at all.
     """
     _patch_setup_for_restart_tests(hass, monkeypatch)
     original_async_stop = hass.async_stop
