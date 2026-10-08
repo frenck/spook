@@ -75,7 +75,7 @@ def _async_restart_for_sub_integrations(hass: HomeAssistant) -> bool:
         return False
 
     LOGGER.info(
-        "Home Assistant needs to be restarted in for Spook to complete setting up",
+        "Home Assistant needs to be restarted for Spook to complete setting up",
     )
     ir.async_create_issue(
         hass=hass,
