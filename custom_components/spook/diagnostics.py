@@ -21,9 +21,10 @@ async def async_get_config_entry_diagnostics(
 ) -> dict[str, Any]:
     """Return what helps tracking down a Spook issue.
 
-    Home Assistant adds the versions of itself and of Spook on its own. The
-    names in a repair are left out: people paste this into public issues, and
-    the ID and type of a repair are enough to go on.
+    Home Assistant adds the versions of itself and of Spook on its own. A
+    repair is described by its type alone: people paste this into public
+    issues, and both its placeholders and its ID can hold names, paths or
+    URLs somebody chose.
     """
     links = await hass.async_add_executor_job(sub_integration_links, hass)
 
@@ -40,7 +41,6 @@ async def async_get_config_entry_diagnostics(
         },
         "repairs": [
             {
-                "issue_id": issue.issue_id,
                 "translation_key": issue.translation_key,
                 "active": issue.active,
                 "ignored": is_ignored(issue),

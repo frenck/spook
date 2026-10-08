@@ -49,7 +49,8 @@ async def test_diagnostics(
         domain="spook_inverse",
         disabled_by=ConfigEntryDisabler.USER,
     ).add_to_hass(hass)
-    _create_issue(hass, DOMAIN, "found")
+    # Some repairs carry a path or URL somebody chose in their ID.
+    _create_issue(hass, DOMAIN, "found_/local/grandma-lights-card.js")
     _create_issue(hass, DOMAIN, "ignored")
     ir.async_ignore_issue(hass, DOMAIN, "ignored", ignore=True)
     _create_issue(hass, "not_spook", "someone_elses")
@@ -67,13 +68,15 @@ async def test_diagnostics(
         },
         "spook_calibration": {"linked": True, "entries": []},
     }
-    repairs = {repair["issue_id"]: repair for repair in result["repairs"]}
-    assert set(repairs) == {"found", "ignored"}
-    assert repairs["found"]["ignored"] is False
-    assert repairs["ignored"]["ignored"] is True
-    assert repairs["found"]["active"] is True
-    assert repairs["found"]["translation_key"] == (
-        "automation_unknown_entity_references"
+    assert sorted(
+        (repair["active"], repair["ignored"]) for repair in result["repairs"]
+    ) == [(True, False), (True, True)]
+    assert all(
+        repair["translation_key"] == "automation_unknown_entity_references"
+        for repair in result["repairs"]
     )
-    # People paste this into public issues, so the names stay out.
-    assert "Grandma" not in json.dumps(result)
+    # People paste this into public issues, so names, paths and URLs stay out,
+    # whether a repair carries them in its placeholders or in its ID.
+    dumped = json.dumps(result)
+    assert "Grandma" not in dumped
+    assert "grandma" not in dumped
