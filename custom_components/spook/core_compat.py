@@ -2,15 +2,17 @@
 
 from __future__ import annotations
 
-from collections.abc import Mapping
+from collections.abc import Callable, Mapping
 from typing import TYPE_CHECKING, Any, cast
 
+from homeassistant import loader
 from homeassistant.const import MAJOR_VERSION, MINOR_VERSION
 from homeassistant.core import callback
 from homeassistant.helpers.service import _load_services_file
 from homeassistant.util.yaml import load_yaml_dict
 
 if TYPE_CHECKING:
+    from homeassistant.core import HomeAssistant
     from homeassistant.helpers import device_registry as dr
     from homeassistant.loader import Integration
 
@@ -132,3 +134,25 @@ def async_update_any_device(
         return
 
     device_registry.async_update_device(device_id, **changes)
+
+
+@callback
+def async_clear_custom_components_cache(hass: HomeAssistant) -> None:
+    """Make the loader look in custom_components again.
+
+    The loader scans that folder once and keeps the list, so a sub
+    integration linked in after that stays unknown to it. Dropping the list
+    makes the next lookup scan again. Core 2026.11 has a helper for this,
+    which the Marketplace uses to load an integration straight after
+    installing it. Before that, the helper is no more than the pop below.
+    Can be replaced with the loader helper once Spook requires Core 2026.11 or
+    later.
+    """
+    clear_cache: Callable[[HomeAssistant], None] | None = getattr(
+        loader, "async_clear_custom_components_cache", None
+    )
+    if clear_cache is not None:
+        clear_cache(hass)
+        return
+
+    hass.data.pop(loader.DATA_CUSTOM_COMPONENTS, None)

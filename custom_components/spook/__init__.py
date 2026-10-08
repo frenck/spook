@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 from typing import TYPE_CHECKING
 
+from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import (
     EVENT_HOMEASSISTANT_START,
     EVENT_HOMEASSISTANT_STARTED,
@@ -18,6 +19,7 @@ from homeassistant.helpers import issue_registry as ir
 
 from .automation_runs import async_setup_automation_runs
 from .const import DOMAIN, LOGGER, PLATFORMS
+from .core_compat import async_clear_custom_components_cache
 from .dismissals import async_setup_dismissals
 from .entity_filtering import async_setup_all_entity_ids_cache_invalidation
 from .integration_linking import link_sub_integrations, unlink_sub_integrations
@@ -34,50 +36,74 @@ if TYPE_CHECKING:
     from homeassistant.core import Event, HomeAssistant
 
 
+def _has_entries_waiting(hass: HomeAssistant, domains: set[str]) -> bool:
+    """Return if a config entry of these domains is waiting to be set up."""
+    return any(
+        entry.state is not ConfigEntryState.LOADED
+        for domain in domains
+        for entry in hass.config_entries.async_entries(domain, include_disabled=False)
+    )
+
+
+@callback
+def _async_restart_for_sub_integrations(hass: HomeAssistant) -> bool:
+    """Restart Home Assistant, or ask for it, so sub integrations get set up.
+
+    Returns if Spook can carry on setting up. Not when a restart is on its
+    way, as everything set up now would be torn down again right after.
+    """
+
+    @callback
+    def _restart(_: Event | None = None) -> None:
+        """Restart Home Assistant."""
+        hass.data["homeassistant_stop"] = asyncio.create_task(
+            hass.async_stop(RESTART_EXIT_CODE),
+        )
+
+    # Should be OK to restart. Better to do it before anything else started.
+    if hass.state == CoreState.starting:
+        LOGGER.info("Restarting Home Assistant to set up Spook's helpers")
+        _restart()
+        return False
+
+    # If all other fails, but we are not running yet... wait for it.
+    if hass.state == CoreState.not_running:
+        LOGGER.info("Restarting Home Assistant to set up Spook's helpers")
+        # Listen to both... just in case.
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _restart)
+        hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _restart)
+        return False
+
+    LOGGER.info(
+        "Home Assistant needs to be restarted in for Spook to complete setting up",
+    )
+    ir.async_create_issue(
+        hass=hass,
+        domain=DOMAIN,
+        issue_id="restart_required",
+        is_fixable=True,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="restart_required",
+    )
+    return True
+
+
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     """Set up from a config entry."""
-    # Symlink all sub integrations from Spook to the parent integrations folder
-    # if one is missing, we have to restart Home Assistant.
+    # Symlink all sub integrations from Spook to the parent integrations folder.
     # This is a workaround for the fact that Home Assistant doesn't support
-    # sub integrations.
-    if await hass.async_add_executor_job(link_sub_integrations, hass):
-        LOGGER.debug("Newly symlinked sub integrations, restarting Home Assistant")
+    # sub integrations. The loader only scans custom_components once, so a
+    # freshly linked one needs it to look again, no restart required.
+    if linked := await hass.async_add_executor_job(link_sub_integrations, hass):
+        LOGGER.debug("Newly symlinked sub integrations, rescanning custom components")
+        async_clear_custom_components_cache(hass)
 
-        @callback
-        def _restart(_: Event | None = None) -> None:
-            """Restart Home Assistant."""
-            hass.data["homeassistant_stop"] = asyncio.create_task(
-                hass.async_stop(RESTART_EXIT_CODE),
-            )
-
-        # User asked to restart Home Assistant in the config flow.
-        if hass.data.get(DOMAIN) == "Boo!":
-            _restart()
+        # A helper made with a sub integration before its link went missing
+        # had nothing to set it up with when Home Assistant started, and that
+        # is not tried again. Only a restart picks it up.
+        waiting = _has_entries_waiting(hass, linked)
+        if waiting and not _async_restart_for_sub_integrations(hass):
             return False
-
-        # Should be OK to restart. Better to do it before anything else started.
-        if hass.state == CoreState.starting:
-            _restart()
-            return False
-
-        # If all other fails, but we are not running yet... wait for it.
-        if hass.state == CoreState.not_running:
-            # Listen to both... just in case.
-            hass.bus.async_listen_once(EVENT_HOMEASSISTANT_START, _restart)
-            hass.bus.async_listen_once(EVENT_HOMEASSISTANT_STARTED, _restart)
-            return False
-
-        LOGGER.info(
-            "Home Assistant needs to be restarted in for Spook to complete setting up",
-        )
-        ir.async_create_issue(
-            hass=hass,
-            domain=DOMAIN,
-            issue_id="restart_required",
-            is_fixable=True,
-            severity=ir.IssueSeverity.WARNING,
-            translation_key="restart_required",
-        )
 
     # Forward async_setup_entry to ectoplasms
     await async_forward_setup_entry(hass, entry)
