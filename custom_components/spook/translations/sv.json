@@ -1,20 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook är redan konfigurerad.",
-            "enable_failed": "Den befintliga Spook-konfigurationsposten kunde inte aktiveras.",
-            "enabled_existing": "Den befintliga Spook-konfigurationsposten har aktiverats."
+            "already_spooked": "Spook spökar redan här 👻\n\nEtt spöke per hus räcker gott. Du hittar Spook under [Enheter och tjänster](/config/integrations/integration/spook).",
+            "enable_failed": "Spook ville inte vakna 👻\n\nFörsök att slå på Spook igen själv under [Enheter och tjänster](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook är vaken igen 👻\n\nGe Spook en stund att se sig omkring. Allt Spook hittar dyker upp under [Reparationer](/config/repairs).",
+            "kept_sleeping": "Spook sover vidare 👻\n\nSaknar du Spook? Du kan väcka Spook när som helst under [Enheter och tjänster](/config/integrations/integration/spook)."
         },
         "step": {
             "user": {
-                "description": "Har du läst readme-filen? Har du läst licensen? Är du verkligen säker?"
+                "description": "Spook svävar runt i ditt Home Assistant och letar efter spöken: hänvisningar till saker som inte finns längre, och rester som ingen har städat bort. Allt Spook hittar rapporteras under Reparationer.\n\nSpook utökar också vad dina automationer och skript kan göra, med extra åtgärder, utlösare, villkor och hjälpare, för ännu kraftfullare automationer.\n\nRättvis varning: Spook är inte en del av Home Assistant. Det är en anpassad integration som letar sig in på ställen den aldrig blev inbjuden till. Om något konstigt händer, misstänk Spook först, och [hör av dig]({issue_tracker_url}).\n\nRedo att bli hemsökt?",
+                "title": "Bu! Möt Spook, din polare 👻"
             },
             "already_configured": {
                 "menu_options": {
-                    "enable_existing": "Aktivera existerande post"
+                    "enable_existing": "Väck Spook",
+                    "keep_sleeping": "Låt det sova"
                 },
-                "description": "Spook är redan konfigurerad, men den befintliga konfigurationsposten är inaktiverad. Vill du aktivera den?"
+                "description": "Spook är redan konfigurerat, men någon har stängt av det. Väcka det?",
+                "title": "Spook sover 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "Spook svävar omkring 👻\n\nGe Spook en stund att se sig omkring. Allt Spook hittar dyker upp under [Reparationer](/config/repairs).\n\nDe extra åtgärderna, utlösarna och villkoren väntar på dig i automations- och skriptredigeraren. Nyfiken på vad mer Spook kan? [Dokumentationen]({documentation_url}) har allt.\n\nGillar du Spook? 👻 En ⭐ på [GitHub]({repository_url}) visar andra att Spook faktiskt är riktigt bra. [Att sponsra Frenck]({sponsor_url}) håller det här spöket välnärt. Och hans gratis [nyhetsbrev]({newsletter_url}) varannan vecka håller ditt inre spöke välnärt."
         }
     },
     "entity": {
@@ -340,7 +347,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Omstart krävs",
-                        "description": "För att Spook 👻 ska kunna slutföra installationen måste Home Assistant startas om.\n\nVälj bekräfta för att starta om Home Assistant nu."
+                        "description": "För att Spook 👻 ska kunna slutföra installationen måste Home Assistant startas om.\n\nVälj bekräfta för att starta om Home Assistant nu.\n\nSpook 👻 Din polare."
                     }
                 }
             }
@@ -1923,6 +1930,14 @@
                 "error": "Fel",
                 "warning": "Varning"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Hittade spöken",
+            "ghosts_ignored": "Ignorerade spöken",
+            "helpers_linked": "Länkade hjälpare",
+            "version": "Version"
         }
     }
 }
