@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Kildeentitet",
+                    "name": "Navn",
+                    "offset": "Forskydning",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Lægges til kildens værdi. En sensor, der viser 1,5 grader for meget, får -1,5. I den måleenhed, kilden bruger.",
+                    "factor": "Kildens værdi ganges først med denne. Lad den stå på 1 for kun at lægge forskydningen til."
+                },
+                "description": "Denne hjælper retter en sensor, der viser forkert: en temperatur en grad for høj, en luftfugtighed et par procent for lav. Den viser kildens værdi gange faktoren plus forskydningen.",
+                "title": "Kalibrering 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Kildeentitet",
+                    "offset": "Forskydning",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Lægges til kildens værdi. En sensor, der viser 1,5 grader for meget, får -1,5. I den måleenhed, kilden bruger.",
+                    "factor": "Kildens værdi ganges først med denne. Lad den stå på 1 for kun at lægge forskydningen til."
+                },
+                "title": "Kalibrering 👻"
+            }
+        }
+    },
+    "title": "Kalibrering 👻"
+}

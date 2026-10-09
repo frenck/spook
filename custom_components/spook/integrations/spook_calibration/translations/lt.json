@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Šaltinio subjektas",
+                    "name": "Pavadinimas",
+                    "offset": "Poslinkis",
+                    "factor": "Koeficientas"
+                },
+                "data_description": {
+                    "offset": "Pridedamas prie šaltinio reikšmės. Jutikliui, kuris rodo 1,5 laipsnio per daug, nurodykite -1,5. Šaltinio naudojamais vienetais.",
+                    "factor": "Pirmiausia šaltinio reikšmė padauginama iš šio skaičiaus. Palikite 1, jei norite tik pridėti poslinkį."
+                },
+                "description": "Šis pagalbininkas pataiso netiksliai rodantį jutiklį: temperatūrą, laipsniu per aukštą, drėgmę, keliais procentais per žemą. Jis rodo šaltinio reikšmę, padaugintą iš koeficiento, plius poslinkį.",
+                "title": "Kalibravimas 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Šaltinio subjektas",
+                    "offset": "Poslinkis",
+                    "factor": "Koeficientas"
+                },
+                "data_description": {
+                    "offset": "Pridedamas prie šaltinio reikšmės. Jutikliui, kuris rodo 1,5 laipsnio per daug, nurodykite -1,5. Šaltinio naudojamais vienetais.",
+                    "factor": "Pirmiausia šaltinio reikšmė padauginama iš šio skaičiaus. Palikite 1, jei norite tik pridėti poslinkį."
+                },
+                "title": "Kalibravimas 👻"
+            }
+        }
+    },
+    "title": "Kalibravimas 👻"
+}

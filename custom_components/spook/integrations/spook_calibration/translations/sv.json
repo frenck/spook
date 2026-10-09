@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Källentitet",
+                    "name": "Namn",
+                    "offset": "Förskjutning",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Läggs till källans värde. En sensor som visar 1,5 grader för mycket får -1,5. I den enhet som källan rapporterar i.",
+                    "factor": "Källans värde multipliceras först med detta. Låt stå på 1 för att bara lägga till förskjutningen."
+                },
+                "description": "Denna hjälpare korrigerar en sensor som visar fel: en temperatur en grad för hög, en luftfuktighet några procent för låg. Den visar källans värde gånger faktorn, plus förskjutningen.",
+                "title": "Kalibrering 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Källentitet",
+                    "offset": "Förskjutning",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Läggs till källans värde. En sensor som visar 1,5 grader för mycket får -1,5. I den enhet som källan rapporterar i.",
+                    "factor": "Källans värde multipliceras först med detta. Låt stå på 1 för att bara lägga till förskjutningen."
+                },
+                "title": "Kalibrering 👻"
+            }
+        }
+    },
+    "title": "Kalibrering 👻"
+}

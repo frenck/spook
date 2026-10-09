@@ -5,24 +5,44 @@
             "switch": {
                 "data": {
                     "name": "Naam",
-                    "hide_source": "Bron entiteit verbergen",
-                    "entity_id": "Bron entiteit"
+                    "hide_source": "Bronentiteit verbergen",
+                    "entity_id": "Bronentiteit"
+                },
+                "title": "Omgekeerd 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Bronentiteit",
+                    "hide_source": "Bronentiteit verbergen",
+                    "name": "Naam"
                 },
                 "title": "Omgekeerd 👻"
             },
             "user": {
-                "description": "Deze helper stelt je in staat om het gedrag van een entiteit om te keren. Bijvoorbeeld, het omkeren van de open/sluit of aan/uit status van binaire sensoren en schakelaars.",
+                "description": "Met deze helper keer je het gedrag van een entiteit om. Bijvoorbeeld open/dicht of aan/uit van binaire sensoren, bedekkingen, schakelaars en kleppen.",
                 "menu_options": {
                     "switch": "Een schakelaar omkeren",
-                    "binary_sensor": "Een binaire sensor omkeren"
+                    "valve": "Een klep omkeren",
+                    "binary_sensor": "Een binaire sensor omkeren",
+                    "cover": "Een bedekking omkeren"
                 },
                 "title": "Omgekeerd 👻"
             },
             "binary_sensor": {
                 "data": {
-                    "hide_source": "Verberg bron entiteit",
+                    "hide_source": "Bronentiteit verbergen",
                     "name": "Naam",
-                    "entity_id": "Bron entiteit"
+                    "entity_id": "Bronentiteit"
+                },
+                "title": "Omgekeerd 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Bronentiteit",
+                    "hide_source": "Bronentiteit verbergen",
+                    "inverse_position": "Openen, sluiten en positie omkeren",
+                    "inverse_tilt": "Kanteling omkeren",
+                    "name": "Naam"
                 },
                 "title": "Omgekeerd 👻"
             }
@@ -32,8 +52,16 @@
         "step": {
             "switch": {
                 "data": {
-                    "hide_source": "Bron entiteit verbergen",
-                    "entity_id": "Bron entiteit",
+                    "hide_source": "Bronentiteit verbergen",
+                    "entity_id": "Bronentiteit",
+                    "name": "Naam"
+                },
+                "title": "Omgekeerd 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Bronentiteit",
+                    "hide_source": "Bronentiteit verbergen",
                     "name": "Naam"
                 },
                 "title": "Omgekeerd 👻"
@@ -42,9 +70,19 @@
                 "title": "Omgekeerd 👻",
                 "data": {
                     "name": "Naam",
-                    "hide_source": "Bron entiteit verbergen",
-                    "entity_id": "Bron entiteit"
+                    "hide_source": "Bronentiteit verbergen",
+                    "entity_id": "Bronentiteit"
                 }
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Bronentiteit",
+                    "hide_source": "Bronentiteit verbergen",
+                    "inverse_position": "Openen, sluiten en positie omkeren",
+                    "inverse_tilt": "Kanteling omkeren",
+                    "name": "Naam"
+                },
+                "title": "Omgekeerd 👻"
             }
         }
     }

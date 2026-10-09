@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Zdrojová entita",
+                    "name": "Názov",
+                    "states": "Počítať len prechod do týchto stavov"
+                },
+                "data_description": {
+                    "states": "Nechaj prázdne, ak chceš vidieť, odkedy je zdroj v stave, v ktorom je teraz. Vyplň napríklad `on`, ak chceš vidieť, kedy naposledy do tohto stavu prešiel; táto hodnota ostane, aj keď sa stav znova zmení."
+                },
+                "description": "Tento pomocník ukazuje, odkedy je entita vo svojom stave, a zachová to aj po reštartoch. Chvíľková nedostupnosť entity sa neráta ako zmena.",
+                "title": "Čas v stave 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Zdrojová entita",
+                    "states": "Počítať len prechod do týchto stavov"
+                },
+                "data_description": {
+                    "states": "Nechaj prázdne, ak chceš vidieť, odkedy je zdroj v stave, v ktorom je teraz. Vyplň napríklad `on`, ak chceš vidieť, kedy naposledy do tohto stavu prešiel; táto hodnota ostane, aj keď sa stav znova zmení."
+                },
+                "title": "Čas v stave 👻"
+            }
+        }
+    },
+    "title": "Čas v stave 👻"
+}

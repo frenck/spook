@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Lähteolem",
+                    "name": "Nimi",
+                    "offset": "Nihe",
+                    "factor": "Tegur"
+                },
+                "data_description": {
+                    "offset": "Liidetakse allika väärtusele. Andur, mis näitab 1,5 kraadi liiga palju, saab -1,5. Allika enda mõõtühikus.",
+                    "factor": "Allika väärtus korrutatakse kõigepealt sellega. Jäta 1, et lisada ainult nihe."
+                },
+                "description": "See abiline parandab andurit, mis näitab valesti: temperatuur kraadi võrra liiga kõrge, niiskus mõne protsendi võrra liiga madal. See näitab allika väärtust korrutatuna teguriga, millele on liidetud nihe.",
+                "title": "Kalibreerimine 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Lähteolem",
+                    "offset": "Nihe",
+                    "factor": "Tegur"
+                },
+                "data_description": {
+                    "offset": "Liidetakse allika väärtusele. Andur, mis näitab 1,5 kraadi liiga palju, saab -1,5. Allika enda mõõtühikus.",
+                    "factor": "Allika väärtus korrutatakse kõigepealt sellega. Jäta 1, et lisada ainult nihe."
+                },
+                "title": "Kalibreerimine 👻"
+            }
+        }
+    },
+    "title": "Kalibreerimine 👻"
+}

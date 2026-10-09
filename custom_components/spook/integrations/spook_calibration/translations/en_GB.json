@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Source entity",
+                    "name": "Name",
+                    "offset": "Offset",
+                    "factor": "Factor"
+                },
+                "data_description": {
+                    "offset": "Added to the source's value. A sensor reading 1.5 degrees too high gets -1.5. In the unit the source reports in.",
+                    "factor": "The source's value is multiplied by this first. Leave at 1 to only add the offset."
+                },
+                "description": "This helper corrects a sensor that reads off: a temperature a degree too high, a humidity a few percent too low. It shows the source's value times the factor, plus the offset.",
+                "title": "Calibration 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Source entity",
+                    "offset": "Offset",
+                    "factor": "Factor"
+                },
+                "data_description": {
+                    "offset": "Added to the source's value. A sensor reading 1.5 degrees too high gets -1.5. In the unit the source reports in.",
+                    "factor": "The source's value is multiplied by this first. Leave at 1 to only add the offset."
+                },
+                "title": "Calibration 👻"
+            }
+        }
+    },
+    "title": "Calibration 👻"
+}

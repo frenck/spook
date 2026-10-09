@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entitas sumber",
+                    "name": "Nama",
+                    "states": "Hanya hitung saat menjadi status ini"
+                },
+                "data_description": {
+                    "states": "Biarkan kosong untuk mengetahui sejak kapan sumber berada dalam statusnya saat ini. Isi, misalnya `on`, untuk mengetahui kapan sumber terakhir kali menjadi status itu, yang tetap tidak bergeser meskipun statusnya berubah lagi."
+                },
+                "description": "Pembantu ini menunjukkan sejak kapan sebuah entitas berada dalam statusnya, dan mempertahankannya meskipun Home Assistant dimulai ulang. Entitas yang sesaat tidak tersedia tidak dihitung sebagai perubahan.",
+                "title": "Waktu dalam status 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entitas sumber",
+                    "states": "Hanya hitung saat menjadi status ini"
+                },
+                "data_description": {
+                    "states": "Biarkan kosong untuk mengetahui sejak kapan sumber berada dalam statusnya saat ini. Isi, misalnya `on`, untuk mengetahui kapan sumber terakhir kali menjadi status itu, yang tetap tidak bergeser meskipun statusnya berubah lagi."
+                },
+                "title": "Waktu dalam status 👻"
+            }
+        }
+    },
+    "title": "Waktu dalam status 👻"
+}
