@@ -13,6 +13,7 @@ Run it from anywhere, with the project's environment:
 from __future__ import annotations
 
 import argparse
+import ast
 import importlib.util
 import json
 from pathlib import Path
@@ -204,24 +205,71 @@ _RESPONSES = {
     "ONLY": "Response: always. Call it asking for the response, or it fails.",
     "OPTIONAL": "Response: on request.",
 }
-_RESPONSE = re.compile(r"supports_response\s*=\s*SupportsResponse\.(ONLY|OPTIONAL)")
-_SERVICE = re.compile(r'^\s*service\s*=\s*"([a-z0-9_]+)"', re.MULTILINE)
+_Classes = dict[str, tuple[dict[str, str], list[str]]]
+
+
+def _action_classes() -> _Classes:
+    """Return every class in Spook with what it sets itself, and its bases.
+
+    Read with `ast`, so the generator never imports Home Assistant. An action
+    that says nothing itself about its name or its response takes what one
+    of its bases says, like every `create` of a helper does.
+    """
+    classes: _Classes = {}
+    for path in SPOOK.rglob("*.py"):
+        tree = ast.parse(path.read_text(encoding="utf-8"))
+        for node in ast.walk(tree):
+            if not isinstance(node, ast.ClassDef):
+                continue
+            own: dict[str, str] = {}
+            for statement in node.body:
+                if not isinstance(statement, ast.Assign):
+                    continue
+                for target in statement.targets:
+                    if not isinstance(target, ast.Name):
+                        continue
+                    value = statement.value
+                    if target.id == "service" and isinstance(value, ast.Constant):
+                        own["service"] = str(value.value)
+                    elif target.id == "supports_response" and isinstance(
+                        value, ast.Attribute
+                    ):
+                        own["supports_response"] = value.attr
+            bases = [
+                ast.unparse(base).split("[", 1)[0].rsplit(".", 1)[-1]
+                for base in node.bases
+            ]
+            # Every action module names its class SpookService, so those are
+            # keyed by file, and the rest by name.
+            key = str(path) if node.name == "SpookService" else node.name
+            classes[key] = (own, bases)
+    return classes
+
+
+def _inherited(classes: _Classes, key: str, attribute: str) -> str | None:
+    """Return what a class, or the nearest of its bases, sets an attribute to."""
+    own, bases = classes.get(key, ({}, []))
+    if attribute in own:
+        return own[attribute]
+    for base in bases:
+        if (found := _inherited(classes, base, attribute)) is not None:
+            return found
+    return None
 
 
 def action_responses() -> dict[str, str]:
     """Return how each action that answers hands its response back.
 
-    Read off the action's own module, where Home Assistant reads it too. The
-    folder an action sits in is the domain it is registered on.
+    The folder an action sits in is the domain it is registered on.
     """
+    classes = _action_classes()
     responses: dict[str, str] = {}
     for module in sorted(SPOOK.glob("ectoplasms/*/services/*.py")):
-        source = module.read_text(encoding="utf-8")
-        if (response := _RESPONSE.search(source)) and (
-            service := _SERVICE.search(source)
-        ):
-            domain = module.parent.parent.name
-            responses[f"{domain}.{service.group(1)}"] = response.group(1)
+        key = str(module)
+        response = _inherited(classes, key, "supports_response")
+        service = _inherited(classes, key, "service")
+        if response in _RESPONSES and service:
+            responses[f"{module.parent.parent.name}.{service}"] = response
     return responses
 
 

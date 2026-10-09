@@ -119,6 +119,8 @@ Documentation: https://spook.boo/climate#increase-temperature
 
 Creates a new counter helper on the fly. Returns the entity ID of the new counter.
 
+Response: on request.
+
 Data:
 
 - `name` (required, text): The name of the new counter.
@@ -819,6 +821,8 @@ Documentation: https://spook.boo/humidifier#increase-humidity
 
 Creates a new input boolean (toggle) helper on the fly. Returns the entity ID of the new input boolean.
 
+Response: on request.
+
 Data:
 
 - `name` (required, text): The name of the new input boolean.
@@ -844,6 +848,8 @@ Documentation: https://spook.boo/input-boolean#delete-an-input-boolean
 
 Creates a new input button helper on the fly. Returns the entity ID of the new input button.
 
+Response: on request.
+
 Data:
 
 - `name` (required, text): The name of the new input button.
@@ -867,6 +873,8 @@ Documentation: https://spook.boo/input-button#delete-an-input-button
 ### `input_datetime.create`: Create an input datetime
 
 Creates a new input datetime helper on the fly, holding a date, a time, or both. Returns the entity ID of the new input datetime.
+
+Response: on request.
 
 Data:
 
@@ -894,6 +902,8 @@ Documentation: https://spook.boo/input-datetime#delete-an-input-datetime
 ### `input_number.create`: Create an input number
 
 Create a new input number helper on the fly. Returns the entity ID of the new input number.
+
+Response: on request.
 
 Data:
 
@@ -981,6 +991,8 @@ Documentation: https://spook.boo/input-number#set-range
 
 Creates a new input select (dropdown) helper on the fly. Returns the entity ID of the new input select.
 
+Response: on request.
+
 Data:
 
 - `name` (required, text): The name of the new input select.
@@ -1042,6 +1054,8 @@ Documentation: https://spook.boo/input-select#sort-options
 ### `input_text.create`: Create an input text
 
 Creates a new input text helper on the fly. Returns the entity ID of the new input text.
+
+Response: on request.
 
 Data:
 
@@ -1376,6 +1390,8 @@ Documentation: https://spook.boo/other-features#wait-for-a-condition
 ### `timer.create`: Create a timer
 
 Creates a new timer helper on the fly. Returns the entity ID of the new timer.
+
+Response: on request.
 
 Data:
 

@@ -88,6 +88,10 @@ def test_actions_say_how_they_answer() -> None:
 
     assert "Response: always." in entry
 
+    # Inherited: every create of a helper answers with its entity ID.
+    entry = text.split("### `counter.create`", 1)[1].split("### ", 1)[0]
+    assert "Response: on request." in entry
+
 
 def test_skill_frontmatter() -> None:
     """The name matches the folder, and the description fits the spec."""
