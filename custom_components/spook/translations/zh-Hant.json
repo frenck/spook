@@ -984,7 +984,7 @@
         },
         "homeassistant_disable_config_entry": {
             "name": "停用整合 👻",
-            "description": "停用一個整合條目。",
+            "description": "停用整合條目，可以是單一條目，也可以是某個整合的所有條目。",
             "fields": {
                 "config_entry_id": {
                     "name": "整合條目",
@@ -998,7 +998,7 @@
         },
         "homeassistant_enable_config_entry": {
             "name": "啟用整合 👻",
-            "description": "啟用一個整合條目。",
+            "description": "啟用整合條目，可以是單一條目，也可以是某個整合的所有條目。",
             "fields": {
                 "config_entry_id": {
                     "name": "整合條目",
@@ -1908,7 +1908,7 @@
         },
         "input_number_create": {
             "name": "建立數值輸入助手 👻",
-            "description": "動態建立一個新的數值輸入助手（input_number）。",
+            "description": "動態建立一個新的數值輸入助手（input_number）。會回傳新數值輸入助手的實體 ID。",
             "fields": {
                 "name": {
                     "name": "名稱",
@@ -1950,7 +1950,7 @@
         },
         "input_number_delete": {
             "name": "刪除數值輸入助手 👻",
-            "description": "刪除數值輸入助手。這僅適用於透過 UI 建立和管理的數值輸入助手。透過 YAML 建立和管理的數值輸入助手無法由 Spook 管理。",
+            "description": "刪除透過 UI 或「建立數值輸入助手」動作建立的數值輸入助手。在 YAML 中設定的數值輸入助手無法由 Spook 刪除。",
             "fields": {
                 "entity_id": {
                     "name": "實體 ID",
@@ -2018,7 +2018,7 @@
         },
         "repairs_ignore_all": {
             "name": "忽略所有問題 👻",
-            "description": "忽略當前在 Home Assistant 修復面板中引發的所有問題。",
+            "description": "忽略當前在 Home Assistant 修復面板中引發的所有問題，或僅忽略特定整合引發的問題。",
             "fields": {
                 "domain": {
                     "name": "領域",
@@ -2056,7 +2056,7 @@
         },
         "repairs_unignore_all": {
             "name": "取消忽略所有問題 👻",
-            "description": "取消忽略當前在 Home Assistant 修復面板中引發的所有問題。",
+            "description": "取消忽略當前在 Home Assistant 修復面板中引發的所有問題，或僅取消忽略特定整合引發的問題。",
             "fields": {
                 "domain": {
                     "name": "領域",
