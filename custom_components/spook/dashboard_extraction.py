@@ -256,19 +256,26 @@ _ACTION_NAME = re.compile(r"[a-z0-9_]+\.[a-z0-9_]+")
 # Some cards borrow the frontend's action shape for actions they run in the
 # browser themselves. ha-floorplan's `floorplan.style_set`, `floorplan.class_set`
 # and the rest never reach Home Assistant, so there is nothing to find missing.
-# There is no `floorplan` integration to confuse them with.
-_CARD_ACTION_DOMAINS = frozenset({"floorplan"})
+# Only inside that card, though: anywhere else nothing would run them, and an
+# action nobody runs is exactly what this repair is for.
+_CARD_OWN_ACTION_DOMAINS = {"custom:floorplan-card": "floorplan"}
 
 
-def _walk_actions(node: Any, actions: set[str]) -> None:
-    """Recursively collect the actions a configuration node performs."""
+def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) -> None:
+    """Recursively collect the actions a configuration node performs.
+
+    `card_domain` is the domain of the actions the enclosing card runs itself.
+    """
     if isinstance(node, list):
         for item in node:
-            _walk_actions(item, actions)
+            _walk_actions(item, actions, card_domain)
         return
 
     if not isinstance(node, dict):
         return
+
+    if isinstance(card_type := node.get("type"), str):
+        card_domain = _CARD_OWN_ACTION_DOMAINS.get(card_type, card_domain)
 
     # Read off the action itself rather than the key it sits under:
     # `tap_action`, `hold_action` and the rest are the frontend's, and custom
@@ -284,13 +291,13 @@ def _walk_actions(node: Any, actions: set[str]) -> None:
             if (
                 isinstance(name, str)
                 and _ACTION_NAME.fullmatch(name)
-                and name.split(".", 1)[0] not in _CARD_ACTION_DOMAINS
+                and name.split(".", 1)[0] != card_domain
             ):
                 actions.add(name)
             break
 
     for child in _worth_descending_into(node):
-        _walk_actions(child, actions)
+        _walk_actions(child, actions, card_domain)
 
 
 def extract_actions_from_dashboard_node(node: Any) -> set[str]:
