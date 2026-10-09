@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Sensor suhu tidak dikenal untuk area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor suhu tidak dikenal untuk area: {area}",
+                        "description": "Spook menemukan hantu di area Anda 👻\n\nArea {area} menggunakan sensor suhu yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\nHome Assistant hanya memeriksa sensor ini saat dipilih, jadi ketika sensornya dihapus atau diganti nama, area ini tetap menunjuk ke kekosongan. Assist dan kartu area tidak lagi mendapat pembacaan suhu darinya.\n\nKosongkan pengaturan ini agar Anda bisa memilih sensor lagi, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Kosongkan pengaturan",
+                            "manage": "Biar saya perbaiki sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit area ini lagi.",
+                    "manage": "Anda bisa memilih sensor lain di pengaturan area ini di [halaman Area](/config/areas/dashboard).",
+                    "changed": "Sensor ini sudah kembali, atau pengaturannya kini menunjuk ke tempat lain, sejak Spook memeriksanya. Jadi tidak ada yang dikosongkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Sensor kelembapan tidak dikenal untuk area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor kelembapan tidak dikenal untuk area: {area}",
+                        "description": "Spook menemukan hantu di area Anda 👻\n\nArea {area} menggunakan sensor kelembapan yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\nHome Assistant hanya memeriksa sensor ini saat dipilih, jadi ketika sensornya dihapus atau diganti nama, area ini tetap menunjuk ke kekosongan. Assist dan kartu area tidak lagi mendapat pembacaan kelembapan darinya.\n\nKosongkan pengaturan ini agar Anda bisa memilih sensor lagi, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Kosongkan pengaturan",
+                            "manage": "Biar saya perbaiki sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit area ini lagi.",
+                    "manage": "Anda bisa memilih sensor lain di pengaturan area ini di [halaman Area](/config/areas/dashboard).",
+                    "changed": "Sensor ini sudah kembali, atau pengaturannya kini menunjuk ke tempat lain, sejak Spook memeriksanya. Jadi tidak ada yang dikosongkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Sensor suhu dan kelembapan tidak dikenal untuk area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor suhu dan kelembapan tidak dikenal untuk area: {area}",
+                        "description": "Spook menemukan hantu di area Anda 👻\n\nArea {area} menggunakan sensor suhu dan sensor kelembapan yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\nHome Assistant hanya memeriksa sensor-sensor ini saat dipilih, jadi ketika sensor-sensor itu dihapus atau diganti nama, area ini tetap menunjuk ke kekosongan. Assist dan kartu area tidak lagi mendapat pembacaan dari sensor-sensor tersebut.\n\nKosongkan kedua pengaturan ini agar Anda bisa memilih sensor lagi, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Kosongkan kedua pengaturan",
+                            "manage": "Biar saya perbaiki sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit area ini lagi.",
+                    "manage": "Anda bisa memilih sensor lain di pengaturan area ini di [halaman Area](/config/areas/dashboard).",
+                    "changed": "Sensor-sensor ini sudah kembali, atau pengaturannya kini menunjuk ke tempat lain, sejak Spook memeriksanya. Jadi tidak ada yang dikosongkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
         }
     },
     "system_health": {
