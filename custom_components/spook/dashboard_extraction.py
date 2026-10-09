@@ -253,6 +253,12 @@ _JAVASCRIPT_FALSY = (None, "", 0, False)
 # editor leaves it empty; neither is an action that went missing.
 _ACTION_NAME = re.compile(r"[a-z0-9_]+\.[a-z0-9_]+")
 
+# Some cards borrow the frontend's action shape for actions they run in the
+# browser themselves. ha-floorplan's `floorplan.style_set`, `floorplan.class_set`
+# and the rest never reach Home Assistant, so there is nothing to find missing.
+# There is no `floorplan` integration to confuse them with.
+_CARD_ACTION_DOMAINS = frozenset({"floorplan"})
+
 
 def _walk_actions(node: Any, actions: set[str]) -> None:
     """Recursively collect the actions a configuration node performs."""
@@ -275,7 +281,11 @@ def _walk_actions(node: Any, actions: set[str]) -> None:
         for key in _PERFORM_ACTION_KEYS:
             if (name := node.get(key)) in _JAVASCRIPT_FALSY:
                 continue
-            if isinstance(name, str) and _ACTION_NAME.fullmatch(name):
+            if (
+                isinstance(name, str)
+                and _ACTION_NAME.fullmatch(name)
+                and name.split(".", 1)[0] not in _CARD_ACTION_DOMAINS
+            ):
                 actions.add(name)
             break
 
