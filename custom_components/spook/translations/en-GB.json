@@ -624,7 +624,7 @@
             }
         },
         "lovelace_missing_resources": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind. To fix this error, open Settings > Dashboards > Resources and remove or correct these resources.\n\nSpook 👻 Your homie.",
+            "description": "Spook has found a ghost in your dashboards 👻\n\nThe following dashboard resources point at files that do not exist:\n\n{resources}\n\n\n\nThis usually happens when a custom card or its files were removed but the resource stayed behind. To fix this error, open the [Resources page](/config/lovelace/resources) and remove or correct these resources. It has no tab of its own: on the Dashboards page it is behind the three dots, top right.\n\nSpook 👻 Your homie.",
             "title": "Dashboard resources point at missing files"
         },
         "lovelace_missing_resources_yaml": {
@@ -1199,7 +1199,7 @@
             "name": "Delete a label"
         },
         "homeassistant_disable_config_entry": {
-            "description": "Disables an integration entry.",
+            "description": "Disables integration entries, by entry or every entry of an integration.",
             "fields": {
                 "config_entry_id": {
                     "description": "The integration entry to disable.",
@@ -1253,7 +1253,7 @@
             "name": "Disable a user"
         },
         "homeassistant_enable_config_entry": {
-            "description": "Enables an integration entry.",
+            "description": "Enables integration entries, by entry or every entry of an integration.",
             "fields": {
                 "config_entry_id": {
                     "description": "The integration entry to enable.",
@@ -1677,7 +1677,7 @@
             "name": "Update an entity's ID"
         },
         "input_number_create": {
-            "description": "Create a new input number helper on the fly.",
+            "description": "Create a new input number helper on the fly. Returns the entity ID of the new input number.",
             "fields": {
                 "icon": {
                     "description": "The icon to use for the input number helper.",
@@ -1733,7 +1733,7 @@
             "name": "Decrease value"
         },
         "input_number_delete": {
-            "description": "Delete an input number helper. This works only with input numbers created and managed via the UI. Input numbers created and managed in YAML cannot be managed by Spook.",
+            "description": "Deletes input number helpers made in the UI or with the create an input number action. Input numbers set up in YAML cannot be deleted by Spook.",
             "fields": {
                 "entity_id": {
                     "name": "Entity ID",
@@ -2129,7 +2129,7 @@
             "name": "Create issue"
         },
         "repairs_ignore_all": {
-            "description": "Ignore all issues currently raised in Home Assistant Repairs.",
+            "description": "Ignore all issues currently raised in Home Assistant Repairs, or only those raised by particular integrations.",
             "fields": {
                 "domain": {
                     "name": "Domain",
@@ -2167,7 +2167,7 @@
             "name": "Remove issue"
         },
         "repairs_unignore_all": {
-            "description": "Unignore all issues currently raised in Home Assistant Repairs.",
+            "description": "Unignore all issues currently raised in Home Assistant Repairs, or only those raised by particular integrations.",
             "fields": {
                 "domain": {
                     "name": "Domain",
