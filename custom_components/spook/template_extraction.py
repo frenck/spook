@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from collections import deque
+from dataclasses import dataclass
 from functools import lru_cache
 import re
 from typing import TYPE_CHECKING, Any
@@ -269,13 +270,79 @@ _TEXT_ARGUMENT_FILTERS = frozenset(
 _TEXT_ARGUMENT_TESTS = frozenset({"match", "search"})
 _TEXT_ARGUMENT_METHODS = frozenset({"replace"})
 
+# Filters that run a test on each item, named as a string: `select('search',
+# 'light.')`, or `selectattr('entity_id', 'contains', 'light.kitchen')` with
+# the attribute first. What a substring or pattern test looks for is text, the
+# same as for `is search(...)`. #1838.
+#
+# `contains` only counts where the item is known to be a string. On a state
+# object's `entity_id`, `state` or the like it is a substring test; on a list, like a group's
+# `attributes.entity_id`, it asks whether a real entity is a member, and that
+# is a reference. Plain `select` and `reject` do not say what their items are.
+_SELECT_FILTERS = frozenset({"reject", "select"})
+_SELECTATTR_FILTERS = frozenset({"rejectattr", "selectattr"})
+_SELECT_TEXT_TESTS = frozenset({"match", "search"})
+_STRING_ATTRIBUTES = frozenset({"domain", "entity_id", "name", "object_id", "state"})
+
 # Only ever used to lex, never to render, so autoescaping has nothing to do.
 _JINJA_LEXER = Environment(autoescape=True)
 
 _OPENING_BRACKETS = frozenset("([{")
+
+# Brackets that are not a call: parentheses that only group a value, and
+# whatever builds a list, a dict or a tuple. A grouping bracket that meets a
+# comma turns out to be a tuple.
+_GROUP = "group"
+_COLLECTION = "collection"
+
+type _Bracket = bool | _SelectCall | str
 _CLOSING_BRACKETS = frozenset(")]}")
 
 _LINE_ENDINGS = re.compile(r"\r\n?")
+
+
+@dataclass(slots=True)
+class _SelectCall:
+    """A select-style filter call, and what its arguments said so far."""
+
+    with_attribute: bool
+    argument: int = 0
+    attribute: str | None = None
+    test: str | None = None
+
+    def is_text(self, argument: int) -> bool:
+        """Return if the literal at this argument is text to look for."""
+        offset = 1 if self.with_attribute else 0
+        if argument != offset + 1 or self.test is None:
+            return False
+
+        if not self.with_attribute:
+            return self.test in _SELECT_TEXT_TESTS
+
+        return self.test in _SELECT_TEXT_TESTS or (
+            self.test == "contains" and self.attribute in _STRING_ATTRIBUTES
+        )
+
+    def remember(self, literal: str) -> None:
+        """Keep the attribute and test names, read off their literals."""
+        offset = 1 if self.with_attribute else 0
+        if self.with_attribute and self.argument == 0:
+            self.attribute = literal
+        elif self.argument == offset:
+            self.test = literal
+
+
+def _select_call(significant: deque[tuple[str, str]]) -> _SelectCall | None:
+    """Return a tracker if the tokens before a `(` name a select-style filter."""
+    *earlier, (_kind, name) = significant
+    if not earlier or earlier[-1] != ("operator", "|"):
+        return None
+
+    if name in _SELECT_FILTERS:
+        return _SelectCall(with_attribute=False)
+    if name in _SELECTATTR_FILTERS:
+        return _SelectCall(with_attribute=True)
+    return None
 
 
 def _is_text_call(significant: deque[tuple[str, str]]) -> bool:
@@ -293,6 +360,56 @@ def _is_text_call(significant: deque[tuple[str, str]]) -> bool:
     if before == ("name", "not") and len(earlier) > 1:
         before = earlier[-2]
     return before == ("name", "is") and name in _TEXT_ARGUMENT_TESTS
+
+
+def _track_brackets(
+    open_brackets: list[_Bracket],
+    significant: deque[tuple[str, str]],
+    operator: str,
+) -> None:
+    """Open, close or step through the brackets an operator token touches."""
+    if operator in _OPENING_BRACKETS:
+        is_call = operator == "(" and bool(significant) and significant[-1][0] == "name"
+        if is_call:
+            open_brackets.append(
+                _select_call(significant) or _is_text_call(significant)
+            )
+        else:
+            open_brackets.append(_GROUP if operator == "(" else _COLLECTION)
+    elif operator in _CLOSING_BRACKETS:
+        if open_brackets:
+            open_brackets.pop()
+    elif operator == "," and open_brackets:
+        # Only a comma right inside a select-style call moves on to its next
+        # argument; one inside a list or a nested call belongs to that.
+        if isinstance(innermost := open_brackets[-1], _SelectCall):
+            innermost.argument += 1
+        elif innermost == _GROUP:
+            open_brackets[-1] = _COLLECTION
+
+
+def _is_text_literal(open_brackets: list[_Bracket], literal: str) -> bool:
+    """Return if a string literal is text for the call it is inside of."""
+    calls = [
+        (index, bracket)
+        for index, bracket in enumerate(open_brackets)
+        if not isinstance(bracket, str)
+    ]
+    if not calls:
+        return False
+
+    index, innermost_call = calls[-1]
+    if not isinstance(innermost_call, _SelectCall):
+        return bool(innermost_call)
+
+    # Only a literal that is one of the call's arguments counts: parentheses
+    # that only group it change nothing, a list or a tuple around it does.
+    if _COLLECTION in open_brackets[index + 1 :]:
+        return False
+
+    is_text = innermost_call.is_text(innermost_call.argument)
+    innermost_call.remember(literal[1:-1])
+    return is_text
 
 
 def _text_argument_offsets(template_str: str) -> frozenset[int]:
@@ -314,9 +431,9 @@ def _text_argument_offsets(template_str: str) -> frozenset[int]:
     treated as they were before: as references.
     """
     offsets: set[int] = set()
-    # Per open bracket: True for a text call, False for any other call, and
-    # None for a bracket that only groups.
-    open_brackets: list[bool | None] = []
+    # Per open bracket: True for a text call, a tracker for a select-style
+    # call, False for any other call, or what kind of bracket it is otherwise.
+    open_brackets: list[_Bracket] = []
     # The last few tokens, enough to tell `x | replace(` from `x is match(`.
     significant: deque[tuple[str, str]] = deque(maxlen=3)
     offset = 0
@@ -333,21 +450,10 @@ def _text_argument_offsets(template_str: str) -> frozenset[int]:
         if kind == "whitespace":
             continue
 
-        if kind == "operator" and value in _OPENING_BRACKETS:
-            is_call = (
-                value == "(" and bool(significant) and significant[-1][0] == "name"
-            )
-            open_brackets.append(_is_text_call(significant) if is_call else None)
-        elif kind == "operator" and value in _CLOSING_BRACKETS:
-            if open_brackets:
-                open_brackets.pop()
-        elif kind == "string":
-            innermost_call = next(
-                (call for call in reversed(open_brackets) if call is not None),
-                False,
-            )
-            if innermost_call:
-                offsets.add(token_start)
+        if kind == "operator":
+            _track_brackets(open_brackets, significant, value)
+        elif kind == "string" and _is_text_literal(open_brackets, value):
+            offsets.add(token_start)
         elif kind in ("variable_end", "block_end"):
             open_brackets.clear()
 
