@@ -615,6 +615,9 @@
     "device_not_found": {
       "message": "Device {device_id} not found."
     },
+    "entity_id_taken": {
+      "message": "Entity ID {entity_id} is already taken."
+    },
     "entity_not_found": {
       "message": "Entity {entity_id} not found."
     },
@@ -623,6 +626,24 @@
     },
     "floor_not_found": {
       "message": "Floor {floor_id} not found."
+    },
+    "group_member_not_allowed": {
+      "message": "{entity_id} cannot join this group: it holds {domains} entities."
+    },
+    "group_not_found_behind": {
+      "message": "Could not find the group behind {entity_id}."
+    },
+    "helpers_unreachable": {
+      "message": "Could not reach the {domain} helpers Home Assistant keeps."
+    },
+    "home_zone_radius": {
+      "message": "The home zone takes its radius in whole meters, zero or more."
+    },
+    "home_zone_unsupported": {
+      "message": "The home zone only takes a latitude, longitude and radius, not: {fields}."
+    },
+    "input_number_not_editable": {
+      "message": "This input number is not editable: {entity_id}."
     },
     "integration_entries_required": {
       "message": "Name the integration entries to change, or their integration."
@@ -636,11 +657,44 @@
     "label_nothing_to_update": {
       "message": "Nothing to update on label {label_id}: give at least one of {fields}."
     },
+    "maximum_not_above_minimum": {
+      "message": "The maximum ({maximum}) has to be above the minimum ({minimum})."
+    },
+    "no_max_value": {
+      "message": "Entity {entity_id} has no max value."
+    },
+    "no_min_value": {
+      "message": "Entity {entity_id} has no min value."
+    },
+    "not_a_group": {
+      "message": "{entity_id} is not a group."
+    },
+    "person_not_editable": {
+      "message": "This person is not editable: {entity_id}."
+    },
     "restart_failed": {
       "message": "Spook encountered an error while restarting Home Assistant."
     },
+    "set_range_nothing_to_change": {
+      "message": "Give a minimum, a maximum or a step to change."
+    },
+    "timer_not_editable": {
+      "message": "This timer is not editable: {entity_id}."
+    },
     "user_not_found": {
       "message": "Could not find user: {user_id}."
+    },
+    "value_not_a_number": {
+      "message": "Value {value} for {entity_id} is not a number."
+    },
+    "yaml_group_not_editable": {
+      "message": "{entity_id} is a group from your YAML configuration, which Spook cannot change. Edit it in your configuration, or use group.set, which still works on that kind of group."
+    },
+    "yaml_helper_cannot_be_deleted": {
+      "message": "{entity_id} is set up in YAML and cannot be deleted."
+    },
+    "zone_not_editable": {
+      "message": "This zone is not editable: {entity_id}."
     }
   },
   "issues": {

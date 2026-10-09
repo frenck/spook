@@ -6,6 +6,8 @@ from typing import TYPE_CHECKING
 
 from homeassistant.exceptions import HomeAssistantError
 
+from ....const import DOMAIN
+
 if TYPE_CHECKING:
     from homeassistant.components.number import NumberEntity
 
@@ -21,8 +23,14 @@ def shown_value_as_float(entity: NumberEntity) -> float:
     try:
         return float(entity.value)
     except (TypeError, ValueError) as err:
-        msg = f"Value {entity.value!r} for {entity.entity_id} is not a number"
-        raise HomeAssistantError(msg) from err
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="value_not_a_number",
+            translation_placeholders={
+                "value": repr(entity.value),
+                "entity_id": entity.entity_id,
+            },
+        ) from err
 
 
 async def async_set_shown_value(entity: NumberEntity, value: float) -> None:

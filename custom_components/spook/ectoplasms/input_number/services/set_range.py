@@ -17,6 +17,7 @@ from homeassistant.components.input_number import (
 from homeassistant.const import CONF_ID
 from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
 
+from ....const import DOMAIN as SPOOK_DOMAIN
 from ....helper_collections import async_get_storage_collection
 from ....services import AbstractSpookEntityComponentService
 
@@ -68,8 +69,10 @@ class SpookService(AbstractSpookEntityComponentService[InputNumber]):
             if key in call.data
         }
         if not changes:
-            message = "Give a minimum, a maximum or a step to change"
-            raise ServiceValidationError(message)
+            raise ServiceValidationError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="set_range_nothing_to_change",
+            )
 
         collection = async_get_storage_collection(self.hass, DOMAIN)
         if (
@@ -77,8 +80,13 @@ class SpookService(AbstractSpookEntityComponentService[InputNumber]):
             or not (item_id := entity.unique_id)
             or item_id not in collection.data
         ):
-            message = f"This input number is not editable: {entity.entity_id}"
-            raise HomeAssistantError(message)
+            raise HomeAssistantError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="input_number_not_editable",
+                translation_placeholders={
+                    "entity_id": entity.entity_id,
+                },
+            )
 
         # Home Assistant checks the whole helper when it is updated, so the
         # change goes on top of what is stored, not on its own.
@@ -89,11 +97,14 @@ class SpookService(AbstractSpookEntityComponentService[InputNumber]):
         # differs between versions, so it is checked here first, and said
         # plainly.
         if updates[CONF_MAX] <= updates[CONF_MIN]:
-            message = (
-                f"The maximum ({updates[CONF_MAX]}) has to be above "
-                f"the minimum ({updates[CONF_MIN]})"
+            raise ServiceValidationError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="maximum_not_above_minimum",
+                translation_placeholders={
+                    "maximum": str(updates[CONF_MAX]),
+                    "minimum": str(updates[CONF_MIN]),
+                },
             )
-            raise ServiceValidationError(message)
 
         try:
             await collection.async_update_item(item_id, updates)

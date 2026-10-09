@@ -29,6 +29,9 @@ if TYPE_CHECKING:
     from tests.common import MockUser
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 INPUT_VALUE = 10
 StorageSetup = Callable[..., Awaitable[bool]]
 

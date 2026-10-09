@@ -16,6 +16,9 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 @pytest.fixture(name="hass_with_yaml_home")
 async def hass_with_yaml_home_fixture(hass: HomeAssistant) -> HomeAssistant:
     """Set up zones with one from YAML named Home, and register the action."""

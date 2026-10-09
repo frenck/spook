@@ -24,6 +24,9 @@ if TYPE_CHECKING:
     from homeassistant.helpers import entity_registry as er
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 @pytest.fixture(autouse=True)
 async def _texts(hass: HomeAssistant, hass_storage: dict[str, Any]) -> None:
     """Set up one input text from the UI and one from YAML, and the actions."""

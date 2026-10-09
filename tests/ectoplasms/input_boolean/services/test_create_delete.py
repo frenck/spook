@@ -23,6 +23,9 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 @pytest.fixture(autouse=True)
 async def _toggles(hass: HomeAssistant, hass_storage: dict[str, Any]) -> None:
     """Set up one toggle from the UI and one from YAML, and the Spook actions."""
