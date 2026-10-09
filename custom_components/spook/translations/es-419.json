@@ -640,7 +640,7 @@
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre este ayudante.",
                     "manage": "Puedes administrar este ayudante tú mismo en la [página de Ayudantes](/config/helpers).",
-                    "changed": "Los miembros que figuraban en esta reparación han vuelto, o han cambiado, desde que Spook la revisó, así que no se ha quitado nada del helper. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación.",
+                    "changed": "Los miembros que figuraban en esta reparación han vuelto, o han cambiado, desde que Spook la revisó, así que no se ha quitado nada del ayudante. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación.",
                     "too_few_members": "Un ayudante mín/máx necesita al menos dos miembros, así que quitar los que faltan dejaría muy pocos. Reconfigura o quita el ayudante tú mismo en la [página de Ayudantes](/config/helpers)."
                 },
                 "step": {
@@ -822,6 +822,69 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "Entidades desconocidas usadas en el puente de HomeKit: {bridge}",
             "description": "Spook ha encontrado un fantasma en tu puente de HomeKit 👻\n\nMientras flotaba, Spook se cruzó con el siguiente puente de HomeKit:\n\n{bridge}\n\nEste puente menciona las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\n\n\nHomeKit no sigue a una entidad cuando se renombra. Una entidad incluida que se ha renombrado o eliminado desaparece de la app Casa. Una entidad excluida que se ha renombrado vuelve a aparecer en ella.\n\nEste puente está definido en tu configuración YAML. Para solucionar este error, edita el `filter` de este puente en `homekit:` y elimina o corrige estas entidades.\n\nSpook 👻 Tu colega."
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Sensor de temperatura desconocido para el área: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor de temperatura desconocido para el área: {area}",
+                        "description": "Spook ha encontrado un fantasma en tus áreas 👻\n\nEl área {area} usa un sensor de temperatura que es desconocido para Home Assistant:\n\n{entities}\n\nHome Assistant solo comprueba este sensor cuando se elige, así que cuando se eliminó o se renombró, el área se quedó apuntando a la nada. Assist y las tarjetas de área ya no obtienen ninguna lectura de temperatura de él.\n\nBorra el ajuste para poder elegir de nuevo un sensor, o quédatelo y Spook no volverá a mencionarlo.\n\nSpook 👻 Tu colega.",
+                        "menu_options": {
+                            "remove": "Borrar el ajuste",
+                            "manage": "Lo arreglo yo mismo",
+                            "ignore": "Quedárselo y no volver a avisarme"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook no volverá a decir nada sobre esta área.",
+                    "manage": "Puedes elegir otro sensor en los ajustes de esta área, en la [página de Áreas](/config/areas/dashboard).",
+                    "changed": "Este sensor ha vuelto, o el ajuste ya apunta a otra parte, desde que Spook lo revisó. Por eso no se ha borrado nada. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Sensor de humedad desconocido para el área: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor de humedad desconocido para el área: {area}",
+                        "description": "Spook ha encontrado un fantasma en tus áreas 👻\n\nEl área {area} usa un sensor de humedad que es desconocido para Home Assistant:\n\n{entities}\n\nHome Assistant solo comprueba este sensor cuando se elige, así que cuando se eliminó o se renombró, el área se quedó apuntando a la nada. Assist y las tarjetas de área ya no obtienen ninguna lectura de humedad de él.\n\nBorra el ajuste para poder elegir de nuevo un sensor, o quédatelo y Spook no volverá a mencionarlo.\n\nSpook 👻 Tu colega.",
+                        "menu_options": {
+                            "remove": "Borrar el ajuste",
+                            "manage": "Lo arreglo yo mismo",
+                            "ignore": "Quedárselo y no volver a avisarme"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook no volverá a decir nada sobre esta área.",
+                    "manage": "Puedes elegir otro sensor en los ajustes de esta área, en la [página de Áreas](/config/areas/dashboard).",
+                    "changed": "Este sensor ha vuelto, o el ajuste ya apunta a otra parte, desde que Spook lo revisó. Por eso no se ha borrado nada. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Sensores de temperatura y humedad desconocidos para el área: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensores de temperatura y humedad desconocidos para el área: {area}",
+                        "description": "Spook ha encontrado un fantasma en tus áreas 👻\n\nEl área {area} usa un sensor de temperatura y uno de humedad que son desconocidos para Home Assistant:\n\n{entities}\n\nHome Assistant solo comprueba estos sensores cuando se eligen, así que cuando se eliminaron o se renombraron, el área se quedó apuntando a la nada. Assist y las tarjetas de área ya no obtienen ninguna lectura de ellos.\n\nBorra los ajustes para poder elegir de nuevo sensores, o quédatelos y Spook no volverá a mencionarlos.\n\nSpook 👻 Tu colega.",
+                        "menu_options": {
+                            "remove": "Borrar los ajustes",
+                            "manage": "Lo arreglo yo mismo",
+                            "ignore": "Quedárselos y no volver a avisarme"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook no volverá a decir nada sobre esta área.",
+                    "manage": "Puedes elegir otros sensores en los ajustes de esta área, en la [página de Áreas](/config/areas/dashboard).",
+                    "changed": "Estos sensores han vuelto, o los ajustes ya apuntan a otra parte, desde que Spook lo revisó. Por eso no se ha borrado nada. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
+                }
+            }
         }
     },
     "conditions": {
@@ -1656,7 +1719,7 @@
             "name": "Cambiar el ID de una entidad"
         },
         "input_number_create": {
-            "description": "Crea un ayudante de entrada numérica al instante.",
+            "description": "Crea un ayudante de entrada numérica al instante. Devuelve el ID de entidad del nuevo ayudante de entrada numérica.",
             "fields": {
                 "icon": {
                     "description": "El icono a usar para el ayudante de entrada numérica.",
