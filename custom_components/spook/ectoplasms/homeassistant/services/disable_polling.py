@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
+from ....errors import config_entry_not_found
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -30,8 +30,7 @@ class SpookService(AbstractSpookAdminService):
                 call.data["config_entry_id"],
             )
         ):
-            msg = f"Config entry not found: {call.data['config_entry_id']}"
-            raise HomeAssistantError(msg)
+            raise config_entry_not_found(call.data["config_entry_id"])
 
         self.hass.config_entries.async_update_entry(
             entry,

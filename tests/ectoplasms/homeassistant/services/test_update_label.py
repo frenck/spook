@@ -21,6 +21,9 @@ if TYPE_CHECKING:
     )
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 async def _setup(hass: HomeAssistant) -> None:
     """Register the action."""
     assert await async_setup_component(hass, "homeassistant", {})

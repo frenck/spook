@@ -563,6 +563,56 @@
       }
     }
   },
+  "exceptions": {
+    "area_not_found": {
+      "message": "Area {area_id} not found."
+    },
+    "cannot_disable_system_user": {
+      "message": "Cannot disable a system-generated user: {user_id}."
+    },
+    "cannot_enable_system_user": {
+      "message": "Cannot enable a system-generated user: {user_id}."
+    },
+    "category_not_found": {
+      "message": "Category {category} not found for {scope}."
+    },
+    "category_nothing_to_update": {
+      "message": "Nothing to update on category {category}: give at least one of {fields}."
+    },
+    "config_entry_not_found": {
+      "message": "Integration entry {config_entry_id} not found."
+    },
+    "device_not_found": {
+      "message": "Device {device_id} not found."
+    },
+    "entity_not_found": {
+      "message": "Entity {entity_id} not found."
+    },
+    "entity_without_unique_id": {
+      "message": "Entity {entity_id} has no unique ID, so Home Assistant cannot keep an icon or aliases for it."
+    },
+    "floor_not_found": {
+      "message": "Floor {floor_id} not found."
+    },
+    "integration_entries_required": {
+      "message": "Name the integration entries to change, or their integration."
+    },
+    "integration_without_entries": {
+      "message": "The {domain} integration has no entries."
+    },
+    "label_not_found": {
+      "message": "Label {label_id} not found."
+    },
+    "label_nothing_to_update": {
+      "message": "Nothing to update on label {label_id}: give at least one of {fields}."
+    },
+    "restart_failed": {
+      "message": "Spook encountered an error while restarting Home Assistant."
+    },
+    "user_not_found": {
+      "message": "Could not find user: {user_id}."
+    }
+  },
   "issues": {
     "alert_unknown_entity_references": {
       "title": "Unknown entity watched by alert: {alert}",

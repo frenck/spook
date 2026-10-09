@@ -5,8 +5,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.core import callback
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import label_registry as lr
+
+from ...errors import label_not_found
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -26,8 +27,7 @@ def async_check_labels_exist(hass: HomeAssistant, label_ids: Iterable[str]) -> N
 
     for label_id in label_ids:
         if not label_registry.async_get_label(label_id):
-            msg = f"Label {label_id} not found"
-            raise HomeAssistantError(msg)
+            raise label_not_found(label_id)
 
 
 # Kept in step with `homeassistant.components.config.label_registry`, which is

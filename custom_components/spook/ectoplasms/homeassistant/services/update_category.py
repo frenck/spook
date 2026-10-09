@@ -11,6 +11,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import category_registry as cr, config_validation as cv
 from homeassistant.helpers.typing import UNDEFINED
 
+from ....const import DOMAIN as SPOOK_DOMAIN
 from ....services import AbstractSpookAdminService
 from ..categories import SCOPES, async_resolve_category
 
@@ -49,11 +50,14 @@ class SpookService(AbstractSpookAdminService):
         }
 
         if not changes:
-            msg = (
-                f"Nothing to update on category {category.name}: "
-                f"give at least one of {', '.join(_UPDATABLE)}"
+            raise HomeAssistantError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="category_nothing_to_update",
+                translation_placeholders={
+                    "category": category.name,
+                    "fields": ", ".join(_UPDATABLE),
+                },
             )
-            raise HomeAssistantError(msg)
 
         try:
             cr.async_get(self.hass).async_update(

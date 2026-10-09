@@ -11,6 +11,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv, label_registry as lr
 from homeassistant.helpers.typing import UNDEFINED
 
+from ....const import DOMAIN as SPOOK_DOMAIN
 from ....services import AbstractSpookAdminService
 from ..labels import SUPPORTED_LABEL_THEME_COLORS, async_check_labels_exist
 
@@ -55,11 +56,14 @@ class SpookService(AbstractSpookAdminService):
         }
 
         if not changes:
-            msg = (
-                f"Nothing to update on label {label_id}: "
-                f"give at least one of {', '.join(_UPDATABLE)}"
+            raise HomeAssistantError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="label_nothing_to_update",
+                translation_placeholders={
+                    "label_id": label_id,
+                    "fields": ", ".join(_UPDATABLE),
+                },
             )
-            raise HomeAssistantError(msg)
 
         try:
             lr.async_get(self.hass).async_update(

@@ -27,6 +27,9 @@ from custom_components.spook.ectoplasms.homeassistant.services import (
 if TYPE_CHECKING:
     from tests.common import MockUser
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 _ASSIST = "conversation"
 _ALEXA = "cloud.alexa"
 _GOOGLE = "cloud.google_assistant"

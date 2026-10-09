@@ -24,6 +24,9 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 async def _async_setup_entry(_hass: HomeAssistant, _entry: MockConfigEntry) -> bool:
     """Set up nothing, successfully."""
     return True

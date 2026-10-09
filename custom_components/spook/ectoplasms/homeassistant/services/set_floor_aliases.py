@@ -7,9 +7,9 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv, floor_registry as fr
 
+from ....errors import floor_not_found
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -30,8 +30,7 @@ class SpookService(AbstractSpookAdminService):
         """Handle the service call."""
         floor_registry = fr.async_get(self.hass)
         if not floor_registry.async_get_floor(call.data["floor_id"]):
-            msg = f"Floor {call.data['floor_id']} not found"
-            raise HomeAssistantError(msg)
+            raise floor_not_found(call.data["floor_id"])
 
         floor_registry.async_update(
             call.data["floor_id"],

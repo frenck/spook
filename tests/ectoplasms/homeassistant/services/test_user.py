@@ -23,6 +23,9 @@ if TYPE_CHECKING:
     from tests.common import MockUser
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 @pytest.fixture
 def user_services(hass: HomeAssistant) -> None:
     """Register the Spook user services."""

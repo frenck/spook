@@ -13,8 +13,11 @@ from homeassistant.components.homeassistant.exposed_entities import (
     async_expose_entity,
 )
 from homeassistant.const import ATTR_ENTITY_ID
-from homeassistant.exceptions import HomeAssistantError, ServiceValidationError
+from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv, entity_registry as er
+
+from ....const import DOMAIN
+from ....errors import entity_not_found
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant, ServiceCall
@@ -41,13 +44,20 @@ def async_config_entry_ids(hass: HomeAssistant, call: ServiceCall) -> list[str]:
     domains: list[str] = call.data.get(CONF_DOMAIN, [])
 
     if not entry_ids and not domains:
-        msg = "Name the integration entries to change, or their integration"
-        raise ServiceValidationError(msg)
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="integration_entries_required",
+        )
 
     for domain in domains:
         if not (entries := hass.config_entries.async_entries(domain)):
-            msg = f"The {domain} integration has no entries"
-            raise ServiceValidationError(msg)
+            raise ServiceValidationError(
+                translation_domain=DOMAIN,
+                translation_key="integration_without_entries",
+                translation_placeholders={
+                    "domain": domain,
+                },
+            )
         entry_ids.extend(
             entry.entry_id for entry in entries if entry.entry_id not in entry_ids
         )
@@ -82,8 +92,7 @@ def async_set_voice_assistant_exposure(
             hass.states.get(entity_id) is None
             and entity_registry.async_get(entity_id) is None
         ):
-            msg = f"Unknown entity: {entity_id}"
-            raise HomeAssistantError(msg)
+            raise entity_not_found(entity_id)
 
     for entity_id in entity_ids:
         for assistant in call.data[CONF_ASSISTANTS]:
