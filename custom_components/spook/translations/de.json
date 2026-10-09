@@ -602,7 +602,7 @@
             "title": "Unbekannte Bereiche werden im Dashboard verwendet : {dashboard}"
         },
         "template_unknown_entity_references": {
-            "description": "Spook hat einen Geist in deinen Template-Helfern entdeckt 👻\n\nBeim Herumschwebe traf Spook auf den folgenden Template-Helper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSeine Templates verweisen auf die folgenden Entitäten, die Home Assistant nicht kennt:\n\n{entities}\n\nDies passiert häufig, wenn eine Entität umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, konfiguriere den Template-Helper neu, sodass er auf vorhandene Entitäten verweist.\n\nSpook 👻 Dein Kumpel.",
+            "description": "Spook hat einen Geist in deinen Template-Helfern entdeckt 👻\n\nBeim Herumschwebe traf Spook auf den folgenden Template-Helfer:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSeine Templates verweisen auf die folgenden Entitäten, die Home Assistant nicht kennt:\n\n{entities}\n\nDies passiert häufig, wenn eine Entität umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, konfiguriere den Template-Helfer neu, sodass er auf vorhandene Entitäten verweist.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Entitäten im Template-Helfer: {helper}"
         },
         "empty_areas": {
@@ -677,7 +677,7 @@
                 "abort": {
                     "too_few_members": "Ein Min/Max-Helfer benötigt mindestens zwei Elemente; würden die fehlenden entfernt, wären zu wenige übrig. Passe den Helfer selbst auf der [Seite „Helfers“](/config/helpers) an oder entferne ihn.",
                     "issue_ignored": "Spook wird ab jetzt nichts mehr zu diesem Helfer berichten.",
-                    "manage": "Du kannst diesen Helper selbst auf der [Seite „Helpers“](/config/helpers) verwalten.",
+                    "manage": "Du kannst diesen Helfer selbst auf der [Seite „Helfer“](/config/helpers) verwalten.",
                     "changed": "Die in dieser Reparaturliste aufgeführten Mitglieder sind wieder da oder haben sich seit Spooks letzter Überprüfung geändert, daher wurde nichts aus dem Helfer entfernt. Spook überprüft die Liste erneut selbstständig und aktualisiert diese Reparaturliste."
                 },
                 "step": {
@@ -760,7 +760,7 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook wird von nun an nichts mehr über diesen Helfer berichten.",
-                    "manage": "Du kannst diesen Helper selbst auf der [Seite „Helpers“](/config/helpers) verwalten.",
+                    "manage": "Du kannst diesen Helfer selbst auf der [Seite „Helfer“](/config/helpers) verwalten.",
                     "changed": "Die Quellen dieses Helfers haben sich geändert, seit Spook nachgesehen hat, daher wurde der Helfer in Ruhe gelassen. Spook schaut von selbst noch einmal nach und aktualisiert diese Reparatur."
                 }
             },
@@ -822,6 +822,69 @@
         "unknown_engines": {
             "title": "Die „Assist“-Pipeline verwendet Engines, die nicht mehr verfügbar sind: {pipeline}",
             "description": "Die Assist-Pipeline {pipeline} verwendet Folgendes, was Home Assistant nicht bekannt ist:\n\n{engines}\n\nDas bedeutet in der Regel, dass die dahinterstehende Integration entfernt wurde. Die Pipeline wurde nicht darüber informiert, sodass sie bei der nächsten Verwendung mit einer Fehlermeldung über einen fehlenden Anbieter oder Agenten fehlschlägt, und nichts zuvor weist darauf hin.\n\nUm dies zu beheben, öffne die Einstellungen dieses Assistenten unter [Sprachassistenten](/config/voice-assistants/assistants) und wähle für jeden dieser Einträge eine Engine aus, die noch verfügbar ist.\n\nSpook 👻 Dein Kumpel."
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Unbekannter Temperatursensor für Bereich: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unbekannter Temperatursensor für Bereich: {area}",
+                        "description": "Spook hat in deinen Bereichen einen Geist entdeckt 👻\n\nDer Bereich {area} verwendet einen Temperatursensor, der Home Assistant unbekannt ist:\n\n{entities}\n\nHome Assistant überprüft diesen Sensor nur, wenn er ausgewählt ist. Als er entfernt oder umbenannt wurde, zeigte der Bereich daher ins Leere. Assist- und Bereichskarten erhalten keine Temperaturwerte mehr von ihm.\n\nLösche die Einstellung, damit du wieder einen Sensor auswählen kannst, oder behalte sie bei – dann wird Spook nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel.",
+                        "menu_options": {
+                            "remove": "Einstellung leeren",
+                            "manage": "Lass es mich selbst beheben",
+                            "ignore": "Behalten und nicht mehr darauf hinweisen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook sagt ab jetzt nichts mehr zu diesem Bereich.",
+                    "manage": "Du kannst in den Einstellungen dieses Bereichs auf der [Bereichsseite](/config/areas/dashboard) einen anderen Sensor wählen.",
+                    "changed": "Dieser Sensor ist zurück, oder die Einstellung zeigt inzwischen woandershin, seit Spook nachgesehen hat. Daher wurde nichts geleert. Spook schaut von selbst noch einmal nach und aktualisiert diese Reparatur."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Unbekannter Luftfeuchtigkeitssensor für Bereich: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unbekannter Luftfeuchtigkeitssensor für Bereich: {area}",
+                        "description": "Spook hat in deinen Bereichen einen Geist entdeckt 👻\n\nDer Bereich {area} verwendet einen Luftfeuchtigkeitssensor, der Home Assistant unbekannt ist:\n\n{entities}\n\nHome Assistant überprüft diesen Sensor nur, wenn er ausgewählt ist. Als er entfernt oder umbenannt wurde, zeigte der Bereich daher ins Leere. Assist- und Bereichskarten erhalten keine Luftfeuchtigkeitswerte mehr von ihm.\n\nLösche die Einstellung, damit du wieder einen Sensor auswählen kannst, oder behalte sie bei – dann wird Spook nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel.",
+                        "menu_options": {
+                            "remove": "Einstellung leeren",
+                            "manage": "Lass es mich selbst beheben",
+                            "ignore": "Behalten und nicht mehr darauf hinweisen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook sagt ab jetzt nichts mehr zu diesem Bereich.",
+                    "manage": "Du kannst in den Einstellungen dieses Bereichs auf der [Bereichsseite](/config/areas/dashboard) einen anderen Sensor wählen.",
+                    "changed": "Dieser Sensor ist zurück, oder die Einstellung zeigt inzwischen woandershin, seit Spook nachgesehen hat. Daher wurde nichts geleert. Spook schaut von selbst noch einmal nach und aktualisiert diese Reparatur."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Unbekannte Temperatur- und Luftfeuchtigkeitssensoren für Bereich: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Unbekannte Temperatur- und Luftfeuchtigkeitssensoren für Bereich: {area}",
+                        "description": "Spook hat in deinen Bereichen einen Geist entdeckt 👻\n\nDer Bereich {area} verwendet einen Temperatur- und einen Luftfeuchtigkeitssensor, die Home Assistant unbekannt sind:\n\n{entities}\n\nHome Assistant überprüft diese Sensoren nur, wenn sie ausgewählt sind. Als sie entfernt oder umbenannt wurden, zeigte der Bereich daher ins Leere. Assist- und Bereichskarten erhalten keine Messwerte mehr von ihnen.\n\nLösche die Einstellungen, damit du wieder Sensoren auswählen kannst, oder behalte sie bei – dann wird Spook nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel.",
+                        "menu_options": {
+                            "remove": "Einstellungen leeren",
+                            "manage": "Lass es mich selbst beheben",
+                            "ignore": "Behalten und nicht mehr darauf hinweisen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook sagt ab jetzt nichts mehr zu diesem Bereich.",
+                    "manage": "Du kannst in den Einstellungen dieses Bereichs auf der [Bereichsseite](/config/areas/dashboard) andere Sensoren wählen.",
+                    "changed": "Diese Sensoren sind zurück, oder die Einstellungen zeigen inzwischen woandershin, seit Spook nachgesehen hat. Daher wurde nichts geleert. Spook schaut von selbst noch einmal nach und aktualisiert diese Reparatur."
+                }
+            }
         }
     },
     "services": {
