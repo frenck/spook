@@ -29,9 +29,9 @@ Then just ask. "How is my house doing?", "Where is `light.kitchen` used?", or "C
 * - `spook__list_ghosts`
   - Lists Spook's open repair issues, optionally by kind, ignored ones on request.
 * - `spook__explain_ghost`
-  - Explains one issue: its full description, its fix options, and what Spook worked out (like a likely rename).
+  - Explains one issue: its full description, the fix options it offers right now, and what Spook worked out (like a likely rename).
 * - `spook__find_usages`
-  - Finds where an entity, action, label, area or floor is used: automations, scripts, scenes, dashboards, helpers and template helpers.
+  - Finds where an entity, action, label, area or floor is used: automations, scripts, scenes, dashboards, groups, helpers and template helpers. Unlike the automation and script repairs, which only look at what runs, it also reports a reference in a disabled step, because that step breaks the day somebody switches it back on.
 * - `spook__check_references`
   - Checks a draft automation, script, scene or dashboard card for references to things that don't exist, before it is saved.
 * - `spook__list_features`

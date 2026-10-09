@@ -17,7 +17,10 @@ from homeassistant.components import automation, lovelace, script
 from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
-from .action_extraction import async_extract_entities_from_action_config
+from .action_extraction import (
+    async_extract_entities_from_action_config,
+    async_extract_entities_from_helper_actions,
+)
 from .dashboard_extraction import (
     extract_actions_from_dashboard_node,
     extract_areas_from_dashboard_node,
@@ -34,13 +37,20 @@ from .entity_filtering import (
     async_find_services_in_sequence,
     async_get_all_services,
     async_name_helper_in_the_registry,
+    find_services_in_helper_options,
 )
-from .helper_sources import SOURCE_OPTION_KEYS, async_helper_sources
+from .helper_sources import (
+    SOURCE_OPTION_KEYS,
+    async_group_members,
+    async_helper_sources,
+    min_max_members,
+)
 from .reference_extraction import extract_targets_from_config
 from .repairs import INSPECTION_YIELD_INTERVAL
 from .template_extraction import async_extract_entities_from_config
 
 if TYPE_CHECKING:
+    from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
 
 type ReferenceType = Literal["entity", "action", "area", "floor", "label"]
@@ -56,6 +66,9 @@ REFERENCE_TYPES: tuple[ReferenceType, ...] = (
 # A template helper keeps its templates in its options, which is exactly the
 # kind of configuration the template reader walks.
 _TEMPLATE_HELPER_DOMAIN = "template"
+
+# Not one of the source helpers: it keeps its members under a key of its own.
+_MIN_MAX_HELPER_DOMAIN = "min_max"
 
 # Where Home Assistant keeps the scenes made in the UI and in YAML.
 _SCENES = "homeassistant_scene"
@@ -128,7 +141,9 @@ async def _async_named_by_automation(
 
     # One that failed to load has no script to read the actions off.
     if "action" in wanted and (action_script := getattr(entity, "action_script", None)):
-        named["action"] = async_find_services_in_sequence(action_script.sequence)
+        named["action"] = async_find_services_in_sequence(
+            action_script.sequence, include_disabled=True
+        )
 
     _add_targets(named, entity, raw_config, wanted)
     return named
@@ -159,7 +174,9 @@ async def _async_named_by_script(
         )
 
     if "action" in wanted and loaded:
-        named["action"] = async_find_services_in_sequence(loaded.sequence)
+        named["action"] = async_find_services_in_sequence(
+            loaded.sequence, include_disabled=True
+        )
 
     _add_targets(named, loaded or entity, raw_config, wanted)
     return named
@@ -252,6 +269,24 @@ def _find_in_scenes(hass: HomeAssistant, reference: str) -> list[Usage]:
     ]
 
 
+def _find_in_groups(hass: HomeAssistant, reference: str) -> list[Usage]:
+    """Return the groups that have the entity as a member.
+
+    Read off the group entities, the way the group repair reads them, so the
+    ones from YAML count as much as the ones made in the UI.
+    """
+    return [
+        Usage(
+            kind="group",
+            id=entity.entity_id,
+            name=entity.name or entity.entity_id,
+            matched_as="entity",
+        )
+        for entity, members in async_group_members(hass)
+        if reference in members
+    ]
+
+
 def _named_by_view(
     view: Any, wanted: tuple[ReferenceType, ...]
 ) -> dict[ReferenceType, set[str]]:
@@ -302,41 +337,75 @@ async def _async_find_in_dashboards(
     return usages
 
 
-async def _async_find_in_helpers(
-    hass: HomeAssistant, reference: str, known_services: set[str]
-) -> list[Usage]:
-    """Return the helpers that take the entity as a source, or in a template.
+async def _async_named_by_helper(
+    hass: HomeAssistant,
+    entry: ConfigEntry,
+    wanted: tuple[ReferenceType, ...],
+    known_services: set[str],
+) -> dict[ReferenceType, set[str]]:
+    """Return what one helper names, read the way its repairs read it.
 
     A helper can store its source as an entity registry ID rather than an
-    entity ID, so each one is resolved before it is compared.
+    entity ID, so each one is resolved before it is compared. A template
+    helper is read the way its two repairs read it: the templates, and the
+    actions some of its types run.
     """
+    named: dict[ReferenceType, set[str]] = {}
+
+    if entry.domain == _TEMPLATE_HELPER_DOMAIN:
+        if "entity" in wanted:
+            options = dict(entry.options)
+            named["entity"] = await async_extract_entities_from_config(
+                hass, options, known_services
+            ) | await async_extract_entities_from_helper_actions(
+                hass, options, known_services=known_services
+            )
+        if "action" in wanted:
+            named["action"] = find_services_in_helper_options(
+                entry.options, include_disabled=True
+            )
+        return named
+
+    # Every other helper only ever holds entities.
+    if "entity" not in wanted:
+        return named
+
+    if entry.domain == _MIN_MAX_HELPER_DOMAIN:
+        sources = min_max_members(entry)
+    elif entry.domain in SOURCE_OPTION_KEYS or entry.domain == "bayesian":
+        sources = async_helper_sources(entry)
+    else:
+        return named
+
     entity_registry = er.async_get(hass)
+    named["entity"] = {
+        er.async_resolve_entity_id(entity_registry, source) or source
+        for source in sources
+    }
+    return named
+
+
+async def _async_find_in_helpers(
+    hass: HomeAssistant,
+    reference: str,
+    wanted: tuple[ReferenceType, ...],
+    known_services: set[str],
+) -> list[Usage]:
+    """Return the helpers that use the reference."""
     usages: list[Usage] = []
 
     for entry in hass.config_entries.async_entries():
-        if entry.domain in SOURCE_OPTION_KEYS or entry.domain == "bayesian":
-            sources = {
-                er.async_resolve_entity_id(entity_registry, source) or source
-                for source in async_helper_sources(entry)
-            }
-            kind = "helper"
-        elif entry.domain == _TEMPLATE_HELPER_DOMAIN:
-            sources = await async_extract_entities_from_config(
-                hass, dict(entry.options), known_services
+        named = await _async_named_by_helper(hass, entry, wanted, known_services)
+        kind = "template" if entry.domain == _TEMPLATE_HELPER_DOMAIN else "helper"
+        usages.extend(
+            Usage(
+                kind=kind,
+                id=async_name_helper_in_the_registry(hass, entry.entry_id),
+                name=entry.title,
+                matched_as=matched_as,
             )
-            kind = "template"
-        else:
-            continue
-
-        if reference in sources:
-            usages.append(
-                Usage(
-                    kind=kind,
-                    id=async_name_helper_in_the_registry(hass, entry.entry_id),
-                    name=entry.title,
-                    matched_as="entity",
-                )
-            )
+            for matched_as in _matches(named, reference)
+        )
 
     return usages
 
@@ -354,9 +423,13 @@ async def async_find_usages(
     )
     usages.extend(await _async_find_in_dashboards(hass, reference, reference_types))
 
-    # Scenes and helpers only ever hold entities.
+    # Scenes and groups only ever hold entities.
     if "entity" in reference_types:
         usages.extend(_find_in_scenes(hass, reference))
-        usages.extend(await _async_find_in_helpers(hass, reference, known_services))
+        usages.extend(_find_in_groups(hass, reference))
+
+    usages.extend(
+        await _async_find_in_helpers(hass, reference, reference_types, known_services)
+    )
 
     return usages

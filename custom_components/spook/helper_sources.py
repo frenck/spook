@@ -2,14 +2,16 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
+from homeassistant.components import group
 from homeassistant.helpers import entity_registry as er
+from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
 
 from .entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable
+    from collections.abc import Iterable, Iterator
 
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
@@ -76,22 +78,49 @@ def async_helper_sources(entry: ConfigEntry) -> set[str]:
     return _source_values(entry)
 
 
+def async_group_members(hass: HomeAssistant) -> Iterator[tuple[Any, list[str]]]:
+    """Yield every group entity with the member entity IDs it tracks.
+
+    The old-style `group.` entities say so in public. The light, switch,
+    sensor and other groups only keep theirs in a private attribute, which
+    one depends on the platform.
+
+    Taken as a snapshot: a caller that hands the event loop a turn between
+    groups would otherwise end in a `RuntimeError` when one is added. #1558.
+    Before the first entity platform is set up there is nothing to read.
+    """
+    platforms = hass.data.get(DATA_ENTITY_PLATFORM, {}).get(group.DOMAIN) or []
+    for platform in list(platforms):
+        for entity in list(platform.entities.values()):
+            members: list[str] = []
+            if platform.domain == group.DOMAIN:
+                members = entity.tracking
+            elif hasattr(entity, "_entity_ids"):
+                # pylint: disable-next=protected-access
+                members = entity._entity_ids  # noqa: SLF001
+            elif hasattr(entity, "_entities"):
+                # pylint: disable-next=protected-access
+                members = entity._entities  # noqa: SLF001
+            yield entity, members
+
+
 def async_unknown_helper_sources(hass: HomeAssistant, entry: ConfigEntry) -> set[str]:
     """Return the raw source references of a helper that are gone."""
     return _async_unknown(hass, _source_values(entry), as_written=False)
 
 
+def min_max_members(entry: ConfigEntry) -> set[str]:
+    """Return every member reference a min/max helper is configured with."""
+    return {
+        value
+        for value in entry.options.get(MIN_MAX_ENTITY_IDS) or []
+        if isinstance(value, str)
+    }
+
+
 def async_unknown_min_max_members(hass: HomeAssistant, entry: ConfigEntry) -> set[str]:
     """Return the raw member references of a min/max helper that are gone."""
-    return _async_unknown(
-        hass,
-        (
-            value
-            for value in entry.options.get(MIN_MAX_ENTITY_IDS) or []
-            if isinstance(value, str)
-        ),
-        as_written=True,
-    )
+    return _async_unknown(hass, min_max_members(entry), as_written=True)
 
 
 def _async_unknown(

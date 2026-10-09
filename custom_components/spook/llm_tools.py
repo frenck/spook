@@ -8,7 +8,7 @@ whoever is talking to the kitchen speaker.
 from __future__ import annotations
 
 from abc import abstractmethod
-from contextlib import suppress
+from contextlib import asynccontextmanager, suppress
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, override
 
@@ -35,13 +35,14 @@ from .trigger import async_get_triggers
 from .usage_finding import REFERENCE_TYPES, async_find_usages, reference_types_for
 
 if TYPE_CHECKING:
-    from collections.abc import Iterable, Mapping
+    from collections.abc import AsyncIterator, Iterable, Mapping
 
+    from homeassistant.components.repairs import (
+        RepairsFlowManager,
+        RepairsFlowResult,
+    )
     from homeassistant.helpers.llm import LLMContext, ToolInput
     from homeassistant.util.json import JsonObjectType
-
-# Home Assistant 2026.11 names its admin API. Older releases do not have the
-# constant, and do not have the API either, so the string matches nothing.
 
 # Sent along with every single request, so it stays short. The rest is in the
 # tool descriptions, which the model only reads when it is looking for a tool.
@@ -174,14 +175,17 @@ class _IssueStrings:
             issue, "fix_flow.step.init.description"
         )
 
-    def menu_options(self, issue: ir.IssueEntry) -> dict[str, str]:
-        """Return the options the fix flow's menu offers, with their labels."""
-        prefix = self._key(issue, "fix_flow.step.init.menu_options.")
-        return {
-            key.removeprefix(prefix): _render(label, _placeholders(issue))
-            for key, label in self._strings.items()
-            if key.startswith(prefix)
-        }
+    def abort_reason(self, issue: ir.IssueEntry, result: RepairsFlowResult) -> str:
+        """Return why a fix flow stopped, in the words the dialog would use."""
+        reason: str = result["reason"]
+        return (
+            self.render(
+                issue,
+                f"fix_flow.abort.{reason}",
+                result.get("description_placeholders"),
+            )
+            or reason
+        )
 
 
 def _kind(issue: ir.IssueEntry) -> str:
@@ -229,6 +233,38 @@ def _unknown_ghost(issue_id: str) -> ToolResult:
         f"There is no open Spook issue with the ID {issue_id!r}. "
         "Use spook__list_ghosts to see which ones there are."
     )
+
+
+class _FixFlowUnavailableError(Exception):
+    """A fix flow that could not even be started."""
+
+
+@asynccontextmanager
+async def _async_fix_flow(
+    hass: HomeAssistant, issue: ir.IssueEntry
+) -> AsyncIterator[tuple[RepairsFlowManager, RepairsFlowResult]]:
+    """Start an issue's fix flow, and make sure it is gone afterwards.
+
+    Through Home Assistant's own flow manager, so the flow runs exactly as it
+    would from the dashboard, the checks it does before it deletes anything
+    included.
+    """
+    if (manager := repairs_flow_manager(hass)) is None:
+        msg = "Home Assistant's repairs are not set up."
+        raise _FixFlowUnavailableError(msg)
+
+    try:
+        result = await manager.async_init(DOMAIN, context={"issue_id": issue.issue_id})
+    except UnknownStep as err:
+        raise _FixFlowUnavailableError(str(err)) from err
+
+    try:
+        yield manager, result
+    finally:
+        # A flow that ended is gone already. One that did not would hang
+        # around waiting for an answer that is never coming.
+        with suppress(UnknownFlow):
+            manager.async_abort(result["flow_id"])
 
 
 def _summary(issue: ir.IssueEntry, strings: _IssueStrings) -> JsonObjectType:
@@ -387,19 +423,56 @@ class ExplainGhostTool(_SpookTool):
             return _unknown_ghost(args["issue_id"])
 
         strings = await _IssueStrings.async_load(hass, llm_context)
-        fix_options = strings.menu_options(issue) if issue.is_fixable else {}
+        data: JsonObjectType = {
+            **_summary(issue, strings),
+            "description": strings.description(issue),
+            "fix_options": [],
+            "placeholders": dict(issue.translation_placeholders or {}),
+        }
+        if issue.is_fixable:
+            data.update(await self._async_fix_options(hass, issue, strings))
 
-        return ToolResult(
-            data={
-                **_summary(issue, strings),
-                "description": strings.description(issue),
-                "fix_options": [
-                    {"option": option, "label": label}
-                    for option, label in fix_options.items()
-                ],
-                "placeholders": dict(issue.translation_placeholders or {}),
-            }
-        )
+        return ToolResult(data=data)
+
+    @staticmethod
+    async def _async_fix_options(
+        hass: HomeAssistant, issue: ir.IssueEntry, strings: _IssueStrings
+    ) -> JsonObjectType:
+        """Return what the fix offers right now, by asking the fix itself.
+
+        The translations list every option a fix can have, not the ones it
+        has today. A dashboard resource from YAML gets no menu at all, just a
+        note saying where the file is, and a model reading the translations
+        would offer a button that is not there.
+        """
+        try:
+            async with _async_fix_flow(hass, issue) as (_, result):
+                if result["type"] is FlowResultType.ABORT:
+                    return {"fix_unavailable": strings.abort_reason(issue, result)}
+
+                # A form wants a person in the dashboard, which is not
+                # something spook__fix_ghost can be.
+                if result["type"] is not FlowResultType.MENU:
+                    return {}
+
+                step = result["step_id"]
+                placeholders = result.get("description_placeholders")
+                return {
+                    "fix_options": [
+                        {
+                            "option": option,
+                            "label": strings.render(
+                                issue,
+                                f"fix_flow.step.{step}.menu_options.{option}",
+                                placeholders,
+                            )
+                            or option,
+                        }
+                        for option in result["menu_options"]
+                    ]
+                }
+        except _FixFlowUnavailableError as err:
+            return {"fix_unavailable": str(err)}
 
 
 class FindUsagesTool(_SpookTool):
@@ -410,9 +483,11 @@ class FindUsagesTool(_SpookTool):
     description = (
         "Find where an entity ID, an action (domain.action), or the ID of a "
         "label, area or floor is used: in automations, scripts, scenes, "
-        "dashboards, helpers and template helpers. Read the way Spook's "
-        "repairs read them, templates included. Answers 'what breaks if I "
-        "remove this' and 'where is this used'."
+        "dashboards, groups, helpers and template helpers. Read the way "
+        "Spook's repairs read them, templates included. Unlike the repairs, "
+        "it also reports a reference in a disabled step, because that step "
+        "breaks the day somebody switches it back on. Answers 'what breaks "
+        "if I remove this' and 'where is this used'."
     )
     annotations = _READ_ONLY
     parameters = probatio.Schema(
@@ -559,46 +634,34 @@ class FixGhostTool(_SpookTool):
     ) -> ToolResult:
         """Start the fix flow, choose the option, and say how it ended.
 
-        Through Home Assistant's own flow manager, so the fix runs exactly as
-        it would from the dashboard, the checks it does before it deletes
-        anything included. Only a menu is something this can answer; a flow
-        that wants a form filled in is left to a person.
+        Only a menu is something this can answer; a flow that wants a form
+        filled in is left to a person.
         """
         if (issue := _async_ghost(hass, args["issue_id"])) is None:
             return _unknown_ghost(args["issue_id"])
         if not issue.is_fixable:
             return _error(f"The issue {issue.issue_id!r} has no fix to run.")
-        if (manager := repairs_flow_manager(hass)) is None:
-            return _error("Home Assistant's repairs are not set up.")
 
-        try:
-            result = await manager.async_init(
-                DOMAIN, context={"issue_id": issue.issue_id}
-            )
-        except UnknownStep as err:
-            return _error(str(err))
-
-        flow_id = result["flow_id"]
         strings = await _IssueStrings.async_load(hass, llm_context)
 
         try:
-            if result["type"] is FlowResultType.MENU:
-                offered = list(result["menu_options"])
+            async with _async_fix_flow(hass, issue) as (manager, started):
+                if started["type"] is not FlowResultType.MENU:
+                    return self._outcome(issue, started, strings)
+
+                offered = list(started["menu_options"])
                 if args["option"] not in offered:
                     return _error(
                         f"The fix for {issue.issue_id!r} does not offer "
                         f"{args['option']!r}. It offers: {', '.join(offered)}."
                     )
-                result = await manager.async_configure(
-                    flow_id, {"next_step_id": args["option"]}
-                )
 
-            return self._outcome(issue, result, strings)
-        finally:
-            # A flow that ended is gone already. One that did not would hang
-            # around waiting for an answer that is never coming.
-            with suppress(UnknownFlow):
-                manager.async_abort(flow_id)
+                finished = await manager.async_configure(
+                    started["flow_id"], {"next_step_id": args["option"]}
+                )
+                return self._outcome(issue, finished, strings)
+        except _FixFlowUnavailableError as err:
+            return _error(str(err))
 
     def _outcome(
         self, issue: ir.IssueEntry, result: Any, strings: _IssueStrings
@@ -608,17 +671,12 @@ class FixGhostTool(_SpookTool):
             return ToolResult(data={"issue_id": issue.issue_id, "outcome": "fixed"})
 
         if result["type"] is FlowResultType.ABORT:
-            reason = result["reason"]
             return ToolResult(
                 data={
                     "issue_id": issue.issue_id,
                     "outcome": "aborted",
-                    "reason": reason,
-                    "message": strings.render(
-                        issue,
-                        f"fix_flow.abort.{reason}",
-                        result.get("description_placeholders"),
-                    ),
+                    "reason": result["reason"],
+                    "message": strings.abort_reason(issue, result),
                 }
             )
 

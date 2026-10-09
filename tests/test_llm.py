@@ -21,6 +21,7 @@ from homeassistant.setup import async_setup_component
 
 from custom_components.spook import draft_checking, llm as spook_llm
 from custom_components.spook.const import DOMAIN
+from custom_components.spook.repairs import UnusedLabelFixFlow
 from custom_components.spook.ectoplasms.homeassistant.repairs.unused_labels import (
     SpookRepair as UnusedLabelsRepair,
 )
@@ -220,6 +221,7 @@ async def test_list_ghosts_leaves_ignored_out_unless_asked(
     assert result.data["ghosts"][0]["ignored"] is True
 
 
+@pytest.mark.usefixtures("repairs")
 async def test_titles_follow_the_conversation_language(
     hass: HomeAssistant, hass_admin_user: MockUser, unused_label: lr.LabelEntry
 ) -> None:
@@ -252,6 +254,7 @@ async def test_titles_follow_the_conversation_language(
     assert result.data["title"] == "Ongebruikt label: Holiday"
 
 
+@pytest.mark.usefixtures("repairs")
 async def test_explain_ghost(
     hass: HomeAssistant, hass_admin_user: MockUser, unused_label: lr.LabelEntry
 ) -> None:
@@ -286,6 +289,75 @@ async def test_explain_ghost_without_a_fix(
     assert "did you mean `light.bedroom`?" in result.data["description"]
     assert "[Wake up](/config/automation/edit/wake_up)" in result.data["description"]
     assert result.data["placeholders"]["entity_id"] == "automation.wake_up"
+
+
+@pytest.mark.usefixtures("repairs")
+async def test_explain_ghost_offers_what_the_menu_offers(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    unused_label: lr.LabelEntry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test the options come from the fix itself, not from its translations."""
+
+    async def _two_options(
+        self: UnusedLabelFixFlow, _: dict[str, str] | None = None
+    ) -> Any:
+        return self.async_show_menu(step_id="init", menu_options=["remove", "ignore"])
+
+    monkeypatch.setattr(UnusedLabelFixFlow, "async_step_init", _two_options)
+
+    result = await _call(
+        hass,
+        "spook__explain_ghost",
+        hass_admin_user,
+        issue_id=f"unused_labels_{unused_label.label_id}",
+    )
+
+    assert result.data["fix_options"] == [
+        {"option": "remove", "label": "Remove this unused label"},
+        {"option": "ignore", "label": "Keep it, stop telling me"},
+    ]
+    assert "fix_unavailable" not in result.data
+    assert not hass.data["repairs"]["flow_manager"].async_progress()
+
+
+@pytest.mark.usefixtures("repairs")
+async def test_explain_ghost_says_why_a_fix_has_nothing_to_offer(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a fix that aborts straight away offers nothing, and says why.
+
+    Its translations still list remove, ignore and manage. A resource from
+    YAML gets none of them.
+    """
+    issue_id = "lovelace_duplicate_resources_module|/local/card.js"
+    ir.async_create_issue(
+        hass,
+        DOMAIN,
+        issue_id,
+        is_fixable=True,
+        severity=ir.IssueSeverity.WARNING,
+        translation_key="lovelace_duplicate_resources",
+        data={
+            "duplicate_resource_url": "module|/local/card.js",
+            "resource": "/local/card.js",
+            "resources": "- `/local/card.js?v=1`\n- `/local/card.js?v=2`",
+            "count": 2,
+        },
+    )
+    # Nothing to delete with: that is what a YAML resource list looks like.
+    hass.data["lovelace"] = SimpleNamespace(resources=SimpleNamespace(async_items=list))
+
+    result = await _call(
+        hass, "spook__explain_ghost", hass_admin_user, issue_id=issue_id
+    )
+
+    assert result.data["fix_options"] == []
+    assert result.data["fix_unavailable"].startswith(
+        "These resources are listed in your YAML configuration"
+    )
+    assert "`/local/card.js`" in result.data["fix_unavailable"]
 
 
 async def test_unknown_issue_is_an_error(
@@ -814,6 +886,172 @@ async def test_find_usages_in_scenes_and_helpers(
     by_kind = {usage["kind"]: usage for usage in result.data["usages"]}
     assert by_kind["scene"]["edit_url"] == "/config/scene/edit/night"
     assert "edit_url" not in by_kind["helper"]
+
+
+async def test_find_usages_in_min_max_helpers(
+    hass: HomeAssistant,
+    hass_admin_user: MockUser,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Test a min/max helper's members are searched, by registry ID too."""
+    bedroom = entity_registry.async_get_or_create(
+        "sensor", "hue", "bedroom", suggested_object_id="bedroom"
+    )
+    MockConfigEntry(
+        domain="min_max",
+        title="Warmest room",
+        options={"entity_ids": [bedroom.id, "sensor.attic"], "type": "max"},
+    ).add_to_hass(hass)
+    hass.data["lovelace"] = SimpleNamespace(dashboards={})
+
+    for reference in ("sensor.bedroom", "sensor.attic"):
+        result = await _call(
+            hass, "spook__find_usages", hass_admin_user, reference=reference
+        )
+        assert [(usage["kind"], usage["name"]) for usage in result.data["usages"]] == [
+            ("helper", "Warmest room")
+        ]
+
+
+async def test_find_usages_in_template_helper_actions(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test an entity a template button presses is found, with no Jinja in sight."""
+    hass.services.async_register("light", "turn_on", lambda _call: None)
+    MockConfigEntry(
+        domain="template",
+        title="Porch button",
+        options={
+            "template_type": "button",
+            "press": [
+                {"action": "light.turn_on", "target": {"entity_id": "light.porch"}}
+            ],
+        },
+    ).add_to_hass(hass)
+    hass.data["lovelace"] = SimpleNamespace(dashboards={})
+
+    result = await _call(
+        hass, "spook__find_usages", hass_admin_user, reference="light.porch"
+    )
+
+    assert [
+        (usage["kind"], usage["name"], usage["matched_as"])
+        for usage in result.data["usages"]
+    ] == [("template", "Porch button", "entity")]
+
+
+async def test_find_usages_of_an_action_in_template_helpers(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test an action a template switch performs is found by an action search."""
+    MockConfigEntry(
+        domain="template",
+        title="Doorbell",
+        options={
+            "template_type": "switch",
+            "turn_on": [{"action": "notify.notify", "data": {"message": "Ding"}}],
+            "turn_off": [],
+        },
+    ).add_to_hass(hass)
+    MockConfigEntry(
+        domain="template", title="Unrelated", options={"state": "{{ 1 }}"}
+    ).add_to_hass(hass)
+    hass.data["lovelace"] = SimpleNamespace(dashboards={})
+
+    result = await _call(
+        hass,
+        "spook__find_usages",
+        hass_admin_user,
+        reference="notify.notify",
+        kind="action",
+    )
+
+    assert [
+        (usage["kind"], usage["name"], usage["matched_as"])
+        for usage in (result.data["usages"])
+    ] == [("template", "Doorbell", "action")]
+
+
+async def test_find_usages_of_an_action_in_disabled_steps(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test an action only a disabled step performs is still found.
+
+    The step breaks the day somebody switches it back on, so it counts.
+    """
+    hass.services.async_register("notify", "notify", lambda _call: None)
+    parked = {"action": "notify.notify", "enabled": False, "data": {"message": "Hi"}}
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": {
+                "id": "parked",
+                "alias": "Parked",
+                "triggers": [{"trigger": "event", "event_type": "go"}],
+                "actions": [parked],
+            }
+        },
+    )
+    assert await async_setup_component(
+        hass,
+        "script",
+        {"script": {"say_hi": {"alias": "Say hi", "sequence": [parked]}}},
+    )
+    MockConfigEntry(
+        domain="template",
+        title="Doorbell",
+        options={
+            "template_type": "button",
+            "press": [parked],
+        },
+    ).add_to_hass(hass)
+    hass.data["lovelace"] = SimpleNamespace(dashboards={})
+
+    result = await _call(
+        hass,
+        "spook__find_usages",
+        hass_admin_user,
+        reference="notify.notify",
+        kind="action",
+    )
+
+    assert {(usage["kind"], usage["name"]) for usage in result.data["usages"]} == {
+        ("automation", "Parked"),
+        ("script", "Say hi"),
+        ("template", "Doorbell"),
+    }
+
+
+async def test_find_usages_in_groups(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test an entity is found as a member of an old-style and a light group."""
+    assert await async_setup_component(
+        hass, "group", {"group": {"porch": {"entities": ["light.porch"]}}}
+    )
+    assert await async_setup_component(
+        hass,
+        "light",
+        {
+            "light": {
+                "platform": "group",
+                "name": "Outside",
+                "entities": ["light.porch", "light.garden"],
+            }
+        },
+    )
+    await hass.async_block_till_done()
+    hass.data["lovelace"] = SimpleNamespace(dashboards={})
+
+    result = await _call(
+        hass, "spook__find_usages", hass_admin_user, reference="light.porch"
+    )
+
+    assert {(usage["kind"], usage["id"]) for usage in result.data["usages"]} == {
+        ("group", "group.porch"),
+        ("group", "light.outside"),
+    }
 
 
 @pytest.mark.parametrize("domain", ["automation", "script"])
