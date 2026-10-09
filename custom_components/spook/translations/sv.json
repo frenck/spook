@@ -822,6 +822,69 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "Okända entiteter används i HomeKit-brygga: {bridge}",
             "description": "Spook har hittat ett spöke i din HomeKit-brygga 👻\n\nMedan han svävade runt hittade Spook följande HomeKit-brygga:\n\n{bridge}\n\nDenna brygga nämner följande entiteter som är okända för Home Assistant:\n\n{entities}\n\n\n\nHomeKit följer inte en entitet som byter namn. En inkluderad entitet som har bytt namn eller tagits bort försvinner från Hem-appen. En exkluderad entitet som har bytt namn dyker upp där igen.\n\nDenna brygga är konfigurerad i din YAML-konfiguration. För att åtgärda felet, redigera `filter` för denna brygga under `homekit:` och ta bort eller rätta dessa entiteter.\n\nSpook 👻 Din polare."
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Okänd temperatursensor för område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Okänd temperatursensor för område: {area}",
+                        "description": "Spook har hittat ett spöke bland dina områden 👻\n\nOmrådet {area} använder en temperatursensor som är okänd för Home Assistant:\n\n{entities}\n\nHome Assistant kontrollerar bara denna sensor när den väljs, så när den togs bort eller döptes om fortsatte området att peka på ingenting. Assist och områdeskort får inte längre något temperaturvärde från den.\n\nRensa inställningen så att du kan välja en sensor igen, eller behåll den och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare.",
+                        "menu_options": {
+                            "remove": "Rensa inställningen",
+                            "manage": "Låt mig fixa det själv",
+                            "ignore": "Behåll och sluta att meddela mig"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om detta område från och med nu.",
+                    "manage": "Du kan välja en annan sensor i inställningarna för detta område på sidan [Områden](/config/areas/dashboard).",
+                    "changed": "Denna sensor är tillbaka, eller inställningen pekar nu någon annanstans, sedan Spook tittade. Därför har ingenting rensats. Spook tittar igen av sig själv och uppdaterar denna reparation."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Okänd luftfuktighetssensor för område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Okänd luftfuktighetssensor för område: {area}",
+                        "description": "Spook har hittat ett spöke bland dina områden 👻\n\nOmrådet {area} använder en luftfuktighetssensor som är okänd för Home Assistant:\n\n{entities}\n\nHome Assistant kontrollerar bara denna sensor när den väljs, så när den togs bort eller döptes om fortsatte området att peka på ingenting. Assist och områdeskort får inte längre något luftfuktighetsvärde från den.\n\nRensa inställningen så att du kan välja en sensor igen, eller behåll den och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare.",
+                        "menu_options": {
+                            "remove": "Rensa inställningen",
+                            "manage": "Låt mig fixa det själv",
+                            "ignore": "Behåll och sluta att meddela mig"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om detta område från och med nu.",
+                    "manage": "Du kan välja en annan sensor i inställningarna för detta område på sidan [Områden](/config/areas/dashboard).",
+                    "changed": "Denna sensor är tillbaka, eller inställningen pekar nu någon annanstans, sedan Spook tittade. Därför har ingenting rensats. Spook tittar igen av sig själv och uppdaterar denna reparation."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Okända temperatur- och luftfuktighetssensorer för område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Okända temperatur- och luftfuktighetssensorer för område: {area}",
+                        "description": "Spook har hittat ett spöke bland dina områden 👻\n\nOmrådet {area} använder en temperatur- och en luftfuktighetssensor som är okända för Home Assistant:\n\n{entities}\n\nHome Assistant kontrollerar bara dessa sensorer när de väljs, så när de togs bort eller döptes om fortsatte området att peka på ingenting. Assist och områdeskort får inte längre något värde från dem.\n\nRensa inställningarna så att du kan välja sensorer igen, eller behåll dem och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare.",
+                        "menu_options": {
+                            "remove": "Rensa inställningarna",
+                            "manage": "Låt mig fixa det själv",
+                            "ignore": "Behåll och sluta att meddela mig"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om detta område från och med nu.",
+                    "manage": "Du kan välja andra sensorer i inställningarna för detta område på sidan [Områden](/config/areas/dashboard).",
+                    "changed": "Dessa sensorer är tillbaka, eller inställningarna pekar nu någon annanstans, sedan Spook tittade. Därför har ingenting rensats. Spook tittar igen av sig själv och uppdaterar denna reparation."
+                }
+            }
         }
     },
     "services": {
