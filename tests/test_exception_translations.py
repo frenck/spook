@@ -29,6 +29,21 @@ def _spook_domain_names(tree: ast.Module) -> set[str]:
     }
 
 
+def _possible_keys(key: ast.expr) -> list[str] | None:
+    """Return each translation key an error can ask for, None if unclear.
+
+    Written out, or a choice between keys that are. Anything picked in a way
+    this cannot follow is reported, rather than trusted.
+    """
+    if isinstance(key, ast.Constant) and isinstance(key.value, str):
+        return [key.value]
+    if isinstance(key, ast.IfExp):
+        body, orelse = _possible_keys(key.body), _possible_keys(key.orelse)
+        if body is not None and orelse is not None:
+            return body + orelse
+    return None
+
+
 def _raised_translations() -> list[tuple[str, str, set[str] | None]]:
     """Return each translated error Spook raises.
 
@@ -52,18 +67,12 @@ def _raised_translations() -> list[tuple[str, str, set[str] | None]]:
             ):
                 continue
 
-            # A key picked at run time, from texts the module spells out
-            # itself, stands for each of the error texts it spells out.
-            keys = (
-                [key.value]
-                if isinstance(key, ast.Constant)
-                else sorted(
-                    constant.value
-                    for constant in ast.walk(tree)
-                    if isinstance(constant, ast.Constant)
-                    and constant.value in EXCEPTIONS
+            keys = _possible_keys(key)
+            if keys is None:
+                found.append(
+                    (f"{path.relative_to(SPOOK)}:{node.lineno}", "<run time>", None)
                 )
-            )
+                continue
 
             placeholders: set[str] | None = set()
             if (given := keywords.get("translation_placeholders")) is not None:
@@ -100,8 +109,9 @@ def test_every_error_uses_spooks_own_texts() -> None:
             if isinstance(node, ast.Call)
             for keyword in node.keywords
             if keyword.arg == "translation_domain"
-            and isinstance(keyword.value, ast.Name)
-            and keyword.value.id not in spook_domain
+            and not (
+                isinstance(keyword.value, ast.Name) and keyword.value.id in spook_domain
+            )
         )
 
     assert not problems

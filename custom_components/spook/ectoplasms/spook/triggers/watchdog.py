@@ -102,19 +102,9 @@ class _Watchdog:
         # thing arriving would be missed and barked about. The other way round
         # is harmless, because the expected trigger arriving while nothing is
         # armed is inert by design.
-        for configs, action, name, failed in (
-            (
-                self._watch.expect,
-                self._async_expected,
-                "the expected triggers",
-                "watchdog_expected_attach_failed",
-            ),
-            (
-                self._watch.arm,
-                self._async_armed,
-                "the arming triggers",
-                "watchdog_arming_attach_failed",
-            ),
+        for configs, action, name in (
+            (self._watch.expect, self._async_expected, "the expected triggers"),
+            (self._watch.arm, self._async_armed, "the arming triggers"),
         ):
             unsub = await async_attach_nested(
                 self._hass,
@@ -140,7 +130,11 @@ class _Watchdog:
                 self.async_stop()
                 raise HomeAssistantError(
                     translation_domain=DOMAIN,
-                    translation_key=failed,
+                    translation_key=(
+                        "watchdog_expected_attach_failed"
+                        if configs is self._watch.expect
+                        else "watchdog_arming_attach_failed"
+                    ),
                 )
 
             self._unsubs.append(unsub)

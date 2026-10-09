@@ -178,7 +178,7 @@ class SpookService(AbstractSpookEntityComponentService[CalendarEntity]):
                 translation_domain=SPOOK_DOMAIN,
                 translation_key="event_cannot_change",
                 translation_placeholders={
-                    "summary": event.summary,
-                    "error": err,
+                    "summary": str(event.summary),
+                    "error": str(err),
                 },
             ) from err
