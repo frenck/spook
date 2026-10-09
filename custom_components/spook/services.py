@@ -39,6 +39,7 @@ from homeassistant.setup import ATTR_COMPONENT
 
 from .const import DOMAIN, LOGGER
 from .core_compat import load_service_descriptions
+from .service_icons import async_inject_service_icons, async_remove_service_icons
 
 if TYPE_CHECKING:
     import asyncio
@@ -310,8 +311,9 @@ class AbstractSpookEntityComponentService(AbstractSpookServiceBase, Generic[_Ent
         raise NotImplementedError
 
 
+# Most of these track something it put into Home Assistant, to undo on unload.
 @dataclass
-class SpookServiceManager:
+class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
     """Class to manage Spook services."""
 
     hass: HomeAssistant
@@ -325,6 +327,8 @@ class SpookServiceManager:
     _selector_translation_overrides: dict[tuple[str, str, str], str | None] = field(
         default_factory=dict
     )
+    # The icons Spook gave its actions on other domains, as (domain, action).
+    _injected_service_icons: set[tuple[str, str]] = field(default_factory=set)
     # Services for a domain that was not loaded yet, by that domain.
     _waiting_for_domain: dict[str, list[AbstractSpookService]] = field(
         default_factory=dict
@@ -461,8 +465,9 @@ class SpookServiceManager:
         for service in waiting:
             self._async_setup_service(service, type(service).__module__)
 
-        # The descriptions went in with the registration, the translations did
-        # not: those are injected for every registered service in one go.
+        # The descriptions went in with the registration, the translations and
+        # icons did not: those are injected for every registered service in one
+        # go.
         self._async_reinject_service_translations()
 
     @callback
@@ -682,7 +687,7 @@ class SpookServiceManager:
                 component_cache[target_key] = value
 
     async def async_inject_service_translations(self) -> None:
-        """Inject Spook service strings into Home Assistant translations."""
+        """Inject Spook service strings and icons into Home Assistant."""
         services = [
             service
             for service in self._services
@@ -729,6 +734,15 @@ class SpookServiceManager:
                 service,
                 cached_spook_selector_translations,
             )
+
+        await async_inject_service_icons(
+            self.hass,
+            (
+                (service.domain, service.service, self._service_schema_key(service))
+                for service in services
+            ),
+            self._injected_service_icons,
+        )
 
     @callback
     def _async_core_config_updated(self, event: Event) -> None:
@@ -804,3 +818,4 @@ class SpookServiceManager:
                 self.hass.data.pop(SERVICE_DESCRIPTION_CACHE, None)
 
         self.async_clear_service_translation_overrides()
+        async_remove_service_icons(self.hass, self._injected_service_icons)
