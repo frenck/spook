@@ -624,7 +624,7 @@
             }
         },
         "lovelace_missing_resources": {
-            "description": "👻 Spook ha trovato un fantasma nelle tue dashboard\n\nLe seguenti risorse della dashboard puntano a file che non esistono:\n\n{resources}\n\nSuccede di solito quando una card personalizzata o i suoi file sono stati rimossi ma la risorsa è rimasta. Per risolvere questo errore, apri Impostazioni > Dashboard > Risorse e rimuovi o correggi queste risorse.\n\nSpook 👻 Il tuo compare.",
+            "description": "Spook ha trovato un fantasma nelle tue dashboard 👻\n\nLe seguenti risorse della dashboard puntano a file che non esistono:\n\n{resources}\n\n\n\nSuccede di solito quando una card personalizzata o i suoi file sono stati rimossi ma la risorsa è rimasta. Per risolvere questo errore, apri la [pagina Risorse](/config/lovelace/resources) e rimuovi o correggi queste risorse. Non ha una scheda propria: nella pagina Dashboard si trova dietro i tre puntini, in alto a destra.\n\nSpook 👻 Il tuo compare.",
             "title": "Risorse della dashboard che puntano a file mancanti"
         },
         "lovelace_missing_resources_yaml": {
@@ -1199,7 +1199,7 @@
             "name": "Elimina un'etichetta"
         },
         "homeassistant_disable_config_entry": {
-            "description": "Disattiva una voce di integrazione.",
+            "description": "Disattiva voci di integrazione, una voce specifica o tutte le voci di un'integrazione.",
             "fields": {
                 "config_entry_id": {
                     "description": "La voce di integrazione da disattivare.",
@@ -1253,7 +1253,7 @@
             "name": "Disattiva un utente"
         },
         "homeassistant_enable_config_entry": {
-            "description": "Attiva una voce di integrazione.",
+            "description": "Attiva voci di integrazione, una voce specifica o tutte le voci di un'integrazione.",
             "fields": {
                 "config_entry_id": {
                     "description": "La voce di integrazione da attivare.",
@@ -1677,7 +1677,7 @@
             "name": "Cambia l'ID di un'entità"
         },
         "input_number_create": {
-            "description": "Crea un nuovo helper input numerico al volo.",
+            "description": "Crea un nuovo helper input numerico al volo. Restituisce l'ID entità del nuovo input numerico.",
             "fields": {
                 "icon": {
                     "description": "L'icona da usare per l'helper input numerico.",
@@ -1733,7 +1733,7 @@
             "name": "Riduci il valore"
         },
         "input_number_delete": {
-            "description": "Elimina un helper input numerico. Funziona solo con gli input numerici creati e gestiti dall'interfaccia. Spook non può gestire quelli creati e gestiti in YAML.",
+            "description": "Elimina gli helper input numerico creati dall'interfaccia o con l'azione crea un input numerico. Spook non può eliminare quelli configurati in YAML.",
             "fields": {
                 "entity_id": {
                     "name": "ID entità",
@@ -2129,7 +2129,7 @@
             "name": "Crea un problema"
         },
         "repairs_ignore_all": {
-            "description": "Ignora tutti i problemi presenti ora in Riparazioni di Home Assistant.",
+            "description": "Ignora tutti i problemi presenti ora in Riparazioni di Home Assistant, o solo quelli segnalati da determinate integrazioni.",
             "fields": {
                 "domain": {
                     "name": "Dominio",
@@ -2167,7 +2167,7 @@
             "name": "Rimuovi un problema"
         },
         "repairs_unignore_all": {
-            "description": "Smette di ignorare tutti i problemi presenti ora in Riparazioni di Home Assistant.",
+            "description": "Smette di ignorare tutti i problemi presenti ora in Riparazioni di Home Assistant, o solo quelli segnalati da determinate integrazioni.",
             "fields": {
                 "domain": {
                     "name": "Dominio",
