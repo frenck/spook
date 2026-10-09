@@ -45,6 +45,25 @@ _GRID_EXPORT = ("stat_energy_to", "stat_compensation", "entity_energy_price_expo
 _GRID_EXPORT_NUMBER = "number_energy_price_export"
 
 
+def _entity_settings_in(value: Any) -> set[str]:
+    """Return the entities named anywhere in a part of the energy settings.
+
+    Not only at the top of a source: a grid connection in the older form keeps
+    its prices inside its flows.
+    """
+    found: set[str] = set()
+    if isinstance(value, list):
+        for item in value:
+            found |= _entity_settings_in(item)
+    elif isinstance(value, dict):
+        for key, setting in value.items():
+            if key.startswith("entity_") and isinstance(setting, str):
+                found.add(setting)
+            else:
+                found |= _entity_settings_in(setting)
+    return found
+
+
 async def _async_entity_settings(hass: HomeAssistant) -> set[str]:
     """Return the energy settings that name an entity, not a statistic.
 
@@ -53,17 +72,7 @@ async def _async_entity_settings(hass: HomeAssistant) -> set[str]:
     that has to be there, because its value is read live while the dashboard
     adds things up.
     """
-    preferences = (await async_get_manager(hass)).data or {}
-
-    return {
-        value
-        for group in preferences.values()
-        if isinstance(group, list)
-        for source in group
-        if isinstance(source, dict)
-        for key, value in source.items()
-        if key.startswith("entity_") and isinstance(value, str)
-    }
+    return _entity_settings_in((await async_get_manager(hass)).data or {})
 
 
 async def async_unknown_energy_entities(hass: HomeAssistant) -> set[str]:
