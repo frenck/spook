@@ -22,6 +22,9 @@ from homeassistant.core import callback, split_entity_id
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er, selector
 
+from .const import DOMAIN
+from .errors import entity_not_found
+
 if TYPE_CHECKING:
     from homeassistant.config_entries import ConfigEntry
     from homeassistant.core import HomeAssistant
@@ -94,34 +97,47 @@ def async_entry_of(hass: HomeAssistant, group_entity_id: str) -> ConfigEntry:
         # entity registry. Having a state is what separates one of those from
         # a name somebody mistyped.
         if hass.states.get(group_entity_id) is None:
-            msg = f"Could not find entity_id: {group_entity_id}"
-            raise HomeAssistantError(msg)
+            raise entity_not_found(group_entity_id)
 
         # Only the group domain holds that older kind. Anything else with a
         # state and no registry entry belongs to somebody else entirely, and
         # pointing them at `group.set` would send them a long way off.
         if split_entity_id(group_entity_id)[0] == GROUP_DOMAIN:
-            msg = (
-                f"{group_entity_id} is a group from your YAML configuration, "
-                "which Spook cannot change. Edit it in your configuration, or "
-                "use group.set, which still works on that kind of group."
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="yaml_group_not_editable",
+                translation_placeholders={"entity_id": group_entity_id},
             )
-            raise HomeAssistantError(msg)
 
-        msg = f"{group_entity_id} is not a group"
-        raise HomeAssistantError(msg)
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="not_a_group",
+            translation_placeholders={
+                "entity_id": group_entity_id,
+            },
+        )
 
     if entry_entity.platform != GROUP_DOMAIN:
-        msg = f"{group_entity_id} is not a group"
-        raise HomeAssistantError(msg)
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="not_a_group",
+            translation_placeholders={
+                "entity_id": group_entity_id,
+            },
+        )
 
     if (
         entry_entity.config_entry_id is None
         or (entry := hass.config_entries.async_get_entry(entry_entity.config_entry_id))
         is None
     ):
-        msg = f"Could not find the group behind {group_entity_id}"
-        raise HomeAssistantError(msg)
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="group_not_found_behind",
+            translation_placeholders={
+                "entity_id": group_entity_id,
+            },
+        )
 
     return entry
 
@@ -160,15 +176,17 @@ def async_check_joining(
         if resolved is None or (
             hass.states.get(resolved) is None and registry.async_get(resolved) is None
         ):
-            msg = f"Could not find entity_id: {member}"
-            raise HomeAssistantError(msg)
+            raise entity_not_found(member)
 
         if allowed is not None and split_entity_id(resolved)[0] not in allowed:
-            msg = (
-                f"{member} cannot join this group: it holds "
-                f"{', '.join(sorted(allowed))} entities"
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="group_member_not_allowed",
+                translation_placeholders={
+                    "entity_id": member,
+                    "domains": ", ".join(sorted(allowed)),
+                },
             )
-            raise HomeAssistantError(msg)
 
 
 async def async_write_members(

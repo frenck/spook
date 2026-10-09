@@ -24,6 +24,9 @@ if TYPE_CHECKING:
 
     from homeassistant.core import HomeAssistant
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 SLIDER = "input_number.track_position"
 
 

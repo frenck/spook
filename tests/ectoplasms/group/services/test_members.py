@@ -25,6 +25,9 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 async def _setup(hass: HomeAssistant) -> None:
     """Register the three actions on a running group integration."""
     assert await async_setup_component(hass, "group", {})
@@ -216,7 +219,7 @@ async def test_an_entity_that_does_not_exist_is_refused(hass: HomeAssistant) -> 
     """Test a mistyped group name says so."""
     await _setup(hass)
 
-    with pytest.raises(HomeAssistantError, match="Could not find entity_id"):
+    with pytest.raises(HomeAssistantError, match=r"Entity light\.nowhere not found"):
         await _call(hass, "add_members", group="light.nowhere", members=["light.two"])
 
 

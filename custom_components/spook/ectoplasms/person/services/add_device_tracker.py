@@ -11,6 +11,8 @@ from homeassistant.components.person import DOMAIN, Person, PersonStorageCollect
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
+from ....const import DOMAIN as SPOOK_DOMAIN
+from ....errors import entity_not_found
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -38,13 +40,17 @@ class SpookService(AbstractSpookAdminService):
         _, collection, entity_component = self.hass.data[DOMAIN]
 
         if not (entity := entity_component.get_entity(call.data["entity_id"])):
-            message = f"Could not find entity_id: {call.data['entity_id']}"
-            raise HomeAssistantError(message)
+            raise entity_not_found(call.data["entity_id"])
 
         # pylint: disable-next=protected-access
         if not entity.editable or "id" not in entity._config:  # noqa: SLF001
-            message = f"This person is not editable: {call.data['entity_id']}"
-            raise HomeAssistantError(message)
+            raise HomeAssistantError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="person_not_editable",
+                translation_placeholders={
+                    "entity_id": call.data["entity_id"],
+                },
+            )
 
         await collection.async_update_item(
             # pylint: disable-next=protected-access

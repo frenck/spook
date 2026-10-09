@@ -17,6 +17,9 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 def _zone(zone_id: str, name: str) -> dict[str, Any]:
     """Return a zone as the storage collection keeps it."""
     return {
@@ -74,7 +77,7 @@ async def test_the_same_zone_twice_is_deleted_once(hass: HomeAssistant) -> None:
 @pytest.mark.parametrize(
     ("bad", "message"),
     [
-        ("zone.nowhere", "Could not find entity_id"),
+        ("zone.nowhere", "Entity zone.nowhere not found"),
         ("zone.home", "not editable"),
     ],
 )
