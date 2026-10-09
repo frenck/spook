@@ -294,6 +294,8 @@ The newest issue comes first. Ignored issues are left out, like on the repairs d
 
 Each issue in the response has its `domain`, `issue_id`, `title`, `severity` (`critical`, `error`, or `warning`), `created`, `is_fixable`, `learn_more_url`, `breaks_in_ha_version`, and whether it is `ignored`.
 
+Issues made with `repairs.create` come back a little different. Their `issue_id` carries the `user_` prefix that `repairs.create` adds, so drop one `user_` before handing a listed ID to `repairs.remove` or `repairs.create`. And their `domain` is always `spook`, whatever `domain` they were created with, so filter on `spook` (or leave `domain` out) to find them.
+
 Listing issues takes an admin, the same as the repairs dashboard does.
 
 :::{seealso} Example {term}`action <performing actions>` in {term}`YAML`
