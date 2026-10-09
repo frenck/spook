@@ -3566,6 +3566,67 @@ async def test_a_skipped_update_stays_skipped_across_a_restart(
     assert state.state == "off"
 
 
+def _restore_an_offer(hass: HomeAssistant) -> str:
+    """Restore a state offering another version of the blueprint on disk."""
+    offered = _fingerprint_of(MOTION_LIGHT_CHANGED)
+    mock_restore_cache(
+        hass,
+        [
+            State(
+                _ENTITY,
+                "on",
+                {
+                    "installed_version": _fingerprint_of(MOTION_LIGHT),
+                    "latest_version": offered,
+                },
+            ),
+        ],
+    )
+    return offered
+
+
+async def test_a_restored_offer_the_source_cannot_confirm_goes(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """An offer remembered from before a restart needs the source to say it.
+
+    An older Spook could save an offer for a source that never answers, an
+    address like `https://local/...`. Taken back as the source's word after
+    every restart, it was offered for ever, with nothing to install it from.
+    #1817.
+    """
+    _restore_an_offer(hass)
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "off"
+    assert state.attributes["latest_version"] == _fingerprint_of(MOTION_LIGHT)
+
+
+async def test_a_restored_offer_the_source_confirms_stays(
+    hass: HomeAssistant,
+    freezer: FrozenDateTimeFactory,
+) -> None:
+    """Once the source says it again, the offer survives the source going down."""
+    offered = _restore_an_offer(hass)
+    async_write_blueprint(hass, "automation", "motion.yaml", MOTION_LIGHT)
+    await async_set_up(hass)
+
+    with _source_says(MOTION_LIGHT_CHANGED):
+        await _check(hass, freezer)
+    with patch(_FETCH, side_effect=aiohttp.ClientError()):
+        await _check(hass, freezer)
+
+    state = hass.states.get(_ENTITY)
+    assert state.state == "on"
+    assert state.attributes["latest_version"] == offered
+
+
 async def test_a_file_changed_while_home_assistant_was_down_starts_afresh(
     hass: HomeAssistant,
 ) -> None:

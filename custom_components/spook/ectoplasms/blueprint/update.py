@@ -1521,6 +1521,10 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # survives the file changing underneath it. #1653.
         self._latest_from_source = False
 
+        # Whether that word was only remembered from before a restart, and the
+        # source has not said it again since. #1817.
+        self._offer_restored = False
+
         # Deliberately no `release_url`. Home Assistant would put it in the
         # state attributes, which every signed-in person can read, and it lets
         # a blueprint be imported from an address carrying a token or a
@@ -1558,6 +1562,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             # answers, the file is written down as both versions, so the same
             # value on both sides says nothing about where it came from.
             self._latest_from_source = offered != self._attr_installed_version
+            self._offer_restored = self._latest_from_source
 
     @callback
     def async_seen(self, said: _OnDisk) -> None:
@@ -1602,6 +1607,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             self._fetched = None
             self._set_aside = None
             self._latest_from_source = False
+            self._offer_restored = False
             self._attr_latest_version = said.fingerprint
         elif offer_installed:
             # Keep the source's word, but not a payload installed elsewhere.
@@ -1673,6 +1679,17 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 self.blueprint_path,
                 err,
             )
+
+            # An offer only remembered from before a restart is not the
+            # source's word until the source says it again. Kept standing, an
+            # offer saved by an older Spook, for a source that never answers,
+            # came back after every restart with nothing to install it from.
+            if self._offer_restored:
+                self._offer_restored = False
+                self._latest_from_source = False
+                self._fetched = None
+                self._attr_latest_version = self._attr_installed_version
+                self.async_write_ha_state()
             return True
 
         if said != self._said:
@@ -1682,6 +1699,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._fetched = fetched
         self._attr_latest_version = _fingerprint(fetched)
         self._latest_from_source = True
+        self._offer_restored = False
         self.async_write_ha_state()
         return True
 
@@ -1816,6 +1834,7 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         self._attr_installed_version = _fingerprint(fetched)
         self._attr_latest_version = self._attr_installed_version
         self._latest_from_source = True
+        self._offer_restored = False
         self.async_write_ha_state()
 
     @callback
