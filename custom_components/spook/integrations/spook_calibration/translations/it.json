@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entità sorgente",
+                    "name": "Nome",
+                    "offset": "Scostamento",
+                    "factor": "Fattore"
+                },
+                "data_description": {
+                    "offset": "Viene sommato al valore della sorgente. Un sensore che segna 1,5 gradi in più riceve -1,5. Nell'unità in cui la sorgente riporta il valore.",
+                    "factor": "Il valore della sorgente viene prima moltiplicato per questo. Lascia 1 per aggiungere solo lo scostamento."
+                },
+                "description": "Questo helper corregge un sensore che sbaglia: una temperatura di un grado troppo alta, un'umidità di qualche punto percentuale troppo bassa. Mostra il valore della sorgente moltiplicato per il fattore, più lo scostamento.",
+                "title": "Calibrazione 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entità sorgente",
+                    "offset": "Scostamento",
+                    "factor": "Fattore"
+                },
+                "data_description": {
+                    "offset": "Viene sommato al valore della sorgente. Un sensore che segna 1,5 gradi in più riceve -1,5. Nell'unità in cui la sorgente riporta il valore.",
+                    "factor": "Il valore della sorgente viene prima moltiplicato per questo. Lascia 1 per aggiungere solo lo scostamento."
+                },
+                "title": "Calibrazione 👻"
+            }
+        }
+    },
+    "title": "Calibrazione 👻"
+}

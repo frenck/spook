@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entità sorgente",
+                    "name": "Nome",
+                    "states": "Conta solo il passaggio a questi stati"
+                },
+                "data_description": {
+                    "states": "Lascia vuoto per sapere da quando la sorgente è nello stato in cui si trova ora. Inserisci, per esempio, `on` per sapere da quando è passata l'ultima volta a quello stato; il valore resta fermo anche quando cambia di nuovo."
+                },
+                "description": "Questo helper indica da quando un'entità è nel suo stato, e lo conserva tra un riavvio e l'altro. Un momento in cui l'entità non è disponibile non conta come cambiamento.",
+                "title": "Tempo nello stato 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entità sorgente",
+                    "states": "Conta solo il passaggio a questi stati"
+                },
+                "data_description": {
+                    "states": "Lascia vuoto per sapere da quando la sorgente è nello stato in cui si trova ora. Inserisci, per esempio, `on` per sapere da quando è passata l'ultima volta a quello stato; il valore resta fermo anche quando cambia di nuovo."
+                },
+                "title": "Tempo nello stato 👻"
+            }
+        }
+    },
+    "title": "Tempo nello stato 👻"
+}

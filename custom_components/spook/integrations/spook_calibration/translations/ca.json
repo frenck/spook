@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entitat d'origen",
+                    "name": "Nom",
+                    "offset": "Desplaçament",
+                    "factor": "Factor"
+                },
+                "data_description": {
+                    "offset": "S'afegeix al valor de l'origen. Un sensor que marca 1,5 graus de més rep -1,5. En la unitat en què informa l'origen.",
+                    "factor": "Primer es multiplica el valor de l'origen per aquest. Deixa'l a 1 per només afegir el desplaçament."
+                },
+                "description": "Aquest ajudant corregeix un sensor que no marca bé: una temperatura un grau massa alta, una humitat uns quants per cent massa baixa. Mostra el valor de l'origen multiplicat pel factor, més el desplaçament.",
+                "title": "Calibratge 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entitat d'origen",
+                    "offset": "Desplaçament",
+                    "factor": "Factor"
+                },
+                "data_description": {
+                    "offset": "S'afegeix al valor de l'origen. Un sensor que marca 1,5 graus de més rep -1,5. En la unitat en què informa l'origen.",
+                    "factor": "Primer es multiplica el valor de l'origen per aquest. Deixa'l a 1 per només afegir el desplaçament."
+                },
+                "title": "Calibratge 👻"
+            }
+        }
+    },
+    "title": "Calibratge 👻"
+}

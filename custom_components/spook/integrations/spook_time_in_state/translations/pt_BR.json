@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "name": "Nome",
+                    "states": "Contar apenas a mudança para estes estados"
+                },
+                "data_description": {
+                    "states": "Deixe vazio para informar desde quando a origem está no estado em que está agora. Preencha, por exemplo, `on`, para informar desde quando ela entrou nesse estado pela última vez, valor que se mantém mesmo depois de mudar de novo."
+                },
+                "description": "Este auxiliar informa desde quando uma entidade está no seu estado e mantém isso entre reinicializações. Um momento de indisponibilidade da entidade não conta como mudança.",
+                "title": "Tempo no estado 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "states": "Contar apenas a mudança para estes estados"
+                },
+                "data_description": {
+                    "states": "Deixe vazio para informar desde quando a origem está no estado em que está agora. Preencha, por exemplo, `on`, para informar desde quando ela entrou nesse estado pela última vez, valor que se mantém mesmo depois de mudar de novo."
+                },
+                "title": "Tempo no estado 👻"
+            }
+        }
+    },
+    "title": "Tempo no estado 👻"
+}

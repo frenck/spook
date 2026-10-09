@@ -3,8 +3,18 @@
         "step": {
             "binary_sensor": {
                 "data": {
-                    "entity_id": "출처 구성요소",
-                    "hide_source": "출처 구성요소 숨김",
+                    "entity_id": "소스 엔티티",
+                    "hide_source": "소스 엔티티 숨기기",
+                    "name": "이름"
+                },
+                "title": "반전 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "소스 엔티티",
+                    "hide_source": "소스 엔티티 숨기기",
+                    "inverse_position": "열림, 닫힘 및 위치 반전",
+                    "inverse_tilt": "기울기 반전",
                     "name": "이름"
                 },
                 "title": "반전 👻"
@@ -12,16 +22,26 @@
             "switch": {
                 "data": {
                     "name": "이름",
-                    "entity_id": "출처 구성요소",
-                    "hide_source": "출처 구성요소 숨김"
+                    "entity_id": "소스 엔티티",
+                    "hide_source": "소스 엔티티 숨기기"
+                },
+                "title": "반전 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "소스 엔티티",
+                    "hide_source": "소스 엔티티 숨기기",
+                    "name": "이름"
                 },
                 "title": "반전 👻"
             },
             "user": {
-                "description": "이 도우미는 구성요소의 동작을 반전시키는 데 도움이 됩니다. 예를 들어, 바이너리 센서 및 스위치의 열림/닫힘 또는 켜짐/꺼짐을 반전시킵니다.",
+                "description": "이 도우미는 엔티티의 동작을 반전시킵니다. 예를 들어 이진 센서, 여닫이, 스위치, 밸브의 열림/닫힘이나 켜짐/꺼짐을 뒤집습니다.",
                 "menu_options": {
                     "switch": "스위치 반전",
-                    "binary_sensor": "이진 센서 반전"
+                    "valve": "밸브 반전",
+                    "binary_sensor": "이진 센서 반전",
+                    "cover": "여닫이 반전"
                 },
                 "title": "반전 👻"
             }
@@ -31,8 +51,18 @@
         "step": {
             "binary_sensor": {
                 "data": {
-                    "hide_source": "출처 구성요소 숨김",
-                    "entity_id": "출처 구성요소",
+                    "hide_source": "소스 엔티티 숨기기",
+                    "entity_id": "소스 엔티티",
+                    "name": "이름"
+                },
+                "title": "반전 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "소스 엔티티",
+                    "hide_source": "소스 엔티티 숨기기",
+                    "inverse_position": "열림, 닫힘 및 위치 반전",
+                    "inverse_tilt": "기울기 반전",
                     "name": "이름"
                 },
                 "title": "반전 👻"
@@ -40,8 +70,16 @@
             "switch": {
                 "data": {
                     "name": "이름",
-                    "entity_id": "출처 구성요소",
-                    "hide_source": "출처 구성요소 숨김"
+                    "entity_id": "소스 엔티티",
+                    "hide_source": "소스 엔티티 숨기기"
+                },
+                "title": "반전 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "소스 엔티티",
+                    "hide_source": "소스 엔티티 숨기기",
+                    "name": "이름"
                 },
                 "title": "반전 👻"
             }

@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Boarne-entiteit",
+                    "name": "Namme",
+                    "offset": "Ferskowing",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Wurdt by de wearde fan de boarne opteld. In sensor dy't 1,5 graad te heech mjit, krijt -1,5. Yn de ienheid dêr't de boarne yn rapportearret.",
+                    "factor": "De wearde fan de boarne wurdt earst hjirmei fermannichfâldige. Lit op 1 stean om allinnich de ferskowing ta te foegjen."
+                },
+                "description": "Dizze helper korrigearret in sensor dy't der neist sit: in temperatuer in graad te heech, in fochtigens in pear persint te leech. Hy toant de wearde fan de boarne kear de faktor, plus de ferskowing.",
+                "title": "Kalibraasje 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Boarne-entiteit",
+                    "offset": "Ferskowing",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Wurdt by de wearde fan de boarne opteld. In sensor dy't 1,5 graad te heech mjit, krijt -1,5. Yn de ienheid dêr't de boarne yn rapportearret.",
+                    "factor": "De wearde fan de boarne wurdt earst hjirmei fermannichfâldige. Lit op 1 stean om allinnich de ferskowing ta te foegjen."
+                },
+                "title": "Kalibraasje 👻"
+            }
+        }
+    },
+    "title": "Kalibraasje 👻"
+}

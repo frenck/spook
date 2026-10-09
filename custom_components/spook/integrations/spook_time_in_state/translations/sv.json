@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Källentitet",
+                    "name": "Namn",
+                    "states": "Räkna bara övergångar till dessa tillstånd"
+                },
+                "data_description": {
+                    "states": "Lämna tomt för att se sedan när källan har varit i sitt nuvarande tillstånd. Fyll i till exempel `on` för att se när den senast gick över till det tillståndet. Den tidpunkten står kvar även när den ändras igen."
+                },
+                "description": "Denna hjälpare visar sedan när en entitet har varit i sitt tillstånd, och minns det även efter en omstart. Att entiteten är otillgänglig en kort stund räknas inte som en ändring.",
+                "title": "Tid i tillstånd 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Källentitet",
+                    "states": "Räkna bara övergångar till dessa tillstånd"
+                },
+                "data_description": {
+                    "states": "Lämna tomt för att se sedan när källan har varit i sitt nuvarande tillstånd. Fyll i till exempel `on` för att se när den senast gick över till det tillståndet. Den tidpunkten står kvar även när den ändras igen."
+                },
+                "title": "Tid i tillstånd 👻"
+            }
+        }
+    },
+    "title": "Tid i tillstånd 👻"
+}

@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "name": "Nome",
+                    "offset": "Desvio",
+                    "factor": "Fator"
+                },
+                "data_description": {
+                    "offset": "Somado ao valor da origem. Um sensor que lê 1,5 graus a mais recebe -1,5. Na unidade em que a origem reporta.",
+                    "factor": "O valor da origem é primeiro multiplicado por este. Deixa em 1 para apenas somar o desvio."
+                },
+                "description": "Este assistente corrige um sensor que lê mal: uma temperatura um grau acima, uma humidade uns pontos percentuais abaixo. Mostra o valor da origem vezes o fator, mais o desvio.",
+                "title": "Calibração 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "offset": "Desvio",
+                    "factor": "Fator"
+                },
+                "data_description": {
+                    "offset": "Somado ao valor da origem. Um sensor que lê 1,5 graus a mais recebe -1,5. Na unidade em que a origem reporta.",
+                    "factor": "O valor da origem é primeiro multiplicado por este. Deixa em 1 para apenas somar o desvio."
+                },
+                "title": "Calibração 👻"
+            }
+        }
+    },
+    "title": "Calibração 👻"
+}

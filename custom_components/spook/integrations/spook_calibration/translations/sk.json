@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Zdrojová entita",
+                    "name": "Názov",
+                    "offset": "Posun",
+                    "factor": "Koeficient"
+                },
+                "data_description": {
+                    "offset": "Pripočíta sa k hodnote zdroja. Senzor, ktorý ukazuje o 1,5 stupňa viac, dostane -1,5. V jednotke, v ktorej zdroj hlási.",
+                    "factor": "Hodnota zdroja sa najprv vynásobí týmto číslom. Nechaj 1, ak chceš len pripočítať posun."
+                },
+                "description": "Tento pomocník opraví senzor, ktorý meria vedľa: teplotu o stupeň vyššiu, vlhkosť o pár percent nižšiu. Zobrazuje hodnotu zdroja vynásobenú koeficientom, plus posun.",
+                "title": "Kalibrácia 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Zdrojová entita",
+                    "offset": "Posun",
+                    "factor": "Koeficient"
+                },
+                "data_description": {
+                    "offset": "Pripočíta sa k hodnote zdroja. Senzor, ktorý ukazuje o 1,5 stupňa viac, dostane -1,5. V jednotke, v ktorej zdroj hlási.",
+                    "factor": "Hodnota zdroja sa najprv vynásobí týmto číslom. Nechaj 1, ak chceš len pripočítať posun."
+                },
+                "title": "Kalibrácia 👻"
+            }
+        }
+    },
+    "title": "Kalibrácia 👻"
+}

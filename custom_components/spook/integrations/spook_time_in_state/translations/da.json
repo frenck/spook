@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Kildeentitet",
+                    "name": "Navn",
+                    "states": "Tæl kun skift til disse tilstande"
+                },
+                "data_description": {
+                    "states": "Lad stå tomt for at vise, siden hvornår kilden har været i den tilstand, den er i nu. Udfyld, for eksempel `on`, for at vise, hvornår den sidst gik over i den tilstand. Det tidspunkt bliver stående, når den skifter igen."
+                },
+                "description": "Denne hjælper viser, siden hvornår en entitet har været i sin tilstand, og husker det på tværs af genstarter. Et øjeblik, hvor entiteten er utilgængelig, tæller ikke som et skift.",
+                "title": "Tid i tilstand 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Kildeentitet",
+                    "states": "Tæl kun skift til disse tilstande"
+                },
+                "data_description": {
+                    "states": "Lad stå tomt for at vise, siden hvornår kilden har været i den tilstand, den er i nu. Udfyld, for eksempel `on`, for at vise, hvornår den sidst gik over i den tilstand. Det tidspunkt bliver stående, når den skifter igen."
+                },
+                "title": "Tid i tilstand 👻"
+            }
+        }
+    },
+    "title": "Tid i tilstand 👻"
+}

@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Source entity",
+                    "name": "Name",
+                    "states": "Only count becoming these states"
+                },
+                "data_description": {
+                    "states": "Leave empty to tell since when the source has been in the state it is in now. Fill in, for example `on`, to tell since when it last became that state, which stays put after it changes again."
+                },
+                "description": "This helper tells since when an entity has been in its state, and keeps that across restarts. A moment of the entity being unavailable does not count as a change.",
+                "title": "Time in state 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Source entity",
+                    "states": "Only count becoming these states"
+                },
+                "data_description": {
+                    "states": "Leave empty to tell since when the source has been in the state it is in now. Fill in, for example `on`, to tell since when it last became that state, which stays put after it changes again."
+                },
+                "title": "Time in state 👻"
+            }
+        }
+    },
+    "title": "Time in state 👻"
+}

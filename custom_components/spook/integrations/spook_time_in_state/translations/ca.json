@@ -1,1 +1,33 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entitat d'origen",
+                    "name": "Nom",
+                    "states": "Compta només el pas a aquests estats"
+                },
+                "data_description": {
+                    "states": "Deixa-ho buit per indicar des de quan l'origen és a l'estat en què es troba ara. Omple-ho, per exemple amb `on`, per indicar quan va passar per última vegada a aquest estat, cosa que es manté quan torna a canviar."
+                },
+                "description": "Aquest ajudant indica des de quan una entitat és al seu estat, i ho conserva entre reinicis. Un moment en què l'entitat no està disponible no compta com a canvi.",
+                "title": "Temps en l'estat 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entitat d'origen",
+                    "states": "Compta només el pas a aquests estats"
+                },
+                "data_description": {
+                    "states": "Deixa-ho buit per indicar des de quan l'origen és a l'estat en què es troba ara. Omple-ho, per exemple amb `on`, per indicar quan va passar per última vegada a aquest estat, cosa que es manté quan torna a canviar."
+                },
+                "title": "Temps en l'estat 👻"
+            }
+        }
+    },
+    "title": "Temps en l'estat 👻"
+}
