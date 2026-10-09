@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Nežinomas temperatūros jutiklis sričiai: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nežinomas temperatūros jutiklis sričiai: {area}",
+                        "description": "Spook rado vaiduoklį jūsų srityse 👻\n\nSritis {area} naudoja temperatūros jutiklį, kurio Home Assistant nežino:\n\n{entities}\n\nHome Assistant šį jutiklį tikrina tik tada, kai jis pasirenkamas, todėl jį pašalinus ar pervadinus sritis toliau rodė į niekur. Assist ir sričių kortelės iš jo nebegauna temperatūros rodmenų.\n\nIšvalykite nustatymą, kad galėtumėte vėl pasirinkti jutiklį, arba palikite, ir Spook liausis apie jį priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Išvalyti nustatymą",
+                            "manage": "Sutvarkysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šią sritį tylės.",
+                    "manage": "Kitą jutiklį galite pasirinkti šios srities nustatymuose [Sričių puslapyje](/config/areas/dashboard).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, šis jutiklis grįžo arba nustatymas dabar rodo kitur. Todėl niekas neišvalyta. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Nežinomas drėgmės jutiklis sričiai: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nežinomas drėgmės jutiklis sričiai: {area}",
+                        "description": "Spook rado vaiduoklį jūsų srityse 👻\n\nSritis {area} naudoja drėgmės jutiklį, kurio Home Assistant nežino:\n\n{entities}\n\nHome Assistant šį jutiklį tikrina tik tada, kai jis pasirenkamas, todėl jį pašalinus ar pervadinus sritis toliau rodė į niekur. Assist ir sričių kortelės iš jo nebegauna drėgmės rodmenų.\n\nIšvalykite nustatymą, kad galėtumėte vėl pasirinkti jutiklį, arba palikite, ir Spook liausis apie jį priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Išvalyti nustatymą",
+                            "manage": "Sutvarkysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šią sritį tylės.",
+                    "manage": "Kitą jutiklį galite pasirinkti šios srities nustatymuose [Sričių puslapyje](/config/areas/dashboard).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, šis jutiklis grįžo arba nustatymas dabar rodo kitur. Todėl niekas neišvalyta. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Nežinomi temperatūros ir drėgmės jutikliai sričiai: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nežinomi temperatūros ir drėgmės jutikliai sričiai: {area}",
+                        "description": "Spook rado vaiduoklį jūsų srityse 👻\n\nSritis {area} naudoja temperatūros ir drėgmės jutiklius, kurių Home Assistant nežino:\n\n{entities}\n\nHome Assistant šiuos jutiklius tikrina tik tada, kai jie pasirenkami, todėl juos pašalinus ar pervadinus sritis toliau rodė į niekur. Assist ir sričių kortelės iš jų nebegauna rodmenų.\n\nIšvalykite nustatymus, kad galėtumėte vėl pasirinkti jutiklius, arba palikite, ir Spook liausis apie juos priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Išvalyti nustatymus",
+                            "manage": "Sutvarkysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šią sritį tylės.",
+                    "manage": "Kitus jutiklius galite pasirinkti šios srities nustatymuose [Sričių puslapyje](/config/areas/dashboard).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, šie jutikliai grįžo arba nustatymai dabar rodo kitur. Todėl niekas neišvalyta. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
         }
     },
     "system_health": {
