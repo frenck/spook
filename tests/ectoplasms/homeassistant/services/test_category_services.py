@@ -25,6 +25,9 @@ if TYPE_CHECKING:
         entity_registry as er,
     )
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 _MODULES = (
     create_category,
     update_category,

@@ -8,6 +8,9 @@ from homeassistant.core import callback
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import entity_registry as er
 
+from ...const import DOMAIN
+from ...errors import entity_not_found
+
 if TYPE_CHECKING:
     from collections.abc import Iterable
 
@@ -34,14 +37,13 @@ def async_get_registry_entries(
             continue
 
         if hass.states.get(entity_id) is not None:
-            msg = (
-                f"Entity {entity_id} has no unique ID, so Home Assistant cannot "
-                "keep an icon or aliases for it"
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="entity_without_unique_id",
+                translation_placeholders={"entity_id": entity_id},
             )
-            raise HomeAssistantError(msg)
 
-        msg = f"Entity {entity_id} not found"
-        raise HomeAssistantError(msg)
+        raise entity_not_found(entity_id)
 
     return entries
 

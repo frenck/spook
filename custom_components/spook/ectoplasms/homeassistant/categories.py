@@ -8,6 +8,8 @@ from homeassistant.core import callback, split_entity_id
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import category_registry as cr
 
+from ...const import DOMAIN
+
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
@@ -46,5 +48,11 @@ def async_resolve_category(
         if entry.name.casefold() == category.casefold():
             return entry
 
-    msg = f"Category {category} not found for {scope}"
-    raise HomeAssistantError(msg)
+    raise HomeAssistantError(
+        translation_domain=DOMAIN,
+        translation_key="category_not_found",
+        translation_placeholders={
+            "category": category,
+            "scope": scope,
+        },
+    )

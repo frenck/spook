@@ -21,6 +21,9 @@ if TYPE_CHECKING:
     from tests.common import MockUser
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 @pytest.fixture
 def area_floor_services(hass: HomeAssistant) -> None:
     """Register the Spook area floor services."""

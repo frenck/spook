@@ -8,6 +8,9 @@ import pytest
 from pytest_homeassistant_custom_component.syrupy import HomeAssistantSnapshotExtension
 
 from homeassistant import config_entries, loader, setup
+from homeassistant.helpers import translation
+
+from custom_components.spook.const import DOMAIN
 
 if TYPE_CHECKING:
     from syrupy.assertion import SnapshotAssertion
@@ -56,3 +59,15 @@ def skip_dependency_setup(monkeypatch: pytest.MonkeyPatch) -> None:
 def snapshot(snapshot: SnapshotAssertion) -> SnapshotAssertion:  # pylint: disable=redefined-outer-name
     """Use the Home Assistant snapshot extension."""
     return snapshot.use_extension(HomeAssistantSnapshotExtension)
+
+
+@pytest.fixture
+async def spook_translations(hass: HomeAssistant) -> None:
+    """Load Spook's translations, the way Home Assistant does setting Spook up.
+
+    A translated error takes its message from them, and only from those of an
+    integration Home Assistant counts as loaded. Without both, the message is
+    only its translation key, and a test cannot tell what people read.
+    """
+    await translation.async_load_integrations(hass, {DOMAIN})
+    hass.config.components.add(DOMAIN)

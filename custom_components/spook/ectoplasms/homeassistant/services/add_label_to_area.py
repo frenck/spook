@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     area_registry as ar,
     config_validation as cv,
 )
 
+from ....errors import area_not_found
 from ....services import AbstractSpookAdminService
 from ..labels import async_check_labels_exist
 
@@ -41,8 +41,7 @@ class SpookService(AbstractSpookAdminService):
         updates: dict[str, set[str]] = {}
         for area_id in call.data["area_id"]:
             if (area_entry := area_registry.async_get_area(area_id)) is None:
-                msg = f"Area {area_id} not found"
-                raise HomeAssistantError(msg)
+                raise area_not_found(area_id)
 
             labels = area_entry.labels.copy()
             labels.update(call.data["label_id"])
