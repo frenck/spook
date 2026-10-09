@@ -984,7 +984,7 @@
         },
         "homeassistant_disable_config_entry": {
             "name": "禁用集成 👻",
-            "description": "禁用一个集成条目。",
+            "description": "禁用集成条目，可以是单个条目，也可以是某个集成的所有条目。",
             "fields": {
                 "config_entry_id": {
                     "name": "集成条目",
@@ -998,7 +998,7 @@
         },
         "homeassistant_enable_config_entry": {
             "name": "启用集成 👻",
-            "description": "启用一个集成条目。",
+            "description": "启用集成条目，可以是单个条目，也可以是某个集成的所有条目。",
             "fields": {
                 "config_entry_id": {
                     "name": "集成条目",
@@ -1357,7 +1357,7 @@
             "description": "禁用某个集成条目的更新轮询。"
         },
         "input_number_create": {
-            "description": "动态创建一个新的数值输入助手（input_number）。",
+            "description": "动态创建一个新的数值输入助手（input_number）。返回新数值输入助手的实体 ID。",
             "name": "创建数值输入助手 👻",
             "fields": {
                 "name": {
@@ -1484,7 +1484,7 @@
         },
         "input_number_delete": {
             "name": "删除数值输入助手 👻",
-            "description": "删除数值输入助手。这仅适用于通过 UI 创建和管理的数值输入助手。通过 YAML 创建和管理的数值输入助手无法由 Spook 管理。",
+            "description": "删除通过 UI 或“创建数值输入助手”动作创建的数值输入助手。在 YAML 中设置的数值输入助手无法由 Spook 删除。",
             "fields": {
                 "entity_id": {
                     "name": "实体 ID",
@@ -2176,7 +2176,7 @@
         },
         "repairs_ignore_all": {
             "name": "忽略所有问题 👻",
-            "description": "忽略当前在 Home Assistant 修复面板中引发的所有问题。",
+            "description": "忽略当前在 Home Assistant 修复面板中引发的所有问题，或仅忽略特定集成引发的问题。",
             "fields": {
                 "domain": {
                     "name": "域",
@@ -2214,7 +2214,7 @@
         },
         "repairs_unignore_all": {
             "name": "取消忽略所有问题 👻",
-            "description": "取消忽略当前在 Home Assistant 修复面板中引发的所有问题。",
+            "description": "取消忽略当前在 Home Assistant 修复面板中引发的所有问题，或仅取消忽略特定集成引发的问题。",
             "fields": {
                 "domain": {
                     "name": "域",
