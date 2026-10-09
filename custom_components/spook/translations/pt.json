@@ -1227,7 +1227,7 @@
                     "name": "Unidade de medida"
                 }
             },
-            "description": "Cria um assistente de entrada numérica num instante.",
+            "description": "Cria um assistente de entrada numérica num instante. Devolve o ID da entidade da nova entrada numérica.",
             "name": "Criar uma entrada numérica"
         },
         "homeassistant_add_area_to_floor": {
@@ -1394,7 +1394,7 @@
         },
         "input_number_delete": {
             "name": "Apaga um número de entrada",
-            "description": "Apaga um auxiliar de número de entrada. Isto funciona apenas com números de entrada criados e geridos pelo editor visual. Números de entrada criados e geridos via YAML não podem ser geridos pelo Spook.",
+            "description": "Apaga assistentes de entrada numérica criados na interface ou com a ação criar uma entrada numérica. As entradas numéricas configuradas em YAML não podem ser apagadas pelo Spook.",
             "fields": {
                 "entity_id": {
                     "name": "ID da Entidade",
@@ -1580,7 +1580,7 @@
         },
         "homeassistant_disable_config_entry": {
             "name": "Desativar uma integração",
-            "description": "Desativa uma entrada de integração.",
+            "description": "Desativa entradas de integração, uma entrada específica ou todas as entradas de uma integração.",
             "fields": {
                 "config_entry_id": {
                     "description": "A entrada de integração a desativar.",
@@ -1867,7 +1867,7 @@
             "name": "Desativar a consulta de atualizações"
         },
         "homeassistant_enable_config_entry": {
-            "description": "Ativa uma entrada de integração.",
+            "description": "Ativa entradas de integração, uma entrada específica ou todas as entradas de uma integração.",
             "fields": {
                 "config_entry_id": {
                     "description": "A entrada de integração a ativar.",
@@ -2289,7 +2289,7 @@
             "name": "Falha aleatória"
         },
         "repairs_ignore_all": {
-            "description": "Ignora todos os problemas que existem agora nas Reparações do Home Assistant.",
+            "description": "Ignora todos os problemas que existem agora nas Reparações do Home Assistant, ou só os levantados por determinadas integrações.",
             "fields": {
                 "domain": {
                     "name": "Domínio",
@@ -2327,7 +2327,7 @@
             "name": "Remover um problema"
         },
         "repairs_unignore_all": {
-            "description": "Deixa de ignorar todos os problemas que existem agora nas Reparações do Home Assistant.",
+            "description": "Deixa de ignorar todos os problemas que existem agora nas Reparações do Home Assistant, ou só os levantados por determinadas integrações.",
             "fields": {
                 "domain": {
                     "name": "Domínio",
@@ -2891,7 +2891,7 @@
                     "description": "Quanto tempo deve permanecer silenciado antes que isto dispare. Cada disparo reinicia essa contagem de tempo, portanto, algo que nunca para de disparar nunca chega a ser relatado."
                 }
             },
-            "name": "Assim que ficar configurado",
+            "name": "Quando acalmar",
             "description": "Dispara após um gatilho parar de disparar por algum tempo, de modo que uma sequência de disparos chega como um único evento. Um sensor de movimento não relata o movimento apenas uma vez, reporta vinte vezes."
         },
         "all_of": {
