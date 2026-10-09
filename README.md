@@ -28,6 +28,23 @@ tools. 🛠️
 
 This custom integration is provided as-is, without any warranty.
 
+# Using Spook with AI agents
+
+Let an AI agent manage your Home Assistant? Then it should know what Spook
+can do, without reading all of the documentation first. Spook ships an agent
+skill for that: its actions, triggers, conditions and repairs, in a form an
+agent can look things up in.
+
+In Claude Code:
+
+```txt
+/plugin marketplace add frenck/spook
+/plugin install spook@spook
+```
+
+Other agents can use the skill folder directly:
+[`plugins/spook/skills/spook`](plugins/spook/skills/spook).
+
 # Contributing
 
 We've set up a separate document for our [contribution guidelines](https://spook.boo/development).
