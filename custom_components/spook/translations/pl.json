@@ -359,7 +359,7 @@
                 "name": "Ignoruj wszystko"
             },
             "repairs_unignore_all": {
-                "name": "Nie ignoruj"
+                "name": "Przestań ignorować wszystko"
             }
         },
         "event": {
@@ -373,7 +373,7 @@
                         }
                     },
                     "domain": {
-                        "name": "Źródło alertu"
+                        "name": "Źródło problemu"
                     },
                     "issue_id": {
                         "name": "ID problemu"
@@ -428,7 +428,7 @@
                 "name": "Urządzenia"
             },
             "homeassistant_device_tracker": {
-                "name": "Urządzenia Lokalizacyjne"
+                "name": "Lokalizatory"
             },
             "homeassistant_entities": {
                 "name": "Encje"
@@ -446,22 +446,22 @@
                 "name": "Obrazy"
             },
             "homeassistant_input_boolean": {
-                "name": "Pomocnik binarny"
+                "name": "Pomocnicy typu przełącznik"
             },
             "homeassistant_input_button": {
-                "name": "Pomocnik przycisk"
+                "name": "Pomocnicy typu przycisk"
             },
             "homeassistant_input_datetime": {
                 "name": "Pomocnicy daty/godziny"
             },
             "homeassistant_input_number": {
-                "name": "Pomocnik liczbowy"
+                "name": "Pomocnicy liczbowi"
             },
             "homeassistant_input_select": {
-                "name": "Pomocnik menu rozwijanego"
+                "name": "Pomocnicy typu pole wyboru"
             },
             "homeassistant_input_text": {
-                "name": "Pomocnika tekst"
+                "name": "Pomocnicy typu pole tekstowe"
             },
             "homeassistant_integration": {
                 "name": "Integracje"
@@ -485,7 +485,7 @@
                 "name": "Osoby"
             },
             "homeassistant_remote": {
-                "name": "Zdalne sterowanie"
+                "name": "Piloty"
             },
             "homeassistant_scene": {
                 "name": "Sceny"
@@ -494,7 +494,7 @@
                 "name": "Skrypty"
             },
             "homeassistant_select": {
-                "name": "Pole wyboru"
+                "name": "Selektory"
             },
             "homeassistant_sensor": {
                 "name": "Sensory"
@@ -506,13 +506,13 @@
                 "name": "Zamiana mowy na tekst"
             },
             "homeassistant_sun": {
-                "name": "Suns"
+                "name": "Słońca"
             },
             "homeassistant_switch": {
                 "name": "Przełączniki"
             },
             "homeassistant_text": {
-                "name": "Tekstowe"
+                "name": "Teksty"
             },
             "homeassistant_time": {
                 "name": "Czas"
@@ -542,7 +542,7 @@
                 "name": "Strefy"
             },
             "repairs_total_issues": {
-                "name": "Całkowity"
+                "name": "Łącznie"
             },
             "repairs_ignored_issues": {
                 "name": "Ignorowane"
@@ -553,13 +553,13 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Raportowanie Alexa"
+                "name": "Raportowanie stanu Alexa"
             },
             "cloud_google_report_state": {
-                "name": "Raportowanie Google"
+                "name": "Raportowanie stanu Google Assistant"
             },
             "cloud_remote": {
-                "name": "Remote"
+                "name": "Zdalny dostęp"
             }
         }
     },
@@ -764,7 +764,7 @@
             "description": "Spook znalazł ducha w Twoich alertach 👻\n\nAlert {alert} (`{entity_id}`) powiadamia za pomocą następujących akcji, które są nieznane Home Assistant:\n\n{notifiers}\n\nAlert nadal się uruchamia i nadal robi swoje, ale te powiadomienia trafiają donikąd. Home Assistant zapisuje to w logu dopiero w chwili uruchomienia alertu, a to kiepski moment, żeby się dowiedzieć, że nikt nie słucha.\n\nAby naprawić ten błąd, edytuj listę `notifiers:` tego alertu w swojej konfiguracji i usuń lub popraw te wpisy.\n\nSpook 👻 Twój ziomek."
         },
         "automation_unknown_area_references": {
-            "description": "Spook znalazł ducha w Twoich automatayzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta dotyczy następujących obszarów, które są nieznane dla Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących obszarów, które są nieznane Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i usuń użycie tych nieistniejących obszarów.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane obszary użyte w: {automation}"
         },
         "automation_unknown_condition_references": {
@@ -776,19 +776,19 @@
             "title": "Nieznane urządzenia użyte w: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących encji, które nie są znane dla Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) i zaprzestać używania tych nieistniejących encji.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących encji, które są nieznane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i usuń użycie tych nieistniejących encji.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane encje użyte w: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook znalazł ducha w Twoich automatyzacjach👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odnosi się do następujących pięter, które nie są znane Home Assistant:\n\n{floors}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) i zaprzestań używania tych nieistniejących pięter.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących pięter, które są nieznane Home Assistant:\n\n{floors}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i usuń użycie tych nieistniejących pięter.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane piętra użyte w: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących etykiet, które są nieznane Home Assistant:\n\n{labels}\n\n\n\nAby naprawić ten błąd, [edit the automation]({edit}) i zaprzestań używania tych nieistniejących etykiet.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących etykiet, które są nieznane Home Assistant:\n\n{labels}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i usuń użycie tych nieistniejących etykiet.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane etykiety użyte w: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich automatyzacjach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą automatyzację:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTa automatyzacja odwołuje się do następujących akcji, które są nieznane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i usuń użycie tych nieistniejących akcji.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane akcje użyte w: {automation}"
         },
         "automation_unknown_trigger_references": {
@@ -922,7 +922,7 @@
             "title": "Nieznane obszary użyte w panelu: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook znalazł ducha w twoich dashboardach 👻\n\nPłynąc, Spook napotkał następujący dashboard:\n\n[{dashboard}]({edit})\n\nTen dashboarda odwołuje się do następujących encji, które są nieznane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the dashboard]({edit}) i zaprzestań używania tych nieistniejących encji.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich panelach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący panel:\n\n[{dashboard}]({edit})\n\nTen panel odwołuje się do następujących encji, które są nieznane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edytuj panel]({edit}) i usuń użycie tych nieistniejących encji.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane encje użyte w: {dashboard}"
         },
         "lovelace_unknown_service_references": {
@@ -1011,11 +1011,11 @@
             "title": "Nieznana strefa: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook znalazł ducha w Twoich scenach 👻\n\nLecąc dookoła, Spook napotkał następującą scenę:\n\n[{scene}]({edit})\n\nTa scena odnosi się do następujących encji, które nie są znane Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich scenach 👻\n\nUnosząc się w powietrzu, Spook napotkał następującą scenę:\n\n[{scene}]({edit})\n\nTa scena odwołuje się do następujących encji, które są nieznane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edytuj scenę]({edit}) i usuń użycie tych nieistniejących encji.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane encje użyte w: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących obszarów, które są nieznane Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt odwołuje się do następujących obszarów, które są nieznane Home Assistant:\n\n{areas}\n\n\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) i usuń użycie tych nieistniejących obszarów.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane obszary użyte w: {script}"
         },
         "script_unknown_condition_references": {
@@ -1023,15 +1023,15 @@
             "title": "Nieznane warunki użyte w: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook znalazł ducha w Twoich skryptachs 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących urządzeń, które nie są znane dla Home Assistant:\n\n{devices}\n\n\n\nAby naprawić ten błąd, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt odwołuje się do następujących urządzeń, które są nieznane Home Assistant:\n\n{devices}\n\n\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) i usuń użycie tych nieistniejących urządzeń.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane urządzenia używane w: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących encji, które nie są znane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt odwołuje się do następujących encji, które są nieznane Home Assistant:\n\n{entities}\n\n\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) i usuń użycie tych nieistniejących encji.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane encje użyte w: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrypt ten odwołuje się do następujących pięter, które nie są znane Home Assistant:\n\n{floors}\n\n\n\nAby naprawić ten błąd, [edit the script]({edit})  zaprzestań używania tych nieistniejących pięter.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt odwołuje się do następujących pięter, które są nieznane Home Assistant:\n\n{floors}\n\n\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) i usuń użycie tych nieistniejących pięter.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane piętra użyte w: {script}"
         },
         "script_unknown_label_references": {
@@ -1039,7 +1039,7 @@
             "title": "Nieznane etykiety użyte w: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nLecąc dookoła, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAutomatyzacja ta odnosi się do następujących usług, które nie są znane Home Assistant:\n\n{services}\n\nAby naprawić ten błąd, [edytuj automatyzację]({edit}) i zaprzestań korzystania z tych nieistniejących usług.\n\nSpook 👻 Twój ziomek.",
+            "description": "Spook znalazł ducha w Twoich skryptach 👻\n\nUnosząc się w powietrzu, Spook napotkał następujący skrypt:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTen skrypt odwołuje się do następujących akcji, które są nieznane Home Assistant:\n\n{services}\n\n\n\nAby naprawić ten błąd, [edytuj skrypt]({edit}) i usuń użycie tych nieistniejących akcji.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane akcje użyte w: {script}"
         },
         "script_unknown_trigger_references": {
@@ -1162,7 +1162,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Wymagany restart",
-                        "description": "Aby Spook 👻 zakończył konfigurację, należy ponownie uruchomić Home Assistant.\n\nWybierz opcję Prześlij, aby teraz ponownie uruchomić Home Assistant."
+                        "description": "Aby Spook 👻 zakończył konfigurację, należy ponownie uruchomić Home Assistant.\n\nWybierz Zatwierdź, aby teraz ponownie uruchomić Home Assistant.\n\nSpook 👻 Twój ziomek."
                     }
                 }
             }

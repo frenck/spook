@@ -339,7 +339,7 @@
             },
             "already_configured": {
                 "title": "Spook sover 👻",
-                "description": "Spook er allerede konfigureret, men det eksisterende element er deaktiveret. Vil du aktivere det?",
+                "description": "Spook er allerede sat op, men nogen har slået den fra. Skal den vækkes?",
                 "menu_options": {
                     "enable_existing": "Væk Spook",
                     "keep_sleeping": "Lad den sove"
@@ -373,10 +373,10 @@
                         }
                     },
                     "domain": {
-                        "name": "Problemer"
+                        "name": "Rapporteret af"
                     },
                     "issue_id": {
-                        "name": "Problem ID"
+                        "name": "Problem-ID"
                     }
                 }
             }
@@ -386,7 +386,7 @@
                 "name": "Luftkvalitet"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Alarm kontrolpanel"
+                "name": "Alarmkontrolpaneler"
             },
             "homeassistant_area": {
                 "name": "Områder"
@@ -413,7 +413,7 @@
                 "name": "Tællere"
             },
             "homeassistant_cover": {
-                "name": "Persienner"
+                "name": "Gardiner/porte"
             },
             "homeassistant_custom_component": {
                 "name": "Tilpassede integrationer"
@@ -428,7 +428,7 @@
                 "name": "Enheder"
             },
             "homeassistant_device_tracker": {
-                "name": "Enhedstracker"
+                "name": "Enhedssporinger"
             },
             "homeassistant_entities": {
                 "name": "Entiteter"
@@ -440,7 +440,7 @@
                 "name": "Grupper"
             },
             "homeassistant_humidifier": {
-                "name": "Affugtere"
+                "name": "Luftfugtere"
             },
             "homeassistant_image": {
                 "name": "Billeder"
@@ -455,7 +455,7 @@
                 "name": "Input dato/tid"
             },
             "homeassistant_input_number": {
-                "name": "Inputnumre"
+                "name": "Input tal"
             },
             "homeassistant_input_select": {
                 "name": "Input valg"
@@ -494,7 +494,7 @@
                 "name": "Scripts"
             },
             "homeassistant_select": {
-                "name": "Vælger"
+                "name": "Valg"
             },
             "homeassistant_sensor": {
                 "name": "Sensorer"
@@ -527,7 +527,7 @@
                 "name": "Tekst-til-tale"
             },
             "homeassistant_update": {
-                "name": "Opdater"
+                "name": "Opdatering"
             },
             "homeassistant_vacuum": {
                 "name": "Støvsugere"
@@ -545,21 +545,21 @@
                 "name": "Total"
             },
             "repairs_ignored_issues": {
-                "name": "ignoreret"
+                "name": "Ignorerede"
             },
             "repairs_active_issues": {
-                "name": "Aktiv"
+                "name": "Aktive"
             }
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa rapportering"
+                "name": "Alexa-statusrapportering"
             },
             "cloud_google_report_state": {
                 "name": "Google Assistant-statusrapportering"
             },
             "cloud_remote": {
-                "name": "Fjernbetjening"
+                "name": "Fjernadgang"
             }
         }
     },
@@ -776,19 +776,19 @@
             "title": "Ukendte enheder, der anvendes i: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering henviser til følgende enheder, som er ukendt for Home Assistant:\n\n{entities}\n\n\n\nHvis du vil rette denne fejl, [rediger automatiseringen]({edit}) og fjerne brugen af disse ikke-eksisterende enheder.\n\nSpook 👻er din ven.",
-            "title": "Ukendte enheder, der anvendes i: {automation}"
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering henviser til følgende entiteter, som Home Assistant ikke kender:\n\n{entities}\n\n\n\nFor at rette denne fejl skal du [redigere automatiseringen]({edit}) og fjerne brugen af disse ikke-eksisterende entiteter.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte entiteter brugt i: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering henviser til følgende steder, som er ukendt for Home Assistant:\n\n{floors}\n\n\n\nHvis du vil rette denne fejl, [rediger automatiseringen]({edit}) og fjerne brugen af disse manglende steder.\n\nSpook 👻er din ven.",
-            "title": "Ukendte steder er benyttet i {automation}"
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering henviser til følgende etager, som Home Assistant ikke kender:\n\n{floors}\n\n\n\nFor at rette denne fejl skal du [redigere automatiseringen]({edit}) og fjerne brugen af disse ikke-eksisterende etager.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte etager brugt i: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering henviser til følgende labels, som er ukendt for Home Assistant:\n\n{labels}\n\n\n\nHvis du vil rette denne fejl, [rediger automatiseringen]({edit}) og fjerne brugen af disse manglende labels.\n\nSpook 👻er din ven.",
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering henviser til følgende labels, som Home Assistant ikke kender:\n\n{labels}\n\n\n\nFor at rette denne fejl skal du [redigere automatiseringen]({edit}) og fjerne brugen af disse ikke-eksisterende labels.\n\nSpook 👻 er din ven.",
             "title": "Ukendte labels brugt i: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens han svævede rundt, krydsede Spook vejen med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering refererer til følgende tjenester, som er ukendte for Home Assistant:\n\n{services}\n\n\n\n[Rediger automatiseringen]({edit}) for at rette denne fejl og fjerne brugen af disse ikke-eksisterende tjenester.\n\nSpook 👻 er din ven.",
+            "description": "Spook har fundet et spøgelse i dine automatiseringer 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenne automatisering henviser til følgende handlinger, som Home Assistant ikke kender:\n\n{services}\n\n\n\nFor at rette denne fejl skal du [redigere automatiseringen]({edit}) og fjerne brugen af disse ikke-eksisterende handlinger.\n\nSpook 👻 er din ven.",
             "title": "Ukendte handlinger, der bruges i: {automation}"
         },
         "automation_unknown_trigger_references": {
@@ -922,8 +922,8 @@
             "title": "Ukendte områder brugt i betjeningspanel: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook har fundet et spøgelse i dine dashboards 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende dashboard:\n\n[{dashboard}]({edit})\n\nDette dashboard henviser til følgende enheder, som er ukendt for Home Assistant:\n\n{entities}\n\n\n\nFor at rette denne fejl, [rediger dashboardet]({edit}) og fjern brugen af disse manglende enheder.\n\nSpook 👻er din ven.",
-            "title": "Ukendte enheder, der anvendes i: {dashboard}"
+            "description": "Spook har fundet et spøgelse i dine betjeningspaneler 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende betjeningspanel:\n\n[{dashboard}]({edit})\n\nDette betjeningspanel henviser til følgende entiteter, som Home Assistant ikke kender:\n\n{entities}\n\n\n\nFor at rette denne fejl skal du [redigere betjeningspanelet]({edit}) og fjerne brugen af disse ikke-eksisterende entiteter.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte entiteter brugt i: {dashboard}"
         },
         "lovelace_unknown_service_references": {
             "description": "Spook har fundet et spøgelse i dine betjeningspaneler 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende betjeningspanel:\n\n[{dashboard}]({edit})\n\nDette betjeningspanel udfører følgende handlinger, som er ukendte for Home Assistant:\n\n{services}\n\n\n\nEn knap eller et kort, der bruger en af dem, gør ingenting, når man trykker på det. Det sker ofte, når et script er blevet omdøbt eller fjernet, eller en integration er blevet fjernet. For at rette denne fejl skal du [redigere betjeningspanelet]({edit}) og fjerne eller erstatte disse ikke-eksisterende handlinger.\n\nSpook 👻 er din ven.",
@@ -1003,19 +1003,19 @@
             "title": "Ukendte ignorerede zoner: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook har fundet et spøgelse i din nærhedskonfiguration 👻\n\nMens han svævede rundt, krydsede Spook stien med følgende nærhedskonfiguration:\n\n{name}\n\nDenne konfiguration sporer personer eller enhedssporere, som Home Assistant ikke kender:\n\n{entities}\n\n\n\nFor at rette denne fejl skal du redigere konfigurationen og fjerne denne/disse enheder.\n\nSpook 👻 er din ven.",
-            "title": "Ukendte sporerede enheder: {name}"
+            "description": "Spook har fundet et spøgelse i din nærhedskonfiguration 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende nærhedskonfiguration:\n\n{name}\n\nDenne konfiguration følger personer eller enhedssporinger, som Home Assistant ikke kender:\n\n{entities}\n\n\n\nFor at rette denne fejl skal du redigere konfigurationen og fjerne denne/disse entiteter.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte sporede entiteter: {name}"
         },
         "proximity_unknown_zone": {
             "description": "Spook har fundet et spøgelse i din nærhedskonfiguration 👻\n\nMens han svævede rundt, krydsede Spook stien med følgende nærhedskonfiguration:\n\n{name}\n\nDenne konfiguration er baseret på en zone, der er ukendt for Home Assistant:\n\n`{zone}`\n\n\n\nFor at rette denne fejl, da du ikke kan ændre zonen for en nærhedskonfiguration, er den eneste mulighed at fjerne denne specifikke nærhedsintegrationsinstans.\n\nSpook 👻 er din ven.",
             "title": "Ukendt zone: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook har fundet et spøgelse i dine scener 👻\n\nMens Spook svæver rundt, krydsede den veje med følgende scene:\n\n[{scene}]({edit})\n\nDenne scene henviser til følgende enheder, som er ukendt for Home Assistant:\n\n{entities}\n\n\n\nHvis du vil rette denne fejl, [redigere scenen]({edit})kan du fjerne brugen af disse ikke-eksisterende enheder.\n\nSpook 👻 er din ven.",
-            "title": "Ukendte enheder brugt i følgende: {scene}"
+            "description": "Spook har fundet et spøgelse i dine scener 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende scene:\n\n[{scene}]({edit})\n\nDenne scene henviser til følgende entiteter, som Home Assistant ikke kender:\n\n{entities}\n\n\n\nFor at rette denne fejl skal du [redigere scenen]({edit}) og fjerne brugen af disse ikke-eksisterende entiteter.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte entiteter brugt i: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende områder, som er ukendt for Home Assistant:\n\n{areas}\n\n\n\nHvis du vil rette denne fejl, [rediger scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende områder.\n\nSpook 👻 er din ven.",
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende områder, som Home Assistant ikke kender:\n\n{areas}\n\n\n\nFor at rette denne fejl skal du [redigere scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende områder.\n\nSpook 👻 er din ven.",
             "title": "Ukendte områder, der anvendes i: {script}"
         },
         "script_unknown_condition_references": {
@@ -1023,23 +1023,23 @@
             "title": "Ukendte betingelser brugt i: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende enheder, som er ukendt for Home Assistant:\n\n{devices}\n\n\n\nHvis du vil rette denne fejl, [rediger scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende enheder.\n\nSpook 👻 er din ven.",
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende enheder, som Home Assistant ikke kender:\n\n{devices}\n\n\n\nFor at rette denne fejl skal du [redigere scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende enheder.\n\nSpook 👻 er din ven.",
             "title": "Ukendte enheder, der anvendes i: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende enheder, som er ukendt for Home Assistant:\n\n{entities}\n\n\n\nHvis du vil rette denne fejl, [rediger scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende enheder.\n\nSpook 👻 din homie.",
-            "title": "Ukendte enheder, der anvendes i: {script}"
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende entiteter, som Home Assistant ikke kender:\n\n{entities}\n\n\n\nFor at rette denne fejl skal du [redigere scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende entiteter.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte entiteter brugt i: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende steder, som er ukendt for Home Assistant:\n\n{floors}\n\n\n\nHvis du vil rette denne fejl, [rediger scriptet]({edit}) og fjerne brugen af disse manglende steder.\n\nSpook 👻 er din ven.",
-            "title": "Ukendte steder benyttet i {script}"
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende etager, som Home Assistant ikke kender:\n\n{floors}\n\n\n\nFor at rette denne fejl skal du [redigere scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende etager.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte etager brugt i: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende labels, som er ukendt for Home Assistant:\n\n{labels}\n\n\n\nHvis du vil rette denne fejl, [rediger scriptet]({edit}) og fjerne brugen af disse manglende labels.\n\nSpook 👻 er din ven.",
-            "title": "Ukendte labels benyttet i {script}"
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende labels, som Home Assistant ikke kender:\n\n{labels}\n\n\n\nFor at rette denne fejl skal du [redigere scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende labels.\n\nSpook 👻 er din ven.",
+            "title": "Ukendte labels brugt i: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svæver rundt, krydsede den vej(e) med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script refererer til følgende tjenester, som er ukendte for Home Assistant:\n\n{services}\n\n[rediger scriptet]({edit}) for at rette denne fejl og fjerne brugen af disse ikke-eksisterende tjenester.\n\nSpook 👻 din homie.",
+            "description": "Spook har fundet et spøgelse i dine scripts 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDette script henviser til følgende handlinger, som Home Assistant ikke kender:\n\n{services}\n\n\n\nFor at rette denne fejl skal du [redigere scriptet]({edit}) og fjerne brugen af disse ikke-eksisterende handlinger.\n\nSpook 👻 er din ven.",
             "title": "Ukendte handlinger, der bruges i: {script}"
         },
         "script_unknown_trigger_references": {
@@ -1162,7 +1162,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Genstart påkrævet",
-                        "description": "For at Spook 👻kan afslutte opsætningen skal Home Assistant genstartes.\n\nVælg Opret for at genstarte Home Assistant nu."
+                        "description": "For at Spook 👻 kan afslutte opsætningen, skal Home Assistant genstartes.\n\nVælg Indsend for at genstarte Home Assistant nu.\n\nSpook 👻 er din ven."
                     }
                 }
             }
@@ -1506,7 +1506,7 @@
                     "description": "En liste med mappings/dictionaries med statistikker, der skal importeres. Dictionaries skal indeholde en \"start\"-nøgle med en datetime-streng; andre gyldige muligheder er \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" og \"state\". De er alle valgfrie og enten et heltal eller et decimaltal, bortset fra \"last_reset\", som er en datetime-streng."
                 },
                 "statistic_id": {
-                    "name": "Statistikker ID",
+                    "name": "Statistik-ID",
                     "description": "Det statistik-ID (entitets-ID), der skal importeres for."
                 },
                 "name": {
@@ -2301,7 +2301,7 @@
                 },
                 "aliases": {
                     "name": "Aliasser",
-                    "description": "Aliasser, der kan indstilles for området."
+                    "description": "De aliasser, der skal angives for området."
                 }
             }
         },

@@ -353,13 +353,13 @@
                 "name": "リロード"
             },
             "homeassistant_restart": {
-                "name": "リスタート"
+                "name": "再起動"
             },
             "repairs_ignore_all": {
-                "name": "すべての無視"
+                "name": "すべて無視"
             },
             "repairs_unignore_all": {
-                "name": "全てを無視する"
+                "name": "すべての無視を解除"
             }
         },
         "event": {
@@ -367,16 +367,16 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "作成した課題",
-                            "remove": "削除された問題",
-                            "update": "更新された問題"
+                            "create": "問題が作成されました",
+                            "remove": "問題が削除されました",
+                            "update": "問題が更新されました"
                         }
                     },
                     "domain": {
-                        "name": "発行者"
+                        "name": "問題の発行元"
                     },
                     "issue_id": {
-                        "name": "発行ID"
+                        "name": "問題 ID"
                     }
                 }
             }
@@ -386,7 +386,7 @@
                 "name": "空気の質"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "警報制御パネル"
+                "name": "アラームコントロールパネル"
             },
             "homeassistant_area": {
                 "name": "エリア"
@@ -407,7 +407,7 @@
                 "name": "カメラ"
             },
             "homeassistant_climate": {
-                "name": "トランスフォーメーション"
+                "name": "空調"
             },
             "homeassistant_counter": {
                 "name": "カウンター"
@@ -431,7 +431,7 @@
                 "name": "デバイストラッカー"
             },
             "homeassistant_entities": {
-                "name": "エントリー"
+                "name": "エンティティ"
             },
             "homeassistant_fan": {
                 "name": "ファン"
@@ -443,31 +443,31 @@
                 "name": "加湿器"
             },
             "homeassistant_image": {
-                "name": "イメージ"
+                "name": "画像"
             },
             "homeassistant_input_boolean": {
-                "name": "入力ボオリアン"
+                "name": "真偽値入力"
             },
             "homeassistant_input_button": {
-                "name": "入力ボタン"
+                "name": "ボタン入力"
             },
             "homeassistant_input_datetime": {
-                "name": "入力日時/時刻"
+                "name": "日時入力"
             },
             "homeassistant_input_number": {
-                "name": "入力番号"
+                "name": "数値入力"
             },
             "homeassistant_input_select": {
-                "name": "入力選択"
+                "name": "選択肢入力"
             },
             "homeassistant_input_text": {
-                "name": "入力テキスト"
+                "name": "テキスト入力"
             },
             "homeassistant_integration": {
-                "name": "インテグレーション"
+                "name": "統合"
             },
             "homeassistant_light": {
-                "name": "ライトライト"
+                "name": "照明"
             },
             "homeassistant_lock": {
                 "name": "ロック"
@@ -476,13 +476,13 @@
                 "name": "メディアプレーヤー"
             },
             "homeassistant_number": {
-                "name": "ナンバー"
+                "name": "数値"
             },
             "homeassistant_persistent_notification": {
                 "name": "永続的な通知"
             },
             "homeassistant_person": {
-                "name": "スタッフ"
+                "name": "人"
             },
             "homeassistant_remote": {
                 "name": "リモート"
@@ -494,19 +494,19 @@
                 "name": "スクリプト"
             },
             "homeassistant_select": {
-                "name": "ラインナップ"
+                "name": "選択"
             },
             "homeassistant_sensor": {
                 "name": "センサー"
             },
             "homeassistant_siren": {
-                "name": "サイレンス"
+                "name": "サイレン"
             },
             "homeassistant_stt": {
-                "name": "スピーチ・ツー・テキスト"
+                "name": "音声テキスト変換"
             },
             "homeassistant_sun": {
-                "name": "サンライズ"
+                "name": "太陽"
             },
             "homeassistant_switch": {
                 "name": "スイッチ"
@@ -515,7 +515,7 @@
                 "name": "テキスト"
             },
             "homeassistant_time": {
-                "name": "スケジュール"
+                "name": "時刻"
             },
             "homeassistant_timer": {
                 "name": "タイマー"
@@ -524,28 +524,28 @@
                 "name": "To-Do リスト"
             },
             "homeassistant_tts": {
-                "name": "テキストツースピーチ"
+                "name": "テキスト読み上げ"
             },
             "homeassistant_update": {
-                "name": "ニュース"
+                "name": "アップデート"
             },
             "homeassistant_vacuum": {
-                "name": "バキューム"
+                "name": "掃除機"
             },
             "homeassistant_water_heater": {
                 "name": "給湯器"
             },
             "homeassistant_weather": {
-                "name": "天気の天気"
+                "name": "天気"
             },
             "homeassistant_zone": {
                 "name": "ゾーン"
             },
             "repairs_total_issues": {
-                "name": "合計:"
+                "name": "合計"
             },
             "repairs_ignored_issues": {
-                "name": "無視される"
+                "name": "無視済み"
             },
             "repairs_active_issues": {
                 "name": "アクティブ"
@@ -553,10 +553,10 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "アレクサ州の報告"
+                "name": "Alexa の状態レポート"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistantのステータスレポート"
+                "name": "Google アシスタントの状態レポート"
             },
             "cloud_remote": {
                 "name": "リモート"
@@ -765,19 +765,19 @@
         },
         "automation_unknown_area_references": {
             "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant が認識していない次のエリアを参照しています:\n\n{areas}\n\n\n\nこのエラーを修正するには、[オートメーションを編集]({edit})して、存在しないこれらのエリアを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
-            "title": "未知の領域で使用される: {automation}"
+            "title": "不明なエリアが使われています: {automation}"
         },
         "automation_unknown_condition_references": {
             "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant で利用できるどの統合も提供できない次の条件を使っています:\n\n{conditions}\n\n\n\nこれはよく、条件を提供していた統合が削除されたときに起こります。このエラーを修正するには、[オートメーションを編集]({edit})して、利用できないこれらの条件を使わないようにするか、それらを提供する統合を元に戻してください。\n\nSpook 👻 あなたの相棒より。",
             "title": "不明な条件が使われています: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[自動化]({edit})を編集し、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
-            "title": "未知のデバイス: {automation}"
+            "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant が認識していない次のデバイスを参照しています:\n\n{devices}\n\n\n\nこのエラーを修正するには、[オートメーションを編集]({edit})して、存在しないこれらのデバイスを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なデバイスが使われています: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに未知の次のエンティティティティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[オートメーションの編集]({edit})をし、これらの非既存のエンティティティの使用を削除します。\n\nあなたの趣味ではありません。.",
-            "title": "未知のエンティティティティ: {automation}"
+            "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant が認識していない次のエンティティを参照しています:\n\n{entities}\n\n\n\nこのエラーを修正するには、[オートメーションを編集]({edit})して、存在しないこれらのエンティティを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なエンティティが使われています: {automation}"
         },
         "automation_unknown_floor_references": {
             "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant が認識していない次のフロアを参照しています:\n\n{floors}\n\n\n\nこのエラーを修正するには、[オートメーションを編集]({edit})して、存在しないこれらのフロアを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
@@ -859,7 +859,7 @@
             }
         },
         "group_unknown_members": {
-            "title": "未知のグループメンバー:{group}",
+            "title": "不明なグループメンバー: {group}",
             "fix_flow": {
                 "step": {
                     "init": {
@@ -922,8 +922,8 @@
             "title": "ダッシュボードで不明なエリアが使われています: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spookはダッシュボードでゴーストを見つけました ◀\n\n周りを浮遊している間、Spookは、次のダッシュボードで横断パスを渡しました。\n\n[{dashboard}]({edit})\n\n\nこのダッシュボードは、ホームアシスタントに不明な以下のエンティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[ダッシュボード]({edit})を編集し、これらの非既存のエンティティティティの使用を削除します。\n\nあなたの趣味ではありません。.",
-            "title": "未知のエンティティティティ: {dashboard}"
+            "description": "Spook がダッシュボードの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のダッシュボードに出くわしました:\n\n[{dashboard}]({edit})\n\nこのダッシュボードは、Home Assistant が認識していない次のエンティティを参照しています:\n\n{entities}\n\n\n\nこのエラーを修正するには、[ダッシュボードを編集]({edit})して、存在しないこれらのエンティティを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なエンティティが使われています: {dashboard}"
         },
         "lovelace_unknown_service_references": {
             "description": "Spook がダッシュボードの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のダッシュボードに出くわしました:\n\n[{dashboard}]({edit})\n\nこのダッシュボードは、Home Assistant が認識していない次のアクションを実行します:\n\n{services}\n\n\n\nこれらを使っているボタンやカードは、タップしても何も起こりません。これはよく、スクリプトの名前が変更されたか削除されたとき、または統合が削除されたときに起こります。このエラーを修正するには、[ダッシュボードを編集]({edit})して、存在しないこれらのアクションを削除するか置き換えてください。\n\nSpook 👻 あなたの相棒より。",
@@ -1015,20 +1015,20 @@
             "title": "不明なエンティティが使われています: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次の領域を参照します。\n\n{areas}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit})をし、これらの非既存の領域の使用を削除します。\n\nあなたの趣味ではありません。.",
-            "title": "未知の領域で使用される: {script}"
+            "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant が認識していない次のエリアを参照しています:\n\n{areas}\n\n\n\nこのエラーを修正するには、[スクリプトを編集]({edit})して、存在しないこれらのエリアを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なエリアが使われています: {script}"
         },
         "script_unknown_condition_references": {
             "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant で利用できるどの統合も提供できない次の条件を使っています:\n\n{conditions}\n\n\n\nこれはよく、条件を提供していた統合が削除されたときに起こります。このエラーを修正するには、[スクリプトを編集]({edit})して、利用できないこれらの条件を使わないようにするか、それらを提供する統合を元に戻してください。\n\nSpook 👻 あなたの相棒より。",
             "title": "不明な条件が使われています: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit}) をし、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
-            "title": "未知のデバイス: {script}"
+            "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant が認識していない次のデバイスを参照しています:\n\n{devices}\n\n\n\nこのエラーを修正するには、[スクリプトを編集]({edit})して、存在しないこれらのデバイスを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なデバイスが使われています: {script}"
         },
         "script_unknown_entity_references": {
             "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant が認識していない次のエンティティを参照しています:\n\n{entities}\n\n\n\nこのエラーを修正するには、[スクリプトを編集]({edit})して、存在しないこれらのエンティティを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
-            "title": "未知の実体: {script}"
+            "title": "不明なエンティティが使われています: {script}"
         },
         "script_unknown_floor_references": {
             "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant が認識していない次のフロアを参照しています:\n\n{floors}\n\n\n\nこのエラーを修正するには、[スクリプトを編集]({edit})して、存在しないこれらのフロアを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
@@ -1157,12 +1157,12 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "必要な再起動",
+            "title": "再起動が必要です",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "必要な再起動",
-                        "description": "Spook で設定を完了するには、ホームアシスタントを再起動する必要があります。\n\n今すぐホームアシスタントを再起動するために送信を選択します。."
+                        "title": "再起動が必要です",
+                        "description": "Spook 👻 のセットアップを完了するには、Home Assistant を再起動する必要があります。\n\n今すぐ Home Assistant を再起動するには、送信を選択してください。\n\nSpook 👻 あなたの相棒より。"
                     }
                 }
             }

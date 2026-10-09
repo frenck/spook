@@ -350,7 +350,7 @@
     "entity": {
         "button": {
             "homeassistant_reload": {
-                "name": "Yeniden yükleme"
+                "name": "Yeniden yükle"
             },
             "homeassistant_restart": {
                 "name": "Yeniden başlat"
@@ -359,7 +359,7 @@
                 "name": "Hepsini yoksay"
             },
             "repairs_unignore_all": {
-                "name": "Hepsini varsay"
+                "name": "Hepsini yoksaymayı bırak"
             }
         },
         "event": {
@@ -367,13 +367,13 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Yaratılan Sorun",
+                            "create": "Sorun oluşturuldu",
                             "remove": "Sorun kaldırıldı",
                             "update": "Sorun güncellendi"
                         }
                     },
                     "domain": {
-                        "name": "Sorunu giren"
+                        "name": "Sorunu bildiren"
                     },
                     "issue_id": {
                         "name": "Sorun ID"
@@ -413,7 +413,7 @@
                 "name": "Sayaçlar"
             },
             "homeassistant_cover": {
-                "name": "Kapaklar"
+                "name": "Panjurlar"
             },
             "homeassistant_custom_component": {
                 "name": "Özel entegrasyonlar"
@@ -428,10 +428,10 @@
                 "name": "Cihazlar"
             },
             "homeassistant_device_tracker": {
-                "name": "Cihaz tarayıcıları"
+                "name": "Cihaz izleyiciler"
             },
             "homeassistant_entities": {
-                "name": "Ögeler"
+                "name": "Varlıklar"
             },
             "homeassistant_fan": {
                 "name": "Fanlar"
@@ -455,7 +455,7 @@
                 "name": "Giriş tarih/zaman"
             },
             "homeassistant_input_number": {
-                "name": "Giriş numaraları"
+                "name": "Giriş sayıları"
             },
             "homeassistant_input_select": {
                 "name": "Giriş tercihleri"
@@ -464,7 +464,7 @@
                 "name": "Giriş metinleri"
             },
             "homeassistant_integration": {
-                "name": "Entegrasyon"
+                "name": "Entegrasyonlar"
             },
             "homeassistant_light": {
                 "name": "Işıklar"
@@ -473,7 +473,7 @@
                 "name": "Kilitler"
             },
             "homeassistant_media_player": {
-                "name": "Media oynatıcıları"
+                "name": "Medya oynatıcılar"
             },
             "homeassistant_number": {
                 "name": "Sayılar"
@@ -491,7 +491,7 @@
                 "name": "Sahneler"
             },
             "homeassistant_script": {
-                "name": "Betikler"
+                "name": "Senaryolar"
             },
             "homeassistant_select": {
                 "name": "Seçenekler"
@@ -545,7 +545,7 @@
                 "name": "Toplam"
             },
             "repairs_ignored_issues": {
-                "name": "Yok sayıldı"
+                "name": "Yoksayılan"
             },
             "repairs_active_issues": {
                 "name": "Aktif"
@@ -559,7 +559,7 @@
                 "name": "Google Assistant durum raporlama"
             },
             "cloud_remote": {
-                "name": "Uzaktan kontrol"
+                "name": "Uzaktan erişim"
             }
         }
     },
@@ -765,7 +765,7 @@
         },
         "automation_unknown_area_references": {
             "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu alanlara başvuruyor:\n\n{areas}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu alanların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
-            "title": "Bilinmeyen kullanım alanları: {automation}"
+            "title": "Bilinmeyen alanlar kullanılıyor: {automation}"
         },
         "automation_unknown_condition_references": {
             "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'taki hiçbir entegrasyonun sağlayamadığı şu koşulları kullanıyor:\n\n{conditions}\n\n\n\nBu genelde bir koşulu sağlayan entegrasyon kaldırıldığında olur. Bu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve kullanılamayan bu koşulları kaldırın ya da onları sağlayan entegrasyonu geri getirin.\n\nSpook 👻 Kankan.",
@@ -773,11 +773,11 @@
         },
         "automation_unknown_device_references": {
             "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu cihazlara başvuruyor:\n\n{devices}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu cihazların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
-            "title": "Bilinmeyen cihazlar kullanılır: {automation}"
+            "title": "Bilinmeyen cihazlar kullanılıyor: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the Automation]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
-            "title": "Bilinmeyen varlıklar kullanılır: {automation}"
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen varlıklar kullanılıyor: {automation}"
         },
         "automation_unknown_floor_references": {
             "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu katlara başvuruyor:\n\n{floors}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu katların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
@@ -922,8 +922,8 @@
             "title": "Gösterge panelinde bilinmeyen alanlar kullanılıyor: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook, panolarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki paniğe yol açtı:\n\n[{dashboard}]({edit})\n\nBu pano, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the dashboard]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
-            "title": "Bilinmeyen varlıklar kullanılır: {dashboard}"
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [gösterge panelini düzenleyin]({edit}) ve var olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen varlıklar kullanılıyor: {dashboard}"
         },
         "lovelace_unknown_service_references": {
             "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, Home Assistant'ın bilmediği şu eylemleri gerçekleştiriyor:\n\n{services}\n\n\n\nBunlardan birini kullanan bir düğme ya da kart, dokunulduğunda hiçbir şey yapmaz. Bu genelde bir senaryo yeniden adlandırıldığında ya da kaldırıldığında veya bir entegrasyon kaldırıldığında olur. Bu hatayı düzeltmek için [gösterge panelini düzenleyin]({edit}) ve var olmayan bu eylemleri kaldırın ya da değiştirin.\n\nSpook 👻 Kankan.",
@@ -1011,12 +1011,12 @@
             "title": "Bilinmeyen bölge: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook sahnelerinizde bir hayalet buldu 👻\n\nOrtalıkta dolaşırken Spook'un yolu şu sahneyle kesişti:\n\n[{scene}]({edit})\n\nBu sahne, Ev Asistanı tarafından bilinmeyen aşağıdaki varlıklara gönderme yapmaktadır:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [sahneyi düzenleyin]({edit}) ve mevcut olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Your homie.",
-            "title": "Bilinmeyen varlıklar şu sahnede kullanıldı: {scene}"
+            "description": "Spook sahnelerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu sahneyle kesişti:\n\n[{scene}]({edit})\n\nBu sahne, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [sahneyi düzenleyin]({edit}) ve var olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen varlıklar kullanılıyor: {scene}"
         },
         "script_unknown_area_references": {
             "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu alanlara başvuruyor:\n\n{areas}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu alanların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
-            "title": "Bilinmeyen alanlarda kullanılır: {script}"
+            "title": "Bilinmeyen alanlar kullanılıyor: {script}"
         },
         "script_unknown_condition_references": {
             "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'taki hiçbir entegrasyonun sağlayamadığı şu koşulları kullanıyor:\n\n{conditions}\n\n\n\nBu genelde bir koşulu sağlayan entegrasyon kaldırıldığında olur. Bu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve kullanılamayan bu koşulları kaldırın ya da onları sağlayan entegrasyonu geri getirin.\n\nSpook 👻 Kankan.",
@@ -1024,11 +1024,11 @@
         },
         "script_unknown_device_references": {
             "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu cihazlara başvuruyor:\n\n{devices}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu cihazların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
-            "title": "Bilinmeyen cihazlar kullanılır: {script}"
+            "title": "Bilinmeyen cihazlar kullanılıyor: {script}"
         },
         "script_unknown_entity_references": {
             "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
-            "title": "Bilinmeyen ögeler: {script}"
+            "title": "Bilinmeyen varlıklar kullanılıyor: {script}"
         },
         "script_unknown_floor_references": {
             "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu katlara başvuruyor:\n\n{floors}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu katların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
@@ -1162,7 +1162,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Yeniden başlatma gerekli",
-                        "description": "Spook'un ayarlanması için, Home Asistan'ın yeniden başlaması gerekir.\n\nŞimdi Home Asistan'ı yeniden başlatmayı seçin."
+                        "description": "Spook 👻 kurulumu bitirebilsin diye Home Assistant'ın yeniden başlatılması gerekiyor.\n\nHome Assistant'ı şimdi yeniden başlatmak için Gönder'i seçin.\n\nSpook 👻 Kankan."
                     }
                 }
             }
