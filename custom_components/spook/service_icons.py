@@ -86,6 +86,13 @@ async def async_inject_service_icons(
     if (cache := _async_service_icon_cache(hass)) is None:
         return
 
+    if not isinstance(spook_icons, dict):
+        LOGGER.warning(
+            "Home Assistant's icon cache has an unexpected structure, "
+            "skipping the icons of Spook's actions"
+        )
+        return
+
     for domain, service, key in services:
         if (icon := spook_icons.get(key)) is None:
             continue

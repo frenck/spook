@@ -126,6 +126,13 @@ async def test_unexpected_services_or_domain_skips_the_icons(
 
     assert not injected
 
+    # Spook's own icons, the ones it hands out, can change shape as well.
+    categories["services"]["light"] = {}
+    categories["services"]["spook"] = "not a mapping"
+    await async_inject_service_icons(hass, [SPOOKS_ACTION], injected)
+
+    assert not injected
+
     # Home Assistant itself trips over this one when loading, so it is the
     # way out that has to cope with it on its own.
     categories["services"] = "not a mapping"
