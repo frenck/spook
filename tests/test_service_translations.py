@@ -71,7 +71,7 @@ async def test_service_translations_are_injected(hass: HomeAssistant) -> None:
     assert translations["component.homeassistant.services.restart.name"] == "Restart 👻"
     assert (
         translations["component.homeassistant.services.restart.description"]
-        == "Restart the Home Assistant action."
+        == "Restarts Home Assistant."
     )
     assert (
         translations["component.homeassistant.services.restart.fields.safe_mode.name"]
