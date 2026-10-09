@@ -822,6 +822,69 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "HomeKit 桥接器 {bridge} 中使用了未知实体",
             "description": "Spook 在你的 HomeKit 桥接器中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下 HomeKit 桥接器：\n\n{bridge}\n\n该桥接器列出了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\nHomeKit 不会跟随被重命名的实体。被包含的实体在重命名或删除后会从“家庭”App 中消失。被排除的实体在重命名后会重新出现在其中。\n\n此桥接器是在你的 YAML 配置中设置的。要修复此错误，请编辑 `homekit:` 下此桥接器的 `filter`，并移除或更正这些实体。\n\nSpook 👻 你的好哥们。"
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "区域 {area} 的温度传感器未知",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "区域 {area} 的温度传感器未知",
+                        "description": "Spook 在你的区域中发现了一个幽灵 👻\n\n区域 {area} 使用了一个 Home Assistant 无法识别的温度传感器：\n\n{entities}\n\nHome Assistant 只在选择该传感器时检查它，所以当它被移除或重命名后，该区域仍然指向一个不存在的东西。Assist 和区域卡片将无法再从中获取温度读数。\n\n清除此设置，以便重新选择传感器；或者保留它，Spook 将不再提示。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "清除此设置",
+                            "manage": "让我自己处理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此区域发声。",
+                    "manage": "你可以在[区域页面](/config/areas/dashboard)中此区域的设置里选择其他传感器。",
+                    "changed": "自 Spook 上次查看以来，这个传感器已经回来，或者设置已指向别处，因此没有清除任何内容。Spook 会自行再次检查并更新此修复。"
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "区域 {area} 的湿度传感器未知",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "区域 {area} 的湿度传感器未知",
+                        "description": "Spook 在你的区域中发现了一个幽灵 👻\n\n区域 {area} 使用了一个 Home Assistant 无法识别的湿度传感器：\n\n{entities}\n\nHome Assistant 只在选择该传感器时检查它，所以当它被移除或重命名后，该区域仍然指向一个不存在的东西。Assist 和区域卡片将无法再从中获取湿度读数。\n\n清除此设置，以便重新选择传感器；或者保留它，Spook 将不再提示。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "清除此设置",
+                            "manage": "让我自己处理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此区域发声。",
+                    "manage": "你可以在[区域页面](/config/areas/dashboard)中此区域的设置里选择其他传感器。",
+                    "changed": "自 Spook 上次查看以来，这个传感器已经回来，或者设置已指向别处，因此没有清除任何内容。Spook 会自行再次检查并更新此修复。"
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "区域 {area} 的温度和湿度传感器未知",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "区域 {area} 的温度和湿度传感器未知",
+                        "description": "Spook 在你的区域中发现了一个幽灵 👻\n\n区域 {area} 使用了 Home Assistant 无法识别的温度传感器和湿度传感器：\n\n{entities}\n\nHome Assistant 只在选择这些传感器时检查它们，所以当它们被移除或重命名后，该区域仍然指向不存在的东西。Assist 和区域卡片将无法再从中获取读数。\n\n清除这些设置，以便重新选择传感器；或者保留它们，Spook 将不再提示。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "清除这些设置",
+                            "manage": "让我自己处理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此区域发声。",
+                    "manage": "你可以在[区域页面](/config/areas/dashboard)中此区域的设置里选择其他传感器。",
+                    "changed": "自 Spook 上次查看以来，这些传感器已经回来，或者设置已指向别处，因此没有清除任何内容。Spook 会自行再次检查并更新此修复。"
+                }
+            }
         }
     },
     "services": {
