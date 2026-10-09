@@ -1054,27 +1054,6 @@
             "description": "Spook har fundet et spøgelse i dine skabelonhjælpere 👻\n\nMens Spook svævede rundt, krydsede den vej med følgende skabelonhjælper:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDen henviser til følgende handlinger, som er ukendte for Home Assistant:\n\n{services}\n\n\n\nDet sker ofte, når det, der leverede en handling, er blevet fjernet, eller et script er blevet omdøbt eller slettet. For at rette denne fejl skal du omkonfigurere skabelonhjælperen, så den bruger eksisterende handlinger.\n\nSpook 👻 er din ven.",
             "title": "Ukendte handlinger brugt i skabelonhjælper: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Ukendt {sensors}-sensor for område: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Ukendt {sensors}-sensor for område: {area}",
-                        "description": "Spook har fundet et spøgelse i dine områder 👻\n\nOmrådet {area} bruger en {sensors}-sensor, som er ukendt for Home Assistant:\n\n{entities}\n\nHome Assistant tjekker kun denne sensor, når den vælges, så da den blev fjernet eller omdøbt, blev området ved med at pege på ingenting. Assist og områdekort får ikke længere en måling fra den.\n\nRyd indstillingen, så du kan vælge en sensor igen, eller behold den, så holder Spook op med at påpege den.\n\nSpook 👻 er din ven.",
-                        "menu_options": {
-                            "remove": "Ryd indstillingen",
-                            "manage": "Lad mig selv ordne det",
-                            "ignore": "Behold den, og stop med at sige det"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook holder fremover mund om dette område.",
-                    "manage": "Du kan vælge en anden sensor i indstillingerne for dette område på [siden Områder](/config/areas/dashboard).",
-                    "changed": "Disse sensorer er tilbage, eller indstillingerne peger nu et andet sted hen, siden Spook kiggede. Derfor er intet ryddet. Spook kigger igen af sig selv og opdaterer denne reparation."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook har fundet et spøgelse i dine tilpasninger 👻\n\nAfsnittet `customize:` fastlåser attributter på følgende entiteter, som er ukendte for Home Assistant:\n\n{entities}\n\n\n\nDet sker ofte, når en entitet er blevet omdøbt eller fjernet, mens dens tilpasning blev hængende. For at rette denne fejl skal du redigere afsnittet `customize:` i din konfiguration og fjerne disse entiteter.\n\nSpook 👻 er din ven.",
             "title": "Ukendte entiteter i dine tilpasninger"

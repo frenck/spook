@@ -786,27 +786,6 @@
             "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDen refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\nDet händer ofta när integrationen bakom en åtgärd har tagits bort, eller när ett skript har bytt namn eller tagits bort. För att åtgärda felet, konfigurera om mallhjälparen så att den använder åtgärder som finns.\n\nSpook 👻 Din polare.",
             "title": "Okända åtgärder används i mallhjälparen: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Okänd {sensors}-sensor för område: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Okänd {sensors}-sensor för område: {area}",
-                        "description": "Spook har hittat ett spöke bland dina områden 👻\n\nOmrådet {area} använder en {sensors}-sensor som är okänd för Home Assistant:\n\n{entities}\n\nHome Assistant kontrollerar bara denna sensor när den väljs, så när den togs bort eller döptes om fortsatte området att peka på ingenting. Assist och områdeskort får inte längre något värde från den.\n\nRensa inställningen så att du kan välja en sensor igen, eller behåll den och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare.",
-                        "menu_options": {
-                            "remove": "Rensa inställningen",
-                            "manage": "Låt mig fixa det själv",
-                            "ignore": "Behåll och sluta att meddela mig"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook kommer att hålla tyst om detta område från och med nu.",
-                    "manage": "Du kan välja en annan sensor i inställningarna för detta område på sidan [Områden](/config/areas/dashboard).",
-                    "changed": "Dessa sensorer är tillbaka, eller inställningarna pekar nu någon annanstans, sedan Spook tittade. Därför har ingenting rensats. Spook tittar igen av sig själv och uppdaterar denna reparation."
-                }
-            }
-        },
         "notify_unknown_group_members": {
             "description": "Spook har hittat ett spöke bland dina aviseringsgrupper 👻\n\nAviseringsgruppen `{group}` vidarebefordrar till följande åtgärder som är okända för Home Assistant:\n\n{members}\n\nGruppen levererar fortfarande till sina övriga medlemmar, och den rapporterar fortfarande att allt gick bra till den som anropade den, så ingenting uppströms märker något. Felet syns bara som ett ensamt \"Task exception was never retrieved\" i loggen, som inte nämner någon grupp och ser ut som ett programfel. Den som fanns bakom den medlemmen slutar helt enkelt att få aviseringar.\n\nFör att åtgärda felet, redigera `services:`-listan för den här gruppen i din konfiguration och ta bort eller rätta dessa poster.\n\nSpook 👻 Din polare.",
             "title": "Okända medlemmar i aviseringsgrupp: {group}"

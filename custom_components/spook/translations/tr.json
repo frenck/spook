@@ -1054,27 +1054,6 @@
             "description": "Spook şablon yardımcılarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu şablon yardımcısıyla kesişti:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHome Assistant'ın bilmediği şu eylemlere başvuruyor:\n\n{services}\n\n\n\nBu genelde bir eylem sağlayıcısı kaldırıldığında ya da bir senaryo yeniden adlandırıldığında veya silindiğinde olur. Bu hatayı düzeltmek için şablon yardımcısını var olan eylemleri kullanacak şekilde yeniden yapılandırın.\n\nSpook 👻 Kankan.",
             "title": "Şablon yardımcısında bilinmeyen eylemler kullanılıyor: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Alan için bilinmeyen {sensors} sensörü: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Alan için bilinmeyen {sensors} sensörü: {area}",
-                        "description": "Spook alanlarınızda bir hayalet buldu 👻\n\n{area} alanı, Home Assistant'ın bilmediği bir {sensors} sensörü kullanıyor:\n\n{entities}\n\nHome Assistant bu sensörü yalnızca seçildiği anda kontrol eder, bu yüzden sensör kaldırıldığında ya da yeniden adlandırıldığında alan boşluğu göstermeye devam etti. Assist ve alan kartları artık ondan değer alamıyor.\n\nYeniden bir sensör seçebilmek için ayarı temizleyin ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
-                        "menu_options": {
-                            "remove": "Ayarı temizle",
-                            "manage": "Kendim düzelteyim",
-                            "ignore": "Kalsın, bana söylemeyi bırak"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook bundan sonra bu alan hakkında sesini çıkarmayacak.",
-                    "manage": "[Alanlar sayfasında](/config/areas/dashboard) bu alanın ayarlarından farklı bir sensör seçebilirsiniz.",
-                    "changed": "Spook baktığından beri bu sensörler geri geldi ya da ayarlar artık başka bir yeri gösteriyor. Bu yüzden hiçbir şey temizlenmedi. Spook kendi başına yeniden bakar ve bu onarımı günceller."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook özelleştirmelerinizde bir hayalet buldu 👻\n\n`customize:` bölümü, Home Assistant'ın bilmediği şu varlıklara öznitelik sabitliyor:\n\n{entities}\n\n\n\nBu genelde bir varlık yeniden adlandırıldığında ya da kaldırıldığında ama özelleştirmesi geride kaldığında olur. Bu hatayı düzeltmek için yapılandırmanızdaki `customize:` bölümünü düzenleyin ve bu varlıkları kaldırın.\n\nSpook 👻 Kankan.",
             "title": "Özelleştirmelerinizde bilinmeyen varlıklar"

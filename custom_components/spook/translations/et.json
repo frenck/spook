@@ -1054,27 +1054,6 @@
             "description": "Spook leidis su mallipõhistest abilistest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise mallipõhise abilise otsa:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSee viitab järgmistele toimingutele, mida Home Assistant ei tunne:\n\n{services}\n\n\n\nSee juhtub sageli siis, kui toimingu pakkuja eemaldati või skript nimetati ümber või kustutati. Vea parandamiseks seadista mallipõhine abiline ümber nii, et see kasutaks olemasolevaid toiminguid.\n\nSpook 👻 Sinu semu.",
             "title": "Mallipõhises abilises kasutatud tundmatud toimingud: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Tundmatu {sensors} andur alal: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Tundmatu {sensors} andur alal: {area}",
-                        "description": "Spook leidis su aladest kummituse 👻\n\nAla {area} kasutab {sensors} andurit, mida Home Assistant ei tunne:\n\n{entities}\n\nHome Assistant kontrollib seda andurit ainult valimise hetkel, nii et kui see eemaldati või ümber nimetati, jäi ala osutama tühjusele. Häälabiline ja alakaardid ei saa sellelt enam näitu.\n\nTühjenda säte, et saaksid uuesti anduri valida, või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
-                        "menu_options": {
-                            "remove": "Tühjenda säte",
-                            "manage": "Las ma parandan ise",
-                            "ignore": "Jäta alles, ära enam ütle"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook vaikib sellest alast nüüdsest peale.",
-                    "manage": "Saad valida teise anduri selle ala sätetes [alade lehel](/config/areas/dashboard).",
-                    "changed": "Need andurid on pärast Spooki vaatamist tagasi või osutavad sätted nüüd mujale. Seega ei tühjendatud midagi. Spook vaatab ise uuesti ja uuendab seda parandust."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook leidis su kohandustest kummituse 👻\n\nJaotis `customize:` kinnitab atribuute järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nSee juhtub sageli siis, kui olem nimetati ümber või eemaldati, aga selle kohandus jäi maha. Vea parandamiseks muuda oma konfiguratsioonis jaotist `customize:` ja eemalda need olemid.\n\nSpook 👻 Sinu semu.",
             "title": "Tundmatud olemid sinu kohandustes"

@@ -1054,27 +1054,6 @@
             "description": "Spook이 템플릿 도우미에서 유령을 발견했습니다 👻\n\n떠돌아다니는 동안 Spook이 다음 템플릿 도우미를 발견했습니다:\n\n[{helper}]({edit}) (`{entity_id}`)\n\n이 도우미가 다음 액션을 참조하는데, Home Assistant에서 알 수 없는 액션입니다:\n\n{services}\n\n\n\n보통 액션을 제공하던 것이 제거되었거나, 스크립트의 이름이 바뀌었거나 삭제되었을 때 이런 일이 생깁니다. 이 오류를 수정하려면 템플릿 도우미가 존재하는 액션을 사용하도록 다시 구성하세요.\n\nSpook 👻 당신의 친구.",
             "title": "템플릿 도우미에서 사용하는 알 수 없는 액션: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "영역의 알 수 없는 {sensors} 센서: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "영역의 알 수 없는 {sensors} 센서: {area}",
-                        "description": "Spook이 영역에서 유령을 발견했습니다 👻\n\n영역 {area}이(가) Home Assistant에서 알 수 없는 {sensors} 센서를 사용하고 있습니다:\n\n{entities}\n\nHome Assistant는 이 센서를 선택할 때만 확인하므로, 센서가 제거되거나 이름이 바뀌면 영역은 아무것도 없는 곳을 계속 가리키게 됩니다. Assist와 영역 카드는 더 이상 이 센서에서 값을 받지 못합니다.\n\n센서를 다시 선택할 수 있도록 설정을 비우거나, 그대로 두면 Spook이 더 이상 알려 드리지 않습니다.\n\nSpook 👻 당신의 친구.",
-                        "menu_options": {
-                            "remove": "설정 비우기",
-                            "manage": "직접 고칠게요",
-                            "ignore": "그대로 두고, 그만 알려 주기"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "이제부터 Spook은 이 영역에 대해 조용히 있겠습니다.",
-                    "manage": "[영역 페이지](/config/areas/dashboard)에서 이 영역의 설정을 열어 다른 센서를 선택할 수 있습니다.",
-                    "changed": "Spook이 확인한 뒤로 이 센서들이 돌아왔거나, 설정이 이제 다른 곳을 가리키고 있습니다. 그래서 아무것도 비우지 않았습니다. Spook이 알아서 다시 확인하고 이 문제를 업데이트합니다."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook이 사용자 지정 설정에서 유령을 발견했습니다 👻\n\n`customize:` 섹션이 다음 엔티티에 속성을 지정하고 있는데, Home Assistant에서 알 수 없는 엔티티입니다:\n\n{entities}\n\n\n\n보통 엔티티의 이름이 바뀌었거나 제거되었는데 사용자 지정 설정은 남아 있을 때 이런 일이 생깁니다. 이 오류를 수정하려면 구성의 `customize:` 섹션을 편집해서 이 엔티티들을 제거하세요.\n\nSpook 👻 당신의 친구.",
             "title": "사용자 지정 설정의 알 수 없는 엔티티"

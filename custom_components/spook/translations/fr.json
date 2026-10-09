@@ -786,27 +786,6 @@
             "description": "Spook a trouvé un fantôme dans vos assistants de modèle 👻\n\nEn flottant dans les parages, Spook est tombé sur l'assistant de modèle suivant :\n\n[{helper}]({edit}) (`{entity_id}`)\n\nIl fait référence aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{services}\n\nCela arrive souvent lorsque l'intégration derrière une action a été supprimée, ou qu'un script a été renommé ou supprimé. Pour résoudre cette erreur, reconfigurez l'assistant de modèle pour qu'il utilise des actions existantes.\n\nSpook 👻 Votre pote.",
             "title": "Actions inconnues utilisées dans l'assistant de modèle : {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Capteur {sensors} inconnu pour la pièce : {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Capteur {sensors} inconnu pour la pièce : {area}",
-                        "description": "Spook a trouvé un fantôme dans vos pièces 👻\n\nLa pièce {area} utilise un capteur {sensors} qui est inconnu de Home Assistant :\n\n{entities}\n\nHome Assistant ne vérifie ce capteur qu'au moment où il est choisi : lorsqu'il a été supprimé ou renommé, la pièce a continué à pointer dans le vide. Assist et les cartes de pièce n'en reçoivent plus aucune valeur.\n\nEffacez le réglage pour pouvoir choisir à nouveau un capteur, ou gardez-le et Spook cessera de le signaler.\n\nSpook 👻 Votre pote.",
-                        "menu_options": {
-                            "remove": "Effacer le réglage",
-                            "manage": "Je le corrige moi-même",
-                            "ignore": "Le garder, ne plus m'en parler"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook ne dira plus rien au sujet de cette pièce.",
-                    "manage": "Vous pouvez choisir un autre capteur dans les paramètres de cette pièce sur la [page Pièces](/config/areas/dashboard).",
-                    "changed": "Ces capteurs sont revenus, ou les réglages pointent maintenant ailleurs, depuis que Spook a regardé. Rien n'a donc été effacé. Spook regarde de nouveau de lui-même et met à jour cette réparation."
-                }
-            }
-        },
         "notify_unknown_group_members": {
             "description": "Spook a trouvé un fantôme dans vos groupes de notification 👻\n\nLe groupe de notification `{group}` transmet aux actions suivantes, qui sont inconnues de Home Assistant :\n\n{members}\n\nLe groupe continue de livrer au reste de ses membres, et il continue de signaler une réussite à ce qui l'a appelé, si bien que rien en amont ne s'en aperçoit. La défaillance n'apparaît que sous la forme d'un \"Task exception was never retrieved\" isolé dans le journal, qui ne nomme aucun groupe et ressemble à un bogue. Celui qui se trouvait derrière ce membre cesse simplement d'être notifié.\n\nPour corriger cette erreur, modifiez la liste `services:` de ce groupe dans votre configuration et supprimez ou corrigez ces entrées.\n\nSpook 👻 Votre pote.",
             "title": "Membres inconnus dans le groupe de notification : {group}"

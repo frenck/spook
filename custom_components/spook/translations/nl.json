@@ -807,27 +807,6 @@
             "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nDe volgende dashboardbronnen verwijzen naar bestanden die niet bestaan:\n\n{resources}\n\n\n\nDit gebeurt meestal wanneer een custom card of de bijbehorende bestanden zijn verwijderd, terwijl de bron bleef staan.\n\nDeze bronnen staan in je YAML-configuratie, dus de pagina Bronnen kan ze niet wijzigen. Bewerk de sectie `resources:` van je Lovelace-configuratie en verwijder of corrigeer deze regels.\n\nSpook 👻 Je homie.",
             "title": "Dashboardbronnen verwijzen naar ontbrekende bestanden"
         },
-        "unknown_area_sensors": {
-            "title": "Onbekende {sensors}-sensor voor ruimte: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Onbekende {sensors}-sensor voor ruimte: {area}",
-                        "description": "Spook heeft een geest gevonden in je ruimtes 👻\n\nDe ruimte {area} gebruikt een {sensors}-sensor die Home Assistant niet kent:\n\n{entities}\n\nHome Assistant controleert deze sensor alleen wanneer hij wordt gekozen, dus toen hij werd verwijderd of hernoemd, bleef de ruimte naar niets verwijzen. Assist en ruimtekaarten krijgen er geen meetwaarde meer van.\n\nWis de instelling zodat je opnieuw een sensor kunt kiezen, of laat hem staan, dan houdt Spook op met erop wijzen.\n\nSpook 👻 Je homie.",
-                        "menu_options": {
-                            "remove": "Instelling wissen",
-                            "manage": "Ik los het zelf op",
-                            "ignore": "Houden, zeg er niets meer over"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook houdt vanaf nu zijn mond over deze ruimte.",
-                    "manage": "Je kunt een andere sensor kiezen in de instellingen van deze ruimte op de [pagina Ruimtes](/config/areas/dashboard).",
-                    "changed": "Deze sensoren zijn terug, of de instellingen verwijzen nu ergens anders naar, sinds Spook keek. Er is dus niets gewist. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
-                }
-            }
-        },
         "unknown_engines": {
             "title": "Assist-pipeline gebruikt engines die verdwenen zijn: {pipeline}",
             "description": "Spook heeft een geest gevonden in je spraakassistenten 👻\n\nDe Assist-pipeline {pipeline} gebruikt het volgende, dat Home Assistant niet kent:\n\n{engines}\n\nDit betekent meestal dat de integratie erachter is verwijderd. De pipeline is daar niet van op de hoogte gebracht, dus de volgende keer dat hij wordt gebruikt, mislukt hij met een fout over een ontbrekende provider of agent, en niets daarvoor wijst hiernaartoe.\n\nOm dit op te lossen, open je de instellingen van deze assistent onder [Spraakassistenten](/config/voice-assistants/assistants) en kies je voor elk hiervan een engine die er nog is.\n\nSpook 👻 Je homie."

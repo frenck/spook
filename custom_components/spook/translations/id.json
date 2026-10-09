@@ -1054,27 +1054,6 @@
             "description": "Spook menemukan hantu di pembantu templat Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan pembantu templat berikut:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nPembantu ini merujuk ke aksi berikut, yang tidak dikenal oleh Home Assistant:\n\n{services}\n\n\n\nIni sering terjadi ketika penyedia aksi dihapus, atau sebuah skrip diganti nama atau dihapus. Untuk memperbaiki kesalahan ini, konfigurasikan ulang pembantu templat agar menggunakan aksi yang ada.\n\nSpook 👻 Sobat Anda.",
             "title": "Aksi tidak dikenal digunakan di pembantu templat: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Sensor {sensors} tidak dikenal untuk area: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Sensor {sensors} tidak dikenal untuk area: {area}",
-                        "description": "Spook menemukan hantu di area Anda 👻\n\nArea {area} menggunakan sensor {sensors} yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\nHome Assistant hanya memeriksa sensor ini saat dipilih, jadi ketika sensornya dihapus atau diganti nama, area ini tetap menunjuk ke kekosongan. Assist dan kartu area tidak lagi mendapat pembacaan darinya.\n\nKosongkan pengaturan ini agar Anda bisa memilih sensor lagi, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
-                        "menu_options": {
-                            "remove": "Kosongkan pengaturan",
-                            "manage": "Biar saya perbaiki sendiri",
-                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit area ini lagi.",
-                    "manage": "Anda bisa memilih sensor lain di pengaturan area ini di [halaman Area](/config/areas/dashboard).",
-                    "changed": "Sensor-sensor ini sudah kembali, atau pengaturannya kini menunjuk ke tempat lain, sejak Spook memeriksanya. Jadi tidak ada yang dikosongkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook menemukan hantu di kustomisasi Anda 👻\n\nBagian `customize:` menyematkan atribut pada entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nIni sering terjadi ketika sebuah entitas diganti nama atau dihapus sementara kustomisasinya tertinggal. Untuk memperbaiki kesalahan ini, edit bagian `customize:` di konfigurasi Anda dan hapus entitas-entitas ini.\n\nSpook 👻 Sobat Anda.",
             "title": "Entitas tidak dikenal di kustomisasi Anda"
