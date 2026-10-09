@@ -68,12 +68,12 @@ DOCUMENTATION_URL, REPAIR_DOCUMENTATION = _load_repair_documentation()
 
 def _yaml(name: str) -> dict[str, Any]:
     """Return one of the YAML files Home Assistant reads Spook's things from."""
-    return yaml.safe_load((SPOOK / name).read_text()) or {}
+    return yaml.safe_load((SPOOK / name).read_text(encoding="utf-8")) or {}
 
 
 def _translations() -> dict[str, Any]:
     """Return the English translations, where the readable text lives."""
-    return json.loads((SPOOK / "translations" / "en.json").read_text())
+    return json.loads((SPOOK / "translations" / "en.json").read_text(encoding="utf-8"))
 
 
 def _url(reference: str) -> str:
@@ -90,7 +90,7 @@ def _url(reference: str) -> str:
 
 def _documentation_links(page: str) -> dict[str, str]:
     """Return the documentation address of every entry on a reference page."""
-    text = (DOCS / page).read_text()
+    text = (DOCS / page).read_text(encoding="utf-8")
     return {match["name"]: _url(match["link"]) for match in _DOCUMENTED.finditer(text)}
 
 
@@ -198,12 +198,41 @@ def _target(target: dict[str, Any] | None) -> str:
     return f"Target: {named} entities, or the devices, areas, floors and labels holding them."
 
 
-def _entry(
+# What an action that hands back a response asks of whoever calls it. One
+# that only answers fails when called without asking for the answer.
+_RESPONSES = {
+    "ONLY": "Response: always. Call it asking for the response, or it fails.",
+    "OPTIONAL": "Response: on request.",
+}
+_RESPONSE = re.compile(r"supports_response\s*=\s*SupportsResponse\.(ONLY|OPTIONAL)")
+_SERVICE = re.compile(r'^\s*service\s*=\s*"([a-z0-9_]+)"', re.MULTILINE)
+
+
+def action_responses() -> dict[str, str]:
+    """Return how each action that answers hands its response back.
+
+    Read off the action's own module, where Home Assistant reads it too. The
+    folder an action sits in is the domain it is registered on.
+    """
+    responses: dict[str, str] = {}
+    for module in sorted(SPOOK.glob("ectoplasms/*/services/*.py")):
+        source = module.read_text(encoding="utf-8")
+        if (response := _RESPONSE.search(source)) and (
+            service := _SERVICE.search(source)
+        ):
+            domain = module.parent.parent.name
+            responses[f"{domain}.{service.group(1)}"] = response.group(1)
+    return responses
+
+
+def _entry(  # noqa: PLR0913  # pylint: disable=too-many-arguments
     name: str,
     described: dict[str, Any],
     translated: dict[str, Any],
     fields_heading: str,
-    documentation: str | None,
+    *,
+    documentation: str | None = None,
+    response: str | None = None,
 ) -> list[str]:
     """Return the lines for one action, trigger or condition."""
     lines = [
@@ -212,6 +241,9 @@ def _entry(
         _flat(translated.get("description", "")),
         "",
     ]
+
+    if response:
+        lines += [_RESPONSES[response], ""]
 
     if "target" in described:
         lines += [_target(described["target"]), ""]
@@ -240,6 +272,7 @@ def render_actions() -> str:
     translated = _translations()["services"]
     links = _documentation_links("actions.md")
     domains = action_domains()
+    responses = action_responses()
 
     by_name = {action_name(key, domains): key for key in described}
 
@@ -253,7 +286,12 @@ def render_actions() -> str:
 
         key = by_name[name]
         lines += _entry(
-            name, described[key] or {}, translated[key], "Data", links.get(name)
+            name,
+            described[key] or {},
+            translated[key],
+            "Data",
+            documentation=links.get(name),
+            response=responses.get(name),
         )
 
     return _page(
@@ -275,7 +313,11 @@ def _automation_reference(kind: str, introduction: str) -> str:
     for key in sorted(described):
         name = f"spook.{key}"
         lines += _entry(
-            name, described[key] or {}, translated[key], "Options", links.get(name)
+            name,
+            described[key] or {},
+            translated[key],
+            "Options",
+            documentation=links.get(name),
         )
     return _page(f"Spook {kind}", introduction, lines)
 
@@ -375,8 +417,16 @@ def render() -> dict[str, str]:
 def write(directory: Path) -> None:
     """Write every reference file into a directory."""
     directory.mkdir(parents=True, exist_ok=True)
-    for name, content in render().items():
-        (directory / name).write_text(content)
+    references = render()
+
+    # A reference that is no longer made would linger, and the test that
+    # holds the folder to what is made would keep failing after regenerating.
+    for stale in directory.glob("*.md"):
+        if stale.name not in references:
+            stale.unlink()
+
+    for name, content in references.items():
+        (directory / name).write_text(content, encoding="utf-8")
 
 
 def main() -> None:

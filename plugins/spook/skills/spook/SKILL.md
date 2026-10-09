@@ -22,8 +22,8 @@ Call them like any core action: `domain.action`, fields under `data`, entities u
 - Most of them live on the domain they act on, not on `spook`. `homeassistant.add_label_to_entity`, `homeassistant.create_area`, `repairs.list`, `light.set_brightness`, `input_select.random`. The UI marks them with a 👻 after the name.
 - One on another domain only exists while that integration is loaded. No `light` integration, no `light.set_brightness`.
 - Registry actions (create, delete, rename, labels, aliases, areas, floors, categories, entity IDs) need an admin user. So do `repairs.list`, `repairs.ignore_all` and `repairs.unignore_all`.
-- Some hand back a response, like `repairs.list` and `calendar.delete_event`. Ask for it (`response_variable` in YAML, `return_response` over the API).
-- An ID that does not exist is an error, not a silent no-op. Read the error: it names what is missing.
+- Some hand back a response. A few only answer, like `repairs.list` and `homeassistant.list_orphaned_database_entities`, and fail when called without asking for it; others answer on request, like `calendar.delete_event`. The reference says which, per action. Ask with `response_variable` in YAML, `return_response` over the API.
+- An ID that does not exist is usually an error, and the error names what is missing. Not always: `group.remove_members`, for one, accepts a member that is already gone, on purpose. Follow each action's reference rather than assume.
 - Home Assistant's own MCP server offers the Assist tools and exposed scripts, not every action. To reach a Spook action from there, wrap it in a script and expose that.
 - From Home Assistant 2026.11, Spook also brings its own tools to Home Assistant's administrator API (`homeassistant`), for conversation agents and Home Assistant's MCP server: `spook__overview`, `spook__list_ghosts`, `spook__explain_ghost`, `spook__find_usages`, `spook__check_references`, `spook__list_features`, `spook__ignore_ghost`, `spook__unignore_ghost` and `spook__fix_ghost`. When they are there, prefer them over calling actions by hand. `spook__check_references` checks a draft automation or script for ghosts before you save it.
 

@@ -48,6 +48,8 @@ Documentation: https://spook.boo/blueprint#import-blueprint
 
 Deletes events from a calendar, found by their title or uid in a stretch of time. Hands back what it deleted, uid included.
 
+Response: on request.
+
 Target: `calendar` entities, or the devices, areas, floors and labels holding them.
 
 Data:
@@ -64,6 +66,8 @@ Documentation: https://spook.boo/calendar#delete-event
 ### `calendar.update_event`: Update event
 
 Changes events in a calendar, found by their title or uid in a stretch of time. Hands back what it changed, uid included.
+
+Response: on request.
 
 Target: `calendar` entities, or the devices, areas, floors and labels holding them.
 
@@ -327,6 +331,8 @@ Documentation: https://spook.boo/areas#create-an-area
 
 Creates a new category on the fly, for automations, scripts, scenes, or helpers. Returns the ID of the new category.
 
+Response: on request.
+
 Data:
 
 - `scope` (required, one of `automation`, `helpers`, `scene`, `script`): Where the category is used.
@@ -544,6 +550,8 @@ Documentation: https://spook.boo/integrations#ignore-all-discovered-devices-serv
 ### `homeassistant.list_orphaned_database_entities`: List all orphaned database entities
 
 Lists all orphaned database entities unclaimed by any integration.
+
+Response: always. Call it asking for the response, or it fails.
 
 Documentation: https://spook.boo/entities#list-all-orphaned-database-entities
 
@@ -1279,6 +1287,8 @@ Documentation: https://spook.boo/repairs#ignore-all-issues
 
 Lists the issues currently raised in Home Assistant Repairs, with their titles, for an automation to act on or a dashboard to show.
 
+Response: always. Call it asking for the response, or it fails.
+
 Data:
 
 - `include_ignored` (optional, boolean): Also list the issues that have been ignored. Default: `false`.
@@ -1351,6 +1361,8 @@ Documentation: https://spook.boo/other-features#random-fail
 ### `spook.wait_for_condition`: Wait for a condition
 
 Wait until a condition is true. Returns straight away if it already is.
+
+Response: on request.
 
 Data:
 
