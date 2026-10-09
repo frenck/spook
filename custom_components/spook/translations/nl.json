@@ -822,6 +822,69 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "Onbekende entiteiten gebruikt in HomeKit-bridge: {bridge}",
             "description": "Spook heeft een geest gevonden in je HomeKit-bridge 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende HomeKit-bridge tegen:\n\n{bridge}\n\nDeze bridge noemt de volgende entiteiten, die Home Assistant niet kent:\n\n{entities}\n\n\n\nHomeKit volgt een entiteit niet als die wordt hernoemd. Een opgenomen entiteit die is hernoemd of verwijderd, verdwijnt uit de Woning-app. Een uitgesloten entiteit die is hernoemd, verschijnt er weer in.\n\nDeze bridge is ingesteld in je YAML-configuratie. Om deze fout te verhelpen, pas je de `filter` van deze bridge onder `homekit:` aan en verwijder of corrigeer je deze entiteiten.\n\nSpook 👻 Je homie."
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Onbekende temperatuursensor voor ruimte: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Onbekende temperatuursensor voor ruimte: {area}",
+                        "description": "Spook heeft een geest gevonden in je ruimtes 👻\n\nDe ruimte {area} gebruikt een temperatuursensor die Home Assistant niet kent:\n\n{entities}\n\nHome Assistant controleert deze sensor alleen wanneer hij wordt gekozen, dus toen hij werd verwijderd of hernoemd, bleef de ruimte naar niets verwijzen. Assist en ruimtekaarten krijgen er geen temperatuurwaarde meer van.\n\nWis de instelling zodat je opnieuw een sensor kunt kiezen, of laat hem staan, dan houdt Spook op met erop wijzen.\n\nSpook 👻 Je homie.",
+                        "menu_options": {
+                            "remove": "Instelling wissen",
+                            "manage": "Ik los het zelf op",
+                            "ignore": "Houden, zeg er niets meer over"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook houdt vanaf nu zijn mond over deze ruimte.",
+                    "manage": "Je kunt een andere sensor kiezen in de instellingen van deze ruimte op de [pagina Ruimtes](/config/areas/dashboard).",
+                    "changed": "Deze sensor is terug, of de instelling verwijst nu ergens anders naar, sinds Spook keek. Er is dus niets gewist. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Onbekende vochtigheidssensor voor ruimte: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Onbekende vochtigheidssensor voor ruimte: {area}",
+                        "description": "Spook heeft een geest gevonden in je ruimtes 👻\n\nDe ruimte {area} gebruikt een vochtigheidssensor die Home Assistant niet kent:\n\n{entities}\n\nHome Assistant controleert deze sensor alleen wanneer hij wordt gekozen, dus toen hij werd verwijderd of hernoemd, bleef de ruimte naar niets verwijzen. Assist en ruimtekaarten krijgen er geen vochtigheidswaarde meer van.\n\nWis de instelling zodat je opnieuw een sensor kunt kiezen, of laat hem staan, dan houdt Spook op met erop wijzen.\n\nSpook 👻 Je homie.",
+                        "menu_options": {
+                            "remove": "Instelling wissen",
+                            "manage": "Ik los het zelf op",
+                            "ignore": "Houden, zeg er niets meer over"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook houdt vanaf nu zijn mond over deze ruimte.",
+                    "manage": "Je kunt een andere sensor kiezen in de instellingen van deze ruimte op de [pagina Ruimtes](/config/areas/dashboard).",
+                    "changed": "Deze sensor is terug, of de instelling verwijst nu ergens anders naar, sinds Spook keek. Er is dus niets gewist. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Onbekende temperatuur- en vochtigheidssensoren voor ruimte: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Onbekende temperatuur- en vochtigheidssensoren voor ruimte: {area}",
+                        "description": "Spook heeft een geest gevonden in je ruimtes 👻\n\nDe ruimte {area} gebruikt een temperatuur- en een vochtigheidssensor die Home Assistant niet kent:\n\n{entities}\n\nHome Assistant controleert deze sensoren alleen wanneer ze worden gekozen, dus toen ze werden verwijderd of hernoemd, bleef de ruimte naar niets verwijzen. Assist en ruimtekaarten krijgen er geen meetwaarde meer van.\n\nWis de instellingen zodat je opnieuw sensoren kunt kiezen, of laat ze staan, dan houdt Spook op met erop wijzen.\n\nSpook 👻 Je homie.",
+                        "menu_options": {
+                            "remove": "Instellingen wissen",
+                            "manage": "Ik los het zelf op",
+                            "ignore": "Houden, zeg er niets meer over"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook houdt vanaf nu zijn mond over deze ruimte.",
+                    "manage": "Je kunt andere sensoren kiezen in de instellingen van deze ruimte op de [pagina Ruimtes](/config/areas/dashboard).",
+                    "changed": "Deze sensoren zijn terug, of de instellingen verwijzen nu ergens anders naar, sinds Spook keek. Er is dus niets gewist. Spook kijkt uit zichzelf opnieuw en werkt deze reparatie bij."
+                }
+            }
         }
     },
     "services": {
