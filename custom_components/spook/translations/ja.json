@@ -1,11 +1,349 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "オートメーションがオフにされた",
+            "description": "誰か、または何かがオートメーションをオフにしたときにトリガーされます。ターゲットを空のままにすると、すべてのオートメーションを監視します。"
+        },
+        "debounce": {
+            "name": "落ち着いたら",
+            "description": "トリガーがしばらく発火しなくなったときに一度だけトリガーされるので、立て続けの発火がひとつにまとまります。人感センサーは動きを一度だけ報告するのではなく、二十回報告するものです。",
+            "fields": {
+                "triggers": {
+                    "name": "トリガー",
+                    "description": "落ち着くのを待つトリガーです。どれかが発火すると一連の発火が始まり、どれかがまた発火すると続いているとみなされます。つまり、複数のトリガーは個別ではなくまとめて扱われます。"
+                },
+                "for": {
+                    "name": "期間",
+                    "description": "これがトリガーされるまでに静かになっている必要がある時間です。発火するたびに待ち時間はやり直しになるので、発火し続けるものは決して報告されません。"
+                }
+            }
+        },
+        "all_of": {
+            "name": "これらすべてが起きた",
+            "description": "複数のトリガーが同じ時間枠の中で、順不同ですべて発火したときにトリガーされます。Home Assistant 標準のトリガーはリストのうちどれかひとつで十分ですが、こちらはその逆です。",
+            "fields": {
+                "triggers": {
+                    "name": "トリガー",
+                    "description": "すべて発火している必要があるトリガーです。順番は問いません。同じトリガーがもう一度発火した場合は、二回と数えずに前回分を置き換えます。"
+                },
+                "within": {
+                    "name": "時間枠",
+                    "description": "どれだけ近い間隔で起きる必要があるかです。時間枠はずれていくので、これより前に発火したトリガーは忘れられ、ほかのトリガーはそのままカウントされ続けます。"
+                }
+            }
+        },
+        "recovered": {
+            "name": "エンティティが復帰した",
+            "description": "しばらく利用できなかったエンティティが戻ってきたときにトリガーされます。ルーターの再起動で家中のすべてが復帰したように見えることはありません。",
+            "fields": {
+                "for": {
+                    "name": "期間",
+                    "description": "復帰とみなすために、エンティティがいなくなっている必要がある時間です。それより短いものはただのちらつきです。統合をリロードすると、そのすべてのエンティティが一秒以内に利用不可になってまた戻ります。"
+                }
+            }
+        },
+        "device_added": {
+            "name": "デバイスが追加された",
+            "description": "新しいデバイスが Home Assistant に追加されたときにトリガーされます。たとえば、ペアリングしたばかりのプラグなどです。"
+        },
+        "sequence": {
+            "name": "順番どおりのトリガー",
+            "description": "複数のトリガーが、指定した順番で次々に起きたときにトリガーされます。",
+            "fields": {
+                "steps": {
+                    "name": "ステップ",
+                    "description": "順番に起きる必要があるトリガーです。待っているステップだけが監視されるので、後のステップが先に発火しても一致とはみなされません。"
+                },
+                "timeout": {
+                    "name": "タイムアウト",
+                    "description": "最初のステップから数えて、シーケンス全体にかけてよい時間です。省略すると無期限に待ちます。"
+                },
+                "reset": {
+                    "name": "リセット",
+                    "description": "進行中のシーケンスを打ち切り、最初のステップ待ちに戻すトリガーです。"
+                }
+            }
+        },
+        "while": {
+            "name": "条件が成立している間",
+            "description": "条件が真になったときにトリガーされ、真である間は一定の間隔でトリガーされ続けます。",
+            "fields": {
+                "condition": {
+                    "name": "条件",
+                    "description": "監視する条件です。真になると発火が始まり、真でなくなると止まります。"
+                },
+                "every": {
+                    "name": "間隔",
+                    "description": "条件が成立している間、ある発火から次の発火までに待つ時間です。"
+                }
+            }
+        },
+        "watchdog": {
+            "name": "ウォッチドッグ",
+            "description": "起きるはずだったことが時間内に起きなかったときにトリガーされます。",
+            "fields": {
+                "arm": {
+                    "name": "開始",
+                    "description": "監視を開始するものです。待ち時間はここから計られ、待っている間にもう一度開始すると待ち時間はやり直しになります。"
+                },
+                "expect": {
+                    "name": "期待",
+                    "description": "続いて起きるはずのものです。時間内に起きれば監視は取り消され、何もトリガーされません。"
+                },
+                "within": {
+                    "name": "時間枠",
+                    "description": "期待したものが起きるまでの猶予です。この時間が過ぎても起きなかったときにトリガーされます。"
+                }
+            }
+        },
+        "flapping": {
+            "name": "エンティティが落ち着かない",
+            "description": "一定の時間内に、エンティティの状態が本来よりも頻繁に変わったときにトリガーされます。",
+            "fields": {
+                "changes": {
+                    "name": "変化の回数",
+                    "description": "これがトリガーされるまでに必要な状態変化の回数です。属性の変化はカウントされず、エンティティが現れたり消えたりすることもカウントされません。"
+                },
+                "within": {
+                    "name": "時間枠",
+                    "description": "それらの変化が収まる必要がある時間の長さです。時間枠はずれていくので、常に直近の変化が対象になります。"
+                }
+            }
+        },
+        "condition_met": {
+            "name": "条件が真になった",
+            "description": "条件が偽から真に変わったときにトリガーされます。条件はほかの場所と同じ構成要素で組み立てられます。",
+            "fields": {
+                "condition": {
+                    "name": "条件",
+                    "description": "監視する条件です。"
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron スケジュール",
+            "description": "crontab のスケジュールでトリガーされます。毎週平日の七時や、毎月最終金曜日など、Home Assistant 標準の時間トリガーでは表現できない時刻に使えます。",
+            "fields": {
+                "schedule": {
+                    "name": "スケジュール",
+                    "description": "五つのフィールド (分、時、日、月、曜日) からなる crontab 式です。範囲やステップ、曜日の拡張表記に対応しています。たとえば \"MON#2\" は第二月曜日、\"5L\" は最終金曜日です。\"@daily\" のようなニックネームには対応していません。"
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "デバイスが検出された",
+            "description": "Home Assistant がセットアップできる新しいものを検出したときにトリガーされます。たとえば、ネットワークに現れたばかりのデバイスなどです。"
+        },
+        "integration_added": {
+            "name": "統合が追加された",
+            "description": "誰が、または何が追加したかに関係なく、統合が Home Assistant に追加されたときにトリガーされます。"
+        },
+        "integration_failed": {
+            "name": "統合のセットアップに失敗した",
+            "description": "設定エントリがしばらくセットアップできず、Home Assistant 自身の再試行では解決しそうにないときにトリガーされます。",
+            "fields": {
+                "for": {
+                    "name": "期間",
+                    "description": "これがトリガーされるまでに、エントリが失敗し続ける必要がある時間です。Home Assistant は失敗したエントリを遅くとも十分ごとに再試行するので、それより短いと、まだ自然に直るかもしれない問題を報告してしまいます。"
+                },
+                "entry_id": {
+                    "name": "エントリ",
+                    "description": "特定の設定エントリに限定します。空のままにすると、すべてのエントリを監視します。"
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "修復の問題が作成された",
+            "description": "新しい修復の問題が現れたときにトリガーされます。修復ページを見に行かなくても気づけます。",
+            "fields": {
+                "domain": {
+                    "name": "統合",
+                    "description": "特定の統合が報告した問題に、ドメインで限定します。空のままにすると、すべてが対象になります。"
+                },
+                "severity": {
+                    "name": "重大度",
+                    "description": "特定の重大度の問題に限定します。空のままにすると、すべてが対象になります。"
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "修復の問題が解決した",
+            "description": "修復の問題がなくなったときにトリガーされます。修正された場合も、報告されなくなった場合も含みます。",
+            "fields": {
+                "domain": {
+                    "name": "統合",
+                    "description": "特定の統合が報告した問題に、ドメインで限定します。空のままにすると、すべてが対象になります。"
+                }
+            }
+        },
+        "stale": {
+            "name": "エンティティが沈黙した",
+            "description": "しばらくエンティティに何も書き込まれなかったときにトリガーされます。利用不可にならずに静かに壊れたデバイスを見つけられます。",
+            "fields": {
+                "for": {
+                    "name": "期間",
+                    "description": "これがトリガーされるまでに、エンティティが沈黙している必要がある時間です。同じ値を報告し続けているエンティティは沈黙しているとはみなされません。"
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "設定温度に到達した",
+            "description": "サーモスタットや給湯器の温度が設定温度に達したとき、または一気に超えたときにトリガーされます。設定温度の変更はカウントされず、オフになっているデバイスもカウントされません。",
+            "fields": {
+                "tolerance": {
+                    "name": "許容範囲",
+                    "description": "設定温度にどこまで近ければ到達とみなすかを、デバイスの単位で指定します。設定値の少し手前で落ち着くサーモスタット向けです。ゼロは設定温度そのものを意味します。"
+                }
+            }
+        },
+        "update_installed": {
+            "name": "アップデートがインストールされた",
+            "description": "アップデートエンティティが別のインストール済みバージョンを報告したときにトリガーされます。誰かがインストールを押した場合も、デバイスが自分で更新した場合も、Home Assistant の外で更新された場合も含みます。"
+        },
+        "position_reached": {
+            "name": "位置に到達した",
+            "description": "カバーやバルブがある位置に到達したとき、または通り過ぎたときにトリガーされます。すでにその位置にあるものや、その位置のまま利用不可から戻ってきたものはカウントされません。",
+            "fields": {
+                "position": {
+                    "name": "位置",
+                    "description": "到達する位置で、0 (閉) から 100 (開) までです。"
+                }
+            }
+        },
+        "script_started": {
+            "name": "スクリプトが開始された",
+            "description": "スクリプトの実行が始まったときにトリガーされます。すでに実行中のためにスクリプトが拒否した実行はカウントされません。ターゲットを空のままにすると、すべてのスクリプトを監視します。"
+        },
+        "user_added": {
+            "name": "ユーザーが追加された",
+            "description": "誰かに Home Assistant のログインが与えられたときにトリガーされます。Home Assistant が自身の統合のために作成するユーザーは対象外です。"
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "重大",
+                "error": "エラー",
+                "warning": "警告"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "一番下",
+                "top": "一番上"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "温度が設定温度にある",
+            "description": "サーモスタットや給湯器の温度が設定温度にあるときに成立します。オフのデバイスは設定温度にあるとはみなされず、利用できないデバイスは対象外です。",
+            "fields": {
+                "behavior": {
+                    "name": "動作",
+                    "description": "デバイスのどれかひとつが到達していれば十分か、すべてが到達している必要があるかです。"
+                },
+                "tolerance": {
+                    "name": "許容範囲",
+                    "description": "設定温度にどこまで近ければ到達とみなすかを、デバイスの単位で指定します。設定値の少し手前で落ち着くサーモスタット向けです。ゼロは設定温度そのものを意味します。"
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "修復の問題が未解決",
+            "description": "修復の問題が未解決の間、成立します。誰かが無視した問題はカウントされません。",
+            "fields": {
+                "domain": {
+                    "name": "統合",
+                    "description": "特定の統合が報告した問題に、ドメインで限定します。空のままにすると、すべてが対象になります。"
+                },
+                "severity": {
+                    "name": "重大度",
+                    "description": "特定の重大度の問題に限定します。空のままにすると、すべてが対象になります。"
+                }
+            }
+        },
+        "quota": {
+            "name": "実行回数の残りあり",
+            "description": "このオートメーションの実行回数が、指定した期間内で指定した回数未満の間、成立します。スクリプトはカウントされません。",
+            "fields": {
+                "limit": {
+                    "name": "上限",
+                    "description": "期間内に許可される実行回数です。"
+                },
+                "period": {
+                    "name": "期間",
+                    "description": "上限が適用される時間枠です。時間枠はずれていくので、一日とは深夜0時から深夜0時までではなく、任意の二十四時間を意味します。"
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "オートメーションによってトリガーされた",
+            "description": "別のオートメーションがこの実行を開始したときに成立します。直接でも、スクリプトを経由した場合でも含みます。",
+            "fields": {
+                "automation": {
+                    "name": "オートメーション",
+                    "description": "特定のオートメーションに限定します。空のままにすると、どのオートメーションでも受け付けます。"
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "ユーザーによってトリガーされた",
+            "description": "これを引き起こしたものの背後に人がいるときに成立します。その人が起こした状態変化やイベントで、テンプレートトリガーを真にしたものも含みます。スケジュール、太陽、自律的に動作する統合には誰も関わっておらず、実行ボタンで強制的に実行した場合も同様です。",
+            "fields": {
+                "person": {
+                    "name": "人",
+                    "description": "これらの人のいずれかが開始したときだけ成立します。空のままにすると、誰でも成立します。人にはユーザーアカウントが紐付いている必要があります。そうでなければ照合する対象がありません。"
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "ユーザーによってトリガーされていない",
+            "description": "この実行に誰も責任がないときに成立します。スケジュール、太陽、自律的に動作する統合、または実行ボタンなどです。あえてオプションはありません。特定の人を除外したい場合は、「ユーザーによってトリガーされた」を Not 条件の中に入れてください。"
+        },
+        "chance": {
+            "name": "確率",
+            "description": "判定のたびにランダムに決まり、設定した割合で成立します。オートメーションにちょっとした変化をつけたいときに便利です。",
+            "fields": {
+                "percentage": {
+                    "name": "パーセンテージ",
+                    "description": "この条件が成立する頻度をパーセントで指定します。"
+                }
+            }
+        },
+        "cooldown": {
+            "name": "クールダウン",
+            "description": "このオートメーションまたはスクリプトが指定した時間内に実行されていない場合 (または一度も実行されていない場合) にだけ成立します。組み込みのクールダウンなので、何度も続けて実行されることがありません。",
+            "fields": {
+                "duration": {
+                    "name": "期間",
+                    "description": "最後の実行から、この条件が再び成立するまでに待つ時間です。"
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "えーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーーー!"
+            "already_spooked": "Spook はすでにここに住み着いています 👻\n\n一軒の家にゴーストは一体で十分です。Spook は[デバイスとサービス](/config/integrations/integration/spook)にあります。",
+            "enabled_existing": "Spook が目を覚ましました 👻\n\n少しの間、あたりを見回させてあげてください。見つけたものはすべて[修復](/config/repairs)に表示されます。",
+            "enable_failed": "Spook が起きてくれませんでした 👻\n\n[デバイスとサービス](/config/integrations/integration/spook)から、ご自身で有効に戻してみてください。",
+            "kept_sleeping": "Spook は眠ったままです 👻\n\n寂しくなりましたか? [デバイスとサービス](/config/integrations/integration/spook)からいつでも起こせます。"
+        },
+        "create_entry": {
+            "spooked": "Spook がふわふわ漂い始めました 👻\n\n少しの間、あたりを見回させてあげてください。見つけたものはすべて[修復](/config/repairs)に表示されます。\n\n追加のアクション、トリガー、条件は、オートメーションとスクリプトのエディターで待っています。Spook にほかに何ができるか気になりますか? [ドキュメント]({documentation_url})にすべて載っています。\n\nSpook を気に入っていただけましたか? 👻 [GitHub]({repository_url}) で ⭐ を付けると、Spook がなかなかいいものだとほかの人にも伝わります。[Frenck をスポンサー]({sponsor_url})すると、このゴーストがお腹いっぱいでいられます。そして、隔週の無料[ニュースレター]({newsletter_url})は、あなたの中のゴーストをお腹いっぱいにしてくれます。"
         },
         "step": {
             "user": {
-                "description": "読み方を読んでいましたか? ライセンスを読みましたか? お問い合わせ?"
+                "title": "ばあ! あなたの相棒、Spook です 👻",
+                "description": "Spook は Home Assistant の中をふわふわ漂いながらゴーストを探します: もう存在しないものへの参照や、誰も片付けなかった残りものです。見つけたものはすべて修復に報告します。\n\nさらに、追加のアクション、トリガー、条件、ヘルパーで、オートメーションやスクリプトでできることを広げ、より強力なオートメーションを実現します。\n\n先に言っておきます: Spook は Home Assistant の一部ではありません。招かれてもいない場所にまで手を伸ばすカスタム統合です。何かおかしなことが起きたら、まず Spook を疑って、[私たちに知らせてください]({issue_tracker_url})。\n\nゾクッとする準備はできましたか?"
+            },
+            "already_configured": {
+                "title": "Spook は眠っています 👻",
+                "description": "Spook はすでにセットアップされていますが、誰かがオフにしました。起こしますか?",
+                "menu_options": {
+                    "enable_existing": "Spook を起こす",
+                    "keep_sleeping": "寝かせておく"
+                }
             }
         }
     },
@@ -71,6 +409,9 @@
             "homeassistant_climate": {
                 "name": "トランスフォーメーション"
             },
+            "homeassistant_counter": {
+                "name": "カウンター"
+            },
             "homeassistant_cover": {
                 "name": "カバー"
             },
@@ -94,6 +435,9 @@
             },
             "homeassistant_fan": {
                 "name": "ファン"
+            },
+            "homeassistant_group": {
+                "name": "グループ"
             },
             "homeassistant_humidifier": {
                 "name": "加湿器"
@@ -173,6 +517,12 @@
             "homeassistant_time": {
                 "name": "スケジュール"
             },
+            "homeassistant_timer": {
+                "name": "タイマー"
+            },
+            "homeassistant_todo": {
+                "name": "To-Do リスト"
+            },
             "homeassistant_tts": {
                 "name": "テキストツースピーチ"
             },
@@ -213,10 +563,213 @@
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "all-of トリガーのすべてのトリガーを登録できませんでした。"
+        },
+        "area_not_found": {
+            "message": "エリア {area_id} が見つかりません。"
+        },
+        "blueprint_backup_failed": {
+            "message": "{path} のコピーを退避できませんでした: {error}。何も書き込まれていません。"
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} はここでは実行できません: {errors}。何も書き込まれていません。"
+        },
+        "blueprint_could_not_write": {
+            "message": "{path} に書き込めませんでした。"
+        },
+        "blueprint_domain_not_supported": {
+            "message": "サポートされていないドメインです: {domain}。"
+        },
+        "blueprint_fetch_failed": {
+            "message": "URL からブループリントを取得中にエラーが発生しました。"
+        },
+        "blueprint_file_exists": {
+            "message": "ファイルはすでに存在します。"
+        },
+        "blueprint_gone": {
+            "message": "{name} はもう存在しないため、更新するものがありません。何も書き込まれていません。"
+        },
+        "blueprint_url_not_supported": {
+            "message": "この URL はサポートされていません。"
+        },
+        "blueprint_write_failed": {
+            "message": "ファイルの書き込み中にエラーが発生しました。"
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain} のブループリントは現在読み込まれていません。"
+        },
+        "calendar_events_which": {
+            "message": "どのイベントかを指定してください: 概要、uid、またはその両方を指定します。"
+        },
+        "calendar_range_backwards": {
+            "message": "検索範囲の終わりは、始まりより後である必要があります。"
+        },
+        "calendar_range_required": {
+            "message": "どこまで検索するかを指定してください: 終了日時、または期間を指定します。"
+        },
+        "cannot_disable_system_user": {
+            "message": "システムが生成したユーザーは無効にできません: {user_id}。"
+        },
+        "cannot_enable_system_user": {
+            "message": "システムが生成したユーザーは有効にできません: {user_id}。"
+        },
+        "category_not_found": {
+            "message": "{scope} にカテゴリー {category} が見つかりません。"
+        },
+        "category_nothing_to_update": {
+            "message": "カテゴリー {category} に更新するものがありません: {fields} のうち少なくともひとつを指定してください。"
+        },
+        "condition_template_is_constant": {
+            "message": "この条件のテンプレートには Jinja が残っていないため、定数となり、決して変化しません。通常は、このアクションが実行される前にスクリプトがテンプレートをレンダリングしてしまったことを意味します。アクションデータ内のテンプレートはすべてそうなります。テンプレートを使わない条件を使うか、'wait_template' でテンプレートそのものを待ってください。"
+        },
+        "config_entry_not_found": {
+            "message": "統合エントリ {config_entry_id} が見つかりません。"
+        },
+        "debounce_attach_failed": {
+            "message": "debounce トリガーのすべてのトリガーを登録できませんでした。"
+        },
+        "device_not_found": {
+            "message": "デバイス {device_id} が見つかりません。"
+        },
+        "entity_id_taken": {
+            "message": "エンティティ ID {entity_id} はすでに使われています。"
+        },
+        "entity_not_found": {
+            "message": "エンティティ {entity_id} が見つかりません。"
+        },
+        "entity_without_unique_id": {
+            "message": "エンティティ {entity_id} には一意の ID がないため、Home Assistant はアイコンやエイリアスを保存できません。"
+        },
+        "event_cannot_change": {
+            "message": "{summary} はそのようには変更できません: {error}。"
+        },
+        "event_nothing_to_change": {
+            "message": "何を変更するかを指定してください: 新しい概要、場所、または新しい時間です。"
+        },
+        "event_shift_or_times": {
+            "message": "イベントはずらすか、新しい時間を指定するかのどちらかで移動してください。両方は指定できません。"
+        },
+        "event_whole_days": {
+            "message": "{summary} は終日のイベントなので、日単位でしか移動できません。"
+        },
+        "floor_not_found": {
+            "message": "フロア {floor_id} が見つかりません。"
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} はこのグループに参加できません: このグループには {domains} のエンティティが含まれています。"
+        },
+        "group_not_found_behind": {
+            "message": "{entity_id} の背後にあるグループが見つかりませんでした。"
+        },
+        "helpers_unreachable": {
+            "message": "Home Assistant が管理している {domain} ヘルパーにアクセスできませんでした。"
+        },
+        "hold_until_nonexistent_time": {
+            "message": "存在しない時刻まで {entity_id} を保持することはできません。"
+        },
+        "home_zone_radius": {
+            "message": "自宅ゾーンの半径は、0 以上の整数 (メートル単位) で指定します。"
+        },
+        "home_zone_unsupported": {
+            "message": "自宅ゾーンに指定できるのは緯度、経度、半径だけです。次は指定できません: {fields}。"
+        },
+        "input_number_not_editable": {
+            "message": "この数値入力は編集できません: {entity_id}。"
+        },
+        "integration_entries_required": {
+            "message": "変更する統合エントリ、またはその統合を指定してください。"
+        },
+        "integration_without_entries": {
+            "message": "{domain} 統合にはエントリがありません。"
+        },
+        "label_not_found": {
+            "message": "ラベル {label_id} が見つかりません。"
+        },
+        "label_nothing_to_update": {
+            "message": "ラベル {label_id} に更新するものがありません: {fields} のうち少なくともひとつを指定してください。"
+        },
+        "maximum_not_above_minimum": {
+            "message": "最大値 ({maximum}) は最小値 ({minimum}) より大きくする必要があります。"
+        },
+        "no_max_value": {
+            "message": "エンティティ {entity_id} には最大値がありません。"
+        },
+        "no_min_value": {
+            "message": "エンティティ {entity_id} には最小値がありません。"
+        },
+        "not_a_group": {
+            "message": "{entity_id} はグループではありません。"
+        },
+        "person_not_editable": {
+            "message": "この人は編集できません: {entity_id}。"
+        },
+        "restart_failed": {
+            "message": "Home Assistant の再起動中に、Spook でエラーが発生しました。"
+        },
+        "sequence_attach_failed": {
+            "message": "シーケンストリガーの最初のステップを登録できませんでした。"
+        },
+        "set_range_nothing_to_change": {
+            "message": "変更する最小値、最大値、またはステップを指定してください。"
+        },
+        "spooked": {
+            "message": "おばけだぞ! 👻"
+        },
+        "timer_not_editable": {
+            "message": "このタイマーは編集できません: {entity_id}。"
+        },
+        "todo_item_after_itself": {
+            "message": "アイテムをそれ自身の後ろに移動することはできません。"
+        },
+        "todo_item_not_found": {
+            "message": "{entity_id} にアイテム {item} はありません。"
+        },
+        "todo_last_item_after": {
+            "message": "{entity_id} の最後のアイテムの後ろには何も移動できません。"
+        },
+        "todo_move_where": {
+            "message": "移動先を指定してください: 別のアイテムの後ろ、または一番上か一番下です。"
+        },
+        "user_not_found": {
+            "message": "ユーザーが見つかりませんでした: {user_id}。"
+        },
+        "value_not_a_number": {
+            "message": "{entity_id} の値 {value} は数値ではありません。"
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "ウォッチドッグトリガーの開始トリガーを登録できませんでした。"
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "ウォッチドッグトリガーの期待トリガーを登録できませんでした。"
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} は YAML 設定のグループなので、Spook では変更できません。設定ファイルで編集するか、この種類のグループでも動作する group.set を使ってください。"
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} は YAML で設定されているため、削除できません。"
+        },
+        "zone_not_editable": {
+            "message": "このゾーンは編集できません: {entity_id}。"
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "アラートが監視している不明なエンティティ: {alert}",
+            "description": "Spook がアラートの中にゴーストを見つけました 👻\n\nアラート {alert} (`{entity_id}`) は、Home Assistant が認識していないエンティティを監視しています:\n\n{entities}\n\nアラートは監視しているエンティティでしか発火できないため、このアラートは二度と発火しません。見た目は、報告することが何もないアラートと同じです。\n\nこのエラーを修正するには、設定の `alert:` セクションを編集して、このアラートが存在するエンティティを指すようにしてください。\n\nSpook 👻 あなたの相棒より。"
+        },
+        "alert_unknown_notifiers": {
+            "title": "アラートが使用している不明な通知先: {alert}",
+            "description": "Spook がアラートの中にゴーストを見つけました 👻\n\nアラート {alert} (`{entity_id}`) は、Home Assistant が認識していない次のアクションを通じて通知します:\n\n{notifiers}\n\nアラートは発火し、繰り返し通知も続けますが、これらの通知はどこにも届きません。Home Assistant がそれをログに記録するのはアラートが発火した瞬間だけで、誰も聞いていないことに気づくにはあまりにも遅すぎます。\n\nこのエラーを修正するには、設定でこのアラートの `notifiers:` リストを編集して、これらの項目を削除または修正してください。\n\nSpook 👻 あなたの相棒より。"
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
+            "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant が認識していない次のエリアを参照しています:\n\n{areas}\n\n\n\nこのエラーを修正するには、[オートメーションを編集]({edit})して、存在しないこれらのエリアを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
             "title": "未知の領域で使用される: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant で利用できるどの統合も提供できない次の条件を使っています:\n\n{conditions}\n\n\n\nこれはよく、条件を提供していた統合が削除されたときに起こります。このエラーを修正するには、[オートメーションを編集]({edit})して、利用できないこれらの条件を使わないようにするか、それらを提供する統合を元に戻してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明な条件が使われています: {automation}"
         },
         "automation_unknown_device_references": {
             "description": "Spookは自動化でゴーストを見つけました\n\n周りを浮遊している間、スプックは、次の自動化でパスを渡しました。\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこの自動化は、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[自動化]({edit})を編集し、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
@@ -227,63 +780,370 @@
             "title": "未知のエンティティティティ: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant が認識していない次のフロアを参照しています:\n\n{floors}\n\n\n\nこのエラーを修正するには、[オートメーションを編集]({edit})して、存在しないこれらのフロアを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なフロアが使われています: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant が認識していない次のラベルを参照しています:\n\n{labels}\n\n\n\nこのエラーを修正するには、[オートメーションを編集]({edit})して、存在しないこれらのラベルを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なラベルが使われています: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant が認識していない次のアクションを参照しています:\n\n{services}\n\n\n\nこのエラーを修正するには、[オートメーションを編集]({edit})して、存在しないこれらのアクションを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なアクションが使われています: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook がオートメーションの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のオートメーションに出くわしました:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nこのオートメーションは、Home Assistant で利用できるどの統合も提供できない次のトリガーを使っています:\n\n{triggers}\n\n\n\nこれはよく、トリガーを提供していた統合が削除されたときに起こります。このエラーを修正するには、[オートメーションを編集]({edit})して、利用できないこれらのトリガーを使わないようにするか、それらを提供する統合を元に戻してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なトリガーが使われています: {automation}"
+        },
+        "empty_areas": {
+            "title": "空のエリア: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "空のエリア: {area}",
+                        "description": "エリア {area} にはデバイスもエンティティもなく、ここをターゲットにしているオートメーションやスクリプトもありません。\n\n削除するか、そのまま残してください。残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "この空のエリアを削除する",
+                            "ignore": "残しておく、もう知らせないで",
+                            "manage": "自分で直す"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのエリアについて何も言いません。",
+                    "manage": "このエリアは[エリアページ](/config/areas/dashboard)でご自身で管理できます。",
+                    "changed": "Spook が確認した後、このエリアは再び使われるようになりました: 何かが置かれたか、オートメーションやスクリプトが使っています。そのため、手を付けずにそのままにしています。Spook は自分でもう一度確認して、この修復を更新します。"
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "空のフロア: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "空のフロア: {floor}",
+                        "description": "フロア {floor} にはエリアがなく、ここをターゲットにしているオートメーションやスクリプトもありません。\n\n削除するか、そのまま残してください。残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "この空のフロアを削除する",
+                            "ignore": "残しておく、もう知らせないで",
+                            "manage": "自分で直す"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのフロアについて何も言いません。",
+                    "manage": "このフロアは[エリアページ](/config/areas/dashboard)でご自身で管理できます。",
+                    "changed": "Spook が確認した後、このフロアは再び使われるようになりました: エリアが割り当てられたか、オートメーションやスクリプトが使っています。そのため、手を付けずにそのままにしています。Spook は自分でもう一度確認して、この修復を更新します。"
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "エネルギーダッシュボードで不明なエンティティが使われています",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "エネルギーダッシュボードで不明なエンティティが使われています",
+                        "description": "Spook がエネルギーダッシュボードの中にゴーストを見つけました 👻\n\nエネルギーダッシュボードは、Home Assistant が認識していない次のエンティティを参照しています:\n\n{entities}\n\nこれは通常、エネルギー設定で使われていたエンティティの名前が変更されたか、削除されたときに起こります。名前が変わっただけですか? それなら[設定 > ダッシュボード > エネルギー](/config/energy)を開いて新しいエンティティを選んでください。そうすれば、その履歴はダッシュボードに残ります。\n\n完全に削除されましたか? Spook がこれらをエネルギー設定から取り除くこともできます。見つからないメーターはそのソースやデバイスごと取り除かれ、見つからない価格やコストはクリアされるだけです。その後、ダッシュボードには取り除いたものの履歴が表示されなくなりますが、統計そのものは残ります。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "これらをエネルギー設定から取り除く",
+                            "manage": "自分でやる",
+                            "ignore": "残しておく、もう知らせないで"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこれらのエンティティについて何も言いません。",
+                    "manage": "これらは[エネルギー設定](/config/energy)でご自身で更新または削除できます。",
+                    "nothing_to_remove": "これらはどれももう不明ではないため、何も取り除いていません。戻ってきたか、誰かがすでにエネルギー設定を変更したのかもしれません。"
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "未知のグループメンバー:{group}"
+            "title": "未知のグループメンバー:{group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "不明なグループメンバー: {group}",
+                        "description": "Spook がグループの中にゴーストを見つけました 👻\n\nグループ {group} (`{entity_id}`) には、Home Assistant が認識していないメンバーがいます:\n\n{entities}\n\nグループから削除するか、そのまま残してください。残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "これらのメンバーを削除する",
+                            "manage": "自分で直す",
+                            "ignore": "残しておく、もう知らせないで"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのグループについて何も言いません。",
+                    "not_editable": "このグループは YAML で設定されているため、Spook では編集できません。代わりに設定ファイルでグループを更新してください。",
+                    "manage": "このグループは[ヘルパーページ](/config/helpers)でご自身で管理できます。",
+                    "changed": "Spook が確認した後、この修復に載っていたメンバーが戻ってきたか、変更されたため、グループからは何も削除していません。Spook は自分でもう一度確認して、この修復を更新します。"
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook が HomeKit ブリッジの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次の HomeKit ブリッジに出くわしました:\n\n{bridge}\n\nこのブリッジは、Home Assistant が認識していない次のエンティティを指定しています:\n\n{entities}\n\n\n\nHomeKit は、名前が変更されたエンティティを追跡しません。含めていたエンティティの名前が変わったり削除されたりすると、ホームアプリから消えます。除外していたエンティティの名前が変わると、ホームアプリに再び現れます。\n\nこのエラーを修正するには、[HomeKit Bridge 統合](/config/integrations/integration/homekit)に移動し、このブリッジで **設定** を選択して、エンティティを選び直してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "HomeKit ブリッジで不明なエンティティが使われています: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook が HomeKit ブリッジの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次の HomeKit ブリッジに出くわしました:\n\n{bridge}\n\nこのブリッジは、Home Assistant が認識していない次のエンティティを指定しています:\n\n{entities}\n\n\n\nHomeKit は、名前が変更されたエンティティを追跡しません。含めていたエンティティの名前が変わったり削除されたりすると、ホームアプリから消えます。除外していたエンティティの名前が変わると、ホームアプリに再び現れます。\n\nこのブリッジは YAML 設定でセットアップされています。このエラーを修正するには、`homekit:` の下にあるこのブリッジの `filter` を編集して、これらのエンティティを削除または修正してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "HomeKit ブリッジで不明なエンティティが使われています: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook がダッシュボードの中にゴーストを見つけました 👻\n\n次のダッシュボードリソースは、存在しないファイルを指しています:\n\n{resources}\n\n\n\nこれは通常、カスタムカードやそのファイルが削除されたのに、リソースだけが残ってしまったときに起こります。このエラーを修正するには、[リソースページ](/config/lovelace/resources)を開いて、これらのリソースを削除または修正してください。このページには専用のタブがありません: ダッシュボードページの右上にある三点メニューの中にあります。\n\nSpook 👻 あなたの相棒より。",
+            "title": "ダッシュボードリソースが存在しないファイルを指しています"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook がダッシュボードの中にゴーストを見つけました 👻\n\n次のダッシュボードリソースは、存在しないファイルを指しています:\n\n{resources}\n\n\n\nこれは通常、カスタムカードやそのファイルが削除されたのに、リソースだけが残ってしまったときに起こります。\n\nこれらのリソースは YAML 設定に記載されているため、リソースページからは変更できません。Lovelace 設定の `resources:` セクションを編集して、これらの項目を削除または修正してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "ダッシュボードリソースが存在しないファイルを指しています"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "ダッシュボードリソースが重複して登録されています: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "ダッシュボードリソースが重複して登録されています: {resource}",
+                        "description": "Spook がダッシュボードの中にゴーストを見つけました 👻\n\nこのダッシュボードリソースは {count} 回登録されています:\n\n{resources}\n\nこれは通常、カスタムカードを更新するときに、既存のリソースを編集せずに新しいバージョン用のリソースを追加してしまったときに起こります。ブラウザーは両方を読み込み、カードは自分自身を二回登録しようとして、二回目は失敗します。その結果、リソースの重複ではなく、カードが壊れているように見えます。\n\nSpook は余分なコピーを削除して、最後に追加されたものを残すことができます。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "余分なコピーを削除して、最新のものを残す",
+                            "ignore": "そのままにしておく、もう知らせないで",
+                            "manage": "自分で直す"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのリソースについて何も言いません。",
+                    "manage": "ダッシュボードリソースは[リソースページ](/config/lovelace/resources)でご自身で管理できます。",
+                    "yaml": "これらのリソースは YAML 設定に記載されているため、Spook が代わりに変更することはできません。Lovelace 設定の `resources:` セクションを編集して、不要になった `{resource}` のコピーを削除してください。"
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook がダッシュボードの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のダッシュボードに出くわしました:\n\n{dashboard}\n\nこのダッシュボードは、Home Assistant が認識していない次のエリアを参照しています:\n\n{areas}\n\n\n\nこれはよく、エリアの名前が変更されたか削除されたときに起こります。このエラーを修正するには、[ダッシュボードを編集]({edit})して、存在しないこれらのエリアを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "ダッシュボードで不明なエリアが使われています: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
             "description": "Spookはダッシュボードでゴーストを見つけました ◀\n\n周りを浮遊している間、Spookは、次のダッシュボードで横断パスを渡しました。\n\n[{dashboard}]({edit})\n\n\nこのダッシュボードは、ホームアシスタントに不明な以下のエンティティティティを参照します。\n\n{entities}\n\n\n\nこのエラーを修正するには、[ダッシュボード]({edit})を編集し、これらの非既存のエンティティティティの使用を削除します。\n\nあなたの趣味ではありません。.",
             "title": "未知のエンティティティティ: {dashboard}"
         },
+        "lovelace_unknown_service_references": {
+            "description": "Spook がダッシュボードの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のダッシュボードに出くわしました:\n\n[{dashboard}]({edit})\n\nこのダッシュボードは、Home Assistant が認識していない次のアクションを実行します:\n\n{services}\n\n\n\nこれらを使っているボタンやカードは、タップしても何も起こりません。これはよく、スクリプトの名前が変更されたか削除されたとき、または統合が削除されたときに起こります。このエラーを修正するには、[ダッシュボードを編集]({edit})して、存在しないこれらのアクションを削除するか置き換えてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "ダッシュボードで不明なアクションが使われています: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "最小/最大ヘルパーで不明なメンバーが使われています: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "最小/最大ヘルパーで不明なメンバーが使われています: {helper}",
+                        "description": "Spook がヘルパーの中にゴーストを見つけました 👻\n\n最小/最大ヘルパー {helper} (`{entity_id}`) は、Home Assistant が認識していない次のメンバーを組み合わせています:\n\n{sources}\n\nこれらを削除すれば、ヘルパーは残りのメンバーで動作し続けます。そのまま残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "これらのメンバーを削除する",
+                            "manage": "自分で直す",
+                            "ignore": "残しておく、もう知らせないで"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのヘルパーについて何も言いません。",
+                    "manage": "このヘルパーは[ヘルパーページ](/config/helpers)でご自身で管理できます。",
+                    "changed": "Spook が確認した後、この修復に載っていたメンバーが戻ってきたか、変更されたため、ヘルパーからは何も削除していません。Spook は自分でもう一度確認して、この修復を更新します。",
+                    "too_few_members": "最小/最大ヘルパーには少なくとも二つのメンバーが必要なため、見つからないメンバーを削除すると足りなくなります。[ヘルパーページ](/config/helpers)で、ご自身でヘルパーを再設定するか削除してください。"
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook が通知グループの中にゴーストを見つけました 👻\n\n通知グループ `{group}` は、Home Assistant が認識していない次のアクションに転送しています:\n\n{members}\n\nグループは残りのメンバーには通知を届け、呼び出し元にも成功を報告するため、上流では誰も気づきません。失敗はログに \"Task exception was never retrieved\" とぽつんと出るだけで、グループ名も書かれておらず、バグのように見えます。そのメンバーの向こうにいた人には、ただ通知が届かなくなります。\n\nこのエラーを修正するには、設定でこのグループの `services:` リストを編集して、これらの項目を削除または修正してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "通知グループの不明なメンバー: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "孤立した長期統計が見つかりました",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "孤立した長期統計が見つかりました",
+                        "description": "Spook がレコーダーの中にゴーストを見つけました 👻\n\nHome Assistant は次の長期統計を保持していますが、対応するエンティティはもう存在しません:\n\n{statistics}\n\nこれは通常、センサーが削除されたのに、その統計が残されたときに起こります。クリアするとその履歴は完全に失われるため、Spook は実行前にもう一度確認し、その間に戻ってきたものには手を付けません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "これらの統計をクリアする",
+                            "manage": "自分でやる",
+                            "ignore": "残しておく、もう知らせないで"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこれらの統計について何も言いません。",
+                    "manage": "これらは[統計ページ](/config/tools/statistics)でご自身でクリアできます。",
+                    "nothing_to_clear": "リストにあるもので、まだクリアが必要なものはないため、何も削除していません。統計に再びエンティティが紐付いたか、すでに削除されています。",
+                    "clearing_took_too_long": "Spook は統計のクリアを依頼しましたが、レコーダーからまだ完了の連絡がありません。処理はキューに入っていて、おそらく完了するので、Spook がもう一度確認するまでこの修復は残ります。"
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "不明なデバイストラッカーを追跡しています: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "不明なデバイストラッカーを追跡しています: {person}",
+                        "description": "Spook がメンバーの中にゴーストを見つけました 👻\n\n{person} は、Home Assistant が認識していない次のデバイストラッカーを追跡しています:\n\n{device_trackers}\n\nこれはよく、デバイストラッカーの名前が変更されたか、その統合が削除されたときに起こります。\n\n{person} から削除するか、そのまま残してください。残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "これらのデバイストラッカーを削除する",
+                            "ignore": "残しておく、もう知らせないで",
+                            "manage": "自分で直す"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこの人について何も言いません。",
+                    "not_editable": "この人は YAML で設定されているため、Spook では編集できません。代わりに設定ファイルでこの人を更新してください。",
+                    "manage": "この人は[メンバーページ](/config/person)でご自身で管理できます。"
+                }
+            }
+        },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook が近接設定の中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次の近接設定に出くわしました:\n\n{name}\n\nこの設定は、Home Assistant が認識していないゾーンを無視しています:\n\n{zones}\n\n\n\nこのエラーを修正するには、設定を編集して、これらのゾーンを削除してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明な無視ゾーン: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook が近接設定の中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次の近接設定に出くわしました:\n\n{name}\n\nこの設定は、Home Assistant が認識していない人またはデバイストラッカーを追跡しています:\n\n{entities}\n\n\n\nこのエラーを修正するには、設定を編集して、これらのエンティティを削除してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明な追跡エンティティ: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook が近接設定の中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次の近接設定に出くわしました:\n\n{name}\n\nこの設定は、Home Assistant が認識していないゾーンに基づいています:\n\n`{zone}`\n\n\n\n近接設定のゾーンは変更できないため、このエラーを修正する唯一の方法は、この近接統合のインスタンスを削除することです。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なゾーン: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spook がシーンの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のシーンに出くわしました:\n\n[{scene}]({edit})\n\nこのシーンは、Home Assistant が認識していない次のエンティティを参照しています:\n\n{entities}\n\n\n\nこのエラーを修正するには、[シーンを編集]({edit})して、存在しないこれらのエンティティを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なエンティティが使われています: {scene}"
         },
         "script_unknown_area_references": {
             "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次の領域を参照します。\n\n{areas}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit})をし、これらの非既存の領域の使用を削除します。\n\nあなたの趣味ではありません。.",
             "title": "未知の領域で使用される: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant で利用できるどの統合も提供できない次の条件を使っています:\n\n{conditions}\n\n\n\nこれはよく、条件を提供していた統合が削除されたときに起こります。このエラーを修正するには、[スクリプトを編集]({edit})して、利用できないこれらの条件を使わないようにするか、それらを提供する統合を元に戻してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明な条件が使われています: {script}"
         },
         "script_unknown_device_references": {
             "description": "Spook は、スクリプトでホストを見つけました。\n\n周りを浮遊している間、Spookは次のスクリプトで横断パスを渡しました。\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、ホームアシスタントに不明な次のデバイスを参照します。\n\n{devices}\n\n\n\nこのエラーを修正するには、[スクリプトの編集]({edit}) をし、これらの非既存のデバイスの使用を削除します。\n\nあなたの趣味ではありません。.",
             "title": "未知のデバイス: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
+            "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant が認識していない次のエンティティを参照しています:\n\n{entities}\n\n\n\nこのエラーを修正するには、[スクリプトを編集]({edit})して、存在しないこれらのエンティティを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
             "title": "未知の実体: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant が認識していない次のフロアを参照しています:\n\n{floors}\n\n\n\nこのエラーを修正するには、[スクリプトを編集]({edit})して、存在しないこれらのフロアを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なフロアが使われています: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant が認識していない次のラベルを参照しています:\n\n{labels}\n\n\n\nこのエラーを修正するには、[スクリプトを編集]({edit})して、存在しないこれらのラベルを使わないようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なラベルが使われています: {script}"
         },
         "script_unknown_service_references": {
             "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "title": "不明なアクションが使われています: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook がスクリプトの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のスクリプトに出くわしました:\n\n[{script}]({edit}) (`{entity_id}`)\n\nこのスクリプトは、Home Assistant で利用できるどの統合も提供できない次のトリガーを使っています:\n\n{triggers}\n\n\n\nこれはよく、トリガーを提供していた統合が削除されたときに起こります。このエラーを修正するには、[スクリプトを編集]({edit})して、利用できないこれらのトリガーを使わないようにするか、それらを提供する統合を元に戻してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "不明なトリガーが使われています: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook がテンプレートヘルパーの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のテンプレートヘルパーに出くわしました:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nその設定は、Home Assistant が認識していない次のエンティティを参照しています:\n\n{entities}\n\n\n\nこれはよく、エンティティの名前が変更されたか削除されたときに起こります。このエラーを修正するには、テンプレートヘルパーを再設定して、存在するエンティティを参照するようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "テンプレートヘルパーで不明なエンティティが使われています: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook がテンプレートヘルパーの中にゴーストを見つけました 👻\n\nふわふわ漂っている間に、Spook は次のテンプレートヘルパーに出くわしました:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nこれは、Home Assistant が認識していない次のアクションを参照しています:\n\n{services}\n\n\n\nこれはよく、アクションの提供元が削除されたとき、またはスクリプトの名前が変更されたか削除されたときに起こります。このエラーを修正するには、テンプレートヘルパーを再設定して、存在するアクションを使うようにしてください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "テンプレートヘルパーで不明なアクションが使われています: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "エリアの不明な {sensors} センサー: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "エリアの不明な {sensors} センサー: {area}",
+                        "description": "Spook がエリアの中にゴーストを見つけました 👻\n\nエリア {area} は、Home Assistant が認識していない {sensors} センサーを使っています:\n\n{entities}\n\nHome Assistant がこのセンサーを確認するのは選択したときだけなので、削除されたり名前が変更されたりすると、エリアは何もないところを指したままになります。Assist やエリアカードは、もうこのセンサーから値を取得できません。\n\n設定をクリアしてセンサーを選び直せるようにするか、そのまま残してください。残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "設定をクリアする",
+                            "manage": "自分で直す",
+                            "ignore": "残しておく、もう知らせないで"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのエリアについて何も言いません。",
+                    "manage": "[エリアページ](/config/areas/dashboard)にあるこのエリアの設定で、別のセンサーを選択できます。",
+                    "changed": "Spook が確認した後、これらのセンサーが戻ってきたか、設定が別のものを指すようになりました。そのため、何もクリアしていません。Spook は自分でもう一度確認して、この修復を更新します。"
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook がカスタマイズの中にゴーストを見つけました 👻\n\n`customize:` セクションは、Home Assistant が認識していない次のエンティティに属性を固定しています:\n\n{entities}\n\n\n\nこれはよく、エンティティの名前が変更されたか削除されたのに、カスタマイズだけが残ってしまったときに起こります。このエラーを修正するには、設定の `customize:` セクションを編集して、これらのエンティティを削除してください。\n\nSpook 👻 あなたの相棒より。",
+            "title": "カスタマイズに不明なエンティティがあります"
+        },
+        "unknown_engines": {
+            "title": "Assist パイプラインが存在しないエンジンを使っています: {pipeline}",
+            "description": "Spook が音声アシスタントの中にゴーストを見つけました 👻\n\nAssist パイプライン {pipeline} は、Home Assistant が認識していない次のものを使っています:\n\n{engines}\n\nこれは通常、その背後にある統合が削除されたことを意味します。パイプラインにはそれが知らされていないため、次に使われたときにプロバイダーやエージェントが見つからないというエラーで失敗します。それまでは、ここを指し示すものは何もありません。\n\nこれを修正するには、[音声アシスタント](/config/voice-assistants/assistants)からこのアシスタントの設定を開き、それぞれについてまだ存在するエンジンを選択してください。\n\nSpook 👻 あなたの相棒より。"
+        },
+        "unknown_helper_source_references": {
+            "title": "ヘルパーで不明なソースエンティティが使われています: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "ヘルパーで不明なソースエンティティが使われています: {helper}",
+                        "description": "Spook がヘルパーの中にゴーストを見つけました 👻\n\nヘルパー {helper} (`{domain}`、`{entity_id}`) は、Home Assistant が認識していない次のソースエンティティを参照しています:\n\n{sources}\n\nソースがなければ、このヘルパーは動作できません。{usage}\n\nヘルパーを削除するか、そのまま残してください。残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "このヘルパーを削除する",
+                            "manage": "自分で直す",
+                            "ignore": "残しておく、もう知らせないで"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのヘルパーについて何も言いません。",
+                    "manage": "このヘルパーは[ヘルパーページ](/config/helpers)でご自身で管理できます。",
+                    "changed": "Spook が確認した後、このヘルパーのソースが変更されたため、ヘルパーには手を付けていません。Spook は自分でもう一度確認して、この修復を更新します。"
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "未使用のブループリント: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "未使用のブループリント: {blueprint}",
+                        "description": "ブループリント {blueprint} は、どの {domain} にも使われていません。\n\n削除するか、そのまま残してください。残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "この未使用のブループリントを削除する",
+                            "ignore": "残しておく、もう知らせないで",
+                            "manage": "自分で直す"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのブループリントについて何も言いません。",
+                    "manage": "このブループリントは[ブループリントページ](/config/blueprint/dashboard)でご自身で管理できます。"
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "未使用のラベル: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "未使用のラベル: {label}",
+                        "description": "ラベル {label} はどのエンティティ、デバイス、エリアにも付けられておらず、ターゲットにしているオートメーションやスクリプトもありません。\n\n削除するか、そのまま残してください。残す場合、Spook はもう指摘しません。\n\nSpook 👻 あなたの相棒より。",
+                        "menu_options": {
+                            "remove": "この未使用のラベルを削除する",
+                            "ignore": "残しておく、もう知らせないで",
+                            "manage": "自分で直す"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "今後、Spook はこのラベルについて何も言いません。",
+                    "manage": "このラベルは[ラベルページ](/config/labels)でご自身で管理できます。",
+                    "changed": "Spook が確認した後、このラベルは再び使われるようになりました: 何かに付けられたか、オートメーションやスクリプトが使っています。そのため、手を付けずにそのままにしています。Spook は自分でもう一度確認して、この修復を更新します。"
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -304,6 +1164,1796 @@
                         "title": "必要な再起動",
                         "description": "Spook で設定を完了するには、ホームアシスタントを再起動する必要があります。\n\n今すぐホームアシスタントを再起動するために送信を選択します。."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "バージョン",
+            "ghosts_found": "見つかったゴースト",
+            "ghosts_ignored": "無視したゴースト",
+            "helpers_linked": "リンクされたヘルパー"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "グループにメンバーを追加",
+            "description": "Home Assistant の実行中に、UI で作成したグループにエンティティを追加します。すでにグループにあるエンティティはそのままです。",
+            "fields": {
+                "group": {
+                    "name": "グループ",
+                    "description": "追加先のグループです。"
+                },
+                "members": {
+                    "name": "メンバー",
+                    "description": "グループに追加するエンティティです。"
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "グループからメンバーを削除",
+            "description": "Home Assistant の実行中に、UI で作成したグループからエンティティを取り除きます。グループにないものを指定しても何も起きないので、もう存在しないメンバーを片付けるのにも使えます。",
+            "fields": {
+                "group": {
+                    "name": "グループ",
+                    "description": "取り除く元のグループです。"
+                },
+                "members": {
+                    "name": "メンバー",
+                    "description": "グループから削除するエンティティです。"
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "グループのメンバーを設定",
+            "description": "Home Assistant の実行中に、UI で作成したグループのメンバーを指定したものに置き換えます。",
+            "fields": {
+                "group": {
+                    "name": "グループ",
+                    "description": "変更するグループです。"
+                },
+                "members": {
+                    "name": "メンバー",
+                    "description": "今後グループに含めるエンティティです。"
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "条件を待つ",
+            "description": "条件が真になるまで待ちます。すでに真であればすぐに戻ります。",
+            "fields": {
+                "condition": {
+                    "name": "条件",
+                    "description": "待つ条件です。"
+                },
+                "timeout": {
+                    "name": "タイムアウト",
+                    "description": "あきらめるまでに待つ時間です。省略すると無期限に待ちます。"
+                }
+            }
+        },
+        "boo": {
+            "name": "ばあ!",
+            "description": "このアクションを呼び出すと、Home Assistant を驚かせます。このアクションの実行は必ず失敗します。"
+        },
+        "random_fail": {
+            "name": "ランダムに失敗",
+            "description": "このアクションの実行はランダムに失敗します。"
+        },
+        "blueprint_import": {
+            "name": "ブループリントをインポート",
+            "description": "ブループリントをインポートします。",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "ブループリントのインポート元の URL です。"
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "スヌーズ",
+            "description": "オートメーションをしばらくオフにし、時間が来たらまたオンに戻します。",
+            "fields": {
+                "duration": {
+                    "name": "期間",
+                    "description": "オートメーションをオフにしておく時間です。時間が来ると自動的にオンに戻ります。途中で Home Assistant が再起動しても同じです。"
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "一定時間オンにする",
+            "description": "オートメーションをしばらくオンにし、時間が来たらまたオフに戻します。",
+            "fields": {
+                "duration": {
+                    "name": "期間",
+                    "description": "オートメーションをオンにしておく時間です。時間が来ると自動的にオフに戻ります。途中で Home Assistant が再起動しても同じです。"
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "明るさを設定",
+            "description": "すでにオンになっているライトの明るさを設定し、オフのライトはそのままにします。",
+            "fields": {
+                "brightness_pct": {
+                    "name": "明るさ",
+                    "description": "設定する明るさをパーセントで指定します。グループはライトごとに調整されるので、オフのライトはオフのままです。"
+                },
+                "transition": {
+                    "name": "トランジション",
+                    "description": "変化にかける時間を秒で指定します。"
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "明るさを上げる",
+            "description": "すでにオンになっているライトを明るくし、オフのライトはそのままにします。",
+            "fields": {
+                "step_pct": {
+                    "name": "ステップ",
+                    "description": "どれだけ明るくするかをパーセントで指定します。各ライトはそれぞれの現在の明るさから変化するので、グループは均一にならずに明るさのバランスを保ちます。"
+                },
+                "transition": {
+                    "name": "トランジション",
+                    "description": "変化にかける時間を秒で指定します。"
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "明るさを下げる",
+            "description": "すでにオンになっているライトを暗くします。オフにはせず、最も暗い状態で止まります。",
+            "fields": {
+                "step_pct": {
+                    "name": "ステップ",
+                    "description": "どれだけ暗くするかをパーセントで指定します。各ライトはそれぞれの現在の明るさから変化するので、グループは均一にならずに明るさのバランスを保ちます。"
+                },
+                "transition": {
+                    "name": "トランジション",
+                    "description": "変化にかける時間を秒で指定します。"
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "色を設定",
+            "description": "すでにオンになっているライトの色を設定し、オフのライトや色を変えられないライトはそのままにします。",
+            "fields": {
+                "rgb_color": {
+                    "name": "色",
+                    "description": "設定する色です。色を変えられないライトは、白にされるのではなくスキップされます。"
+                },
+                "transition": {
+                    "name": "トランジション",
+                    "description": "変化にかける時間を秒で指定します。"
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "色温度を設定",
+            "description": "すでにオンになっているライトの色温度を、それぞれが実際に出せる範囲内で設定します。",
+            "fields": {
+                "kelvin": {
+                    "name": "色温度",
+                    "description": "設定する色温度です。あるランプの電球色が、別のランプでは出せない値であることもあるため、各ライトはそれぞれの範囲内に収められます。"
+                },
+                "transition": {
+                    "name": "トランジション",
+                    "description": "変化にかける時間を秒で指定します。"
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "エフェクトを設定",
+            "description": "すでにオンになっていて、実際にそのエフェクトを持っているライトにエフェクトを設定します。",
+            "fields": {
+                "effect": {
+                    "name": "エフェクト",
+                    "description": "設定するエフェクトの名前です。エフェクト名はメーカーごとに異なるため、このエフェクトを持たないライトはそのままにします。"
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "イベントを削除",
+            "description": "一定の期間内でタイトルまたは uid で見つけたイベントを、カレンダーから削除します。削除したものを uid も含めて返します。",
+            "fields": {
+                "summary": {
+                    "name": "概要",
+                    "description": "削除するイベントのタイトルで、カレンダーにあるとおりに正確に指定します。"
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "削除するイベントの識別子です。わかっている場合に指定します。"
+                },
+                "start_date_time": {
+                    "name": "開始日時",
+                    "description": "検索を始める位置です。デフォルトは現在です。"
+                },
+                "end_date_time": {
+                    "name": "終了日時",
+                    "description": "検索を終える位置です。これか期間のどちらかを指定します。"
+                },
+                "duration": {
+                    "name": "期間",
+                    "description": "開始からどこまで検索するかです。これか終了日時のどちらかを指定します。"
+                },
+                "whole_series": {
+                    "name": "シリーズ全体",
+                    "description": "繰り返しイベントの場合、見つかった回だけでなく、シリーズ全体を削除します。"
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "イベントを更新",
+            "description": "一定の期間内でタイトルまたは uid で見つけたイベントを、カレンダー内で変更します。変更したものを uid も含めて返します。",
+            "fields": {
+                "summary": {
+                    "name": "概要",
+                    "description": "変更するイベントのタイトルで、カレンダーにあるとおりに正確に指定します。"
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "変更するイベントの識別子です。わかっている場合に指定します。"
+                },
+                "start_date_time": {
+                    "name": "開始日時",
+                    "description": "検索を始める位置です。デフォルトは現在です。"
+                },
+                "end_date_time": {
+                    "name": "終了日時",
+                    "description": "検索を終える位置です。これか期間のどちらかを指定します。"
+                },
+                "duration": {
+                    "name": "期間",
+                    "description": "開始からどこまで検索するかです。これか終了日時のどちらかを指定します。"
+                },
+                "new_summary": {
+                    "name": "新しい概要",
+                    "description": "イベントに付けるタイトルです。"
+                },
+                "description": {
+                    "name": "説明",
+                    "description": "イベントに付ける説明です。"
+                },
+                "location": {
+                    "name": "場所",
+                    "description": "イベントに付ける場所です。"
+                },
+                "new_start": {
+                    "name": "新しい開始",
+                    "description": "イベントの新しい開始時刻です。新しい終了も指定しない限り、長さはそのままです。"
+                },
+                "new_end": {
+                    "name": "新しい終了",
+                    "description": "イベントの新しい終了時刻です。"
+                },
+                "shift": {
+                    "name": "ずらす",
+                    "description": "イベントをこの分だけ後ろに、負の値なら前にずらします。新しい開始や終了の代わりに使います。"
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "温度を上げる",
+            "description": "サーモスタットの設定温度を一段階上げます。冷暖房両用のものは両方の設定温度を上げます。オフのサーモスタットはオフのままです。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "変化させる量です。省略するとサーモスタット自身のステップを使い、ステップがない場合は 0.5 度 (華氏では 1 度) を使います。"
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "温度を下げる",
+            "description": "サーモスタットの設定温度を一段階下げます。冷暖房両用のものは両方の設定温度を下げます。オフのサーモスタットはオフのままです。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "変化させる量です。省略するとサーモスタット自身のステップを使い、ステップがない場合は 0.5 度 (華氏では 1 度) を使います。"
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "エリアを作成",
+            "description": "その場で新しいエリアを作成します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "作成するエリアの名前です。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "エリアに使うアイコンです。"
+                },
+                "aliases": {
+                    "name": "エイリアス",
+                    "description": "エリアのエイリアスのリストです。エリアを別の言語や別の呼び名で使いたい場合に便利です。"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "エリアにエイリアスを追加",
+            "description": "エリアにエイリアスを追加します。",
+            "fields": {
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "エイリアスを追加するエリアの ID です。"
+                },
+                "alias": {
+                    "name": "エイリアス",
+                    "description": "エリアに追加するエイリアス (またはエイリアスのリスト) です。"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "エリアからエイリアスを削除",
+            "description": "エリアからエイリアスを削除します。",
+            "fields": {
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "エイリアスを削除するエリアの ID です。"
+                },
+                "alias": {
+                    "name": "エイリアス",
+                    "description": "エリアから削除するエイリアス (またはエイリアスのリスト) です。"
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "エリアのエイリアスを設定",
+            "description": "エリアのエイリアスを設定します。既存のエイリアスはすべて上書き・削除され、新しいものに完全に置き換えられます。",
+            "fields": {
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "エイリアスを設定するエリアの ID です。"
+                },
+                "aliases": {
+                    "name": "エイリアス",
+                    "description": "エリアに設定するエイリアスです。"
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "エリアにデバイスを追加",
+            "description": "エリアにデバイスを追加します。デバイスがすでに別のエリアにある場合は、以前のエリアから外されるのでご注意ください。",
+            "fields": {
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "デバイスを追加するエリアの ID です。"
+                },
+                "device_id": {
+                    "name": "デバイス ID",
+                    "description": "エリアに追加するデバイスの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "エリアからデバイスを削除",
+            "description": "エリアからデバイスを削除します。デバイスは一つのエリアにしか所属できないため、エリアを指定する必要はありません。",
+            "fields": {
+                "device_id": {
+                    "name": "デバイス ID",
+                    "description": "エリアから外すデバイスの ID です。"
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "エリアにエンティティを追加",
+            "description": "エリアにエンティティを追加します。エンティティがすでに別のエリアにある場合は、以前のエリアから外されるのでご注意ください。これは、このエンティティを提供するデバイスが所属するエリアよりも優先されます。",
+            "fields": {
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "エンティティを追加するエリアの ID です。"
+                },
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "エリアに追加するエンティティの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "エリアからエンティティを削除",
+            "description": "エリアからエンティティを削除します。エンティティは一つのエリアにしか所属できないため、エリアを指定する必要はありません。なお、この呼び出しの後も、エンティティはそれを提供するデバイスのエリアに所属したままになるのでご注意ください。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "エリアから外すエンティティの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "エリアを削除",
+            "description": "その場でエリアを削除します。",
+            "fields": {
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "削除するエリアの ID です。"
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "統合を無効化",
+            "description": "統合エントリを、エントリ単位または統合のすべてのエントリ単位で無効にします。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "統合エントリ",
+                    "description": "無効にする統合エントリです。"
+                },
+                "domain": {
+                    "name": "統合",
+                    "description": "これらの統合のすべてのエントリを無効にします。後から追加されたエントリも含みます。"
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "統合を有効化",
+            "description": "統合エントリを、エントリ単位または統合のすべてのエントリ単位で有効にします。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "統合エントリ",
+                    "description": "有効にする統合エントリです。"
+                },
+                "domain": {
+                    "name": "統合",
+                    "description": "これらの統合のすべてのエントリを有効にします。後から追加されたエントリも含みます。"
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "デバイスを無効化",
+            "description": "その場でデバイスを無効にします。",
+            "fields": {
+                "device_id": {
+                    "name": "デバイス",
+                    "description": "無効にするデバイスです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "デバイスを有効化",
+            "description": "その場でデバイスを有効にします。",
+            "fields": {
+                "device_id": {
+                    "name": "デバイス ID",
+                    "description": "有効にするデバイスの ID をそのまま指定します。無効になっているデバイスは、Home Assistant のデバイスセレクターには表示されません。複数の ID を YAML のリストで指定できます。"
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "ユーザーを無効化",
+            "description": "ユーザーアカウントを無効にし、ログインできないようにします。",
+            "fields": {
+                "user_id": {
+                    "name": "ユーザー ID",
+                    "description": "無効にするユーザーの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "ユーザーを有効化",
+            "description": "ユーザーアカウントを有効にし、ログインできるようにします。",
+            "fields": {
+                "user_id": {
+                    "name": "ユーザー ID",
+                    "description": "有効にするユーザーの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "エンティティ ID を更新",
+            "description": "その場でエンティティの ID を更新します。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "更新するエンティティです (複数可)。"
+                },
+                "new_entity_id": {
+                    "name": "新しいエンティティ ID",
+                    "description": "エンティティの新しい ID です。"
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "エンティティを無効化",
+            "description": "その場でエンティティを無効にします (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "無効にするエンティティです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "エンティティを有効化",
+            "description": "その場でエンティティを有効にします (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "有効にするエンティティです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "エンティティをアシスタントに公開",
+            "description": "エンティティを音声アシスタントに公開します (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "公開するエンティティです (複数可)。"
+                },
+                "assistants": {
+                    "name": "アシスタント",
+                    "description": "これを適用するアシスタントです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "エンティティを非表示",
+            "description": "その場でエンティティを非表示にします (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "非表示にするエンティティです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "エンティティの名前を変更",
+            "description": "その場でエンティティの名前を変更します (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "名前を変更するエンティティです (複数可)。"
+                },
+                "name": {
+                    "name": "名前",
+                    "description": "エンティティの新しい名前です。"
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "エンティティのアイコンを設定",
+            "description": "その場でエンティティのアイコンを設定します (複数可)。null に設定すると、統合が付けたアイコンに戻ります。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "アイコンを設定するエンティティです (複数可)。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "新しいアイコンです。null にすると統合自身のアイコンになります。"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "エンティティにエイリアスを追加",
+            "description": "音声アシスタントが呼び名として使えるエイリアスを、エンティティに一つ以上追加します (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "エイリアスを追加するエンティティです (複数可)。"
+                },
+                "alias": {
+                    "name": "エイリアス",
+                    "description": "追加するエイリアスです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "エンティティからエイリアスを削除",
+            "description": "エンティティからエイリアスを一つ以上削除します (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "エイリアスを削除するエンティティです (複数可)。"
+                },
+                "alias": {
+                    "name": "エイリアス",
+                    "description": "削除するエイリアスです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "エンティティのエイリアスを設定",
+            "description": "エンティティのエイリアスを置き換えます (複数可)。エンティティ自身の名前をエイリアスとして扱うかどうかは、元の設定のままです。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "エイリアスを設定するエンティティです (複数可)。"
+                },
+                "aliases": {
+                    "name": "エイリアス",
+                    "description": "設定するエイリアスです。"
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "エンティティのアシスタントへの公開を停止",
+            "description": "エンティティの音声アシスタントへの公開を停止します (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "公開を停止するエンティティです (複数可)。"
+                },
+                "assistants": {
+                    "name": "アシスタント",
+                    "description": "これを適用するアシスタントです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "エンティティを再表示",
+            "description": "その場でエンティティを再表示します (複数可)。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "再表示するエンティティです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "フロアを作成",
+            "description": "その場で新しいフロアを作成します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "作成するフロアの名前です。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "フロアに使うアイコンです。"
+                },
+                "level": {
+                    "name": "階",
+                    "description": "家の中でそのフロアがある階です。"
+                },
+                "aliases": {
+                    "name": "エイリアス",
+                    "description": "フロアのエイリアスのリストです。フロアを別の言語や別の呼び名で使いたい場合に便利です。"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "フロアにエイリアスを追加",
+            "description": "フロアにエイリアスを追加します。",
+            "fields": {
+                "floor_id": {
+                    "name": "フロア ID",
+                    "description": "エイリアスを追加するフロアの ID です。"
+                },
+                "alias": {
+                    "name": "エイリアス",
+                    "description": "フロアに追加するエイリアス (またはエイリアスのリスト) です。"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "フロアからエイリアスを削除",
+            "description": "フロアからエイリアスを削除します。",
+            "fields": {
+                "floor_id": {
+                    "name": "フロア ID",
+                    "description": "エイリアスを削除するフロアの ID です。"
+                },
+                "alias": {
+                    "name": "エイリアス",
+                    "description": "フロアから削除するエイリアス (またはエイリアスのリスト) です。"
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "フロアのエイリアスを設定",
+            "description": "フロアのエイリアスを設定します。既存のエイリアスはすべて上書き・削除され、新しいものに完全に置き換えられます。",
+            "fields": {
+                "floor_id": {
+                    "name": "フロア ID",
+                    "description": "エイリアスを設定するフロアの ID です。"
+                },
+                "aliases": {
+                    "name": "エイリアス",
+                    "description": "フロアに設定するエイリアスです。"
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "フロアにエリアを追加",
+            "description": "フロアにエリアを追加します。エリアがすでに別のフロアにある場合は、以前のフロアから外されるのでご注意ください。",
+            "fields": {
+                "floor_id": {
+                    "name": "フロア ID",
+                    "description": "エリアを追加するフロアの ID です。"
+                },
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "フロアに追加するエリアの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "フロアからエリアを削除",
+            "description": "フロアからエリアを削除します。エリアは一つのフロアにしか所属できないため、フロアを指定する必要はありません。",
+            "fields": {
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "フロアから外すエリアの ID です。"
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "フロアを削除",
+            "description": "その場でフロアを削除します。",
+            "fields": {
+                "floor_id": {
+                    "name": "フロア ID",
+                    "description": "削除するフロアの ID です。"
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "ラベルを作成",
+            "description": "その場で新しいラベルを作成します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "作成するラベルの名前です。"
+                },
+                "description": {
+                    "name": "説明",
+                    "description": "ラベルの説明です。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "ラベルに使うアイコンです。"
+                },
+                "color": {
+                    "name": "色",
+                    "description": "ラベルに使う色です。リストにある色名か、16 進数のカラーコード (#FF0000 など) を指定できます。"
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "ラベルを更新",
+            "description": "その場で既存のラベルを更新します。省略したものは現在の値のままです。説明、アイコン、色は null に設定するとクリアできます。",
+            "fields": {
+                "label_id": {
+                    "name": "ラベル ID",
+                    "description": "更新するラベルの ID です。"
+                },
+                "name": {
+                    "name": "名前",
+                    "description": "ラベルの新しい名前です。"
+                },
+                "description": {
+                    "name": "説明",
+                    "description": "ラベルの新しい説明です。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "ラベルに使う新しいアイコンです。"
+                },
+                "color": {
+                    "name": "色",
+                    "description": "ラベルに使う色です。リストにある色名か、16 進数のカラーコード (#FF0000 など) を指定できます。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "エリアにラベルを追加",
+            "description": "エリアにラベルを追加します。複数のラベルや複数のエリアを指定した場合は、すべての組み合わせが追加されます。",
+            "fields": {
+                "label_id": {
+                    "name": "ラベル ID",
+                    "description": "エリアに追加するラベルの ID です (複数可)。"
+                },
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "ラベルを追加するエリアの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "デバイスにラベルを追加",
+            "description": "デバイスにラベルを追加します。複数のラベルや複数のデバイスを指定した場合は、すべての組み合わせが追加されます。",
+            "fields": {
+                "label_id": {
+                    "name": "ラベル ID",
+                    "description": "デバイスに追加するラベルの ID です (複数可)。"
+                },
+                "device_id": {
+                    "name": "デバイス ID",
+                    "description": "ラベルを追加するデバイスの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "エンティティにラベルを追加",
+            "description": "エンティティにラベルを追加します。複数のラベルや複数のエンティティを指定した場合は、すべての組み合わせが追加されます。",
+            "fields": {
+                "label_id": {
+                    "name": "ラベル ID",
+                    "description": "エンティティに追加するラベルの ID です (複数可)。"
+                },
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "ラベルを追加するエンティティの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "エリアからラベルを削除",
+            "description": "エリアからラベルを削除します。複数のラベルや複数のエリアを指定した場合は、すべての組み合わせが削除されます。",
+            "fields": {
+                "label_id": {
+                    "name": "ラベル ID",
+                    "description": "エリアから削除するラベルの ID です (複数可)。"
+                },
+                "area_id": {
+                    "name": "エリア ID",
+                    "description": "ラベルを削除するエリアの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "デバイスからラベルを削除",
+            "description": "デバイスからラベルを削除します。複数のラベルや複数のデバイスを指定した場合は、すべての組み合わせが削除されます。",
+            "fields": {
+                "label_id": {
+                    "name": "ラベル ID",
+                    "description": "デバイスから削除するラベルの ID です (複数可)。"
+                },
+                "device_id": {
+                    "name": "デバイス ID",
+                    "description": "ラベルを削除するデバイスの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "エンティティからラベルを削除",
+            "description": "エンティティからラベルを削除します。複数のラベルや複数のエンティティを指定した場合は、すべての組み合わせが削除されます。",
+            "fields": {
+                "label_id": {
+                    "name": "ラベル ID",
+                    "description": "エンティティから削除するラベルの ID です (複数可)。"
+                },
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "ラベルを削除するエンティティの ID です (複数可)。"
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "カテゴリーを作成",
+            "description": "オートメーション、スクリプト、シーン、またはヘルパー用の新しいカテゴリーを、その場で作成します。新しいカテゴリーの ID を返します。",
+            "fields": {
+                "scope": {
+                    "name": "スコープ",
+                    "description": "カテゴリーを使う場所です。"
+                },
+                "name": {
+                    "name": "名前",
+                    "description": "作成するカテゴリーの名前です。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "カテゴリーに使うアイコンです。"
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "カテゴリーを更新",
+            "description": "その場で既存のカテゴリーを更新します。省略したものは現在の値のままです。アイコンは null に設定するとクリアできます。",
+            "fields": {
+                "scope": {
+                    "name": "スコープ",
+                    "description": "カテゴリーを使う場所です。"
+                },
+                "category_id": {
+                    "name": "カテゴリー",
+                    "description": "更新するカテゴリーの ID または名前です。"
+                },
+                "name": {
+                    "name": "名前",
+                    "description": "カテゴリーの新しい名前です。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "カテゴリーの新しいアイコンです。"
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "カテゴリーを削除",
+            "description": "カテゴリーを削除します。そこに入っていたものはすべて、カテゴリーなしになります。",
+            "fields": {
+                "scope": {
+                    "name": "スコープ",
+                    "description": "カテゴリーを使う場所です。"
+                },
+                "category_id": {
+                    "name": "カテゴリー",
+                    "description": "削除するカテゴリーの ID または名前です。"
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "エンティティにカテゴリーを追加",
+            "description": "オートメーション、スクリプト、シーン、またはヘルパーをカテゴリーに入れます。それぞれ一つのカテゴリーにしか入れないため、以前のカテゴリーは置き換えられます。",
+            "fields": {
+                "category_id": {
+                    "name": "カテゴリー",
+                    "description": "カテゴリーの ID または名前です。"
+                },
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "カテゴリーに入れるオートメーション、スクリプト、シーン、またはヘルパーです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "エンティティからカテゴリーを削除",
+            "description": "オートメーション、スクリプト、シーン、またはヘルパーをカテゴリーから外します。別のカテゴリーに入っているものはそのままです。",
+            "fields": {
+                "category_id": {
+                    "name": "カテゴリー",
+                    "description": "カテゴリーの ID または名前です。"
+                },
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "カテゴリーから外すオートメーション、スクリプト、シーン、またはヘルパーです (複数可)。"
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "ラベルを削除",
+            "description": "その場でラベルを削除します。",
+            "fields": {
+                "label_id": {
+                    "name": "ラベル ID",
+                    "description": "削除するラベルの ID です。"
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "現在検出されているすべてのデバイスを無視",
+            "description": "統合ダッシュボードに表示されている、現在検出済みのすべてのデバイスを無視します。この後に検出されたデバイスは無視されません。",
+            "fields": {
+                "domain": {
+                    "name": "統合ドメイン",
+                    "description": "検出済みのデバイスをすべて無視する統合ドメインです。指定しない場合は、すべてのドメインが無視の対象になります。"
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "更新のポーリングを無効化",
+            "description": "統合エントリの更新のポーリングを無効にします。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "統合エントリ",
+                    "description": "ポーリングを無効にする統合エントリです。"
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "更新のポーリングを有効化",
+            "description": "統合エントリの更新のポーリングを有効にします。",
+            "fields": {
+                "config_entry_id": {
+                    "name": "統合エントリ",
+                    "description": "ポーリングを有効にする統合エントリです。"
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "孤立したエンティティをすべて削除",
+            "description": "提供元の統合がなくなった孤立エンティティをすべて削除します。統合を削除したばかりの場合は、Home Assistant がそれらを孤立していると認識するために再起動が必要な場合があるのでご注意ください。\n**警告** 統合がオフラインであるか、Home Assistant の起動以降動作していないために、エンティティが孤立とみなされている場合があります。このアクションを呼び出すと、それらのエンティティも削除されます。"
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "データベースの孤立したエンティティをすべて一覧表示",
+            "description": "どの統合にも属していない、データベースの孤立したエンティティをすべて一覧表示します。"
+        },
+        "homeassistant_restart": {
+            "name": "再起動",
+            "description": "Home Assistant を再起動します。",
+            "fields": {
+                "safe_mode": {
+                    "name": "セーフモード",
+                    "description": "セーフモードで再起動するかどうかです。すべてのカスタム統合とフロントエンドモジュールが無効になります。"
+                },
+                "force": {
+                    "name": "強制再起動",
+                    "description": "再起動を強制します。警告! Home Assistant は正常にシャットダウンされず、設定のチェックが省略され、実行中のデータベース移行も無視されます。何をしているかわかっている場合にだけ使ってください。"
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "統計をインポート",
+            "description": "長期統計をインポートします。",
+            "fields": {
+                "statistic_id": {
+                    "name": "統計 ID",
+                    "description": "インポート先の統計 ID (エンティティ ID) です。"
+                },
+                "name": {
+                    "name": "名前",
+                    "description": "統計の名前です。"
+                },
+                "source": {
+                    "name": "ソース",
+                    "description": "統計データのソースです。"
+                },
+                "unit_of_measurement": {
+                    "name": "測定単位",
+                    "description": "統計の測定単位です。"
+                },
+                "has_mean": {
+                    "name": "平均値あり",
+                    "description": "統計に平均値があるかどうかです。"
+                },
+                "has_sum": {
+                    "name": "合計値あり",
+                    "description": "統計に合計値があるかどうかです。"
+                },
+                "stats": {
+                    "name": "統計",
+                    "description": "インポートする統計を含むマッピング/辞書のリストです。辞書には日時文字列の \"start\" キーが必須で、ほかに指定できるオプションは \"mean\"、\"sum\"、\"min\"、\"max\"、\"last_reset\"、\"state\" です。これらはすべて省略可能で、日時文字列である \"last_reset\" を除き、整数または浮動小数点数です。"
+                }
+            }
+        },
+        "select_random": {
+            "name": "ランダムなオプションを選択",
+            "description": "セレクトエンティティでランダムなオプションを選択します。",
+            "fields": {
+                "options": {
+                    "name": "オプション",
+                    "description": "選択元のオプションを限定します。指定しない場合は、すべてのオプションが対象になります。"
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "選択肢入力を作成",
+            "description": "その場で新しい選択肢入力 (ドロップダウン) ヘルパーを作成します。新しい選択肢入力のエンティティ ID を返します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "新しい選択肢入力の名前です。"
+                },
+                "input_select_id": {
+                    "name": "選択肢入力のエンティティ ID",
+                    "description": "新しい選択肢入力のエンティティ ID です。input_select. の接頭辞は自動的に付けられます。指定しない場合は、名前からエンティティ ID が生成されます。"
+                },
+                "options": {
+                    "name": "オプション",
+                    "description": "選択できるオプションです。各オプションは一度しか含められません。"
+                },
+                "initial": {
+                    "name": "初期オプション",
+                    "description": "開始時のオプションで、オプションのいずれかである必要があります。省略すると、Home Assistant が再起動する前のオプションが維持されます。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "新しい選択肢入力のアイコンです。"
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "選択肢入力を削除",
+            "description": "UI または「選択肢入力を作成」アクションで作成した選択肢入力ヘルパーを削除します。YAML で設定した選択肢入力は Spook では削除できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除する選択肢入力です (複数可)。"
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "ランダムなオプションを選択",
+            "description": "input_select エンティティでランダムなオプションを選択します。",
+            "fields": {
+                "options": {
+                    "name": "オプション",
+                    "description": "選択元のオプションを限定します。指定しない場合は、すべてのオプションが対象になります。"
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "オプションを逆順にする",
+            "description": "`input_select` エンティティの選択可能なオプションの順番を、前後逆にします。これは保存されず、リロードするか Home Assistant を再起動すると元に戻ります。"
+        },
+        "input_select_shuffle": {
+            "name": "オプションをシャッフル",
+            "description": "`input_select` エンティティの選択可能なオプションのリストをシャッフルします。これは保存されず、リロードするか Home Assistant を再起動すると元に戻ります。"
+        },
+        "input_select_sort": {
+            "name": "オプションを並べ替え",
+            "description": "`input_select` エンティティの選択可能なオプションのリストを並べ替えます。これは保存されず、リロードするか Home Assistant を再起動すると元に戻ります。"
+        },
+        "number_decrement": {
+            "name": "値を減らす",
+            "description": "数値エンティティの値を一定量減らします。",
+            "fields": {
+                "amount": {
+                    "name": "量",
+                    "description": "数値を減らす量です。指定しない場合は、数値エンティティのステップが使われます。"
+                }
+            }
+        },
+        "number_increment": {
+            "name": "値を増やす",
+            "description": "数値エンティティの値を一定量増やします。",
+            "fields": {
+                "amount": {
+                    "name": "量",
+                    "description": "数値を増やす量です。指定しない場合は、数値エンティティのステップが使われます。"
+                }
+            }
+        },
+        "number_max": {
+            "name": "最大値に設定",
+            "description": "数値エンティティを最大値に設定します。"
+        },
+        "number_min": {
+            "name": "最小値に設定",
+            "description": "数値エンティティを最小値に設定します。"
+        },
+        "input_number_decrement": {
+            "name": "値を減らす",
+            "description": "数値入力エンティティの値を一定量減らします。",
+            "fields": {
+                "amount": {
+                    "name": "量",
+                    "description": "数値入力を減らす量です。指定しない場合は、数値エンティティのステップが使われます。"
+                },
+                "cycle": {
+                    "name": "循環",
+                    "description": "範囲の端で止まらずに、反対側の端から続けます。セレクトで次のオプションを選択すると循環するのと同じです。"
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "値を増やす",
+            "description": "数値入力エンティティの値を一定量増やします。",
+            "fields": {
+                "amount": {
+                    "name": "量",
+                    "description": "数値入力を増やす量です。指定しない場合は、数値エンティティのステップが使われます。"
+                },
+                "cycle": {
+                    "name": "循環",
+                    "description": "範囲の端で止まらずに、反対側の端から続けます。セレクトで次のオプションを選択すると循環するのと同じです。"
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "最大値に設定",
+            "description": "数値入力エンティティを最大値に設定します。"
+        },
+        "input_number_min": {
+            "name": "最小値に設定",
+            "description": "数値入力エンティティを最小値に設定します。"
+        },
+        "input_number_set_range": {
+            "name": "範囲を設定",
+            "description": "UI で作成した数値入力の最小値、最大値、ステップを、編集するのと同じように変更します。新しい範囲外の値は範囲内に移されます。",
+            "fields": {
+                "min": {
+                    "name": "最小値",
+                    "description": "新しい最小値です。"
+                },
+                "max": {
+                    "name": "最大値",
+                    "description": "新しい最大値です。"
+                },
+                "step": {
+                    "name": "ステップ",
+                    "description": "新しいステップの大きさです。"
+                }
+            }
+        },
+        "counter_create": {
+            "name": "カウンターを作成",
+            "description": "その場で新しいカウンターヘルパーを作成します。新しいカウンターのエンティティ ID を返します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "新しいカウンターの名前です。"
+                },
+                "counter_id": {
+                    "name": "カウンターのエンティティ ID",
+                    "description": "新しいカウンターのエンティティ ID です。counter. の接頭辞は自動的に付けられます。指定しない場合は、名前からエンティティ ID が生成されます。"
+                },
+                "initial": {
+                    "name": "初期値",
+                    "description": "カウンターの開始値で、リセットしたときにもこの値に戻ります。"
+                },
+                "minimum": {
+                    "name": "最小値",
+                    "description": "カウンターが下がれる最小の値です。省略すると制限なしになります。"
+                },
+                "maximum": {
+                    "name": "最大値",
+                    "description": "カウンターが上がれる最大の値です。省略すると制限なしになります。"
+                },
+                "step": {
+                    "name": "ステップ",
+                    "description": "カウンターが一回に増減する量です。"
+                },
+                "restore": {
+                    "name": "復元",
+                    "description": "Home Assistant の起動時に、初期値からやり直すのではなく、カウンターの値を復元します。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "新しいカウンターのアイコンです。"
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "カウンターを削除",
+            "description": "UI または「カウンターを作成」アクションで作成したカウンターヘルパーを削除します。YAML で設定したカウンターは Spook では削除できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除するカウンターです (複数可)。"
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "真偽値入力を作成",
+            "description": "その場で新しい真偽値入力 (トグル) ヘルパーを作成します。新しい真偽値入力のエンティティ ID を返します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "新しい真偽値入力の名前です。"
+                },
+                "input_boolean_id": {
+                    "name": "真偽値入力のエンティティ ID",
+                    "description": "新しい真偽値入力のエンティティ ID です。input_boolean. の接頭辞は自動的に付けられます。指定しない場合は、名前からエンティティ ID が生成されます。"
+                },
+                "initial": {
+                    "name": "初期値",
+                    "description": "開始時の値です。省略すると、Home Assistant が再起動する前の値が維持されます。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "新しい真偽値入力のアイコンです。"
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "真偽値入力を削除",
+            "description": "UI または「真偽値入力を作成」アクションで作成した真偽値入力ヘルパーを削除します。YAML で設定した真偽値入力は Spook では削除できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除する真偽値入力です (複数可)。"
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "テキスト入力を作成",
+            "description": "その場で新しいテキスト入力ヘルパーを作成します。新しいテキスト入力のエンティティ ID を返します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "新しいテキスト入力の名前です。"
+                },
+                "input_text_id": {
+                    "name": "テキスト入力のエンティティ ID",
+                    "description": "新しいテキスト入力のエンティティ ID です。input_text. の接頭辞は自動的に付けられます。指定しない場合は、名前からエンティティ ID が生成されます。"
+                },
+                "initial": {
+                    "name": "初期値",
+                    "description": "開始時のテキストです。省略すると、Home Assistant が再起動する前のテキストが維持されます。"
+                },
+                "min": {
+                    "name": "最小文字数",
+                    "description": "テキストの最短の長さです。"
+                },
+                "max": {
+                    "name": "最大文字数",
+                    "description": "テキストの最長の長さです。"
+                },
+                "pattern": {
+                    "name": "パターン",
+                    "description": "テキストが一致する必要がある正規表現です。"
+                },
+                "mode": {
+                    "name": "モード",
+                    "description": "テキストをそのまま表示するか、パスワードのように隠すかです。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "新しいテキスト入力のアイコンです。"
+                },
+                "unit_of_measurement": {
+                    "name": "測定単位",
+                    "description": "テキストの横に表示する単位です。"
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "テキスト入力を削除",
+            "description": "UI または「テキスト入力を作成」アクションで作成したテキスト入力ヘルパーを削除します。YAML で設定したテキスト入力は Spook では削除できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除するテキスト入力です (複数可)。"
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "ボタン入力を作成",
+            "description": "その場で新しいボタン入力ヘルパーを作成します。新しいボタン入力のエンティティ ID を返します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "新しいボタン入力の名前です。"
+                },
+                "input_button_id": {
+                    "name": "ボタン入力のエンティティ ID",
+                    "description": "新しいボタン入力のエンティティ ID です。input_button. の接頭辞は自動的に付けられます。指定しない場合は、名前からエンティティ ID が生成されます。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "新しいボタン入力のアイコンです。"
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "ボタン入力を削除",
+            "description": "UI または「ボタン入力を作成」アクションで作成したボタン入力ヘルパーを削除します。YAML で設定したボタン入力は Spook では削除できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除するボタン入力です (複数可)。"
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "日時入力を作成",
+            "description": "日付、時刻、またはその両方を保持する新しい日時入力ヘルパーを、その場で作成します。新しい日時入力のエンティティ ID を返します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "新しい日時入力の名前です。"
+                },
+                "input_datetime_id": {
+                    "name": "日時入力のエンティティ ID",
+                    "description": "新しい日時入力のエンティティ ID です。input_datetime. の接頭辞は自動的に付けられます。指定しない場合は、名前からエンティティ ID が生成されます。"
+                },
+                "has_date": {
+                    "name": "日付あり",
+                    "description": "日付を保持するかどうかです。日付と時刻のうち、少なくとも一方はオンにする必要があります。"
+                },
+                "has_time": {
+                    "name": "時刻あり",
+                    "description": "時刻を保持するかどうかです。日付と時刻のうち、少なくとも一方はオンにする必要があります。"
+                },
+                "initial": {
+                    "name": "初期値",
+                    "description": "開始時の日付と時刻、またはそのどちらかです。たとえば 2026-12-31、08:30:00、2026-12-31 08:30:00 などです。省略すると、Home Assistant が再起動する前の値が維持されます。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "新しい日時入力のアイコンです。"
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "日時入力を削除",
+            "description": "UI または「日時入力を作成」アクションで作成した日時入力ヘルパーを削除します。YAML で設定した日時入力は Spook では削除できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除する日時入力です (複数可)。"
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "数値入力を作成",
+            "description": "その場で新しい数値入力ヘルパーを作成します。新しい数値入力のエンティティ ID を返します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "新しい数値入力ヘルパーの名前です。"
+                },
+                "input_number_id": {
+                    "name": "数値入力のエンティティ ID",
+                    "description": "新しい数値入力ヘルパーのエンティティ ID です。input_number. の接頭辞は自動的に付けられます。指定しない場合は、名前からエンティティ ID が生成されます。"
+                },
+                "min": {
+                    "name": "最小値",
+                    "description": "数値入力の最小値です。"
+                },
+                "max": {
+                    "name": "最大値",
+                    "description": "数値入力の最大値です。"
+                },
+                "initial": {
+                    "name": "初期値",
+                    "description": "Home Assistant の起動時の、数値入力の初期値です。"
+                },
+                "step": {
+                    "name": "ステップの大きさ",
+                    "description": "数値入力のステップの大きさです。"
+                },
+                "mode": {
+                    "name": "表示モード",
+                    "description": "数値入力の表示モードで、スライダーか入力ボックスのどちらかです。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "数値入力ヘルパーに使うアイコンです。"
+                },
+                "unit_of_measurement": {
+                    "name": "測定単位",
+                    "description": "数値入力の測定単位です。"
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "数値入力を削除",
+            "description": "UI または「数値入力を作成」アクションで作成した数値入力ヘルパーを削除します。YAML で設定した数値入力は Spook では削除できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除する数値入力です (複数可)。"
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "デバイストラッカーを追加",
+            "description": "人にデバイストラッカーを追加します。",
+            "fields": {
+                "entity_id": {
+                    "name": "人",
+                    "description": "デバイストラッカーを追加する人のエンティティ ID です。"
+                },
+                "device_tracker": {
+                    "name": "デバイストラッカー",
+                    "description": "人に追加するデバイストラッカーのエンティティ ID です。"
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "デバイストラッカーを削除",
+            "description": "人からデバイストラッカーを削除します。",
+            "fields": {
+                "entity_id": {
+                    "name": "人",
+                    "description": "デバイストラッカーを削除する人のエンティティ ID です。"
+                },
+                "device_tracker": {
+                    "name": "デバイストラッカー",
+                    "description": "人から削除するデバイストラッカーのエンティティ ID です。"
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "問題を作成",
+            "description": "Home Assistant の修復に、手動で問題を作成して表示します。",
+            "fields": {
+                "title": {
+                    "name": "タイトル",
+                    "description": "問題のタイトルです。"
+                },
+                "description": {
+                    "name": "説明",
+                    "description": "問題の説明です。Markdown に対応しています。"
+                },
+                "issue_id": {
+                    "name": "問題 ID",
+                    "description": "問題には識別子を付けられます。必要なら後からその ID で取り消せます。また、重複した問題が作成されるのも防げます。指定しない場合は、ランダムな ID が生成されます。"
+                },
+                "domain": {
+                    "name": "ドメイン",
+                    "description": "このフィールドで問題のドメインを設定できます。たとえば、デフォルト (未設定の場合) では \"spook\" が使われます。これにより、問題のロゴ/画像に Spook が表示されます。\"homeassistant\" に設定すると Home Assistant のロゴが使われ、\"hue\"、\"zwave_js\"、\"mqtt\" などに設定すると、その統合のロゴが使われます。"
+                },
+                "severity": {
+                    "name": "重大度",
+                    "description": "問題の重大度です。問題の優先度を決めるのに使われます。設定しない場合は \"warning\" が使われます。"
+                },
+                "persistent": {
+                    "name": "永続",
+                    "description": "問題を永続にするかどうかです。永続にすると、Home Assistant を再起動しても残ります。デフォルトでは、問題は永続ではありません。"
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "すべての問題を無視",
+            "description": "Home Assistant の修復に現在表示されているすべての問題、または特定の統合が報告した問題だけを無視します。",
+            "fields": {
+                "domain": {
+                    "name": "ドメイン",
+                    "description": "これらの統合が報告した問題だけを無視します。"
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "問題を一覧表示",
+            "description": "Home Assistant の修復に現在表示されている問題を、タイトル付きで一覧表示します。オートメーションで処理したり、ダッシュボードに表示したりするのに使えます。",
+            "fields": {
+                "include_ignored": {
+                    "name": "無視したものを含める",
+                    "description": "無視された問題も一覧に含めます。"
+                },
+                "domain": {
+                    "name": "ドメイン",
+                    "description": "これらの統合が報告した問題だけを一覧表示します。"
+                },
+                "severity": {
+                    "name": "重大度",
+                    "description": "これらの重大度の問題だけを一覧表示します。"
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "問題を削除",
+            "description": "手動で作成した Home Assistant の修復の問題を削除します。このアクションで削除できるのは、`repairs_create` アクションで作成した問題だけです。",
+            "fields": {
+                "issue_id": {
+                    "name": "問題 ID",
+                    "description": "削除する問題の ID です。"
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "すべての問題の無視を解除",
+            "description": "Home Assistant の修復に現在表示されているすべての問題、または特定の統合が報告した問題だけの無視を解除します。",
+            "fields": {
+                "domain": {
+                    "name": "ドメイン",
+                    "description": "これらの統合が報告した問題だけの無視を解除します。"
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "表示精度を設定",
+            "description": "一つ以上のセンサーで表示する小数点以下の桁数を設定します。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ",
+                    "description": "更新するセンサーエンティティです (複数可)。"
+                },
+                "display_precision": {
+                    "name": "表示精度",
+                    "description": "センサーで表示する小数点以下の桁数です。"
+                }
+            }
+        },
+        "timer_create": {
+            "name": "タイマーを作成",
+            "description": "その場で新しいタイマーヘルパーを作成します。新しいタイマーのエンティティ ID を返します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "新しいタイマーの名前です。"
+                },
+                "timer_id": {
+                    "name": "タイマーのエンティティ ID",
+                    "description": "新しいタイマーのエンティティ ID です。timer. の接頭辞は自動的に付けられます。指定しない場合は、名前からエンティティ ID が生成されます。"
+                },
+                "duration": {
+                    "name": "期間",
+                    "description": "タイマーを開始したときに動作する時間です。"
+                },
+                "restore": {
+                    "name": "復元",
+                    "description": "Home Assistant の起動時にタイマーの状態を復元します。動作中のタイマーは再起動をまたいで動作し続けます。"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "新しいタイマーのアイコンです。"
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "タイマーを削除",
+            "description": "UI または「タイマーを作成」アクションで作成したタイマーヘルパーを削除します。YAML で設定したタイマーは Spook では削除できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除するタイマーです (複数可)。"
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "期間を設定",
+            "description": "既存のタイマーの期間を設定します。",
+            "fields": {
+                "duration": {
+                    "name": "期間",
+                    "description": "タイマーの新しい期間を、timedelta 文字列で指定します。"
+                }
+            }
+        },
+        "zone_create": {
+            "name": "ゾーンを作成",
+            "description": "その場で Home Assistant に新しいゾーンを作成します。",
+            "fields": {
+                "name": {
+                    "name": "名前",
+                    "description": "ゾーンの名前"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "ゾーンに使うアイコン"
+                },
+                "latitude": {
+                    "name": "緯度",
+                    "description": "ゾーンの緯度です。テンプレートも使えます。"
+                },
+                "longitude": {
+                    "name": "経度",
+                    "description": "ゾーンの経度です。テンプレートも使えます。"
+                },
+                "radius": {
+                    "name": "半径",
+                    "description": "ゾーンの半径"
+                },
+                "passive": {
+                    "name": "パッシブ",
+                    "description": "パッシブゾーンはオートメーション専用です: 地図には表示されず、人やデバイストラッカーの居場所も変えません。"
+                }
+            }
+        },
+        "zone_update": {
+            "name": "ゾーンを更新",
+            "description": "その場でゾーンのプロパティを更新します。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "更新するエンティティの ID です (複数可)。"
+                },
+                "name": {
+                    "name": "名前",
+                    "description": "ゾーンの名前"
+                },
+                "icon": {
+                    "name": "アイコン",
+                    "description": "ゾーンに使うアイコン"
+                },
+                "latitude": {
+                    "name": "緯度",
+                    "description": "ゾーンの緯度です。テンプレートも使えます。"
+                },
+                "longitude": {
+                    "name": "経度",
+                    "description": "ゾーンの経度です。テンプレートも使えます。"
+                },
+                "radius": {
+                    "name": "半径",
+                    "description": "ゾーンの半径"
+                },
+                "passive": {
+                    "name": "パッシブ",
+                    "description": "パッシブゾーンはオートメーション専用です: 地図には表示されず、人やデバイストラッカーの居場所も変えません。"
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "ゾーンを削除",
+            "description": "ゾーンを削除します。UI で作成・管理しているゾーンでのみ動作します。YAML で作成・管理しているゾーンは Spook では管理できません。",
+            "fields": {
+                "entity_id": {
+                    "name": "エンティティ ID",
+                    "description": "削除するエンティティの ID です (複数可)。"
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "温度を上げる",
+            "description": "給湯器の設定温度を、範囲内で一段階上げます。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "変化させる量です。省略すると給湯器自身のステップを使い、ステップがない場合は 0.5 度 (華氏では 1 度) を使います。"
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "温度を下げる",
+            "description": "給湯器の設定温度を、範囲内で一段階下げます。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "変化させる量です。省略すると給湯器自身のステップを使い、ステップがない場合は 0.5 度 (華氏では 1 度) を使います。"
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "湿度を上げる",
+            "description": "加湿器の設定湿度を、範囲内で一段階上げます。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "変化させる量をパーセントで指定します。省略すると加湿器自身のステップを使い、ステップがない場合は 1 パーセントを使います。"
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "湿度を下げる",
+            "description": "加湿器の設定湿度を、範囲内で一段階下げます。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "変化させる量をパーセントで指定します。省略すると加湿器自身のステップを使い、ステップがない場合は 1 パーセントを使います。"
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "位置を上げる",
+            "description": "カバーを一段階開きます。全開で止まります。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "動かす量をパーセントで指定します。省略すると 10 パーセントです。"
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "位置を下げる",
+            "description": "カバーを一段階閉じます。全閉で止まります。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "動かす量をパーセントで指定します。省略すると 10 パーセントです。"
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "位置を上げる",
+            "description": "バルブを一段階開きます。全開で止まります。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "動かす量をパーセントで指定します。省略すると 10 パーセントです。"
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "位置を下げる",
+            "description": "バルブを一段階閉じます。全閉で止まります。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "動かす量をパーセントで指定します。省略すると 10 パーセントです。"
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "音量を上げる",
+            "description": "メディアプレーヤーの音量を指定したステップだけ上げます。最大音量で止まります。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "音量を変化させる量をパーセントで指定します。"
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "音量を下げる",
+            "description": "メディアプレーヤーの音量を指定したステップだけ下げます。無音で止まります。",
+            "fields": {
+                "step": {
+                    "name": "ステップ",
+                    "description": "音量を変化させる量をパーセントで指定します。"
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "アイテムを移動",
+            "description": "To-Do リストのアイテムを、一番上、一番下、または別のアイテムの後ろに移動します。",
+            "fields": {
+                "item": {
+                    "name": "アイテム",
+                    "description": "移動するアイテムのタイトルまたは uid です。"
+                },
+                "after": {
+                    "name": "後ろ",
+                    "description": "このアイテムの後ろに置くアイテムのタイトルまたは uid です。これか位置のどちらかを指定します。"
+                },
+                "position": {
+                    "name": "位置",
+                    "description": "リストの一番上か一番下に移動します。これか、後ろに置くアイテムのどちらかを指定します。"
                 }
             }
         }
