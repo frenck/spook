@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
+import asyncio
 from dataclasses import dataclass, field
 import importlib
 from pathlib import Path
@@ -42,8 +43,7 @@ from .core_compat import load_service_descriptions
 from .service_icons import async_inject_service_icons, async_remove_service_icons
 
 if TYPE_CHECKING:
-    import asyncio
-    from collections.abc import Callable
+    from collections.abc import Callable, Iterable
     from types import ModuleType
 
 
@@ -336,6 +336,10 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
     # Everything to undo on unload: the listeners, and any translation
     # injection still on its way.
     _on_unload: list[Callable[[], None]] = field(default_factory=list)
+    # The languages Spook's strings went into. Not just the server's: every
+    # person picks their own in their profile, and the frontend asks for that
+    # one. #1820.
+    _languages: set[str] = field(default_factory=set)
 
     def __post_init__(self) -> None:
         """Post initialization."""
@@ -386,7 +390,93 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
         for module in modules:
             self._async_setup_service_module(module)
 
+        self._async_follow_translation_loads()
         await self.async_inject_service_translations()
+
+    @callback
+    def _async_follow_translation_loads(self) -> None:
+        """Inject into every language Home Assistant loads, as it loads it.
+
+        Home Assistant loads a language the moment somebody asks for it, and
+        says nothing when it does. Spook's strings for a domain that is not
+        its own have to be written into that language by hand, so it follows
+        the loading on this one cache: once a language is in for the first
+        time, Spook's strings go in too, before the caller reads them.
+
+        The cache keeps its attributes in slots, so its method cannot be
+        swapped on the instance. Its class can, for a subclass that adds no
+        slots of its own, and only this Home Assistant's cache is touched.
+        """
+        translations_cache = _async_get_translations_cache(self.hass)
+        original_class = type(translations_cache)
+        if not callable(getattr(original_class, "async_load", None)):
+            LOGGER.warning(
+                "Unable to follow Home Assistant's translation loading, "
+                "Spook's actions are only translated in the server's language"
+            )
+            return
+
+        manager = self
+
+        class _FollowedTranslationCache(original_class):  # type: ignore[misc,valid-type]
+            """Home Assistant's translation cache, with Spook along."""
+
+            __slots__ = ()
+
+            async def async_load(self, language: str, components: set[str]) -> None:
+                """Load as ever, then add Spook's strings to a new language."""
+                await super().async_load(language, components)
+                await manager.async_follow_language(language)
+
+        try:
+            translations_cache.__class__ = _FollowedTranslationCache
+        except TypeError:
+            LOGGER.warning(
+                "Unable to follow Home Assistant's translation loading, "
+                "Spook's actions are only translated in the server's language"
+            )
+            return
+
+        @callback
+        def _stop_following() -> None:
+            # Only when nothing swapped it again since.
+            if translations_cache.__class__ is _FollowedTranslationCache:
+                translations_cache.__class__ = original_class
+
+        self._on_unload.append(_stop_following)
+
+    async def async_follow_language(self, language: str) -> None:
+        """Translate Spook's actions into a language loaded for the first time."""
+        if language in self._languages:
+            return
+
+        # Taken before injecting, which loads this language again.
+        self._languages.add(language)
+
+        # In a task unloading cancels, like every other injection: one still
+        # on its way would write Spook's strings back after unload took them
+        # out again.
+        task = self.hass.async_create_task(
+            self.async_inject_service_translations([language]),
+            f"Inject Spook service translations in {language}",
+        )
+        self._on_unload.append(task.cancel)
+        try:
+            await task
+        except asyncio.CancelledError:
+            # Only swallowed when unloading cancelled Spook's part; the caller
+            # being cancelled itself goes on as it should.
+            current = asyncio.current_task()
+            if current is not None and current.cancelling():
+                raise
+        # pylint: disable-next=broad-exception-caught
+        except Exception:  # noqa: BLE001
+            # The caller only asked for translations; Spook's part going wrong
+            # must not take theirs with it.
+            LOGGER.exception("Spook could not translate its actions into %s", language)
+        finally:
+            if task.cancel in self._on_unload:
+                self._on_unload.remove(task.cancel)
 
     @callback
     def _async_setup_service_module(self, module: ModuleType) -> None:
@@ -471,7 +561,9 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
         self._async_reinject_service_translations()
 
     @callback
-    def _async_reinject_service_translations(self) -> None:
+    def _async_reinject_service_translations(
+        self, languages: Iterable[str] | None = None
+    ) -> None:
         """Inject the translations again, in a task unloading cancels.
 
         Injecting waits on loading translations before it writes anything.
@@ -480,7 +572,7 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
         back.
         """
         task = self.hass.async_create_task(
-            self.async_inject_service_translations(),
+            self.async_inject_service_translations(languages),
             "Inject Spook service translations",
         )
         self._on_unload.append(task.cancel)
@@ -598,9 +690,9 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
         self,
         service: AbstractSpookService,
         cached_spook_translations: dict[str, str],
+        language: str,
     ) -> None:
         """Inject service translation strings into Home Assistant's cache."""
-        language = self.hass.config.language
         component_cache = self._translation_component_cache(
             language,
             service.domain,
@@ -645,6 +737,7 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
         self,
         service: AbstractSpookService,
         cached_spook_translations: dict[str, str],
+        language: str,
     ) -> None:
         """Inject the option labels of a Spook service's selectors.
 
@@ -656,7 +749,6 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
         if not (keys := self._selector_translation_keys(service)):
             return
 
-        language = self.hass.config.language
         component_cache = self._translation_component_cache(
             language,
             service.domain,
@@ -686,8 +778,13 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
                 )
                 component_cache[target_key] = value
 
-    async def async_inject_service_translations(self) -> None:
-        """Inject Spook service strings and icons into Home Assistant."""
+    async def async_inject_service_translations(
+        self, languages: Iterable[str] | None = None
+    ) -> None:
+        """Inject Spook service strings and icons into Home Assistant.
+
+        Into the languages given, or every language Spook has written into.
+        """
         services = [
             service
             for service in self._services
@@ -697,43 +794,14 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
         if not services:
             return
 
-        await async_get_translations(
-            self.hass,
-            self.hass.config.language,
-            SERVICE_TRANSLATION_CATEGORY,
-            {DOMAIN, *(service.domain for service in services)},
-        )
-        cached_spook_translations = async_get_cached_translations(
-            self.hass,
-            self.hass.config.language,
-            SERVICE_TRANSLATION_CATEGORY,
-            DOMAIN,
-        )
-
-        for service in services:
-            self._inject_service_translation_strings(
-                service,
-                cached_spook_translations,
-            )
+        if languages is None:
+            # The server's own is always one of them.
+            self._languages.add(self.hass.config.language)
+            languages = self._languages
 
         domains = {DOMAIN, *(service.domain for service in services)}
-        await async_get_translations(
-            self.hass,
-            self.hass.config.language,
-            SELECTOR_TRANSLATION_CATEGORY,
-            domains,
-        )
-        cached_spook_selector_translations = async_get_cached_translations(
-            self.hass,
-            self.hass.config.language,
-            SELECTOR_TRANSLATION_CATEGORY,
-            DOMAIN,
-        )
-        for service in services:
-            self._inject_selector_translation_strings(
-                service,
-                cached_spook_selector_translations,
-            )
+        for language in list(languages):
+            await self._async_inject_translations_for(language, services, domains)
 
         await async_inject_service_icons(
             self.hass,
@@ -744,12 +812,44 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
             self._injected_service_icons,
         )
 
+    async def _async_inject_translations_for(
+        self,
+        language: str,
+        services: list[AbstractSpookService],
+        domains: set[str],
+    ) -> None:
+        """Inject the strings and selector labels of these services in a language."""
+        await async_get_translations(
+            self.hass, language, SERVICE_TRANSLATION_CATEGORY, domains
+        )
+        cached_spook_translations = async_get_cached_translations(
+            self.hass, language, SERVICE_TRANSLATION_CATEGORY, DOMAIN
+        )
+        for service in services:
+            self._inject_service_translation_strings(
+                service, cached_spook_translations, language
+            )
+
+        await async_get_translations(
+            self.hass, language, SELECTOR_TRANSLATION_CATEGORY, domains
+        )
+        cached_spook_selector_translations = async_get_cached_translations(
+            self.hass, language, SELECTOR_TRANSLATION_CATEGORY, DOMAIN
+        )
+        for service in services:
+            self._inject_selector_translation_strings(
+                service, cached_spook_selector_translations, language
+            )
+
     @callback
     def _async_core_config_updated(self, event: Event) -> None:
         """Re-inject service translations when the language changes."""
         if "language" not in event.data:
             return
-        self._async_reinject_service_translations()
+
+        # The language it was is kept: somebody can still have it as theirs.
+        self._languages.add(self.hass.config.language)
+        self._async_reinject_service_translations([self.hass.config.language])
 
     @callback
     def async_clear_service_translation_overrides(self) -> None:

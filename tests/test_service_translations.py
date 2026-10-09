@@ -13,6 +13,7 @@ import yaml
 from homeassistant.helpers.translation import (
     _async_get_translations_cache,
     async_get_cached_translations,
+    async_get_translations,
 )
 
 from custom_components.spook import services as spook_services
@@ -51,6 +52,68 @@ class MockSpookService(AbstractSpookService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
+
+
+def _a_manager_with_restart(hass: HomeAssistant) -> SpookServiceManager:
+    """Return a manager carrying Spook's restart action, not set up yet."""
+    manager = SpookServiceManager(hass)
+    manager._services.add(MockSpookService(hass))
+    manager._service_schemas = {"homeassistant_restart": {}}
+    return manager
+
+
+async def test_actions_are_translated_in_a_profile_language(
+    hass: HomeAssistant,
+) -> None:
+    """Test a language other than the server's gets Spook's strings too.
+
+    Everybody picks a language in their own profile, and the frontend asks
+    for that one. Spook used to write its strings into the server's language
+    only, so a Dutch profile on an English server read core's own. #1820.
+    """
+    manager = _a_manager_with_restart(hass)
+    manager._async_follow_translation_loads()
+    await manager.async_inject_service_translations()
+
+    translations = await async_get_translations(
+        hass, "nl", "services", {"homeassistant"}
+    )
+
+    assert translations["component.homeassistant.services.restart.name"] == (
+        "Herstart 👻"
+    )
+    assert (
+        translations["component.homeassistant.services.restart.fields.force.name"]
+        == "Forceer herstart"
+    )
+
+    # The test harness shares one translation cache between tests, so leave
+    # it the way it was found.
+    manager.async_clear_service_translation_overrides()
+    for undo in manager._on_unload:
+        undo()
+
+
+async def test_unloading_stops_following_translation_loads(
+    hass: HomeAssistant,
+) -> None:
+    """Test unloading leaves Home Assistant's translation cache as it was."""
+    cache = _async_get_translations_cache(hass)
+    original_class = cache.__class__
+    manager = _a_manager_with_restart(hass)
+    manager._async_follow_translation_loads()
+    assert cache.__class__ is not original_class
+
+    for undo in manager._on_unload:
+        undo()
+
+    assert cache.__class__ is original_class
+    translations = await async_get_translations(
+        hass, "de", "services", {"homeassistant"}
+    )
+    assert "component.homeassistant.services.restart.fields.force.name" not in (
+        translations
+    )
 
 
 async def test_service_translations_are_injected(hass: HomeAssistant) -> None:
