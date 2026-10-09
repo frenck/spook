@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Alan için bilinmeyen sıcaklık sensörü: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Alan için bilinmeyen sıcaklık sensörü: {area}",
+                        "description": "Spook alanlarınızda bir hayalet buldu 👻\n\n{area} alanı, Home Assistant'ın bilmediği bir sıcaklık sensörü kullanıyor:\n\n{entities}\n\nHome Assistant bu sensörü yalnızca seçildiği anda kontrol eder, bu yüzden sensör kaldırıldığında ya da yeniden adlandırıldığında alan boşluğu göstermeye devam etti. Assist ve alan kartları artık ondan sıcaklık değeri alamıyor.\n\nYeniden bir sensör seçebilmek için ayarı temizleyin ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Ayarı temizle",
+                            "manage": "Kendim düzelteyim",
+                            "ignore": "Kalsın, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu alan hakkında sesini çıkarmayacak.",
+                    "manage": "[Alanlar sayfasında](/config/areas/dashboard) bu alanın ayarlarından farklı bir sensör seçebilirsiniz.",
+                    "changed": "Spook baktığından beri bu sensör geri geldi ya da ayar artık başka bir yeri gösteriyor. Bu yüzden hiçbir şey temizlenmedi. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Alan için bilinmeyen nem sensörü: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Alan için bilinmeyen nem sensörü: {area}",
+                        "description": "Spook alanlarınızda bir hayalet buldu 👻\n\n{area} alanı, Home Assistant'ın bilmediği bir nem sensörü kullanıyor:\n\n{entities}\n\nHome Assistant bu sensörü yalnızca seçildiği anda kontrol eder, bu yüzden sensör kaldırıldığında ya da yeniden adlandırıldığında alan boşluğu göstermeye devam etti. Assist ve alan kartları artık ondan nem değeri alamıyor.\n\nYeniden bir sensör seçebilmek için ayarı temizleyin ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Ayarı temizle",
+                            "manage": "Kendim düzelteyim",
+                            "ignore": "Kalsın, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu alan hakkında sesini çıkarmayacak.",
+                    "manage": "[Alanlar sayfasında](/config/areas/dashboard) bu alanın ayarlarından farklı bir sensör seçebilirsiniz.",
+                    "changed": "Spook baktığından beri bu sensör geri geldi ya da ayar artık başka bir yeri gösteriyor. Bu yüzden hiçbir şey temizlenmedi. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Alan için bilinmeyen sıcaklık ve nem sensörleri: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Alan için bilinmeyen sıcaklık ve nem sensörleri: {area}",
+                        "description": "Spook alanlarınızda bir hayalet buldu 👻\n\n{area} alanı, Home Assistant'ın bilmediği bir sıcaklık ve bir nem sensörü kullanıyor:\n\n{entities}\n\nHome Assistant bu sensörleri yalnızca seçildikleri anda kontrol eder, bu yüzden sensörler kaldırıldığında ya da yeniden adlandırıldığında alan boşluğu göstermeye devam etti. Assist ve alan kartları artık onlardan değer alamıyor.\n\nYeniden sensör seçebilmek için ayarları temizleyin ya da tutun, Spook da artık bunlardan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Ayarları temizle",
+                            "manage": "Kendim düzelteyim",
+                            "ignore": "Kalsın, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu alan hakkında sesini çıkarmayacak.",
+                    "manage": "[Alanlar sayfasında](/config/areas/dashboard) bu alanın ayarlarından farklı sensörler seçebilirsiniz.",
+                    "changed": "Spook baktığından beri bu sensörler geri geldi ya da ayarlar artık başka bir yeri gösteriyor. Bu yüzden hiçbir şey temizlenmedi. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
         }
     },
     "system_health": {
