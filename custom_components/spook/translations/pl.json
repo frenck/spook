@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Nieznany sensor temperatury dla obszaru: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nieznany sensor temperatury dla obszaru: {area}",
+                        "description": "Spook znalazł ducha w Twoich obszarach 👻\n\nObszar {area} używa sensora temperatury, który jest nieznany Home Assistant:\n\n{entities}\n\nHome Assistant sprawdza ten sensor tylko w chwili jego wyboru, więc gdy został usunięty lub przemianowany, obszar dalej wskazywał na nic. Asystent i karty obszarów nie dostają już z niego odczytu temperatury.\n\nWyczyść to ustawienie, żeby móc ponownie wybrać sensor, albo zostaw, a Spook przestanie o nim przypominać.\n\nSpook 👻 Twój ziomek.",
+                        "menu_options": {
+                            "remove": "Wyczyść ustawienie",
+                            "manage": "Naprawię to sam",
+                            "ignore": "Zostaw, nie mów mi o tym więcej"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Od teraz Spook nie będzie wspominał o tym obszarze.",
+                    "manage": "Możesz wybrać inny sensor w ustawieniach tego obszaru na [stronie Obszary](/config/areas/dashboard).",
+                    "changed": "Ten sensor wrócił albo ustawienie wskazuje teraz gdzie indziej od czasu, gdy Spook sprawdzał. Dlatego nic nie zostało wyczyszczone. Spook sprawdzi to ponownie sam i zaktualizuje ten problem."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Nieznany sensor wilgotności dla obszaru: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nieznany sensor wilgotności dla obszaru: {area}",
+                        "description": "Spook znalazł ducha w Twoich obszarach 👻\n\nObszar {area} używa sensora wilgotności, który jest nieznany Home Assistant:\n\n{entities}\n\nHome Assistant sprawdza ten sensor tylko w chwili jego wyboru, więc gdy został usunięty lub przemianowany, obszar dalej wskazywał na nic. Asystent i karty obszarów nie dostają już z niego odczytu wilgotności.\n\nWyczyść to ustawienie, żeby móc ponownie wybrać sensor, albo zostaw, a Spook przestanie o nim przypominać.\n\nSpook 👻 Twój ziomek.",
+                        "menu_options": {
+                            "remove": "Wyczyść ustawienie",
+                            "manage": "Naprawię to sam",
+                            "ignore": "Zostaw, nie mów mi o tym więcej"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Od teraz Spook nie będzie wspominał o tym obszarze.",
+                    "manage": "Możesz wybrać inny sensor w ustawieniach tego obszaru na [stronie Obszary](/config/areas/dashboard).",
+                    "changed": "Ten sensor wrócił albo ustawienie wskazuje teraz gdzie indziej od czasu, gdy Spook sprawdzał. Dlatego nic nie zostało wyczyszczone. Spook sprawdzi to ponownie sam i zaktualizuje ten problem."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Nieznane sensory temperatury i wilgotności dla obszaru: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nieznane sensory temperatury i wilgotności dla obszaru: {area}",
+                        "description": "Spook znalazł ducha w Twoich obszarach 👻\n\nObszar {area} używa sensorów temperatury i wilgotności, które są nieznane Home Assistant:\n\n{entities}\n\nHome Assistant sprawdza te sensory tylko w chwili ich wyboru, więc gdy zostały usunięte lub przemianowane, obszar dalej wskazywał na nic. Asystent i karty obszarów nie dostają już z nich odczytów.\n\nWyczyść te ustawienia, żeby móc ponownie wybrać sensory, albo zostaw, a Spook przestanie o nich przypominać.\n\nSpook 👻 Twój ziomek.",
+                        "menu_options": {
+                            "remove": "Wyczyść ustawienia",
+                            "manage": "Naprawię to sam",
+                            "ignore": "Zostaw, nie mów mi o tym więcej"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Od teraz Spook nie będzie wspominał o tym obszarze.",
+                    "manage": "Możesz wybrać inne sensory w ustawieniach tego obszaru na [stronie Obszary](/config/areas/dashboard).",
+                    "changed": "Te sensory wróciły albo ustawienia wskazują teraz gdzie indziej od czasu, gdy Spook sprawdzał. Dlatego nic nie zostało wyczyszczone. Spook sprawdzi to ponownie sam i zaktualizuje ten problem."
+                }
+            }
         }
     },
     "system_health": {
