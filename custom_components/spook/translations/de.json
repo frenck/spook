@@ -1,27 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook ist bereits konfiguriert.",
-            "enabled_existing": "Der vorhandene Spook Eintrag wurde aktiviert.",
-            "enable_failed": "Der vorhandene Spook Eintrag konnte nicht aktiviert werden."
+            "already_spooked": "Spook spukt hier schon 👻\n\nEin Geist pro Haus reicht völlig. Du findest Spook unter [Geräte & Dienste](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook ist wieder wach 👻\n\nGib Spook einen Moment, sich umzusehen. Alles, was Spook findet, erscheint unter [Reparaturen](/config/repairs).",
+            "enable_failed": "Spook wollte nicht aufwachen 👻\n\nVersuche, Spook unter [Geräte & Dienste](/config/integrations/integration/spook) selbst wieder einzuschalten.",
+            "kept_sleeping": "Spook schläft weiter 👻\n\nVermisst du Spook? Unter [Geräte & Dienste](/config/integrations/integration/spook) kannst du Spook jederzeit wecken."
         },
         "step": {
             "user": {
-                "description": "Hast du die README gelesen? Hast du die Lizenz gelesen? Bist du dir wirklich sicher?"
-            },
-            "choice_restart": {
-                "description": "Damit Spook die Einrichtung abschließen kann, muss Home Assistant neu gestartet werden.\n\nMöchtest du Home Assistant jetzt neu starten?",
-                "menu_options": {
-                    "restart_now": "Jetzt neu starten",
-                    "restart_later": "Später neu starten"
-                }
+                "description": "Spook schwebt durch dein Home Assistant und sucht nach Geistern: Verweise auf Dinge, die es nicht mehr gibt, und Überbleibsel, die niemand aufgeräumt hat. Was Spook findet, meldet es unter Reparaturen.\n\nAußerdem erweitert Spook, was deine Automatisierungen und Skripte können, mit zusätzlichen Aktionen, Auslösern, Bedingungen und Helfern, für noch mächtigere Automatisierungen.\n\nFairerweise vorab: Spook ist kein Teil von Home Assistant. Es ist eine benutzerdefinierte Integration, die an Stellen greift, an die sie nie eingeladen wurde. Wenn etwas Seltsames passiert, verdächtige zuerst Spook und [sag uns Bescheid]({issue_tracker_url}).\n\nBereit, heimgesucht zu werden?",
+                "title": "Buh! Lerne Spook kennen, deinen Kumpel 👻"
             },
             "already_configured": {
-                "description": "Spook ist bereits konfiguriert, aber  der bestehende Eintrag ist deaktiviert. Möchtest du ihn aktivieren?",
+                "description": "Spook ist bereits eingerichtet, aber jemand hat es ausgeschaltet. Aufwecken?",
                 "menu_options": {
-                    "enable_existing": "Aktiviere existierenden Eintrag"
-                }
+                    "enable_existing": "Spook aufwecken",
+                    "keep_sleeping": "Weiterschlafen lassen"
+                },
+                "title": "Spook schläft 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "Spook schwebt herum 👻\n\nGib Spook einen Moment, sich umzusehen. Alles, was Spook findet, erscheint unter [Reparaturen](/config/repairs).\n\nDie zusätzlichen Aktionen, Auslöser und Bedingungen warten im Automatisierungs- und Skript-Editor auf dich. Neugierig, was Spook sonst noch kann? In der [Dokumentation]({documentation_url}) steht alles.\n\nGefällt dir Spook? 👻 Ein ⭐ auf [GitHub]({repository_url}) zeigt anderen, dass Spook eigentlich ziemlich klasse ist. [Frenck zu sponsern]({sponsor_url}) hält diesen Geist gut genährt. Und sein kostenloser zweiwöchentlicher [Newsletter]({newsletter_url}) hält deinen inneren Geist gut genährt."
         }
     },
     "entity": {
@@ -348,7 +348,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Neustart erforderlich",
-                        "description": "Damit Spook 👻 die Einrichtung beenden kann, muss Home Assistant neu gestartet werden.\n\nWähle Senden, um Home Assistant jetzt neu zu starten."
+                        "description": "Damit Spook 👻 die Einrichtung beenden kann, muss Home Assistant neu gestartet werden.\n\nWähle Senden, um Home Assistant jetzt neu zu starten.\n\nSpook 👻 Dein Kumpel."
                     }
                 }
             }
@@ -439,7 +439,6 @@
             "title": "Unbekannte Entitäten in deinen Customizations"
         },
         "energy_unknown_references": {
-            "description": "Spook hat in deinem Energie-Dashboard einen „Geist“ entdeckt 👻\n\nDas Energie-Dashboard verweist auf die folgenden Entitäten, die Home Assistant nicht bekannt sind:\n\n{entities}\n\n\n\nDies tritt in der Regel auf, wenn eine in der Energiekonfiguration verwendete Entität umbenannt oder entfernt wurde. Um diesen Fehler zu beheben, öffne „Einstellungen“ > „Dashboards“ > „Energie“ und aktualisiere oder entferne diese Entitäten.\n\nSpook 👻 Dein Kumpel.",
             "title": "Unbekannte Entitäten, die im Energie-Dashboard verwendet werden"
         },
         "empty_floors": {
@@ -2392,6 +2391,14 @@
                 "bottom": "Ende",
                 "top": "Anfang"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Gefundene Geister",
+            "ghosts_ignored": "Ignorierte Geister",
+            "helpers_linked": "Verknüpfte Helfer",
+            "version": "Version"
         }
     }
 }

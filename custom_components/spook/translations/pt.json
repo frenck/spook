@@ -1,27 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "O Spook já está configurado.",
-            "enable_failed": "A entrada atual do Spook não pode ser ativada.",
-            "enabled_existing": "A entrada atual do Spook foi ativada."
+            "already_spooked": "O Spook já anda a assombrar este sítio 👻\n\nUm fantasma por casa chega bem. Encontras o Spook em [Dispositivos e serviços](/config/integrations/integration/spook).",
+            "enable_failed": "O Spook não quis acordar 👻\n\nTenta voltar a ligá-lo tu próprio em [Dispositivos e serviços](/config/integrations/integration/spook).",
+            "enabled_existing": "O Spook está acordado outra vez 👻\n\nDá-lhe um momento para dar uma volta. Tudo o que encontrar aparece em [Reparações](/config/repairs).",
+            "kept_sleeping": "O Spook continua a dormir 👻\n\nTens saudades? Podes acordá-lo a qualquer momento em [Dispositivos e serviços](/config/integrations/integration/spook)."
         },
         "step": {
             "user": {
-                "description": "Leste o \"readme\"? Leste a licença? Tens mesmo a certeza?"
-            },
-            "choice_restart": {
-                "description": "Para que o Spook consiga terminar a configuração, o Home Assistant tem que ser reiniciado.\n\nPretendes reiniciar o Home assistant agora?",
-                "menu_options": {
-                    "restart_now": "Reiniciar agora",
-                    "restart_later": "Reiniciar mais tarde"
-                }
+                "description": "O Spook flutua pelo teu Home Assistant à procura de fantasmas: referências a coisas que já não existem, e restos que ninguém limpou. Tudo o que encontra, reporta em Reparações.\n\nTambém alarga o que as tuas automações e scripts conseguem fazer, com ações, acionadores, condições e assistentes extra, para automações ainda mais poderosas.\n\nAviso justo: o Spook não faz parte do Home Assistant. É uma integração personalizada que se mete em sítios para onde nunca foi convidada. Se algo estranho acontecer, suspeita primeiro do Spook e [avisa-nos]({issue_tracker_url}).\n\nPronto para ser assombrado?",
+                "title": "Bu! Conhece o Spook, o teu amigo 👻"
             },
             "already_configured": {
-                "description": "O Spook já está configurado, mas a entrada está desativada. Queres ativá-la?",
+                "description": "O Spook já está configurado, mas alguém o desligou. Acordá-lo?",
                 "menu_options": {
-                    "enable_existing": "Ativar entrada existente"
-                }
+                    "enable_existing": "Acordar o Spook",
+                    "keep_sleeping": "Deixá-lo dormir"
+                },
+                "title": "O Spook está a dormir 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "O Spook anda por aí a flutuar 👻\n\nDá-lhe um momento para dar uma volta. Tudo o que encontrar aparece em [Reparações](/config/repairs).\n\nAs ações, acionadores e condições extra estão à tua espera nos editores de automações e scripts. Curioso sobre o que mais o Spook consegue fazer? A [documentação]({documentation_url}) tem tudo.\n\nEstás a gostar do Spook? 👻 Uma ⭐ no [GitHub]({repository_url}) mostra aos outros que o Spook é mesmo muito bom. [Patrocinar o Frenck]({sponsor_url}) mantém este fantasma bem alimentado. E a [newsletter]({newsletter_url}) gratuita e quinzenal dele mantém o teu fantasma interior bem alimentado."
         }
     },
     "entity": {
@@ -347,7 +347,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "É necessário reiniciar",
-                        "description": "Para que o Spook 👻 consiga terminar a configuração, o Home Assistant tem que ser reiniciado.\n\nEscolhe reiniciar o Home Assistant agora."
+                        "description": "Para que o Spook 👻 consiga terminar a configuração, o Home Assistant tem que ser reiniciado.\n\nEscolhe reiniciar o Home Assistant agora.\n\nSpook 👻 O teu amigo."
                     }
                 }
             }
@@ -515,7 +515,6 @@
             "title": "Áreas desconhecidas utilizadas na dashboard: {dashboard}"
         },
         "energy_unknown_references": {
-            "description": "O Spook encontrou um fantasma no teu dashboard de energia 👻\n\nEste dashboard contém as seguintes entidades que são desconhecidas para o Home Assistant:\n\n{entities}\n\n\n\nIsto geralmente acontece quando uma entidade usada na configuração da energia foi renomeada ou removida. Para corrigir este erro, vai a Configurações > Painéis > Energia e atualiza ou remove as entidades.\n\nSpook 👻 O teu amigo.",
             "title": "Entidades desconhecidas usadas no painel de energia"
         },
         "script_unknown_condition_references": {
@@ -1936,6 +1935,14 @@
                 "error": "Erro",
                 "warning": "Aviso"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Fantasmas encontrados",
+            "ghosts_ignored": "Fantasmas ignorados",
+            "helpers_linked": "Assistentes ligados",
+            "version": "Versão"
         }
     }
 }

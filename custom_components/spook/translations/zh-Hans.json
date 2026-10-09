@@ -1,27 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook 已经配置好了。",
-            "enabled_existing": "现有的 Spook 条目已被启用。",
-            "enable_failed": "无法启用现有的 Spook 条目。"
+            "already_spooked": "Spook 已经在这里闹鬼啦 👻\n\n一栋房子有一个幽灵就够了。你可以在[设备与服务](/config/integrations/integration/spook)中找到 Spook。",
+            "enabled_existing": "Spook 又醒过来了 👻\n\n给它一点时间四处看看。它发现的任何问题都会显示在[修复](/config/repairs)中。",
+            "enable_failed": "Spook 没能醒过来 👻\n\n请尝试在[设备与服务](/config/integrations/integration/spook)中手动重新启用它。",
+            "kept_sleeping": "Spook 继续睡觉 👻\n\n想它了？你随时可以在[设备与服务](/config/integrations/integration/spook)中唤醒它。"
         },
         "step": {
             "user": {
-                "description": "你阅读了 README 了吗？你阅读了许可证吗？你真的确定吗？"
-            },
-            "choice_restart": {
-                "description": "为了让 Spook 完成设置，需要重新启动 Home Assistant。\n\n你现在要重新启动 Home Assistant 吗？",
-                "menu_options": {
-                    "restart_now": "现在重新启动",
-                    "restart_later": "稍后重新启动"
-                }
+                "description": "Spook 在你的 Home Assistant 里四处飘荡，寻找幽灵：指向已不存在之物的引用，以及没人清理的残留。它发现的一切都会在“修复”中报告。\n\n它还扩展了你的自动化和脚本的能力，提供额外的动作、触发条件、条件和辅助程序，让自动化更加强大。\n\n先说清楚：Spook 不是 Home Assistant 的一部分。它是一个自定义集成，会钻进一些从未邀请过它的地方。如果出现奇怪的情况，请先怀疑 Spook，并[告诉我们]({issue_tracker_url})。\n\n准备好被 Spook 缠上了吗？",
+                "title": "哇！来认识一下 Spook，你的好哥们 👻"
             },
             "already_configured": {
-                "description": "Spook 已经配置好了，但现有的条目处于禁用状态。你想启用它吗？",
+                "description": "Spook 已经设置好了，但有人把它关掉了。要叫醒它吗？",
                 "menu_options": {
-                    "enable_existing": "启用现有条目"
-                }
+                    "enable_existing": "叫醒 Spook",
+                    "keep_sleeping": "让它继续睡"
+                },
+                "title": "Spook 正在睡觉 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "Spook 正在四处飘荡 👻\n\n给它一点时间四处看看。它发现的任何问题都会显示在[修复](/config/repairs)中。\n\n额外的动作、触发条件和条件已经在自动化和脚本编辑器中等着你了。想知道 Spook 还能做什么？[文档]({documentation_url})里都有。\n\n喜欢 Spook 吗？👻 在 [GitHub]({repository_url}) 上点个 ⭐，让大家知道 Spook 其实挺棒的。[赞助 Frenck]({sponsor_url}) 能让这个幽灵吃得饱饱的。而他免费的双周[通讯]({newsletter_url})能让你内心的幽灵也吃得饱饱的。"
         }
     },
     "entity": {
@@ -347,7 +347,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "需要重新启动",
-                        "description": "为了让 Spook 👻 完成设置，需要重新启动 Home Assistant。\n\n选择提交以立即重新启动 Home Assistant。"
+                        "description": "为了让 Spook 👻 完成设置，需要重新启动 Home Assistant。\n\n选择提交以立即重新启动 Home Assistant。\n\nSpook 👻 你的好哥们。"
                     }
                 }
             }
@@ -401,7 +401,6 @@
             }
         },
         "energy_unknown_references": {
-            "description": "Spook 在你的能源仪表盘中发现了一个幽灵 👻\n\n能源仪表盘引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n\n\n这通常发生在能源配置中使用的实体被重命名或移除时。要修复此错误，请打开 设置 > 仪表盘 > 能源 并更新或移除这些实体。\n\nSpook 👻 你的好哥们。",
             "title": "能源仪表盘中使用了未知实体"
         },
         "lovelace_missing_resources": {
@@ -1936,6 +1935,14 @@
                 "error": "错误",
                 "warning": "警告"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "发现的幽灵",
+            "ghosts_ignored": "忽略的幽灵",
+            "helpers_linked": "已链接的辅助程序",
+            "version": "版本"
         }
     }
 }

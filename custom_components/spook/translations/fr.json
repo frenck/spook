@@ -1,27 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook est déja configuré.",
-            "enable_failed": "Impossible d'activer l'entrée de configuration existante de Spook.",
-            "enabled_existing": "L'entrée de configuration existante de Spook a été activée."
+            "already_spooked": "Spook hante déjà les lieux 👻\n\nUn fantôme par maison, c'est bien assez. Vous trouverez Spook dans [Appareils et services](/config/integrations/integration/spook).",
+            "enable_failed": "Spook n'a pas voulu se réveiller 👻\n\nEssayez de le réactiver vous-même dans [Appareils et services](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook est de nouveau réveillé 👻\n\nLaissez-lui un moment pour faire le tour. Tout ce qu'il trouve apparaît dans [Réparations](/config/repairs).",
+            "kept_sleeping": "Spook continue de dormir 👻\n\nIl vous manque ? Vous pouvez le réveiller à tout moment dans [Appareils et services](/config/integrations/integration/spook)."
         },
         "step": {
             "user": {
-                "description": "Avez-vous lu le readme ? Avez-vous lu la licence ? Êtes-vous sûr de vous ?"
-            },
-            "choice_restart": {
-                "description": "Home Assistant doit être redémarré, afin de terminer la configuration de Spook.\n\nVoulez-vous redémarrer Home Assistant maintenant ?",
-                "menu_options": {
-                    "restart_now": "Redémarrer maintenant",
-                    "restart_later": "Redémarrer plus tard"
-                }
+                "description": "Spook flotte dans votre Home Assistant à la recherche de fantômes : des références à des choses qui n'existent plus, et des restes que personne n'a nettoyés. Tout ce qu'il trouve, il le signale dans Réparations.\n\nIl étend aussi ce que vos automatisations et scripts peuvent faire, avec des actions, déclencheurs, conditions et entrées supplémentaires, pour des automatisations encore plus puissantes.\n\nSoyons honnêtes : Spook ne fait pas partie de Home Assistant. C'est une intégration personnalisée qui se glisse là où on ne l'a jamais invitée. Si quelque chose d'étrange se produit, soupçonnez d'abord Spook, et [faites-le-nous savoir]({issue_tracker_url}).\n\nPrêt à vous faire hanter ?",
+                "title": "Bouh ! Voici Spook, votre pote 👻"
             },
             "already_configured": {
                 "menu_options": {
-                    "enable_existing": "Activer la configuration existante"
+                    "enable_existing": "Réveiller Spook",
+                    "keep_sleeping": "Le laisser dormir"
                 },
-                "description": "Spook est déjà configuré, mais son entrée de configuration est désactivée. Voulez-vous l'activer ?"
+                "description": "Spook est déjà configuré, mais quelqu'un l'a désactivé. Le réveiller ?",
+                "title": "Spook dort 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "Spook flotte dans les parages 👻\n\nLaissez-lui un moment pour faire le tour. Tout ce qu'il trouve apparaît dans [Réparations](/config/repairs).\n\nLes actions, déclencheurs et conditions supplémentaires vous attendent dans les éditeurs d'automatisations et de scripts. Curieux de savoir ce que Spook sait faire d'autre ? La [documentation]({documentation_url}) dit tout.\n\nVous aimez Spook ? 👻 Une ⭐ sur [GitHub]({repository_url}) fait savoir aux autres que Spook est en fait plutôt génial. [Sponsoriser Frenck]({sponsor_url}) garde ce fantôme bien nourri. Et sa [newsletter]({newsletter_url}) gratuite, toutes les deux semaines, garde votre fantôme intérieur bien nourri."
         }
     },
     "entity": {
@@ -347,7 +347,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Redémarrage nécessaire",
-                        "description": "Home Assistant doit être redémarré, afin de finaliser la configuration de Spook 👻.\n\nSélectionner Soumettre pour redémarrer Home Assistant maintenant."
+                        "description": "Home Assistant doit être redémarré, afin de finaliser la configuration de Spook 👻.\n\nSélectionner Soumettre pour redémarrer Home Assistant maintenant.\n\nSpook 👻 Votre pote."
                     }
                 }
             }
@@ -510,8 +510,7 @@
             "description": "Spook a trouvé un fantôme dans vos automatisations 👻\n\n\n\nEn flottant dans les parages, Spook est tombé sur l'automatisation suivante :\n\n\n\n[{automation}]({edit}) (`{entity_id}`)\n\n\n\nCette automatisation fait référence aux déclencheurs suivants, qui sont inconnus de Home Assistant :\n\n\n\n{triggers}\n\n\n\n\n\n\n\nIl arrive souvent que l'intégration qui les fournissait ait été supprimée. Pour corriger cette erreur, [modifiez l'automatisation]({edit}) et n'utilisez plus ces déclencheurs ou réinstallez l'intégration qui les fournissait.\n\n\n\nSpook 👻 Votre pote."
         },
         "energy_unknown_references": {
-            "title": "Entités inconnues utilisé dans le tableau de bord Énergie",
-            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nLe tableau de bord Énergie fait référence à ces entités, qui sont inconnues de Home Assistant :\n\n\n\n{entities}\n\n\n\n\n\n\n\nCeci arrive souvent lorsque l'entité utilisé dans la configuration du tableau de bord Énergie soit renommé ou supprimé. Pour corriger cette erreur, ouvrez les Paramètres > Tableaux de bord > Énergie et mettez à jour ou supprimez ces entités.\n\n\n\nSpook 👻 Votre pote."
+            "title": "Entités inconnues utilisé dans le tableau de bord Énergie"
         },
         "lovelace_unknown_area_references": {
             "title": "Pièce inconnue utilisée dans ce tableau de bord : {dashboard}",
@@ -1619,6 +1618,13 @@
                     "description": "Couleur à utiliser pour l'étiquette. Peut être un nom de couleur de la liste ou un code couleur hexadécimal (comme #FF0000)."
                 }
             }
+        },
+        "todo_move_item": {
+            "fields": {
+                "position": {
+                    "name": "Position"
+                }
+            }
         }
     },
     "conditions": {
@@ -1693,6 +1699,13 @@
         "not_triggered_by_user": {
             "name": "Non déclenché par un utilisateur",
             "description": "Est satisfait lorsque personne ne peut être tenu pour responsable de cette exécution : une planification, le soleil, une intégration agissant d'elle-même ou le bouton Exécuter. Sans options, volontairement. Pour exclure des personnes précises, placez plutôt \"Déclenché par un utilisateur\" dans une condition Non."
+        },
+        "is_at_target_temperature": {
+            "fields": {
+                "tolerance": {
+                    "name": "Tolérance"
+                }
+            }
         }
     },
     "triggers": {
@@ -1843,6 +1856,72 @@
         "device_discovered": {
             "name": "Appareil découvert",
             "description": "Se déclenche lorsque Home Assistant découvre quelque chose de nouveau qu'il pourrait configurer, comme un appareil qui vient d'apparaître sur votre réseau."
+        },
+        "automation_turned_off": {
+            "name": "Automatisation désactivée",
+            "description": "Se déclenche quand quelqu'un, ou quelque chose, désactive une automatisation. Laisser la cible vide pour surveiller toutes les automatisations."
+        },
+        "debounce": {
+            "name": "Une fois stabilisé",
+            "description": "Se déclenche une fois qu'un déclencheur a cessé de se déclencher pendant un certain temps, ainsi une salve survient d'un seul tenant. Un détecteur de mouvement ne signale pas un mouvement une seule fois, il le signale vingt fois.",
+            "fields": {
+                "triggers": {
+                    "name": "Déclencheurs",
+                    "description": "Les déclencheurs à attendre. L'activation de l'un d'eux lance une salve, et une nouvelle activation de l'un d'eux la prolonge ; ainsi, plusieurs déclencheurs sont regroupés plutôt que traités un par un."
+                },
+                "for": {
+                    "name": "Pendant",
+                    "description": "La durée de silence requise avant que cela ne se déclenche. Chaque déclenchement réinitialise ce délai d'attente ; par conséquent, un événement qui se déclenche en continu ne fait jamais l'objet d'un signalement."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Tout cela s'est produit",
+            "description": "Se déclenche lorsque chacun des différents déclencheurs s'est activé au sein d'une même fenêtre temporelle, quel que soit l'ordre. Les déclencheurs classiques de Home Assistant fonctionnent sur le principe qu'un seul d'entre eux suffit ; celui-ci est l'autre cas de figure.",
+            "fields": {
+                "triggers": {
+                    "name": "Déclencheurs",
+                    "description": "Les déclencheurs qui doivent tous s'être activés. L'ordre n'a pas d'importance, et une nouvelle activation d'un déclencheur remplace sa précédente occurrence au lieu de compter deux fois."
+                },
+                "within": {
+                    "name": "En moins de",
+                    "description": "À quelle proximité ils doivent se trouver. La fenêtre glisse ; ainsi, un signal déclenché il y a plus longtemps est oublié, tandis que les autres continuent de compter."
+                }
+            }
+        },
+        "recovered": {
+            "name": "L'entité est revenue",
+            "description": "Se déclenche lorsqu'une entité redevient disponible après une période d'indisponibilité ; ainsi, le redémarrage d'un routeur n'est pas interprété comme le rétablissement de tous les équipements de la maison.",
+            "fields": {
+                "for": {
+                    "name": "Pendant",
+                    "description": "La durée d'absence de l'entité avant son retour a de l'importance. Tout ce qui est plus court n'est qu'un scintillement : le rechargement d'une intégration rend chacune de ses entités indisponible puis de nouveau disponible en moins d'une seconde."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Température cible atteinte",
+            "description": "Se déclenche lorsque la température d'un thermostat ou d'un chauffe-eau atteint ou dépasse sa valeur cible. La modification de la valeur cible ne compte pas, pas plus qu'un appareil éteint.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolérance",
+                    "description": "Définit la proximité de la cible encore considérée comme étant « sur » celle-ci, exprimée dans l'unité de l'appareil. Par exemple un thermostat qui se stabilise juste en dessous de sa température de consigne. La valeur zéro correspond à la cible elle-même."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Mise à jour installée",
+            "description": "Se déclenche lorsqu'une entité de mise à jour signale une version installée différente, que ce soit parce que quelqu'un a appuyé sur installer, que l'appareil s'est mis à jour automatiquement ou qu'il a été mis à jour en dehors de Home Assistant."
+        },
+        "position_reached": {
+            "name": "Position atteinte",
+            "description": "Se déclenche lorsqu'un ouvrant ou une vanne atteint une position ou la dépasse. Une situation où l'élément est déjà en place, ou y revient après avoir été indisponible, ne compte pas.",
+            "fields": {
+                "position": {
+                    "name": "Position",
+                    "description": "La position à atteindre, de 0 (fermé) à 100 (ouvert)."
+                }
+            }
         }
     },
     "selector": {
@@ -1852,6 +1931,14 @@
                 "error": "Erreur",
                 "warning": "Avertissement"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Fantômes trouvés",
+            "ghosts_ignored": "Fantômes ignorés",
+            "helpers_linked": "Entrées liées",
+            "version": "Version"
         }
     }
 }

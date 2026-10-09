@@ -1,27 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook is already configured.",
-            "enable_failed": "The existing Spook entry could not be enabled.",
-            "enabled_existing": "The existing Spook entry has been enabled."
+            "already_spooked": "Spook is already haunting this place 👻\n\nOne ghost per house is plenty. You can find Spook under [Devices & services](/config/integrations/integration/spook).",
+            "enable_failed": "Spook would not wake up 👻\n\nTry switching it back on yourself under [Devices & services](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook is awake again 👻\n\nGive it a moment to look around. Anything it finds shows up under [Repairs](/config/repairs).",
+            "kept_sleeping": "Spook stays asleep 👻\n\nMiss it? You can wake it up any time under [Devices & services](/config/integrations/integration/spook)."
         },
         "step": {
             "user": {
-                "description": "Have you read the readme? Have you read the licence? Are you quite certain?"
-            },
-            "choice_restart": {
-                "description": "For Spook to finish setting up, Home Assistant needs to be restarted.\n\nDo you want to restart Home Assistant now?",
-                "menu_options": {
-                    "restart_now": "Restart now",
-                    "restart_later": "Restart later"
-                }
+                "description": "Spook floats around your Home Assistant looking for ghosts: references to things that no longer exist, and leftovers nobody cleaned up. Whatever it finds, it reports under Repairs.\n\nIt also extends what your automations and scripts can do, with extra actions, triggers, conditions and helpers, for even more powerful automations.\n\nFair warning: Spook is not part of Home Assistant. It is a custom integration that reaches into places it was never invited. If something odd happens, suspect Spook first, and [let us know]({issue_tracker_url}).\n\nReady to get spooked?",
+                "title": "Boo! Meet Spook, your homie 👻"
             },
             "already_configured": {
-                "description": "Spook is already configured, but the existing entry is disabled. Do you want to enable it?",
+                "description": "Spook is already set up, but someone switched it off. Wake it up?",
                 "menu_options": {
-                    "enable_existing": "Enable existing entry"
-                }
+                    "enable_existing": "Wake Spook up",
+                    "keep_sleeping": "Let it sleep"
+                },
+                "title": "Spook is sleeping 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "Spook is floating around 👻\n\nGive it a moment to look around. Anything it finds shows up under [Repairs](/config/repairs).\n\nThe extra actions, triggers and conditions are waiting for you in the automation and script editors. Curious what else Spook can do? The [documentation]({documentation_url}) has it all.\n\nEnjoying Spook? 👻 A ⭐ on [GitHub]({repository_url}) lets others know Spook is actually pretty great. [Sponsoring Frenck]({sponsor_url}) keeps this ghost well fed. And his free bi-weekly [newsletter]({newsletter_url}) keeps your inner ghost well fed."
         }
     },
     "entity": {
@@ -347,7 +347,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Restart required",
-                        "description": "For Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+                        "description": "For Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now.\n\nSpook 👻 Your homie."
                     }
                 }
             }
@@ -409,7 +409,6 @@
             "title": "Empty floor: {floor}"
         },
         "energy_unknown_references": {
-            "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. To fix this error, open Settings > Dashboards > Energy and update or remove these entities.\n\nSpook 👻 Your homie.",
             "title": "Unknown entities used in the energy dashboard"
         },
         "lovelace_missing_resources": {
@@ -1865,6 +1864,14 @@
                 "error": "Error",
                 "warning": "Warning"
             }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Ghosts found",
+            "ghosts_ignored": "Ghosts ignored",
+            "helpers_linked": "Helpers linked",
+            "version": "Version"
         }
     }
 }
