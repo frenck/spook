@@ -275,19 +275,27 @@ _TEXT_ARGUMENT_METHODS = frozenset({"replace"})
 # the attribute first. What a substring or pattern test looks for is text, the
 # same as for `is search(...)`. #1838.
 #
-# `contains` only counts on a string. On `entity_id` or `object_id` it is a
-# substring test; on a list, like a group's `attributes.entity_id`, it asks
-# whether a real entity is a member, and that is a reference.
+# `contains` only counts where the item is known to be a string. On
+# `entity_id` or `object_id` it is a substring test; on a list, like a group's
+# `attributes.entity_id`, it asks whether a real entity is a member, and that
+# is a reference. Plain `select` and `reject` do not say what their items are.
 _SELECT_FILTERS = frozenset({"reject", "select"})
 _SELECTATTR_FILTERS = frozenset({"rejectattr", "selectattr"})
-_SELECT_TEXT_TESTS = frozenset({"contains", "match", "search"})
-_SELECTATTR_TEXT_TESTS = frozenset({"match", "search"})
+_SELECT_TEXT_TESTS = frozenset({"match", "search"})
 _STRING_ATTRIBUTES = frozenset({"entity_id", "object_id"})
 
 # Only ever used to lex, never to render, so autoescaping has nothing to do.
 _JINJA_LEXER = Environment(autoescape=True)
 
 _OPENING_BRACKETS = frozenset("([{")
+
+# Brackets that are not a call: parentheses that only group a value, and
+# whatever builds a list, a dict or a tuple. A grouping bracket that meets a
+# comma turns out to be a tuple.
+_GROUP = "group"
+_COLLECTION = "collection"
+
+type _Bracket = bool | _SelectCall | str
 _CLOSING_BRACKETS = frozenset(")]}")
 
 _LINE_ENDINGS = re.compile(r"\r\n?")
@@ -311,7 +319,7 @@ class _SelectCall:
         if not self.with_attribute:
             return self.test in _SELECT_TEXT_TESTS
 
-        return self.test in _SELECTATTR_TEXT_TESTS or (
+        return self.test in _SELECT_TEXT_TESTS or (
             self.test == "contains" and self.attribute in _STRING_ATTRIBUTES
         )
 
@@ -355,18 +363,19 @@ def _is_text_call(significant: deque[tuple[str, str]]) -> bool:
 
 
 def _track_brackets(
-    open_brackets: list[bool | _SelectCall | None],
+    open_brackets: list[_Bracket],
     significant: deque[tuple[str, str]],
     operator: str,
 ) -> None:
     """Open, close or step through the brackets an operator token touches."""
     if operator in _OPENING_BRACKETS:
         is_call = operator == "(" and bool(significant) and significant[-1][0] == "name"
-        open_brackets.append(
-            (_select_call(significant) or _is_text_call(significant))
-            if is_call
-            else None
-        )
+        if is_call:
+            open_brackets.append(
+                _select_call(significant) or _is_text_call(significant)
+            )
+        else:
+            open_brackets.append(_GROUP if operator == "(" else _COLLECTION)
     elif operator in _CLOSING_BRACKETS:
         if open_brackets:
             open_brackets.pop()
@@ -375,21 +384,27 @@ def _track_brackets(
         # argument; one inside a list or a nested call belongs to that.
         if isinstance(innermost := open_brackets[-1], _SelectCall):
             innermost.argument += 1
+        elif innermost == _GROUP:
+            open_brackets[-1] = _COLLECTION
 
 
-def _is_text_literal(
-    open_brackets: list[bool | _SelectCall | None], literal: str
-) -> bool:
+def _is_text_literal(open_brackets: list[_Bracket], literal: str) -> bool:
     """Return if a string literal is text for the call it is inside of."""
-    innermost_call = next(
-        (call for call in reversed(open_brackets) if call is not None), False
-    )
+    calls = [
+        (index, bracket)
+        for index, bracket in enumerate(open_brackets)
+        if not isinstance(bracket, str)
+    ]
+    if not calls:
+        return False
+
+    index, innermost_call = calls[-1]
     if not isinstance(innermost_call, _SelectCall):
         return bool(innermost_call)
 
-    # Only a literal right inside the call is one of its arguments; one in a
-    # list or a grouping bracket there is not the attribute, test or needle.
-    if open_brackets[-1] is not innermost_call:
+    # Only a literal that is one of the call's arguments counts: parentheses
+    # that only group it change nothing, a list or a tuple around it does.
+    if _COLLECTION in open_brackets[index + 1 :]:
         return False
 
     is_text = innermost_call.is_text(innermost_call.argument)
@@ -417,8 +432,8 @@ def _text_argument_offsets(template_str: str) -> frozenset[int]:
     """
     offsets: set[int] = set()
     # Per open bracket: True for a text call, a tracker for a select-style
-    # call, False for any other call, and None for a bracket that only groups.
-    open_brackets: list[bool | _SelectCall | None] = []
+    # call, False for any other call, or what kind of bracket it is otherwise.
+    open_brackets: list[_Bracket] = []
     # The last few tokens, enough to tell `x | replace(` from `x is match(`.
     significant: deque[tuple[str, str]] = deque(maxlen=3)
     offset = 0

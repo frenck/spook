@@ -203,7 +203,8 @@ async def test_value_template_ignores_entity_id_suffix_string_match(
         "{{ states.binary_sensor | rejectattr('entity_id', 'search', 'binary_sensor.100') | list }}",
         "{{ states.light | selectattr('object_id', 'match', 'light.kitchen') | list }}",
         "{{ ids | select('search', 'light.kitchen') | list }}",
-        "{{ ids | reject('contains', 'light.kitchen') | list }}",
+        # Parentheses that only group the needle change nothing.
+        "{{ ids | select('search', ('light.kitchen')) | list }}",
     ],
 )
 async def test_value_template_ignores_text_function_arguments(
@@ -244,6 +245,10 @@ async def test_value_template_ignores_text_function_arguments(
         ),
         # A list inside the call is not the needle, even after a text test.
         "{{ ids | select('search', ['light.kitchen']) | list }}",
+        "{{ ids | select('search', ('a', 'light.kitchen')) | list }}",
+        # Plain select does not say its items are strings, and on a list
+        # `contains` asks about a member.
+        "{{ groups | select('contains', 'light.kitchen') | list }}",
     ],
 )
 async def test_value_template_keeps_references_next_to_text_functions(
