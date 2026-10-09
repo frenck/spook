@@ -546,7 +546,7 @@
         },
         "lovelace_missing_resources": {
             "title": "Kontrollpanelsresurser hänvisar till filer som saknas",
-            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nFöljande resurs för kontrollpaneler pekar på en fil som inte finns:\n\n{resources}\n\n\n\nDetta kan hända när ett anpassat kort eller dess filer tas bort utan att resursen uppdateras. För att åtgärda felet, öppna Inställningar > Kontrollpaneler > Resurser och ta bort eller rätta till dessa resurser.\n\nSpook 👻 Din polare."
+            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nFöljande resurser för kontrollpaneler pekar på filer som inte finns:\n\n{resources}\n\n\n\nDetta kan hända när ett anpassat kort eller dess filer tas bort men resursen blir kvar. För att åtgärda felet, öppna [sidan för Resurser](/config/lovelace/resources) och ta bort eller rätta till dessa resurser. Den har ingen egen flik: på sidan Kontrollpaneler ligger den bakom de tre prickarna uppe till höger.\n\nSpook 👻 Din polare."
         },
         "lovelace_missing_resources_yaml": {
             "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nFöljande resurser för kontrollpaneler pekar på filer som inte finns:\n\n{resources}\n\n\n\nDetta händer oftast när ett anpassat kort eller dess filer har tagits bort men resursen blev kvar.\n\nDessa resurser listas i din YAML-konfiguration, så sidan Resurser kan inte ändra dem. Redigera avsnittet `resources:` i din Lovelace-konfiguration och ta bort eller rätta dessa poster.\n\nSpook 👻 Din polare.",
@@ -1140,7 +1140,7 @@
                 }
             },
             "name": "Inaktivera en integration",
-            "description": "Inaktiverar en integrationspost."
+            "description": "Inaktiverar integrationsposter, en enskild post eller alla poster för en integration."
         },
         "homeassistant_enable_config_entry": {
             "fields": {
@@ -1154,7 +1154,7 @@
                 }
             },
             "name": "Aktivera en integration",
-            "description": "Aktiverar en integrationspost."
+            "description": "Aktiverar integrationsposter, en enskild post eller alla poster för en integration."
         },
         "homeassistant_disable_polling": {
             "fields": {
@@ -1178,7 +1178,7 @@
         },
         "input_number_create": {
             "name": "Skapa ett inmatningsnummer",
-            "description": "Skapar en ny hjälpare för inmatningsnummer direkt.",
+            "description": "Skapar en ny hjälpare för inmatningsnummer direkt. Returnerar entitets-ID:t för det nya inmatningsnumret.",
             "fields": {
                 "mode": {
                     "name": "Visningsläge",
@@ -1328,7 +1328,7 @@
         },
         "input_number_delete": {
             "name": "Ta bort ett inmatningsnummer",
-            "description": "Tar bort en hjälpare för inmatningsnummer. Detta fungerar bara för inmatningsnummer som är skapade via användargränssnittet. Inmatningsnummer som har skapats via YAML kan inte ändras av Spook.",
+            "description": "Tar bort hjälpare för inmatningsnummer som skapats i gränssnittet eller med åtgärden skapa ett inmatningsnummer. Inmatningsnummer som är inställda i YAML kan inte tas bort av Spook.",
             "fields": {
                 "entity_id": {
                     "name": "Entitets-ID",
@@ -1776,7 +1776,7 @@
         },
         "repairs_ignore_all": {
             "name": "Ignorera alla problem",
-            "description": "Ignorera alla problem som för närvarande finns i Home Assistant Repairs.",
+            "description": "Ignorera alla problem som för närvarande finns i Home Assistant Repairs, eller bara de som har tagits upp av vissa integrationer.",
             "fields": {
                 "domain": {
                     "name": "Domän",
@@ -1916,7 +1916,7 @@
         },
         "repairs_unignore_all": {
             "name": "Avignorera alla problem",
-            "description": "Avignorera alla problem som för närvarande finns i Home Assistant Repairs.",
+            "description": "Avignorera alla problem som för närvarande finns i Home Assistant Repairs, eller bara de som har tagits upp av vissa integrationer.",
             "fields": {
                 "domain": {
                     "name": "Domän",
