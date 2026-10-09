@@ -845,9 +845,11 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
             return
 
         if languages is None:
-            # The server's own is always one of them.
+            # The server's own is always one of them. So is a language still
+            # on its first injection: that one took its list of actions when it
+            # started, and an action registered since would be left out.
             self._languages.add(self.hass.config.language)
-            languages = self._languages
+            languages = self._languages | set(self._language_tasks)
 
         domains = {DOMAIN, *(service.domain for service in services)}
         for language in list(languages):

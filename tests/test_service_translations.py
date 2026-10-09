@@ -175,6 +175,26 @@ async def test_a_language_that_failed_is_tried_again(
         undo()
 
 
+async def test_injecting_everywhere_includes_a_language_under_way(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a reinjection also covers a language still on its first injection."""
+    manager = _a_manager_with_restart(hass)
+    manager._language_tasks["nl"] = hass.loop.create_future()  # type: ignore[assignment]
+    injected: list[str] = []
+
+    async def _record(language: str, *_args: Any) -> None:
+        injected.append(language)
+
+    monkeypatch.setattr(manager, "_async_inject_translations_for", _record)
+
+    await manager.async_inject_service_translations()
+
+    assert sorted(injected) == ["en", "nl"]
+    manager._language_tasks.clear()
+
+
 async def test_a_load_that_outlives_unloading_adds_nothing(
     hass: HomeAssistant,
 ) -> None:
