@@ -275,14 +275,14 @@ _TEXT_ARGUMENT_METHODS = frozenset({"replace"})
 # the attribute first. What a substring or pattern test looks for is text, the
 # same as for `is search(...)`. #1838.
 #
-# `contains` only counts where the item is known to be a string. On
-# `entity_id` or `object_id` it is a substring test; on a list, like a group's
+# `contains` only counts where the item is known to be a string. On a state
+# object's `entity_id`, `state` or the like it is a substring test; on a list, like a group's
 # `attributes.entity_id`, it asks whether a real entity is a member, and that
 # is a reference. Plain `select` and `reject` do not say what their items are.
 _SELECT_FILTERS = frozenset({"reject", "select"})
 _SELECTATTR_FILTERS = frozenset({"rejectattr", "selectattr"})
 _SELECT_TEXT_TESTS = frozenset({"match", "search"})
-_STRING_ATTRIBUTES = frozenset({"entity_id", "object_id"})
+_STRING_ATTRIBUTES = frozenset({"domain", "entity_id", "name", "object_id", "state"})
 
 # Only ever used to lex, never to render, so autoescaping has nothing to do.
 _JINJA_LEXER = Environment(autoescape=True)

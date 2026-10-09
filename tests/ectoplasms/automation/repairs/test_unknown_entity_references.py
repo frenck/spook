@@ -203,6 +203,7 @@ async def test_value_template_ignores_entity_id_suffix_string_match(
         "{{ states.binary_sensor | rejectattr('entity_id', 'search', 'binary_sensor.100') | list }}",
         "{{ states.light | selectattr('object_id', 'match', 'light.kitchen') | list }}",
         "{{ ids | select('search', 'light.kitchen') | list }}",
+        "{{ states.sensor | selectattr('state', 'contains', 'light.kitchen') | list }}",
         # Parentheses that only group the needle change nothing.
         "{{ ids | select('search', ('light.kitchen')) | list }}",
     ],
