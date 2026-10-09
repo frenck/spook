@@ -60,6 +60,7 @@ from .helper_sources import (
 )
 from .reference_extraction import async_collect_mentioned_strings
 from .registry_usage import async_area_in_use, async_floor_in_use, async_label_in_use
+from .repair_documentation import repair_documentation_url
 from .statistics_sources import async_settled_orphaned_statistic_ids
 
 if TYPE_CHECKING:
@@ -202,7 +203,7 @@ class AbstractSpookRepairBase(ABC):
             is_persistent=is_persistent,
             issue_domain=issue_domain or self.domain,
             issue_id=f"{self.repair}_{issue_id}",
-            learn_more_url=learn_more_url,
+            learn_more_url=learn_more_url or repair_documentation_url(self.repair),
             severity=severity,
             translation_key=translation_key or self.repair,
             translation_placeholders=translation_placeholders,
