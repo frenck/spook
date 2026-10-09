@@ -6,6 +6,8 @@ from dataclasses import dataclass
 import re
 from typing import TYPE_CHECKING, Any
 
+import voluptuous as vol
+
 from homeassistant.components import automation, script
 from homeassistant.const import (
     CONF_CHOOSE,
@@ -728,11 +730,18 @@ def split_comma_separated_entity_ids(entity_id: str) -> list[str]:
 @callback
 def async_find_services_in_sequence(  # noqa: C901
     sequence: Sequence[dict[str, Any]],
+    *,
+    include_disabled: bool = False,
 ) -> set[str]:
-    """Find all services called in a sequence."""
+    """Find all services called in a sequence.
+
+    Steps carrying `enabled: false` are skipped unless `include_disabled` is
+    set: a repair cares about what runs, a search for where an action is
+    named cares about the step somebody may switch back on.
+    """
     called_services: set[str] = set()
     for step in sequence:
-        if step.get(CONF_ENABLED) is False:
+        if step.get(CONF_ENABLED) is False and not include_disabled:
             continue
 
         action = cv.determine_script_action(step)
@@ -746,25 +755,60 @@ def async_find_services_in_sequence(  # noqa: C901
         if action == cv.SCRIPT_ACTION_CHOOSE:
             for choice in step[CONF_CHOOSE]:
                 called_services |= async_find_services_in_sequence(
-                    choice[CONF_SEQUENCE]
+                    choice[CONF_SEQUENCE], include_disabled=include_disabled
                 )
             if nested_sequence := step.get(CONF_DEFAULT):
-                called_services |= async_find_services_in_sequence(nested_sequence)
+                called_services |= async_find_services_in_sequence(
+                    nested_sequence, include_disabled=include_disabled
+                )
 
         if action == cv.SCRIPT_ACTION_IF:
-            called_services |= async_find_services_in_sequence(step[CONF_THEN])
+            called_services |= async_find_services_in_sequence(
+                step[CONF_THEN], include_disabled=include_disabled
+            )
             if nested_sequence := step.get(CONF_ELSE):
-                called_services |= async_find_services_in_sequence(nested_sequence)
+                called_services |= async_find_services_in_sequence(
+                    nested_sequence, include_disabled=include_disabled
+                )
 
         if action == cv.SCRIPT_ACTION_PARALLEL:
             for nested_sequence in step[CONF_PARALLEL]:
                 called_services |= async_find_services_in_sequence(
-                    nested_sequence[CONF_SEQUENCE]
+                    nested_sequence[CONF_SEQUENCE], include_disabled=include_disabled
                 )
 
         if action == cv.SCRIPT_ACTION_REPEAT:
             called_services |= async_find_services_in_sequence(
-                step[CONF_REPEAT][CONF_SEQUENCE]
+                step[CONF_REPEAT][CONF_SEQUENCE], include_disabled=include_disabled
             )
 
     return called_services
+
+
+def find_services_in_helper_options(
+    options: Mapping[str, Any], *, include_disabled: bool = False
+) -> set[str]:
+    """Find all services the actions in a helper's options call.
+
+    Which options hold actions grows with every new template helper type, so
+    ask Home Assistant instead of keeping a list of keys.
+
+    Validating is not just a shape check. The walker reads keys that only
+    exist after validation, so raw options make it raise on shapes the action
+    editor writes every day, a `parallel` block among them. Validation
+    normalizes those, and turns a templated action name into a Template,
+    which is not a string and so falls out of the known-services filter on
+    its own.
+    """
+    services: set[str] = set()
+    for option in options.values():
+        try:
+            sequence = cv.SCRIPT_SCHEMA(option)
+        except vol.Invalid:
+            continue
+
+        services.update(
+            async_find_services_in_sequence(sequence, include_disabled=include_disabled)
+        )
+
+    return services

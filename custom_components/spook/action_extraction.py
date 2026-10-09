@@ -16,6 +16,8 @@ from .template_extraction import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Mapping
+
     from homeassistant.core import HomeAssistant
 
 # The pattern enumerates every known domain, so it is long. This walker
@@ -120,6 +122,38 @@ async def async_extract_entities_from_action_config(
             _service=service,
         )
     )
+
+    return entities
+
+
+async def async_extract_entities_from_helper_actions(
+    hass: HomeAssistant,
+    options: Mapping[str, Any],
+    *,
+    include_disabled: bool = True,
+    known_services: set[str],
+) -> set[str]:
+    """Extract entity IDs from the actions in a helper's options.
+
+    Template helpers can run action sequences: a button's press, a switch's
+    turn_on/turn_off, a cover's open/close, an alarm's arm/disarm and so on.
+    Those reference entities through structured config (target, entity_id,
+    service data) rather than through Jinja, so reading the templates alone
+    does not see them.
+    """
+    entities: set[str] = set()
+    for option in options.values():
+        # Only structured options can hold an action; a plain string option
+        # walks straight back out of the extractor.
+        if not isinstance(option, (dict, list)):
+            continue
+
+        entities |= await async_extract_entities_from_action_config(
+            hass,
+            option,
+            include_disabled=include_disabled,
+            known_services=known_services,
+        )
 
     return entities
 

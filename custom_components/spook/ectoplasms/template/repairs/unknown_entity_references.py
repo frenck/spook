@@ -8,7 +8,7 @@ from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
 from homeassistant.core import Event, callback
 from homeassistant.helpers import entity_registry as er
 
-from ....action_extraction import async_extract_entities_from_action_config
+from ....action_extraction import async_extract_entities_from_helper_actions
 from ....const import LOGGER
 from ....entity_filtering import (
     async_filter_known_entity_ids,
@@ -82,32 +82,19 @@ class SpookRepair(AbstractSpookRepair):
                 self.hass, options, known_services
             )
 
-            # Template helpers can also run action sequences: a button's press,
-            # a switch's turn_on/turn_off, a cover's open/close, an alarm's
-            # arm/disarm and so on. Those reference entities through structured
-            # config (target, entity_id, service data) rather than through Jinja,
-            # so the template extraction above does not see them.
-            #
             # Extracting the actions twice separates references that a step
             # carrying `enabled: false` is the only source of: those cannot
             # break a run, so the report says so instead of listing them
             # alongside the ones that can.
-            active = set(referenced)
-            for option in options.values():
-                # Only structured options can hold an action; a plain string
-                # option walks straight back out of the extractor.
-                if not isinstance(option, (dict, list)):
-                    continue
-
-                referenced |= await async_extract_entities_from_action_config(
-                    self.hass, option, known_services=known_services
-                )
-                active |= await async_extract_entities_from_action_config(
-                    self.hass,
-                    option,
-                    include_disabled=False,
-                    known_services=known_services,
-                )
+            active = referenced | await async_extract_entities_from_helper_actions(
+                self.hass,
+                options,
+                include_disabled=False,
+                known_services=known_services,
+            )
+            referenced |= await async_extract_entities_from_helper_actions(
+                self.hass, options, known_services=known_services
+            )
 
             if unknown_entities := async_filter_known_entity_ids(
                 self.hass,
