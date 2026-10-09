@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Ukendt temperatursensor for område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ukendt temperatursensor for område: {area}",
+                        "description": "Spook har fundet et spøgelse i dine områder 👻\n\nOmrådet {area} bruger en temperatursensor, som er ukendt for Home Assistant:\n\n{entities}\n\nHome Assistant tjekker kun denne sensor, når den vælges, så da den blev fjernet eller omdøbt, blev området ved med at pege på ingenting. Assist og områdekort får ikke længere en temperaturmåling fra den.\n\nRyd indstillingen, så du kan vælge en sensor igen, eller behold den, så holder Spook op med at påpege den.\n\nSpook 👻 er din ven.",
+                        "menu_options": {
+                            "remove": "Ryd indstillingen",
+                            "manage": "Lad mig selv ordne det",
+                            "ignore": "Behold den, og stop med at sige det"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook holder fremover mund om dette område.",
+                    "manage": "Du kan vælge en anden sensor i indstillingerne for dette område på [siden Områder](/config/areas/dashboard).",
+                    "changed": "Denne sensor er tilbage, eller indstillingen peger nu et andet sted hen, siden Spook kiggede. Derfor er intet ryddet. Spook kigger igen af sig selv og opdaterer denne reparation."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Ukendt luftfugtighedssensor for område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ukendt luftfugtighedssensor for område: {area}",
+                        "description": "Spook har fundet et spøgelse i dine områder 👻\n\nOmrådet {area} bruger en luftfugtighedssensor, som er ukendt for Home Assistant:\n\n{entities}\n\nHome Assistant tjekker kun denne sensor, når den vælges, så da den blev fjernet eller omdøbt, blev området ved med at pege på ingenting. Assist og områdekort får ikke længere en luftfugtighedsmåling fra den.\n\nRyd indstillingen, så du kan vælge en sensor igen, eller behold den, så holder Spook op med at påpege den.\n\nSpook 👻 er din ven.",
+                        "menu_options": {
+                            "remove": "Ryd indstillingen",
+                            "manage": "Lad mig selv ordne det",
+                            "ignore": "Behold den, og stop med at sige det"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook holder fremover mund om dette område.",
+                    "manage": "Du kan vælge en anden sensor i indstillingerne for dette område på [siden Områder](/config/areas/dashboard).",
+                    "changed": "Denne sensor er tilbage, eller indstillingen peger nu et andet sted hen, siden Spook kiggede. Derfor er intet ryddet. Spook kigger igen af sig selv og opdaterer denne reparation."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Ukendte temperatur- og luftfugtighedssensorer for område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ukendte temperatur- og luftfugtighedssensorer for område: {area}",
+                        "description": "Spook har fundet et spøgelse i dine områder 👻\n\nOmrådet {area} bruger en temperatur- og en luftfugtighedssensor, som er ukendte for Home Assistant:\n\n{entities}\n\nHome Assistant tjekker kun disse sensorer, når de vælges, så da de blev fjernet eller omdøbt, blev området ved med at pege på ingenting. Assist og områdekort får ikke længere en måling fra dem.\n\nRyd indstillingerne, så du kan vælge sensorer igen, eller behold dem, så holder Spook op med at påpege dem.\n\nSpook 👻 er din ven.",
+                        "menu_options": {
+                            "remove": "Ryd indstillingerne",
+                            "manage": "Lad mig selv ordne det",
+                            "ignore": "Behold dem, og stop med at sige det"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook holder fremover mund om dette område.",
+                    "manage": "Du kan vælge andre sensorer i indstillingerne for dette område på [siden Områder](/config/areas/dashboard).",
+                    "changed": "Disse sensorer er tilbage, eller indstillingerne peger nu et andet sted hen, siden Spook kiggede. Derfor er intet ryddet. Spook kigger igen af sig selv og opdaterer denne reparation."
+                }
+            }
         }
     },
     "system_health": {
