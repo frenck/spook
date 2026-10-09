@@ -194,6 +194,16 @@ async def test_value_template_ignores_entity_id_suffix_string_match(
         "{{ trigger.entity_id is not search('binary_sensor.live') }}",
         # A Windows line ending before it does not shift where it is.
         "before\r\n{{ trigger.entity_id | replace('sensor.live', '') }}",
+        # What a substring or pattern test looks for is text. #1838.
+        (
+            "{{ states.input_boolean | selectattr('entity_id', 'defined')"
+            " | selectattr('entity_id', 'contains', 'input_boolean.robovac_run')"
+            " | map(attribute='entity_id') | list }}"
+        ),
+        "{{ states.binary_sensor | rejectattr('entity_id', 'search', 'binary_sensor.100') | list }}",
+        "{{ states.light | selectattr('object_id', 'match', 'light.kitchen') | list }}",
+        "{{ ids | select('search', 'light.kitchen') | list }}",
+        "{{ ids | reject('contains', 'light.kitchen') | list }}",
     ],
 )
 async def test_value_template_ignores_text_function_arguments(
@@ -225,6 +235,15 @@ async def test_value_template_ignores_text_function_arguments(
         ),
         # An apostrophe in the prose around a block is not a quote.
         "It's {{ states('light.kitchen') }}, replace('it') later",
+        # Exact matches and membership are references, select-style or not.
+        "{{ states.light | selectattr('entity_id', 'in', ['light.kitchen']) | list }}",
+        "{{ states.light | selectattr('entity_id', 'eq', 'light.kitchen') | list }}",
+        (
+            "{{ states.group | selectattr('attributes.entity_id', 'contains',"
+            " 'light.kitchen') | list }}"
+        ),
+        # A list inside the call is not the needle, even after a text test.
+        "{{ ids | select('search', ['light.kitchen']) | list }}",
     ],
 )
 async def test_value_template_keeps_references_next_to_text_functions(
