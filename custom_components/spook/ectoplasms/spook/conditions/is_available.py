@@ -12,6 +12,7 @@ from homeassistant.const import (
     STATE_UNAVAILABLE,
     STATE_UNKNOWN,
 )
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.condition import Condition
 from homeassistant.helpers.target import (
     TargetSelection,
@@ -85,20 +86,24 @@ class SpookCondition(Condition):
 
         # An entity named outright and missing altogether is about as
         # unavailable as it gets. One that only comes along with a device or
-        # an area and has no state is a disabled one, and a disabled entity is
-        # not a reason for a whole room to count as unavailable.
-        answers = [
-            (state := self._hass.states.get(entity_id)) is not None
-            and state.state not in _NOT_THERE
-            for entity_id in selected.referenced
-        ]
+        # an area is left out when it is disabled: that is not a reason for a
+        # whole room to count as unavailable. Enabled and without a state, its
+        # integration is not there, and neither is it.
+        entity_registry = er.async_get(self._hass)
+        answers = [self._is_there(entity_id) for entity_id in selected.referenced]
         answers.extend(
-            state.state not in _NOT_THERE
+            self._is_there(entity_id)
             for entity_id in selected.indirectly_referenced - selected.referenced
-            if (state := self._hass.states.get(entity_id)) is not None
+            if (entry := entity_registry.async_get(entity_id)) is None
+            or entry.disabled_by is None
         )
 
         # Nothing to ask is not a yes, whatever `all` makes of an empty list.
         if not answers:
             return False
         return all(answers) if self._all else any(answers)
+
+    def _is_there(self, entity_id: str) -> bool:
+        """Return whether an entity has a state that is not unavailable."""
+        state = self._hass.states.get(entity_id)
+        return state is not None and state.state not in _NOT_THERE

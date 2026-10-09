@@ -6,6 +6,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 from homeassistant.const import STATE_OFF, STATE_UNAVAILABLE, STATE_UNKNOWN
+from homeassistant.helpers import entity_registry as er
 from homeassistant.helpers.condition import ConditionConfig
 import pytest
 import voluptuous as vol
@@ -21,7 +22,7 @@ import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
-    from homeassistant.helpers import area_registry as ar, entity_registry as er
+    from homeassistant.helpers import area_registry as ar
 
 SPEAKER = "media_player.bathroom"
 PLUG = "switch.desk"
@@ -110,20 +111,48 @@ async def test_a_disabled_entity_in_an_area_does_not_count(
     area_registry: ar.AreaRegistry,
     entity_registry: er.EntityRegistry,
 ) -> None:
-    """An entity that only comes along with the area, and has no state, is left out.
+    """A disabled entity that only comes along with the area is left out.
 
-    A disabled entity has no state. Counted as unavailable, it would keep
-    a whole room from ever being all there.
+    It has no state. Counted as unavailable, it would keep a whole room from
+    ever being all there.
     """
     area = area_registry.async_create("Bathroom")
-    for unique_id, entity_id in (("speaker", SPEAKER), ("old", "media_player.old")):
-        entity_registry.async_get_or_create(
-            "media_player",
-            "test",
-            unique_id,
-            suggested_object_id=entity_id.split(".", 1)[1],
-        )
-        entity_registry.async_update_entity(entity_id, area_id=area.id)
+    _in_area(entity_registry, area.id, SPEAKER)
+    _in_area(
+        entity_registry, area.id, "media_player.old", er.RegistryEntryDisabler.USER
+    )
     hass.states.async_set(SPEAKER, "idle")
 
     assert await _ask(hass, {"area_id": area.id}, behavior="all") is True
+
+
+async def test_an_enabled_entity_without_a_state_in_an_area_is_not_there(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    entity_registry: er.EntityRegistry,
+) -> None:
+    """Enabled but without a state, its integration is not there, nor is it."""
+    area = area_registry.async_create("Bathroom")
+    _in_area(entity_registry, area.id, SPEAKER)
+    _in_area(entity_registry, area.id, "media_player.still_loading")
+    hass.states.async_set(SPEAKER, "idle")
+
+    assert await _ask(hass, {"area_id": area.id}, behavior="all") is False
+
+
+def _in_area(
+    entity_registry: er.EntityRegistry,
+    area_id: str,
+    entity_id: str,
+    disabled_by: er.RegistryEntryDisabler | None = None,
+) -> None:
+    """Register a media player in an area, disabled or not."""
+    object_id = entity_id.split(".", 1)[1]
+    entity_registry.async_get_or_create(
+        "media_player",
+        "test",
+        object_id,
+        suggested_object_id=object_id,
+        disabled_by=disabled_by,
+    )
+    entity_registry.async_update_entity(entity_id, area_id=area_id)

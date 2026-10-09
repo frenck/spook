@@ -1809,7 +1809,7 @@ options:
 :class: dropdown
 
 - An entity named outright that does not exist at all is not available.
-- An entity that only comes along with a device, an area, a floor or a label, and has no state, is left out. That is a disabled entity, and it should not keep a whole room from ever being all there.
+- A disabled entity that only comes along with a device, an area, a floor or a label is left out: it should not keep a whole room from ever being all there. One that is enabled but has no state, because its integration is not loaded, is not available.
 - With nothing left to ask, it does not pass, `all` included.
 - There is no `for` option. To act on an entity that has been away for a while, Home Assistant's own state trigger does that: to `unavailable`, with a `for`. [Entity came back](#entity-came-back) fires when it returns after such an absence.
 
