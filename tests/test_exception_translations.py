@@ -45,20 +45,28 @@ def _integrations() -> list[Path]:
     ]
 
 
-def _own_domain_names(tree: ast.Module) -> set[str]:
+def _own_domain_names(tree: ast.Module, path: Path) -> set[str]:
     """Return the names a module gives the domain of its own integration.
 
     Many modules import the domain of the integration their action belongs
-    to as `DOMAIN`, and Spook's as `SPOOK_DOMAIN`. Only the one imported from
-    the integration's own constants counts here.
+    to as `DOMAIN`, and Spook's as `SPOOK_DOMAIN`. A sub integration can
+    import Spook's too. Only the one from the integration's own `const.py`
+    counts here, so a relative import is followed to the file it names.
     """
-    return {
-        alias.asname or alias.name
-        for node in ast.walk(tree)
-        if isinstance(node, ast.ImportFrom) and node.level and node.module == "const"
-        for alias in node.names
-        if alias.name == "DOMAIN"
-    }
+    own_constants = _integration(path) / "const.py"
+    names = set()
+    for node in ast.walk(tree):
+        if not (isinstance(node, ast.ImportFrom) and node.level):
+            continue
+        package = path.parent
+        for _ in range(node.level - 1):
+            package = package.parent
+        if package / f"{node.module}.py" != own_constants:
+            continue
+        names.update(
+            alias.asname or alias.name for alias in node.names if alias.name == "DOMAIN"
+        )
+    return names
 
 
 def _possible_keys(key: ast.expr) -> list[str] | None:
@@ -86,7 +94,7 @@ def _raised_translations() -> list[tuple[str, Path, str, set[str] | None]]:
     found = []
     for path in sorted(SPOOK.rglob("*.py")):
         tree = ast.parse(path.read_text())
-        own_domain = _own_domain_names(tree)
+        own_domain = _own_domain_names(tree, path)
         for node in ast.walk(tree):
             if not isinstance(node, ast.Call):
                 continue
@@ -145,7 +153,7 @@ def test_every_error_uses_its_own_texts() -> None:
     problems = []
     for path in sorted(SPOOK.rglob("*.py")):
         tree = ast.parse(path.read_text())
-        own_domain = _own_domain_names(tree)
+        own_domain = _own_domain_names(tree, path)
         problems.extend(
             f"{path.relative_to(SPOOK)}:{node.lineno}"
             for node in ast.walk(tree)
