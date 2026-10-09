@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Sensor de temperatura desconegut per a l'àrea: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor de temperatura desconegut per a l'àrea: {area}",
+                        "description": "Spook ha trobat un fantasma a les teves àrees 👻\n\nL'àrea {area} fa servir un sensor de temperatura que Home Assistant no coneix:\n\n{entities}\n\nHome Assistant només comprova aquest sensor quan es tria, així que quan es va eliminar o se li va canviar el nom, l'àrea va continuar apuntant al no-res. Assist i les targetes d'àrea ja no n'obtenen cap lectura de temperatura.\n\nEsborra el paràmetre perquè puguis tornar a triar un sensor, o conserva'l i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Esborra el paràmetre",
+                            "manage": "Ja ho arreglaré jo",
+                            "ignore": "Conserva-la, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta àrea.",
+                    "manage": "Pots triar un altre sensor a la configuració d'aquesta àrea a la [pàgina d'Àrees](/config/areas/dashboard).",
+                    "changed": "Aquest sensor ha tornat, o la configuració ara apunta a un altre lloc, des que Spook va mirar. Així que no s'ha esborrat res. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Sensor d'humitat desconegut per a l'àrea: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor d'humitat desconegut per a l'àrea: {area}",
+                        "description": "Spook ha trobat un fantasma a les teves àrees 👻\n\nL'àrea {area} fa servir un sensor d'humitat que Home Assistant no coneix:\n\n{entities}\n\nHome Assistant només comprova aquest sensor quan es tria, així que quan es va eliminar o se li va canviar el nom, l'àrea va continuar apuntant al no-res. Assist i les targetes d'àrea ja no n'obtenen cap lectura d'humitat.\n\nEsborra el paràmetre perquè puguis tornar a triar un sensor, o conserva'l i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Esborra el paràmetre",
+                            "manage": "Ja ho arreglaré jo",
+                            "ignore": "Conserva-la, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta àrea.",
+                    "manage": "Pots triar un altre sensor a la configuració d'aquesta àrea a la [pàgina d'Àrees](/config/areas/dashboard).",
+                    "changed": "Aquest sensor ha tornat, o la configuració ara apunta a un altre lloc, des que Spook va mirar. Així que no s'ha esborrat res. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Sensors de temperatura i d'humitat desconeguts per a l'àrea: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensors de temperatura i d'humitat desconeguts per a l'àrea: {area}",
+                        "description": "Spook ha trobat un fantasma a les teves àrees 👻\n\nL'àrea {area} fa servir un sensor de temperatura i un d'humitat que Home Assistant no coneix:\n\n{entities}\n\nHome Assistant només comprova aquests sensors quan es trien, així que quan es van eliminar o se'ls va canviar el nom, l'àrea va continuar apuntant al no-res. Assist i les targetes d'àrea ja no n'obtenen cap lectura.\n\nEsborra els paràmetres perquè puguis tornar a triar sensors, o conserva'ls i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Esborra els paràmetres",
+                            "manage": "Ja ho arreglaré jo",
+                            "ignore": "Conserva'ls, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta àrea.",
+                    "manage": "Pots triar altres sensors a la configuració d'aquesta àrea a la [pàgina d'Àrees](/config/areas/dashboard).",
+                    "changed": "Aquests sensors han tornat, o la configuració ara apunta a un altre lloc, des que Spook va mirar. Així que no s'ha esborrat res. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
         }
     },
     "system_health": {
