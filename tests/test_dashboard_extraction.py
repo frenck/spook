@@ -466,6 +466,47 @@ def test_an_action_key_on_something_else_is_not_an_action() -> None:
     assert extract_actions_from_dashboard_node(node) == set()
 
 
+def test_actions_a_card_runs_itself_are_not_looked_up() -> None:
+    """Test ha-floorplan's own actions are left to the card. #1843."""
+    node = {
+        "type": "custom:floorplan-card",
+        "config": {
+            "rules": [
+                {
+                    "entity": "sensor.clockface",
+                    "state_action": [
+                        {
+                            "action": "call-service",
+                            "service": "floorplan.style_set",
+                            "service_data": {"element": "hour", "style": "..."},
+                        },
+                        {
+                            "action": "call-service",
+                            "service": "light.turn_on",
+                            "service_data": {"entity_id": "light.hallway"},
+                        },
+                    ],
+                }
+            ]
+        },
+    }
+
+    assert extract_actions_from_dashboard_node(node) == {"light.turn_on"}
+
+
+def test_a_card_only_answers_for_its_own_actions() -> None:
+    """Test a floorplan action outside ha-floorplan is still looked up."""
+    node = {
+        "type": "button",
+        "tap_action": {
+            "action": "call-service",
+            "service": "floorplan.style_set",
+        },
+    }
+
+    assert extract_actions_from_dashboard_node(node) == {"floorplan.style_set"}
+
+
 @pytest.mark.parametrize("action_type", [["perform-action"], {"type": "x"}])
 def test_an_action_that_is_not_a_string_does_not_stop_the_walk(
     action_type: Any,
