@@ -240,6 +240,197 @@
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Kon niet elke trigger van een 'al deze'-trigger koppelen."
+        },
+        "area_not_found": {
+            "message": "Ruimte {area_id} niet gevonden."
+        },
+        "blueprint_backup_failed": {
+            "message": "Kon geen kopie van {path} opzij zetten: {error}. Er is niets geschreven."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} kan hier niet draaien: {errors}. Er is niets geschreven."
+        },
+        "blueprint_could_not_write": {
+            "message": "Kon {path} niet schrijven."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Niet-ondersteund domein: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Fout bij het ophalen van de blueprint via de URL."
+        },
+        "blueprint_file_exists": {
+            "message": "Bestand bestaat al."
+        },
+        "blueprint_gone": {
+            "message": "{name} is er niet meer, dus er valt niets bij te werken. Er is niets geschreven."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Deze URL wordt niet ondersteund."
+        },
+        "blueprint_write_failed": {
+            "message": "Fout bij het schrijven van het bestand."
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain}-blueprints zijn nu niet geladen."
+        },
+        "calendar_events_which": {
+            "message": "Zeg welke gebeurtenissen: geef een samenvatting, een uid, of allebei."
+        },
+        "calendar_range_backwards": {
+            "message": "Het einde van waar je zoekt moet na het begin komen."
+        },
+        "calendar_range_required": {
+            "message": "Zeg hoe ver er gezocht moet worden: geef een einddatum en -tijd, of een duur."
+        },
+        "cannot_disable_system_user": {
+            "message": "Een door het systeem aangemaakte gebruiker kan niet worden uitgeschakeld: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Een door het systeem aangemaakte gebruiker kan niet worden ingeschakeld: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Categorie {category} niet gevonden voor {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Niets bij te werken aan categorie {category}: geef minstens één van {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Een template in deze voorwaarde bevat geen Jinja meer, dus het is een constante die nooit kan omslaan. Meestal betekent dat dat een script het al heeft gerenderd voordat deze actie liep, en dat gebeurt met elke template in actiedata. Gebruik een voorwaarde zonder templates, of wacht op de template zelf met 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Integratie-instantie {config_entry_id} niet gevonden."
+        },
+        "debounce_attach_failed": {
+            "message": "Kon niet elke trigger van een 'zodra het tot rust komt'-trigger koppelen."
+        },
+        "device_not_found": {
+            "message": "Apparaat {device_id} niet gevonden."
+        },
+        "entity_id_taken": {
+            "message": "Entiteit-ID {entity_id} is al in gebruik."
+        },
+        "entity_not_found": {
+            "message": "Entiteit {entity_id} niet gevonden."
+        },
+        "entity_without_unique_id": {
+            "message": "Entiteit {entity_id} heeft geen unieke ID, dus Home Assistant kan er geen icoon of aliassen voor bewaren."
+        },
+        "event_cannot_change": {
+            "message": "{summary} kan niet zo worden gewijzigd: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Zeg wat er moet veranderen: een nieuwe samenvatting, een locatie of nieuwe tijden."
+        },
+        "event_shift_or_times": {
+            "message": "Verschuif een gebeurtenis, of geef nieuwe tijden, niet allebei."
+        },
+        "event_whole_days": {
+            "message": "{summary} duurt hele dagen, dus kan alleen met hele dagen worden verschoven."
+        },
+        "floor_not_found": {
+            "message": "Verdieping {floor_id} niet gevonden."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} kan niet bij deze groep: die bevat {domains}-entiteiten."
+        },
+        "group_not_found_behind": {
+            "message": "Kon de groep achter {entity_id} niet vinden."
+        },
+        "helpers_unreachable": {
+            "message": "Kon de {domain}-helpers die Home Assistant bijhoudt niet bereiken."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Kan {entity_id} niet vasthouden tot een tijdstip dat niet bestaat."
+        },
+        "home_zone_radius": {
+            "message": "De thuiszone neemt zijn radius in hele meters, nul of meer."
+        },
+        "home_zone_unsupported": {
+            "message": "De thuiszone neemt alleen een breedtegraad, lengtegraad en radius, niet: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Deze numerieke invoer kan niet worden bewerkt: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Noem de integratie-instanties die moeten veranderen, of hun integratie."
+        },
+        "integration_without_entries": {
+            "message": "De integratie {domain} heeft geen instanties."
+        },
+        "label_not_found": {
+            "message": "Label {label_id} niet gevonden."
+        },
+        "label_nothing_to_update": {
+            "message": "Niets bij te werken aan label {label_id}: geef minstens één van {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Het maximum ({maximum}) moet boven het minimum ({minimum}) liggen."
+        },
+        "no_max_value": {
+            "message": "Entiteit {entity_id} heeft geen maximumwaarde."
+        },
+        "no_min_value": {
+            "message": "Entiteit {entity_id} heeft geen minimumwaarde."
+        },
+        "not_a_group": {
+            "message": "{entity_id} is geen groep."
+        },
+        "person_not_editable": {
+            "message": "Deze persoon kan niet worden bewerkt: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook liep tegen een fout aan bij het herstarten van Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "Kon de eerste stap van een 'triggers op volgorde'-trigger niet koppelen."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Geef een minimum, een maximum of een stap om te wijzigen."
+        },
+        "spooked": {
+            "message": "Gespookt! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Deze timer kan niet worden bewerkt: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Een item kan niet achter zichzelf worden gezet."
+        },
+        "todo_item_not_found": {
+            "message": "Er is geen item {item} in {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "Er kan niets achter het laatste item in {entity_id} worden gezet."
+        },
+        "todo_move_where": {
+            "message": "Zeg waarheen: achter een ander item, of bovenaan of onderaan."
+        },
+        "user_not_found": {
+            "message": "Kon gebruiker niet vinden: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Waarde {value} voor {entity_id} is geen getal."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Kon de scherpstel-triggers van een waakhondtrigger niet koppelen."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Kon de verwachte triggers van een waakhondtrigger niet koppelen."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} is een groep uit je YAML-configuratie, en die kan Spook niet wijzigen. Pas hem aan in je configuratie, of gebruik group.set, dat op dat soort groepen nog wel werkt."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} is ingesteld in YAML en kan niet worden verwijderd."
+        },
+        "zone_not_editable": {
+            "message": "Deze zone kan niet worden bewerkt: {entity_id}."
+        }
+    },
     "issues": {
         "automation_unknown_area_references": {
             "description": "Spook heeft een geest gevonden in je automatiseringen 👻\n\nTerwijl hij rondzweefde, kwam Spook de volgende automatisering tegen:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDeze automatisering verwijst naar de volgende ruimtes, die Home Assistant niet kent:\n\n{areas}\n\n\n\nOm deze fout te verhelpen, [bewerk je de automatisering]({edit}) en verwijder je het gebruik van deze niet-bestaande ruimtes.\n\nSpook 👻 Je homie.",
@@ -416,7 +607,25 @@
             "title": "Lege verdieping: {floor}"
         },
         "energy_unknown_references": {
-            "title": "Onbekende entiteiten gebruikt in het energiedashboard"
+            "title": "Onbekende entiteiten gebruikt in het energiedashboard",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Onbekende entiteiten gebruikt in het energiedashboard",
+                        "description": "Spook heeft een geest gevonden in je energiedashboard 👻\n\nHet energiedashboard verwijst naar de volgende entiteiten, die Home Assistant niet kent:\n\n{entities}\n\nDit gebeurt meestal wanneer een entiteit uit de energieconfiguratie is hernoemd of verwijderd. Hernoemd? Open dan [Instellingen > Dashboards > Energie](/config/energy) en kies de nieuwe, zodat de geschiedenis op het dashboard blijft.\n\nDefinitief verwijderd? Dan kan Spook deze voor je uit de energieconfiguratie halen. Een ontbrekende meter neemt zijn bron of apparaat mee, een ontbrekende prijs of kostenpost wordt alleen leeggemaakt. Het dashboard toont daarna de geschiedenis van wat eruit is gehaald niet meer; de statistieken zelf blijven bestaan.\n\nSpook 👻 Je homie.",
+                        "menu_options": {
+                            "remove": "Haal deze uit de energieconfiguratie",
+                            "manage": "Laat mij het zelf doen",
+                            "ignore": "Houden, zeg er niets meer over"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook houdt vanaf nu zijn mond over deze entiteiten.",
+                    "manage": "Je kunt deze zelf bijwerken of verwijderen in de [energieconfiguratie](/config/energy).",
+                    "nothing_to_remove": "Geen van deze is nog onbekend, dus er is niets uitgehaald. Misschien zijn ze terug, of heeft iemand de energieconfiguratie al aangepast."
+                }
+            }
         },
         "lovelace_unknown_area_references": {
             "description": "Spook heeft een geest gevonden in je dashboards 👻\n\nTerwijl hij rondzweefde, kwam Spook het volgende dashboard tegen:\n\n{dashboard}\n\nDit dashboard verwijst naar de volgende ruimtes, die Home Assistant niet kent:\n\n{areas}\n\nDit gebeurt vaak wanneer een ruimte is hernoemd of verwijderd. Om deze fout te verhelpen, [bewerk je het dashboard]({edit}) en verwijder je het gebruik van deze niet-bestaande ruimtes.\n\nSpook 👻 Je homie.",
@@ -800,6 +1009,10 @@
                 "config_entry_id": {
                     "name": "Integratie-instantie",
                     "description": "De integratie-instantie die je wilt deactiveren."
+                },
+                "domain": {
+                    "name": "Integratie",
+                    "description": "Deactiveer elke instantie van deze integraties, ook die later worden toegevoegd."
                 }
             },
             "name": "Deactiveer een integratie",
@@ -810,6 +1023,10 @@
                 "config_entry_id": {
                     "name": "Integratie-instantie",
                     "description": "De integratie-instantie die je wilt activeren."
+                },
+                "domain": {
+                    "name": "Integratie",
+                    "description": "Activeer elke instantie van deze integraties, ook die later worden toegevoegd."
                 }
             },
             "description": "Activeert een integratie-instantie.",
@@ -922,6 +1139,10 @@
                 "radius": {
                     "description": "Radius van de zone",
                     "name": "Radius"
+                },
+                "passive": {
+                    "name": "Passief",
+                    "description": "Een passieve zone is er alleen voor automatiseringen: hij wordt niet op de kaart getoond en verandert niets aan waar personen en apparaattrackers zijn."
                 }
             }
         },
@@ -1393,6 +1614,10 @@
             },
             "name": "Selecteer willekeurige optie"
         },
+        "input_select_reverse": {
+            "name": "Keer opties om",
+            "description": "Keert de volgorde van de selecteerbare opties van een `input_select`-entiteit om, van achter naar voor. Dit is niet permanent en wordt teruggedraaid bij een herlaad of een herstart van Home Assistant."
+        },
         "input_select_shuffle": {
             "name": "Hussel opties",
             "description": "Hussel de lijst met selecteerbare opties van een `input_select`-entiteit. Dit is niet permanent en wordt teruggedraaid bij een herlaad of een herstart van Home Assistant."
@@ -1453,12 +1678,36 @@
             "description": "Zet een numerieke invoer op zijn minimumwaarde.",
             "name": "Stel minimumwaarde in"
         },
+        "input_number_set_range": {
+            "name": "Stel bereik in",
+            "description": "Wijzigt het minimum, maximum of de stap van een numerieke invoer die in de gebruikersinterface is gemaakt, net als bij bewerken. Een waarde buiten het nieuwe bereik wordt erbinnen gezet.",
+            "fields": {
+                "min": {
+                    "name": "Minimum",
+                    "description": "De nieuwe minimumwaarde."
+                },
+                "max": {
+                    "name": "Maximum",
+                    "description": "De nieuwe maximumwaarde."
+                },
+                "step": {
+                    "name": "Stap",
+                    "description": "De nieuwe stapgrootte."
+                }
+            }
+        },
         "number_max": {
             "description": "Zet een getal-entiteit op zijn maximumwaarde.",
             "name": "Stel maximumwaarde in"
         },
         "repairs_ignore_all": {
             "description": "Negeer alle problemen die nu in Home Assistant Reparaties staan.",
+            "fields": {
+                "domain": {
+                    "name": "Domein",
+                    "description": "Negeer alleen de problemen van deze integraties."
+                }
+            },
             "name": "Negeer alle problemen"
         },
         "repairs_remove": {
@@ -1473,6 +1722,12 @@
         },
         "repairs_unignore_all": {
             "description": "Stop met het negeren van alle problemen die nu in Home Assistant Reparaties staan.",
+            "fields": {
+                "domain": {
+                    "name": "Domein",
+                    "description": "Stop alleen met het negeren van de problemen van deze integraties."
+                }
+            },
             "name": "Stop met negeren van alle problemen"
         },
         "select_random": {
@@ -1535,6 +1790,10 @@
                 "radius": {
                     "description": "Radius van de zone",
                     "name": "Radius"
+                },
+                "passive": {
+                    "name": "Passief",
+                    "description": "Een passieve zone is er alleen voor automatiseringen: hij wordt niet op de kaart getoond en verandert niets aan waar personen en apparaattrackers zijn."
                 }
             },
             "name": "Werk een zone bij"
@@ -2158,19 +2417,23 @@
                     "description": "Hoe ver moet er vanaf het begin worden gekeken? Geef dit op, of een einddatum en -tijdstip."
                 },
                 "end_date_time": {
-                    "name": "Einddatum en -tijd"
+                    "name": "Einddatum en -tijd",
+                    "description": "Waar het zoeken stopt. Geef dit op, of een duur."
                 },
                 "whole_series": {
+                    "name": "Hele reeks",
                     "description": "Bij een terugkerende gebeurtenis, verwijder de volledige reeks, ipv enkel de gebeurtenis die gevonden werd."
                 },
                 "start_date_time": {
-                    "name": "Startdatum en -tijd"
+                    "name": "Startdatum en -tijd",
+                    "description": "Waar het zoeken begint. Standaard is dat nu."
                 },
                 "summary": {
                     "name": "Samenvatting",
                     "description": "De titel van de gebeurtenissen die moeten worden verwijderd, precies zoals die in de kalender staat."
                 },
                 "uid": {
+                    "name": "UID",
                     "description": "De identificatiecode van de gebeurtenis die je wilt verwijderen, voor het geval je die hebt."
                 }
             }
@@ -2182,7 +2445,8 @@
                     "name": "Positie"
                 },
                 "after": {
-                    "name": "Na"
+                    "name": "Na",
+                    "description": "De titel of uid van het item waarachter het moet komen. Geef dit op, of een positie."
                 },
                 "item": {
                     "name": "Item",
@@ -2233,9 +2497,11 @@
             "name": "Verhoog positie"
         },
         "calendar_update_event": {
+            "name": "Afspraak bijwerken",
             "fields": {
                 "new_summary": {
-                    "name": "Nieuwe samenvatting"
+                    "name": "Nieuwe samenvatting",
+                    "description": "De titel voor de gebeurtenissen."
                 },
                 "description": {
                     "name": "Omschrijving",
@@ -2246,7 +2512,8 @@
                     "description": "Hoe ver moet er vanaf het begin worden gekeken? Geef dit op, of een einddatum en -tijdstip."
                 },
                 "end_date_time": {
-                    "name": "Enddatum en -tijd"
+                    "name": "Einddatum en -tijd",
+                    "description": "Waar het zoeken stopt. Geef dit op, of een duur."
                 },
                 "location": {
                     "name": "Locatie",
@@ -2257,19 +2524,23 @@
                     "name": "Verschuif"
                 },
                 "new_end": {
-                    "name": "Nieuw einde"
+                    "name": "Nieuw einde",
+                    "description": "Wanneer de gebeurtenissen voortaan eindigen."
                 },
                 "new_start": {
-                    "name": "Nieuwe start"
+                    "name": "Nieuwe start",
+                    "description": "Wanneer de gebeurtenissen voortaan beginnen. Ze houden hun lengte, tenzij er ook een nieuw einde wordt opgegeven."
                 },
                 "start_date_time": {
-                    "name": "Startdatum en -tijd"
+                    "name": "Startdatum en -tijd",
+                    "description": "Waar het zoeken begint. Standaard is dat nu."
                 },
                 "summary": {
                     "name": "Samenvatting",
                     "description": "De titel van de gebeurtenissen die moeten worden aangepast, precies zoals die in de kalender staat."
                 },
                 "uid": {
+                    "name": "UID",
                     "description": "De identificatiecode van de gebeurtenis die je wilt wijzigen, voor het geval je die hebt."
                 }
             },
@@ -2277,6 +2548,7 @@
         },
         "humidifier_decrease_humidity": {
             "name": "Verlaag vochtigheid",
+            "description": "Zet de doelvochtigheid van een luchtbevochtiger een stap lager, binnen zijn grenzen.",
             "fields": {
                 "step": {
                     "description": "Met hoeveel procent moet de waarde worden aangepast? Laat dit veld leeg om de standaardinstelling van de luchtbevochtiger te gebruiken, of vul 1 procent in als er geen standaardinstelling is.",
@@ -2286,24 +2558,27 @@
         },
         "climate_decrease_temperature": {
             "name": "Verlaag temperatuur",
+            "description": "Zet het instelpunt van een thermostaat een stap lager, of beide instelpunten bij een thermostaat die verwarmt en koelt. Een thermostaat die uit staat, blijft uit.",
             "fields": {
                 "step": {
-                    "description": "Met hoeveel moet je het aanpassen? Laat leegf om de eigen instelling van de thermostaat te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
+                    "description": "Met hoeveel moet je het aanpassen? Laat leeg om de eigen instelling van de thermostaat te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
                     "name": "Stap"
                 }
             }
         },
         "water_heater_decrease_temperature": {
             "name": "Verlaag temperatuur",
+            "description": "Zet het instelpunt van een boiler een stap lager, binnen zijn grenzen.",
             "fields": {
                 "step": {
-                    "description": "Met hoeveel moet je het aanpassen? Laat leegf om de eigen instelling van de ketel te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
+                    "description": "Met hoeveel moet je het aanpassen? Laat leeg om de eigen instelling van de ketel te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
                     "name": "Stap"
                 }
             }
         },
         "media_player_decrease_volume": {
             "name": "Verlaag volume",
+            "description": "Zet het volume van een mediaspeler lager met de stap die je opgeeft, tot stil.",
             "fields": {
                 "step": {
                     "description": "Met hoeveel procent moet het volume worden aangepast?",
@@ -2318,7 +2593,8 @@
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog vochtigheid"
+            "name": "Verhoog vochtigheid",
+            "description": "Zet de doelvochtigheid van een luchtbevochtiger een stap hoger, binnen zijn grenzen."
         },
         "media_player_increase_volume": {
             "fields": {
@@ -2327,28 +2603,45 @@
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog volume"
+            "name": "Verhoog volume",
+            "description": "Zet het volume van een mediaspeler hoger met de stap die je opgeeft, tot maximaal volume."
         },
         "climate_increase_temperature": {
             "fields": {
                 "step": {
-                    "description": "Met hoeveel moet je het aanpassen? Laat leegf om de eigen instelling van de thermostaat te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
+                    "description": "Met hoeveel moet je het aanpassen? Laat leeg om de eigen instelling van de thermostaat te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog temperatuur"
+            "name": "Verhoog temperatuur",
+            "description": "Zet het instelpunt van een thermostaat een stap hoger, of beide instelpunten bij een thermostaat die verwarmt en koelt. Een thermostaat die uit staat, blijft uit."
         },
         "water_heater_increase_temperature": {
             "fields": {
                 "step": {
-                    "description": "Met hoeveel moet je het aanpassen? Laat leegf om de eigen instelling van de ketel te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
+                    "description": "Met hoeveel moet je het aanpassen? Laat leeg om de eigen instelling van de ketel te gebruiken, of stel het in op een halve graad (één in Fahrenheit) als er geen instelling is.",
                     "name": "Stap"
                 }
             },
-            "name": "Verhoog temperatuur"
+            "name": "Verhoog temperatuur",
+            "description": "Zet het instelpunt van een boiler een stap hoger, binnen zijn grenzen."
         }
     },
     "conditions": {
+        "is_at_target_temperature": {
+            "name": "Temperatuur op het doel",
+            "description": "Slaagt wanneer de temperatuur van een thermostaat of boiler op het doel is. Een apparaat dat uit staat is niet op het doel, en een apparaat dat onbeschikbaar is wordt overgeslagen.",
+            "fields": {
+                "behavior": {
+                    "name": "Gedrag",
+                    "description": "Of het genoeg is dat een van de apparaten er is, of dat ze er allemaal moeten zijn."
+                },
+                "tolerance": {
+                    "name": "Tolerantie",
+                    "description": "Hoe dicht bij het doel nog als bereikt telt, in de eenheid van het apparaat. Voor een thermostaat die net onder zijn instelpunt blijft hangen. Nul betekent het doel zelf."
+                }
+            }
+        },
         "chance": {
             "name": "Kans",
             "description": "Slaagt in een ingesteld percentage van de gevallen, elke keer opnieuw willekeurig bepaald. Handig om wat variatie in je automatiseringen te brengen.",
@@ -2423,6 +2716,10 @@
         }
     },
     "triggers": {
+        "automation_turned_off": {
+            "name": "Automatisering uitgeschakeld",
+            "description": "Wordt geactiveerd wanneer iemand, of iets, een automatisering uitschakelt. Laat het doel leeg om elke automatisering in de gaten te houden."
+        },
         "sequence": {
             "description": "Wordt geactiveerd wanneer meerdere triggers na elkaar optreden, in de opgegeven volgorde.",
             "name": "Triggers op volgorde",
@@ -2555,6 +2852,34 @@
             "name": "Entiteit viel stil",
             "description": "Wordt geactiveerd wanneer er een tijd niets naar een entiteit is geschreven, wat een apparaat betrapt dat stilletjes is overleden in plaats van onbeschikbaar te worden."
         },
+        "target_temperature_reached": {
+            "name": "Doeltemperatuur bereikt",
+            "description": "Wordt geactiveerd wanneer de temperatuur van een thermostaat of boiler het doel bereikt, of er voorbij schiet. Het doel veranderen telt niet mee, en een apparaat dat uit staat ook niet.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolerantie",
+                    "description": "Hoe dicht bij het doel nog als bereikt telt, in de eenheid van het apparaat. Voor een thermostaat die net onder zijn instelpunt blijft hangen. Nul betekent het doel zelf."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Update geïnstalleerd",
+            "description": "Wordt geactiveerd wanneer een update-entiteit een andere geïnstalleerde versie meldt, of iemand nu op installeren drukte, het apparaat zichzelf bijwerkte of het buiten Home Assistant om is bijgewerkt."
+        },
+        "position_reached": {
+            "name": "Positie bereikt",
+            "description": "Wordt geactiveerd wanneer een bedekking of klep een positie bereikt, of er voorbij gaat. Eentje die er al is, of er staat wanneer hij terugkomt van onbeschikbaar, telt niet mee.",
+            "fields": {
+                "position": {
+                    "name": "Positie",
+                    "description": "De positie die bereikt moet worden, van 0 (dicht) tot 100 (open)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Script gestart",
+            "description": "Wordt geactiveerd wanneer een script een uitvoering start. Een uitvoering die het script weigert, omdat het al loopt, telt niet mee. Laat het doel leeg om elk script in de gaten te houden."
+        },
         "debounce": {
             "name": "Zodra het tot rust komt",
             "description": "Gaat af zodra een trigger een tijdje niet meer is afgegaan, zodat een reeks ervan als één binnenkomt. Een bewegingssensor meldt beweging niet één keer, maar twintig keer.",
@@ -2616,6 +2941,12 @@
                 "critical": "Kritiek",
                 "error": "Fout",
                 "warning": "Waarschuwing"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Onderaan",
+                "top": "Bovenaan"
             }
         }
     },

@@ -240,6 +240,197 @@
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "No se han podido enganchar todos los activadores de un activador «Todo esto sucedió»."
+        },
+        "area_not_found": {
+            "message": "No se ha encontrado el área {area_id}."
+        },
+        "blueprint_backup_failed": {
+            "message": "No se ha podido guardar una copia de {path}: {error}. No se ha escrito nada."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} no puede ejecutarse aquí: {errors}. No se ha escrito nada."
+        },
+        "blueprint_could_not_write": {
+            "message": "No se ha podido escribir {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Dominio no compatible: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Error al obtener el blueprint desde la URL."
+        },
+        "blueprint_file_exists": {
+            "message": "El archivo ya existe."
+        },
+        "blueprint_gone": {
+            "message": "{name} ya no está aquí, así que no hay nada que actualizar. No se ha escrito nada."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Esta URL no es compatible."
+        },
+        "blueprint_write_failed": {
+            "message": "Error al escribir el archivo."
+        },
+        "blueprints_not_loaded": {
+            "message": "Los blueprints de {domain} no están cargados ahora mismo."
+        },
+        "calendar_events_which": {
+            "message": "Indica qué eventos: da un resumen, un uid o ambos."
+        },
+        "calendar_range_backwards": {
+            "message": "El final de la búsqueda tiene que ser posterior a su inicio."
+        },
+        "calendar_range_required": {
+            "message": "Indica hasta dónde buscar: da una fecha y hora de fin, o una duración."
+        },
+        "cannot_disable_system_user": {
+            "message": "No se puede desactivar un usuario generado por el sistema: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "No se puede activar un usuario generado por el sistema: {user_id}."
+        },
+        "category_not_found": {
+            "message": "No se ha encontrado la categoría {category} para {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "No hay nada que actualizar en la categoría {category}: indica al menos uno de {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Una plantilla de esta condición ya no tiene Jinja, así que es una constante y nunca puede cambiar. Normalmente significa que un script la renderizó antes de que se ejecutara esta acción, cosa que pasa con todas las plantillas en los datos de una acción. Usa una condición sin plantillas, o espera a la propia plantilla con 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "No se ha encontrado la entrada de integración {config_entry_id}."
+        },
+        "debounce_attach_failed": {
+            "message": "No se han podido enganchar todos los activadores de un activador con antirrebote."
+        },
+        "device_not_found": {
+            "message": "No se ha encontrado el dispositivo {device_id}."
+        },
+        "entity_id_taken": {
+            "message": "El ID de entidad {entity_id} ya está en uso."
+        },
+        "entity_not_found": {
+            "message": "No se ha encontrado la entidad {entity_id}."
+        },
+        "entity_without_unique_id": {
+            "message": "La entidad {entity_id} no tiene un ID único, así que Home Assistant no puede guardarle un icono ni alias."
+        },
+        "event_cannot_change": {
+            "message": "{summary} no se puede cambiar así: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Indica qué cambiar: un resumen nuevo, un lugar o nuevas horas."
+        },
+        "event_shift_or_times": {
+            "message": "Mueve un evento con un desplazamiento o dale nuevas horas, pero no ambas cosas."
+        },
+        "event_whole_days": {
+            "message": "{summary} dura días completos, así que solo se puede mover por días completos."
+        },
+        "floor_not_found": {
+            "message": "No se ha encontrado la planta {floor_id}."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} no puede unirse a este grupo: contiene entidades de {domains}."
+        },
+        "group_not_found_behind": {
+            "message": "No se ha encontrado el grupo detrás de {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "No se ha podido acceder a los asistentes de {domain} que guarda Home Assistant."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "No se puede mantener {entity_id} hasta una hora que no existe."
+        },
+        "home_zone_radius": {
+            "message": "La zona de casa toma su radio en metros enteros, cero o más."
+        },
+        "home_zone_unsupported": {
+            "message": "La zona de casa solo admite latitud, longitud y radio, no: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Esta entrada numérica no se puede editar: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Indica las entradas de integración que quieres cambiar, o su integración."
+        },
+        "integration_without_entries": {
+            "message": "La integración {domain} no tiene entradas."
+        },
+        "label_not_found": {
+            "message": "No se ha encontrado la etiqueta {label_id}."
+        },
+        "label_nothing_to_update": {
+            "message": "No hay nada que actualizar en la etiqueta {label_id}: indica al menos uno de {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "El máximo ({maximum}) tiene que ser mayor que el mínimo ({minimum})."
+        },
+        "no_max_value": {
+            "message": "La entidad {entity_id} no tiene valor máximo."
+        },
+        "no_min_value": {
+            "message": "La entidad {entity_id} no tiene valor mínimo."
+        },
+        "not_a_group": {
+            "message": "{entity_id} no es un grupo."
+        },
+        "person_not_editable": {
+            "message": "Esta persona no se puede editar: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook ha encontrado un error al reiniciar Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "No se ha podido enganchar el primer paso de un activador de secuencia."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Indica un mínimo, un máximo o un paso que cambiar."
+        },
+        "spooked": {
+            "message": "¡Bu! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Este temporizador no se puede editar: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Un elemento no se puede mover detrás de sí mismo."
+        },
+        "todo_item_not_found": {
+            "message": "No hay ningún elemento {item} en {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "No se puede mover nada detrás del último elemento de {entity_id}."
+        },
+        "todo_move_where": {
+            "message": "Indica adónde: detrás de otro elemento, o arriba o abajo del todo."
+        },
+        "user_not_found": {
+            "message": "No se ha encontrado el usuario: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "El valor {value} de {entity_id} no es un número."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "No se han podido enganchar los activadores de armado de un activador de perro guardián."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "No se han podido enganchar los activadores esperados de un activador de perro guardián."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} es un grupo de tu configuración YAML, que Spook no puede cambiar. Edítalo en tu configuración, o usa group.set, que sigue funcionando con ese tipo de grupo."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} está configurado en YAML y no se puede eliminar."
+        },
+        "zone_not_editable": {
+            "message": "Esta zona no se puede editar: {entity_id}."
+        }
+    },
     "issues": {
         "automation_unknown_area_references": {
             "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización hace referencia a las siguientes áreas, que son desconocidas para Home Assistant:\n\n{areas}\n\n\n\nPara solucionar este error, [edita la automatización]({edit}) y elimina el uso de estas áreas que no existen.\n\nSpook 👻 Tu colega.",
@@ -254,8 +445,8 @@
             "title": "Entidades desconocidas usadas en: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Tu colega.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización hace referencia a las siguientes plantas, que son desconocidas para Home Assistant:\n\n{floors}\n\n\n\nPara solucionar este error, [edita la automatización]({edit}) y elimina el uso de estas plantas que no existen.\n\nSpook 👻 Tu colega.",
+            "title": "Plantas desconocidas usadas en: {automation}"
         },
         "automation_unknown_label_references": {
             "description": "Spook ha encontrado un fantasma en tus automatizaciones 👻\n\nMientras flotaba, Spook se cruzó con la siguiente automatización:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nEsta automatización hace referencia a las siguientes etiquetas, que son desconocidas para Home Assistant:\n\n{labels}\n\n\n\nPara solucionar este error, [edita la automatización]({edit}) y elimina el uso de estas etiquetas que no existen.\n\nSpook 👻 Tu colega.",
@@ -271,6 +462,7 @@
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre este grupo.",
                     "manage": "Puedes administrar este grupo tú mismo en la [página de Asistentes](/config/helpers).",
+                    "changed": "Los miembros que figuraban en esta reparación han vuelto, o han cambiado, desde que Spook la revisó, así que no se ha quitado nada del grupo. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación.",
                     "not_editable": "Este grupo está configurado en YAML, así que Spook no puede editarlo. Actualiza el grupo en tu configuración."
                 },
                 "step": {
@@ -319,15 +511,15 @@
             "title": "Entidades desconocidas usadas en: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Tu colega.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script hace referencia a las siguientes plantas, que son desconocidas para Home Assistant:\n\n{floors}\n\n\n\nPara solucionar este error, [edita el script]({edit}) y elimina el uso de estas plantas que no existen.\n\nSpook 👻 Tu colega.",
+            "title": "Plantas desconocidas usadas en: {script}"
         },
         "script_unknown_label_references": {
             "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script hace referencia a las siguientes etiquetas, que son desconocidas para Home Assistant:\n\n{labels}\n\n\n\nPara solucionar este error, [edita el script]({edit}) y elimina el uso de estas etiquetas que no existen.\n\nSpook 👻 Tu colega.",
             "title": "Etiquetas desconocidas usadas en: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
+            "description": "Spook ha encontrado un fantasma en tus scripts 👻\n\nMientras flotaba, Spook se cruzó con el siguiente script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nEste script hace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\nPara solucionar este error, [edita el script]({edit}) y elimina el uso de estas acciones que no existen.\n\nSpook 👻 Tu colega.",
             "title": "Acciones desconocidas utilizadas en: {script}"
         },
         "user_issue": {
@@ -372,7 +564,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre esta área.",
-                    "manage": "Puedes administrar esta área tú mismo en la [página de Áreas](/config/areas/dashboard)."
+                    "manage": "Puedes administrar esta área tú mismo en la [página de Áreas](/config/areas/dashboard).",
+                    "changed": "Esta área vuelve a estar en uso desde que Spook la revisó: contiene algo, o una automatización o un script la utiliza. Por eso se ha dejado en paz. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
                 },
                 "step": {
                     "init": {
@@ -392,7 +585,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre esta planta.",
-                    "manage": "Puedes administrar esta planta tú mismo en la [página de Áreas](/config/areas/dashboard)."
+                    "manage": "Puedes administrar esta planta tú mismo en la [página de Áreas](/config/areas/dashboard).",
+                    "changed": "Esta planta vuelve a estar en uso desde que Spook la revisó: tiene un área, o una automatización o un script la utiliza. Por eso se ha dejado en paz. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
                 },
                 "step": {
                     "init": {
@@ -409,11 +603,33 @@
             "title": "Planta vacía: {floor}"
         },
         "energy_unknown_references": {
-            "title": "Entidades desconocidas usadas en el panel de energía"
+            "title": "Entidades desconocidas usadas en el panel de energía",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Entidades desconocidas usadas en el panel de energía",
+                        "description": "Spook ha encontrado un fantasma en tu panel de energía 👻\n\nEl panel de energía hace referencia a las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\nEsto suele pasar cuando se ha renombrado o eliminado una entidad usada en la configuración de energía. ¿Renombrada? Entonces abre [Ajustes > Paneles > Energía](/config/energy) y elige la nueva, para que su historial siga en el panel.\n\n¿Eliminada para siempre? Spook puede sacarlas de la configuración de energía por ti. Un contador que falta se lleva consigo su fuente o dispositivo; un precio o coste que falta solo se borra. A partir de ahí, el panel deja de mostrar el historial de lo que se saca; las estadísticas en sí se quedan.\n\nSpook 👻 Tu colega.",
+                        "menu_options": {
+                            "remove": "Sacarlas de la configuración de energía",
+                            "manage": "Lo hago yo mismo",
+                            "ignore": "Conservarlas, no me avises más"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook no volverá a decir nada sobre estas entidades.",
+                    "manage": "Puedes actualizarlas o quitarlas tú mismo en la [configuración de energía](/config/energy).",
+                    "nothing_to_remove": "Ninguna de ellas sigue siendo desconocida, así que no se ha sacado nada. Puede que hayan vuelto, o que alguien ya haya cambiado la configuración de energía."
+                }
+            }
         },
         "lovelace_missing_resources": {
             "description": "Spook ha encontrado un fantasma en tus paneles 👻\n\nLos siguientes recursos de panel apuntan a archivos que no existen:\n\n{resources}\n\nEsto suele pasar cuando se ha quitado una tarjeta personalizada o sus archivos, pero el recurso se ha quedado. Para solucionar este error, abre Ajustes > Paneles > Recursos y quita o corrige estos recursos.\n\nSpook 👻 Tu colega.",
             "title": "Recursos del panel que apuntan a archivos que faltan"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook ha encontrado un fantasma en tus paneles 👻\n\nLos siguientes recursos de panel hacen referencia a archivos que no existen:\n\n{resources}\n\n\n\nEsto suele ocurrir cuando se elimina una tarjeta personalizada o sus archivos, pero el recurso permanece.\n\nEstos recursos figuran en tu configuración YAML, por lo que no es posible modificarlos desde la página de Recursos. Edita la sección `resources:` de tu configuración de Lovelace y elimina o corrige estas entradas.\n\nSpook 👻 Tu colega.",
+            "title": "Los recursos del panel apuntan a archivos inexistentes"
         },
         "lovelace_unknown_area_references": {
             "description": "Spook ha encontrado un fantasma en tus paneles 👻\n\nMientras flotaba, Spook se cruzó con el siguiente panel:\n\n{dashboard}\n\nEste panel hace referencia a las siguientes áreas, que son desconocidas para Home Assistant:\n\n{areas}\n\nEsto suele pasar cuando se ha renombrado o quitado un área. Para solucionar este error, [edita el panel]({edit}) y elimina el uso de estas áreas que no existen.\n\nSpook 👻 Tu colega.",
@@ -424,6 +640,7 @@
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre este asistente.",
                     "manage": "Puedes administrar este asistente tú mismo en la [página de Asistentes](/config/helpers).",
+                    "changed": "Los miembros que figuraban en esta reparación han vuelto, o han cambiado, desde que Spook la revisó, así que no se ha quitado nada del helper. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación.",
                     "too_few_members": "Un asistente mín/máx necesita al menos dos miembros, así que quitar los que faltan dejaría muy pocos. Reconfigura o quita el asistente tú mismo en la [página de Asistentes](/config/helpers)."
                 },
                 "step": {
@@ -441,7 +658,26 @@
             "title": "Miembros desconocidos usados en el asistente mín/máx: {helper}"
         },
         "orphaned_statistics": {
-            "title": "Se han encontrado estadísticas a largo plazo huérfanas"
+            "title": "Se han encontrado estadísticas a largo plazo huérfanas",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Se han encontrado estadísticas a largo plazo huérfanas",
+                        "description": "Hay un fantasma en tu recorder 👻\n\nHome Assistant está guardando estadísticas a largo plazo de lo siguiente, pero ya no existe ninguna entidad que coincida:\n\n{statistics}\n\nEsto suele pasar cuando se eliminó un sensor pero se conservaron sus estadísticas. Borrarlas tira ese historial a la basura para siempre, así que Spook vuelve a comprobarlo antes de hacerlo y deja en paz todo lo que haya vuelto mientras tanto.\n\nSpook 👻 Tu colega.",
+                        "menu_options": {
+                            "remove": "Borrar estas estadísticas",
+                            "manage": "Lo hago yo mismo",
+                            "ignore": "Conservarlas, no me avises más"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook no volverá a decir nada sobre estas estadísticas.",
+                    "manage": "Puedes borrarlas tú mismo en la [página de Estadísticas](/config/tools/statistics).",
+                    "nothing_to_clear": "Nada de esa lista necesita ya borrarse, así que no se ha tirado nada. O las estadísticas vuelven a tener una entidad detrás, o ya han desaparecido.",
+                    "clearing_took_too_long": "Spook ha pedido que se borren las estadísticas y el recorder todavía no ha dicho que haya terminado. El trabajo está en cola y lo más probable es que se complete, así que esta reparación sigue ahí hasta que Spook vuelva a comprobarlo."
+                }
+            }
         },
         "person_unknown_device_trackers": {
             "fix_flow": {
@@ -480,15 +716,41 @@
             "description": "Spook ha encontrado un fantasma en tus asistentes de plantilla 👻\n\nMientras flotaba, Spook se cruzó con el siguiente asistente de plantilla:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\nEsto suele pasar cuando se ha quitado la integración que estaba detrás de una acción, o cuando se ha renombrado o eliminado un script. Para solucionar este error, reconfigura el asistente de plantilla para que use acciones que existan.\n\nSpook 👻 Tu colega.",
             "title": "Acciones desconocidas usadas en el asistente de plantilla: {helper}"
         },
+        "unknown_area_sensors": {
+            "title": "Sensor de {sensors} desconocido para el área: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor de {sensors} desconocido para el área: {area}",
+                        "description": "Spook ha encontrado un fantasma en tus áreas 👻\n\nEl área {area} usa un sensor de {sensors} que es desconocido para Home Assistant:\n\n{entities}\n\nHome Assistant solo comprueba este sensor cuando se elige, así que cuando se eliminó o se renombró, el área se quedó apuntando a la nada. Assist y las tarjetas de área ya no obtienen ninguna lectura de él.\n\nBorra el ajuste para poder elegir de nuevo un sensor, o quédatelo y Spook no volverá a mencionarlo.\n\nSpook 👻 Tu colega.",
+                        "menu_options": {
+                            "remove": "Borrar el ajuste",
+                            "manage": "Lo arreglo yo mismo",
+                            "ignore": "Quedárselo y no volver a avisarme"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook no volverá a decir nada sobre esta área.",
+                    "manage": "Puedes elegir otro sensor en los ajustes de esta área, en la [página de Áreas](/config/areas/dashboard).",
+                    "changed": "Estos sensores han vuelto, o los ajustes ya apuntan a otra parte, desde que Spook lo revisó. Por eso no se ha borrado nada. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
+                }
+            }
+        },
         "unknown_customized_entities": {
             "description": "Spook ha encontrado un fantasma en tus personalizaciones 👻\n\nLa sección `customize:` fija atributos en las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\nEsto suele pasar cuando se ha renombrado o quitado una entidad y su personalización se ha quedado. Para solucionar este error, edita la sección `customize:` de tu configuración y quita estas entidades.\n\nSpook 👻 Tu colega.",
             "title": "Entidades desconocidas en tus personalizaciones"
+        },
+        "unknown_engines": {
+            "title": "La canalización de Assist usa motores que ya no existen: {pipeline}",
+            "description": "Spook ha encontrado un fantasma en tus asistentes de voz 👻\n\nLa canalización de Assist {pipeline} usa lo siguiente, que es desconocido para Home Assistant:\n\n{engines}\n\nEsto suele significar que se eliminó la integración que había detrás. Nadie avisó a la canalización, así que la próxima vez que se use fallará con un error sobre un proveedor o agente que falta, y nada antes de eso apunta hasta aquí.\n\nPara arreglarlo, abre los ajustes de este asistente en [Asistentes de voz](/config/voice-assistants/assistants) y elige, para cada uno de estos, un motor que siga existiendo.\n\nSpook 👻 Tu colega."
         },
         "unknown_helper_source_references": {
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre este asistente.",
-                    "manage": "Puedes administrar este asistente tú mismo en la [página de Asistentes](/config/helpers)."
+                    "manage": "Puedes administrar este asistente tú mismo en la [página de Asistentes](/config/helpers).",
+                    "changed": "Los orígenes de este asistente han cambiado desde que Spook lo revisó, así que se ha dejado el asistente en paz. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
                 },
                 "step": {
                     "init": {
@@ -528,7 +790,8 @@
             "fix_flow": {
                 "abort": {
                     "issue_ignored": "Spook no volverá a decir nada sobre esta etiqueta.",
-                    "manage": "Puedes administrar esta etiqueta tú mismo en la [página de Etiquetas](/config/labels)."
+                    "manage": "Puedes administrar esta etiqueta tú mismo en la [página de Etiquetas](/config/labels).",
+                    "changed": "Esta etiqueta vuelve a estar en uso desde que Spook la revisó: algo la lleva puesta, o una automatización o un script la utiliza. Por eso se ha dejado en paz. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
                 },
                 "step": {
                     "init": {
@@ -583,6 +846,20 @@
         }
     },
     "conditions": {
+        "is_at_target_temperature": {
+            "name": "Temperatura en su objetivo",
+            "description": "Se cumple cuando la temperatura de un termostato o calentador de agua está en su objetivo. Un dispositivo apagado no está en su objetivo, y uno no disponible se deja fuera.",
+            "fields": {
+                "behavior": {
+                    "name": "Comportamiento",
+                    "description": "Si basta con que uno de los dispositivos haya llegado, o tienen que haber llegado todos."
+                },
+                "tolerance": {
+                    "name": "Tolerancia",
+                    "description": "Hasta qué punto cerca del objetivo sigue contando como alcanzado, en la unidad del dispositivo. Para un termostato que se queda justo por debajo de su consigna. Cero significa el propio objetivo."
+                }
+            }
+        },
         "chance": {
             "description": "Se cumple en un porcentaje determinado de los casos, elegido al azar en cada comprobación. Útil para añadir algo de variación a tus automatizaciones.",
             "fields": {
@@ -657,6 +934,48 @@
         }
     },
     "services": {
+        "group_add_members": {
+            "name": "Agrega miembros a un grupo",
+            "description": "Agrega entidades a un grupo creado a través de la interfaz mientras Home Assistant está en ejecución. Las entidades que ya forman parte del grupo permanecen donde están.",
+            "fields": {
+                "group": {
+                    "name": "Grupo",
+                    "description": "El grupo al que agregar."
+                },
+                "members": {
+                    "name": "Miembros",
+                    "description": "Las entidades para agregar al grupo."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Eliminar miembros del grupo",
+            "description": "Elimina entidades de un grupo creado a través de la interfaz mientras Home Assistant está en ejecución. Indicar un elemento que no forma parte del grupo no produce ningún efecto; por tanto, este es también el método para eliminar un miembro que ya no existe.",
+            "fields": {
+                "group": {
+                    "name": "Grupo",
+                    "description": "El grupo del cual eliminarlos."
+                },
+                "members": {
+                    "name": "Miembros",
+                    "description": "Las entidades que se deben eliminar del grupo."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Establecer los miembros de un grupo",
+            "description": "Reemplaza los miembros de un grupo creado a través de la interfaz por los indicados, mientras Home Assistant está en ejecución.",
+            "fields": {
+                "group": {
+                    "name": "Grupo",
+                    "description": "El grupo a cambiar."
+                },
+                "members": {
+                    "name": "Miembros",
+                    "description": "Las entidades que el grupo debería mantener de ahora en adelante."
+                }
+            }
+        },
         "blueprint_import": {
             "description": "Importa un blueprint.",
             "fields": {
@@ -885,6 +1204,10 @@
                 "config_entry_id": {
                     "description": "La entrada de integración que quieres desactivar.",
                     "name": "Entrada de integración"
+                },
+                "domain": {
+                    "name": "Integración",
+                    "description": "Desactiva todas las entradas de estas integraciones, incluidas las que se añadan más adelante."
                 }
             },
             "name": "Desactivar una integración"
@@ -935,6 +1258,10 @@
                 "config_entry_id": {
                     "description": "La entrada de integración que quieres activar.",
                     "name": "Entrada de integración"
+                },
+                "domain": {
+                    "name": "Integración",
+                    "description": "Activa todas las entradas de estas integraciones, incluidas las que se añadan más adelante."
                 }
             },
             "name": "Activar una integración"
@@ -1117,6 +1444,88 @@
             },
             "name": "Quitar una etiqueta de una entidad"
         },
+        "homeassistant_create_category": {
+            "name": "Crear una categoría",
+            "description": "Crea una categoría nueva al instante, para automatizaciones, scripts, escenas o asistentes. Devuelve el ID de la nueva categoría.",
+            "fields": {
+                "scope": {
+                    "name": "Ámbito",
+                    "description": "Dónde se usa la categoría."
+                },
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nombre de la categoría que crear."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El icono a usar para la categoría."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Actualizar una categoría",
+            "description": "Actualiza una categoría existente al instante. Todo lo que dejes fuera conserva el valor que ya tenía. El icono se puede borrar poniéndolo a null.",
+            "fields": {
+                "scope": {
+                    "name": "Ámbito",
+                    "description": "Dónde se usa la categoría."
+                },
+                "category_id": {
+                    "name": "Categoría",
+                    "description": "El ID o el nombre de la categoría que actualizar."
+                },
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nuevo nombre de la categoría."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El nuevo icono de la categoría."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Eliminar una categoría",
+            "description": "Elimina una categoría. Todo lo que estaba en ella se queda sin categoría.",
+            "fields": {
+                "scope": {
+                    "name": "Ámbito",
+                    "description": "Dónde se usa la categoría."
+                },
+                "category_id": {
+                    "name": "Categoría",
+                    "description": "El ID o el nombre de la categoría que eliminar."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Añadir una categoría a una entidad",
+            "description": "Pone una automatización, un script, una escena o un asistente en una categoría. Sustituye la categoría en la que estaba antes, ya que cada uno solo puede estar en una.",
+            "fields": {
+                "category_id": {
+                    "name": "Categoría",
+                    "description": "El ID o el nombre de la categoría."
+                },
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "Las automatizaciones, scripts, escenas o asistentes que poner en la categoría."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Quitar una categoría de una entidad",
+            "description": "Saca una automatización, un script, una escena o un asistente de una categoría. Lo que esté en otra categoría se deja en paz.",
+            "fields": {
+                "category_id": {
+                    "name": "Categoría",
+                    "description": "El ID o el nombre de la categoría."
+                },
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "Las automatizaciones, scripts, escenas o asistentes que sacar de la categoría."
+                }
+            }
+        },
         "homeassistant_rename_entity": {
             "description": "Renombra una entidad (o entidades) al instante.",
             "fields": {
@@ -1130,6 +1539,62 @@
                 }
             },
             "name": "Renombrar una entidad"
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Establecer el icono de una entidad",
+            "description": "Establece el icono de una entidad (o entidades) al instante. Ponlo a null para volver al icono que le da la integración.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entidad",
+                    "description": "La entidad o entidades a las que poner el icono."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El nuevo icono, o null para el icono propio de la integración."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Añadir un alias a una entidad",
+            "description": "Añade uno o más alias a una entidad (o entidades), con los que los asistentes de voz pueden llamarla.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entidad",
+                    "description": "La entidad o entidades a las que añadir los alias."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "El alias o los alias que añadir."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Quitar un alias de una entidad",
+            "description": "Quita uno o más alias de una entidad (o entidades).",
+            "fields": {
+                "entity_id": {
+                    "name": "Entidad",
+                    "description": "La entidad o entidades de las que quitar los alias."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "El alias o los alias que quitar."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Establecer los alias de una entidad",
+            "description": "Reemplaza los alias de una entidad (o entidades). Que el nombre propio de la entidad cuente o no como alias se queda como estaba.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entidad",
+                    "description": "La entidad o entidades de las que establecer los alias."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Los alias que establecer."
+                }
+            }
         },
         "homeassistant_restart": {
             "description": "Reinicia Home Assistant.",
@@ -1269,6 +1734,12 @@
         },
         "input_number_delete": {
             "description": "Elimina un asistente de entrada numérica. Esto solo funciona con entradas numéricas creadas y gestionadas desde la interfaz. Spook no puede administrar las que se crean y se gestionan en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "La entrada o entradas numéricas que eliminar."
+                }
+            },
             "name": "Eliminar una entrada numérica"
         },
         "input_number_increment": {
@@ -1293,6 +1764,224 @@
             "description": "Pone una entrada numérica en su valor mínimo.",
             "name": "Establecer el valor mínimo"
         },
+        "input_number_set_range": {
+            "name": "Establecer el rango",
+            "description": "Cambia el mínimo, el máximo o el paso de una entrada numérica creada en la interfaz, igual que si la editaras. Un valor fuera del nuevo rango se mueve dentro de él.",
+            "fields": {
+                "min": {
+                    "name": "Mínimo",
+                    "description": "El nuevo valor mínimo."
+                },
+                "max": {
+                    "name": "Máximo",
+                    "description": "El nuevo valor máximo."
+                },
+                "step": {
+                    "name": "Paso",
+                    "description": "El nuevo tamaño de paso."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Crear un contador",
+            "description": "Crea un asistente de contador nuevo al instante. Devuelve el ID de entidad del nuevo contador.",
+            "fields": {
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nombre del nuevo contador."
+                },
+                "counter_id": {
+                    "name": "ID de entidad del contador",
+                    "description": "El ID de entidad para el nuevo contador. El prefijo counter. se añade automáticamente. Si no lo indicas, el ID de entidad se generará a partir del nombre."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "El valor con el que empieza el contador, y al que vuelve al reiniciarlo."
+                },
+                "minimum": {
+                    "name": "Mínimo",
+                    "description": "El valor más bajo al que puede bajar el contador. Déjalo vacío para no poner límite."
+                },
+                "maximum": {
+                    "name": "Máximo",
+                    "description": "El valor más alto al que puede subir el contador. Déjalo vacío para no poner límite."
+                },
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuánto sube o baja el contador cada vez."
+                },
+                "restore": {
+                    "name": "Restaurar",
+                    "description": "Restaura el valor del contador cuando se inicia Home Assistant, en lugar de volver a empezar desde el valor inicial."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El icono del nuevo contador."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Eliminar un contador",
+            "description": "Elimina asistentes de contador creados en la interfaz o con la acción de crear un contador. Spook no puede eliminar los contadores configurados en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "El contador o contadores que eliminar."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Crear una entrada booleana",
+            "description": "Crea un asistente de entrada booleana (interruptor) nuevo al instante. Devuelve el ID de entidad de la nueva entrada booleana.",
+            "fields": {
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nombre de la nueva entrada booleana."
+                },
+                "input_boolean_id": {
+                    "name": "ID de entidad de la entrada booleana",
+                    "description": "El ID de entidad para la nueva entrada booleana. El prefijo input_boolean. se añade automáticamente. Si no lo indicas, el ID de entidad se generará a partir del nombre."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "El valor con el que empieza. Si lo dejas vacío, conserva el valor que tenía antes de que Home Assistant se reiniciara."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El icono de la nueva entrada booleana."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Eliminar una entrada booleana",
+            "description": "Elimina asistentes de entrada booleana creados en la interfaz o con la acción de crear una entrada booleana. Spook no puede eliminar las entradas booleanas configuradas en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "La entrada o entradas booleanas que eliminar."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Crear una entrada de texto",
+            "description": "Crea un asistente de entrada de texto nuevo al instante. Devuelve el ID de entidad de la nueva entrada de texto.",
+            "fields": {
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nombre de la nueva entrada de texto."
+                },
+                "input_text_id": {
+                    "name": "ID de entidad de la entrada de texto",
+                    "description": "El ID de entidad para la nueva entrada de texto. El prefijo input_text. se añade automáticamente. Si no lo indicas, el ID de entidad se generará a partir del nombre."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "El texto con el que empieza. Si lo dejas vacío, conserva el texto que tenía antes de que Home Assistant se reiniciara."
+                },
+                "min": {
+                    "name": "Longitud mínima",
+                    "description": "Lo más corto que puede ser el texto."
+                },
+                "max": {
+                    "name": "Longitud máxima",
+                    "description": "Lo más largo que puede ser el texto."
+                },
+                "pattern": {
+                    "name": "Patrón",
+                    "description": "Una expresión regular con la que tiene que coincidir el texto."
+                },
+                "mode": {
+                    "name": "Modo",
+                    "description": "Mostrar el texto tal cual, u ocultarlo como una contraseña."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El icono de la nueva entrada de texto."
+                },
+                "unit_of_measurement": {
+                    "name": "Unidad de medida",
+                    "description": "La unidad que se muestra junto al texto."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Eliminar una entrada de texto",
+            "description": "Elimina asistentes de entrada de texto creados en la interfaz o con la acción de crear una entrada de texto. Spook no puede eliminar las entradas de texto configuradas en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "La entrada o entradas de texto que eliminar."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Crear un botón de entrada",
+            "description": "Crea un asistente de botón de entrada nuevo al instante. Devuelve el ID de entidad del nuevo botón de entrada.",
+            "fields": {
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nombre del nuevo botón de entrada."
+                },
+                "input_button_id": {
+                    "name": "ID de entidad del botón de entrada",
+                    "description": "El ID de entidad para el nuevo botón de entrada. El prefijo input_button. se añade automáticamente. Si no lo indicas, el ID de entidad se generará a partir del nombre."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El icono del nuevo botón de entrada."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Eliminar un botón de entrada",
+            "description": "Elimina asistentes de botón de entrada creados en la interfaz o con la acción de crear un botón de entrada. Spook no puede eliminar los botones de entrada configurados en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "El botón o botones de entrada que eliminar."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Crear una entrada de fecha y hora",
+            "description": "Crea un asistente de entrada de fecha y hora nuevo al instante, que guarda una fecha, una hora o ambas. Devuelve el ID de entidad de la nueva entrada de fecha y hora.",
+            "fields": {
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nombre de la nueva entrada de fecha y hora."
+                },
+                "input_datetime_id": {
+                    "name": "ID de entidad de la entrada de fecha y hora",
+                    "description": "El ID de entidad para la nueva entrada de fecha y hora. El prefijo input_datetime. se añade automáticamente. Si no lo indicas, el ID de entidad se generará a partir del nombre."
+                },
+                "has_date": {
+                    "name": "Tiene fecha",
+                    "description": "Si guarda una fecha. Al menos una de fecha y hora tiene que estar activada."
+                },
+                "has_time": {
+                    "name": "Tiene hora",
+                    "description": "Si guarda una hora. Al menos una de fecha y hora tiene que estar activada."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "La fecha y/u hora con la que empieza, como 2026-12-31, 08:30:00 o 2026-12-31 08:30:00. Si la dejas vacía, conserva el valor que tenía antes de que Home Assistant se reiniciara."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El icono de la nueva entrada de fecha y hora."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Eliminar una entrada de fecha y hora",
+            "description": "Elimina asistentes de entrada de fecha y hora creados en la interfaz o con la acción de crear una entrada de fecha y hora. Spook no puede eliminar las entradas de fecha y hora configuradas en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "La entrada o entradas de fecha y hora que eliminar."
+                }
+            }
+        },
         "input_select_random": {
             "description": "Selecciona una opción al azar en una entidad input_select.",
             "fields": {
@@ -1302,6 +1991,10 @@
                 }
             },
             "name": "Seleccionar una opción al azar"
+        },
+        "input_select_reverse": {
+            "name": "Invertir las opciones",
+            "description": "Invierte el orden de las opciones seleccionables de una entidad `input_select`, de atrás hacia delante. No es permanente: se deshace al recargar o al reiniciar Home Assistant."
         },
         "input_select_shuffle": {
             "description": "Mezcla la lista de opciones seleccionables de una entidad `input_select`. No es permanente: se deshace al recargar o al reiniciar Home Assistant.",
@@ -1437,7 +2130,31 @@
         },
         "repairs_ignore_all": {
             "description": "Ignora todos los problemas que hay ahora en Reparaciones de Home Assistant.",
+            "fields": {
+                "domain": {
+                    "name": "Dominio",
+                    "description": "Ignorar solo los problemas que generan estas integraciones."
+                }
+            },
             "name": "Ignorar todos los problemas"
+        },
+        "repairs_list": {
+            "name": "Listar problemas",
+            "description": "Lista los problemas que hay ahora en Reparaciones de Home Assistant, con sus títulos, para que una automatización actúe sobre ellos o un panel los muestre.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Incluir ignorados",
+                    "description": "Listar también los problemas que se han ignorado."
+                },
+                "domain": {
+                    "name": "Dominio",
+                    "description": "Listar solo los problemas que generan estas integraciones."
+                },
+                "severity": {
+                    "name": "Gravedad",
+                    "description": "Listar solo los problemas con estas gravedades."
+                }
+            }
         },
         "repairs_remove": {
             "description": "Elimina un problema de Reparaciones de Home Assistant creado manualmente. Esta acción solo puede eliminar los problemas creados con la acción `repairs_create`.",
@@ -1451,6 +2168,12 @@
         },
         "repairs_unignore_all": {
             "description": "Deja de ignorar todos los problemas que hay ahora en Reparaciones de Home Assistant.",
+            "fields": {
+                "domain": {
+                    "name": "Dominio",
+                    "description": "Dejar de ignorar solo los problemas que generan estas integraciones."
+                }
+            },
             "name": "Dejar de ignorar todos los problemas"
         },
         "select_random": {
@@ -1462,6 +2185,42 @@
                 }
             },
             "name": "Seleccionar una opción al azar"
+        },
+        "input_select_create": {
+            "name": "Crear una entrada de selección",
+            "description": "Crea un asistente de entrada de selección (desplegable) nuevo al instante. Devuelve el ID de entidad de la nueva entrada de selección.",
+            "fields": {
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nombre de la nueva entrada de selección."
+                },
+                "input_select_id": {
+                    "name": "ID de entidad de la entrada de selección",
+                    "description": "El ID de entidad para la nueva entrada de selección. El prefijo input_select. se añade automáticamente. Si no lo indicas, el ID de entidad se generará a partir del nombre."
+                },
+                "options": {
+                    "name": "Opciones",
+                    "description": "Las opciones entre las que elegir. Cada opción solo puede aparecer una vez."
+                },
+                "initial": {
+                    "name": "Opción inicial",
+                    "description": "La opción con la que empieza, que tiene que ser una de las opciones. Si la dejas vacía, conserva la opción que tenía antes de que Home Assistant se reiniciara."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El icono de la nueva entrada de selección."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Eliminar una entrada de selección",
+            "description": "Elimina asistentes de entrada de selección creados en la interfaz o con la acción de crear una entrada de selección. Spook no puede eliminar las entradas de selección configuradas en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "La entrada o entradas de selección que eliminar."
+                }
+            }
         },
         "sensor_set_display_precision": {
             "description": "Establece cuántos decimales se muestran para uno o varios sensores.",
@@ -1476,6 +2235,42 @@
                 }
             },
             "name": "Establecer la precisión de visualización"
+        },
+        "timer_create": {
+            "name": "Crear un temporizador",
+            "description": "Crea un asistente de temporizador nuevo al instante. Devuelve el ID de entidad del nuevo temporizador.",
+            "fields": {
+                "name": {
+                    "name": "Nombre",
+                    "description": "El nombre del nuevo temporizador."
+                },
+                "timer_id": {
+                    "name": "ID de entidad del temporizador",
+                    "description": "El ID de entidad para el nuevo temporizador. El prefijo timer. se añade automáticamente. Si no lo indicas, el ID de entidad se generará a partir del nombre."
+                },
+                "duration": {
+                    "name": "Duración",
+                    "description": "Cuánto dura el temporizador cuando se inicia."
+                },
+                "restore": {
+                    "name": "Restaurar",
+                    "description": "Restaura el estado del temporizador cuando se inicia Home Assistant, para que un temporizador en marcha siga corriendo tras un reinicio."
+                },
+                "icon": {
+                    "name": "Icono",
+                    "description": "El icono del nuevo temporizador."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Eliminar un temporizador",
+            "description": "Elimina asistentes de temporizador creados en la interfaz o con la acción de crear un temporizador. Spook no puede eliminar los temporizadores configurados en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID de entidad",
+                    "description": "El temporizador o temporizadores que eliminar."
+                }
+            }
         },
         "timer_set_duration": {
             "description": "Establece la duración de un temporizador existente.",
@@ -1509,6 +2304,10 @@
                 "radius": {
                     "description": "Radio de la zona",
                     "name": "Radio"
+                },
+                "passive": {
+                    "name": "Pasiva",
+                    "description": "Una zona pasiva solo existe para las automatizaciones: no se muestra en el mapa y no cambia dónde están las personas ni los rastreadores de dispositivo."
                 }
             },
             "name": "Crear una zona"
@@ -1522,6 +2321,124 @@
                 }
             },
             "name": "Eliminar una zona"
+        },
+        "water_heater_increase_temperature": {
+            "name": "Subir la temperatura",
+            "description": "Sube un paso la consigna de un calentador de agua, dentro de sus límites.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuánto cambiarla. Déjalo vacío para usar el paso del propio calentador de agua, o medio grado (uno en Fahrenheit) si no tiene."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Bajar la temperatura",
+            "description": "Baja un paso la consigna de un calentador de agua, dentro de sus límites.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuánto cambiarla. Déjalo vacío para usar el paso del propio calentador de agua, o medio grado (uno en Fahrenheit) si no tiene."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Subir la humedad",
+            "description": "Sube un paso la humedad objetivo de un humidificador, dentro de sus límites.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuántos puntos porcentuales cambiarla. Déjalo vacío para usar el paso del propio humidificador, o un uno por ciento si no tiene."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Bajar la humedad",
+            "description": "Baja un paso la humedad objetivo de un humidificador, dentro de sus límites.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuántos puntos porcentuales cambiarla. Déjalo vacío para usar el paso del propio humidificador, o un uno por ciento si no tiene."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Aumentar la posición",
+            "description": "Abre una persiana un paso más, hasta que esté abierta del todo.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuántos puntos porcentuales moverla. Un diez por ciento si lo dejas vacío."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Reducir la posición",
+            "description": "Cierra una persiana un paso más, hasta que esté cerrada del todo.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuántos puntos porcentuales moverla. Un diez por ciento si lo dejas vacío."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Aumentar la posición",
+            "description": "Abre una válvula un paso más, hasta que esté abierta del todo.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuántos puntos porcentuales moverla. Un diez por ciento si lo dejas vacío."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Reducir la posición",
+            "description": "Cierra una válvula un paso más, hasta que esté cerrada del todo.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuántos puntos porcentuales moverla. Un diez por ciento si lo dejas vacío."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Subir el volumen",
+            "description": "Sube el volumen de un reproductor multimedia según el paso que indiques, hasta el volumen máximo.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuántos puntos porcentuales cambiar el volumen."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Bajar el volumen",
+            "description": "Baja el volumen de un reproductor multimedia según el paso que indiques, hasta el silencio.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuántos puntos porcentuales cambiar el volumen."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Mover elemento",
+            "description": "Mueve un elemento de una lista de tareas arriba del todo, abajo del todo o detrás de otro elemento.",
+            "fields": {
+                "item": {
+                    "name": "Elemento",
+                    "description": "El título o uid del elemento que mover."
+                },
+                "after": {
+                    "name": "Detrás de",
+                    "description": "El título o uid del elemento detrás del cual ponerlo. Indica esto o una posición."
+                },
+                "position": {
+                    "name": "Posición",
+                    "description": "Muévelo arriba o abajo del todo en la lista. Indica esto o un elemento detrás del cual ponerlo."
+                }
+            }
         },
         "zone_update": {
             "description": "Actualiza las propiedades de una zona al instante.",
@@ -1549,6 +2466,10 @@
                 "radius": {
                     "description": "Radio de la zona",
                     "name": "Radio"
+                },
+                "passive": {
+                    "name": "Pasiva",
+                    "description": "Una zona pasiva solo existe para las automatizaciones: no se muestra en el mapa y no cambia dónde están las personas ni los rastreadores de dispositivo."
                 }
             },
             "name": "Actualizar una zona"
@@ -1667,6 +2588,106 @@
                 }
             }
         },
+        "calendar_delete_event": {
+            "name": "Eliminar evento",
+            "description": "Elimina eventos de un calendario, buscándolos por su título o uid dentro de un intervalo de tiempo. Devuelve lo que ha eliminado, uid incluido.",
+            "fields": {
+                "summary": {
+                    "name": "Resumen",
+                    "description": "El título de los eventos que eliminar, tal cual aparece en el calendario."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "El identificador del evento que eliminar, por si lo tienes."
+                },
+                "start_date_time": {
+                    "name": "Fecha y hora de inicio",
+                    "description": "Desde dónde empezar a buscar. Por defecto, ahora."
+                },
+                "end_date_time": {
+                    "name": "Fecha y hora de fin",
+                    "description": "Dónde dejar de buscar. Indica esto o una duración."
+                },
+                "duration": {
+                    "name": "Duración",
+                    "description": "Hasta dónde buscar desde el inicio. Indica esto o una fecha y hora de fin."
+                },
+                "whole_series": {
+                    "name": "Toda la serie",
+                    "description": "Para un evento periódico, elimina toda la serie en lugar de solo la repetición encontrada."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Actualizar evento",
+            "description": "Cambia eventos de un calendario, buscándolos por su título o uid dentro de un intervalo de tiempo. Devuelve lo que ha cambiado, uid incluido.",
+            "fields": {
+                "summary": {
+                    "name": "Resumen",
+                    "description": "El título de los eventos que cambiar, tal cual aparece en el calendario."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "El identificador del evento que cambiar, por si lo tienes."
+                },
+                "start_date_time": {
+                    "name": "Fecha y hora de inicio",
+                    "description": "Desde dónde empezar a buscar. Por defecto, ahora."
+                },
+                "end_date_time": {
+                    "name": "Fecha y hora de fin",
+                    "description": "Dónde dejar de buscar. Indica esto o una duración."
+                },
+                "duration": {
+                    "name": "Duración",
+                    "description": "Hasta dónde buscar desde el inicio. Indica esto o una fecha y hora de fin."
+                },
+                "new_summary": {
+                    "name": "Nuevo resumen",
+                    "description": "El título que dar a los eventos."
+                },
+                "description": {
+                    "name": "Descripción",
+                    "description": "La descripción que dar a los eventos."
+                },
+                "location": {
+                    "name": "Ubicación",
+                    "description": "La ubicación que dar a los eventos."
+                },
+                "new_start": {
+                    "name": "Nuevo inicio",
+                    "description": "Cuándo empiezan ahora los eventos. Mantienen su duración, salvo que también indiques un nuevo fin."
+                },
+                "new_end": {
+                    "name": "Nuevo fin",
+                    "description": "Cuándo terminan ahora los eventos."
+                },
+                "shift": {
+                    "name": "Desplazamiento",
+                    "description": "Mueve los eventos esta cantidad, más tarde, o antes si es negativa. En lugar de un nuevo inicio o fin."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Subir la temperatura",
+            "description": "Sube un paso la consigna de un termostato, las dos consignas en uno que calienta y enfría. Un termostato apagado sigue apagado.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuánto cambiarla. Déjalo vacío para usar el paso del propio termostato, o medio grado (uno en Fahrenheit) si no tiene."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Bajar la temperatura",
+            "description": "Baja un paso la consigna de un termostato, las dos consignas en uno que calienta y enfría. Un termostato apagado sigue apagado.",
+            "fields": {
+                "step": {
+                    "name": "Paso",
+                    "description": "Cuánto cambiarla. Déjalo vacío para usar el paso del propio termostato, o medio grado (uno en Fahrenheit) si no tiene."
+                }
+            }
+        },
         "homeassistant_update_label": {
             "name": "Actualizar una etiqueta",
             "description": "Actualiza una etiqueta existente sobre la marcha. Todo lo que dejes fuera conserva el valor que ya tenía. La descripción, el icono y el color se pueden vaciar poniéndolos a null.",
@@ -1695,6 +2716,48 @@
         }
     },
     "triggers": {
+        "automation_turned_off": {
+            "name": "Automatización desactivada",
+            "description": "Se activa cuando alguien, o algo, desactiva una automatización. Deja el destino vacío para vigilar todas las automatizaciones."
+        },
+        "debounce": {
+            "name": "Cuando termine",
+            "description": "Se activa una vez que el disparador ha dejado de emitir señales durante un tiempo, de modo que una ráfaga de ellas llega como una sola. Un sensor de movimiento no informa del movimiento una sola vez, sino veinte veces.",
+            "fields": {
+                "triggers": {
+                    "name": "Disparadores",
+                    "description": "Los disparadores que se deben aguardar. La activación de cualquiera de ellos inicia una ráfaga, y si alguno vuelve a activarse, esta continúa; por tanto, varios disparadores se agrupan en lugar de procesarse uno a uno."
+                },
+                "for": {
+                    "name": "Para",
+                    "description": "Cuánto tiempo debe haber permanecido en silencio antes de que esto se dispare. Cada disparo reinicia esa espera, por lo que algo que nunca deja de dispararse nunca llega a notificarse."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Todo esto sucedió.",
+            "description": "Se activa cuando todos los disparadores de un conjunto se han activado dentro de la misma ventana de tiempo, en cualquier orden. Los disparadores estándar de Home Assistant funcionan como una lista en la que basta con que se active uno solo; este caso es la alternativa a ese funcionamiento.",
+            "fields": {
+                "triggers": {
+                    "name": "Disparadores",
+                    "description": "Los disparadores que deben haberse activado todos. El orden no importa, y si un disparador se activa de nuevo, reemplaza su activación anterior en lugar de contar dos veces."
+                },
+                "within": {
+                    "name": "Dentro",
+                    "description": "Qué tan cerca deben estar entre sí. La ventana se desplaza, de modo que un evento desencadenante ocurrido hace más tiempo que eso queda olvidado, mientras los demás continúan contando."
+                }
+            }
+        },
+        "recovered": {
+            "name": "La entidad regresó",
+            "description": "Se activa cuando una entidad vuelve a estar disponible tras un periodo de inactividad, de modo que el reinicio de un router no se interpreta como la recuperación de todos los dispositivos de la casa.",
+            "fields": {
+                "for": {
+                    "name": "Para",
+                    "description": "El tiempo que la entidad haya permanecido ausente antes de regresar es un factor relevante. Cualquier periodo inferior se considera un parpadeo: al recargar una integración, todas sus entidades pasan por un estado de falta de disponibilidad y se restablecen en cuestión de un segundo."
+                }
+            }
+        },
         "sequence": {
             "name": "Activadores en orden",
             "description": "Se activa cuando varios activadores ocurren uno tras otro, en el orden indicado.",
@@ -1827,6 +2890,34 @@
                 }
             }
         },
+        "target_temperature_reached": {
+            "name": "Temperatura objetivo alcanzada",
+            "description": "Se activa cuando la temperatura de un termostato o calentador de agua alcanza su objetivo, o lo sobrepasa de golpe. Cambiar el objetivo no cuenta, y un dispositivo apagado tampoco.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolerancia",
+                    "description": "Hasta qué punto cerca del objetivo sigue contando como alcanzado, en la unidad del dispositivo. Para un termostato que se queda justo por debajo de su consigna. Cero significa el propio objetivo."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Actualización instalada",
+            "description": "Se activa cuando una entidad de actualización informa de una versión instalada distinta, ya sea porque alguien pulsó instalar, porque el dispositivo se actualizó solo o porque se actualizó fuera de Home Assistant."
+        },
+        "position_reached": {
+            "name": "Posición alcanzada",
+            "description": "Se activa cuando una persiana o una válvula llega a una posición, o la sobrepasa. Una que ya está ahí, o que vuelve a estar disponible ya en ella, no cuenta.",
+            "fields": {
+                "position": {
+                    "name": "Posición",
+                    "description": "La posición a alcanzar, de 0 (cerrada) a 100 (abierta)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Script iniciado",
+            "description": "Se activa cuando un script inicia una ejecución. Una ejecución que el script rechaza porque ya está en marcha no cuenta. Deja el destino vacío para vigilar todos los scripts."
+        },
         "user_added": {
             "name": "Usuario añadido",
             "description": "Se activa cuando alguien recibe un acceso a Home Assistant. Los usuarios que Home Assistant crea para sus propias integraciones no cuentan."
@@ -1850,6 +2941,12 @@
                 "critical": "Crítico",
                 "error": "Error",
                 "warning": "Advertencia"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Abajo",
+                "top": "Arriba"
             }
         }
     },

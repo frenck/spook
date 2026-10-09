@@ -240,6 +240,197 @@
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "无法挂接“全部发生”触发条件中的所有触发条件。"
+        },
+        "area_not_found": {
+            "message": "未找到区域 {area_id}。"
+        },
+        "blueprint_backup_failed": {
+            "message": "无法为 {path} 留存副本：{error}。没有写入任何内容。"
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} 无法在此运行：{errors}。没有写入任何内容。"
+        },
+        "blueprint_could_not_write": {
+            "message": "无法写入 {path}。"
+        },
+        "blueprint_domain_not_supported": {
+            "message": "不支持的域：{domain}。"
+        },
+        "blueprint_fetch_failed": {
+            "message": "从 URL 获取蓝图时出错。"
+        },
+        "blueprint_file_exists": {
+            "message": "文件已存在。"
+        },
+        "blueprint_gone": {
+            "message": "{name} 已经不在了，所以没有什么可更新的。没有写入任何内容。"
+        },
+        "blueprint_url_not_supported": {
+            "message": "不支持此 URL。"
+        },
+        "blueprint_write_failed": {
+            "message": "写入文件时出错。"
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain} 蓝图目前尚未加载。"
+        },
+        "calendar_events_which": {
+            "message": "请说明是哪些事件：提供标题、uid，或两者都提供。"
+        },
+        "calendar_range_backwards": {
+            "message": "查找范围的结束时间必须晚于开始时间。"
+        },
+        "calendar_range_required": {
+            "message": "请说明要查找多远：提供结束日期和时间，或一个持续时间。"
+        },
+        "cannot_disable_system_user": {
+            "message": "无法禁用系统生成的用户：{user_id}。"
+        },
+        "cannot_enable_system_user": {
+            "message": "无法启用系统生成的用户：{user_id}。"
+        },
+        "category_not_found": {
+            "message": "在 {scope} 中未找到类别 {category}。"
+        },
+        "category_nothing_to_update": {
+            "message": "类别 {category} 没有可更新的内容：请至少提供 {fields} 中的一项。"
+        },
+        "condition_template_is_constant": {
+            "message": "此条件中的模板已经不含任何 Jinja，因此它是一个常量，永远不会改变。这通常意味着在此动作运行之前，脚本已经渲染了它，动作数据中的每个模板都会这样。请使用不含模板的条件，或者用 'wait_template' 直接等待该模板本身。"
+        },
+        "config_entry_not_found": {
+            "message": "未找到集成条目 {config_entry_id}。"
+        },
+        "debounce_attach_failed": {
+            "message": "无法挂接防抖触发条件中的所有触发条件。"
+        },
+        "device_not_found": {
+            "message": "未找到设备 {device_id}。"
+        },
+        "entity_id_taken": {
+            "message": "实体 ID {entity_id} 已被占用。"
+        },
+        "entity_not_found": {
+            "message": "未找到实体 {entity_id}。"
+        },
+        "entity_without_unique_id": {
+            "message": "实体 {entity_id} 没有唯一 ID，因此 Home Assistant 无法为它保存图标或别名。"
+        },
+        "event_cannot_change": {
+            "message": "{summary} 不能这样修改：{error}。"
+        },
+        "event_nothing_to_change": {
+            "message": "请说明要修改什么：新的标题、地点或新的时间。"
+        },
+        "event_shift_or_times": {
+            "message": "移动事件时，要么给出偏移量，要么给出新的时间，不能两者都给。"
+        },
+        "event_whole_days": {
+            "message": "{summary} 持续整天，因此只能按整天移动。"
+        },
+        "floor_not_found": {
+            "message": "未找到楼层 {floor_id}。"
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} 不能加入此群组：它包含 {domains} 实体。"
+        },
+        "group_not_found_behind": {
+            "message": "找不到 {entity_id} 背后的群组。"
+        },
+        "helpers_unreachable": {
+            "message": "无法访问 Home Assistant 保存的 {domain} 辅助程序。"
+        },
+        "hold_until_nonexistent_time": {
+            "message": "无法将 {entity_id} 保持到一个不存在的时间。"
+        },
+        "home_zone_radius": {
+            "message": "家庭区域的半径必须是以米为单位的整数，零或更大。"
+        },
+        "home_zone_unsupported": {
+            "message": "家庭区域只接受纬度、经度和半径，不接受：{fields}。"
+        },
+        "input_number_not_editable": {
+            "message": "此数值输入助手不可编辑：{entity_id}。"
+        },
+        "integration_entries_required": {
+            "message": "请指定要修改的集成条目，或它们所属的集成。"
+        },
+        "integration_without_entries": {
+            "message": "{domain} 集成没有任何条目。"
+        },
+        "label_not_found": {
+            "message": "未找到标签 {label_id}。"
+        },
+        "label_nothing_to_update": {
+            "message": "标签 {label_id} 没有可更新的内容：请至少提供 {fields} 中的一项。"
+        },
+        "maximum_not_above_minimum": {
+            "message": "最大值（{maximum}）必须大于最小值（{minimum}）。"
+        },
+        "no_max_value": {
+            "message": "实体 {entity_id} 没有最大值。"
+        },
+        "no_min_value": {
+            "message": "实体 {entity_id} 没有最小值。"
+        },
+        "not_a_group": {
+            "message": "{entity_id} 不是群组。"
+        },
+        "person_not_editable": {
+            "message": "此人员不可编辑：{entity_id}。"
+        },
+        "restart_failed": {
+            "message": "Spook 在重新启动 Home Assistant 时遇到了错误。"
+        },
+        "sequence_attach_failed": {
+            "message": "无法挂接顺序触发条件的第一步。"
+        },
+        "set_range_nothing_to_change": {
+            "message": "请提供要修改的最小值、最大值或步长。"
+        },
+        "spooked": {
+            "message": "吓到了吧！👻"
+        },
+        "timer_not_editable": {
+            "message": "此计时器不可编辑：{entity_id}。"
+        },
+        "todo_item_after_itself": {
+            "message": "项目不能移到它自己后面。"
+        },
+        "todo_item_not_found": {
+            "message": "{entity_id} 中没有项目 {item}。"
+        },
+        "todo_last_item_after": {
+            "message": "无法将项目移动到 {entity_id} 中最后一个项目之后。"
+        },
+        "todo_move_where": {
+            "message": "请说明要移到哪里：另一个项目之后，或者顶部或底部。"
+        },
+        "user_not_found": {
+            "message": "找不到用户：{user_id}。"
+        },
+        "value_not_a_number": {
+            "message": "{entity_id} 的值 {value} 不是数字。"
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "无法挂接看门狗触发条件的布防触发条件。"
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "无法挂接看门狗触发条件的预期触发条件。"
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} 是来自你的 YAML 配置的群组，Spook 无法修改它。请在你的配置中编辑它，或者使用 group.set，它对这类群组仍然有效。"
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} 是在 YAML 中设置的，无法删除。"
+        },
+        "zone_not_editable": {
+            "message": "此区域不可编辑：{entity_id}。"
+        }
+    },
     "issues": {
         "automation_unknown_area_references": {
             "description": "Spook 在你的自动化中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下自动化：\n\n[{automation}]({edit}) (`{entity_id}`)\n\n此自动化引用了以下 Home Assistant 无法识别的区域：\n\n{areas}\n\n\n\n要修复此错误，请[编辑此自动化]({edit})并移除这些不存在的区域。\n\nSpook 👻 你的好哥们。",
@@ -282,7 +473,8 @@
                 "abort": {
                     "issue_ignored": "从现在起，Spook 将不再就此组发声。",
                     "not_editable": "此组是在 YAML 中设置的，因此 Spook 无法编辑它。请改为在你的配置中更新此组。",
-                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此组。"
+                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此组。",
+                    "changed": "自 Spook 上次查看以来，此修复列出的成员已经回来或发生了变化，因此没有从群组中移除任何成员。Spook 会自行再次检查并更新此修复。"
                 }
             }
         },
@@ -376,7 +568,8 @@
                 },
                 "abort": {
                     "issue_ignored": "从现在起，Spook 将不再就此区域发声。",
-                    "manage": "你可以在 [区域页面](/config/areas/dashboard) 自行管理此区域。"
+                    "manage": "你可以在 [区域页面](/config/areas/dashboard) 自行管理此区域。",
+                    "changed": "自 Spook 上次查看以来，此区域又被使用了：里面有了东西，或者有自动化或脚本在使用它。所以它被保留了下来。Spook 会自行再次检查并更新此修复。"
                 }
             }
         },
@@ -396,12 +589,31 @@
                 },
                 "abort": {
                     "issue_ignored": "从现在起，Spook 将不再就此楼层发声。",
-                    "manage": "你可以在 [区域页面](/config/areas/dashboard) 自行管理此楼层。"
+                    "manage": "你可以在 [区域页面](/config/areas/dashboard) 自行管理此楼层。",
+                    "changed": "自 Spook 上次查看以来，此楼层又被使用了：上面有了区域，或者有自动化或脚本在使用它。所以它被保留了下来。Spook 会自行再次检查并更新此修复。"
                 }
             }
         },
         "energy_unknown_references": {
-            "title": "能源仪表盘中使用了未知实体"
+            "title": "能源仪表盘中使用了未知实体",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "能源仪表盘中使用了未知实体",
+                        "description": "Spook 在你的能源仪表盘中发现了一个幽灵 👻\n\n能源仪表盘引用了以下 Home Assistant 无法识别的实体：\n\n{entities}\n\n这通常发生在能源配置中使用的实体被重命名或移除之后。是重命名了？那就打开[设置 > 仪表盘 > 能源](/config/energy)，选择新的实体，这样它的历史记录会继续留在仪表盘上。\n\n已经永久移除了？Spook 可以帮你把它们从能源配置中移除。缺失的电表会连同它的能源来源或设备一起移除，缺失的价格或费用只会被清空。之后仪表盘将不再显示被移除内容的历史记录，但统计数据本身会保留。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "从能源配置中移除这些",
+                            "manage": "让我自己来",
+                            "ignore": "保留它们，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就这些实体发声。",
+                    "manage": "你可以在[能源配置](/config/energy)中自行更新或移除它们。",
+                    "nothing_to_remove": "这些实体都已不再是未知的，因此没有移除任何内容。它们可能已经回来了，或者有人已经修改了能源配置。"
+                }
+            }
         },
         "lovelace_missing_resources": {
             "description": "Spook 在你的仪表盘中发现了一个幽灵 👻\n\n以下仪表盘资源指向了不存在的文件：\n\n{resources}\n\n\n\n这通常发生在自定义卡片或其文件被移除，但资源条目仍保留在系统中的情况。要修复此错误，请打开 设置 > 仪表盘 > 资源 并移除或修正这些资源。\n\nSpook 👻 你的好哥们。",
@@ -428,12 +640,32 @@
                 "abort": {
                     "issue_ignored": "从现在起，Spook 将不再就此辅助程序发声。",
                     "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此辅助程序。",
+                    "changed": "自 Spook 上次查看以来，此修复列出的成员已经回来或发生了变化，因此没有从辅助程序中移除任何成员。Spook 会自行再次检查并更新此修复。",
                     "too_few_members": "最大值/最小值辅助程序需要至少两个成员，因此移除缺失的成员会导致成员过少。请自行在 [辅助程序页面](/config/helpers) 重新配置或移除该辅助程序。"
                 }
             }
         },
         "orphaned_statistics": {
-            "title": "发现孤立的长期统计数据"
+            "title": "发现孤立的长期统计数据",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "发现孤立的长期统计数据",
+                        "description": "Spook 在你的记录器中发现了一个幽灵 👻\n\nHome Assistant 仍在为以下项目保存长期统计数据，但已经没有与之对应的实体了：\n\n{statistics}\n\n这通常发生在传感器被移除而其统计数据被保留的情况下。清除它们会永久丢弃这些历史记录，所以 Spook 在动手之前会再检查一遍，并跳过在此期间已经回来的任何项目。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "清除这些统计数据",
+                            "manage": "让我自己来",
+                            "ignore": "保留它们，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就这些统计数据发声。",
+                    "manage": "你可以在[统计页面](/config/tools/statistics)自行清除它们。",
+                    "nothing_to_clear": "列表中已经没有需要清除的项目，因此没有丢弃任何内容。要么这些统计数据又有了对应的实体，要么它们已经不存在了。",
+                    "clearing_took_too_long": "Spook 已请求清除这些统计数据，但记录器还没有报告完成。该任务已在队列中，很可能会完成，因此在 Spook 再次检查之前，此修复会继续保留。"
+                }
+            }
         },
         "person_unknown_device_trackers": {
             "title": "{person} 追踪了未知的设备追踪器",
@@ -472,6 +704,10 @@
             "description": "Spook 在你的自定义设置中发现了一个幽灵 👻\n\n`customize:` 部分在以下实体上固定了属性，但 Home Assistant 无法识别这些实体：\n\n{entities}\n\n\n\n这通常发生在实体被重命名或移除，但其自定义设置仍保留在系统中的情况。要修复此错误，请编辑配置中的 `customize:` 部分并移除这些实体。\n\nSpook 👻 你的好哥们。",
             "title": "自定义设置中存在未知实体"
         },
+        "unknown_engines": {
+            "title": "Assist 管道使用了已不存在的引擎：{pipeline}",
+            "description": "Spook 在你的语音助手中发现了一个幽灵 👻\n\nAssist 管道 {pipeline} 使用了以下 Home Assistant 无法识别的项目：\n\n{engines}\n\n这通常意味着其背后的集成已被移除。管道并未收到通知，所以下次使用时会报错，提示缺少提供者或代理，而在此之前没有任何迹象指向这里。\n\n要修复此问题，请在[语音助手](/config/voice-assistants/assistants)中打开此助手的设置，并为其中每一项选择一个仍然存在的引擎。\n\nSpook 👻 你的好哥们。"
+        },
         "unknown_helper_source_references": {
             "title": "辅助程序 {helper} 中使用了未知源实体",
             "fix_flow": {
@@ -488,7 +724,8 @@
                 },
                 "abort": {
                     "issue_ignored": "从现在起，Spook 将不再就此辅助程序发声。",
-                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此辅助程序。"
+                    "manage": "你可以在 [辅助程序页面](/config/helpers) 自行管理此辅助程序。",
+                    "changed": "自 Spook 上次查看以来，此辅助程序的源已经发生了变化，因此该辅助程序被保留了下来。Spook 会自行再次检查并更新此修复。"
                 }
             }
         },
@@ -528,7 +765,8 @@
                 },
                 "abort": {
                     "issue_ignored": "从现在起，Spook 将不再就此标签发声。",
-                    "manage": "你可以在 [标签页面](/config/labels) 自行管理此标签。"
+                    "manage": "你可以在 [标签页面](/config/labels) 自行管理此标签。",
+                    "changed": "自 Spook 上次查看以来，此标签又被使用了：有东西带上了它，或者有自动化或脚本在使用它。所以它被保留了下来。Spook 会自行再次检查并更新此修复。"
                 }
             }
         },
@@ -543,6 +781,27 @@
         "template_unknown_service_references": {
             "description": "Spook 在你的模板助手中发现了一个幽灵 👻\n\n在四处漂浮时，Spook 遇到了以下模板助手：\n\n[{helper}]({edit}) (`{entity_id}`)\n\n它引用了以下 Home Assistant 无法识别的动作：\n\n{services}\n\n这通常是因为提供某个动作的集成已被移除，或某个脚本被重命名或删除了。要修复此错误，请重新配置该模板助手，使其使用存在的动作。\n\nSpook 👻 你的好哥们。",
             "title": "模板助手中使用了未知动作：{helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "区域 {area} 的 {sensors} 传感器未知",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "区域 {area} 的 {sensors} 传感器未知",
+                        "description": "Spook 在你的区域中发现了一个幽灵 👻\n\n区域 {area} 使用了一个 Home Assistant 无法识别的 {sensors} 传感器：\n\n{entities}\n\nHome Assistant 只在选择该传感器时检查它，所以当它被移除或重命名后，该区域仍然指向一个不存在的东西。Assist 和区域卡片将无法再从中获取读数。\n\n清除此设置，以便重新选择传感器；或者保留它，Spook 将不再提示。\n\nSpook 👻 你的好哥们。",
+                        "menu_options": {
+                            "remove": "清除此设置",
+                            "manage": "让我自己处理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "从现在起，Spook 将不再就此区域发声。",
+                    "manage": "你可以在[区域页面](/config/areas/dashboard)中此区域的设置里选择其他传感器。",
+                    "changed": "自 Spook 上次查看以来，这些传感器已经回来，或者设置已指向别处，因此没有清除任何内容。Spook 会自行再次检查并更新此修复。"
+                }
+            }
         },
         "notify_unknown_group_members": {
             "description": "Spook 在你的通知组中发现了一个幽灵 👻\n\n通知组 `{group}` 会转发到以下 Home Assistant 无法识别的动作：\n\n{members}\n\n该组仍会投递给其余成员，也仍会向调用方报告成功，因此上游察觉不到任何异常。这个故障只会在日志里留下一条孤零零的 \"Task exception was never retrieved\"，它不会指明是哪个组，读起来就像一个程序缺陷。原本在该成员背后的人，就这样再也收不到通知了。\n\n要修复此错误，请编辑配置中该组的 `services:` 列表，移除或更正这些条目。\n\nSpook 👻 你的好哥们。",
@@ -730,6 +989,10 @@
                 "config_entry_id": {
                     "name": "集成条目",
                     "description": "要禁用的集成条目。"
+                },
+                "domain": {
+                    "name": "集成",
+                    "description": "禁用这些集成的所有条目，包括以后添加的条目。"
                 }
             }
         },
@@ -740,6 +1003,10 @@
                 "config_entry_id": {
                     "name": "集成条目",
                     "description": "要启用的集成条目。"
+                },
+                "domain": {
+                    "name": "集成",
+                    "description": "启用这些集成的所有条目，包括以后添加的条目。"
                 }
             }
         },
@@ -1154,6 +1421,10 @@
                 "radius": {
                     "name": "半径",
                     "description": "区域半径"
+                },
+                "passive": {
+                    "name": "被动",
+                    "description": "被动区域只供自动化使用：它不会显示在地图上，也不会改变人员和设备追踪器所在的位置。"
                 }
             }
         },
@@ -1213,7 +1484,13 @@
         },
         "input_number_delete": {
             "name": "删除数值输入助手 👻",
-            "description": "删除数值输入助手。这仅适用于通过 UI 创建和管理的数值输入助手。通过 YAML 创建和管理的数值输入助手无法由 Spook 管理。"
+            "description": "删除数值输入助手。这仅适用于通过 UI 创建和管理的数值输入助手。通过 YAML 创建和管理的数值输入助手无法由 Spook 管理。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要删除的数值输入助手。"
+                }
+            }
         },
         "zone_delete": {
             "name": "删除区域 👻",
@@ -1222,6 +1499,124 @@
                 "entity_id": {
                     "name": "实体 ID",
                     "description": "要移除的实体（或多个实体）ID。"
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "提高温度 👻",
+            "description": "将热水器的设定温度调高一档，不超出其限制。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "调整的幅度。不填则使用热水器自身的步长；如果它没有步长，则为半度（华氏度为一度）。"
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "降低温度 👻",
+            "description": "将热水器的设定温度调低一档，不超出其限制。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "调整的幅度。不填则使用热水器自身的步长；如果它没有步长，则为半度（华氏度为一度）。"
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "提高湿度 👻",
+            "description": "将加湿器的目标湿度调高一档，不超出其限制。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "调整的百分比。不填则使用加湿器自身的步长；如果它没有步长，则为百分之一。"
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "降低湿度 👻",
+            "description": "将加湿器的目标湿度调低一档，不超出其限制。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "调整的百分比。不填则使用加湿器自身的步长；如果它没有步长，则为百分之一。"
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "增加位置 👻",
+            "description": "将窗帘再打开一档，到完全打开为止。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "移动的百分比。不填则为百分之十。"
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "减少位置 👻",
+            "description": "将窗帘再关闭一档，到完全关闭为止。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "移动的百分比。不填则为百分之十。"
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "增加位置 👻",
+            "description": "将阀门再打开一档，到完全打开为止。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "移动的百分比。不填则为百分之十。"
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "减少位置 👻",
+            "description": "将阀门再关闭一档，到完全关闭为止。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "移动的百分比。不填则为百分之十。"
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "调高音量 👻",
+            "description": "按你给定的步长调高媒体播放器的音量，到最大音量为止。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "音量调整的百分比。"
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "调低音量 👻",
+            "description": "按你给定的步长调低媒体播放器的音量，到静音为止。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "音量调整的百分比。"
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "移动项目 👻",
+            "description": "将待办事项列表中的项目移到顶部、底部或另一个项目之后。",
+            "fields": {
+                "item": {
+                    "name": "项目",
+                    "description": "要移动的项目的标题或 uid。"
+                },
+                "after": {
+                    "name": "之后",
+                    "description": "要将它放在其后的项目的标题或 uid。提供此项或位置。"
+                },
+                "position": {
+                    "name": "位置",
+                    "description": "将它移到列表的顶部或底部。提供此项或要放在其后的项目。"
                 }
             }
         },
@@ -1256,6 +1651,62 @@
                 "name": {
                     "name": "名称",
                     "description": "实体的新名称。"
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "设置实体图标 👻",
+            "description": "动态设置一个（或多个）实体的图标。设为 null 则恢复为集成提供的图标。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要设置图标的实体。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "新图标，或设为 null 以使用集成自己的图标。"
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "为实体添加别名 👻",
+            "description": "为一个（或多个）实体添加一个或多个别名，语音助手可以用这些别名称呼它。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要添加别名的实体。"
+                },
+                "alias": {
+                    "name": "别名",
+                    "description": "要添加的别名。"
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "从实体移除别名 👻",
+            "description": "从一个（或多个）实体移除一个或多个别名。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要移除别名的实体。"
+                },
+                "alias": {
+                    "name": "别名",
+                    "description": "要移除的别名。"
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "设置实体别名 👻",
+            "description": "替换一个（或多个）实体的别名。实体自身的名称是否算作别名保持不变。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体",
+                    "description": "要设置别名的实体。"
+                },
+                "aliases": {
+                    "name": "别名",
+                    "description": "要设置的别名。"
                 }
             }
         },
@@ -1297,6 +1748,88 @@
                 }
             }
         },
+        "homeassistant_create_category": {
+            "name": "创建类别 👻",
+            "description": "为自动化、脚本、场景或辅助程序动态创建一个新类别。返回新类别的 ID。",
+            "fields": {
+                "scope": {
+                    "name": "范围",
+                    "description": "类别的使用范围。"
+                },
+                "name": {
+                    "name": "名称",
+                    "description": "要创建的类别的名称。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "类别使用的图标。"
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "更新类别 👻",
+            "description": "动态更新一个现有类别。你未提供的任何内容都会保持原值。将图标设为 null 即可清除图标。",
+            "fields": {
+                "scope": {
+                    "name": "范围",
+                    "description": "类别的使用范围。"
+                },
+                "category_id": {
+                    "name": "类别",
+                    "description": "要更新的类别的 ID 或名称。"
+                },
+                "name": {
+                    "name": "名称",
+                    "description": "类别的新名称。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "类别的新图标。"
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "删除类别 👻",
+            "description": "删除一个类别。原本在其中的所有内容都将不再属于任何类别。",
+            "fields": {
+                "scope": {
+                    "name": "范围",
+                    "description": "类别的使用范围。"
+                },
+                "category_id": {
+                    "name": "类别",
+                    "description": "要删除的类别的 ID 或名称。"
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "为实体添加类别 👻",
+            "description": "将一个自动化、脚本、场景或辅助程序放入某个类别。由于每项只能属于一个类别，它会替换之前所在的类别。",
+            "fields": {
+                "category_id": {
+                    "name": "类别",
+                    "description": "类别的 ID 或名称。"
+                },
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要放入该类别的自动化、脚本、场景或辅助程序。"
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "从实体移除类别 👻",
+            "description": "将一个自动化、脚本、场景或辅助程序从某个类别中移出。属于其他类别的项目不受影响。",
+            "fields": {
+                "category_id": {
+                    "name": "类别",
+                    "description": "类别的 ID 或名称。"
+                },
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要从该类别中移出的自动化、脚本、场景或辅助程序。"
+                }
+            }
+        },
         "homeassistant_ignore_all_discovered": {
             "name": "忽略所有当前已发现的设备 👻",
             "description": "忽略集成仪表板上显示的所有当前已发现设备。这不会忽略在此之后发现的设备。",
@@ -1335,6 +1868,42 @@
                 }
             }
         },
+        "input_select_create": {
+            "name": "创建下拉选择辅助程序 👻",
+            "description": "动态创建一个新的下拉选择（input_select）辅助程序。返回新下拉选择辅助程序的实体 ID。",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "新下拉选择辅助程序的名称。"
+                },
+                "input_select_id": {
+                    "name": "下拉选择辅助程序实体 ID",
+                    "description": "新下拉选择辅助程序的实体 ID。input_select. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                },
+                "options": {
+                    "name": "选项",
+                    "description": "可供选择的选项。每个选项只能出现一次。"
+                },
+                "initial": {
+                    "name": "初始选项",
+                    "description": "起始时选中的选项，必须是选项之一。如果不填，它会保持 Home Assistant 重新启动前的选项。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "新下拉选择辅助程序的图标。"
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "删除下拉选择辅助程序 👻",
+            "description": "删除通过 UI 或“创建下拉选择辅助程序”动作创建的下拉选择辅助程序。在 YAML 中设置的下拉选择辅助程序无法由 Spook 删除。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要删除的下拉选择辅助程序。"
+                }
+            }
+        },
         "input_select_random": {
             "name": "选择随机选项 👻",
             "description": "为输入选择（input_select）实体选择一个随机选项。",
@@ -1344,6 +1913,10 @@
                     "description": "限制可供选择的选项。如果不提供，将考虑所有选项。"
                 }
             }
+        },
+        "input_select_reverse": {
+            "name": "反转选项 👻",
+            "description": "将 `input_select` 实体的可选选项顺序前后反转。此更改不会持久保存，重新加载或 Home Assistant 重新启动后将被撤销。"
         },
         "input_select_shuffle": {
             "name": "打乱选项 👻",
@@ -1369,6 +1942,224 @@
             "name": "设为最小值 👻",
             "description": "将输入数字实体设置为其最小值。"
         },
+        "input_number_set_range": {
+            "name": "设置范围 👻",
+            "description": "修改通过 UI 创建的数值输入助手的最小值、最大值或步长，效果与编辑它相同。超出新范围的值会被移入范围内。",
+            "fields": {
+                "min": {
+                    "name": "最小值",
+                    "description": "新的最小值。"
+                },
+                "max": {
+                    "name": "最大值",
+                    "description": "新的最大值。"
+                },
+                "step": {
+                    "name": "步长",
+                    "description": "新的步进大小。"
+                }
+            }
+        },
+        "counter_create": {
+            "name": "创建计数器 👻",
+            "description": "动态创建一个新的计数器辅助程序。返回新计数器的实体 ID。",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "新计数器的名称。"
+                },
+                "counter_id": {
+                    "name": "计数器实体 ID",
+                    "description": "新计数器的实体 ID。counter. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                },
+                "initial": {
+                    "name": "初始值",
+                    "description": "计数器的起始值，重置时也会回到此值。"
+                },
+                "minimum": {
+                    "name": "最小值",
+                    "description": "计数器能降到的最低值。不填则没有限制。"
+                },
+                "maximum": {
+                    "name": "最大值",
+                    "description": "计数器能升到的最高值。不填则没有限制。"
+                },
+                "step": {
+                    "name": "步长",
+                    "description": "计数器每次增加或减少的量。"
+                },
+                "restore": {
+                    "name": "恢复",
+                    "description": "在 Home Assistant 启动时恢复计数器的值，而不是从初始值重新开始。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "新计数器的图标。"
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "删除计数器 👻",
+            "description": "删除通过 UI 或“创建计数器”动作创建的计数器辅助程序。在 YAML 中设置的计数器无法由 Spook 删除。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要删除的计数器。"
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "创建开关辅助程序 👻",
+            "description": "动态创建一个新的开关（input_boolean）辅助程序。返回新开关辅助程序的实体 ID。",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "新开关辅助程序的名称。"
+                },
+                "input_boolean_id": {
+                    "name": "开关辅助程序实体 ID",
+                    "description": "新开关辅助程序的实体 ID。input_boolean. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                },
+                "initial": {
+                    "name": "初始值",
+                    "description": "起始时的值。如果不填，它会保持 Home Assistant 重新启动前的值。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "新开关辅助程序的图标。"
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "删除开关辅助程序 👻",
+            "description": "删除通过 UI 或“创建开关辅助程序”动作创建的开关辅助程序。在 YAML 中设置的开关辅助程序无法由 Spook 删除。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要删除的开关辅助程序。"
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "创建文本输入辅助程序 👻",
+            "description": "动态创建一个新的文本输入（input_text）辅助程序。返回新文本输入辅助程序的实体 ID。",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "新文本输入辅助程序的名称。"
+                },
+                "input_text_id": {
+                    "name": "文本输入辅助程序实体 ID",
+                    "description": "新文本输入辅助程序的实体 ID。input_text. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                },
+                "initial": {
+                    "name": "初始值",
+                    "description": "起始时的文本。如果不填，它会保持 Home Assistant 重新启动前的文本。"
+                },
+                "min": {
+                    "name": "最小长度",
+                    "description": "文本的最短长度。"
+                },
+                "max": {
+                    "name": "最大长度",
+                    "description": "文本的最长长度。"
+                },
+                "pattern": {
+                    "name": "正则表达式",
+                    "description": "文本必须匹配的正则表达式。"
+                },
+                "mode": {
+                    "name": "模式",
+                    "description": "按原样显示文本，或像密码一样隐藏它。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "新文本输入辅助程序的图标。"
+                },
+                "unit_of_measurement": {
+                    "name": "测量单位",
+                    "description": "显示在文本旁边的单位。"
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "删除文本输入辅助程序 👻",
+            "description": "删除通过 UI 或“创建文本输入辅助程序”动作创建的文本输入辅助程序。在 YAML 中设置的文本输入辅助程序无法由 Spook 删除。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要删除的文本输入辅助程序。"
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "创建按钮辅助程序 👻",
+            "description": "动态创建一个新的按钮（input_button）辅助程序。返回新按钮辅助程序的实体 ID。",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "新按钮辅助程序的名称。"
+                },
+                "input_button_id": {
+                    "name": "按钮辅助程序实体 ID",
+                    "description": "新按钮辅助程序的实体 ID。input_button. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "新按钮辅助程序的图标。"
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "删除按钮辅助程序 👻",
+            "description": "删除通过 UI 或“创建按钮辅助程序”动作创建的按钮辅助程序。在 YAML 中设置的按钮辅助程序无法由 Spook 删除。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要删除的按钮辅助程序。"
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "创建日期时间辅助程序 👻",
+            "description": "动态创建一个新的日期时间（input_datetime）辅助程序，可以保存日期、时间或两者。返回新日期时间辅助程序的实体 ID。",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "新日期时间辅助程序的名称。"
+                },
+                "input_datetime_id": {
+                    "name": "日期时间辅助程序实体 ID",
+                    "description": "新日期时间辅助程序的实体 ID。input_datetime. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                },
+                "has_date": {
+                    "name": "包含日期",
+                    "description": "是否保存日期。日期和时间至少要开启一项。"
+                },
+                "has_time": {
+                    "name": "包含时间",
+                    "description": "是否保存时间。日期和时间至少要开启一项。"
+                },
+                "initial": {
+                    "name": "初始值",
+                    "description": "起始时的日期和/或时间，例如 2026-12-31、08:30:00 或 2026-12-31 08:30:00。如果不填，它会保持 Home Assistant 重新启动前的值。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "新日期时间辅助程序的图标。"
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "删除日期时间辅助程序 👻",
+            "description": "删除通过 UI 或“创建日期时间辅助程序”动作创建的日期时间辅助程序。在 YAML 中设置的日期时间辅助程序无法由 Spook 删除。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要删除的日期时间辅助程序。"
+                }
+            }
+        },
         "person_remove_device_tracker": {
             "name": "移除设备追踪器 👻",
             "description": "从某个人员中移除设备追踪器。",
@@ -1385,7 +2176,31 @@
         },
         "repairs_ignore_all": {
             "name": "忽略所有问题 👻",
-            "description": "忽略当前在 Home Assistant 修复面板中引发的所有问题。"
+            "description": "忽略当前在 Home Assistant 修复面板中引发的所有问题。",
+            "fields": {
+                "domain": {
+                    "name": "域",
+                    "description": "只忽略这些集成提出的问题。"
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "列出问题 👻",
+            "description": "列出 Home Assistant 修复中当前存在的问题及其标题，供自动化处理或在仪表盘上显示。",
+            "fields": {
+                "include_ignored": {
+                    "name": "包含已忽略的",
+                    "description": "同时列出已被忽略的问题。"
+                },
+                "domain": {
+                    "name": "域",
+                    "description": "只列出这些集成提出的问题。"
+                },
+                "severity": {
+                    "name": "严重程度",
+                    "description": "只列出这些严重程度的问题。"
+                }
+            }
         },
         "repairs_remove": {
             "name": "移除问题 👻",
@@ -1399,7 +2214,13 @@
         },
         "repairs_unignore_all": {
             "name": "取消忽略所有问题 👻",
-            "description": "取消忽略当前在 Home Assistant 修复面板中引发的所有问题。"
+            "description": "取消忽略当前在 Home Assistant 修复面板中引发的所有问题。",
+            "fields": {
+                "domain": {
+                    "name": "域",
+                    "description": "只取消忽略这些集成提出的问题。"
+                }
+            }
         },
         "timer_set_duration": {
             "name": "设置时长 👻",
@@ -1438,6 +2259,10 @@
                 "radius": {
                     "name": "半径",
                     "description": "区域半径"
+                },
+                "passive": {
+                    "name": "被动",
+                    "description": "被动区域只供自动化使用：它不会显示在地图上，也不会改变人员和设备追踪器所在的位置。"
                 }
             }
         },
@@ -1482,6 +2307,42 @@
                 }
             },
             "name": "设置显示精度 👻"
+        },
+        "timer_create": {
+            "name": "创建计时器 👻",
+            "description": "动态创建一个新的计时器辅助程序。返回新计时器的实体 ID。",
+            "fields": {
+                "name": {
+                    "name": "名称",
+                    "description": "新计时器的名称。"
+                },
+                "timer_id": {
+                    "name": "计时器实体 ID",
+                    "description": "新计时器的实体 ID。timer. 前缀会自动添加。如果不提供，实体 ID 将根据名称生成。"
+                },
+                "duration": {
+                    "name": "持续时间",
+                    "description": "计时器启动后运行的时长。"
+                },
+                "restore": {
+                    "name": "恢复",
+                    "description": "在 Home Assistant 启动时恢复计时器的状态，这样正在运行的计时器在重新启动后会继续运行。"
+                },
+                "icon": {
+                    "name": "图标",
+                    "description": "新计时器的图标。"
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "删除计时器 👻",
+            "description": "删除通过 UI 或“创建计时器”动作创建的计时器辅助程序。在 YAML 中设置的计时器无法由 Spook 删除。",
+            "fields": {
+                "entity_id": {
+                    "name": "实体 ID",
+                    "description": "要删除的计时器。"
+                }
+            }
         },
         "wait_for_condition": {
             "name": "等待条件 👻",
@@ -1597,6 +2458,106 @@
                 }
             }
         },
+        "calendar_delete_event": {
+            "name": "删除事件 👻",
+            "description": "从日历中删除事件，按标题或 uid 在一段时间内查找。返回已删除的内容，包括 uid。",
+            "fields": {
+                "summary": {
+                    "name": "标题",
+                    "description": "要删除的事件的标题，必须与日历中的完全一致。"
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "要删除的事件的标识符，如果你有的话。"
+                },
+                "start_date_time": {
+                    "name": "开始日期和时间",
+                    "description": "从哪里开始查找。默认为现在。"
+                },
+                "end_date_time": {
+                    "name": "结束日期和时间",
+                    "description": "查找到哪里为止。提供此项或持续时间。"
+                },
+                "duration": {
+                    "name": "持续时间",
+                    "description": "从开始时间起查找多远。提供此项或结束日期和时间。"
+                },
+                "whole_series": {
+                    "name": "整个系列",
+                    "description": "对于重复事件，删除整个系列，而不仅仅是找到的那一次。"
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "更新事件 👻",
+            "description": "修改日历中的事件，按标题或 uid 在一段时间内查找。返回已修改的内容，包括 uid。",
+            "fields": {
+                "summary": {
+                    "name": "标题",
+                    "description": "要修改的事件的标题，必须与日历中的完全一致。"
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "要修改的事件的标识符，如果你有的话。"
+                },
+                "start_date_time": {
+                    "name": "开始日期和时间",
+                    "description": "从哪里开始查找。默认为现在。"
+                },
+                "end_date_time": {
+                    "name": "结束日期和时间",
+                    "description": "查找到哪里为止。提供此项或持续时间。"
+                },
+                "duration": {
+                    "name": "持续时间",
+                    "description": "从开始时间起查找多远。提供此项或结束日期和时间。"
+                },
+                "new_summary": {
+                    "name": "新标题",
+                    "description": "要给事件设置的标题。"
+                },
+                "description": {
+                    "name": "描述",
+                    "description": "要给事件设置的描述。"
+                },
+                "location": {
+                    "name": "地点",
+                    "description": "要给事件设置的地点。"
+                },
+                "new_start": {
+                    "name": "新开始时间",
+                    "description": "事件改为何时开始。事件会保持原有时长，除非同时提供了新的结束时间。"
+                },
+                "new_end": {
+                    "name": "新结束时间",
+                    "description": "事件改为何时结束。"
+                },
+                "shift": {
+                    "name": "偏移",
+                    "description": "将事件移动这么多时间，正值为推后，负值为提前。用于替代新的开始或结束时间。"
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "提高温度 👻",
+            "description": "将恒温器的设定温度调高一档；对于同时制热和制冷的恒温器，两个设定温度都会调高。处于关闭状态的恒温器保持关闭。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "调整的幅度。不填则使用恒温器自身的步长；如果它没有步长，则为半度（华氏度为一度）。"
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "降低温度 👻",
+            "description": "将恒温器的设定温度调低一档；对于同时制热和制冷的恒温器，两个设定温度都会调低。处于关闭状态的恒温器保持关闭。",
+            "fields": {
+                "step": {
+                    "name": "步长",
+                    "description": "调整的幅度。不填则使用恒温器自身的步长；如果它没有步长，则为半度（华氏度为一度）。"
+                }
+            }
+        },
         "homeassistant_update_label": {
             "name": "更新标签 👻",
             "description": "动态更新现有标签。未修改的字段保持原值。描述、图标和颜色可以通过设置为 null 来清除。",
@@ -1667,8 +2628,22 @@
         }
     },
     "conditions": {
+        "is_at_target_temperature": {
+            "name": "温度已达到目标",
+            "description": "当恒温器或热水器的温度处于目标值时通过。处于关闭状态的设备不算达到目标，不可用的设备则不予考虑。",
+            "fields": {
+                "behavior": {
+                    "name": "行为",
+                    "description": "是任意一个设备达到就够了，还是必须全部达到。"
+                },
+                "tolerance": {
+                    "name": "容差",
+                    "description": "离目标多近仍算达到，单位与设备一致。适用于总是停在设定值略低一点的恒温器。零表示必须正好等于目标值。"
+                }
+            }
+        },
         "chance": {
-            "name": "概率 👻",
+            "name": "概率",
             "description": "按设定的百分比概率通过，每次检查时随机选择。方便为您的自动化添加一些随机性。",
             "fields": {
                 "percentage": {
@@ -1685,7 +2660,7 @@
                     "name": "持续时间"
                 }
             },
-            "name": "冷却时间 👻"
+            "name": "冷却时间"
         },
         "repair_issue_present": {
             "name": "存在未解决的修复问题",
@@ -1741,6 +2716,10 @@
         }
     },
     "triggers": {
+        "automation_turned_off": {
+            "name": "自动化已关闭",
+            "description": "当有人或某个东西关闭了一个自动化时触发。目标留空则监视所有自动化。"
+        },
         "sequence": {
             "name": "按顺序触发",
             "description": "当多个触发条件按给定顺序依次发生时触发。",
@@ -1873,6 +2852,34 @@
                 }
             }
         },
+        "target_temperature_reached": {
+            "name": "已达到目标温度",
+            "description": "当恒温器或热水器的温度达到目标值，或越过目标值时触发。修改目标值不算，处于关闭状态的设备也不算。",
+            "fields": {
+                "tolerance": {
+                    "name": "容差",
+                    "description": "离目标多近仍算达到，单位与设备一致。适用于总是停在设定值略低一点的恒温器。零表示必须正好等于目标值。"
+                }
+            }
+        },
+        "update_installed": {
+            "name": "更新已安装",
+            "description": "当更新实体报告的已安装版本发生变化时触发，无论是有人按下了安装、设备自行更新，还是在 Home Assistant 之外完成了更新。"
+        },
+        "position_reached": {
+            "name": "已到达位置",
+            "description": "当窗帘或阀门到达某个位置，或越过该位置时触发。已经处于该位置的，或从不可用状态恢复时正好处于该位置的，都不算。",
+            "fields": {
+                "position": {
+                    "name": "位置",
+                    "description": "要到达的位置，从 0（关闭）到 100（打开）。"
+                }
+            }
+        },
+        "script_started": {
+            "name": "脚本已启动",
+            "description": "当脚本开始一次运行时触发。脚本因已在运行而拒绝的运行不算。目标留空则监视所有脚本。"
+        },
         "debounce": {
             "name": "稳定后触发",
             "description": "当触发条件停止触发一段时间后再触发，这样一连串触发会合并为一次。运动传感器不会只报告一次运动，它会报告二十次。",
@@ -1934,6 +2941,12 @@
                 "critical": "严重",
                 "error": "错误",
                 "warning": "警告"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "底部",
+                "top": "顶部"
             }
         }
     },

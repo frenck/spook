@@ -240,6 +240,197 @@
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Kunde inte koppla in alla utlösare i en alla-av-utlösare."
+        },
+        "area_not_found": {
+            "message": "Området {area_id} hittades inte."
+        },
+        "blueprint_backup_failed": {
+            "message": "Kunde inte lägga undan en kopia av {path}: {error}. Ingenting har skrivits."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} kan inte köras här: {errors}. Ingenting har skrivits."
+        },
+        "blueprint_could_not_write": {
+            "message": "Kunde inte skriva {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Domänen stöds inte: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Fel vid hämtning av blueprint från URL."
+        },
+        "blueprint_file_exists": {
+            "message": "Filen finns redan."
+        },
+        "blueprint_gone": {
+            "message": "{name} finns inte längre här, så det finns inget att uppdatera. Ingenting har skrivits."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Denna URL stöds inte."
+        },
+        "blueprint_write_failed": {
+            "message": "Fel vid skrivning av fil."
+        },
+        "blueprints_not_loaded": {
+            "message": "Blueprints för {domain} är inte inlästa just nu."
+        },
+        "calendar_events_which": {
+            "message": "Ange vilka händelser: ge en sammanfattning, ett uid eller båda."
+        },
+        "calendar_range_backwards": {
+            "message": "Slutet på sökintervallet måste komma efter dess början."
+        },
+        "calendar_range_required": {
+            "message": "Ange hur långt det ska letas: ge ett slutdatum och en sluttid, eller en varaktighet."
+        },
+        "cannot_disable_system_user": {
+            "message": "Kan inte inaktivera en systemgenererad användare: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Kan inte aktivera en systemgenererad användare: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Kategorin {category} hittades inte för {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Inget att uppdatera i kategorin {category}: ange minst ett av {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "En mall i detta villkor har ingen Jinja kvar i sig, så den är en konstant och kan aldrig slå om. Oftast betyder det att ett skript renderade den innan denna åtgärd kördes, vilket händer med alla mallar i åtgärdsdata. Använd ett villkor utan mallar, eller vänta på själva mallen med 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Integrationsposten {config_entry_id} hittades inte."
+        },
+        "debounce_attach_failed": {
+            "message": "Kunde inte koppla in alla utlösare i en lugna-ner-utlösare."
+        },
+        "device_not_found": {
+            "message": "Enheten {device_id} hittades inte."
+        },
+        "entity_id_taken": {
+            "message": "Entitets-ID:t {entity_id} är redan upptaget."
+        },
+        "entity_not_found": {
+            "message": "Entiteten {entity_id} hittades inte."
+        },
+        "entity_without_unique_id": {
+            "message": "Entiteten {entity_id} har inget unikt ID, så Home Assistant kan inte spara en ikon eller alias för den."
+        },
+        "event_cannot_change": {
+            "message": "{summary} kan inte ändras så: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Ange vad som ska ändras: en ny sammanfattning, en plats eller nya tider."
+        },
+        "event_shift_or_times": {
+            "message": "Flytta en händelse med en förskjutning, eller ge den nya tider, inte båda."
+        },
+        "event_whole_days": {
+            "message": "{summary} varar hela dagar, så den kan bara flyttas med hela dagar."
+        },
+        "floor_not_found": {
+            "message": "Våningen {floor_id} hittades inte."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} kan inte gå med i denna grupp: den innehåller {domains}-entiteter."
+        },
+        "group_not_found_behind": {
+            "message": "Kunde inte hitta gruppen bakom {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "Kunde inte nå de {domain}-hjälpare som Home Assistant håller reda på."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Kan inte hålla {entity_id} till en tidpunkt som inte finns."
+        },
+        "home_zone_radius": {
+            "message": "Hemzonen tar sin radie i hela meter, noll eller mer."
+        },
+        "home_zone_unsupported": {
+            "message": "Hemzonen tar bara en latitud, longitud och radie, inte: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Detta inmatningsnummer går inte att redigera: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Ange vilka integrationsposter som ska ändras, eller deras integration."
+        },
+        "integration_without_entries": {
+            "message": "Integrationen {domain} har inga poster."
+        },
+        "label_not_found": {
+            "message": "Etiketten {label_id} hittades inte."
+        },
+        "label_nothing_to_update": {
+            "message": "Inget att uppdatera i etiketten {label_id}: ange minst ett av {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Maximum ({maximum}) måste vara högre än minimum ({minimum})."
+        },
+        "no_max_value": {
+            "message": "Entiteten {entity_id} har inget maxvärde."
+        },
+        "no_min_value": {
+            "message": "Entiteten {entity_id} har inget minvärde."
+        },
+        "not_a_group": {
+            "message": "{entity_id} är inte en grupp."
+        },
+        "person_not_editable": {
+            "message": "Denna person går inte att redigera: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook stötte på ett fel när Home Assistant skulle startas om."
+        },
+        "sequence_attach_failed": {
+            "message": "Kunde inte koppla in första steget i en sekvensutlösare."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Ange ett minimum, ett maximum eller ett steg att ändra."
+        },
+        "spooked": {
+            "message": "Skrämd! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Denna timer går inte att redigera: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "En post kan inte flyttas efter sig själv."
+        },
+        "todo_item_not_found": {
+            "message": "Det finns ingen post {item} i {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "Inget kan flyttas efter den sista posten i {entity_id}."
+        },
+        "todo_move_where": {
+            "message": "Ange vart: efter en annan post, eller högst upp eller längst ner."
+        },
+        "user_not_found": {
+            "message": "Kunde inte hitta användaren: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Värdet {value} för {entity_id} är inte ett tal."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Kunde inte koppla in aktiveringsutlösarna i en vakthundsutlösare."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Kunde inte koppla in de förväntade utlösarna i en vakthundsutlösare."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} är en grupp från din YAML-konfiguration, som Spook inte kan ändra. Redigera den i din konfiguration, eller använd group.set, som fortfarande fungerar på den sortens grupp."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} är inställd i YAML och kan inte tas bort."
+        },
+        "zone_not_editable": {
+            "message": "Denna zon går inte att redigera: {entity_id}."
+        }
+    },
     "issues": {
         "automation_unknown_area_references": {
             "description": "Spook har hittat ett spöke bland dina automatiseringar 👻\n\nMedan han svävade runt hittade Spook följande automatisering:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDenna automatisering refererar till följande områden som är okända för Home Assistant:\n\n{areas}\n\n\n\nFör att åtgärda felet, [redigera automatiseringen]({edit}) och ta bort referensen till de icke-existerande områdena.\n\nSpook 👻 Din polare.",
@@ -282,7 +473,8 @@
                 "abort": {
                     "issue_ignored": "Spook kommer att hålla tyst om denna grupp från och med nu.",
                     "not_editable": "Denna grupp är inställd i YAML, så Spook kan inte redigera den. Uppdatera gruppen i din YAML-konfiguration istället.",
-                    "manage": "Du kan själv hantera denna grupp på sidan om [Hjälpare](/config/helpers)."
+                    "manage": "Du kan själv hantera denna grupp på sidan om [Hjälpare](/config/helpers).",
+                    "changed": "Medlemmarna som denna reparation listade är tillbaka, eller har ändrats, sedan Spook tittade, så ingenting har tagits bort från gruppen. Spook tittar igen av sig själv och uppdaterar denna reparation."
                 }
             }
         },
@@ -356,6 +548,10 @@
             "title": "Kontrollpanelsresurser hänvisar till filer som saknas",
             "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nFöljande resurs för kontrollpaneler pekar på en fil som inte finns:\n\n{resources}\n\n\n\nDetta kan hända när ett anpassat kort eller dess filer tas bort utan att resursen uppdateras. För att åtgärda felet, öppna Inställningar > Kontrollpaneler > Resurser och ta bort eller rätta till dessa resurser.\n\nSpook 👻 Din polare."
         },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook har hittat ett spöke bland dina kontrollpaneler 👻\n\nFöljande resurser för kontrollpaneler pekar på filer som inte finns:\n\n{resources}\n\n\n\nDetta händer oftast när ett anpassat kort eller dess filer har tagits bort men resursen blev kvar.\n\nDessa resurser listas i din YAML-konfiguration, så sidan Resurser kan inte ändra dem. Redigera avsnittet `resources:` i din Lovelace-konfiguration och ta bort eller rätta dessa poster.\n\nSpook 👻 Din polare.",
+            "title": "Kontrollpanelsresurser hänvisar till filer som saknas"
+        },
         "empty_areas": {
             "title": "Tomt område: {area}",
             "fix_flow": {
@@ -372,7 +568,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook kommer att hålla tyst om detta område från och med nu.",
-                    "manage": "Du kan själv hantera detta område på sidan om [Områden](/config/areas/dashboard)."
+                    "manage": "Du kan själv hantera detta område på sidan om [Områden](/config/areas/dashboard).",
+                    "changed": "Detta område används igen sedan Spook tittade: något finns i det, eller en automatisering eller ett skript använder det. Därför har det lämnats i fred. Spook tittar igen av sig själv och uppdaterar denna reparation."
                 }
             }
         },
@@ -392,7 +589,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook kommer att hålla tyst om denna våning från och med nu.",
-                    "manage": "Du kan själv hantera denna våning på sidan om [Områden](/config/areas/dashboard)."
+                    "manage": "Du kan själv hantera denna våning på sidan om [Områden](/config/areas/dashboard).",
+                    "changed": "Denna våning används igen sedan Spook tittade: ett område ligger på den, eller en automatisering eller ett skript använder den. Därför har den lämnats i fred. Spook tittar igen av sig själv och uppdaterar denna reparation."
                 }
             }
         },
@@ -411,7 +609,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook kommer att hålla tyst om denna hjälpare från och med nu.",
-                    "manage": "Du kan själv hantera denna hjälpare på sidan om [Hjälpare](/config/helpers)."
+                    "manage": "Du kan själv hantera denna hjälpare på sidan om [Hjälpare](/config/helpers).",
+                    "changed": "Källorna för denna hjälpare har ändrats sedan Spook tittade, så hjälparen har lämnats i fred. Spook tittar igen av sig själv och uppdaterar denna reparation."
                 }
             },
             "title": "Okända entiteter används i hjälpare: {helper}"
@@ -451,7 +650,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook kommer att hålla tyst om denna etikett från och med nu.",
-                    "manage": "Du kan själv hantera denna etikett på sidan om [Etiketter](/config/labels)."
+                    "manage": "Du kan själv hantera denna etikett på sidan om [Etiketter](/config/labels).",
+                    "changed": "Denna etikett används igen sedan Spook tittade: något bär den, eller en automatisering eller ett skript använder den. Därför har den lämnats i fred. Spook tittar igen av sig själv och uppdaterar denna reparation."
                 }
             },
             "title": "Oanvänd etikett: {label}"
@@ -472,7 +672,8 @@
                 "abort": {
                     "issue_ignored": "Spook kommer att hålla tyst om denna hjälpare från och med nu.",
                     "too_few_members": "En min/max-hjälpare behöver minst två medlemmar, och att ta bort de som saknas skulle lämna för få kvar. Konfigurera om eller ta bort hjälparen själv på sidan [Hjälpare](/config/helpers).",
-                    "manage": "Du kan själv hantera denna hjälpare på sidan om [Hjälpare](/config/helpers)."
+                    "manage": "Du kan själv hantera denna hjälpare på sidan om [Hjälpare](/config/helpers).",
+                    "changed": "Medlemmarna som denna reparation listade är tillbaka, eller har ändrats, sedan Spook tittade, så ingenting har tagits bort från hjälparen. Spook tittar igen av sig själv och uppdaterar denna reparation."
                 }
             },
             "title": "Okända medlemmar används i min/max-hjälpare: {helper}"
@@ -503,10 +704,20 @@
             "fix_flow": {
                 "step": {
                     "init": {
+                        "title": "Föräldralös långtidsstatistik hittad",
+                        "description": "Spook har hittat ett spöke i din recorder 👻\n\nHome Assistant sparar långtidsstatistik för följande, men det finns inte längre någon matchande entitet för dem:\n\n{statistics}\n\nDetta händer oftast när en sensor togs bort medan dess statistik behölls. Att rensa den kastar bort den historiken för gott, så Spook tittar igen innan det sker och lämnar allt som har kommit tillbaka under tiden i fred.\n\nSpook 👻 Din polare.",
                         "menu_options": {
-                            "remove": "Ta bort statistiken"
+                            "remove": "Ta bort statistiken",
+                            "manage": "Låt mig göra det själv",
+                            "ignore": "Behåll och sluta att meddela mig"
                         }
                     }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om denna statistik från och med nu.",
+                    "manage": "Du kan själv rensa dem på sidan [Statistik](/config/tools/statistics).",
+                    "nothing_to_clear": "Inget på listan behöver rensas längre, så ingenting har kastats bort. Antingen har statistiken en entitet bakom sig igen, eller så är den redan borta.",
+                    "clearing_took_too_long": "Spook bad om att statistiken skulle rensas och recordern har inte sagt att den är klar. Arbetet ligger i kö och blir troligen av, så denna reparation ligger kvar tills Spook har tittat igen."
                 }
             }
         },
@@ -526,12 +737,34 @@
             "title": "Okända entiteter i dina anpassningar",
             "description": "Spook har hittat ett spöke bland dina anpassningar 👻\n\nAvsnittet `customize:` använder attribut på följande entiteter som är okända för Home Assistant:\n\n{entities}\n\n\n\nDetta kan kan hända om en entitet döps om eller avlägsnas utan att dess anpassning uppdateras. För att åtgärda felet, redigera `customize:`-avsnittet i din konfiguration och ta bort dessa entiteter.\n\nSpook 👻 Din polare."
         },
+        "unknown_engines": {
+            "title": "Assist-pipeline använder motorer som är borta: {pipeline}",
+            "description": "Spook har hittat ett spöke bland dina röstassistenter 👻\n\nAssist-pipelinen {pipeline} använder följande, som är okända för Home Assistant:\n\n{engines}\n\nDetta betyder oftast att integrationen bakom har tagits bort. Pipelinen fick inte veta det, så nästa gång den används misslyckas den med ett fel om en saknad leverantör eller agent, och inget innan dess pekar hit.\n\nFör att åtgärda detta, öppna inställningarna för denna assistent under [Röstassistenter](/config/voice-assistants/assistants) och välj en motor som fortfarande finns kvar för var och en av dessa.\n\nSpook 👻 Din polare."
+        },
         "template_unknown_entity_references": {
             "title": "Okända entiteter används i mallhjälpare: {helper}",
             "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDess mall refererar till följande entiteter som är okända för Home Assistant:\n\n{entities}\n\n\n\nDetta kan hända när entitet döps om eller tas bort. För att åtgärda felet, konfigurera om mallhjälparen så att den refererar till existerande entiteter.\n\nSpook 👻 Din polare."
         },
         "energy_unknown_references": {
-            "title": "Okända entiteter används i Energi-kontrollpanelen"
+            "title": "Okända entiteter används i Energi-kontrollpanelen",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Okända entiteter används i Energi-kontrollpanelen",
+                        "description": "Spook har hittat ett spöke i din Energi-kontrollpanel 👻\n\nEnergi-kontrollpanelen refererar till följande entiteter som är okända för Home Assistant:\n\n{entities}\n\nDetta händer oftast när en entitet som används i energikonfigurationen har döpts om eller tagits bort. Omdöpt? Öppna då [Inställningar > Kontrollpaneler > Energi](/config/energy) och välj den nya, så att dess historik stannar kvar på kontrollpanelen.\n\nBorttagen för gott? Spook kan ta bort dem ur energikonfigurationen åt dig. En saknad mätare tar med sig sin källa eller enhet, ett saknat pris eller en saknad kostnad rensas bara. Kontrollpanelen slutar då visa historiken för det som tas bort; själva statistiken finns kvar.\n\nSpook 👻 Din polare.",
+                        "menu_options": {
+                            "remove": "Ta bort dem ur energikonfigurationen",
+                            "manage": "Låt mig göra det själv",
+                            "ignore": "Behåll och sluta att meddela mig"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om dessa entiteter från och med nu.",
+                    "manage": "Du kan själv uppdatera eller ta bort dem i [energikonfigurationen](/config/energy).",
+                    "nothing_to_remove": "Ingen av dessa är okänd längre, så ingenting har tagits bort. De kan vara tillbaka, eller så har någon redan ändrat energikonfigurationen."
+                }
+            }
         },
         "automation_unknown_trigger_references": {
             "title": "Okända utlösare används i: {automation}",
@@ -552,6 +785,27 @@
         "template_unknown_service_references": {
             "description": "Spook har hittat ett spöke bland dina mallhjälpare 👻\n\nMedan han svävade runt hittade Spook följande mallhjälpare:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nDen refererar till följande åtgärder som är okända för Home Assistant:\n\n{services}\n\nDet händer ofta när integrationen bakom en åtgärd har tagits bort, eller när ett skript har bytt namn eller tagits bort. För att åtgärda felet, konfigurera om mallhjälparen så att den använder åtgärder som finns.\n\nSpook 👻 Din polare.",
             "title": "Okända åtgärder används i mallhjälparen: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Okänd {sensors}-sensor för område: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Okänd {sensors}-sensor för område: {area}",
+                        "description": "Spook har hittat ett spöke bland dina områden 👻\n\nOmrådet {area} använder en {sensors}-sensor som är okänd för Home Assistant:\n\n{entities}\n\nHome Assistant kontrollerar bara denna sensor när den väljs, så när den togs bort eller döptes om fortsatte området att peka på ingenting. Assist och områdeskort får inte längre något värde från den.\n\nRensa inställningen så att du kan välja en sensor igen, eller behåll den och be Spook att sluta påpeka problemet.\n\nSpook 👻 Din polare.",
+                        "menu_options": {
+                            "remove": "Rensa inställningen",
+                            "manage": "Låt mig fixa det själv",
+                            "ignore": "Behåll och sluta att meddela mig"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook kommer att hålla tyst om detta område från och med nu.",
+                    "manage": "Du kan välja en annan sensor i inställningarna för detta område på sidan [Områden](/config/areas/dashboard).",
+                    "changed": "Dessa sensorer är tillbaka, eller inställningarna pekar nu någon annanstans, sedan Spook tittade. Därför har ingenting rensats. Spook tittar igen av sig själv och uppdaterar denna reparation."
+                }
+            }
         },
         "notify_unknown_group_members": {
             "description": "Spook har hittat ett spöke bland dina aviseringsgrupper 👻\n\nAviseringsgruppen `{group}` vidarebefordrar till följande åtgärder som är okända för Home Assistant:\n\n{members}\n\nGruppen levererar fortfarande till sina övriga medlemmar, och den rapporterar fortfarande att allt gick bra till den som anropade den, så ingenting uppströms märker något. Felet syns bara som ett ensamt \"Task exception was never retrieved\" i loggen, som inte nämner någon grupp och ser ut som ett programfel. Den som fanns bakom den medlemmen slutar helt enkelt att få aviseringar.\n\nFör att åtgärda felet, redigera `services:`-listan för den här gruppen i din konfiguration och ta bort eller rätta dessa poster.\n\nSpook 👻 Din polare.",
@@ -879,6 +1133,10 @@
                 "config_entry_id": {
                     "name": "Integrationspost",
                     "description": "Den integrationspost som ska inaktiveras."
+                },
+                "domain": {
+                    "name": "Integration",
+                    "description": "Inaktivera alla poster för dessa integrationer, även de som läggs till senare."
                 }
             },
             "name": "Inaktivera en integration",
@@ -889,6 +1147,10 @@
                 "config_entry_id": {
                     "name": "Integrationspost",
                     "description": "Den integrationspost som ska aktiveras."
+                },
+                "domain": {
+                    "name": "Integration",
+                    "description": "Aktivera alla poster för dessa integrationer, även de som läggs till senare."
                 }
             },
             "name": "Aktivera en integration",
@@ -979,6 +1241,10 @@
                 "radius": {
                     "name": "Radie",
                     "description": "Zonens radie"
+                },
+                "passive": {
+                    "name": "Passiv",
+                    "description": "En passiv zon finns bara till för automatiseringar: den visas inte på kartan och ändrar inte var personer och enhetsspårare befinner sig."
                 }
             }
         },
@@ -1062,7 +1328,13 @@
         },
         "input_number_delete": {
             "name": "Ta bort ett inmatningsnummer",
-            "description": "Tar bort en hjälpare för inmatningsnummer. Detta fungerar bara för inmatningsnummer som är skapade via användargränssnittet. Inmatningsnummer som har skapats via YAML kan inte ändras av Spook."
+            "description": "Tar bort en hjälpare för inmatningsnummer. Detta fungerar bara för inmatningsnummer som är skapade via användargränssnittet. Inmatningsnummer som har skapats via YAML kan inte ändras av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Det eller de inmatningsnummer som ska tas bort."
+                }
+            }
         },
         "number_increment": {
             "fields": {
@@ -1095,6 +1367,124 @@
                 "entity_id": {
                     "name": "Entitets-ID",
                     "description": "ID:t för den eller de entiteter som ska tas bort."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Höj temperaturen",
+            "description": "Höjer en varmvattenberedares börvärde ett steg, inom dess gränser.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur mycket det ska ändras. Lämna tomt för att använda varmvattenberedarens eget steg, eller en halv grad (en i Fahrenheit) om den inte har något."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Sänk temperaturen",
+            "description": "Sänker en varmvattenberedares börvärde ett steg, inom dess gränser.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur mycket det ska ändras. Lämna tomt för att använda varmvattenberedarens eget steg, eller en halv grad (en i Fahrenheit) om den inte har något."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Höj luftfuktigheten",
+            "description": "Höjer en luftfuktares målfuktighet ett steg, inom dess gränser.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur många procent det ska ändras. Lämna tomt för att använda luftfuktarens eget steg, eller en procent om den inte har något."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Sänk luftfuktigheten",
+            "description": "Sänker en luftfuktares målfuktighet ett steg, inom dess gränser.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur många procent det ska ändras. Lämna tomt för att använda luftfuktarens eget steg, eller en procent om den inte har något."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Öka positionen",
+            "description": "Flyttar ett skydd ett steg mer öppet, och stannar vid helt öppet.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur många procent det ska flyttas. Tio procent om inget anges."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Minska positionen",
+            "description": "Flyttar ett skydd ett steg mer stängt, och stannar vid helt stängt.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur många procent det ska flyttas. Tio procent om inget anges."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Öka positionen",
+            "description": "Flyttar en ventil ett steg mer öppen, och stannar vid helt öppen.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur många procent den ska flyttas. Tio procent om inget anges."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Minska positionen",
+            "description": "Flyttar en ventil ett steg mer stängd, och stannar vid helt stängd.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur många procent den ska flyttas. Tio procent om inget anges."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Höj volymen",
+            "description": "Höjer en mediaspelares volym med det steg du anger, och stannar vid full volym.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur många procent volymen ska ändras."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Sänk volymen",
+            "description": "Sänker en mediaspelares volym med det steg du anger, och stannar vid tyst.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur många procent volymen ska ändras."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Flytta post",
+            "description": "Flyttar en post i en att göra-lista högst upp, längst ner eller efter en annan post.",
+            "fields": {
+                "item": {
+                    "name": "Post",
+                    "description": "Titeln eller uid för posten som ska flyttas."
+                },
+                "after": {
+                    "name": "Efter",
+                    "description": "Titeln eller uid för posten som den ska läggas efter. Ange detta eller en position."
+                },
+                "position": {
+                    "name": "Position",
+                    "description": "Flytta den högst upp eller längst ner i listan. Ange detta eller en post att lägga den efter."
                 }
             }
         },
@@ -1244,6 +1634,20 @@
             "name": "Döp om en entitet",
             "description": "Döper om en eller flera entiteter direkt."
         },
+        "homeassistant_set_entity_icon": {
+            "name": "Ställ in ikonen för en entitet",
+            "description": "Ställer in ikonen för en eller flera entiteter direkt. Sätt den till null för att gå tillbaka till ikonen som integrationen ger den.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter vars ikon ska ställas in."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Den nya ikonen, eller null för integrationens egen ikon."
+                }
+            }
+        },
         "homeassistant_unhide_entity": {
             "fields": {
                 "entity_id": {
@@ -1303,6 +1707,10 @@
                 "radius": {
                     "name": "Radie",
                     "description": "Zonens radie"
+                },
+                "passive": {
+                    "name": "Passiv",
+                    "description": "En passiv zon finns bara till för automatiseringar: den visas inte på kartan och ändrar inte var personer och enhetsspårare befinner sig."
                 }
             },
             "name": "Uppdatera en zon",
@@ -1368,7 +1776,13 @@
         },
         "repairs_ignore_all": {
             "name": "Ignorera alla problem",
-            "description": "Ignorera alla problem som för närvarande finns i Home Assistant Repairs."
+            "description": "Ignorera alla problem som för närvarande finns i Home Assistant Repairs.",
+            "fields": {
+                "domain": {
+                    "name": "Domän",
+                    "description": "Ignorera bara de problem som har tagits upp av dessa integrationer."
+                }
+            }
         },
         "blueprint_import": {
             "description": "Importera en blueprint.",
@@ -1400,6 +1814,42 @@
             "name": "Välj slumpmässigt alternativ",
             "description": "Väljer ett slumpmässigt alternativ för en väljar-entitet."
         },
+        "input_select_create": {
+            "name": "Skapa ett inmatningsval",
+            "description": "Skapar en ny hjälpare för inmatningsval (rullgardinsmeny) direkt. Returnerar entitets-ID:t för det nya inmatningsvalet.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på det nya inmatningsvalet."
+                },
+                "input_select_id": {
+                    "name": "Inmatningsvalets entitets-ID",
+                    "description": "Entitets-ID:t för det nya inmatningsvalet. Prefixet input_select. läggs till automatiskt. Om inget anges genereras entitets-ID:t baserat på namnet."
+                },
+                "options": {
+                    "name": "Alternativ",
+                    "description": "Alternativen att välja mellan. Varje alternativ kan bara finnas med en gång."
+                },
+                "initial": {
+                    "name": "Inledande alternativ",
+                    "description": "Alternativet det börjar på, som måste vara ett av alternativen. Om det utelämnas behåller det alternativet det hade innan Home Assistant startades om."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonen för det nya inmatningsvalet."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Ta bort ett inmatningsval",
+            "description": "Tar bort hjälpare för inmatningsval som skapats i gränssnittet eller med åtgärden skapa ett inmatningsval. Inmatningsval som är inställda i YAML kan inte tas bort av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Det eller de inmatningsval som ska tas bort."
+                }
+            }
+        },
         "input_select_random": {
             "fields": {
                 "options": {
@@ -1409,6 +1859,10 @@
             },
             "name": "Välj slumpmässigt alternativ",
             "description": "Väljer ett slumpmässigt alternativ för en `input_select`-entitet."
+        },
+        "input_select_reverse": {
+            "name": "Vänd på alternativ",
+            "description": "Vänder på ordningen av de valbara alternativen för en `input_select`-entitet, bakifrån och fram. Detta är inte beständigt och kommer att återställas vid omladdning eller när Home Assistant startas om."
         },
         "homeassistant_list_orphaned_database_entities": {
             "name": "Lista alla föräldralösa databasentiteter",
@@ -1434,6 +1888,24 @@
             "description": "Ställer in ett inmatningsnummer till dess lägsta värde.",
             "name": "Ställ in lägsta värde"
         },
+        "input_number_set_range": {
+            "name": "Ställ in intervall",
+            "description": "Ändrar minimum, maximum eller steg för ett inmatningsnummer skapat i gränssnittet, precis som när du redigerar det. Ett värde utanför det nya intervallet flyttas in i det.",
+            "fields": {
+                "min": {
+                    "name": "Minimum",
+                    "description": "Det nya lägsta värdet."
+                },
+                "max": {
+                    "name": "Maximum",
+                    "description": "Det nya högsta värdet."
+                },
+                "step": {
+                    "name": "Steg",
+                    "description": "Den nya stegstorleken."
+                }
+            }
+        },
         "number_max": {
             "description": "Ställer in en nummerentitet till dess högsta värde.",
             "name": "Ställ in högsta värde"
@@ -1444,7 +1916,13 @@
         },
         "repairs_unignore_all": {
             "name": "Avignorera alla problem",
-            "description": "Avignorera alla problem som för närvarande finns i Home Assistant Repairs."
+            "description": "Avignorera alla problem som för närvarande finns i Home Assistant Repairs.",
+            "fields": {
+                "domain": {
+                    "name": "Domän",
+                    "description": "Avignorera bara de problem som har tagits upp av dessa integrationer."
+                }
+            }
         },
         "homeassistant_expose_entity": {
             "description": "Exponerar en entitet (eller entiteter) för röstassistenter.",
@@ -1487,6 +1965,42 @@
                 }
             },
             "name": "Ställ in visningsprecision"
+        },
+        "timer_create": {
+            "name": "Skapa en timer",
+            "description": "Skapar en ny timerhjälpare direkt. Returnerar entitets-ID:t för den nya timern.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på den nya timern."
+                },
+                "timer_id": {
+                    "name": "Timerns entitets-ID",
+                    "description": "Entitets-ID:t för den nya timern. Prefixet timer. läggs till automatiskt. Om inget anges genereras entitets-ID:t baserat på namnet."
+                },
+                "duration": {
+                    "name": "Varaktighet",
+                    "description": "Hur länge timern går när den startas."
+                },
+                "restore": {
+                    "name": "Återställ",
+                    "description": "Återställ timerns tillstånd när Home Assistant startar, så att en timer som går fortsätter att gå över en omstart."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonen för den nya timern."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Ta bort en timer",
+            "description": "Tar bort timerhjälpare som skapats i gränssnittet eller med åtgärden skapa en timer. Timers som är inställda i YAML kan inte tas bort av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Den eller de timers som ska tas bort."
+                }
+            }
         },
         "wait_for_condition": {
             "name": "Vänta på ett villkor",
@@ -1602,6 +2116,106 @@
                 }
             }
         },
+        "calendar_delete_event": {
+            "name": "Ta bort händelse",
+            "description": "Tar bort händelser från en kalender, hittade via sin titel eller sitt uid inom ett tidsintervall. Lämnar tillbaka det som togs bort, uid inräknat.",
+            "fields": {
+                "summary": {
+                    "name": "Sammanfattning",
+                    "description": "Titeln på händelserna att ta bort, exakt som den står i kalendern."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Identifieraren för händelsen att ta bort, för när du har den."
+                },
+                "start_date_time": {
+                    "name": "Startdatum och starttid",
+                    "description": "Var sökningen ska börja. Standard är nu."
+                },
+                "end_date_time": {
+                    "name": "Slutdatum och sluttid",
+                    "description": "Var sökningen ska sluta. Ange detta eller en varaktighet."
+                },
+                "duration": {
+                    "name": "Varaktighet",
+                    "description": "Hur långt från starten det ska letas. Ange detta eller ett slutdatum och en sluttid."
+                },
+                "whole_series": {
+                    "name": "Hela serien",
+                    "description": "För en återkommande händelse, ta bort hela serien i stället för bara den förekomst som hittades."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Uppdatera händelse",
+            "description": "Ändrar händelser i en kalender, hittade via sin titel eller sitt uid inom ett tidsintervall. Lämnar tillbaka det som ändrades, uid inräknat.",
+            "fields": {
+                "summary": {
+                    "name": "Sammanfattning",
+                    "description": "Titeln på händelserna att ändra, exakt som den står i kalendern."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Identifieraren för händelsen att ändra, för när du har den."
+                },
+                "start_date_time": {
+                    "name": "Startdatum och starttid",
+                    "description": "Var sökningen ska börja. Standard är nu."
+                },
+                "end_date_time": {
+                    "name": "Slutdatum och sluttid",
+                    "description": "Var sökningen ska sluta. Ange detta eller en varaktighet."
+                },
+                "duration": {
+                    "name": "Varaktighet",
+                    "description": "Hur långt från starten det ska letas. Ange detta eller ett slutdatum och en sluttid."
+                },
+                "new_summary": {
+                    "name": "Ny sammanfattning",
+                    "description": "Titeln att ge händelserna."
+                },
+                "description": {
+                    "name": "Beskrivning",
+                    "description": "Beskrivningen att ge händelserna."
+                },
+                "location": {
+                    "name": "Plats",
+                    "description": "Platsen att ge händelserna."
+                },
+                "new_start": {
+                    "name": "Ny start",
+                    "description": "När händelserna börjar i stället. De behåller sin längd, om inte ett nytt slut också anges."
+                },
+                "new_end": {
+                    "name": "Nytt slut",
+                    "description": "När händelserna slutar i stället."
+                },
+                "shift": {
+                    "name": "Förskjutning",
+                    "description": "Flytta händelserna så här mycket, senare, eller tidigare om värdet är negativt. I stället för en ny start eller ett nytt slut."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Höj temperaturen",
+            "description": "Höjer en termostats börvärde ett steg, båda börvärdena för en som både värmer och kyler. En termostat som är avstängd förblir avstängd.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur mycket det ska ändras. Lämna tomt för att använda termostatens eget steg, eller en halv grad (en i Fahrenheit) om den inte har något."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Sänk temperaturen",
+            "description": "Sänker en termostats börvärde ett steg, båda börvärdena för en som både värmer och kyler. En termostat som är avstängd förblir avstängd.",
+            "fields": {
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur mycket det ska ändras. Lämna tomt för att använda termostatens eget steg, eller en halv grad (en i Fahrenheit) om den inte har något."
+                }
+            }
+        },
         "homeassistant_update_label": {
             "name": "Uppdatera en etikett",
             "description": "Uppdaterar en befintlig etikett direkt. Allt du utelämnar behåller det värde det redan hade. Beskrivningen, ikonen och färgen kan tömmas genom att sättas till null.",
@@ -1629,73 +2243,405 @@
             }
         },
         "homeassistant_add_category_to_entity": {
-            "name": "Lägg till en kategori för en enhet"
+            "name": "Lägg till en kategori för en enhet",
+            "description": "Lägger en automatisering, ett skript, en scen eller en hjälpare i en kategori. Det ersätter kategorin den låg i tidigare, eftersom var och en bara kan ligga i en.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "ID:t eller namnet på kategorin."
+                },
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Den eller de automatiseringar, skript, scener eller hjälpare som ska läggas i kategorin."
+                }
+            }
         },
         "group_add_members": {
             "name": "Lägg till medlemmar i en grupp",
-            "description": "Lägger till entiteter i en grupp skapad genom interfacet, medan Home Assistant fortsätter vara aktiv. Entiteter som redan finns i gruppen påverkas inte."
+            "description": "Lägger till entiteter i en grupp skapad genom interfacet, medan Home Assistant fortsätter vara aktiv. Entiteter som redan finns i gruppen påverkas inte.",
+            "fields": {
+                "group": {
+                    "name": "Grupp",
+                    "description": "Gruppen att lägga till i."
+                },
+                "members": {
+                    "name": "Medlemmar",
+                    "description": "Entiteterna att lägga till i gruppen."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Ta bort medlemmar från en grupp",
+            "description": "Tar ut entiteter ur en grupp skapad genom gränssnittet, medan Home Assistant är igång. Att ange något som inte finns i gruppen gör ingenting, så det är också så du rensar bort en medlem som inte längre finns.",
+            "fields": {
+                "group": {
+                    "name": "Grupp",
+                    "description": "Gruppen att ta ut dem ur."
+                },
+                "members": {
+                    "name": "Medlemmar",
+                    "description": "Entiteterna att ta bort från gruppen."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Ställ in medlemmarna i en grupp",
+            "description": "Ersätter medlemmarna i en grupp skapad genom gränssnittet med de angivna, medan Home Assistant är igång.",
+            "fields": {
+                "group": {
+                    "name": "Grupp",
+                    "description": "Gruppen att ändra."
+                },
+                "members": {
+                    "name": "Medlemmar",
+                    "description": "Entiteterna som gruppen ska innehålla från och med nu."
+                }
+            }
         },
         "repairs_list": {
+            "name": "Lista problem",
+            "description": "Listar de problem som för närvarande finns i Home Assistants Reparationer, med sina titlar, för en automatisering att agera på eller en kontrollpanel att visa.",
             "fields": {
                 "include_ignored": {
+                    "name": "Inkludera ignorerade",
                     "description": "Lista också de problem som har ignorerats"
+                },
+                "domain": {
+                    "name": "Domän",
+                    "description": "Lista bara de problem som har tagits upp av dessa integrationer."
+                },
+                "severity": {
+                    "name": "Allvarlighetsgrad",
+                    "description": "Lista bara de problem som har dessa allvarlighetsgrader."
                 }
             }
         },
         "input_text_create": {
             "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på den nya inmatningstexten."
+                },
+                "input_text_id": {
+                    "name": "Inmatningstextens entitets-ID",
+                    "description": "Entitets-ID:t för den nya inmatningstexten. Prefixet input_text. läggs till automatiskt. Om inget anges genereras entitets-ID:t baserat på namnet."
+                },
+                "initial": {
+                    "name": "Inledande värde",
+                    "description": "Texten den börjar med. Om det utelämnas behåller den texten den hade innan Home Assistant startades om."
+                },
+                "min": {
+                    "name": "Minsta längd",
+                    "description": "Hur kort texten som minst får vara."
+                },
+                "max": {
+                    "name": "Största längd",
+                    "description": "Hur lång texten som mest får vara."
+                },
                 "pattern": {
+                    "name": "Mönster",
                     "description": "En regular expression (REGEX) som texten ska matcha"
+                },
+                "mode": {
+                    "name": "Läge",
+                    "description": "Visa texten som den är, eller dölj den som ett lösenord."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonen för den nya inmatningstexten."
+                },
+                "unit_of_measurement": {
+                    "name": "Måttenhet",
+                    "description": "Enheten som visas bredvid texten."
                 }
             },
-            "name": "Skapa inmatningstext"
+            "name": "Skapa inmatningstext",
+            "description": "Skapar en ny hjälpare för inmatningstext direkt. Returnerar entitets-ID:t för den nya inmatningstexten."
+        },
+        "input_text_delete": {
+            "name": "Ta bort en inmatningstext",
+            "description": "Tar bort hjälpare för inmatningstext som skapats i gränssnittet eller med åtgärden skapa en inmatningstext. Inmatningstexter som är inställda i YAML kan inte tas bort av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Den eller de inmatningstexter som ska tas bort."
+                }
+            }
         },
         "homeassistant_update_category": {
+            "name": "Uppdatera en kategori",
+            "description": "Uppdaterar en befintlig kategori direkt. Allt du lämnar tomt behåller sitt nuvarande värde. Ikonen kan rensas genom att sätta den till null.",
             "fields": {
+                "scope": {
+                    "name": "Omfång",
+                    "description": "Var kategorin används."
+                },
                 "category_id": {
-                    "name": "Kategori"
+                    "name": "Kategori",
+                    "description": "ID:t eller namnet på kategorin som ska uppdateras."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Det nya namnet för kategorin."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Den nya ikonen för kategorin."
                 }
             }
         },
         "homeassistant_delete_category": {
+            "name": "Ta bort en kategori",
+            "description": "Tar bort en kategori. Allt som låg i den blir utan kategori.",
             "fields": {
+                "scope": {
+                    "name": "Omfång",
+                    "description": "Var kategorin används."
+                },
                 "category_id": {
-                    "name": "Kategori"
+                    "name": "Kategori",
+                    "description": "ID:t eller namnet på kategorin som ska tas bort."
                 }
             }
         },
         "homeassistant_remove_category_from_entity": {
+            "name": "Ta bort en kategori från en entitet",
+            "description": "Tar ut en automatisering, ett skript, en scen eller en hjälpare ur en kategori. Allt som ligger i en annan kategori lämnas i fred.",
             "fields": {
                 "category_id": {
-                    "name": "Kategori"
+                    "name": "Kategori",
+                    "description": "ID:t eller namnet på kategorin."
+                },
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Den eller de automatiseringar, skript, scener eller hjälpare som ska tas ut ur kategorin."
                 }
             }
         },
         "counter_create": {
             "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på den nya räknaren."
+                },
                 "counter_id": {
-                    "name": "Räknarens entitetsid"
+                    "name": "Räknarens entitetsid",
+                    "description": "Entitets-ID:t för den nya räknaren. Prefixet counter. läggs till automatiskt. Om inget anges genereras entitets-ID:t baserat på namnet."
+                },
+                "initial": {
+                    "name": "Inledande värde",
+                    "description": "Värdet som räknaren börjar på, och går tillbaka till vid en återställning."
+                },
+                "minimum": {
+                    "name": "Minimum",
+                    "description": "Det lägsta värdet räknaren kan gå ner till. Lämna tomt för ingen gräns."
+                },
+                "maximum": {
+                    "name": "Maximum",
+                    "description": "Det högsta värdet räknaren kan gå upp till. Lämna tomt för ingen gräns."
+                },
+                "step": {
+                    "name": "Steg",
+                    "description": "Hur mycket räknaren går upp eller ner varje gång."
+                },
+                "restore": {
+                    "name": "Återställ",
+                    "description": "Återställ räknarens värde när Home Assistant startar, i stället för att börja om från det inledande värdet."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonen för den nya räknaren."
                 }
             },
-            "name": "Skapa en räknare"
+            "name": "Skapa en räknare",
+            "description": "Skapar en ny räknarhjälpare direkt. Returnerar entitets-ID:t för den nya räknaren."
+        },
+        "counter_delete": {
+            "name": "Ta bort en räknare",
+            "description": "Tar bort räknarhjälpare som skapats i gränssnittet eller med åtgärden skapa en räknare. Räknare som är inställda i YAML kan inte tas bort av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Den eller de räknare som ska tas bort."
+                }
+            }
         },
         "homeassistant_create_category": {
-            "name": "Skapa en kategori"
+            "name": "Skapa en kategori",
+            "description": "Skapar en ny kategori direkt, för automatiseringar, skript, scener eller hjälpare. Returnerar ID:t för den nya kategorin.",
+            "fields": {
+                "scope": {
+                    "name": "Omfång",
+                    "description": "Var kategorin används."
+                },
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på kategorin som ska skapas."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Den ikon att använda för kategorin."
+                }
+            }
         },
         "input_boolean_create": {
-            "name": "Skapa en inmatningsboolean"
+            "name": "Skapa en inmatningsboolean",
+            "description": "Skapar en ny hjälpare för inmatningsboolean (växlare) direkt. Returnerar entitets-ID:t för den nya inmatningsbooleanen.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på den nya inmatningsbooleanen."
+                },
+                "input_boolean_id": {
+                    "name": "Inmatningsbooleanens entitets-ID",
+                    "description": "Entitets-ID:t för den nya inmatningsbooleanen. Prefixet input_boolean. läggs till automatiskt. Om inget anges genereras entitets-ID:t baserat på namnet."
+                },
+                "initial": {
+                    "name": "Inledande värde",
+                    "description": "Värdet den börjar med. Om det utelämnas behåller den värdet den hade innan Home Assistant startades om."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonen för den nya inmatningsbooleanen."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Ta bort en inmatningsboolean",
+            "description": "Tar bort hjälpare för inmatningsboolean som skapats i gränssnittet eller med åtgärden skapa en inmatningsboolean. Inmatningsbooleaner som är inställda i YAML kan inte tas bort av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Den eller de inmatningsbooleaner som ska tas bort."
+                }
+            }
         },
         "input_button_create": {
-            "name": "Skapa en knapp för inmatning"
+            "name": "Skapa en knapp för inmatning",
+            "description": "Skapar en ny hjälpare för inmatningsknapp direkt. Returnerar entitets-ID:t för den nya inmatningsknappen.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på den nya inmatningsknappen."
+                },
+                "input_button_id": {
+                    "name": "Inmatningsknappens entitets-ID",
+                    "description": "Entitets-ID:t för den nya inmatningsknappen. Prefixet input_button. läggs till automatiskt. Om inget anges genereras entitets-ID:t baserat på namnet."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonen för den nya inmatningsknappen."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Ta bort en inmatningsknapp",
+            "description": "Tar bort hjälpare för inmatningsknapp som skapats i gränssnittet eller med åtgärden skapa en inmatningsknapp. Inmatningsknappar som är inställda i YAML kan inte tas bort av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Den eller de inmatningsknappar som ska tas bort."
+                }
+            }
         },
         "input_datetime_create": {
-            "name": "Shapa en inmatnings datum/tid"
+            "name": "Skapa en inmatnings datum/tid",
+            "description": "Skapar en ny hjälpare för inmatat datum/tid direkt, som håller ett datum, en tid eller båda. Returnerar entitets-ID:t för det nya inmatade datumet/tiden.",
+            "fields": {
+                "name": {
+                    "name": "Namn",
+                    "description": "Namnet på det nya inmatade datumet/tiden."
+                },
+                "input_datetime_id": {
+                    "name": "Entitets-ID för inmatat datum/tid",
+                    "description": "Entitets-ID:t för det nya inmatade datumet/tiden. Prefixet input_datetime. läggs till automatiskt. Om inget anges genereras entitets-ID:t baserat på namnet."
+                },
+                "has_date": {
+                    "name": "Har ett datum",
+                    "description": "Om den håller ett datum. Minst ett av datum och tid måste vara påslaget."
+                },
+                "has_time": {
+                    "name": "Har en tid",
+                    "description": "Om den håller en tid. Minst ett av datum och tid måste vara påslaget."
+                },
+                "initial": {
+                    "name": "Inledande värde",
+                    "description": "Datumet och/eller tiden den börjar med, som 2026-12-31, 08:30:00 eller 2026-12-31 08:30:00. Om det utelämnas behåller den värdet den hade innan Home Assistant startades om."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikonen för det nya inmatade datumet/tiden."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Ta bort ett inmatat datum/tid",
+            "description": "Tar bort hjälpare för inmatat datum/tid som skapats i gränssnittet eller med åtgärden skapa ett inmatat datum/tid. Inmatade datum/tider som är inställda i YAML kan inte tas bort av Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitets-ID",
+                    "description": "Det eller de inmatade datum/tider som ska tas bort."
+                }
+            }
         },
         "homeassistant_add_alias_to_entity": {
-            "name": "Lägg till en alias till en entitet"
+            "name": "Lägg till en alias till en entitet",
+            "description": "Lägger till ett eller flera alias till en eller flera entiteter, som röstassistenter kan kalla den vid.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter som aliasen ska läggas till på."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Det eller de alias som ska läggas till."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Ta bort ett alias från en entitet",
+            "description": "Tar bort ett eller flera alias från en eller flera entiteter.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter som aliasen ska tas bort från."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Det eller de alias som ska tas bort."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Ställ in alias för en entitet",
+            "description": "Ersätter aliasen för en eller flera entiteter. Huruvida entitetens eget namn räknas som ett alias förblir som det var.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitet",
+                    "description": "Den eller de entiteter vars alias ska ställas in."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Aliasen att ställa in."
+                }
+            }
         }
     },
     "conditions": {
+        "is_at_target_temperature": {
+            "name": "Temperaturen är vid sitt mål",
+            "description": "Uppfylls när temperaturen hos en termostat eller varmvattenberedare är vid sitt mål. En enhet som är avstängd är inte vid sitt mål, och en som är otillgänglig räknas inte med.",
+            "fields": {
+                "behavior": {
+                    "name": "Beteende",
+                    "description": "Om det räcker att någon av enheterna är där, eller om alla måste vara det."
+                },
+                "tolerance": {
+                    "name": "Tolerans",
+                    "description": "Hur nära målet som fortfarande räknas som framme, i enhetens egen enhet. För en termostat som stannar strax under sitt börvärde. Noll betyder själva målet."
+                }
+            }
+        },
         "chance": {
             "fields": {
                 "percentage": {
@@ -1770,6 +2716,24 @@
         }
     },
     "triggers": {
+        "automation_turned_off": {
+            "name": "Automatisering avstängd",
+            "description": "Utlöses när någon, eller något, stänger av en automatisering. Lämna målet tomt för att bevaka alla automatiseringar."
+        },
+        "debounce": {
+            "name": "När det har lugnat sig",
+            "description": "Utlöses när en utlösare har slutat utlösas på ett tag, så att en hel skur kommer fram som en enda. En rörelsesensor rapporterar inte rörelse en gång, den rapporterar den tjugo gånger.",
+            "fields": {
+                "triggers": {
+                    "name": "Utlösare",
+                    "description": "Utlösarna att vänta ut. Om någon av dem utlöses börjar en skur, och om någon av dem utlöses igen fortsätter den, så flera utlösare slås ihop i stället för att hanteras en i taget."
+                },
+                "for": {
+                    "name": "Under",
+                    "description": "Hur länge det måste ha varit tyst innan detta utlöses. Varje utlösning startar om väntan, så något som aldrig slutar utlösas rapporteras aldrig."
+                }
+            }
+        },
         "sequence": {
             "name": "Utlösare i ordning",
             "description": "Utlöses när flera utlösare inträffar efter varandra, i den ordning du anger.",
@@ -1902,8 +2866,57 @@
                 }
             }
         },
+        "target_temperature_reached": {
+            "name": "Måltemperatur nådd",
+            "description": "Utlöses när temperaturen hos en termostat eller varmvattenberedare når sitt mål, eller hoppar förbi det. Att ändra målet räknas inte, och inte heller en enhet som är avstängd.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolerans",
+                    "description": "Hur nära målet som fortfarande räknas som framme, i enhetens egen enhet. För en termostat som stannar strax under sitt börvärde. Noll betyder själva målet."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Uppdatering installerad",
+            "description": "Utlöses när en uppdateringsentitet rapporterar en annan installerad version, oavsett om någon tryckte på installera, enheten uppdaterade sig själv eller den uppdaterades utanför Home Assistant."
+        },
+        "position_reached": {
+            "name": "Position nådd",
+            "description": "Utlöses när ett skydd eller en ventil når en position, eller passerar den. En som redan är där, eller kommer tillbaka från otillgänglig i den positionen, räknas inte.",
+            "fields": {
+                "position": {
+                    "name": "Position",
+                    "description": "Positionen att nå, från 0 (stängd) till 100 (öppen)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Skript startat",
+            "description": "Utlöses när ett skript startar en körning. En körning som skriptet vägrar, eftersom det redan körs, räknas inte. Lämna målet tomt för att bevaka alla skript."
+        },
         "all_of": {
-            "name": "Alla dessa inträffade"
+            "name": "Alla dessa inträffade",
+            "description": "Utlöses när var och en av flera utlösare har utlösts inom samma tidsfönster, i valfri ordning. Home Assistants egna utlösare är en lista där vilken som helst av dem räcker; det här är den andra varianten.",
+            "fields": {
+                "triggers": {
+                    "name": "Utlösare",
+                    "description": "Utlösarna som alla måste ha utlösts. Ordningen spelar ingen roll, och en utlösare som utlöses igen ersätter sin tidigare tur i stället för att räknas två gånger."
+                },
+                "within": {
+                    "name": "Inom",
+                    "description": "Hur nära varandra de måste ske. Fönstret glider, så en utlösare som utlöstes längre tillbaka än så glöms bort medan de andra fortsätter att räknas."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entiteten kom tillbaka",
+            "description": "Utlöses när en entitet kommer tillbaka efter att ha varit otillgänglig ett tag, så att en router som startar om inte ser ut som att allt i huset återhämtar sig.",
+            "fields": {
+                "for": {
+                    "name": "Under",
+                    "description": "Hur länge entiteten måste ha varit borta innan återkomsten räknas. Allt kortare är ett flimmer: att ladda om en integration tar alla dess entiteter genom otillgänglig och tillbaka på under en sekund."
+                }
+            }
         },
         "user_added": {
             "name": "Användare tillagd",
@@ -1928,6 +2941,12 @@
                 "critical": "Kritisk",
                 "error": "Fel",
                 "warning": "Varning"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Längst ner",
+                "top": "Högst upp"
             }
         }
     },
