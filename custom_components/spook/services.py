@@ -340,6 +340,13 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
     # person picks their own in their profile, and the frontend asks for that
     # one. #1820.
     _languages: set[str] = field(default_factory=set)
+    # A language whose injection is on its way, so a second request for it
+    # waits for that one instead of reading the cache halfway.
+    _language_tasks: dict[str, asyncio.Task[None]] = field(default_factory=dict)
+    _starting_languages: set[str] = field(default_factory=set)
+    # Whether Home Assistant's translation loading is still being followed.
+    # Turned off the moment unloading starts, for a load already under way.
+    follows_translation_loads: bool = False
 
     def __post_init__(self) -> None:
         """Post initialization."""
@@ -426,7 +433,9 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
             async def async_load(self, language: str, components: set[str]) -> None:
                 """Load as ever, then add Spook's strings to a new language."""
                 await super().async_load(language, components)
-                await manager.async_follow_language(language)
+                # Unloading can have happened while that waited on the lock.
+                if manager.follows_translation_loads:
+                    await manager.async_follow_language(language)
 
         try:
             translations_cache.__class__ = _FollowedTranslationCache
@@ -437,8 +446,11 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
             )
             return
 
+        self.follows_translation_loads = True
+
         @callback
         def _stop_following() -> None:
+            self.follows_translation_loads = False
             # Only when nothing swapped it again since.
             if translations_cache.__class__ is _FollowedTranslationCache:
                 translations_cache.__class__ = original_class
@@ -446,23 +458,28 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
         self._on_unload.append(_stop_following)
 
     async def async_follow_language(self, language: str) -> None:
-        """Translate Spook's actions into a language loaded for the first time."""
-        if language in self._languages:
+        """Translate Spook's actions into a language loaded for the first time.
+
+        One injection per language, which every request for that language
+        waits for. Only one that went through marks the language as done; a
+        failed or cancelled one is tried again by the next request.
+        """
+        if language in self._languages or language in self._starting_languages:
             return
 
-        # Taken before injecting, which loads this language again.
-        self._languages.add(language)
+        task = self._language_tasks.get(language)
+        if task is None or task.done():
+            # A finished one is still listed until its callback has run; one
+            # that failed is not a reason to stop trying.
+            task = self._async_start_language_task(language)
+        elif task is asyncio.current_task():
+            # The injection itself loading this language again.
+            return
 
-        # In a task unloading cancels, like every other injection: one still
-        # on its way would write Spook's strings back after unload took them
-        # out again.
-        task = self.hass.async_create_task(
-            self.async_inject_service_translations([language]),
-            f"Inject Spook service translations in {language}",
-        )
-        self._on_unload.append(task.cancel)
         try:
-            await task
+            # Shielded: one caller being cancelled must not cancel the
+            # injection the others are waiting for.
+            await asyncio.shield(task)
         except asyncio.CancelledError:
             # Only swallowed when unloading cancelled Spook's part; the caller
             # being cancelled itself goes on as it should.
@@ -470,13 +487,46 @@ class SpookServiceManager:  # pylint: disable=too-many-instance-attributes
             if current is not None and current.cancelling():
                 raise
         # pylint: disable-next=broad-exception-caught
-        except Exception:  # noqa: BLE001
-            # The caller only asked for translations; Spook's part going wrong
-            # must not take theirs with it.
-            LOGGER.exception("Spook could not translate its actions into %s", language)
+        except Exception:  # noqa: BLE001, S110
+            # Logged once, where the task finishes. The caller only asked for
+            # translations, and Spook's part going wrong must not take theirs
+            # with it.
+            pass
+
+    @callback
+    def _async_start_language_task(self, language: str) -> asyncio.Task[None]:
+        """Start injecting into a language, in a task unloading cancels."""
+        # Home Assistant starts a task eagerly: the injection runs, and loads
+        # this language again, before the task is handed back to be listed.
+        self._starting_languages.add(language)
+        try:
+            task = self.hass.async_create_task(
+                self.async_inject_service_translations([language]),
+                f"Inject Spook service translations in {language}",
+            )
         finally:
+            self._starting_languages.discard(language)
+        self._language_tasks[language] = task
+        self._on_unload.append(task.cancel)
+
+        @callback
+        def _finished(_task: asyncio.Task[None]) -> None:
+            self._language_tasks.pop(language, None)
             if task.cancel in self._on_unload:
                 self._on_unload.remove(task.cancel)
+            if task.cancelled():
+                return
+            if (err := task.exception()) is not None:
+                LOGGER.error(
+                    "Spook could not translate its actions into %s: %s",
+                    language,
+                    err,
+                )
+                return
+            self._languages.add(language)
+
+        task.add_done_callback(_finished)
+        return task
 
     @callback
     def _async_setup_service_module(self, module: ModuleType) -> None:

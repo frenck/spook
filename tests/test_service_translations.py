@@ -4,9 +4,10 @@
 
 from __future__ import annotations
 
+import asyncio
 import json
 from pathlib import Path
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 import yaml
 
@@ -114,6 +115,83 @@ async def test_unloading_stops_following_translation_loads(
     assert "component.homeassistant.services.restart.fields.force.name" not in (
         translations
     )
+
+
+async def test_requests_for_a_new_language_all_wait_for_spook(
+    hass: HomeAssistant,
+) -> None:
+    """Test a second request for the same language does not read it halfway."""
+    manager = _a_manager_with_restart(hass)
+    manager._async_follow_translation_loads()
+    await manager.async_inject_service_translations()
+
+    first, second = await asyncio.gather(
+        async_get_translations(hass, "nl", "services", {"homeassistant"}),
+        async_get_translations(hass, "nl", "services", {"homeassistant"}),
+    )
+
+    key = "component.homeassistant.services.restart.name"
+    assert first[key] == second[key] == "Herstart 👻"
+
+    manager.async_clear_service_translation_overrides()
+    for undo in manager._on_unload:
+        undo()
+
+
+async def test_a_language_that_failed_is_tried_again(
+    hass: HomeAssistant,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """Test a failed injection does not mark the language as done."""
+    manager = _a_manager_with_restart(hass)
+    manager._async_follow_translation_loads()
+    await manager.async_inject_service_translations()
+
+    original = manager.async_inject_service_translations
+    calls = 0
+
+    async def _fails_once(languages: Any = None) -> None:
+        nonlocal calls
+        calls += 1
+        if calls == 1:
+            msg = "boom"
+            raise RuntimeError(msg)
+        await original(languages)
+
+    monkeypatch.setattr(manager, "async_inject_service_translations", _fails_once)
+
+    await async_get_translations(hass, "nl", "services", {"homeassistant"})
+    assert "nl" not in manager._languages
+
+    translations = await async_get_translations(
+        hass, "nl", "services", {"homeassistant"}
+    )
+    assert translations["component.homeassistant.services.restart.name"] == (
+        "Herstart 👻"
+    )
+
+    manager.async_clear_service_translation_overrides()
+    for undo in manager._on_unload:
+        undo()
+
+
+async def test_a_load_that_outlives_unloading_adds_nothing(
+    hass: HomeAssistant,
+) -> None:
+    """Test a load still under way when Spook unloads leaves Spook out."""
+    cache = _async_get_translations_cache(hass)
+    manager = _a_manager_with_restart(hass)
+    manager._async_follow_translation_loads()
+
+    # Unloading turns this off first, while a load can still be under way.
+    manager.follows_translation_loads = False
+    await cache.async_load("fr", {"homeassistant"})
+
+    assert "fr" not in manager._languages
+    assert "fr" not in manager._language_tasks
+
+    for undo in manager._on_unload:
+        undo()
 
 
 async def test_service_translations_are_injected(hass: HomeAssistant) -> None:
