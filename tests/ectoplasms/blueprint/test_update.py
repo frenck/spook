@@ -846,6 +846,7 @@ async def test_another_blueprint_at_the_same_address_is_not_this_one(
     assert "to: 'off'" in written
 
 
+@pytest.mark.usefixtures("spook_translations")
 async def test_a_blueprint_needing_a_newer_home_assistant_is_refused(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
@@ -2270,6 +2271,7 @@ async def test_the_copies_of_another_blueprint_are_left_alone(
     assert len(_copies_beside(file)) == 1
 
 
+@pytest.mark.usefixtures("spook_translations")
 async def test_a_copy_that_cannot_be_made_stops_the_install(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
@@ -3692,6 +3694,7 @@ actions:
     assert _fingerprint(before) != _fingerprint(after)
 
 
+@pytest.mark.usefixtures("spook_translations")
 async def test_installing_does_not_write_back_a_blueprint_that_was_deleted(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
@@ -3756,6 +3759,7 @@ async def test_a_deleted_blueprint_is_noticed_without_waiting_for_a_round(
     assert hass.states.get(_ENTITY) is None
 
 
+@pytest.mark.usefixtures("spook_translations")
 async def test_a_deleted_blueprint_is_reported_before_anything_else_is(
     hass: HomeAssistant,
     freezer: FrozenDateTimeFactory,
