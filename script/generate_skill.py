@@ -469,8 +469,12 @@ def write(directory: Path) -> None:
 
     # A reference that is no longer made would linger, and the test that
     # holds the folder to what is made would keep failing after regenerating.
+    # Only files this generator wrote, going by the line it starts them with:
+    # pointed at the wrong folder, it must not take anybody's notes with it.
     for stale in directory.glob("*.md"):
-        if stale.name not in references:
+        if stale.name not in references and stale.read_text(
+            encoding="utf-8"
+        ).startswith(GENERATED):
             stale.unlink()
 
     for name, content in references.items():

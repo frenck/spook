@@ -74,11 +74,23 @@ def test_references_are_up_to_date(tmp_path: Path) -> None:
 
 def test_regenerating_clears_a_reference_no_longer_made(tmp_path: Path) -> None:
     """A reference that was renamed or dropped does not linger after a rerun."""
-    (tmp_path / "gone.md").write_text("left behind", encoding="utf-8")
+    generator = _generator()
+    (tmp_path / "gone.md").write_text(
+        f"{generator.GENERATED}\n\n# Gone", encoding="utf-8"
+    )
+
+    generator.write(tmp_path)
+
+    assert not (tmp_path / "gone.md").exists()
+
+
+def test_regenerating_leaves_files_it_did_not_write(tmp_path: Path) -> None:
+    """Pointed at the wrong folder, the generator takes nobody's notes along."""
+    (tmp_path / "notes.md").write_text("# Mine", encoding="utf-8")
 
     _generator().write(tmp_path)
 
-    assert not (tmp_path / "gone.md").exists()
+    assert (tmp_path / "notes.md").read_text(encoding="utf-8") == "# Mine"
 
 
 def test_actions_say_how_they_answer() -> None:
