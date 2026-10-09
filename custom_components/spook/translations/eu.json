@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Tenperatura-sentsore ezezaguna gune honetarako: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tenperatura-sentsore ezezaguna gune honetarako: {area}",
+                        "description": "Spookek mamu bat aurkitu du zure guneetan 👻\n\n{area} guneak Home Assistant-ek ezagutzen ez duen tenperatura-sentsore bat erabiltzen du:\n\n{entities}\n\nHome Assistant-ek sentsore hau aukeratzen denean bakarrik egiaztatzen du; beraz, kendu edo izenez aldatu zenean, guneak ezer ez seinalatzen jarraitu zuen. Assist-ek eta gune-txartelek jada ez dute tenperatura-irakurketarik jasotzen hartatik.\n\nGarbitu ezarpena berriro sentsore bat aukeratu ahal izateko, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Garbitu ezarpena",
+                            "manage": "Utzi nik neuk konpontzen",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da gune honi buruz hemendik aurrera.",
+                    "manage": "Beste sentsore bat aukera dezakezu gune honen ezarpenetan, [Guneak orrian](/config/areas/dashboard).",
+                    "changed": "Sentsore hau itzuli da, edo ezarpenak beste nonbait seinalatzen du orain, Spookek begiratu zuenetik. Beraz, ez da ezer garbitu. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Hezetasun-sentsore ezezaguna gune honetarako: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Hezetasun-sentsore ezezaguna gune honetarako: {area}",
+                        "description": "Spookek mamu bat aurkitu du zure guneetan 👻\n\n{area} guneak Home Assistant-ek ezagutzen ez duen hezetasun-sentsore bat erabiltzen du:\n\n{entities}\n\nHome Assistant-ek sentsore hau aukeratzen denean bakarrik egiaztatzen du; beraz, kendu edo izenez aldatu zenean, guneak ezer ez seinalatzen jarraitu zuen. Assist-ek eta gune-txartelek jada ez dute hezetasun-irakurketarik jasotzen hartatik.\n\nGarbitu ezarpena berriro sentsore bat aukeratu ahal izateko, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Garbitu ezarpena",
+                            "manage": "Utzi nik neuk konpontzen",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da gune honi buruz hemendik aurrera.",
+                    "manage": "Beste sentsore bat aukera dezakezu gune honen ezarpenetan, [Guneak orrian](/config/areas/dashboard).",
+                    "changed": "Sentsore hau itzuli da, edo ezarpenak beste nonbait seinalatzen du orain, Spookek begiratu zuenetik. Beraz, ez da ezer garbitu. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Tenperatura- eta hezetasun-sentsore ezezagunak gune honetarako: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tenperatura- eta hezetasun-sentsore ezezagunak gune honetarako: {area}",
+                        "description": "Spookek mamu bat aurkitu du zure guneetan 👻\n\n{area} guneak Home Assistant-ek ezagutzen ez dituen tenperatura-sentsore bat eta hezetasun-sentsore bat erabiltzen ditu:\n\n{entities}\n\nHome Assistant-ek sentsore hauek aukeratzen direnean bakarrik egiaztatzen ditu; beraz, kendu edo izenez aldatu zirenean, guneak ezer ez seinalatzen jarraitu zuen. Assist-ek eta gune-txartelek jada ez dute irakurketarik jasotzen haietatik.\n\nGarbitu ezarpenak berriro sentsoreak aukeratu ahal izateko, edo mantendu eta Spookek ez ditu gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Garbitu ezarpenak",
+                            "manage": "Utzi nik neuk konpontzen",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da gune honi buruz hemendik aurrera.",
+                    "manage": "Beste sentsore batzuk aukera ditzakezu gune honen ezarpenetan, [Guneak orrian](/config/areas/dashboard).",
+                    "changed": "Sentsore hauek itzuli dira, edo ezarpenek beste nonbait seinalatzen dute orain, Spookek begiratu zuenetik. Beraz, ez da ezer garbitu. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
         }
     },
     "system_health": {
