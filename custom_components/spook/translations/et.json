@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Tundmatu temperatuuriandur alal: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tundmatu temperatuuriandur alal: {area}",
+                        "description": "Spook leidis su aladest kummituse 👻\n\nAla {area} kasutab temperatuuriandurit, mida Home Assistant ei tunne:\n\n{entities}\n\nHome Assistant kontrollib seda andurit ainult valimise hetkel, nii et kui see eemaldati või ümber nimetati, jäi ala osutama tühjusele. Häälabiline ja alakaardid ei saa sellelt enam temperatuurinäitu.\n\nTühjenda säte, et saaksid uuesti anduri valida, või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Tühjenda säte",
+                            "manage": "Las ma parandan ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest alast nüüdsest peale.",
+                    "manage": "Saad valida teise anduri selle ala sätetes [alade lehel](/config/areas/dashboard).",
+                    "changed": "See andur on pärast Spooki vaatamist tagasi või osutab säte nüüd mujale. Seega ei tühjendatud midagi. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Tundmatu niiskusandur alal: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tundmatu niiskusandur alal: {area}",
+                        "description": "Spook leidis su aladest kummituse 👻\n\nAla {area} kasutab niiskusandurit, mida Home Assistant ei tunne:\n\n{entities}\n\nHome Assistant kontrollib seda andurit ainult valimise hetkel, nii et kui see eemaldati või ümber nimetati, jäi ala osutama tühjusele. Häälabiline ja alakaardid ei saa sellelt enam niiskusnäitu.\n\nTühjenda säte, et saaksid uuesti anduri valida, või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Tühjenda säte",
+                            "manage": "Las ma parandan ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest alast nüüdsest peale.",
+                    "manage": "Saad valida teise anduri selle ala sätetes [alade lehel](/config/areas/dashboard).",
+                    "changed": "See andur on pärast Spooki vaatamist tagasi või osutab säte nüüd mujale. Seega ei tühjendatud midagi. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Tundmatud temperatuuri- ja niiskusandurid alal: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tundmatud temperatuuri- ja niiskusandurid alal: {area}",
+                        "description": "Spook leidis su aladest kummituse 👻\n\nAla {area} kasutab temperatuuri- ja niiskusandureid, mida Home Assistant ei tunne:\n\n{entities}\n\nHome Assistant kontrollib neid andureid ainult valimise hetkel, nii et kui need eemaldati või ümber nimetati, jäi ala osutama tühjusele. Häälabiline ja alakaardid ei saa neilt enam näitu.\n\nTühjenda sätted, et saaksid uuesti andurid valida, või jäta alles, siis Spook lõpetab neile osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Tühjenda sätted",
+                            "manage": "Las ma parandan ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest alast nüüdsest peale.",
+                    "manage": "Saad valida teised andurid selle ala sätetes [alade lehel](/config/areas/dashboard).",
+                    "changed": "Need andurid on pärast Spooki vaatamist tagasi või osutavad sätted nüüd mujale. Seega ei tühjendatud midagi. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
         }
     },
     "system_health": {
