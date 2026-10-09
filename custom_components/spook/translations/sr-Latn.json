@@ -822,6 +822,69 @@
         "lovelace_unknown_service_references": {
             "description": "Spook je pronašao duha u vašim kontrolnim tablama 👻\n\nDok je lebdeo uokolo, Spook je naišao na sledeću kontrolnu tablu:\n\n[{dashboard}]({edit})\n\nOva kontrolna tabla pokreće sledeće akcije koje su nepoznate sistemu Home Assistant:\n\n{services}\n\n\n\nDugme ili kartica koji koriste neku od ovih akcija neće uraditi ništa kada se pritisnu. Ovo se najčešće dešava kada je skripta preimenovana ili uklonjena, ili kada je izbrisana cela integracija. Da biste rešili ovu grešku, [uredite kontrolnu tablu]({edit}) i uklonite ili zamenite ove akcije koje više ne postoje.\n\nSpook 👻 Vaš pomoćnik.",
             "title": "Nepoznate akcije se koriste u kontrolnoj tabli: {dashboard}"
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Nepoznat senzor temperature za prostoriju: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nepoznat senzor temperature za prostoriju: {area}",
+                        "description": "Spook je pronašao duha u vašim prostorijama. 👻\n\nProstorija {area} koristi senzor temperature koji je nepoznat Home Assistant-u:\n\n{entities}\n\nHome Assistant proverava ovaj senzor samo kada je odabran, pa kada je uklonjen ili preimenovan, prostorija je nastavila da pokazuje na ništa. Kartice asistenta i prostorija više ne dobijaju očitavanja temperature sa njega.\n\nObrišite podešavanje kako biste mogli ponovo da izaberete senzor, ili ga zadržite i Spook će prestati da ukazuje na to.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Obriši podešavanje",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "ignore": "Zadrži, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
+                    "manage": "Možete izabrati drugi senzor u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovaj senzor je ponovo dostupan ili podešavanje sada ukazuje na drugu lokaciju otkako ga je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Nepoznat senzor vlažnosti za prostoriju: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nepoznat senzor vlažnosti za prostoriju: {area}",
+                        "description": "Spook je pronašao duha u vašim prostorijama. 👻\n\nProstorija {area} koristi senzor vlažnosti koji je nepoznat Home Assistant-u:\n\n{entities}\n\nHome Assistant proverava ovaj senzor samo kada je odabran, pa kada je uklonjen ili preimenovan, prostorija je nastavila da pokazuje na ništa. Kartice asistenta i prostorija više ne dobijaju očitavanja vlažnosti sa njega.\n\nObrišite podešavanje kako biste mogli ponovo da izaberete senzor, ili ga zadržite i Spook će prestati da ukazuje na to.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Obriši podešavanje",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "ignore": "Zadrži, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
+                    "manage": "Možete izabrati drugi senzor u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovaj senzor je ponovo dostupan ili podešavanje sada ukazuje na drugu lokaciju otkako ga je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Nepoznati senzori temperature i vlažnosti za prostoriju: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nepoznati senzori temperature i vlažnosti za prostoriju: {area}",
+                        "description": "Spook je pronašao duha u vašim prostorijama. 👻\n\nProstorija {area} koristi senzor temperature i senzor vlažnosti koji su nepoznati Home Assistant-u:\n\n{entities}\n\nHome Assistant proverava ove senzore samo kada su odabrani, pa kada su uklonjeni ili preimenovani, prostorija je nastavila da pokazuje na ništa. Kartice asistenta i prostorija više ne dobijaju očitavanja sa njih.\n\nObrišite podešavanja kako biste mogli ponovo da izaberete senzore, ili ih zadržite i Spook će prestati da ukazuje na to.\n\nSpook 👻 Vaš pomoćnik.",
+                        "menu_options": {
+                            "remove": "Obriši podešavanja",
+                            "manage": "Dozvoli mi da sam popravim",
+                            "ignore": "Zadrži, prestani da me obaveštavaš"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
+                    "manage": "Možete izabrati druge senzore u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard).",
+                    "changed": "Ovi senzori su ponovo dostupni ili podešavanja sada ukazuju na drugu lokaciju otkako ih je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
+                }
+            }
         }
     },
     "services": {
