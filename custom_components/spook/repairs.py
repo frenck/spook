@@ -13,6 +13,9 @@ from typing import TYPE_CHECKING, Any, final
 
 from homeassistant.components import blueprint, lovelace as lovelace_const
 from homeassistant.components.automation import automations_with_entity
+from homeassistant.components.energy.data import (
+    async_get_manager as async_get_energy_manager,
+)
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
 from homeassistant.components.script import scripts_with_entity
@@ -43,6 +46,10 @@ from homeassistant.util.async_ import create_eager_task
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
+from .energy_preferences import (
+    async_unknown_energy_entities,
+    energy_preferences_without,
+)
 from .entity_filtering import (
     async_filter_known_entity_ids,
     async_get_all_entity_ids,
@@ -1476,6 +1483,47 @@ class OrphanedStatisticsFixFlow(_RemoveOrIgnoreFixFlow):
         return self.async_create_entry(data={})
 
 
+class EnergyUnknownReferencesFixFlow(_RemoveOrIgnoreFixFlow):
+    """Handler for entities the energy settings name that are gone.
+
+    Takes them out of the energy settings, each in the way its setting allows:
+    a meter takes its source along, a price or a cost is only cleared. What
+    goes is what the issue showed and is still unknown when the button is
+    pressed, so one that came back meanwhile stays.
+    """
+
+    _key = "entities"
+    _id_key = "energy_unknown_entity_ids"
+
+    def _menu_placeholders(self) -> dict[str, str]:
+        """List the entities the way the issue listed them."""
+        return {"entities": str((self.data or {}).get("entities", ""))}
+
+    async def async_step_remove(
+        self,
+        _: dict[str, str] | None = None,
+    ) -> FlowResult:
+        """Take the entities out of the energy settings, after looking again."""
+        offered = _offered(self.data, self._id_key)
+        removing = offered & await async_unknown_energy_entities(self.hass)
+        if not removing:
+            return self.async_abort(reason="nothing_to_remove")
+
+        manager = await async_get_energy_manager(self.hass)
+        preferences = manager.data or {}
+        cleaned = energy_preferences_without(preferences, removing)
+        if all(value == preferences.get(key) for key, value in cleaned.items()):
+            return self.async_abort(reason="nothing_to_remove")
+
+        await manager.async_update(cleaned)  # type: ignore[arg-type]
+        LOGGER.debug(
+            "Spook took unknown entities out of the energy settings: %s",
+            ", ".join(sorted(removing)),
+        )
+
+        return self.async_create_entry(data={})
+
+
 # Remove-or-ignore fix flows, keyed by the data field that identifies their
 # leftover registry thing.
 _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
@@ -1490,6 +1538,7 @@ _REMOVE_OR_IGNORE_FLOWS: dict[str, type[_RemoveOrIgnoreFixFlow]] = {
     "min_max_config_entry_id": MinMaxUnknownSourcesFixFlow,
     "helper_config_entry_id": HelperUnknownSourcesFixFlow,
     "orphaned_statistic_ids": OrphanedStatisticsFixFlow,
+    "energy_unknown_entity_ids": EnergyUnknownReferencesFixFlow,
 }
 
 

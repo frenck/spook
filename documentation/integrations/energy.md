@@ -38,7 +38,17 @@ Spook runs Home Assistant's own energy validation and looks for one result out o
 
 What this buys you is where the answer appears. The dashboard itself does not complain: it draws the sources it can still read and leaves out the one it cannot, so the graph stays plausible while quietly being wrong. A missing gas sensor does not look like an error, it looks like a month where you used no gas.
 
-To resolve the raised issue, go to Settings > Dashboards > Energy and update or remove these entities. Spook will automatically remove the repair issue once the issue is fixed.
+The repair offers to fix it for you. It gives you three choices:
+
+- **Take these out of the energy configuration**, which removes them the way each setting allows. A missing meter takes its source or device along: a solar panel, a battery, a gas or water meter, or one way of a grid connection. A missing price or cost is only cleared, so the meter it belonged to keeps counting. A device that was part of a device that goes stops saying so.
+- **Let me do it myself**, which points you at **Settings** > **Dashboards** > **Energy**.
+- **Keep them, stop telling me**, which leaves them alone and stops the repair coming back.
+
+Was the entity renamed rather than removed, like a device that was paired again? Then pick the new one in the energy configuration yourself. Taking it out means the dashboard stops showing the history of that source; the statistics themselves stay.
+
+Spook looks again before it takes anything out, and only touches what the list you read and that fresh look agree on. An entity that is back by the time you press the button is left where it is. If none of them is still unknown, Spook says so instead of reporting a job it did not do.
+
+Spook will automatically remove the repair issue once the issue is fixed.
 
 ## Use cases
 

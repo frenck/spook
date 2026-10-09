@@ -12,8 +12,7 @@ from homeassistant.components.energy.validate import (
     ValidationIssues,
 )
 
-from custom_components.spook import statistics_sources
-from custom_components.spook.ectoplasms.energy.repairs import unknown_references
+from custom_components.spook import energy_preferences, statistics_sources
 from custom_components.spook.ectoplasms.energy.repairs.unknown_references import (
     SpookRepair,
 )
@@ -38,7 +37,7 @@ def _install_validation(
     async def _async_validate(_hass: HomeAssistant) -> EnergyPreferencesValidation:
         return result
 
-    monkeypatch.setattr(unknown_references, "async_validate", _async_validate)
+    monkeypatch.setattr(energy_preferences, "async_validate", _async_validate)
 
 
 async def test_missing_energy_entity_creates_issue(
@@ -63,6 +62,11 @@ async def test_missing_energy_entity_creates_issue(
     assert issue.translation_placeholders
     assert "sensor.ghost_meter" in issue.translation_placeholders["entities"]
     assert "sensor.flaky" not in issue.translation_placeholders["entities"]
+    # Fixable, and the fix knows exactly what was shown.
+    assert issue.is_fixable
+    assert issue.data
+    assert issue.data["energy_unknown_entity_ids"] == "sensor.ghost_meter"
+    assert issue.data["entities"] == issue.translation_placeholders["entities"]
 
 
 async def test_only_transient_issues_create_no_issue(
