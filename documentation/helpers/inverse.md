@@ -23,8 +23,8 @@ A light inverted as a switch is only on or off: its brightness, colors and effec
 
 A cover can be backwards in two ways, and the inverse helper lets you turn around either one, or both:
 
-- **Inverse opening, closing and position** (on by default): opening becomes closing and the other way around, and a position becomes its opposite. A cover that is 30% open is shown as 70% open, and telling the inverse to go to 70% sends the source to 30%.
-- **Inverse tilt** (off by default): the same for the tilt of the slats. Handy for blinds that open and close fine, but tilt the wrong way.
+- **Invert opening, closing and position** (on by default): opening becomes closing and the other way around, and a position becomes its opposite. A cover that is 30% open is shown as 70% open, and telling the inverse to go to 70% sends the source to 30%.
+- **Invert tilt** (off by default): the same for the tilt of the slats. Handy for blinds that open and close fine, but tilt the wrong way.
 
 The position decides whether the inverted cover is closed, not the state of the source. A cover counts as closed only at exactly 0%, and as open at anything above that. So the inverted cover is closed only when the source is all the way open. A cover that cannot report its position only knows open or closed, and has just that turned around.
 
