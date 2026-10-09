@@ -42,14 +42,16 @@ def _async_service_icon_cache(hass: HomeAssistant) -> dict[str, Any] | None:
         )
         return None
 
-    if not isinstance(categories, dict):
+    if not isinstance(categories, dict) or not isinstance(
+        services := categories.setdefault(ICON_CATEGORY, {}), dict
+    ):
         LOGGER.warning(
             "Home Assistant's icon cache has an unexpected structure, "
             "skipping the icons of Spook's actions"
         )
         return None
 
-    return categories.setdefault(ICON_CATEGORY, {})
+    return services
 
 
 async def async_inject_service_icons(
@@ -88,8 +90,12 @@ async def async_inject_service_icons(
         if (icon := spook_icons.get(key)) is None:
             continue
 
+        # A domain in a shape Spook does not know is left alone, like the
+        # whole cache would be.
         domain_icons = cache.setdefault(domain, {})
-        if service in domain_icons and (domain, service) not in injected:
+        if not isinstance(domain_icons, dict) or (
+            service in domain_icons and (domain, service) not in injected
+        ):
             continue
 
         domain_icons[service] = icon
@@ -104,6 +110,7 @@ def async_remove_service_icons(
     """Take out the icons Spook put in, and only those."""
     if injected and (cache := _async_service_icon_cache(hass)) is not None:
         for domain, service in injected:
-            cache.get(domain, {}).pop(service, None)
+            if isinstance(domain_icons := cache.get(domain), dict):
+                domain_icons.pop(service, None)
 
     injected.clear()

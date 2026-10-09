@@ -104,3 +104,33 @@ async def test_unexpected_cache_skips_the_icons(
 
     assert not injected
     assert "Unable to access Home Assistant's icon cache" in caplog.text
+
+
+async def test_unexpected_services_or_domain_skips_the_icons(
+    hass: HomeAssistant,
+    caplog: pytest.LogCaptureFixture,
+) -> None:
+    """Test a cache that is a dict outside but not inside costs the icons only.
+
+    Both the actions and a single domain can change shape on their own, and
+    neither may take Spook down with it.
+    """
+    await async_get_icons(hass, "services", {"light", "spook"})
+    # pylint: disable-next=protected-access
+    categories = hass.data[ICON_CACHE]._cache  # noqa: SLF001
+    injected: set[tuple[str, str]] = set()
+
+    categories["services"]["light"] = "not a mapping"
+    await async_inject_service_icons(hass, [SPOOKS_ACTION], injected)
+    async_remove_service_icons(hass, {("light", "increase_brightness")})
+
+    assert not injected
+
+    # Home Assistant itself trips over this one when loading, so it is the
+    # way out that has to cope with it on its own.
+    categories["services"] = "not a mapping"
+    await async_inject_service_icons(hass, [SPOOKS_ACTION], injected)
+    async_remove_service_icons(hass, {("light", "increase_brightness")})
+
+    assert not injected
+    assert "Home Assistant's icon cache has an unexpected structure" in caplog.text
