@@ -93,6 +93,12 @@ Fires when a script starts a run, picked in the editor rather than typed into an
 
 `spook.script_started`, [documentation](other-features#script-started) 📚
 
+## Spook's state trigger
+
+Fires when an entity changes state, for everything a label, area, floor or device covers, or every entity of a domain, integration or device class, with things excluded again. Ignores unavailable and attribute noise, survives a blip while waiting out a duration, and can wait before it fires. _#state_ _#label_ _#area_ _#wildcard_
+
+`spook.state_changed`, [documentation](other-features#spooks-state-trigger) 📚
+
 ## Target temperature reached
 
 Fires when the temperature of a thermostat or water heater reaches its target: the bathroom is warm, the water is hot. _#climate_ _#thermostat_ _#temperature_

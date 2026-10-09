@@ -37,6 +37,115 @@ script_started:
   target:
     entity:
       domain: script
+state_changed:
+  target:
+  fields:
+    domain:
+      required: false
+      example: binary_sensor
+      selector:
+        text:
+          multiple: true
+    integration:
+      required: false
+      example: zha
+      selector:
+        text:
+          multiple: true
+    config_entry:
+      required: false
+      selector:
+        config_entry:
+    device_class:
+      required: false
+      example: door
+      selector:
+        text:
+          multiple: true
+    exclude_target:
+      required: false
+      selector:
+        target:
+    exclude_domain:
+      required: false
+      example: sensor
+      selector:
+        text:
+          multiple: true
+    exclude_integration:
+      required: false
+      example: template
+      selector:
+        text:
+          multiple: true
+    exclude_config_entry:
+      required: false
+      selector:
+        config_entry:
+    exclude_device_class:
+      required: false
+      example: battery
+      selector:
+        text:
+          multiple: true
+    attribute:
+      required: false
+      example: brightness
+      selector:
+        text:
+    from:
+      required: false
+      example: "off"
+      selector:
+        text:
+          multiple: true
+    not_from:
+      required: false
+      selector:
+        text:
+          multiple: true
+    to:
+      required: false
+      example: "on"
+      selector:
+        text:
+          multiple: true
+    not_to:
+      required: false
+      selector:
+        text:
+          multiple: true
+    ignore_unavailable:
+      required: true
+      default: true
+      selector:
+        boolean:
+    attribute_changes:
+      required: true
+      default: false
+      selector:
+        boolean:
+    behavior:
+      required: true
+      default: each
+      selector:
+        automation_behavior:
+          mode: trigger
+    for:
+      required: false
+      example: "00:05:00"
+      selector:
+        duration:
+    blip_tolerance:
+      required: false
+      example: "00:00:30"
+      selector:
+        duration:
+    delay:
+      required: false
+      example: "00:01:00"
+      selector:
+        duration:
 target_temperature_reached:
   target:
     entity:

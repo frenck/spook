@@ -1059,6 +1059,159 @@ target:
 
 :::
 
+### Spook's state trigger
+
+Fires when an entity changes state, for everything a target covers.
+
+```{list-table}
+:header-rows: 1
+* - Trigger properties
+* - Trigger
+  - Spook's state trigger 👻
+* - Trigger name
+  - `spook.state_changed`
+* - Targets
+  - Any {term}`entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels; optional
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added trigger
+```
+
+```{list-table}
+:header-rows: 2
+* - Trigger options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `domain`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  - `binary_sensor`
+* - `integration`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  - `zha`
+* - `config_entry`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  -
+* - `device_class`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  - `door`
+* - `exclude_target`
+  - target
+  - No
+  - `area_id: garage`
+* - `exclude_domain`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  - `sensor`
+* - `exclude_integration`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  - `template`
+* - `exclude_config_entry`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  -
+* - `exclude_device_class`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  - `battery`
+* - `attribute`
+  - {term}`string <string>`
+  - No
+  - `brightness`
+* - `from`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  - `"off"`
+* - `not_from`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  -
+* - `to`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  - `"on"`
+* - `not_to`
+  - {term}`list <list>` of {term}`strings <string>`
+  - No
+  -
+* - `ignore_unavailable`
+  - {term}`boolean <boolean>`
+  - No
+  - `true`
+* - `attribute_changes`
+  - {term}`boolean <boolean>`
+  - No
+  - `false`
+* - `behavior`
+  - {term}`string <string>`
+  - No
+  - `each`
+* - `for`
+  - {term}`string <string>`
+  - No
+  - `00:05:00`
+* - `blip_tolerance`
+  - {term}`string <string>`
+  - No
+  - `00:00:30`
+* - `delay`
+  - {term}`string <string>`
+  - No
+  - `00:01:00`
+```
+
+Home Assistant's state trigger takes entities, one by one. This one takes a target: a label, an area, a floor, a device, or a mix. Put a label on every outside door and one trigger covers all of them, including the door you add next year.
+
+**Which entities.** Everything the target covers, kept to the domains, integrations, integration entries and device classes you list. Leave the target out and those lists pick the entities from everything Home Assistant has instead: `device_class: door` alone is every door in the house. Without a target, at least one of them is needed. Picked this way, only primary entities count, and entities without a registry entry can only be picked by domain. Within one list any match will do; across lists, all of them must hold: a door sensor from ZHA is a `binary_sensor`, from `zha`, of class `door`. Through a device, area or floor, or a label on one of those, only the primary entities count, the way Home Assistant does it, so the battery and signal strength sensors of a device stay out of it. A label put on an entity itself names that entity, so it counts whatever it is. Then the same again, but to leave things out: `exclude_target` and the `exclude_` lists. Without an `exclude_target`, or with one that names nothing, the `exclude_` lists apply to everything the target covers. Leaving out an area leaves out everything in it, the diagnostic entities too. The target is followed as it changes: a new entity with the label joins straight away.
+
+**Which changes.** A different state, from any state to any state, unless you narrow it down with `from` or `not_from`, and `to` or `not_to`. An attribute that changes while the state stays the same does not count, unless you turn on `attribute_changes`. With `attribute`, it follows that attribute instead of the state, and `attribute_changes` has nothing to add. Values are compared as text, so a brightness of `255` and a `"255"` typed into the editor are the same thing.
+
+Unavailable and unknown are ignored on both sides: a router rebooting does not take every door through a change. Turn off `ignore_unavailable` to trigger on them. Naming them in `from` or `to` while they are ignored is refused, since that trigger could never fire. Following an `attribute`, `from` and `to` are its values, so an attribute that says `unknown` is fine to ask for.
+
+**How many.** `behavior` works like it does on Home Assistant's own entity triggers. `each` fires for every entity on its own. `first` fires when the first one of the target gets there, and not again until none of them are. `all` fires the moment the last one gets there. Both are about getting to a state, so they need `to` or `not_to`. While unavailable and unknown are ignored, entities in those states do not take part: a door that is not answering does not keep `all` from firing.
+
+**When.** `for` waits until the change has held for that long. Held means that value: changing again in between calls it off, even to another value that would pass `to`. For `first` and `all` it is the target that has to hold, not one entity. `blip_tolerance` lets something drop to unavailable or unknown for a moment while `for` is running without starting the wait over: it counts as still there until it is back, as it was, or the tolerance runs out. Coming back as anything else calls the wait off. If the time runs out during the blip, it fires as soon as the blip is over. `delay` waits before firing, whatever happens in between, like a delay at the start of your actions. With both, `delay` starts once `for` is done.
+
+When it fires, `trigger.entity_id` names the entity, `trigger.from_state` and `trigger.to_state` hold its state just before and after the change, and `trigger.for` and `trigger.delay` the durations you asked for. With `delay`, those are still the states of the moment it changed.
+
+:::{seealso} Example trigger in {term}`YAML`
+:class: dropdown
+
+Any outside door left open for five minutes, except the garage:
+
+```{code-block} yaml
+:linenos:
+trigger: spook.state_changed
+target:
+  label_id: outside_door
+options:
+  domain: binary_sensor
+  device_class: door
+  exclude_target:
+    area_id: garage
+  to: "on"
+  for: "00:05:00"
+  blip_tolerance: "00:00:30"
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- A change while Home Assistant is down, or while this trigger is not loaded, is not reported afterwards. What is waiting out `for` or `delay` is dropped on a restart or a reload of the automation, the same as a delay in the actions.
+- An entity already in the state when the trigger loads has not changed, so `for` does not start counting until it does.
+- Filters that leave nothing are not refused. The target can still grow into them.
+- Picking without a target follows the entity registry. An entity without a registry entry that shows up later is picked by its domain the next time the registry changes, not the moment its first state is written.
+- A filter on integration, integration entry or device class reads the entity registry, because a change there is what makes the trigger look again. Entities without a unique ID are not in it, and never pass one of those filters.
+
+:::
+
 ### User added
 
 Fires when somebody is given a login to Home Assistant.
