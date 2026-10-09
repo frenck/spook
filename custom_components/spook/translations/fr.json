@@ -546,7 +546,7 @@
         },
         "lovelace_missing_resources": {
             "title": "Les ressources du tableau de bord font référence a des fichiers manquants",
-            "description": "Spook a trouvé un fantôme dans vos tableaux de bords 👻\n\n\n\nLa ressource de tableau de bord suivante fait référence à des fichiers qui n'existent pas :\n\n\n\n{resources}\n\n\n\n\n\n\n\nCeci arrive souvent lorsqu'une carte personnalisée ou ses fichiers sont supprimés malgré que la configuration de la ressource reste configurée. Pour corriger cette erreur, ouvrez Paramètres > Tableaux de bord > Ressources et retirez ou corrigez ces ressources.\n\n\n\nSpook 👻 Votre pote."
+            "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nLes ressources de tableau de bord suivantes font référence à des fichiers qui n'existent pas :\n\n{resources}\n\n\n\nCeci arrive souvent lorsqu'une carte personnalisée ou ses fichiers ont été supprimés alors que la ressource est restée configurée. Pour corriger cette erreur, ouvrez la [page Ressources](/config/lovelace/resources) et retirez ou corrigez ces ressources. Elle n'a pas d'onglet à elle : sur la page Tableaux de bord, elle se trouve derrière les trois points, en haut à droite.\n\nSpook 👻 Votre pote."
         },
         "lovelace_missing_resources_yaml": {
             "description": "Spook a trouvé un fantôme dans vos tableaux de bord 👻\n\nLes ressources de tableau de bord suivantes pointent vers des fichiers qui n'existent pas :\n\n{resources}\n\n\n\nCela arrive généralement lorsqu'une carte personnalisée ou ses fichiers ont été supprimés mais que la ressource est restée.\n\nCes ressources sont listées dans votre configuration YAML, la page Ressources ne peut donc pas les modifier. Modifiez la section `resources:` de votre configuration Lovelace et supprimez ou corrigez ces entrées.\n\nSpook 👻 Votre pote.",
@@ -1327,7 +1327,7 @@
                     "description": "La valeur initiale de l'entré numérique lors du démarrage de Home Assistant."
                 }
             },
-            "description": "Créer une nouvelle entrée numérique dynamiquement.",
+            "description": "Crée une nouvelle entrée numérique dynamiquement. Renvoie l'ID d'entité de la nouvelle entrée numérique.",
             "name": "Créer une entrée numérique"
         },
         "homeassistant_rename_entity": {
@@ -1698,7 +1698,7 @@
                 }
             },
             "name": "Désactiver une intégration",
-            "description": "Désactive une entrée d'intégration."
+            "description": "Désactive des entrées d'intégration, une entrée précise ou toutes les entrées d'une intégration."
         },
         "homeassistant_enable_config_entry": {
             "fields": {
@@ -1712,7 +1712,7 @@
                 }
             },
             "name": "Activer une intégration",
-            "description": "Active une entrée d'intégration."
+            "description": "Active des entrées d'intégration, une entrée précise ou toutes les entrées d'une intégration."
         },
         "homeassistant_disable_polling": {
             "fields": {
@@ -1992,7 +1992,7 @@
         },
         "repairs_ignore_all": {
             "name": "Ignorer tout les corrections",
-            "description": "Ignore toutes les corrections actuellement signalés dans l'espace de réparations de Home Assistant.",
+            "description": "Ignore toutes les corrections actuellement signalées dans l'espace de réparations de Home Assistant, ou seulement celles signalées par certaines intégrations.",
             "fields": {
                 "domain": {
                     "name": "Domaine",
@@ -2278,7 +2278,7 @@
         },
         "repairs_unignore_all": {
             "name": "Ne plus ignorer les corrections",
-            "description": "Ne plus ignorer les corrections actuellement signalés dans les corrections Home Assistant.",
+            "description": "Ne plus ignorer les corrections actuellement signalées dans les corrections Home Assistant, ou seulement celles signalées par certaines intégrations.",
             "fields": {
                 "domain": {
                     "name": "Domaine",
