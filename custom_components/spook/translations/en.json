@@ -727,8 +727,25 @@
       }
     },
     "energy_unknown_references": {
-      "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. To fix this error, open Settings > Dashboards > Energy and update or remove these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in the energy dashboard"
+      "title": "Unknown entities used in the energy dashboard",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Unknown entities used in the energy dashboard",
+            "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. Renamed? Then open [Settings > Dashboards > Energy](/config/energy) and pick the new one, so its history stays on the dashboard.\n\nRemoved for good? Spook can take these out of the energy configuration for you. A missing meter takes its source or device along, a missing price or cost is only cleared. The dashboard then stops showing the history of what is taken out; the statistics themselves stay.\n\nSpook 👻 Your homie.",
+            "menu_options": {
+              "remove": "Take these out of the energy configuration",
+              "manage": "Let me do it myself",
+              "ignore": "Keep them, stop telling me"
+            }
+          }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about these entities from now on.",
+          "manage": "You can update or remove these yourself in the [energy configuration](/config/energy).",
+          "nothing_to_remove": "None of these is still unknown, so nothing has been taken out. They may be back, or somebody already changed the energy configuration."
+        }
+      }
     },
     "group_unknown_members": {
       "title": "Unknown group members in: {group}",
