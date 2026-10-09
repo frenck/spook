@@ -321,6 +321,16 @@
     }
   },
   "conditions": {
+    "is_available": {
+      "name": "Entity is available",
+      "description": "Passes when an entity is there to talk to: anything but unavailable or unknown. For a speaker or a smart plug that is not always powered.",
+      "fields": {
+        "behavior": {
+          "name": "Behavior",
+          "description": "Whether any of the entities being there is enough, or all of them have to be."
+        }
+      }
+    },
     "is_at_target_temperature": {
       "name": "Temperature at its target",
       "description": "Passes when the temperature of a thermostat or water heater is at its target. A device that is off is not at its target, and one that is unavailable is left out.",

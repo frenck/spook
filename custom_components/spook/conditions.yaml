@@ -54,6 +54,16 @@ repair_issue_present:
             - critical
             - error
             - warning
+is_available:
+  target:
+    entity: {}
+  fields:
+    behavior:
+      required: true
+      default: any
+      selector:
+        automation_behavior:
+          mode: condition
 is_at_target_temperature:
   target:
     entity:

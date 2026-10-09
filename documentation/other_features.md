@@ -1746,6 +1746,75 @@ options:
 
 :::
 
+### Entity is available
+
+Passes when an entity is there to talk to.
+
+```{list-table}
+:header-rows: 1
+* - Condition properties
+* - Condition
+  - Entity is available 👻
+* - Condition name
+  - `spook.is_available`
+* - Targets
+  - Any {term}`entities <entity>`, {term}`devices <device>`, {term}`areas <area>`, floors and labels
+* - {term}`Spook's influence <influence of spook>`
+  - Newly added condition
+```
+
+```{list-table}
+:header-rows: 2
+* - Condition options
+* - Attribute
+  - Type
+  - Required
+  - Default / Example
+* - `behavior`
+  - {term}`string <string>`
+  - No
+  - `any` / `all`
+```
+
+A speaker that is not always powered, a smart plug that comes and goes: before asking them to do anything, you want to know they are there. Any state counts, `off` included, except `unavailable` and `unknown`. Written by hand, that is a `not` around a state condition listing both, every time.
+
+With several entities, `any` passes when one of them is there and `all` when every one is.
+
+:::{seealso} Example {term}`condition <condition>` in {term}`YAML`
+:class: dropdown
+
+Only when the bathroom speaker is on the network:
+
+```{code-block} yaml
+:linenos:
+condition: spook.is_available
+target:
+  entity_id: media_player.bathroom
+```
+
+Everything in the living room is there:
+
+```{code-block} yaml
+:linenos:
+condition: spook.is_available
+target:
+  area_id: living_room
+options:
+  behavior: all
+```
+
+:::
+
+:::{attention} Known limitations
+:class: dropdown
+
+- An entity named outright that does not exist at all is not available.
+- A disabled entity that only comes along with a device, an area, a floor or a label is left out: it should not keep a whole room from ever being all there. One that is enabled but has no state, because its integration is not loaded, is not available.
+- With nothing left to ask, it does not pass, `all` included.
+- There is no `for` option. To act on an entity that has been away for a while, Home Assistant's own state trigger does that: to `unavailable`, with a `for`. [Entity came back](#entity-came-back) fires when it returns after such an absence.
+
+:::
+
 ### All of these happened
 
 Fires when every one of several triggers has fired inside the same window of time, in any order.

@@ -56,3 +56,9 @@ Passes when the temperature of a thermostat or water heater is at its target: on
 Passes while this automation has run fewer than a given number of times within a given period. The counterpart to Cooldown: that one spaces runs out, this one caps them. _#quota_ _#ratelimit_
 
 `spook.quota`, [documentation](other-features#run-allowance-left) 📚
+
+## Entity is available
+
+Passes when an entity is there to talk to: anything but unavailable or unknown. For a speaker or a smart plug that is not always powered. _#availability_ _#unavailable_
+
+`spook.is_available`, [documentation](other-features#entity-is-available) 📚
