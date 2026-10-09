@@ -749,27 +749,6 @@
             "description": "Spook našiel ducha v tvojich pomocníkoch so šablónou 👻\n\nAko sa tak vznášal okolo, Spook narazil na tohto pomocníka so šablónou:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nOdkazuje na nasledujúce akcie, ktoré Home Assistant nepozná:\n\n{services}\n\n\n\nBýva to tak, keď bol odstránený poskytovateľ akcie alebo bol skript premenovaný či zmazaný. Ak chceš túto chybu opraviť, nastav pomocníka so šablónou nanovo tak, aby používal existujúce akcie.\n\nSpook 👻 Tvoj kamoš.",
             "title": "Neznáme akcie použité v pomocníkovi so šablónou: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Neznámy snímač {sensors} pre oblasť: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Neznámy snímač {sensors} pre oblasť: {area}",
-                        "description": "Spook našiel ducha v tvojich oblastiach 👻\n\nOblasť {area} používa snímač {sensors}, ktorý Home Assistant nepozná:\n\n{entities}\n\nHome Assistant tento snímač kontroluje len vtedy, keď ho vyberáš, takže keď bol odstránený alebo premenovaný, oblasť ostala ukazovať do prázdna. Assist a karty oblastí z neho už nedostávajú žiadne hodnoty.\n\nVymaž nastavenie, aby si mohol snímač vybrať znova, alebo si ho nechaj a Spook naň prestane upozorňovať.\n\nSpook 👻 Tvoj kamoš.",
-                        "menu_options": {
-                            "remove": "Vymazať nastavenie",
-                            "manage": "Opravím si to sám",
-                            "ignore": "Nechať tak, viac mi to nehovor"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook bude odteraz o tejto oblasti mlčať.",
-                    "manage": "Iný snímač môžeš vybrať v nastaveniach tejto oblasti na [stránke Oblasti](/config/areas/dashboard).",
-                    "changed": "Tieto snímače sú späť, alebo nastavenia odvtedy, čo sa Spook pozrel, ukazujú inam. Preto sa nič nevymazalo. Spook sa pozrie znova sám a túto opravu aktualizuje."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook našiel ducha v tvojich prispôsobeniach 👻\n\nSekcia `customize:` pripína atribúty na nasledujúce entity, ktoré Home Assistant nepozná:\n\n{entities}\n\n\n\nBýva to tak, keď bola entita premenovaná alebo odstránená, no jej prispôsobenie zostalo. Ak chceš túto chybu opraviť, uprav v konfigurácii sekciu `customize:` a tieto entity z nej odstráň.\n\nSpook 👻 Tvoj kamoš.",
             "title": "Neznáme entity v tvojich prispôsobeniach"

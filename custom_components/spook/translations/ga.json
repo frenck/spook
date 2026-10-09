@@ -1054,27 +1054,6 @@
             "description": "Tá taibhse aimsithe ag Spook i do chúntóirí teimpléid 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an gcúntóir teimpléid seo a leanas:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nTagraíonn sé do na gníomhartha seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{services}\n\n\n\nTarlaíonn sé seo go minic nuair a baineadh soláthraí gnímh, nó nuair a athainmníodh nó a scriosadh script. Chun an earráid seo a réiteach, athchumraigh an cúntóir teimpléid ionas go n-úsáideann sé gníomhartha atá ann.\n\nSpook 👻 Do chara.",
             "title": "Gníomhartha anaithnide in úsáid i gcúntóir teimpléid: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Braiteoir {sensors} anaithnid don limistéar: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Braiteoir {sensors} anaithnid don limistéar: {area}",
-                        "description": "Tá taibhse aimsithe ag Spook i do limistéir 👻\n\nÚsáideann an limistéar {area} braiteoir {sensors} nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\nNí sheiceálann Home Assistant an braiteoir seo ach nuair a roghnaítear é, mar sin nuair a baineadh nó a athainmníodh é, choinnigh an limistéar ag díriú ar rud nach ann dó. Ní fhaigheann Assist ná cártaí limistéir léamh uaidh a thuilleadh.\n\nGlan an socrú ionas gur féidir leat braiteoir a roghnú arís, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
-                        "menu_options": {
-                            "remove": "Glan an socrú",
-                            "manage": "Réiteoidh mé féin é",
-                            "ignore": "Coinnigh é, ná habair liom é arís"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Fanfaidh Spook ciúin faoin limistéar seo as seo amach.",
-                    "manage": "Is féidir leat braiteoir eile a roghnú i socruithe an limistéir seo ar an [leathanach Limistéar](/config/areas/dashboard).",
-                    "changed": "Tá na braiteoirí seo ar ais, nó díríonn na socruithe ar áit eile anois, ó d'fhéach Spook. Mar sin níor glanadh aon rud. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Tá taibhse aimsithe ag Spook i do shaincheapacháin 👻\n\nSocraíonn an chuid `customize:` tréithe ar na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nTarlaíonn sé seo go minic nuair a athainmníodh nó a baineadh aonán agus gur fhan a shaincheapadh ina dhiaidh. Chun an earráid seo a réiteach, cuir an chuid `customize:` i do chumraíocht in eagar agus bain na haonáin seo.\n\nSpook 👻 Do chara.",
             "title": "Aonáin anaithnide i do shaincheapacháin"

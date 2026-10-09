@@ -1054,27 +1054,6 @@
             "description": "Spook ha trobat un fantasma als teus ajudants de plantilla 👻\n\nMentre voletejava, Spook s'ha creuat amb l'ajudant de plantilla següent:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nFa referència a les accions següents, que Home Assistant no coneix:\n\n{services}\n\n\n\nAixò passa sovint quan s'ha eliminat el proveïdor d'una acció, o s'ha canviat el nom d'un script o s'ha esborrat. Per corregir aquest error, reconfigura l'ajudant de plantilla perquè faci servir accions que existeixin.\n\nSpook 👻 El teu col·lega.",
             "title": "Accions desconegudes utilitzades a l'ajudant de plantilla: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Sensor de {sensors} desconegut per a l'àrea: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Sensor de {sensors} desconegut per a l'àrea: {area}",
-                        "description": "Spook ha trobat un fantasma a les teves àrees 👻\n\nL'àrea {area} fa servir un sensor de {sensors} que Home Assistant no coneix:\n\n{entities}\n\nHome Assistant només comprova aquest sensor quan es tria, així que quan es va eliminar o se li va canviar el nom, l'àrea va continuar apuntant al no-res. Assist i les targetes d'àrea ja no n'obtenen cap lectura.\n\nEsborra el paràmetre perquè puguis tornar a triar un sensor, o conserva'l i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
-                        "menu_options": {
-                            "remove": "Esborra el paràmetre",
-                            "manage": "Ja ho arreglaré jo",
-                            "ignore": "Conserva-la, deixa d'avisar-me"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta àrea.",
-                    "manage": "Pots triar un altre sensor a la configuració d'aquesta àrea a la [pàgina d'Àrees](/config/areas/dashboard).",
-                    "changed": "Aquests sensors han tornat, o la configuració ara apunta a un altre lloc, des que Spook va mirar. Així que no s'ha esborrat res. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook ha trobat un fantasma a les teves personalitzacions 👻\n\nLa secció `customize:` fixa atributs a les entitats següents, que Home Assistant no coneix:\n\n{entities}\n\n\n\nAixò passa sovint quan s'ha canviat el nom d'una entitat o s'ha eliminat mentre la seva personalització es quedava. Per corregir aquest error, edita la secció `customize:` de la teva configuració i treu aquestes entitats.\n\nSpook 👻 El teu col·lega.",
             "title": "Entitats desconegudes a les teves personalitzacions"

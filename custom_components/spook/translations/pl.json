@@ -1054,27 +1054,6 @@
             "description": "Spook znalazł ducha w Twoich pomocnikach szablonów 👻\n\nUnosząc się w powietrzu, Spook napotkał następującego pomocnika szablonu:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nOdwołuje się do następujących akcji, które są nieznane Home Assistant:\n\n{services}\n\n\n\nZwykle dzieje się tak, gdy dostawca akcji został usunięty albo skrypt został przemianowany lub usunięty. Aby naprawić ten błąd, skonfiguruj ponownie pomocnika szablonu, aby używał istniejących akcji.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane akcje użyte w pomocniku szablonu: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Nieznany sensor {sensors} dla obszaru: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Nieznany sensor {sensors} dla obszaru: {area}",
-                        "description": "Spook znalazł ducha w Twoich obszarach 👻\n\nObszar {area} używa sensora {sensors}, który jest nieznany Home Assistant:\n\n{entities}\n\nHome Assistant sprawdza ten sensor tylko w chwili jego wyboru, więc gdy został usunięty lub przemianowany, obszar dalej wskazywał na nic. Asystent i karty obszarów nie dostają już z niego odczytu.\n\nWyczyść to ustawienie, żeby móc ponownie wybrać sensor, albo zostaw, a Spook przestanie o nim przypominać.\n\nSpook 👻 Twój ziomek.",
-                        "menu_options": {
-                            "remove": "Wyczyść ustawienie",
-                            "manage": "Naprawię to sam",
-                            "ignore": "Zostaw, nie mów mi o tym więcej"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Od teraz Spook nie będzie wspominał o tym obszarze.",
-                    "manage": "Możesz wybrać inny sensor w ustawieniach tego obszaru na [stronie Obszary](/config/areas/dashboard).",
-                    "changed": "Te sensory wróciły albo ustawienia wskazują teraz gdzie indziej od czasu, gdy Spook sprawdzał. Dlatego nic nie zostało wyczyszczone. Spook sprawdzi to ponownie sam i zaktualizuje ten problem."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook znalazł ducha w Twoich dostosowaniach 👻\n\nSekcja `customize:` ustawia atrybuty następujących encji, które są nieznane Home Assistant:\n\n{entities}\n\n\n\nZwykle dzieje się tak, gdy encja została przemianowana lub usunięta, a jej dostosowanie pozostało. Aby naprawić ten błąd, edytuj sekcję `customize:` w swojej konfiguracji i usuń te encje.\n\nSpook 👻 Twój ziomek.",
             "title": "Nieznane encje w Twoich dostosowaniach"

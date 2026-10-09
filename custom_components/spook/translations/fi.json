@@ -782,27 +782,6 @@
             "description": "Spook on löytänyt kummituksen mallipohja-avustajistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohja-avustajaan:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSe viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\nNäin käy usein, kun toiminnon tarjonnut integraatio on poistettu tai skripti on nimetty uudelleen tai poistettu. Korjataksesi tämän ongelman, määritä mallipohja-avustaja käyttämään olemassa olevia toimintoja.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia toimintoja käytössä mallipohja-avustajassa: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Tuntematon {sensors}-sensori alueella: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Tuntematon {sensors}-sensori alueella: {area}",
-                        "description": "Spook on löytänyt kummituksen alueistasi 👻\n\nAlue {area} käyttää {sensors}-sensoria, joka on Home Assistantille tuntematon:\n\n{entities}\n\nHome Assistant tarkistaa tämän sensorin vain silloin kun se valitaan, joten kun se poistettiin tai uudelleennimettiin, alue jäi osoittamaan tyhjään. Assist ja aluekortit eivät enää saa siitä lukemaa.\n\nTyhjennä asetus, jotta voit valita sensorin uudelleen, tai säilytä se ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
-                        "menu_options": {
-                            "remove": "Tyhjennä asetus",
-                            "manage": "Korjaan asian itse",
-                            "ignore": "Säilytä se, lopeta asiasta ilmoittelu"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook pysyy tästä eteenpäin hiljaa tästä alueesta.",
-                    "manage": "Voit valita toisen sensorin tämän alueen asetuksista [Alueet-sivulla](/config/areas/dashboard).",
-                    "changed": "Nämä sensorit ovat palanneet, tai asetukset osoittavat nyt muualle, sen jälkeen kun Spook katsoi. Joten mitään ei tyhjennetty. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
-                }
-            }
-        },
         "notify_unknown_group_members": {
             "description": "Spook on löytänyt kummituksen ilmoitusryhmistäsi 👻\n\nIlmoitusryhmä `{group}` välittää seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{members}\n\nRyhmä toimittaa edelleen muille jäsenilleen ja ilmoittaa edelleen onnistumisesta kutsujalleen, joten mikään sitä ennen ei huomaa mitään. Virhe näkyy vain yksittäisenä \"Task exception was never retrieved\" -merkintänä lokissa, joka ei nimeä mitään ryhmää ja näyttää ohjelmavirheeltä. Se, joka oli tuon jäsenen takana, ei yksinkertaisesti saa enää ilmoituksia.\n\nKorjataksesi tämän virheen, muokkaa tämän ryhmän `services:`-luetteloa määrityksissäsi ja poista tai korjaa nämä merkinnät.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia jäseniä ilmoitusryhmässä: {group}"

@@ -1054,27 +1054,6 @@
             "description": "Spookek mamu bat aurkitu du zure txantiloi-laguntzaileetan 👻\n\nHegan zebilela, Spookek txantiloi-laguntzaile honekin egin du topo:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEkintza hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{services}\n\n\n\nHau askotan ekintza-hornitzaile bat kendu denean, edo script bat izenez aldatu edo ezabatu denean gertatzen da. Errore hau konpontzeko, birkonfiguratu txantiloi-laguntzailea existitzen diren ekintzak erabil ditzan.\n\nSpook 👻 Zure laguna.",
             "title": "Ekintza ezezagunak txantiloi-laguntzailean erabilita: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "{sensors} sentsore ezezaguna gune honetarako: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "{sensors} sentsore ezezaguna gune honetarako: {area}",
-                        "description": "Spookek mamu bat aurkitu du zure guneetan 👻\n\n{area} guneak Home Assistant-ek ezagutzen ez duen {sensors} sentsore bat erabiltzen du:\n\n{entities}\n\nHome Assistant-ek sentsore hau aukeratzen denean bakarrik egiaztatzen du; beraz, kendu edo izenez aldatu zenean, guneak ezer ez seinalatzen jarraitu zuen. Assist-ek eta gune-txartelek jada ez dute irakurketarik jasotzen hartatik.\n\nGarbitu ezarpena berriro sentsore bat aukeratu ahal izateko, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
-                        "menu_options": {
-                            "remove": "Garbitu ezarpena",
-                            "manage": "Utzi nik neuk konpontzen",
-                            "ignore": "Mantendu, ez esan gehiago"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook isilik egongo da gune honi buruz hemendik aurrera.",
-                    "manage": "Beste sentsore bat aukera dezakezu gune honen ezarpenetan, [Guneak orrian](/config/areas/dashboard).",
-                    "changed": "Sentsore hauek itzuli dira, edo ezarpenek beste nonbait seinalatzen dute orain, Spookek begiratu zuenetik. Beraz, ez da ezer garbitu. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spookek mamu bat aurkitu du zure pertsonalizazioetan 👻\n\n`customize:` atalak atributuak finkatzen ditu entitate hauetan, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nHau askotan entitate bat izenez aldatu edo kendu denean gertatzen da, bere pertsonalizazioa atzean geratu den bitartean. Errore hau konpontzeko, editatu zure konfigurazioko `customize:` atala eta kendu entitate hauek.\n\nSpook 👻 Zure laguna.",
             "title": "Entitate ezezagunak zure pertsonalizazioetan"

@@ -819,27 +819,6 @@
             "title": "Unbekannte Entitäten in HomeKit-Bridge verwendet: {bridge}",
             "description": "Spook hat einen Geist in deiner HomeKit-Bridge gefunden 👻\n\nBeim Herumschweben begegnete Spook der folgenden HomeKit-Bridge:\n\n{bridge}\n\nDiese Bridge nennt die folgenden Entitäten, die Home Assistant unbekannt sind:\n\n{entities}\n\n\n\nHomeKit folgt einer Entität nicht, wenn sie umbenannt wird. Eine eingeschlossene Entität, die umbenannt oder entfernt wurde, verschwindet aus der Home-App. Eine ausgeschlossene Entität, die umbenannt wurde, taucht dort wieder auf.\n\nDiese Bridge ist in deiner YAML-Konfiguration eingerichtet. Um diesen Fehler zu beheben, bearbeite den `filter` dieser Bridge unter `homekit:` und entferne oder korrigiere diese Entitäten.\n\nSpook 👻 Dein Kumpel."
         },
-        "unknown_area_sensors": {
-            "title": "Unbekannter {sensors}-Sensor für Bereich: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Unbekannter {sensors}-Sensor für Bereich: {area}",
-                        "menu_options": {
-                            "remove": "Einstellung leeren",
-                            "manage": "Lass es mich selbst beheben",
-                            "ignore": "Behalten und nicht mehr darauf hinweisen"
-                        },
-                        "description": "Spook hat in deinen Bereichen einen Geist entdeckt 👻\n\nDer Bereich {area} verwendet einen {sensors}-Sensor, der Home Assistant unbekannt ist:\n\n{entities}\n\nHome Assistant überprüft diesen Sensor nur, wenn er ausgewählt ist. Als er entfernt oder umbenannt wurde, zeigte der Bereich daher ins Leere. Assist- und Bereichskarten erhalten keine Messwerte mehr von ihm.\n\nLösche die Einstellung, damit du wieder einen Sensor auswählen kannst, oder behalte sie bei – dann wird Spook nicht mehr darauf hinweisen.\n\nSpook 👻 Dein Kumpel."
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook sagt ab jetzt nichts mehr zu diesem Bereich.",
-                    "manage": "Du kannst in den Einstellungen dieses Bereichs auf der [Bereichsseite](/config/areas/dashboard) einen anderen Sensor wählen.",
-                    "changed": "Diese Sensoren sind zurück, oder die Einstellungen zeigen inzwischen woandershin, seit Spook nachgesehen hat. Daher wurde nichts geleert. Spook schaut von selbst noch einmal nach und aktualisiert diese Reparatur."
-                }
-            }
-        },
         "unknown_engines": {
             "title": "Die „Assist“-Pipeline verwendet Engines, die nicht mehr verfügbar sind: {pipeline}",
             "description": "Die Assist-Pipeline {pipeline} verwendet Folgendes, was Home Assistant nicht bekannt ist:\n\n{engines}\n\nDas bedeutet in der Regel, dass die dahinterstehende Integration entfernt wurde. Die Pipeline wurde nicht darüber informiert, sodass sie bei der nächsten Verwendung mit einer Fehlermeldung über einen fehlenden Anbieter oder Agenten fehlschlägt, und nichts zuvor weist darauf hin.\n\nUm dies zu beheben, öffne die Einstellungen dieses Assistenten unter [Sprachassistenten](/config/voice-assistants/assistants) und wähle für jeden dieser Einträge eine Engine aus, die noch verfügbar ist.\n\nSpook 👻 Dein Kumpel."

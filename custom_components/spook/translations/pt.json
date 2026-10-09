@@ -782,27 +782,6 @@
             "description": "O Spook encontrou um fantasma nos teus assistentes de template 👻\n\nEnquanto flutuava por aí, o Spook cruzou-se com o seguinte assistente de template:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nRefere as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{services}\n\nIsto acontece muitas vezes quando a integração por trás de uma ação foi removida, ou quando um script foi renomeado ou eliminado. Para corrigir este erro, reconfigura o assistente de template para usar ações que existam.\n\nSpook 👻 O teu amigo.",
             "title": "Ações desconhecidas usadas no assistente de template: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Sensor de {sensors} desconhecido na área: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Sensor de {sensors} desconhecido na área: {area}",
-                        "description": "O Spook encontrou um fantasma nas tuas áreas 👻\n\nA área {area} usa um sensor de {sensors} que é desconhecido para o Home Assistant:\n\n{entities}\n\nO Home Assistant só verifica este sensor quando é escolhido, por isso quando foi removido ou renomeado, a área ficou a apontar para o vazio. O Assist e os cartões de área deixam de receber leituras dele.\n\nLimpa a definição para poderes escolher um sensor outra vez, ou fica com ela e o Spook deixa de a apontar.\n\nSpook 👻 O teu amigo.",
-                        "menu_options": {
-                            "remove": "Limpar a definição",
-                            "manage": "Eu próprio resolvo",
-                            "ignore": "Fica com ela e não me digas mais nada"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "O Spook vai manter-se calado relativamente a esta área a partir de agora.",
-                    "manage": "Podes escolher outro sensor nas definições desta área na [página de Áreas](/config/areas/dashboard).",
-                    "changed": "Estes sensores voltaram, ou as definições apontam agora para outro lado, desde que o Spook olhou. Por isso nada foi limpo. O Spook volta a olhar por conta própria e atualiza esta reparação."
-                }
-            }
-        },
         "notify_unknown_group_members": {
             "description": "O Spook encontrou um fantasma nos teus grupos de notificação 👻\n\nO grupo de notificação `{group}` encaminha para as seguintes ações, que são desconhecidas para o Home Assistant:\n\n{members}\n\nO grupo continua a entregar aos restantes membros e continua a comunicar sucesso a quem o chamou, pelo que nada a montante se apercebe. A falha só aparece como um \"Task exception was never retrieved\" solto no registo, que não nomeia nenhum grupo e parece um erro de programação. Quem estava por trás desse membro deixa simplesmente de ser notificado.\n\nPara corrigir este erro, edita a lista `services:` deste grupo na tua configuração e remove ou corrige estas entradas.\n\nSpook 👻 O teu amigo.",
             "title": "Membros desconhecidos no grupo de notificação: {group}"

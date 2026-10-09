@@ -712,27 +712,6 @@
             "description": "Spook ha encontrado un fantasma en tus ayudantes de plantilla 👻\n\nMientras flotaba, Spook se cruzó con el siguiente ayudante de plantilla:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHace referencia a las siguientes acciones, que son desconocidas para Home Assistant:\n\n{services}\n\nEsto suele pasar cuando se ha quitado la integración que estaba detrás de una acción, o cuando se ha renombrado o eliminado un script. Para solucionar este error, reconfigura el ayudante de plantilla para que use acciones que existan.\n\nSpook 👻 Tu colega.",
             "title": "Acciones desconocidas usadas en el ayudante de plantilla: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Sensor de {sensors} desconocido para el área: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Sensor de {sensors} desconocido para el área: {area}",
-                        "description": "Spook ha encontrado un fantasma en tus áreas 👻\n\nEl área {area} usa un sensor de {sensors} que es desconocido para Home Assistant:\n\n{entities}\n\nHome Assistant solo comprueba este sensor cuando se elige, así que cuando se eliminó o se renombró, el área se quedó apuntando a la nada. Assist y las tarjetas de área ya no obtienen ninguna lectura de él.\n\nBorra el ajuste para poder elegir de nuevo un sensor, o quédatelo y Spook no volverá a mencionarlo.\n\nSpook 👻 Tu colega.",
-                        "menu_options": {
-                            "remove": "Borrar el ajuste",
-                            "manage": "Lo arreglo yo mismo",
-                            "ignore": "Quedárselo y no volver a avisarme"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook no volverá a decir nada sobre esta área.",
-                    "manage": "Puedes elegir otro sensor en los ajustes de esta área, en la [página de Áreas](/config/areas/dashboard).",
-                    "changed": "Estos sensores han vuelto, o los ajustes ya apuntan a otra parte, desde que Spook lo revisó. Por eso no se ha borrado nada. Spook vuelve a comprobarlo por su cuenta y actualiza esta reparación."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook ha encontrado un fantasma en tus personalizaciones 👻\n\nLa sección `customize:` fija atributos en las siguientes entidades, que son desconocidas para Home Assistant:\n\n{entities}\n\nEsto suele pasar cuando se ha renombrado o quitado una entidad y su personalización se ha quedado. Para solucionar este error, edita la sección `customize:` de tu configuración y quita estas entidades.\n\nSpook 👻 Tu colega.",
             "title": "Entidades desconocidas en tus personalizaciones"

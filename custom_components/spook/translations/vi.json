@@ -1054,27 +1054,6 @@
             "description": "Spook đã tìm thấy một con ma trong các biến trợ giúp bản mẫu của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp biến trợ giúp bản mẫu sau:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nNó tham chiếu đến các hành động sau, những thứ mà Home Assistant không biết đến:\n\n{services}\n\n\n\nChuyện này thường xảy ra khi thứ cung cấp hành động đã bị gỡ bỏ, hoặc một tập lệnh đã bị đổi tên hay xóa. Để sửa lỗi này, hãy cấu hình lại biến trợ giúp bản mẫu để dùng các hành động có tồn tại.\n\nSpook 👻 Bạn thân của bạn.",
             "title": "Hành động không xác định được dùng trong biến trợ giúp bản mẫu: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Cảm biến {sensors} không xác định cho khu vực: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Cảm biến {sensors} không xác định cho khu vực: {area}",
-                        "description": "Spook đã tìm thấy một con ma trong các khu vực của bạn 👻\n\nKhu vực {area} dùng một cảm biến {sensors} mà Home Assistant không biết đến:\n\n{entities}\n\nHome Assistant chỉ kiểm tra cảm biến này lúc nó được chọn, nên khi nó bị gỡ bỏ hoặc đổi tên, khu vực vẫn trỏ vào khoảng không. Assist và các thẻ khu vực không còn nhận được số đo từ nó nữa.\n\nXóa trống thiết lập để bạn có thể chọn lại cảm biến, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
-                        "menu_options": {
-                            "remove": "Xóa trống thiết lập",
-                            "manage": "Để tôi tự sửa",
-                            "ignore": "Giữ lại, đừng nhắc nữa"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Từ giờ Spook sẽ im lặng về khu vực này.",
-                    "manage": "Bạn có thể chọn một cảm biến khác trong phần cài đặt của khu vực này trên [trang Khu vực](/config/areas/dashboard).",
-                    "changed": "Các cảm biến này đã quay lại, hoặc thiết lập giờ đã trỏ đi nơi khác, kể từ lúc Spook xem. Vì vậy chưa có gì bị xóa. Spook sẽ tự xem lại và cập nhật sửa chữa này."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook đã tìm thấy một con ma trong các tùy chỉnh của bạn 👻\n\nPhần `customize:` gắn cố định thuộc tính cho các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nChuyện này thường xảy ra khi một thực thể đã bị đổi tên hoặc gỡ bỏ trong khi phần tùy chỉnh của nó vẫn nằm lại. Để sửa lỗi này, hãy chỉnh sửa phần `customize:` trong cấu hình của bạn và xóa các thực thể này.\n\nSpook 👻 Bạn thân của bạn.",
             "title": "Thực thể không xác định trong các tùy chỉnh của bạn"

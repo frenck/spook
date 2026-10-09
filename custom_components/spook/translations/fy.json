@@ -1054,27 +1054,6 @@
             "description": "Spook hat in spoek fûn yn dyn sjabloanhelpers 👻\n\nÛnder it omswalkjen kaam Spook de folgjende sjabloanhelper tsjin:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHy ferwiist nei de folgjende aksjes, dy't Home Assistant net ken:\n\n{services}\n\n\n\nDit bart faak as eat dat in aksje levere fuortsmiten is, of as in script omneamd of fuortsmiten is. Om dizze flater op te lossen, konfigurearje de sjabloanhelper opnij sadat er besteande aksjes brûkt.\n\nSpook 👻 Dyn maat.",
             "title": "Ûnbekende aksjes brûkt yn sjabloanhelper: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Ûnbekende {sensors}-sensor foar romte: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Ûnbekende {sensors}-sensor foar romte: {area}",
-                        "description": "Spook hat in spoek fûn yn dyn romten 👻\n\nDe romte {area} brûkt in {sensors}-sensor dy't Home Assistant net ken:\n\n{entities}\n\nHome Assistant kontrolearret dizze sensor allinnich as er keazen wurdt, dus doe't er fuortsmiten of omneamd waard, bleau de romte nei neat wizen. Assist en romtekaarten krije der gjin mjitting mear fan.\n\nMeitsje de ynstelling leech, sadatst opnij in sensor kieze kinst, of hâld him en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
-                        "menu_options": {
-                            "remove": "De ynstelling leechmeitsje",
-                            "manage": "Ik reparearje it sels",
-                            "ignore": "Hâld him, hâld der oer op"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze romte.",
-                    "manage": "Do kinst in oare sensor kieze yn de ynstellingen fan dizze romte op de [side Romten](/config/areas/dashboard).",
-                    "changed": "Dizze sensoren binne werom, of de ynstellingen wize no earne oars hinne, sûnt Spook seach. Dêrom is der neat leechmakke. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook hat in spoek fûn yn dyn oanpassingen 👻\n\nDe seksje `customize:` set attributen fêst op de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nDit bart faak as in entiteit omneamd of fuortsmiten is wylst syn oanpassing efterbleau. Om dizze flater op te lossen, bewurkje de seksje `customize:` yn dyn konfiguraasje en smyt dizze entiteiten fuort.\n\nSpook 👻 Dyn maat.",
             "title": "Ûnbekende entiteiten yn dyn oanpassingen"

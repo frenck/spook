@@ -811,27 +811,6 @@
             "title": "Pipeline asistenta koristi mehanizme kojih više nema: {pipeline}",
             "description": "Spook je pronašao duha u vašim glasovnim asistentima 👻\n\nPipeline asistenta {pipeline} koristi sledeće, što je nepoznato Home Assistant-u:\n\n{engines}\n\nOvo obično znači da je integracija iza toga uklonjena. Pipeline-u to nije javljeno, pa sledeći put kada se pokrene javlja grešku o nedostajućem provajderu ili agentu, a ništa pre toga ne ukazuje ovde.\n\nDa biste ovo popravili, otvorite podešavanja ovog asistenta pod [Glasovni asistenti](/config/voice-assistants/assistants) i izaberite sistem koji je još uvek dostupan za svaki od ovih.\n\nSpook 👻 Vaš pomoćnik."
         },
-        "unknown_area_sensors": {
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "menu_options": {
-                            "remove": "Obriši podešavanje",
-                            "ignore": "Zadrži, prestani da me obaveštavaš",
-                            "manage": "Dozvoli mi da sam popravim"
-                        },
-                        "description": "Spook je pronašao duha u vašim prostorijama. 👻\n\nProstorija {area} koristi senzor {sensors} koji je nepoznat Home Assistant-u:\n\n{entities}\n\nHome Assistant proverava ovaj senzor samo kada je odabran, pa kada je uklonjen ili preimenovan, prostorija je nastavila da pokazuje na ništa. Kartice asistenta i prostorija više ne dobijaju očitavanja sa njega.\n\nObrišite podešavanje kako biste mogli ponovo da izaberete senzor, ili ga zadržite i Spook će prestati da ukazuje na to.\n\nSpook 👻 Vaš pomoćnik.",
-                        "title": "Nepoznat {sensors} senzor za prostoriju: {area}"
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Spook će od sada ćutati o ovoj prostoriji.",
-                    "manage": "Možete izabrati drugi senzor u podešavanjima ove prostorije na stranici [Prostorije](/config/areas/dashboard).",
-                    "changed": "Ovi senzori su ponovo dostupni ili podešavanja sada ukazuju na drugu lokaciju otkako ih je Spook proverio. Zbog toga ništa nije obrisano. Spook će automatski ponovo izvršiti proveru i ažurirati ovu stavku popravke."
-                }
-            },
-            "title": "Nepoznat {sensors} senzor za prostoriju: {area}"
-        },
         "homekit_unknown_entity_references": {
             "description": "Spook je pronašao duha u vašem HomeKit mostu 👻\n\nDok je lebdeo uokolo, Spook je naišao na sledeći HomeKit most:\n\n{bridge}\n\nOvaj most navodi sledeće entitete koji su nepoznati sistemu Home Assistant:\n\n{entities}\n\n\n\nHomeKit ne prati entitete koji su preimenovani. Entitet koji je bio uključen, pa preimenovan ili uklonjen, nestaje iz aplikacije Home; entitet koji je bio isključen, pa preimenovan, ponovo će se pojaviti u njoj.\n\nDa biste rešili ovu grešku, idite na [integraciju HomeKit Bridge](/config/integrations/integration/homekit), izaberite Konfiguriši na ovom mostu i ponovo izaberite entitete.\n\nSpook 👻 Vaš pomoćnik.",
             "title": "Nepoznati entiteti se koriste u HomeKit mostu: {bridge}"

@@ -1054,27 +1054,6 @@
             "description": "Spook rado vaiduoklį jūsų šablonų pagalbininkuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo šablono pagalbininku:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nJis nurodo šiuos veiksmus, kurių Home Assistant nežino:\n\n{services}\n\n\n\nTaip dažnai nutinka, kai veiksmą teikianti integracija buvo pašalinta arba scenarijus buvo pervadintas ar ištrintas. Norėdami ištaisyti šią klaidą, perkonfigūruokite šablono pagalbininką, kad jis naudotų esamus veiksmus.\n\nSpook 👻 Jūsų bičiulis.",
             "title": "Šablono pagalbininke naudojami nežinomi veiksmai: {helper}"
         },
-        "unknown_area_sensors": {
-            "title": "Nežinomas {sensors} jutiklis sričiai: {area}",
-            "fix_flow": {
-                "step": {
-                    "init": {
-                        "title": "Nežinomas {sensors} jutiklis sričiai: {area}",
-                        "description": "Spook rado vaiduoklį jūsų srityse 👻\n\nSritis {area} naudoja {sensors} jutiklį, kurio Home Assistant nežino:\n\n{entities}\n\nHome Assistant šį jutiklį tikrina tik tada, kai jis pasirenkamas, todėl jį pašalinus ar pervadinus sritis toliau rodė į niekur. Assist ir sričių kortelės iš jo nebegauna rodmenų.\n\nIšvalykite nustatymą, kad galėtumėte vėl pasirinkti jutiklį, arba palikite, ir Spook liausis apie jį priminęs.\n\nSpook 👻 Jūsų bičiulis.",
-                        "menu_options": {
-                            "remove": "Išvalyti nustatymą",
-                            "manage": "Sutvarkysiu savarankiškai",
-                            "ignore": "Palikti, nebeprimink"
-                        }
-                    }
-                },
-                "abort": {
-                    "issue_ignored": "Nuo šiol Spook apie šią sritį tylės.",
-                    "manage": "Kitą jutiklį galite pasirinkti šios srities nustatymuose [Sričių puslapyje](/config/areas/dashboard).",
-                    "changed": "Nuo tada, kai Spook žiūrėjo, šie jutikliai grįžo arba nustatymai dabar rodo kitur. Todėl niekas neišvalyta. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
-                }
-            }
-        },
         "unknown_customized_entities": {
             "description": "Spook rado vaiduoklį jūsų pritaikymuose 👻\n\nSkiltis `customize:` prisega atributus šiems subjektams, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nTaip dažnai nutinka, kai subjektas buvo pervadintas ar pašalintas, o jo pritaikymas liko. Norėdami ištaisyti šią klaidą, redaguokite `customize:` skiltį savo konfigūracijoje ir pašalinkite šiuos subjektus.\n\nSpook 👻 Jūsų bičiulis.",
             "title": "Nežinomi subjektai jūsų pritaikymuose"
