@@ -1648,7 +1648,7 @@
                 }
             },
             "name": "Eine Integration deaktivieren",
-            "description": "Deaktiviert einen Integrationseintrag."
+            "description": "Deaktiviert Integrationseinträge, einen bestimmten Eintrag oder jeden Eintrag einer Integration."
         },
         "input_number_decrement": {
             "fields": {
@@ -1676,7 +1676,7 @@
         },
         "repairs_ignore_all": {
             "name": "Ignoriere alle Probleme",
-            "description": "Ignoriere alle Probleme, die derzeit unter „Home Assistant Reparaturen“ aufgeführt sind.",
+            "description": "Ignoriere alle Probleme, die derzeit unter „Home Assistant Reparaturen“ aufgeführt sind, oder nur die von bestimmten Integrationen gemeldeten.",
             "fields": {
                 "domain": {
                     "name": "Domain",
@@ -1696,11 +1696,11 @@
                 }
             },
             "name": "Integration aktivieren",
-            "description": "Aktiviert einen Integrationseintrag."
+            "description": "Aktiviert Integrationseinträge, einen bestimmten Eintrag oder jeden Eintrag einer Integration."
         },
         "input_number_delete": {
             "name": "Löscht eine Zahleneingabe",
-            "description": "Einen Eingabezahl-Helfer löschen. Dies funktioniert nur mit Eingabezahlen, die über die Benutzeroberfläche erstellt und verwaltet wurden. Eingabezahlen, die in YAML erstellt und verwaltet wurden, können von Spook nicht verwaltet werden.",
+            "description": "Löscht Zahleneingabe-Helfer, die in der Oberfläche oder mit der Aktion „Erstelle eine Zahleneingabe“ erstellt wurden. In YAML eingerichtete Zahleneingaben kann Spook nicht löschen.",
             "fields": {
                 "entity_id": {
                     "name": "Entitäts-ID",
@@ -1738,7 +1738,7 @@
         },
         "repairs_unignore_all": {
             "name": "Alle Probleme wieder in den Blick nehmen",
-            "description": "Alle derzeit in „Home Assistant Reparaturen“ gemeldeten Probleme wieder in den Beobachtungsstatus aufnehmen.",
+            "description": "Alle derzeit in „Home Assistant Reparaturen“ gemeldeten Probleme wieder in den Beobachtungsstatus aufnehmen, oder nur die von bestimmten Integrationen gemeldeten.",
             "fields": {
                 "domain": {
                     "name": "Domain",
