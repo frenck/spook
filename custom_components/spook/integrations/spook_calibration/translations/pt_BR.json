@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "name": "Nome",
+                    "offset": "Deslocamento",
+                    "factor": "Fator"
+                },
+                "data_description": {
+                    "offset": "Somado ao valor da origem. Um sensor que marca 1,5 grau a mais recebe -1,5. Na unidade em que a origem informa.",
+                    "factor": "O valor da origem é multiplicado por isto primeiro. Deixe em 1 para apenas somar o deslocamento."
+                },
+                "description": "Este auxiliar corrige um sensor que mede errado: uma temperatura um grau acima, uma umidade alguns pontos percentuais abaixo. Mostra o valor da origem vezes o fator, mais o deslocamento.",
+                "title": "Calibração 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entidade de origem",
+                    "offset": "Deslocamento",
+                    "factor": "Fator"
+                },
+                "data_description": {
+                    "offset": "Somado ao valor da origem. Um sensor que marca 1,5 grau a mais recebe -1,5. Na unidade em que a origem informa.",
+                    "factor": "O valor da origem é multiplicado por isto primeiro. Deixe em 1 para apenas somar o deslocamento."
+                },
+                "title": "Calibração 👻"
+            }
+        }
+    },
+    "title": "Calibração 👻"
+}

@@ -15,6 +15,7 @@ from homeassistant.components.todo import (
 from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 
+from ....const import DOMAIN as SPOOK_DOMAIN
 from ....services import AbstractSpookEntityComponentService
 
 if TYPE_CHECKING:
@@ -62,19 +63,33 @@ class SpookService(AbstractSpookEntityComponentService[TodoListEntity]):
         items = list(entity.todo_items or ())
 
         if (item := _find(call.data[ATTR_ITEM], items)) is None or item.uid is None:
-            msg = f"There is no item {call.data[ATTR_ITEM]} in {entity.entity_id}"
-            raise ServiceValidationError(msg)
+            raise ServiceValidationError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="todo_item_not_found",
+                translation_placeholders={
+                    "item": call.data[ATTR_ITEM],
+                    "entity_id": entity.entity_id,
+                },
+            )
 
         # Where it goes is said as the item it lands after, the way the list
         # itself takes it. None is the top.
         if (after := call.data.get(ATTR_AFTER)) is not None:
             previous = _find(after, items)
             if previous is None or previous.uid is None:
-                msg = f"There is no item {after} in {entity.entity_id}"
-                raise ServiceValidationError(msg)
+                raise ServiceValidationError(
+                    translation_domain=SPOOK_DOMAIN,
+                    translation_key="todo_item_not_found",
+                    translation_placeholders={
+                        "item": after,
+                        "entity_id": entity.entity_id,
+                    },
+                )
             if previous.uid == item.uid:
-                msg = "An item cannot be moved after itself"
-                raise ServiceValidationError(msg)
+                raise ServiceValidationError(
+                    translation_domain=SPOOK_DOMAIN,
+                    translation_key="todo_item_after_itself",
+                )
             previous_uid: str | None = previous.uid
         elif call.data.get(ATTR_POSITION) == POSITION_BOTTOM:
             others = [other for other in items if other.uid != item.uid]
@@ -83,13 +98,20 @@ class SpookService(AbstractSpookEntityComponentService[TodoListEntity]):
             # Without a uid the last item cannot be named, and naming nothing
             # is the top: the opposite end of where it was asked to go.
             if (previous_uid := others[-1].uid) is None:
-                msg = f"The last item in {entity.entity_id} cannot be moved after"
-                raise ServiceValidationError(msg)
+                raise ServiceValidationError(
+                    translation_domain=SPOOK_DOMAIN,
+                    translation_key="todo_last_item_after",
+                    translation_placeholders={
+                        "entity_id": entity.entity_id,
+                    },
+                )
         elif call.data.get(ATTR_POSITION) == POSITION_TOP:
             previous_uid = None
         else:
-            msg = "Say where to: after another item, or the top or bottom"
-            raise ServiceValidationError(msg)
+            raise ServiceValidationError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="todo_move_where",
+            )
 
         # Straight to the list, the way the interface asks it when an item
         # is dragged.

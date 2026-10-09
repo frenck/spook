@@ -27,6 +27,9 @@ if TYPE_CHECKING:
 StorageSetup = Callable[..., Awaitable[bool]]
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 @pytest.fixture
 def storage_setup(
     hass: HomeAssistant,

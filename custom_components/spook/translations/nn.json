@@ -9,13 +9,6 @@
             "user": {
                 "description": "Har du lese readme? Har du lese lisensen? Er du verkeleg sikker?"
             },
-            "choice_restart": {
-                "description": "For at Spook skal fullføre oppsettet må Home Assistant startast på nytt.\n\nVil du starte Home Assistant på nytt no?",
-                "menu_options": {
-                    "restart_now": "Start på nytt no",
-                    "restart_later": "Start på nytt seinare"
-                }
-            },
             "already_configured": {
                 "description": "Spook er allereie konfigurert, men den eksisterande oppføringa er deaktivert. Vil du aktivere ho?",
                 "menu_options": {
@@ -409,7 +402,6 @@
             }
         },
         "energy_unknown_references": {
-            "description": "Spook har funne eit spøkelse i energidashbordet ditt 👻\n\nEnergidashbordet refererer til følgjande entitetar, som er ukjende for Home Assistant:\n\n{entities}\n\n\n\nDette skjer vanlegvis når ein entitet brukt i energikonfigurasjonen vart omdøypt eller fjerna. For å rette denne feilen, opne Innstillingar > Dashbord > Energi og oppdater eller fjern desse entitetane.\n\nSpook 👻 Kompisen din.",
             "title": "Ukjende entitetar brukt i energidashbordet"
         },
         "lovelace_missing_resources": {

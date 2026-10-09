@@ -13,6 +13,8 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv, entity_registry as er
 from homeassistant.helpers.entity_component import DATA_INSTANCES
 
+from .const import DOMAIN
+from .errors import entity_not_found
 from .services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -38,8 +40,13 @@ def async_get_storage_collection(
         handler = hass.data["websocket_api"][f"{domain}/list"][0]
         storage_collection = handler.__self__.storage_collection
     except (KeyError, IndexError, AttributeError) as err:
-        message = f"Could not reach the {domain} helpers Home Assistant keeps"
-        raise HomeAssistantError(message) from err
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="helpers_unreachable",
+            translation_placeholders={
+                "domain": domain,
+            },
+        ) from err
 
     return storage_collection  # type: ignore[no-any-return]
 
@@ -93,8 +100,13 @@ class AbstractSpookCreateHelperService(AbstractSpookAdminService):
                 entity_registry.async_get(wanted_entity_id)
                 or not self.hass.states.async_available(wanted_entity_id)
             ):
-                message = f"Entity ID {wanted_entity_id} is already taken"
-                raise HomeAssistantError(message)
+                raise HomeAssistantError(
+                    translation_domain=DOMAIN,
+                    translation_key="entity_id_taken",
+                    translation_placeholders={
+                        "entity_id": wanted_entity_id,
+                    },
+                )
 
             try:
                 for validator in self.validators:
@@ -121,8 +133,13 @@ class AbstractSpookCreateHelperService(AbstractSpookAdminService):
                     # helper behind under a name nobody asked for would be a
                     # failed call that still changed something.
                     await collection.async_delete_item(item[CONF_ID])
-                    message = f"Entity ID {wanted_entity_id} is already taken"
-                    raise HomeAssistantError(message) from err
+                    raise HomeAssistantError(
+                        translation_domain=DOMAIN,
+                        translation_key="entity_id_taken",
+                        translation_placeholders={
+                            "entity_id": wanted_entity_id,
+                        },
+                    ) from err
                 entity_id = wanted_entity_id
 
         if call.return_response:
@@ -166,12 +183,16 @@ class AbstractSpookDeleteHelperService(AbstractSpookAdminService):
                 continue
 
             if entry is None and component.get_entity(entity_id) is None:
-                message = f"Could not find {entity_id}"
-                raise HomeAssistantError(message)
+                raise entity_not_found(entity_id)
 
             # It exists, but not in the collection the UI keeps: YAML.
-            message = f"{entity_id} is set up in YAML and cannot be deleted"
-            raise HomeAssistantError(message)
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="yaml_helper_cannot_be_deleted",
+                translation_placeholders={
+                    "entity_id": entity_id,
+                },
+            )
 
         # The same helper twice in the list is still one helper. Deleting it a
         # second time would fail after the first had already gone through.

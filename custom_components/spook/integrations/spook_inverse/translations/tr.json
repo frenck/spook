@@ -4,47 +4,85 @@
             "binary_sensor": {
                 "data": {
                     "name": "İsim",
-                    "entity_id": "Kaynak nesnesi",
-                    "hide_source": "Kaynak nesnesini gizle"
+                    "entity_id": "Kaynak varlık",
+                    "hide_source": "Kaynak varlığı gizle"
+                },
+                "title": "Ters 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Kaynak varlık",
+                    "hide_source": "Kaynak varlığı gizle",
+                    "inverse_position": "Açmayı, kapamayı ve pozisyonu tersle",
+                    "inverse_tilt": "Eğimi tersle",
+                    "name": "İsim"
                 },
                 "title": "Ters 👻"
             },
             "switch": {
                 "data": {
-                    "entity_id": "Kaynak nesnesi",
+                    "entity_id": "Kaynak varlık",
                     "name": "İsim",
-                    "hide_source": "Kaynak nesnesini gizle"
+                    "hide_source": "Kaynak varlığı gizle"
+                },
+                "title": "Ters 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Kaynak varlık",
+                    "hide_source": "Kaynak varlığı gizle",
+                    "name": "İsim"
                 },
                 "title": "Ters 👻"
             },
             "user": {
                 "menu_options": {
                     "binary_sensor": "İkili sensörü tersle",
-                    "switch": "Anahtarı tersle"
+                    "cover": "Panjuru tersle",
+                    "switch": "Anahtarı tersle",
+                    "valve": "Vanayı tersle"
                 },
-                "description": "Bu yardımcı, bir varlığın davranışını terslemenize olanak tanır. Örneğin, ikili sensörlerin ve anahtarların açma/kapama veya açma/kapama işlemlerini tersine çevirir.",
-                "title": "Terslemek 👻"
+                "description": "Bu yardımcı, bir varlığın davranışını terslemenize olanak tanır. Örneğin ikili sensörlerin, panjurların, anahtarların ve vanaların açılma/kapanma ya da açık/kapalı durumunu tersine çevirin.",
+                "title": "Ters 👻"
             }
         }
     },
-    "title": "Tersle👻",
+    "title": "Ters 👻",
     "options": {
         "step": {
             "binary_sensor": {
                 "data": {
-                    "entity_id": "Kaynak nesnesi",
-                    "hide_source": "Kaynak nesnesini gizle",
+                    "entity_id": "Kaynak varlık",
+                    "hide_source": "Kaynak varlığı gizle",
                     "name": "İsim"
                 },
-                "title": "Tersle 👻"
+                "title": "Ters 👻"
+            },
+            "cover": {
+                "data": {
+                    "entity_id": "Kaynak varlık",
+                    "hide_source": "Kaynak varlığı gizle",
+                    "inverse_position": "Açmayı, kapamayı ve pozisyonu tersle",
+                    "inverse_tilt": "Eğimi tersle",
+                    "name": "İsim"
+                },
+                "title": "Ters 👻"
             },
             "switch": {
                 "data": {
-                    "entity_id": "Kaynak nesnesi",
-                    "hide_source": "Kaynak nesnesini gizle",
+                    "entity_id": "Kaynak varlık",
+                    "hide_source": "Kaynak varlığı gizle",
                     "name": "İsim"
                 },
-                "title": "Tersle👻"
+                "title": "Ters 👻"
+            },
+            "valve": {
+                "data": {
+                    "entity_id": "Kaynak varlık",
+                    "hide_source": "Kaynak varlığı gizle",
+                    "name": "İsim"
+                },
+                "title": "Ters 👻"
             }
         }
     }

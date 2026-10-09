@@ -2,10 +2,12 @@
     "config": {
         "step": {
             "user": {
-                "description": "This helper allow you to invert the behaviour of an entity. For example, reverse the open/close or on/off of binary sensors, and switches.",
+                "description": "This helper allows you to invert the behaviour of an entity. For example, reverse the open/close or on/off of binary sensors, covers, switches, and valves.",
                 "menu_options": {
                     "binary_sensor": "Invert a binary sensor",
-                    "switch": "Invert a switch"
+                    "cover": "Invert a cover",
+                    "switch": "Invert a switch",
+                    "valve": "Invert a valve"
                 },
                 "title": "Inverse 👻"
             },
@@ -17,7 +19,25 @@
                 },
                 "title": "Inverse 👻"
             },
+            "cover": {
+                "data": {
+                    "entity_id": "Source entity",
+                    "hide_source": "Hide source entity",
+                    "inverse_position": "Invert opening, closing and position",
+                    "inverse_tilt": "Invert tilt",
+                    "name": "Name"
+                },
+                "title": "Inverse 👻"
+            },
             "switch": {
+                "data": {
+                    "entity_id": "Source entity",
+                    "hide_source": "Hide source entity",
+                    "name": "Name"
+                },
+                "title": "Inverse 👻"
+            },
+            "valve": {
                 "data": {
                     "entity_id": "Source entity",
                     "hide_source": "Hide source entity",
@@ -37,7 +57,25 @@
                 },
                 "title": "Inverse 👻"
             },
+            "cover": {
+                "data": {
+                    "entity_id": "Source entity",
+                    "hide_source": "Hide source entity",
+                    "inverse_position": "Invert opening, closing and position",
+                    "inverse_tilt": "Invert tilt",
+                    "name": "Name"
+                },
+                "title": "Inverse 👻"
+            },
             "switch": {
+                "data": {
+                    "entity_id": "Source entity",
+                    "hide_source": "Hide source entity",
+                    "name": "Name"
+                },
+                "title": "Inverse 👻"
+            },
+            "valve": {
                 "data": {
                     "entity_id": "Source entity",
                     "hide_source": "Hide source entity",

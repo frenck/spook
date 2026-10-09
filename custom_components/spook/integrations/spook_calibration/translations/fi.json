@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Lähde-entiteetti",
+                    "name": "Nimi",
+                    "offset": "Korjausarvo",
+                    "factor": "Kerroin"
+                },
+                "data_description": {
+                    "offset": "Lisätään lähteen arvoon. Sensori, joka näyttää 1,5 astetta liikaa, saa arvon -1,5. Lähteen käyttämässä yksikössä.",
+                    "factor": "Lähteen arvo kerrotaan ensin tällä. Jätä arvoksi 1, jos haluat vain lisätä korjausarvon."
+                },
+                "description": "Tämä apuri korjaa sensorin, joka näyttää väärin: lämpötilan, joka on asteen liian korkea, tai kosteuden, joka on muutaman prosentin liian matala. Se näyttää lähteen arvon kerrottuna kertoimella, plus korjausarvon.",
+                "title": "Kalibrointi 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Lähde-entiteetti",
+                    "offset": "Korjausarvo",
+                    "factor": "Kerroin"
+                },
+                "data_description": {
+                    "offset": "Lisätään lähteen arvoon. Sensori, joka näyttää 1,5 astetta liikaa, saa arvon -1,5. Lähteen käyttämässä yksikössä.",
+                    "factor": "Lähteen arvo kerrotaan ensin tällä. Jätä arvoksi 1, jos haluat vain lisätä korjausarvon."
+                },
+                "title": "Kalibrointi 👻"
+            }
+        }
+    },
+    "title": "Kalibrointi 👻"
+}

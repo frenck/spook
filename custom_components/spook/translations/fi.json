@@ -1,27 +1,27 @@
 {
     "config": {
         "abort": {
-            "already_spooked": "Spook on jo konfiguroitu.",
-            "enabled_existing": "Olemassa oleva Spook-asennus on otettu käyttöön.",
-            "enable_failed": "Olemassa olevaa Spook-asennusta ei saatu otettua käyttöön."
+            "already_spooked": "Spook kummittelee täällä jo 👻\n\nYksi kummitus taloa kohden riittää. Löydät Spookin kohdasta [Laitteet ja palvelut](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook on taas hereillä 👻\n\nAnna sille hetki aikaa katsella ympärilleen. Kaikki, mitä se löytää, näkyy kohdassa [Korjaukset](/config/repairs).",
+            "enable_failed": "Spook ei suostunut heräämään 👻\n\nKokeile kytkeä se itse takaisin päälle kohdassa [Laitteet ja palvelut](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook jatkaa uniaan 👻\n\nIkävä sitä? Voit herättää sen milloin tahansa kohdassa [Laitteet ja palvelut](/config/integrations/integration/spook)."
         },
         "step": {
             "user": {
-                "description": "Luitko readme-osion? Luitko lisenssiehdot? Oletko aivan varma?"
-            },
-            "choice_restart": {
-                "description": "Jotta Spook pystyy viimeistelemään käyttöönoton, Home Assistant pitää käynnistää uudelleen.\n\nHaluatko käynnistää Home Assistantin uudelleen nyt?",
-                "menu_options": {
-                    "restart_now": "Käynnistä uudelleen nyt",
-                    "restart_later": "Käynnistä uudelleen myöhemmin"
-                }
+                "description": "Spook leijailee Home Assistantissasi ja etsii kummituksia: viittauksia asioihin, joita ei enää ole, ja jämiä, joita kukaan ei ole siivonnut. Kaiken löytämänsä se ilmoittaa kohdassa Korjaukset.\n\nSe myös laajentaa sitä, mihin automaatiosi ja skriptisi pystyvät, lisätoiminnoilla, -laukaisimilla, -ehdoilla ja -apureilla, entistä tehokkaampia automaatioita varten.\n\nReilu varoitus: Spook ei ole osa Home Assistantia. Se on mukautettu integraatio, joka tunkeutuu paikkoihin, joihin sitä ei koskaan kutsuttu. Jos jotain outoa tapahtuu, epäile ensin Spookia ja [kerro meille]({issue_tracker_url}).\n\nValmiina kummitteluun?",
+                "title": "Pöö! Tutustu Spookiin, kamuusi 👻"
             },
             "already_configured": {
-                "description": "Spook on jo konfiguroitu, mutta olemassa oleva asennus ei ole käytössä. Haluatko ottaa sen käyttöön?",
+                "description": "Spook on jo määritetty, mutta joku on kytkenyt sen pois päältä. Herätetäänkö se?",
                 "menu_options": {
-                    "enable_existing": "Ota olemassa oleva asennus käyttöön"
-                }
+                    "enable_existing": "Herätä Spook",
+                    "keep_sleeping": "Anna sen nukkua"
+                },
+                "title": "Spook nukkuu 👻"
             }
+        },
+        "create_entry": {
+            "spooked": "Spook leijailee ympäriinsä 👻\n\nAnna sille hetki aikaa katsella ympärilleen. Kaikki, mitä se löytää, näkyy kohdassa [Korjaukset](/config/repairs).\n\nLisätoiminnot, -laukaisimet ja -ehdot odottavat sinua automaatio- ja skriptieditorissa. Haluatko tietää, mitä muuta Spook osaa? [Dokumentaatiosta]({documentation_url}) löytyy kaikki.\n\nPidätkö Spookista? 👻 Tähti ⭐ [GitHubissa]({repository_url}) kertoo muille, että Spook on oikeasti aika mahtava. [Frenckin sponsorointi]({sponsor_url}) pitää tämän kummituksen hyvin ruokittuna. Ja hänen ilmainen, joka toinen viikko ilmestyvä [uutiskirjeensä]({newsletter_url}) pitää sisäisen kummituksesi hyvin ruokittuna."
         }
     },
     "entity": {
@@ -240,6 +240,197 @@
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Kaikki nämä -laukaisimen kaikkia laukaisimia ei saatu liitettyä."
+        },
+        "area_not_found": {
+            "message": "Aluetta {area_id} ei löytynyt."
+        },
+        "blueprint_backup_failed": {
+            "message": "Tiedostosta {path} ei saatu otettua kopiota talteen: {error}. Mitään ei kirjoitettu."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} ei voi toimia täällä: {errors}. Mitään ei kirjoitettu."
+        },
+        "blueprint_could_not_write": {
+            "message": "Tiedostoa {path} ei voitu kirjoittaa."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Domainia ei tueta: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Piirustuksen haku URL-osoitteesta epäonnistui."
+        },
+        "blueprint_file_exists": {
+            "message": "Tiedosto on jo olemassa."
+        },
+        "blueprint_gone": {
+            "message": "{name} ei ole enää täällä, joten päivitettävää ei ole. Mitään ei kirjoitettu."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Tätä URL-osoitetta ei tueta."
+        },
+        "blueprint_write_failed": {
+            "message": "Tiedoston kirjoittaminen epäonnistui."
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain}-piirustuksia ei ole juuri nyt ladattu."
+        },
+        "calendar_events_which": {
+            "message": "Kerro mitkä tapahtumat: anna otsikko, uid tai molemmat."
+        },
+        "calendar_range_backwards": {
+            "message": "Hakuvälin lopun on oltava sen alun jälkeen."
+        },
+        "calendar_range_required": {
+            "message": "Kerro kuinka pitkältä etsitään: anna loppupäivä ja -aika tai kesto."
+        },
+        "cannot_disable_system_user": {
+            "message": "Järjestelmän luomaa käyttäjää ei voi poistaa käytöstä: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Järjestelmän luomaa käyttäjää ei voi ottaa käyttöön: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Kategoriaa {category} ei löytynyt kohteelle {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Kategoriassa {category} ei ole mitään päivitettävää: anna ainakin yksi näistä: {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Tämän ehdon mallissa ei ole enää lainkaan Jinjaa, joten se on vakio eikä voi koskaan muuttua. Yleensä se tarkoittaa, että skripti renderöi sen ennen kuin tämä toiminto suoritettiin, ja niin käy jokaiselle toiminnon datassa olevalle mallille. Käytä ehtoa ilman malleja, tai odota itse mallia 'wait_template'-toiminnolla."
+        },
+        "config_entry_not_found": {
+            "message": "Integraatiomerkintää {config_entry_id} ei löytynyt."
+        },
+        "debounce_attach_failed": {
+            "message": "Asettumislaukaisimen kaikkia laukaisimia ei saatu liitettyä."
+        },
+        "device_not_found": {
+            "message": "Laitetta {device_id} ei löytynyt."
+        },
+        "entity_id_taken": {
+            "message": "Entiteetin ID {entity_id} on jo varattu."
+        },
+        "entity_not_found": {
+            "message": "Entiteettiä {entity_id} ei löytynyt."
+        },
+        "entity_without_unique_id": {
+            "message": "Entiteetillä {entity_id} ei ole yksilöllistä ID:tä, joten Home Assistant ei voi säilyttää sille kuvaketta tai aliaksia."
+        },
+        "event_cannot_change": {
+            "message": "Tapahtumaa {summary} ei voi muuttaa noin: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Kerro mitä muutetaan: uusi otsikko, paikka tai uudet ajat."
+        },
+        "event_shift_or_times": {
+            "message": "Siirrä tapahtumaa siirtymällä tai anna sille uudet ajat, älä molempia."
+        },
+        "event_whole_days": {
+            "message": "{summary} kestää kokonaisia päiviä, joten sitä voi siirtää vain kokonaisilla päivillä."
+        },
+        "floor_not_found": {
+            "message": "Kerrosta {floor_id} ei löytynyt."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} ei voi liittyä tähän ryhmään: siinä on {domains}-entiteettejä."
+        },
+        "group_not_found_behind": {
+            "message": "Entiteetin {entity_id} takana olevaa ryhmää ei löytynyt."
+        },
+        "helpers_unreachable": {
+            "message": "Home Assistantin {domain}-apureita ei tavoitettu."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Entiteettiä {entity_id} ei voi pitää ajankohtaan, jota ei ole olemassa."
+        },
+        "home_zone_radius": {
+            "message": "Kotivyöhyke ottaa säteensä kokonaisina metreinä, nolla tai enemmän."
+        },
+        "home_zone_unsupported": {
+            "message": "Kotivyöhyke ottaa vain leveysasteen, pituusasteen ja säteen, ei näitä: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Tätä syötenumeroa ei voi muokata: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Nimeä muutettavat integraatiomerkinnät tai niiden integraatio."
+        },
+        "integration_without_entries": {
+            "message": "Integraatiolla {domain} ei ole merkintöjä."
+        },
+        "label_not_found": {
+            "message": "Tunnistetta {label_id} ei löytynyt."
+        },
+        "label_nothing_to_update": {
+            "message": "Tunnisteessa {label_id} ei ole mitään päivitettävää: anna ainakin yksi näistä: {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Maksimin ({maximum}) on oltava minimiä ({minimum}) suurempi."
+        },
+        "no_max_value": {
+            "message": "Entiteetillä {entity_id} ei ole maksimiarvoa."
+        },
+        "no_min_value": {
+            "message": "Entiteetillä {entity_id} ei ole minimiarvoa."
+        },
+        "not_a_group": {
+            "message": "{entity_id} ei ole ryhmä."
+        },
+        "person_not_editable": {
+            "message": "Tätä henkilöä ei voi muokata: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook kohtasi virheen käynnistäessään Home Assistantia uudelleen."
+        },
+        "sequence_attach_failed": {
+            "message": "Järjestyslaukaisimen ensimmäistä vaihetta ei saatu liitettyä."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Anna muutettava minimi, maksimi tai askel."
+        },
+        "spooked": {
+            "message": "Spookattu! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Tätä ajastinta ei voi muokata: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Kohdetta ei voi siirtää itsensä perään."
+        },
+        "todo_item_not_found": {
+            "message": "Listalla {entity_id} ei ole kohdetta {item}."
+        },
+        "todo_last_item_after": {
+            "message": "Listan {entity_id} viimeisen kohteen perään ei voi siirtää."
+        },
+        "todo_move_where": {
+            "message": "Kerro minne: toisen kohteen perään, ylimmäiseksi tai alimmaiseksi."
+        },
+        "user_not_found": {
+            "message": "Käyttäjää ei löytynyt: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Entiteetin {entity_id} arvo {value} ei ole numero."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Vahtikoiralaukaisimen viritys-laukaisimia ei saatu liitettyä."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Vahtikoiralaukaisimen odotettuja laukaisimia ei saatu liitettyä."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} on YAML-konfiguraatiosi ryhmä, jota Spook ei voi muuttaa. Muokkaa sitä konfiguraatiossasi, tai käytä group.set-toimintoa, joka toimii yhä tällaisiin ryhmiin."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} on määritetty YAML:issa, eikä sitä voi poistaa."
+        },
+        "zone_not_editable": {
+            "message": "Tätä vyöhykettä ei voi muokata: {entity_id}."
+        }
+    },
     "issues": {
         "automation_unknown_area_references": {
             "description": "Spook on löytänyt kummituksen automaatioistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan automaatioon:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTämä automaatio viittaa seuraaviin alueisiin, jotka ovat Home Assistantille tuntemattomia:\n\n{areas}\n\n\n\nKorjataksesi tämän ongelman, [muokkaa automaatiota]({edit}) ja lopeta näiden olemattomien alueiden käyttäminen.\n\nSpook 👻 Kamusi.",
@@ -282,7 +473,8 @@
                 "abort": {
                     "issue_ignored": "Spook pysyy hiljaa tästä ryhmästä tästä eteenpäin.",
                     "not_editable": "Ryhmä on luotu YAML:issa, joten Spook ei voi muokata sitä. Päivitä ryhmä käsin konfiguraation kautta.",
-                    "manage": "Voit hallita tätä ryhmää itse [apurit-sivulla](/config/helpers)."
+                    "manage": "Voit hallita tätä ryhmää itse [apurit-sivulla](/config/helpers).",
+                    "changed": "Tämän korjauksen listaamat jäsenet ovat palanneet tai muuttuneet sen jälkeen kun Spook katsoi, joten ryhmästä ei poistettu mitään. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
                 }
             }
         },
@@ -347,7 +539,7 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Uudelleenkäynnistys vaaditaan",
-                        "description": "Jotta Spook👻 pystyy suorittamaan käyttöönoton loppuun, tulee Home Assistant käynnistää uudelleen.\n\nValitse lähetä, jotta Home Assistant käynnistyy uudelleen nyt."
+                        "description": "Jotta Spook👻 pystyy suorittamaan käyttöönoton loppuun, tulee Home Assistant käynnistää uudelleen.\n\nValitse lähetä, jotta Home Assistant käynnistyy uudelleen nyt.\n\nSpook 👻 Kamusi."
                     }
                 }
             }
@@ -376,7 +568,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook pysyy hiljaa tästä alueesta tästä eteenpäin.",
-                    "manage": "Voit hallita tätä aluetta itse [alueet-sivulta](/config/areas/dashboard)."
+                    "manage": "Voit hallita tätä aluetta itse [alueet-sivulta](/config/areas/dashboard).",
+                    "changed": "Tämä alue on taas käytössä sen jälkeen kun Spook katsoi: siinä on jotain, tai jokin automaatio tai skripti käyttää sitä. Joten se jätettiin rauhaan. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
                 }
             }
         },
@@ -396,13 +589,31 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook pysyy hiljaa tästä kerroksesta tästä eteenpäin.",
-                    "manage": "Voit hallita tätä kerrosta itse [alueet-sivulta](/config/areas/dashboard)."
+                    "manage": "Voit hallita tätä kerrosta itse [alueet-sivulta](/config/areas/dashboard).",
+                    "changed": "Tämä kerros on taas käytössä sen jälkeen kun Spook katsoi: sillä on alue, tai jokin automaatio tai skripti käyttää sitä. Joten se jätettiin rauhaan. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
                 }
             }
         },
         "energy_unknown_references": {
-            "description": "Spook on löytänyt kummituksen energiakojelaudaltasi 👻\n\nEnergiakojelauta viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nTämä tapahtuu yleensä, kun energiakonfiguraation käyttämä entiteetti on poistettu tai uudelleennimetty. Korjataksesi ongelman, avaa Asetukset > Kojelaudat > Energia ja päivitä tai poista nämä entiteetit.\n\nSpook 👻 Kamusi.",
-            "title": "Tuntemattomia entiteettejä käytetty energiakojelaudalla"
+            "title": "Tuntemattomia entiteettejä käytetty energiakojelaudalla",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tuntemattomia entiteettejä käytetty energiakojelaudalla",
+                        "description": "Spook on löytänyt kummituksen energiakojelaudaltasi 👻\n\nEnergiakojelauta viittaa seuraaviin entiteetteihin, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\nTämä tapahtuu yleensä, kun energiakonfiguraatiossa käytetty entiteetti on uudelleennimetty tai poistettu. Uudelleennimetty? Avaa silloin [Asetukset > Kojelaudat > Energia](/config/energy) ja valitse uusi, jotta sen historia pysyy kojelaudalla.\n\nPoistettu lopullisesti? Spook voi ottaa nämä pois energiakonfiguraatiosta puolestasi. Puuttuva mittari vie lähteensä tai laitteensa mukanaan, puuttuva hinta tai kustannus vain tyhjennetään. Kojelauta lakkaa sen jälkeen näyttämästä poistetun historiaa; itse tilastot säilyvät.\n\nSpook 👻 Kamusi.",
+                        "menu_options": {
+                            "remove": "Ota nämä pois energiakonfiguraatiosta",
+                            "manage": "Hoidan asian itse",
+                            "ignore": "Säilytä ne, lopeta asiasta ilmoittelu"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook pysyy tästä eteenpäin hiljaa näistä entiteeteistä.",
+                    "manage": "Voit päivittää tai poistaa nämä itse [energiakonfiguraatiossa](/config/energy).",
+                    "nothing_to_remove": "Mikään näistä ei ole enää tuntematon, joten mitään ei otettu pois. Ne voivat olla palanneet, tai joku on jo muuttanut energiakonfiguraatiota."
+                }
+            }
         },
         "lovelace_missing_resources": {
             "description": "Spook on löytänyt kummituksen kojelaudoistasi 👻\n\nSeuraavat resurssit viittaavat tiedostoihin joita ei ole olemassa:\n\n{resources}\n\n\n\nTämä tapahtuu usein kun mukautettu kortti tai sen tiedostot on poistettu, mutta resurssia ei. Korjataksesi ongelman, avaa [Resurssit-sivu](/config/lovelace/resources) ja poista tai korjaa nämä resurssit. Resursseilla ei ole omaa tabia. Löydät ne kojelautojen alta, kolmen pisteen takaa sivun oikeassaa yläkulmassa. \n\nSpook 👻 Kamusi.",
@@ -429,12 +640,32 @@
                 "abort": {
                     "issue_ignored": "Spook pysyy hiljaa tästä apurista tästä eteenpäin.",
                     "manage": "Voit hallita tätä apuria itse [apurit-sivulta](/config/helpers).",
+                    "changed": "Tämän korjauksen listaamat jäsenet ovat palanneet tai muuttuneet sen jälkeen kun Spook katsoi, joten apurista ei poistettu mitään. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen.",
                     "too_few_members": "Min/max-apurissa on oltava vähintään kaksi jäsentä, joten puuttuvia jäseniä ei voida poistaa. Muokkaa apuria tai poista se itse [apurit-sivulta](/config/helpers)."
                 }
             }
         },
         "orphaned_statistics": {
-            "title": "Orpoja pitkän aikavälin tilastoja löydetty"
+            "title": "Orpoja pitkän aikavälin tilastoja löydetty",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Orpoja pitkän aikavälin tilastoja löydetty",
+                        "description": "Spook on löytänyt kummituksen tallentimestasi 👻\n\nHome Assistant säilyttää pitkän aikavälin tilastoja seuraaville, mutta niille ei ole enää vastaavaa entiteettiä:\n\n{statistics}\n\nTämä tapahtuu yleensä, kun sensori on poistettu mutta sen tilastot jätetty. Tyhjentäminen heittää sen historian pois lopullisesti, joten Spook katsoo uudelleen ennen kuin tekee sen, ja jättää rauhaan kaiken, mikä on sillä välin palannut.\n\nSpook 👻 Kamusi.",
+                        "menu_options": {
+                            "remove": "Tyhjennä nämä tilastot",
+                            "manage": "Hoidan asian itse",
+                            "ignore": "Säilytä ne, lopeta asiasta ilmoittelu"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook pysyy tästä eteenpäin hiljaa näistä tilastoista.",
+                    "manage": "Voit tyhjentää nämä itse [Tilastot-sivulla](/config/tools/statistics).",
+                    "nothing_to_clear": "Listalla ei ole enää mitään tyhjennettävää, joten mitään ei heitetty pois. Joko tilastojen takana on taas entiteetti, tai ne ovat jo poissa.",
+                    "clearing_took_too_long": "Spook pyysi tyhjentämään tilastot, eikä tallennin ole vielä ilmoittanut olevansa valmis. Työ on jonossa ja todennäköisesti menee läpi, joten tämä korjaus pysyy esillä, kunnes Spook on katsonut uudelleen."
+                }
+            }
         },
         "person_unknown_device_trackers": {
             "title": "Tuntemattomia laiteseuraimia seurataan: {person}",
@@ -473,6 +704,10 @@
             "description": "Spook on löytänyt kummituksen mukautuksistasi 👻\n\n`customize:` osio lisää attribuutteja seuraaville entiteeteillä, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nTämä tapahtuu usein kun entiteetti on uudelleennimetty tai poistettu, mutta mukautus on yhä olemassa. Korjataksesi ongelman, muokkaa `customize:` osiota konfiguraatiossasi ja poista nämä entiteetit.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia eniteettejä mukautuksissa"
         },
+        "unknown_engines": {
+            "title": "Assist-putki käyttää moottoreita, joita ei enää ole: {pipeline}",
+            "description": "Spook on löytänyt kummituksen puheavustajistasi 👻\n\nAssist-putki {pipeline} käyttää seuraavia, jotka ovat Home Assistantille tuntemattomia:\n\n{engines}\n\nTämä tarkoittaa yleensä, että sen takana oleva integraatio on poistettu. Putkelle ei kerrottu, joten seuraavalla käyttökerralla se epäonnistuu virheellä puuttuvasta palveluntarjoajasta tai agentista, eikä mikään sitä ennen viittaa tänne.\n\nKorjataksesi tämän, avaa tämän avustajan asetukset kohdassa [Puheavustajat](/config/voice-assistants/assistants) ja valitse jokaiselle näistä moottori, joka on yhä olemassa.\n\nSpook 👻 Kamusi."
+        },
         "unknown_helper_source_references": {
             "title": "Tuntemattomia lähde-entiteettejä apurissa: {helper}",
             "fix_flow": {
@@ -489,7 +724,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook pysyy hiljaa tästä apurista tästä eteenpäin.",
-                    "manage": "Voit hallita apuria itse [apurit-sivulla](/config/helpers)."
+                    "manage": "Voit hallita apuria itse [apurit-sivulla](/config/helpers).",
+                    "changed": "Tämän apurin lähteet ovat muuttuneet sen jälkeen kun Spook katsoi, joten apuri jätettiin rauhaan. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
                 }
             }
         },
@@ -529,7 +765,8 @@
                 },
                 "abort": {
                     "issue_ignored": "Spook pysyy hiljaa tästä tunnisteesta tästä eteenpäin.",
-                    "manage": "Voit hallita tunnisteita itse [tunnisteet-sivulta](/config/labels)."
+                    "manage": "Voit hallita tunnisteita itse [tunnisteet-sivulta](/config/labels).",
+                    "changed": "Tämä tunniste on taas käytössä sen jälkeen kun Spook katsoi: jollakin on se, tai jokin automaatio tai skripti käyttää sitä. Joten se jätettiin rauhaan. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
                 }
             }
         },
@@ -544,6 +781,27 @@
         "template_unknown_service_references": {
             "description": "Spook on löytänyt kummituksen mallipohja-avustajistasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan mallipohja-avustajaan:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSe viittaa seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{services}\n\nNäin käy usein, kun toiminnon tarjonnut integraatio on poistettu tai skripti on nimetty uudelleen tai poistettu. Korjataksesi tämän ongelman, määritä mallipohja-avustaja käyttämään olemassa olevia toimintoja.\n\nSpook 👻 Kamusi.",
             "title": "Tuntemattomia toimintoja käytössä mallipohja-avustajassa: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Tuntematon {sensors}-sensori alueella: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tuntematon {sensors}-sensori alueella: {area}",
+                        "description": "Spook on löytänyt kummituksen alueistasi 👻\n\nAlue {area} käyttää {sensors}-sensoria, joka on Home Assistantille tuntematon:\n\n{entities}\n\nHome Assistant tarkistaa tämän sensorin vain silloin kun se valitaan, joten kun se poistettiin tai uudelleennimettiin, alue jäi osoittamaan tyhjään. Assist ja aluekortit eivät enää saa siitä lukemaa.\n\nTyhjennä asetus, jotta voit valita sensorin uudelleen, tai säilytä se ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
+                        "menu_options": {
+                            "remove": "Tyhjennä asetus",
+                            "manage": "Korjaan asian itse",
+                            "ignore": "Säilytä se, lopeta asiasta ilmoittelu"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook pysyy tästä eteenpäin hiljaa tästä alueesta.",
+                    "manage": "Voit valita toisen sensorin tämän alueen asetuksista [Alueet-sivulla](/config/areas/dashboard).",
+                    "changed": "Nämä sensorit ovat palanneet, tai asetukset osoittavat nyt muualle, sen jälkeen kun Spook katsoi. Joten mitään ei tyhjennetty. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
+                }
+            }
         },
         "notify_unknown_group_members": {
             "description": "Spook on löytänyt kummituksen ilmoitusryhmistäsi 👻\n\nIlmoitusryhmä `{group}` välittää seuraaviin toimintoihin, jotka ovat Home Assistantille tuntemattomia:\n\n{members}\n\nRyhmä toimittaa edelleen muille jäsenilleen ja ilmoittaa edelleen onnistumisesta kutsujalleen, joten mikään sitä ennen ei huomaa mitään. Virhe näkyy vain yksittäisenä \"Task exception was never retrieved\" -merkintänä lokissa, joka ei nimeä mitään ryhmää ja näyttää ohjelmavirheeltä. Se, joka oli tuon jäsenen takana, ei yksinkertaisesti saa enää ilmoituksia.\n\nKorjataksesi tämän virheen, muokkaa tämän ryhmän `services:`-luetteloa määrityksissäsi ja poista tai korjaa nämä merkinnät.\n\nSpook 👻 Kamusi.",
@@ -865,6 +1123,10 @@
                 "config_entry_id": {
                     "name": "Integraatiomerkintä",
                     "description": "Integraatiomerkintä, joka poistetaan käytöstä."
+                },
+                "domain": {
+                    "name": "Integraatio",
+                    "description": "Poista käytöstä näiden integraatioiden kaikki merkinnät, myös myöhemmin lisätyt."
                 }
             }
         },
@@ -875,6 +1137,10 @@
                 "config_entry_id": {
                     "name": "Integraatiomerkintä",
                     "description": "Integraatiomerkintä, joka otetaan käyttöön."
+                },
+                "domain": {
+                    "name": "Integraatio",
+                    "description": "Ota käyttöön näiden integraatioiden kaikki merkinnät, myös myöhemmin lisätyt."
                 }
             }
         },
@@ -976,6 +1242,62 @@
                 }
             }
         },
+        "homeassistant_set_entity_icon": {
+            "name": "Aseta entiteetin kuvake",
+            "description": "Asettaa entiteetin (tai entiteettien) kuvakkeen lennossa. Aseta arvoksi null, niin palataan integraation antamaan kuvakkeeseen.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetti",
+                    "description": "Entiteetti tai entiteetit, joiden kuvake asetetaan."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uusi kuvake, tai null integraation omalle kuvakkeelle."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Lisää alias entiteetille",
+            "description": "Lisää yhden tai useamman aliaksen entiteetille (tai entiteeteille), joilla puheavustajat voivat kutsua sitä.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetti",
+                    "description": "Entiteetti tai entiteetit, joille alias tai aliakset lisätään."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Lisättävä alias tai aliakset."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Poista alias entiteetiltä",
+            "description": "Poistaa yhden tai useamman aliaksen entiteetiltä (tai entiteeteiltä).",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetti",
+                    "description": "Entiteetti tai entiteetit, joilta alias tai aliakset poistetaan."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Poistettava alias tai aliakset."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Aseta entiteetin aliakset",
+            "description": "Korvaa entiteetin (tai entiteettien) aliakset. Se, lasketaanko entiteetin oma nimi aliakseksi, pysyy ennallaan.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetti",
+                    "description": "Entiteetti tai entiteetit, joiden aliakset asetetaan."
+                },
+                "aliases": {
+                    "name": "Aliakset",
+                    "description": "Asetettavat aliakset."
+                }
+            }
+        },
         "homeassistant_unhide_entity": {
             "name": "Poista entiteetin piilotus",
             "description": "Poistaa entiteettien piilotuksen lennossa.",
@@ -1067,6 +1389,88 @@
                 "entity_id": {
                     "name": "Entiteetin ID",
                     "description": "Niiden entiteettien ID:t, joilta tunnisteet poistetaan."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Luo kategoria",
+            "description": "Luo lennossa uuden kategorian automaatioille, skripteille, tilanteille tai apureille. Palauttaa uuden kategorian ID:n.",
+            "fields": {
+                "scope": {
+                    "name": "Laajuus",
+                    "description": "Missä kategoriaa käytetään."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Luotavan kategorian nimi."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Kategorialle käytettävä kuvake."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Päivitä kategoria",
+            "description": "Päivittää olemassa olevan kategorian lennossa. Kaikki minkä jätät pois säilyttää arvon, joka sillä jo oli. Kuvakkeen voi tyhjentää asettamalla sen arvoon null.",
+            "fields": {
+                "scope": {
+                    "name": "Laajuus",
+                    "description": "Missä kategoriaa käytetään."
+                },
+                "category_id": {
+                    "name": "Kategoria",
+                    "description": "Päivitettävän kategorian ID tai nimi."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Kategorian uusi nimi."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Kategorian uusi kuvake."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Poista kategoria",
+            "description": "Poistaa kategorian. Kaikki siinä ollut jää ilman kategoriaa.",
+            "fields": {
+                "scope": {
+                    "name": "Laajuus",
+                    "description": "Missä kategoriaa käytetään."
+                },
+                "category_id": {
+                    "name": "Kategoria",
+                    "description": "Poistettavan kategorian ID tai nimi."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Lisää kategoria entiteetille",
+            "description": "Laittaa automaation, skriptin, tilanteen tai apurin kategoriaan. Se korvaa kategorian, jossa se oli aiemmin, koska kukin voi olla vain yhdessä.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategoria",
+                    "description": "Kategorian ID tai nimi."
+                },
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Automaatiot, skriptit, tilanteet tai apurit, jotka laitetaan kategoriaan."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Poista kategoria entiteetiltä",
+            "description": "Ottaa automaation, skriptin, tilanteen tai apurin pois kategoriasta. Toisessa kategoriassa olevat jätetään rauhaan.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategoria",
+                    "description": "Kategorian ID tai nimi."
+                },
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Automaatiot, skriptit, tilanteet tai apurit, jotka otetaan pois kategoriasta."
                 }
             }
         },
@@ -1176,6 +1580,42 @@
                 }
             }
         },
+        "input_select_create": {
+            "name": "Luo syötevalinta",
+            "description": "Luo lennossa uuden syötevalinta-apurin (pudotusvalikko). Palauttaa uuden syötevalinnan entiteetin ID:n.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uuden syötevalinnan nimi."
+                },
+                "input_select_id": {
+                    "name": "Syötevalintaentiteetin ID",
+                    "description": "Uuden syötevalinnan entiteetin ID. Etuliite input_select. lisätään automaattisesti. Jos sitä ei anneta, entiteetin ID muodostetaan nimen perusteella."
+                },
+                "options": {
+                    "name": "Vaihtoehdot",
+                    "description": "Vaihtoehdot, joista valitaan. Kukin vaihtoehto voi esiintyä vain kerran."
+                },
+                "initial": {
+                    "name": "Alkuvaihtoehto",
+                    "description": "Vaihtoehto, josta se aloittaa, ja sen on oltava yksi vaihtoehdoista. Jos se jätetään pois, se säilyttää vaihtoehdon, joka sillä oli ennen Home Assistantin uudelleenkäynnistystä."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uuden syötevalinnan kuvake."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Poista syötevalinta",
+            "description": "Poistaa käyttöliittymässä tai luo syötevalinta -toiminnolla tehtyjä syötevalinta-apureita. YAML:issa määritettyjä syötevalintoja Spook ei voi poistaa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava syötevalinta tai syötevalinnat."
+                }
+            }
+        },
         "input_select_random": {
             "name": "Valitse satunnainen arvo",
             "description": "Valitse satunnainen arvo syötevalintaentiteetille.",
@@ -1185,6 +1625,10 @@
                     "description": "Rajoittaa käytettäviä valintoja. Jos rajoituksia ei aseteta, kaikki valinnat ovat käytössä."
                 }
             }
+        },
+        "input_select_reverse": {
+            "name": "Käännä vaihtoehdot",
+            "description": "Kääntää `input_select`-entiteetin valittavien vaihtoehtojen järjestyksen takaperin. Tämä ei ole pysyvää, ja se kumoutuu uudelleenlatauksessa tai kun Home Assistant käynnistyy uudelleen."
         },
         "input_select_shuffle": {
             "name": "Sekoita valintoja",
@@ -1258,6 +1702,224 @@
             "name": "Aseta minimiarvo",
             "description": "Asettaa entiteetin arvon sen minimiin."
         },
+        "input_number_set_range": {
+            "name": "Aseta vaihteluväli",
+            "description": "Muuttaa käyttöliittymässä tehdyn syötenumeron minimiä, maksimia tai askelta, samoin kuin sitä muokattaessa. Uuden välin ulkopuolella oleva arvo siirretään sen sisälle.",
+            "fields": {
+                "min": {
+                    "name": "Minimi",
+                    "description": "Uusi minimiarvo."
+                },
+                "max": {
+                    "name": "Maksimi",
+                    "description": "Uusi maksimiarvo."
+                },
+                "step": {
+                    "name": "Askel",
+                    "description": "Uusi askelkoko."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Luo laskuri",
+            "description": "Luo lennossa uuden laskuriapurin. Palauttaa uuden laskurin entiteetin ID:n.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uuden laskurin nimi."
+                },
+                "counter_id": {
+                    "name": "Laskurientiteetin ID",
+                    "description": "Uuden laskurin entiteetin ID. Etuliite counter. lisätään automaattisesti. Jos sitä ei anneta, entiteetin ID muodostetaan nimen perusteella."
+                },
+                "initial": {
+                    "name": "Alkuarvo",
+                    "description": "Arvo, josta laskuri aloittaa ja johon se palaa nollauksessa."
+                },
+                "minimum": {
+                    "name": "Minimi",
+                    "description": "Pienin arvo, johon laskuri voi laskea. Jätä tyhjäksi, niin rajaa ei ole."
+                },
+                "maximum": {
+                    "name": "Maksimi",
+                    "description": "Suurin arvo, johon laskuri voi nousta. Jätä tyhjäksi, niin rajaa ei ole."
+                },
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka paljon laskuri nousee tai laskee kerralla."
+                },
+                "restore": {
+                    "name": "Palauta",
+                    "description": "Palauta laskurin arvo Home Assistantin käynnistyessä sen sijaan, että aloitetaan alusta alkuarvosta."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uuden laskurin kuvake."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Poista laskuri",
+            "description": "Poistaa käyttöliittymässä tai luo laskuri -toiminnolla tehtyjä laskuriapureita. YAML:issa määritettyjä laskureita Spook ei voi poistaa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava laskuri tai laskurit."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Luo syötetotuusarvo",
+            "description": "Luo lennossa uuden syötetotuusarvo-apurin (vaihtokytkin). Palauttaa uuden syötetotuusarvon entiteetin ID:n.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uuden syötetotuusarvon nimi."
+                },
+                "input_boolean_id": {
+                    "name": "Syötetotuusarvoentiteetin ID",
+                    "description": "Uuden syötetotuusarvon entiteetin ID. Etuliite input_boolean. lisätään automaattisesti. Jos sitä ei anneta, entiteetin ID muodostetaan nimen perusteella."
+                },
+                "initial": {
+                    "name": "Alkuarvo",
+                    "description": "Arvo, josta se aloittaa. Jos se jätetään pois, se säilyttää arvon, joka sillä oli ennen Home Assistantin uudelleenkäynnistystä."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uuden syötetotuusarvon kuvake."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Poista syötetotuusarvo",
+            "description": "Poistaa käyttöliittymässä tai luo syötetotuusarvo -toiminnolla tehtyjä syötetotuusarvo-apureita. YAML:issa määritettyjä syötetotuusarvoja Spook ei voi poistaa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava syötetotuusarvo tai syötetotuusarvot."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Luo syöteteksti",
+            "description": "Luo lennossa uuden syöteteksti-apurin. Palauttaa uuden syötetekstin entiteetin ID:n.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uuden syötetekstin nimi."
+                },
+                "input_text_id": {
+                    "name": "Syötetekstientiteetin ID",
+                    "description": "Uuden syötetekstin entiteetin ID. Etuliite input_text. lisätään automaattisesti. Jos sitä ei anneta, entiteetin ID muodostetaan nimen perusteella."
+                },
+                "initial": {
+                    "name": "Alkuarvo",
+                    "description": "Teksti, josta se aloittaa. Jos se jätetään pois, se säilyttää tekstin, joka sillä oli ennen Home Assistantin uudelleenkäynnistystä."
+                },
+                "min": {
+                    "name": "Vähimmäispituus",
+                    "description": "Lyhin mahdollinen tekstin pituus."
+                },
+                "max": {
+                    "name": "Enimmäispituus",
+                    "description": "Pisin mahdollinen tekstin pituus."
+                },
+                "pattern": {
+                    "name": "Kuvio",
+                    "description": "Säännöllinen lauseke, jota tekstin on vastattava."
+                },
+                "mode": {
+                    "name": "Tila",
+                    "description": "Näytä teksti sellaisenaan, tai piilota se kuin salasana."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uuden syötetekstin kuvake."
+                },
+                "unit_of_measurement": {
+                    "name": "Mittayksikkö",
+                    "description": "Tekstin vieressä näytettävä yksikkö."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Poista syöteteksti",
+            "description": "Poistaa käyttöliittymässä tai luo syöteteksti -toiminnolla tehtyjä syöteteksti-apureita. YAML:issa määritettyjä syötetekstejä Spook ei voi poistaa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava syöteteksti tai syötetekstit."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Luo syötepainike",
+            "description": "Luo lennossa uuden syötepainike-apurin. Palauttaa uuden syötepainikkeen entiteetin ID:n.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uuden syötepainikkeen nimi."
+                },
+                "input_button_id": {
+                    "name": "Syötepainike-entiteetin ID",
+                    "description": "Uuden syötepainikkeen entiteetin ID. Etuliite input_button. lisätään automaattisesti. Jos sitä ei anneta, entiteetin ID muodostetaan nimen perusteella."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uuden syötepainikkeen kuvake."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Poista syötepainike",
+            "description": "Poistaa käyttöliittymässä tai luo syötepainike -toiminnolla tehtyjä syötepainike-apureita. YAML:issa määritettyjä syötepainikkeita Spook ei voi poistaa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava syötepainike tai syötepainikkeet."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Luo syöteaika",
+            "description": "Luo lennossa uuden syöteaika-apurin, joka sisältää päivämäärän, kellonajan tai molemmat. Palauttaa uuden syöteajan entiteetin ID:n.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uuden syöteajan nimi."
+                },
+                "input_datetime_id": {
+                    "name": "Syöteaikaentiteetin ID",
+                    "description": "Uuden syöteajan entiteetin ID. Etuliite input_datetime. lisätään automaattisesti. Jos sitä ei anneta, entiteetin ID muodostetaan nimen perusteella."
+                },
+                "has_date": {
+                    "name": "Sisältää päivämäärän",
+                    "description": "Sisältääkö se päivämäärän. Vähintään toisen, päivämäärän tai kellonajan, on oltava päällä."
+                },
+                "has_time": {
+                    "name": "Sisältää kellonajan",
+                    "description": "Sisältääkö se kellonajan. Vähintään toisen, päivämäärän tai kellonajan, on oltava päällä."
+                },
+                "initial": {
+                    "name": "Alkuarvo",
+                    "description": "Päivämäärä ja/tai kellonaika, josta se aloittaa, kuten 2026-12-31, 08:30:00 tai 2026-12-31 08:30:00. Jos se jätetään pois, se säilyttää arvon, joka sillä oli ennen Home Assistantin uudelleenkäynnistystä."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uuden syöteajan kuvake."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Poista syöteaika",
+            "description": "Poistaa käyttöliittymässä tai luo syöteaika -toiminnolla tehtyjä syöteaika-apureita. YAML:issa määritettyjä syöteaikoja Spook ei voi poistaa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava syöteaika tai syöteajat."
+                }
+            }
+        },
         "input_number_create": {
             "name": "Luo syötenumero",
             "description": "Luo lennossa uuden syötenumeroapurin.",
@@ -1302,7 +1964,13 @@
         },
         "input_number_delete": {
             "name": "Poista syötenumero",
-            "description": "Poista syötenumeroapuri. Tämä toimii vain sellaisten syöttönumeroiden kanssa, jotka on luotu käyttöliittymän kautta. YAML:in kautta luotuja ja hallittuja syöttönumeroita ei voi hallita Spookilla."
+            "description": "Poista syötenumeroapuri. Tämä toimii vain sellaisten syöttönumeroiden kanssa, jotka on luotu käyttöliittymän kautta. YAML:in kautta luotuja ja hallittuja syöttönumeroita ei voi hallita Spookilla.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava syötenumero tai syötenumerot."
+                }
+            }
         },
         "person_remove_device_tracker": {
             "name": "Poista laitepaikannin",
@@ -1350,7 +2018,31 @@
         },
         "repairs_ignore_all": {
             "name": "Sivuuta kaikki ongelmat",
-            "description": "Sivuuttaa kaikki ongelmat, jotka tällä hetkellä ovat Home Assistant -korjauksissa."
+            "description": "Sivuuttaa kaikki ongelmat, jotka tällä hetkellä ovat Home Assistant -korjauksissa.",
+            "fields": {
+                "domain": {
+                    "name": "Domain",
+                    "description": "Sivuuta vain näiden integraatioiden ilmoittamat ongelmat."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Listaa ongelmat",
+            "description": "Listaa Home Assistantin Korjauksissa tällä hetkellä olevat ongelmat otsikkoineen, automaation käsiteltäväksi tai kojelaudalla näytettäväksi.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Sisällytä sivuutetut",
+                    "description": "Listaa myös ongelmat, jotka on sivuutettu."
+                },
+                "domain": {
+                    "name": "Domain",
+                    "description": "Listaa vain näiden integraatioiden ilmoittamat ongelmat."
+                },
+                "severity": {
+                    "name": "Vakavuus",
+                    "description": "Listaa vain ongelmat, joilla on nämä vakavuudet."
+                }
+            }
         },
         "repairs_remove": {
             "name": "Poista ongelma",
@@ -1364,7 +2056,13 @@
         },
         "repairs_unignore_all": {
             "name": "Poista kaikkien ongelmien sivuutus",
-            "description": "Poistaa kaikkien ongelmien sivuutukset."
+            "description": "Poistaa kaikkien ongelmien sivuutukset.",
+            "fields": {
+                "domain": {
+                    "name": "Domain",
+                    "description": "Poista sivuutus vain näiden integraatioiden ilmoittamista ongelmista."
+                }
+            }
         },
         "timer_set_duration": {
             "name": "Aseta kesto",
@@ -1399,6 +2097,10 @@
                 "radius": {
                     "name": "Halkaisija",
                     "description": "Vyöhykkeen halkaisija."
+                },
+                "passive": {
+                    "name": "Passiivinen",
+                    "description": "Passiivinen vyöhyke on olemassa vain automaatioita varten: sitä ei näytetä kartalla, eikä se muuta sitä, missä henkilöt ja laiteseuraimet ovat."
                 }
             }
         },
@@ -1429,6 +2131,10 @@
                 "radius": {
                     "name": "Halkaisija",
                     "description": "Vyöhykkeen halkaisija."
+                },
+                "passive": {
+                    "name": "Passiivinen",
+                    "description": "Passiivinen vyöhyke on olemassa vain automaatioita varten: sitä ei näytetä kartalla, eikä se muuta sitä, missä henkilöt ja laiteseuraimet ovat."
                 }
             }
         },
@@ -1439,6 +2145,124 @@
                 "entity_id": {
                     "name": "Entiteetin ID",
                     "description": "Poistettavien entiteettien ID:t."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Nosta lämpötilaa",
+            "description": "Nostaa vedenlämmittimen asetusarvoa askeleen verran, sen rajojen puitteissa.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka paljon muutetaan. Jätä tyhjäksi, niin käytetään vedenlämmittimen omaa askelta, tai puolta astetta (yhtä Fahrenheitissa), jos sillä ei ole sellaista."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Laske lämpötilaa",
+            "description": "Laskee vedenlämmittimen asetusarvoa askeleen verran, sen rajojen puitteissa.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka paljon muutetaan. Jätä tyhjäksi, niin käytetään vedenlämmittimen omaa askelta, tai puolta astetta (yhtä Fahrenheitissa), jos sillä ei ole sellaista."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Nosta kosteutta",
+            "description": "Nostaa ilmankostuttimen tavoitekosteutta askeleen verran, sen rajojen puitteissa.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka monta prosenttia muutetaan. Jätä tyhjäksi, niin käytetään ilmankostuttimen omaa askelta, tai yhtä prosenttia, jos sillä ei ole sellaista."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Laske kosteutta",
+            "description": "Laskee ilmankostuttimen tavoitekosteutta askeleen verran, sen rajojen puitteissa.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka monta prosenttia muutetaan. Jätä tyhjäksi, niin käytetään ilmankostuttimen omaa askelta, tai yhtä prosenttia, jos sillä ei ole sellaista."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Nosta asentoa",
+            "description": "Avaa kaihdinta askeleen verran lisää, pysähtyen täysin auki.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka monta prosenttia liikutetaan. Kymmenen prosenttia, jos jätetään tyhjäksi."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Laske asentoa",
+            "description": "Sulkee kaihdinta askeleen verran lisää, pysähtyen täysin kiinni.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka monta prosenttia liikutetaan. Kymmenen prosenttia, jos jätetään tyhjäksi."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Nosta asentoa",
+            "description": "Avaa venttiiliä askeleen verran lisää, pysähtyen täysin auki.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka monta prosenttia liikutetaan. Kymmenen prosenttia, jos jätetään tyhjäksi."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Laske asentoa",
+            "description": "Sulkee venttiiliä askeleen verran lisää, pysähtyen täysin kiinni.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka monta prosenttia liikutetaan. Kymmenen prosenttia, jos jätetään tyhjäksi."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Nosta äänenvoimakkuutta",
+            "description": "Nostaa mediasoittimen äänenvoimakkuutta antamasi askeleen verran, pysähtyen täyteen voimakkuuteen.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka monta prosenttia äänenvoimakkuutta muutetaan."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Laske äänenvoimakkuutta",
+            "description": "Laskee mediasoittimen äänenvoimakkuutta antamasi askeleen verran, pysähtyen hiljaiseen.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka monta prosenttia äänenvoimakkuutta muutetaan."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Siirrä kohde",
+            "description": "Siirtää tehtävälistan kohteen ylimmäiseksi, alimmaiseksi tai toisen kohteen perään.",
+            "fields": {
+                "item": {
+                    "name": "Kohde",
+                    "description": "Siirrettävän kohteen otsikko tai uid."
+                },
+                "after": {
+                    "name": "Perään",
+                    "description": "Sen kohteen otsikko tai uid, jonka perään se laitetaan. Anna tämä tai sijainti."
+                },
+                "position": {
+                    "name": "Sijainti",
+                    "description": "Siirrä se listan ylimmäiseksi tai alimmaiseksi. Anna tämä tai kohde, jonka perään se laitetaan."
                 }
             }
         },
@@ -1483,6 +2307,42 @@
                 }
             },
             "name": "Aseta näyttötarkkuus"
+        },
+        "timer_create": {
+            "name": "Luo ajastin",
+            "description": "Luo lennossa uuden ajastinapurin. Palauttaa uuden ajastimen entiteetin ID:n.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uuden ajastimen nimi."
+                },
+                "timer_id": {
+                    "name": "Ajastinentiteetin ID",
+                    "description": "Uuden ajastimen entiteetin ID. Etuliite timer. lisätään automaattisesti. Jos sitä ei anneta, entiteetin ID muodostetaan nimen perusteella."
+                },
+                "duration": {
+                    "name": "Kesto",
+                    "description": "Kuinka kauan ajastin käy, kun se käynnistetään."
+                },
+                "restore": {
+                    "name": "Palauta",
+                    "description": "Palauta ajastimen tila Home Assistantin käynnistyessä, jotta käynnissä oleva ajastin jatkaa käyntiään uudelleenkäynnistyksen yli."
+                },
+                "icon": {
+                    "name": "Kuvake",
+                    "description": "Uuden ajastimen kuvake."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Poista ajastin",
+            "description": "Poistaa käyttöliittymässä tai luo ajastin -toiminnolla tehtyjä ajastinapureita. YAML:issa määritettyjä ajastimia Spook ei voi poistaa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteetin ID",
+                    "description": "Poistettava ajastin tai ajastimet."
+                }
+            }
         },
         "wait_for_condition": {
             "name": "Odota ehtoa",
@@ -1598,6 +2458,106 @@
                 }
             }
         },
+        "calendar_delete_event": {
+            "name": "Poista tapahtuma",
+            "description": "Poistaa kalenterista tapahtumia, jotka löydetään otsikon tai uid:n perusteella tietyltä aikaväliltä. Palauttaa poistamansa, uid mukaan lukien.",
+            "fields": {
+                "summary": {
+                    "name": "Otsikko",
+                    "description": "Poistettavien tapahtumien otsikko, täsmälleen kuten se on kalenterissa."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Poistettavan tapahtuman tunniste, silloin kun se on tiedossa."
+                },
+                "start_date_time": {
+                    "name": "Alkupäivä ja -aika",
+                    "description": "Mistä etsiminen aloitetaan. Oletuksena nyt."
+                },
+                "end_date_time": {
+                    "name": "Loppupäivä ja -aika",
+                    "description": "Mihin etsiminen lopetetaan. Anna tämä tai kesto."
+                },
+                "duration": {
+                    "name": "Kesto",
+                    "description": "Kuinka pitkältä alusta etsitään. Anna tämä tai loppupäivä ja -aika."
+                },
+                "whole_series": {
+                    "name": "Koko sarja",
+                    "description": "Toistuvan tapahtuman kohdalla poista koko sarja, eikä vain löydettyä esiintymää."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Päivitä tapahtuma",
+            "description": "Muuttaa kalenterin tapahtumia, jotka löydetään otsikon tai uid:n perusteella tietyltä aikaväliltä. Palauttaa muuttamansa, uid mukaan lukien.",
+            "fields": {
+                "summary": {
+                    "name": "Otsikko",
+                    "description": "Muutettavien tapahtumien otsikko, täsmälleen kuten se on kalenterissa."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Muutettavan tapahtuman tunniste, silloin kun se on tiedossa."
+                },
+                "start_date_time": {
+                    "name": "Alkupäivä ja -aika",
+                    "description": "Mistä etsiminen aloitetaan. Oletuksena nyt."
+                },
+                "end_date_time": {
+                    "name": "Loppupäivä ja -aika",
+                    "description": "Mihin etsiminen lopetetaan. Anna tämä tai kesto."
+                },
+                "duration": {
+                    "name": "Kesto",
+                    "description": "Kuinka pitkältä alusta etsitään. Anna tämä tai loppupäivä ja -aika."
+                },
+                "new_summary": {
+                    "name": "Uusi otsikko",
+                    "description": "Tapahtumille annettava otsikko."
+                },
+                "description": {
+                    "name": "Kuvaus",
+                    "description": "Tapahtumille annettava kuvaus."
+                },
+                "location": {
+                    "name": "Sijainti",
+                    "description": "Tapahtumille annettava sijainti."
+                },
+                "new_start": {
+                    "name": "Uusi alku",
+                    "description": "Milloin tapahtumat sen sijaan alkavat. Ne säilyttävät pituutensa, ellei myös uutta loppua anneta."
+                },
+                "new_end": {
+                    "name": "Uusi loppu",
+                    "description": "Milloin tapahtumat sen sijaan päättyvät."
+                },
+                "shift": {
+                    "name": "Siirto",
+                    "description": "Siirrä tapahtumia näin paljon myöhemmäksi, tai aikaisemmaksi kun arvo on negatiivinen. Uuden alun tai lopun sijaan."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Nosta lämpötilaa",
+            "description": "Nostaa termostaatin asetusarvoa askeleen verran, lämmittävällä ja jäähdyttävällä molempia asetusarvoja. Pois päältä oleva termostaatti pysyy pois päältä.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka paljon muutetaan. Jätä tyhjäksi, niin käytetään termostaatin omaa askelta, tai puolta astetta (yhtä Fahrenheitissa), jos sillä ei ole sellaista."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Laske lämpötilaa",
+            "description": "Laskee termostaatin asetusarvoa askeleen verran, lämmittävällä ja jäähdyttävällä molempia asetusarvoja. Pois päältä oleva termostaatti pysyy pois päältä.",
+            "fields": {
+                "step": {
+                    "name": "Askel",
+                    "description": "Kuinka paljon muutetaan. Jätä tyhjäksi, niin käytetään termostaatin omaa askelta, tai puolta astetta (yhtä Fahrenheitissa), jos sillä ei ole sellaista."
+                }
+            }
+        },
         "homeassistant_update_label": {
             "name": "Päivitä tunniste",
             "description": "Päivittää olemassa olevan tunnisteen lennossa. Kaikki minkä jätät pois säilyttää arvon joka sillä jo oli. Kuvauksen, kuvakkeen ja värin voi tyhjentää asettamalla ne arvoon null.",
@@ -1668,6 +2628,20 @@
         }
     },
     "conditions": {
+        "is_at_target_temperature": {
+            "name": "Lämpötila tavoitteessaan",
+            "description": "Toteutuu, kun termostaatin tai vedenlämmittimen lämpötila on tavoitteessaan. Pois päältä oleva laite ei ole tavoitteessaan, ja tavoittamattomissa oleva jätetään huomiotta.",
+            "fields": {
+                "behavior": {
+                    "name": "Toiminta",
+                    "description": "Riittääkö, että yksi laitteista on perillä, vai pitääkö kaikkien olla."
+                },
+                "tolerance": {
+                    "name": "Toleranssi",
+                    "description": "Kuinka lähellä tavoitetta lasketaan vielä perille päässeeksi, laitteen omassa yksikössä. Termostaatille, joka asettuu hieman asetusarvonsa alle. Nolla tarkoittaa itse tavoitetta."
+                }
+            }
+        },
         "chance": {
             "name": "Sattuma",
             "description": "Täyttää ehdon prosenttiosuuden mukaisesti. Hyödyllinen pienen vaihtelun lisäämiseksi automaatioihin.",
@@ -1742,6 +2716,10 @@
         }
     },
     "triggers": {
+        "automation_turned_off": {
+            "name": "Automaatio poistettu käytöstä",
+            "description": "Laukeaa, kun joku tai jokin poistaa automaation käytöstä. Jätä kohde tyhjäksi, niin kaikkia automaatioita pidetään silmällä."
+        },
         "sequence": {
             "name": "Laukaisimet järjestyksessä",
             "description": "Laukeaa, kun useampi laukaisin tapahtuu peräkkäin, antamassasi järjestyksessä.",
@@ -1874,6 +2852,34 @@
                 }
             }
         },
+        "target_temperature_reached": {
+            "name": "Tavoitelämpötila saavutettu",
+            "description": "Laukeaa, kun termostaatin tai vedenlämmittimen lämpötila saavuttaa tavoitteensa tai hyppää sen yli. Tavoitteen muuttaminen ei kelpaa, eikä myöskään laite, joka on pois päältä.",
+            "fields": {
+                "tolerance": {
+                    "name": "Toleranssi",
+                    "description": "Kuinka lähellä tavoitetta lasketaan vielä perille päässeeksi, laitteen omassa yksikössä. Termostaatille, joka asettuu hieman asetusarvonsa alle. Nolla tarkoittaa itse tavoitetta."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Päivitys asennettu",
+            "description": "Laukeaa, kun päivitysentiteetti ilmoittaa eri asennetun version, painoi joku sitten asenna-painiketta, päivittyi laite itsestään tai päivitettiin se Home Assistantin ulkopuolella."
+        },
+        "position_reached": {
+            "name": "Asento saavutettu",
+            "description": "Laukeaa, kun kaihdin tai venttiili saavuttaa asennon tai liikkuu sen ohi. Jo valmiiksi perillä oleva, tai tavoittamattomista siinä asennossa palaava, ei kelpaa.",
+            "fields": {
+                "position": {
+                    "name": "Asento",
+                    "description": "Saavutettava asento, 0:sta (kiinni) 100:aan (auki)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Skripti käynnistyi",
+            "description": "Laukeaa, kun skripti aloittaa suorituksen. Suoritus, jonka skripti torjuu, koska se on jo käynnissä, ei kelpaa. Jätä kohde tyhjäksi, niin kaikkia skriptejä pidetään silmällä."
+        },
         "all_of": {
             "name": "Kaikki nämä tapahtuivat",
             "fields": {
@@ -1936,6 +2942,20 @@
                 "error": "Virhe",
                 "warning": "Varoitus"
             }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Alimmaiseksi",
+                "top": "Ylimmäiseksi"
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "ghosts_found": "Löydetyt kummitukset",
+            "ghosts_ignored": "Ohitetut kummitukset",
+            "helpers_linked": "Linkitetyt apurit",
+            "version": "Versio"
         }
     }
 }

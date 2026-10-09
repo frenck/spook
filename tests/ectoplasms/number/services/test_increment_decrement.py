@@ -19,6 +19,9 @@ from custom_components.spook.ectoplasms.number.services import (
 )
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 class MockNumberEntity:  # pylint: disable=too-few-public-methods
     """Mock number entity."""
 

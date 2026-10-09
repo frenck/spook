@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Kaynak varlık",
+                    "name": "İsim",
+                    "offset": "Telafi",
+                    "factor": "Çarpan"
+                },
+                "data_description": {
+                    "offset": "Kaynağın değerine eklenir. 1,5 derece fazla gösteren bir sensöre -1,5 girilir. Kaynağın bildirdiği birim cinsindendir.",
+                    "factor": "Kaynağın değeri önce bununla çarpılır. Yalnızca telafiyi eklemek için 1 olarak bırakın."
+                },
+                "description": "Bu yardımcı, yanlış ölçen bir sensörü düzeltir: bir derece fazla gösteren bir sıcaklık, birkaç yüzde eksik gösteren bir nem. Kaynağın değerini çarpanla çarpıp üstüne telafiyi ekleyerek gösterir.",
+                "title": "Kalibrasyon 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Kaynak varlık",
+                    "offset": "Telafi",
+                    "factor": "Çarpan"
+                },
+                "data_description": {
+                    "offset": "Kaynağın değerine eklenir. 1,5 derece fazla gösteren bir sensöre -1,5 girilir. Kaynağın bildirdiği birim cinsindendir.",
+                    "factor": "Kaynağın değeri önce bununla çarpılır. Yalnızca telafiyi eklemek için 1 olarak bırakın."
+                },
+                "title": "Kalibrasyon 👻"
+            }
+        }
+    },
+    "title": "Kalibrasyon 👻"
+}

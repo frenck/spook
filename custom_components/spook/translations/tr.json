@@ -1,17 +1,348 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Otomasyon kapatıldı",
+            "description": "Biri ya da bir şey bir otomasyonu kapattığında tetiklenir. Tüm otomasyonları izlemek için hedefi boş bırakın."
+        },
+        "debounce": {
+            "name": "Ortalık durulunca",
+            "description": "Bir tetikleyici bir süre susunca tetiklenir, böylece art arda gelenler tek seferde gelir. Bir hareket sensörü hareketi bir kez bildirmez, yirmi kez bildirir.",
+            "fields": {
+                "triggers": {
+                    "name": "Tetikleyiciler",
+                    "description": "Susması beklenecek tetikleyiciler. Herhangi biri tetiklenince bir patlama başlar, biri yeniden tetiklendikçe devam eder; yani birden çok tetikleyici tek tek değil, birlikte ele alınır."
+                },
+                "for": {
+                    "name": "Süre",
+                    "description": "Bu tetiklenmeden önce ne kadar süre sessizlik olması gerektiği. Her tetiklenme bu beklemeyi baştan başlatır, yani hiç susmayan bir şey hiç bildirilmez."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Bunların hepsi oldu",
+            "description": "Birkaç tetikleyicinin her biri aynı zaman aralığında, herhangi bir sırayla tetiklendiğinde tetiklenir. Home Assistant'ın kendi tetikleyicileri, herhangi birinin yettiği bir listedir; bu da öbürü.",
+            "fields": {
+                "triggers": {
+                    "name": "Tetikleyiciler",
+                    "description": "Hepsinin tetiklenmiş olması gereken tetikleyiciler. Sıra önemli değil; yeniden tetiklenen bir tetikleyici iki kez sayılmaz, önceki sırasının yerini alır."
+                },
+                "within": {
+                    "name": "Zaman aralığı",
+                    "description": "Ne kadar yakın aralıklarla olmaları gerektiği. Pencere kayar, yani bundan daha önce tetiklenmiş bir tetikleyici unutulur, diğerleri saymaya devam eder."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Varlık geri geldi",
+            "description": "Bir varlık bir süre kullanım dışı kaldıktan sonra geri geldiğinde tetiklenir; böylece yeniden başlayan bir modem, evdeki her şey kendine geldi gibi görünmez.",
+            "fields": {
+                "for": {
+                    "name": "Süre",
+                    "description": "Geri gelişin sayılması için varlığın ne kadar süre ortadan kaybolmuş olması gerektiği. Daha kısası sadece bir kıpırtıdır: bir entegrasyonu yeniden yüklemek, tüm varlıklarını bir saniye içinde kullanım dışına alıp geri getirir."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Cihaz eklendi",
+            "description": "Home Assistant'a yeni bir cihaz eklendiğinde tetiklenir, örneğin az önce eşleştirilmiş bir priz."
+        },
+        "sequence": {
+            "name": "Sıralı tetikleyiciler",
+            "description": "Birkaç tetikleyici verilen sırayla art arda gerçekleştiğinde tetiklenir.",
+            "fields": {
+                "steps": {
+                    "name": "Adımlar",
+                    "description": "Sırayla gerçekleşmesi gereken tetikleyiciler. Sadece beklenen adım dinlenir, yani erken tetiklenen sonraki bir adım eşleşme sayılmaz."
+                },
+                "timeout": {
+                    "name": "Zaman aşımı",
+                    "description": "İlk adımdan itibaren sayılarak tüm dizinin ne kadar sürebileceği. Boş bırakılırsa süresiz bekler."
+                },
+                "reset": {
+                    "name": "Sıfırla",
+                    "description": "Devam eden bir diziyi iptal edip yeniden ilk adımı beklemeye döndüren tetikleyiciler."
+                }
+            }
+        },
+        "while": {
+            "name": "Bir koşul sağlandığı sürece",
+            "description": "Bir koşul doğru olduğunda tetiklenir ve doğru kaldığı sürece belirli aralıklarla tetiklenmeye devam eder.",
+            "fields": {
+                "condition": {
+                    "name": "Koşul",
+                    "description": "İzlenecek koşul. Doğru olunca tetiklenme başlar, doğru olmaktan çıkınca durur."
+                },
+                "every": {
+                    "name": "Sıklık",
+                    "description": "Koşul sağlandığı sürece, bir tetiklenmeyle bir sonraki arasında ne kadar bekleneceği."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Bekçi",
+            "description": "Olması beklenen bir şey zamanında olmadığında tetiklenir.",
+            "fields": {
+                "arm": {
+                    "name": "Kur",
+                    "description": "Bekçiyi başlatan şey. Bekleme buradan itibaren ölçülür; zaten beklerken yeniden kurmak beklemeyi baştan başlatır."
+                },
+                "expect": {
+                    "name": "Beklenen",
+                    "description": "Ardından gelmesi beklenen şey. Zamanında gelirse bekçi iptal olur ve hiçbir şey tetiklenmez."
+                },
+                "within": {
+                    "name": "Zaman aralığı",
+                    "description": "Beklenen şeyin ne kadar sürede gelmesi gerektiği. Bu süre dolup da gelmemişse tetiklenir."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Varlık bir türlü durulmuyor",
+            "description": "Bir varlık belirli bir süre içinde olması gerekenden sık durum değiştirdiğinde tetiklenir.",
+            "fields": {
+                "changes": {
+                    "name": "Değişiklikler",
+                    "description": "Bunun tetiklenmesi için kaç durum değişikliği gerektiği. Öznitelik değişiklikleri sayılmaz, bir varlığın ortaya çıkması ya da kaybolması da."
+                },
+                "within": {
+                    "name": "Zaman aralığı",
+                    "description": "Bu değişikliklerin içine düşmesi gereken zaman aralığı. Kayan bir penceredir, yani hep en son değişikliklere bakar."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Koşul doğru oldu",
+            "description": "Bir koşul yanlıştan doğruya döndüğünde tetiklenir; her yerde kullanılan koşul yapı taşlarının aynısını kullanır.",
+            "fields": {
+                "condition": {
+                    "name": "Koşul",
+                    "description": "İzlenecek koşul."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron zamanlaması",
+            "description": "Crontab zamanlamasına göre tetiklenir; Home Assistant'ın kendi zaman tetikleyicilerinin ifade edemediği zamanlar için, örneğin hafta içi her gün saat yedide ya da ayın son cuması.",
+            "fields": {
+                "schedule": {
+                    "name": "Zamanlama",
+                    "description": "Beş alanlı bir crontab ifadesi: dakika, saat, ayın günü, ay, haftanın günü. Aralıkları, adımları ve haftanın günü uzantılarını destekler; yani \"MON#2\" ikinci pazartesi, \"5L\" son cuma demektir. \"@daily\" gibi takma adlar desteklenmez."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Cihaz keşfedildi",
+            "description": "Home Assistant kurabileceği yeni bir şey keşfettiğinde tetiklenir, örneğin ağınızda yeni beliren bir cihaz."
+        },
+        "integration_added": {
+            "name": "Entegrasyon eklendi",
+            "description": "Home Assistant'a bir entegrasyon eklendiğinde tetiklenir; ekleyen kim ya da ne olursa olsun."
+        },
+        "integration_failed": {
+            "name": "Entegrasyon kurulamadı",
+            "description": "Bir yapılandırma girişi bir süredir kendini kuramadığında tetiklenir; Home Assistant'ın kendi yeniden denemelerinin işi çözmüş olacağı noktayı geçince.",
+            "fields": {
+                "for": {
+                    "name": "Süre",
+                    "description": "Bunun tetiklenmesi için bir girişin ne kadar süre başarısız olmaya devam etmesi gerektiği. Home Assistant başarısız bir girişi en geç on dakikada bir yeniden dener, yani bundan kısası hâlâ kendiliğinden düzelebilecek bir sorunu bildirir."
+                },
+                "entry_id": {
+                    "name": "Girişler",
+                    "description": "Bunu belirli yapılandırma girişleriyle sınırlayın. Hepsini izlemek için boş bırakın."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Onarım sorunu oluşturuldu",
+            "description": "Yeni bir onarım sorunu çıktığında tetiklenir; böylece onarımlar sayfasına gitmeden haberiniz olur.",
+            "fields": {
+                "domain": {
+                    "name": "Entegrasyonlar",
+                    "description": "Bunu belirli entegrasyonların bildirdiği sorunlarla, alan adlarına göre sınırlayın. Hepsi için boş bırakın."
+                },
+                "severity": {
+                    "name": "Önem derecesi",
+                    "description": "Bunu belirli bir önem derecesindeki sorunlarla sınırlayın. Hepsi için boş bırakın."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Onarım sorunu çözüldü",
+            "description": "Bir onarım sorunu ortadan kalktığında tetiklenir; düzeltildiği için ya da artık bildirilmediği için.",
+            "fields": {
+                "domain": {
+                    "name": "Entegrasyonlar",
+                    "description": "Bunu belirli entegrasyonların bildirdiği sorunlarla, alan adlarına göre sınırlayın. Hepsi için boş bırakın."
+                }
+            }
+        },
+        "stale": {
+            "name": "Varlık sessizleşti",
+            "description": "Bir süredir bir varlığa hiçbir şey yazılmadığında tetiklenir; kullanım dışı olmak yerine sessizce ölen bir cihazı yakalar.",
+            "fields": {
+                "for": {
+                    "name": "Süre",
+                    "description": "Bunun tetiklenmesi için bir varlığın ne kadar süre sessiz kalması gerektiği. Aynı değeri bildirmeye devam eden bir varlık sessiz sayılmaz."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Hedef sıcaklığa ulaşıldı",
+            "description": "Bir termostatın ya da su ısıtıcının sıcaklığı hedefine ulaştığında ya da onu aştığında tetiklenir. Hedefi değiştirmek sayılmaz, kapalı bir cihaz da.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolerans",
+                    "description": "Hedefe ne kadar yakın olmanın hâlâ ulaşılmış sayılacağı, cihazın biriminde. Ayar noktasının hemen altında duran bir termostat için. Sıfır, hedefin kendisi demektir."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Güncelleme yüklendi",
+            "description": "Bir güncelleme varlığı farklı bir yüklü sürüm bildirdiğinde tetiklenir; biri yükle'ye bastıysa da, cihaz kendini güncellediyse de, Home Assistant dışında güncellendiyse de."
+        },
+        "position_reached": {
+            "name": "Pozisyona ulaşıldı",
+            "description": "Bir panjur ya da vana bir pozisyona geldiğinde ya da onu geçtiğinde tetiklenir. Zaten orada olan ya da kullanım dışından o pozisyonda geri dönen sayılmaz.",
+            "fields": {
+                "position": {
+                    "name": "Pozisyon",
+                    "description": "Ulaşılacak pozisyon, 0 (kapalı) ile 100 (açık) arasında."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Senaryo başladı",
+            "description": "Bir senaryo çalışmaya başladığında tetiklenir. Senaryonun zaten çalıştığı için reddettiği bir çalışma sayılmaz. Tüm senaryoları izlemek için hedefi boş bırakın."
+        },
+        "user_added": {
+            "name": "Kullanıcı eklendi",
+            "description": "Birine Home Assistant'ta oturum açma hakkı verildiğinde tetiklenir. Home Assistant'ın kendi entegrasyonları için oluşturduğu kullanıcılar hariç tutulur."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritik",
+                "error": "Hata",
+                "warning": "Uyarı"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "En alt",
+                "top": "En üst"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Sıcaklık hedefinde",
+            "description": "Bir termostatın ya da su ısıtıcının sıcaklığı hedefindeyken geçer. Kapalı bir cihaz hedefinde sayılmaz, kullanım dışı olan da hesaba katılmaz.",
+            "fields": {
+                "behavior": {
+                    "name": "Davranış",
+                    "description": "Cihazlardan herhangi birinin orada olması yeterli mi, yoksa hepsinin mi olması gerekiyor."
+                },
+                "tolerance": {
+                    "name": "Tolerans",
+                    "description": "Hedefe ne kadar yakın olmanın hâlâ ulaşılmış sayılacağı, cihazın biriminde. Ayar noktasının hemen altında duran bir termostat için. Sıfır, hedefin kendisi demektir."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Onarım sorunu bekliyor",
+            "description": "Bekleyen bir onarım sorunu olduğu sürece geçer. Birinin yoksaydığı sorunlar sayılmaz.",
+            "fields": {
+                "domain": {
+                    "name": "Entegrasyonlar",
+                    "description": "Bunu belirli entegrasyonların bildirdiği sorunlarla, alan adlarına göre sınırlayın. Hepsi için boş bırakın."
+                },
+                "severity": {
+                    "name": "Önem derecesi",
+                    "description": "Bunu belirli bir önem derecesindeki sorunlarla sınırlayın. Hepsi için boş bırakın."
+                }
+            }
+        },
+        "quota": {
+            "name": "Kalan çalışma hakkı",
+            "description": "Bu otomasyon belirli bir süre içinde belirli bir sayıdan az çalıştığı sürece geçer. Senaryolar sayılmaz.",
+            "fields": {
+                "limit": {
+                    "name": "Sınır",
+                    "description": "Süre içinde kaç çalışmaya izin verildiği."
+                },
+                "period": {
+                    "name": "Dönem",
+                    "description": "Sınırın geçerli olduğu pencere. Kayan bir penceredir, yani bir gün iki gece yarısı arası değil, herhangi bir yirmi dört saat demektir."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Bir otomasyon tarafından tetiklendi",
+            "description": "Bu çalışmayı başka bir otomasyon başlattığında geçer; doğrudan ya da bir senaryo üzerinden fark etmez.",
+            "fields": {
+                "automation": {
+                    "name": "Otomasyonlar",
+                    "description": "Bunu belirli otomasyonlarla sınırlayın. Herhangi birini kabul etmek için boş bırakın."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Bir kullanıcı tarafından tetiklendi",
+            "description": "Bunu başlatanın arkasında bir kişi olduğunda geçer: o kişinin yol açtığı bir durum değişikliği ya da olay; bir şablon tetikleyicisini doğru yapan biri de dahil. Bir zamanlama, güneş ya da kendi başına hareket eden bir entegrasyonun arkasında kimse yoktur; Çalıştır düğmesiyle zorla başlatılan bir çalışmanın da.",
+            "fields": {
+                "person": {
+                    "name": "Kişiler",
+                    "description": "Sadece bu kişilerden biri başlattığında geçer. Herkes için geçmesi için boş bırakın. Kişiye bağlı bir kullanıcı hesabı olmalı, yoksa eşleştirilecek bir şey yoktur."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Bir kullanıcı tarafından tetiklenmedi",
+            "description": "Bu çalışmadan kimse sorumlu tutulamadığında geçer: bir zamanlama, güneş, kendi başına hareket eden bir entegrasyon ya da Çalıştır düğmesi. Bilerek hiçbir seçenek almaz. Bunun yerine belirli kişileri hariç tutmak için \"Bir kullanıcı tarafından tetiklendi\" koşulunu bir Değil koşulunun içine koyun."
+        },
+        "chance": {
+            "name": "Şans",
+            "description": "Zamanın belirli bir yüzdesinde geçer; her kontrolde rastgele seçilir. Otomasyonlarınıza biraz çeşitlilik katmak için kullanışlı.",
+            "fields": {
+                "percentage": {
+                    "name": "Yüzde",
+                    "description": "Bu koşulun ne sıklıkla geçmesi gerektiği, yüzde olarak."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Bekleme süresi",
+            "description": "Sadece bu otomasyon ya da senaryo verilen süre içinde çalışmadıysa (ya da hiç çalışmadıysa) geçer. Yerleşik bir bekleme süresi, böylece çok sık yeniden tetiklenmez.",
+            "fields": {
+                "duration": {
+                    "name": "Süre",
+                    "description": "Bu koşulun yeniden geçmesi için son çalışmadan sonra ne kadar bekleneceği."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Oh..hayır. Tamam, teşekkürler, görüşürüz."
+            "already_spooked": "Spook zaten burada dolaşıyor 👻\n\nBir eve bir hayalet fazlasıyla yeter. Spook'u [Cihazlar ve hizmetler](/config/integrations/integration/spook) altında bulabilirsiniz.",
+            "enabled_existing": "Spook yeniden uyandı 👻\n\nEtrafa bakması için ona biraz zaman verin. Bulduğu her şey [Onarımlar](/config/repairs) altında görünür.",
+            "enable_failed": "Spook uyanmak istemedi 👻\n\nOnu [Cihazlar ve hizmetler](/config/integrations/integration/spook) altından kendiniz yeniden açmayı deneyin.",
+            "kept_sleeping": "Spook uyumaya devam ediyor 👻\n\nÖzlediniz mi? Onu istediğiniz zaman [Cihazlar ve hizmetler](/config/integrations/integration/spook) altından uyandırabilirsiniz."
+        },
+        "create_entry": {
+            "spooked": "Spook ortalıkta süzülüyor 👻\n\nEtrafa bakması için ona biraz zaman verin. Bulduğu her şey [Onarımlar](/config/repairs) altında görünür.\n\nEk eylemler, tetikleyiciler ve koşullar otomasyon ve senaryo düzenleyicilerinde sizi bekliyor. Spook'un başka neler yapabildiğini merak mı ediyorsunuz? Hepsi [belgelerde]({documentation_url}).\n\nSpook'u sevdiniz mi? 👻 [GitHub]({repository_url}) üzerinde bir ⭐, başkalarına Spook'un aslında epey iyi olduğunu duyurur. [Frenck'e sponsor olmak]({sponsor_url}) bu hayaleti tok tutar. Onun iki haftada bir çıkan ücretsiz [bülteni]({newsletter_url}) de içinizdeki hayaleti tok tutar."
         },
         "step": {
             "user": {
-                "description": "Readme kısmını okudunuz mu? Lisansı okudunuz mu? Gerçekten emin misiniz?"
+                "title": "Böö! Kankan Spook ile tanışın 👻",
+                "description": "Spook, hayalet aramak için Home Assistant'ınızda dolaşır: artık var olmayan şeylere yapılan başvurular ve kimsenin temizlemediği artıklar. Bulduğu her şeyi Onarımlar altında bildirir.\n\nAyrıca ek eylemler, tetikleyiciler, koşullar ve yardımcılarla otomasyonlarınızın ve senaryolarınızın yapabileceklerini genişletir; böylece otomasyonlarınız daha da güçlü olur.\n\nBaştan uyaralım: Spook, Home Assistant'ın bir parçası değildir. Hiç davet edilmediği yerlere uzanan özel bir entegrasyondur. Tuhaf bir şey olursa önce Spook'tan şüphelenin ve [bize haber verin]({issue_tracker_url}).\n\nÜrpermeye hazır mısınız?"
             },
-            "choice_restart": {
-                "description": "Spook'un ayarlanması için, Home Asistan'ın yeniden başlaması gerekir.\n\nŞimdi Home Asistanı yeniden başlatmak ister misiniz?",
+            "already_configured": {
+                "title": "Spook uyuyor 👻",
+                "description": "Spook zaten kurulu ama biri onu kapatmış. Uyandıralım mı?",
                 "menu_options": {
-                    "restart_now": "Şimdi yeniden başlat",
-                    "restart_later": "Daha sonra yeniden başlat"
+                    "enable_existing": "Spook'u uyandır",
+                    "keep_sleeping": "Uyumaya devam etsin"
                 }
             }
         }
@@ -19,7 +350,7 @@
     "entity": {
         "button": {
             "homeassistant_reload": {
-                "name": "Yeniden yükleme"
+                "name": "Yeniden yükle"
             },
             "homeassistant_restart": {
                 "name": "Yeniden başlat"
@@ -28,7 +359,7 @@
                 "name": "Hepsini yoksay"
             },
             "repairs_unignore_all": {
-                "name": "Hepsini varsay"
+                "name": "Hepsini yoksaymayı bırak"
             }
         },
         "event": {
@@ -36,13 +367,13 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Yaratılan Sorun",
+                            "create": "Sorun oluşturuldu",
                             "remove": "Sorun kaldırıldı",
                             "update": "Sorun güncellendi"
                         }
                     },
                     "domain": {
-                        "name": "Sorunu giren"
+                        "name": "Sorunu bildiren"
                     },
                     "issue_id": {
                         "name": "Sorun ID"
@@ -78,8 +409,11 @@
             "homeassistant_climate": {
                 "name": "İklimlendirme"
             },
+            "homeassistant_counter": {
+                "name": "Sayaçlar"
+            },
             "homeassistant_cover": {
-                "name": "Kapaklar"
+                "name": "Panjurlar"
             },
             "homeassistant_custom_component": {
                 "name": "Özel entegrasyonlar"
@@ -94,13 +428,16 @@
                 "name": "Cihazlar"
             },
             "homeassistant_device_tracker": {
-                "name": "Cihaz tarayıcıları"
+                "name": "Cihaz izleyiciler"
             },
             "homeassistant_entities": {
-                "name": "Ögeler"
+                "name": "Varlıklar"
             },
             "homeassistant_fan": {
                 "name": "Fanlar"
+            },
+            "homeassistant_group": {
+                "name": "Gruplar"
             },
             "homeassistant_humidifier": {
                 "name": "Hava Nemlendiricileri"
@@ -118,7 +455,7 @@
                 "name": "Giriş tarih/zaman"
             },
             "homeassistant_input_number": {
-                "name": "Giriş numaraları"
+                "name": "Giriş sayıları"
             },
             "homeassistant_input_select": {
                 "name": "Giriş tercihleri"
@@ -127,7 +464,7 @@
                 "name": "Giriş metinleri"
             },
             "homeassistant_integration": {
-                "name": "Entegrasyon"
+                "name": "Entegrasyonlar"
             },
             "homeassistant_light": {
                 "name": "Işıklar"
@@ -136,7 +473,7 @@
                 "name": "Kilitler"
             },
             "homeassistant_media_player": {
-                "name": "Media oynatıcıları"
+                "name": "Medya oynatıcılar"
             },
             "homeassistant_number": {
                 "name": "Sayılar"
@@ -154,7 +491,7 @@
                 "name": "Sahneler"
             },
             "homeassistant_script": {
-                "name": "Betikler"
+                "name": "Senaryolar"
             },
             "homeassistant_select": {
                 "name": "Seçenekler"
@@ -180,6 +517,12 @@
             "homeassistant_time": {
                 "name": "Zamanlar"
             },
+            "homeassistant_timer": {
+                "name": "Zamanlayıcılar"
+            },
+            "homeassistant_todo": {
+                "name": "Yapılacaklar listeleri"
+            },
             "homeassistant_tts": {
                 "name": "Yazıdan-konuşmaya"
             },
@@ -202,7 +545,7 @@
                 "name": "Toplam"
             },
             "repairs_ignored_issues": {
-                "name": "Yok sayıldı"
+                "name": "Yoksayılan"
             },
             "repairs_active_issues": {
                 "name": "Aktif"
@@ -216,81 +559,591 @@
                 "name": "Google Assistant durum raporlama"
             },
             "cloud_remote": {
-                "name": "Uzaktan kontrol"
+                "name": "Uzaktan erişim"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Bir hepsi tetikleyicisinin tüm tetikleyicileri bağlanamadı."
+        },
+        "area_not_found": {
+            "message": "{area_id} alanı bulunamadı."
+        },
+        "blueprint_backup_failed": {
+            "message": "{path} dosyasının bir kopyası kenara alınamadı: {error}. Hiçbir şey yazılmadı."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} burada çalışamaz: {errors}. Hiçbir şey yazılmadı."
+        },
+        "blueprint_could_not_write": {
+            "message": "{path} yazılamadı."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Desteklenmeyen alan adı: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Taslak URL'den alınırken hata oluştu."
+        },
+        "blueprint_file_exists": {
+            "message": "Dosya zaten var."
+        },
+        "blueprint_gone": {
+            "message": "{name} artık burada değil, yani güncellenecek bir şey yok. Hiçbir şey yazılmadı."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Bu URL desteklenmiyor."
+        },
+        "blueprint_write_failed": {
+            "message": "Dosya yazılırken hata oluştu."
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain} taslakları şu anda yüklü değil."
+        },
+        "calendar_events_which": {
+            "message": "Hangi etkinlikler olduğunu söyleyin: bir özet, bir uid ya da ikisini birden verin."
+        },
+        "calendar_range_backwards": {
+            "message": "Aranacak aralığın sonu, başlangıcından sonra gelmeli."
+        },
+        "calendar_range_required": {
+            "message": "Ne kadar ileriye bakılacağını söyleyin: bir bitiş tarihi ve saati ya da bir süre verin."
+        },
+        "cannot_disable_system_user": {
+            "message": "Sistem tarafından oluşturulmuş bir kullanıcı devre dışı bırakılamaz: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Sistem tarafından oluşturulmuş bir kullanıcı etkinleştirilemez: {user_id}."
+        },
+        "category_not_found": {
+            "message": "{scope} için {category} kategorisi bulunamadı."
+        },
+        "category_nothing_to_update": {
+            "message": "{category} kategorisinde güncellenecek bir şey yok: {fields} alanlarından en az birini verin."
+        },
+        "condition_template_is_constant": {
+            "message": "Bu koşuldaki bir şablonda hiç Jinja kalmamış, yani sabit bir değer ve asla değişemez. Bu genelde bir senaryonun onu bu eylem çalışmadan önce işlediği anlamına gelir; eylem verisindeki her şablonun başına gelen bu. Şablonsuz bir koşul kullanın ya da 'wait_template' ile doğrudan şablonun kendisini bekleyin."
+        },
+        "config_entry_not_found": {
+            "message": "{config_entry_id} entegrasyon girişi bulunamadı."
+        },
+        "debounce_attach_failed": {
+            "message": "Bir durulma tetikleyicisinin tüm tetikleyicileri bağlanamadı."
+        },
+        "device_not_found": {
+            "message": "{device_id} cihazı bulunamadı."
+        },
+        "entity_id_taken": {
+            "message": "{entity_id} varlık kimliği zaten kullanılıyor."
+        },
+        "entity_not_found": {
+            "message": "{entity_id} varlığı bulunamadı."
+        },
+        "entity_without_unique_id": {
+            "message": "{entity_id} varlığının benzersiz kimliği yok, bu yüzden Home Assistant onun için bir simge ya da takma ad saklayamaz."
+        },
+        "event_cannot_change": {
+            "message": "{summary} bu şekilde değiştirilemez: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Neyin değişeceğini söyleyin: yeni bir özet, bir yer ya da yeni saatler."
+        },
+        "event_shift_or_times": {
+            "message": "Bir etkinliği ya kaydırarak taşıyın ya da ona yeni saatler verin, ikisini birden değil."
+        },
+        "event_whole_days": {
+            "message": "{summary} tam günler sürüyor, bu yüzden yalnızca tam günlerle taşınabilir."
+        },
+        "floor_not_found": {
+            "message": "{floor_id} katı bulunamadı."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} bu gruba katılamaz: grup {domains} varlıkları içeriyor."
+        },
+        "group_not_found_behind": {
+            "message": "{entity_id} arkasındaki grup bulunamadı."
+        },
+        "helpers_unreachable": {
+            "message": "Home Assistant'ın tuttuğu {domain} yardımcılarına ulaşılamadı."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "{entity_id}, var olmayan bir saate kadar tutulamaz."
+        },
+        "home_zone_radius": {
+            "message": "Ev bölgesi yarıçapını tam metre olarak alır, sıfır ya da daha fazla."
+        },
+        "home_zone_unsupported": {
+            "message": "Ev bölgesi yalnızca enlem, boylam ve yarıçap alır, şunları değil: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Bu sayı girişi düzenlenemez: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Değiştirilecek entegrasyon girişlerini ya da entegrasyonlarını belirtin."
+        },
+        "integration_without_entries": {
+            "message": "{domain} entegrasyonunun hiç girişi yok."
+        },
+        "label_not_found": {
+            "message": "{label_id} etiketi bulunamadı."
+        },
+        "label_nothing_to_update": {
+            "message": "{label_id} etiketinde güncellenecek bir şey yok: {fields} alanlarından en az birini verin."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Maksimum ({maximum}) minimumdan ({minimum}) büyük olmalı."
+        },
+        "no_max_value": {
+            "message": "{entity_id} varlığının maksimum değeri yok."
+        },
+        "no_min_value": {
+            "message": "{entity_id} varlığının minimum değeri yok."
+        },
+        "not_a_group": {
+            "message": "{entity_id} bir grup değil."
+        },
+        "person_not_editable": {
+            "message": "Bu kişi düzenlenemez: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook, Home Assistant'ı yeniden başlatırken bir hatayla karşılaştı."
+        },
+        "sequence_attach_failed": {
+            "message": "Bir sıralı tetikleyicinin ilk adımı bağlanamadı."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Değiştirilecek bir minimum, maksimum ya da adım verin."
+        },
+        "spooked": {
+            "message": "Hayalet çarptı! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Bu zamanlayıcı düzenlenemez: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Bir öğe kendisinin arkasına taşınamaz."
+        },
+        "todo_item_not_found": {
+            "message": "{entity_id} içinde {item} diye bir öğe yok."
+        },
+        "todo_last_item_after": {
+            "message": "{entity_id} içindeki son öğenin arkasına hiçbir şey taşınamaz."
+        },
+        "todo_move_where": {
+            "message": "Nereye olduğunu söyleyin: başka bir öğenin arkasına ya da en üste veya en alta."
+        },
+        "user_not_found": {
+            "message": "Kullanıcı bulunamadı: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "{entity_id} için {value} değeri bir sayı değil."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Bir bekçi tetikleyicisinin kurma tetikleyicileri bağlanamadı."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Bir bekçi tetikleyicisinin beklenen tetikleyicileri bağlanamadı."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id}, YAML yapılandırmanızdan gelen bir grup ve Spook onu değiştiremez. Yapılandırmanızda düzenleyin ya da bu tür gruplarda hâlâ çalışan group.set'i kullanın."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} YAML ile kurulmuş, silinemez."
+        },
+        "zone_not_editable": {
+            "message": "Bu bölge düzenlenemez: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Uyarının izlediği bilinmeyen varlık: {alert}",
+            "description": "Spook uyarılarınızda bir hayalet buldu 👻\n\n{alert} (`{entity_id}`) uyarısı, Home Assistant'ın bilmediği bir varlığı izliyor:\n\n{entities}\n\nBir uyarı yalnızca izlediği varlık üzerinden tetiklenebilir, yani bu uyarı bir daha asla tetiklenemez. Bildirecek bir şeyi olmayan bir uyarıyla aynı görünür.\n\nBu hatayı düzeltmek için yapılandırmanızdaki `alert:` bölümünü düzenleyin ve bu uyarıyı var olan bir varlığa yönlendirin.\n\nSpook 👻 Kankan."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Uyarının kullandığı bilinmeyen bildirim hizmetleri: {alert}",
+            "description": "Spook uyarılarınızda bir hayalet buldu 👻\n\n{alert} (`{entity_id}`) uyarısı, Home Assistant'ın bilmediği şu eylemler üzerinden bildirim gönderiyor:\n\n{notifiers}\n\nUyarı hâlâ tetikleniyor ve turlarını atıyor, ama bu bildirimler hiçbir yere gitmiyor. Home Assistant bunu yalnızca uyarının tetiklendiği anda günlüğe yazar; kimsenin dinlemediğini öğrenmek için pek iyi bir an değil.\n\nBu hatayı düzeltmek için yapılandırmanızda bu uyarının `notifiers:` listesini düzenleyin ve bu girişleri kaldırın ya da düzeltin.\n\nSpook 👻 Kankan."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki alanları referanslar:\n\n{areas}\n\n\n\nBu hatayı düzeltmek için [edit the Automation] ({edit}) ve bu non-existing alanlarının kullanımını ortadan kaldırmak.\n\nSpook . senin homie değil.",
-            "title": "Bilinmeyen kullanım alanları: {automation}"
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu alanlara başvuruyor:\n\n{areas}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu alanların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen alanlar kullanılıyor: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'taki hiçbir entegrasyonun sağlayamadığı şu koşulları kullanıyor:\n\n{conditions}\n\n\n\nBu genelde bir koşulu sağlayan entegrasyon kaldırıldığında olur. Bu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve kullanılamayan bu koşulları kaldırın ya da onları sağlayan entegrasyonu geri getirin.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen koşullar kullanılıyor: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki cihazlara atıfta bulunur:\n\n{devices}\n\n\n\nBu hatayı düzeltmek için [Automasyonu düzenleyin] ({edit}) ve bu eksik cihazların kullanımını ortadan kaldırın. \n\nSpook . senin homieniz.",
-            "title": "Bilinmeyen cihazlar kullanılır: {automation}"
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu cihazlara başvuruyor:\n\n{devices}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu cihazların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen cihazlar kullanılıyor: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook, otomasyonlarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki otomasyonla yola geçti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the Automation]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
-            "title": "Bilinmeyen varlıklar kullanılır: {automation}"
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen varlıklar kullanılıyor: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu katlara başvuruyor:\n\n{floors}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu katların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen katlar kullanılıyor: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu etiketlere başvuruyor:\n\n{labels}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu etiketlerin kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen etiketler kullanılıyor: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'ın bilmediği şu eylemlere başvuruyor:\n\n{services}\n\n\n\nBu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve var olmayan bu eylemlerin kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen eylemler kullanılıyor: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook otomasyonlarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu otomasyonla kesişti:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nBu otomasyon, Home Assistant'taki hiçbir entegrasyonun sağlayamadığı şu tetikleyicileri kullanıyor:\n\n{triggers}\n\n\n\nBu genelde bir tetikleyiciyi sağlayan entegrasyon kaldırıldığında olur. Bu hatayı düzeltmek için [otomasyonu düzenleyin]({edit}) ve kullanılamayan bu tetikleyicileri kaldırın ya da onları sağlayan entegrasyonu geri getirin.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen tetikleyiciler kullanılıyor: {automation}"
+        },
+        "empty_areas": {
+            "title": "Boş alan: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Boş alan: {area}",
+                        "description": "{area} alanında hiç cihaz, hiç varlık yok ve onu hedefleyen bir otomasyon ya da senaryo da yok.\n\nKaldırın ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu boş alanı kaldır",
+                            "ignore": "Kalsın, bana söylemeyi bırak",
+                            "manage": "Kendim düzelteyim"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu alan hakkında sesini çıkarmayacak.",
+                    "manage": "Bu alanı [Alanlar sayfasında](/config/areas/dashboard) kendiniz yönetebilirsiniz.",
+                    "changed": "Spook baktığından beri bu alan yeniden kullanımda: içinde bir şey var ya da bir otomasyon veya senaryo onu kullanıyor. Bu yüzden dokunulmadı. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Boş kat: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Boş kat: {floor}",
+                        "description": "{floor} katında hiç alan yok ve onu hedefleyen bir otomasyon ya da senaryo da yok.\n\nKaldırın ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu boş katı kaldır",
+                            "ignore": "Kalsın, bana söylemeyi bırak",
+                            "manage": "Kendim düzelteyim"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu kat hakkında sesini çıkarmayacak.",
+                    "manage": "Bu katı [Alanlar sayfasında](/config/areas/dashboard) kendiniz yönetebilirsiniz.",
+                    "changed": "Spook baktığından beri bu kat yeniden kullanımda: üzerinde bir alan var ya da bir otomasyon veya senaryo onu kullanıyor. Bu yüzden dokunulmadı. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Enerji panelinde bilinmeyen varlıklar kullanılıyor",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Enerji panelinde bilinmeyen varlıklar kullanılıyor",
+                        "description": "Spook enerji panelinizde bir hayalet buldu 👻\n\nEnerji paneli, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\nBu genelde enerji yapılandırmasında kullanılan bir varlık yeniden adlandırıldığında ya da kaldırıldığında olur. Yeniden mi adlandırıldı? O zaman [Ayarlar > Gösterge panelleri > Enerji](/config/energy) sayfasını açın ve yenisini seçin, böylece geçmişi panelde kalır.\n\nTamamen mi kaldırıldı? Spook bunları sizin için enerji yapılandırmasından çıkarabilir. Eksik bir sayaç kaynağını ya da cihazını da beraberinde götürür, eksik bir fiyat ya da maliyet yalnızca temizlenir. Panel bundan sonra çıkarılanların geçmişini göstermez; istatistiklerin kendisi kalır.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bunları enerji yapılandırmasından çıkar",
+                            "manage": "Kendim yapayım",
+                            "ignore": "Kalsınlar, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu varlıklar hakkında sesini çıkarmayacak.",
+                    "manage": "Bunları [enerji yapılandırmasında](/config/energy) kendiniz güncelleyebilir ya da kaldırabilirsiniz.",
+                    "nothing_to_remove": "Bunların hiçbiri artık bilinmeyen değil, bu yüzden hiçbir şey çıkarılmadı. Geri gelmiş olabilirler ya da biri enerji yapılandırmasını zaten değiştirmiş."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Bilinmeyen grup üyeleri: {group}"
+            "title": "Bilinmeyen grup üyeleri: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Bilinmeyen grup üyeleri: {group}",
+                        "description": "Spook gruplarınızda bir hayalet buldu 👻\n\n{group} (`{entity_id}`) grubunda Home Assistant'ın bilmediği üyeler var:\n\n{entities}\n\nOnları gruptan kaldırın ya da tutun, Spook da artık onlardan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu üyeleri kaldır",
+                            "manage": "Kendim düzelteyim",
+                            "ignore": "Kalsınlar, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu grup hakkında sesini çıkarmayacak.",
+                    "not_editable": "Bu grup YAML ile kurulmuş, bu yüzden Spook onu düzenleyemez. Bunun yerine grubu yapılandırmanızda güncelleyin.",
+                    "manage": "Bu grubu [Yardımcılar sayfasında](/config/helpers) kendiniz yönetebilirsiniz.",
+                    "changed": "Bu onarımın listelediği üyeler Spook baktığından beri geri geldi ya da değişti, bu yüzden gruptan hiçbir şey kaldırılmadı. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook HomeKit köprünüzde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu HomeKit köprüsüyle kesişti:\n\n{bridge}\n\nBu köprü, Home Assistant'ın bilmediği şu varlıkları adlandırıyor:\n\n{entities}\n\n\n\nHomeKit yeniden adlandırılan bir varlığı takip etmez. Dahil edilmiş bir varlık yeniden adlandırılır ya da kaldırılırsa Ev uygulamasından kaybolur; hariç tutulmuş bir varlık yeniden adlandırılırsa orada yeniden görünür.\n\nBu hatayı düzeltmek için [HomeKit Bridge entegrasyonuna](/config/integrations/integration/homekit) gidin, bu köprüde **Yapılandır**'ı seçin ve varlıkları yeniden seçin.\n\nSpook 👻 Kankan.",
+            "title": "HomeKit köprüsünde bilinmeyen varlıklar kullanılıyor: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook HomeKit köprünüzde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu HomeKit köprüsüyle kesişti:\n\n{bridge}\n\nBu köprü, Home Assistant'ın bilmediği şu varlıkları adlandırıyor:\n\n{entities}\n\n\n\nHomeKit yeniden adlandırılan bir varlığı takip etmez. Dahil edilmiş bir varlık yeniden adlandırılır ya da kaldırılırsa Ev uygulamasından kaybolur; hariç tutulmuş bir varlık yeniden adlandırılırsa orada yeniden görünür.\n\nBu köprü YAML yapılandırmanızda kurulmuş. Bu hatayı düzeltmek için `homekit:` altında bu köprünün `filter` kısmını düzenleyin ve bu varlıkları kaldırın ya da düzeltin.\n\nSpook 👻 Kankan.",
+            "title": "HomeKit köprüsünde bilinmeyen varlıklar kullanılıyor: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nŞu gösterge paneli kaynakları var olmayan dosyaları gösteriyor:\n\n{resources}\n\n\n\nBu genelde özel bir kart ya da dosyaları kaldırıldığında ama kaynak geride kaldığında olur. Bu hatayı düzeltmek için [Kaynaklar sayfasını](/config/lovelace/resources) açın ve bu kaynakları kaldırın ya da düzeltin. Kendine ait bir sekmesi yok: Gösterge panelleri sayfasında sağ üstteki üç noktanın arkasında.\n\nSpook 👻 Kankan.",
+            "title": "Gösterge paneli kaynakları eksik dosyaları gösteriyor"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nŞu gösterge paneli kaynakları var olmayan dosyaları gösteriyor:\n\n{resources}\n\n\n\nBu genelde özel bir kart ya da dosyaları kaldırıldığında ama kaynak geride kaldığında olur.\n\nBu kaynaklar YAML yapılandırmanızda listelenmiş, bu yüzden Kaynaklar sayfası onları değiştiremez. Lovelace yapılandırmanızın `resources:` bölümünü düzenleyin ve bu girişleri kaldırın ya da düzeltin.\n\nSpook 👻 Kankan.",
+            "title": "Gösterge paneli kaynakları eksik dosyaları gösteriyor"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Gösterge paneli kaynağı birden fazla kez listelenmiş: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Gösterge paneli kaynağı birden fazla kez listelenmiş: {resource}",
+                        "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nBu gösterge paneli kaynağı {count} kez listelenmiş:\n\n{resources}\n\nBu genelde özel bir kart, mevcut kaynak düzenlenmek yerine yeni sürüm için bir kaynak daha eklenerek güncellendiğinde olur. Tarayıcı ikisini de yükler, kart kendini iki kez kaydetmeye çalışır ve ikinci deneme başarısız olur; bu da çift kaynak gibi değil, bozuk bir kart gibi görünür.\n\nSpook fazla kopyaları temizleyip en son ekleneni tutabilir.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Fazla kopyaları temizle, en yenisini tut",
+                            "ignore": "Bırak kalsınlar, bana söylemeyi bırak",
+                            "manage": "Kendim düzelteyim"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu kaynak hakkında sesini çıkarmayacak.",
+                    "manage": "Gösterge paneli kaynaklarınızı [Kaynaklar sayfasında](/config/lovelace/resources) kendiniz yönetebilirsiniz.",
+                    "yaml": "Bu kaynaklar YAML yapılandırmanızda listelenmiş, bu yüzden Spook onları sizin için değiştiremez. Lovelace yapılandırmanızın `resources:` bölümünü düzenleyin ve artık ihtiyacınız olmayan `{resource}` kopyalarını kaldırın."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n{dashboard}\n\nBu gösterge paneli, Home Assistant'ın bilmediği şu alanlara başvuruyor:\n\n{areas}\n\n\n\nBu genelde bir alan yeniden adlandırıldığında ya da kaldırıldığında olur. Bu hatayı düzeltmek için [gösterge panelini düzenleyin]({edit}) ve var olmayan bu alanların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Gösterge panelinde bilinmeyen alanlar kullanılıyor: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook, panolarınızda bir hayalet buldu 👻\n\nÇevrede yüzerken, Spook aşağıdaki paniğe yol açtı:\n\n[{dashboard}]({edit})\n\nBu pano, Home Asistan tarafından bilinmeyen aşağıdaki varlıklara atıfta bulunur:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [edit the dashboard]({edit}) ve bu dış olmayan varlıkların kullanımını ortadan kaldırır.\n\nSpook . senin homie değil.",
-            "title": "Bilinmeyen varlıklar kullanılır: {dashboard}"
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [gösterge panelini düzenleyin]({edit}) ve var olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen varlıklar kullanılıyor: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook gösterge panellerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu gösterge paneliyle kesişti:\n\n[{dashboard}]({edit})\n\nBu gösterge paneli, Home Assistant'ın bilmediği şu eylemleri gerçekleştiriyor:\n\n{services}\n\n\n\nBunlardan birini kullanan bir düğme ya da kart, dokunulduğunda hiçbir şey yapmaz. Bu genelde bir senaryo yeniden adlandırıldığında ya da kaldırıldığında veya bir entegrasyon kaldırıldığında olur. Bu hatayı düzeltmek için [gösterge panelini düzenleyin]({edit}) ve var olmayan bu eylemleri kaldırın ya da değiştirin.\n\nSpook 👻 Kankan.",
+            "title": "Gösterge panelinde bilinmeyen eylemler kullanılıyor: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Min/maks yardımcısında bilinmeyen üyeler kullanılıyor: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Min/maks yardımcısında bilinmeyen üyeler kullanılıyor: {helper}",
+                        "description": "Spook yardımcılarınızda bir hayalet buldu 👻\n\n{helper} (`{entity_id}`) min/maks yardımcısı, Home Assistant'ın bilmediği şu üyeleri birleştiriyor:\n\n{sources}\n\nOnları kaldırın, yardımcı kalan üyelerle devam etsin; ya da tutun, Spook da artık onlardan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu üyeleri kaldır",
+                            "manage": "Kendim düzelteyim",
+                            "ignore": "Kalsınlar, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu yardımcı hakkında sesini çıkarmayacak.",
+                    "manage": "Bu yardımcıyı [Yardımcılar sayfasında](/config/helpers) kendiniz yönetebilirsiniz.",
+                    "changed": "Bu onarımın listelediği üyeler Spook baktığından beri geri geldi ya da değişti, bu yüzden yardımcıdan hiçbir şey kaldırılmadı. Spook kendi başına yeniden bakar ve bu onarımı günceller.",
+                    "too_few_members": "Bir min/maks yardımcısının en az iki üyeye ihtiyacı var, eksik olanları kaldırmak çok az üye bırakır. Yardımcıyı [Yardımcılar sayfasında](/config/helpers) kendiniz yeniden yapılandırın ya da kaldırın."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook bildirim gruplarınızda bir hayalet buldu 👻\n\n`{group}` bildirim grubu, Home Assistant'ın bilmediği şu eylemlere yönlendiriyor:\n\n{members}\n\nGrup hâlâ diğer üyelerine iletiyor ve onu çağıran her neyse ona hâlâ başarılı olduğunu bildiriyor, yani yukarıda kimse fark etmiyor. Hata yalnızca günlükte başıboş bir \"Task exception was never retrieved\" olarak ortaya çıkıyor; hiçbir grubun adını vermiyor ve bir hata gibi okunuyor. O üyenin arkasındaki kişiye ise artık hiç bildirim gitmiyor.\n\nBu hatayı düzeltmek için yapılandırmanızda bu grubun `services:` listesini düzenleyin ve bu girişleri kaldırın ya da düzeltin.\n\nSpook 👻 Kankan.",
+            "title": "Bildirim grubunda bilinmeyen üyeler: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Sahipsiz uzun vadeli istatistikler bulundu",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sahipsiz uzun vadeli istatistikler bulundu",
+                        "description": "Spook kaydedicinizde bir hayalet buldu 👻\n\nHome Assistant şunlar için uzun vadeli istatistik tutuyor, ama artık bunlara karşılık gelen bir varlık yok:\n\n{statistics}\n\nBu genelde bir sensör kaldırılıp istatistikleri tutulduğunda olur. Onları temizlemek o geçmişi kalıcı olarak siler, bu yüzden Spook bunu yapmadan önce yeniden bakar ve bu arada geri gelen her şeye dokunmaz.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu istatistikleri temizle",
+                            "manage": "Kendim yapayım",
+                            "ignore": "Kalsınlar, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu istatistikler hakkında sesini çıkarmayacak.",
+                    "manage": "Bunları [İstatistikler sayfasında](/config/tools/statistics) kendiniz temizleyebilirsiniz.",
+                    "nothing_to_clear": "O listede temizlenmesi gereken bir şey kalmadı, bu yüzden hiçbir şey silinmedi. Ya istatistiklerin arkasında yeniden bir varlık var ya da zaten gitmişler.",
+                    "clearing_took_too_long": "Spook istatistiklerin temizlenmesini istedi ve kaydedici henüz bittiğini söylemedi. İş sıraya alındı ve büyük ihtimalle tamamlanacak, bu yüzden Spook yeniden bakana kadar bu onarım açık kalır."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Takip edilen bilinmeyen cihaz izleyiciler: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Takip edilen bilinmeyen cihaz izleyiciler: {person}",
+                        "description": "Spook kişilerinizde bir hayalet buldu 👻\n\n{person}, Home Assistant'ın bilmediği şu cihaz izleyicileri takip ediyor:\n\n{device_trackers}\n\nBu genelde bir cihaz izleyici yeniden adlandırıldığında ya da entegrasyonu kaldırıldığında olur.\n\nOnları {person} kişisinden kaldırın ya da tutun, Spook da artık onlardan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu cihaz izleyicileri kaldır",
+                            "ignore": "Kalsınlar, bana söylemeyi bırak",
+                            "manage": "Kendim düzelteyim"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu kişi hakkında sesini çıkarmayacak.",
+                    "not_editable": "Bu kişi YAML ile kurulmuş, bu yüzden Spook onu düzenleyemez. Bunun yerine kişiyi yapılandırmanızda güncelleyin.",
+                    "manage": "Bu kişiyi [Kişiler sayfasında](/config/person) kendiniz yönetebilirsiniz."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook yakınlık yapılandırmanızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu yakınlık yapılandırmasıyla kesişti:\n\n{name}\n\nBu yapılandırma, Home Assistant'ın bilmediği bölgeleri yok sayıyor:\n\n{zones}\n\n\n\nBu hatayı düzeltmek için yapılandırmayı düzenleyin ve bu bölgeleri kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen yok sayılan bölgeler: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook yakınlık yapılandırmanızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu yakınlık yapılandırmasıyla kesişti:\n\n{name}\n\nBu yapılandırma, Home Assistant'ın bilmediği kişileri ya da cihaz izleyicileri takip ediyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için yapılandırmayı düzenleyin ve bu varlıkları kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Takip edilen bilinmeyen varlıklar: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook yakınlık yapılandırmanızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu yakınlık yapılandırmasıyla kesişti:\n\n{name}\n\nBu yapılandırma, Home Assistant'ın bilmediği bir bölgeye dayanıyor:\n\n`{zone}`\n\n\n\nBir yakınlık yapılandırmasının bölgesi değiştirilemediği için bu hatayı düzeltmenin tek yolu, bu yakınlık entegrasyonu örneğini kaldırmak.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen bölge: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook sahnelerinizde bir hayalet buldu 👻\n\nOrtalıkta dolaşırken Spook'un yolu şu sahneyle kesişti:\n\n[{scene}]({edit})\n\nBu sahne, Ev Asistanı tarafından bilinmeyen aşağıdaki varlıklara gönderme yapmaktadır:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [sahneyi düzenleyin]({edit}) ve mevcut olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Your homie.",
-            "title": "Bilinmeyen varlıklar şu sahnede kullanıldı: {scene}"
+            "description": "Spook sahnelerinizde bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu sahneyle kesişti:\n\n[{scene}]({edit})\n\nBu sahne, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [sahneyi düzenleyin]({edit}) ve var olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen varlıklar kullanılıyor: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Bilinmeyen alanlarda kullanılır: {script}"
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu alanlara başvuruyor:\n\n{areas}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu alanların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen alanlar kullanılıyor: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'taki hiçbir entegrasyonun sağlayamadığı şu koşulları kullanıyor:\n\n{conditions}\n\n\n\nBu genelde bir koşulu sağlayan entegrasyon kaldırıldığında olur. Bu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve kullanılamayan bu koşulları kaldırın ya da onları sağlayan entegrasyonu geri getirin.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen koşullar kullanılıyor: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Bilinmeyen cihazlar kullanılır: {script}"
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu cihazlara başvuruyor:\n\n{devices}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu cihazların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen cihazlar kullanılıyor: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Bilinmeyen ögeler: {script}"
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu varlıkların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen varlıklar kullanılıyor: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu katlara başvuruyor:\n\n{floors}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu katların kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen katlar kullanılıyor: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu etiketlere başvuruyor:\n\n{labels}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu etiketlerin kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen etiketler kullanılıyor: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'ın bilmediği şu eylemlere başvuruyor:\n\n{services}\n\n\n\nBu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve var olmayan bu eylemlerin kullanımını kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen eylemler kullanılıyor: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook senaryolarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu senaryoyla kesişti:\n\n[{script}]({edit}) (`{entity_id}`)\n\nBu senaryo, Home Assistant'taki hiçbir entegrasyonun sağlayamadığı şu tetikleyicileri kullanıyor:\n\n{triggers}\n\n\n\nBu genelde bir tetikleyiciyi sağlayan entegrasyon kaldırıldığında olur. Bu hatayı düzeltmek için [senaryoyu düzenleyin]({edit}) ve kullanılamayan bu tetikleyicileri kaldırın ya da onları sağlayan entegrasyonu geri getirin.\n\nSpook 👻 Kankan.",
+            "title": "Bilinmeyen tetikleyiciler kullanılıyor: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook şablon yardımcılarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu şablon yardımcısıyla kesişti:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nYapılandırması, Home Assistant'ın bilmediği şu varlıklara başvuruyor:\n\n{entities}\n\n\n\nBu genelde bir varlık yeniden adlandırıldığında ya da kaldırıldığında olur. Bu hatayı düzeltmek için şablon yardımcısını var olan varlıklara başvuracak şekilde yeniden yapılandırın.\n\nSpook 👻 Kankan.",
+            "title": "Şablon yardımcısında bilinmeyen varlıklar kullanılıyor: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook şablon yardımcılarınızda bir hayalet buldu 👻\n\nOrtalıkta süzülürken Spook'un yolu şu şablon yardımcısıyla kesişti:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHome Assistant'ın bilmediği şu eylemlere başvuruyor:\n\n{services}\n\n\n\nBu genelde bir eylem sağlayıcısı kaldırıldığında ya da bir senaryo yeniden adlandırıldığında veya silindiğinde olur. Bu hatayı düzeltmek için şablon yardımcısını var olan eylemleri kullanacak şekilde yeniden yapılandırın.\n\nSpook 👻 Kankan.",
+            "title": "Şablon yardımcısında bilinmeyen eylemler kullanılıyor: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Alan için bilinmeyen {sensors} sensörü: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Alan için bilinmeyen {sensors} sensörü: {area}",
+                        "description": "Spook alanlarınızda bir hayalet buldu 👻\n\n{area} alanı, Home Assistant'ın bilmediği bir {sensors} sensörü kullanıyor:\n\n{entities}\n\nHome Assistant bu sensörü yalnızca seçildiği anda kontrol eder, bu yüzden sensör kaldırıldığında ya da yeniden adlandırıldığında alan boşluğu göstermeye devam etti. Assist ve alan kartları artık ondan değer alamıyor.\n\nYeniden bir sensör seçebilmek için ayarı temizleyin ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Ayarı temizle",
+                            "manage": "Kendim düzelteyim",
+                            "ignore": "Kalsın, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu alan hakkında sesini çıkarmayacak.",
+                    "manage": "[Alanlar sayfasında](/config/areas/dashboard) bu alanın ayarlarından farklı bir sensör seçebilirsiniz.",
+                    "changed": "Spook baktığından beri bu sensörler geri geldi ya da ayarlar artık başka bir yeri gösteriyor. Bu yüzden hiçbir şey temizlenmedi. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook özelleştirmelerinizde bir hayalet buldu 👻\n\n`customize:` bölümü, Home Assistant'ın bilmediği şu varlıklara öznitelik sabitliyor:\n\n{entities}\n\n\n\nBu genelde bir varlık yeniden adlandırıldığında ya da kaldırıldığında ama özelleştirmesi geride kaldığında olur. Bu hatayı düzeltmek için yapılandırmanızdaki `customize:` bölümünü düzenleyin ve bu varlıkları kaldırın.\n\nSpook 👻 Kankan.",
+            "title": "Özelleştirmelerinizde bilinmeyen varlıklar"
+        },
+        "unknown_engines": {
+            "title": "Assist işlem hattı artık olmayan motorlar kullanıyor: {pipeline}",
+            "description": "Spook sesli asistanlarınızda bir hayalet buldu 👻\n\n{pipeline} Assist işlem hattı, Home Assistant'ın bilmediği şunları kullanıyor:\n\n{engines}\n\nBu genelde arkasındaki entegrasyonun kaldırıldığı anlamına gelir. İşlem hattına haber verilmedi, bu yüzden bir sonraki kullanımda eksik bir sağlayıcı ya da ajanla ilgili bir hatayla başarısız olur ve ondan önce hiçbir şey buraya işaret etmez.\n\nBunu düzeltmek için [Sesli asistanlar](/config/voice-assistants/assistants) altında bu asistanın ayarlarını açın ve bunların her biri için hâlâ var olan bir motor seçin.\n\nSpook 👻 Kankan."
+        },
+        "unknown_helper_source_references": {
+            "title": "Yardımcıda bilinmeyen kaynak varlıklar kullanılıyor: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Yardımcıda bilinmeyen kaynak varlıklar kullanılıyor: {helper}",
+                        "description": "Spook yardımcılarınızda bir hayalet buldu 👻\n\n{helper} (`{domain}`, `{entity_id}`) yardımcısı, Home Assistant'ın bilmediği şu kaynak varlıklara başvuruyor:\n\n{sources}\n\nKaynakları olmadan bu yardımcı çalışamaz. {usage}\n\nYardımcıyı kaldırın ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu yardımcıyı kaldır",
+                            "manage": "Kendim düzelteyim",
+                            "ignore": "Kalsın, bana söylemeyi bırak"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu yardımcı hakkında sesini çıkarmayacak.",
+                    "manage": "Bu yardımcıyı [Yardımcılar sayfasında](/config/helpers) kendiniz yönetebilirsiniz.",
+                    "changed": "Spook baktığından beri bu yardımcının kaynakları değişti, bu yüzden yardımcıya dokunulmadı. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Kullanılmayan taslak: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Kullanılmayan taslak: {blueprint}",
+                        "description": "{blueprint} taslağı hiçbir {domain} tarafından kullanılmıyor.\n\nKaldırın ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu kullanılmayan taslağı kaldır",
+                            "ignore": "Kalsın, bana söylemeyi bırak",
+                            "manage": "Kendim düzelteyim"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu taslak hakkında sesini çıkarmayacak.",
+                    "manage": "Bu taslağı [Taslaklar sayfasında](/config/blueprint/dashboard) kendiniz yönetebilirsiniz."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Kullanılmayan etiket: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Kullanılmayan etiket: {label}",
+                        "description": "{label} etiketi hiçbir varlığa, cihaza ya da alana uygulanmamış ve onu hedefleyen bir otomasyon ya da senaryo da yok.\n\nKaldırın ya da tutun, Spook da artık bundan bahsetmesin.\n\nSpook 👻 Kankan.",
+                        "menu_options": {
+                            "remove": "Bu kullanılmayan etiketi kaldır",
+                            "ignore": "Kalsın, bana söylemeyi bırak",
+                            "manage": "Kendim düzelteyim"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bundan sonra bu etiket hakkında sesini çıkarmayacak.",
+                    "manage": "Bu etiketi [Etiketler sayfasında](/config/labels) kendiniz yönetebilirsiniz.",
+                    "changed": "Spook baktığından beri bu etiket yeniden kullanımda: bir şey onu taşıyor ya da bir otomasyon veya senaryo onu kullanıyor. Bu yüzden dokunulmadı. Spook kendi başına yeniden bakar ve bu onarımı günceller."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -309,8 +1162,1798 @@
                 "step": {
                     "confirm_restart": {
                         "title": "Yeniden başlatma gerekli",
-                        "description": "Spook'un ayarlanması için, Home Asistan'ın yeniden başlaması gerekir.\n\nŞimdi Home Asistan'ı yeniden başlatmayı seçin."
+                        "description": "Spook 👻 kurulumu bitirebilsin diye Home Assistant'ın yeniden başlatılması gerekiyor.\n\nHome Assistant'ı şimdi yeniden başlatmak için Gönder'i seçin.\n\nSpook 👻 Kankan."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Sürüm",
+            "ghosts_found": "Bulunan hayaletler",
+            "ghosts_ignored": "Yok sayılan hayaletler",
+            "helpers_linked": "Bağlı yardımcılar"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Bir gruba üye ekle",
+            "description": "Home Assistant çalışırken arayüzden oluşturulmuş bir gruba varlık ekler. Zaten grupta olan varlıklar yerinde kalır.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "Eklenecek grup."
+                },
+                "members": {
+                    "name": "Üyeler",
+                    "description": "Gruba eklenecek varlıklar."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Bir gruptan üye kaldır",
+            "description": "Home Assistant çalışırken arayüzden oluşturulmuş bir gruptan varlıkları çıkarır. Grupta olmayan bir şeyi belirtmek hiçbir şey yapmaz; artık var olmayan bir üyeyi temizlemenin yolu da bu.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "Çıkarılacakları grup."
+                },
+                "members": {
+                    "name": "Üyeler",
+                    "description": "Gruptan kaldırılacak varlıklar."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Bir grubun üyelerini ayarla",
+            "description": "Home Assistant çalışırken arayüzden oluşturulmuş bir grubun üyelerini verilenlerle değiştirir.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "Değiştirilecek grup."
+                },
+                "members": {
+                    "name": "Üyeler",
+                    "description": "Grubun bundan sonra içereceği varlıklar."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Bir koşulu bekle",
+            "description": "Bir koşul doğru olana kadar bekler. Zaten doğruysa hemen döner.",
+            "fields": {
+                "condition": {
+                    "name": "Koşul",
+                    "description": "Beklenecek koşul."
+                },
+                "timeout": {
+                    "name": "Zaman aşımı",
+                    "description": "Vazgeçmeden önce ne kadar bekleneceği. Boş bırakılırsa süresiz bekler."
+                }
+            }
+        },
+        "boo": {
+            "name": "Böö!",
+            "description": "Bu eylemi çağırmak Home Assistant'ı korkutur. Bu eylem her zaman başarısız olur."
+        },
+        "random_fail": {
+            "name": "Rastgele hata",
+            "description": "Bu eylem rastgele başarısız olur."
+        },
+        "blueprint_import": {
+            "name": "Taslak içe aktar",
+            "description": "Bir taslağı içe aktarır.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "Taslağın içe aktarılacağı URL."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Ertele",
+            "description": "Bir otomasyonu bir süreliğine kapatır ve süre dolunca yeniden açar.",
+            "fields": {
+                "duration": {
+                    "name": "Süre",
+                    "description": "Otomasyonun ne kadar süre kapalı kalacağı. Bu süre dolunca kendiliğinden yeniden açılır, arada Home Assistant yeniden başlasa bile."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Bir süreliğine aç",
+            "description": "Bir otomasyonu bir süreliğine açar ve süre dolunca yeniden kapatır.",
+            "fields": {
+                "duration": {
+                    "name": "Süre",
+                    "description": "Otomasyonun ne kadar süre açık kalacağı. Bu süre dolunca kendiliğinden yeniden kapanır, arada Home Assistant yeniden başlasa bile."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Parlaklığı ayarla",
+            "description": "Zaten açık olan ışıkların parlaklığını ayarlar, kapalı olanlara dokunmaz.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Parlaklık",
+                    "description": "Ayarlanacak parlaklık, yüzde olarak. Gruplar ışık ışık ayarlanır, yani kapalı bir ışık kapalı kalır."
+                },
+                "transition": {
+                    "name": "Geçiş",
+                    "description": "Değişikliğin ne kadar süreceği, saniye cinsinden."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Parlaklığı artır",
+            "description": "Zaten açık olan ışıkları açar, kapalı olanlara dokunmaz.",
+            "fields": {
+                "step_pct": {
+                    "name": "Adım",
+                    "description": "Ne kadar parlaklaşacağı, yüzde olarak. Her ışık kendi seviyesinden adım atar, böylece bir grup eşitlenmek yerine kendi düzenini korur."
+                },
+                "transition": {
+                    "name": "Geçiş",
+                    "description": "Değişikliğin ne kadar süreceği, saniye cinsinden."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Parlaklığı azalt",
+            "description": "Zaten açık olan ışıkları kısar; onları kapatmak yerine en düşük seviyelerinde durur.",
+            "fields": {
+                "step_pct": {
+                    "name": "Adım",
+                    "description": "Ne kadar kısılacağı, yüzde olarak. Her ışık kendi seviyesinden adım atar, böylece bir grup eşitlenmek yerine kendi düzenini korur."
+                },
+                "transition": {
+                    "name": "Geçiş",
+                    "description": "Değişikliğin ne kadar süreceği, saniye cinsinden."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Rengi ayarla",
+            "description": "Zaten açık olan ışıkların rengini ayarlar; kapalı olanlara ya da renk yapamayanlara dokunmaz.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Renk",
+                    "description": "Ayarlanacak renk. Renk yapamayan ışıklar beyaza döndürülmez, atlanır."
+                },
+                "transition": {
+                    "name": "Geçiş",
+                    "description": "Değişikliğin ne kadar süreceği, saniye cinsinden."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Renk sıcaklığını ayarla",
+            "description": "Zaten açık olan ışıkların renk sıcaklığını, her birinin gerçekten ulaşabildiği aralık içinde ayarlar.",
+            "fields": {
+                "kelvin": {
+                    "name": "Renk sıcaklığı",
+                    "description": "Ayarlanacak renk sıcaklığı. Her ışık kendi aralığında tutulur, çünkü bir lambadaki sıcak beyaz, diğerinin ulaşamadığı bir sayı olabilir."
+                },
+                "transition": {
+                    "name": "Geçiş",
+                    "description": "Değişikliğin ne kadar süreceği, saniye cinsinden."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Efekti ayarla",
+            "description": "Zaten açık olan ve bu efekte gerçekten sahip olan ışıklara bir efekt ayarlar.",
+            "fields": {
+                "effect": {
+                    "name": "Efekt",
+                    "description": "Ayarlanacak efektin adı. Efekt adları üreticiye göre değişir, bu yüzden bu efekte sahip olmayan ışıklar olduğu gibi bırakılır."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Etkinliği sil",
+            "description": "Bir zaman aralığında başlığına ya da uid'sine göre bulunan etkinlikleri takvimden siler. Sildiklerini, uid dahil, geri döndürür.",
+            "fields": {
+                "summary": {
+                    "name": "Özet",
+                    "description": "Silinecek etkinliklerin başlığı, takvimde tam olarak nasılsa öyle."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Silinecek etkinliğin tanımlayıcısı, elinizde varsa."
+                },
+                "start_date_time": {
+                    "name": "Başlangıç tarihi ve saati",
+                    "description": "Aramaya nereden başlanacağı. Varsayılan olarak şimdi."
+                },
+                "end_date_time": {
+                    "name": "Bitiş tarihi ve saati",
+                    "description": "Aramanın nerede biteceği. Bunu ya da bir süre verin."
+                },
+                "duration": {
+                    "name": "Süre",
+                    "description": "Başlangıçtan itibaren ne kadar ileriye bakılacağı. Bunu ya da bir bitiş tarihi ve saati verin."
+                },
+                "whole_series": {
+                    "name": "Tüm seri",
+                    "description": "Yinelenen bir etkinlik için yalnızca bulunan tekrarı değil, tüm seriyi siler."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Etkinliği güncelle",
+            "description": "Bir zaman aralığında başlığına ya da uid'sine göre bulunan etkinlikleri takvimde değiştirir. Değiştirdiklerini, uid dahil, geri döndürür.",
+            "fields": {
+                "summary": {
+                    "name": "Özet",
+                    "description": "Değiştirilecek etkinliklerin başlığı, takvimde tam olarak nasılsa öyle."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Değiştirilecek etkinliğin tanımlayıcısı, elinizde varsa."
+                },
+                "start_date_time": {
+                    "name": "Başlangıç tarihi ve saati",
+                    "description": "Aramaya nereden başlanacağı. Varsayılan olarak şimdi."
+                },
+                "end_date_time": {
+                    "name": "Bitiş tarihi ve saati",
+                    "description": "Aramanın nerede biteceği. Bunu ya da bir süre verin."
+                },
+                "duration": {
+                    "name": "Süre",
+                    "description": "Başlangıçtan itibaren ne kadar ileriye bakılacağı. Bunu ya da bir bitiş tarihi ve saati verin."
+                },
+                "new_summary": {
+                    "name": "Yeni özet",
+                    "description": "Etkinliklere verilecek başlık."
+                },
+                "description": {
+                    "name": "Açıklama",
+                    "description": "Etkinliklere verilecek açıklama."
+                },
+                "location": {
+                    "name": "Konum",
+                    "description": "Etkinliklere verilecek konum."
+                },
+                "new_start": {
+                    "name": "Yeni başlangıç",
+                    "description": "Etkinliklerin bunun yerine ne zaman başlayacağı. Yeni bir bitiş de verilmedikçe süreleri aynı kalır."
+                },
+                "new_end": {
+                    "name": "Yeni bitiş",
+                    "description": "Etkinliklerin bunun yerine ne zaman biteceği."
+                },
+                "shift": {
+                    "name": "Kaydırma",
+                    "description": "Etkinlikleri bu kadar kaydırır; ileri, negatifse geri. Yeni bir başlangıç ya da bitiş yerine."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Sıcaklığı artır",
+            "description": "Bir termostatın ayar noktasını bir adım yükseltir; hem ısıtan hem soğutan bir termostatta iki ayar noktasını da. Kapalı bir termostat kapalı kalır.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Ne kadar değiştirileceği. Termostatın kendi adımını kullanmak için boş bırakın; adımı yoksa yarım derece (Fahrenheit'ta bir)."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Sıcaklığı düşür",
+            "description": "Bir termostatın ayar noktasını bir adım düşürür; hem ısıtan hem soğutan bir termostatta iki ayar noktasını da. Kapalı bir termostat kapalı kalır.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Ne kadar değiştirileceği. Termostatın kendi adımını kullanmak için boş bırakın; adımı yoksa yarım derece (Fahrenheit'ta bir)."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Alan oluştur",
+            "description": "Anında yeni bir alan oluşturur.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Oluşturulacak alanın adı."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Alan için kullanılacak simge."
+                },
+                "aliases": {
+                    "name": "Takma adlar",
+                    "description": "Alan için takma adların listesi. Alanı farklı bir dilde ya da farklı bir lakapla kullanmak istiyorsanız işe yarar."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Bir alana takma ad ekle",
+            "description": "Bir alana takma ad ekler.",
+            "fields": {
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Takma adın ekleneceği alanın kimliği."
+                },
+                "alias": {
+                    "name": "Takma ad",
+                    "description": "Alana eklenecek takma ad (ya da takma adlar listesi)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Bir alandan takma ad kaldır",
+            "description": "Bir alandan takma ad kaldırır.",
+            "fields": {
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Takma adın kaldırılacağı alanın kimliği."
+                },
+                "alias": {
+                    "name": "Takma ad",
+                    "description": "Alandan kaldırılacak takma ad (ya da takma adlar listesi)."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Bir alanın takma adlarını ayarla",
+            "description": "Bir alanın takma adlarını ayarlar. Mevcut tüm takma adların üzerine yazar ve onları kaldırarak tamamen yenileriyle değiştirir.",
+            "fields": {
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Takma adların ayarlanacağı alanın kimliği."
+                },
+                "aliases": {
+                    "name": "Takma adlar",
+                    "description": "Alan için ayarlanacak takma adlar."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Bir alana cihaz ekle",
+            "description": "Bir alana cihaz ekler. Not: cihaz zaten bir alandaysa önceki alandan çıkarılır.",
+            "fields": {
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Cihazın ekleneceği alanın kimliği."
+                },
+                "device_id": {
+                    "name": "Cihaz kimliği",
+                    "description": "Alana eklenecek cihazın (ya da cihazların) kimliği."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Bir cihazı alandan çıkar",
+            "description": "Bir cihazı alanından çıkarır. Bir cihaz yalnızca tek bir alanda olabildiği için bu çağrıda alanı belirtmeye gerek yoktur.",
+            "fields": {
+                "device_id": {
+                    "name": "Cihaz kimliği",
+                    "description": "Alanından çıkarılacak cihazın kimliği."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Bir alana varlık ekle",
+            "description": "Bir alana varlık ekler. Not: varlık zaten bir alandaysa önceki alandan çıkarılır. Bu, varlığı sağlayan cihazın bulunduğu alanı geçersiz kılar.",
+            "fields": {
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Varlığın ekleneceği alanın kimliği."
+                },
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Alana eklenecek varlığın (ya da varlıkların) kimliği."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Bir varlığı alandan çıkar",
+            "description": "Bir varlığı alanından çıkarır. Bir varlık yalnızca tek bir alanda olabildiği için bu çağrıda alanı belirtmeye gerek yoktur. Not: bu çağrıdan sonra varlık, kendisini sağlayan cihazın alanında olmaya devam eder.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Alanından çıkarılacak varlığın (ya da varlıkların) kimliği."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Alanı sil",
+            "description": "Bir alanı anında siler.",
+            "fields": {
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Silinecek alanın kimliği."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Bir entegrasyonu devre dışı bırak",
+            "description": "Entegrasyon girişlerini, tek tek ya da bir entegrasyonun tüm girişlerini devre dışı bırakır.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entegrasyon girişi",
+                    "description": "Devre dışı bırakılacak entegrasyon girişi."
+                },
+                "domain": {
+                    "name": "Entegrasyon",
+                    "description": "Bu entegrasyonların tüm girişlerini, sonradan eklenenler dahil, devre dışı bırakır."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Bir entegrasyonu etkinleştir",
+            "description": "Entegrasyon girişlerini, tek tek ya da bir entegrasyonun tüm girişlerini etkinleştirir.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entegrasyon girişi",
+                    "description": "Etkinleştirilecek entegrasyon girişi."
+                },
+                "domain": {
+                    "name": "Entegrasyon",
+                    "description": "Bu entegrasyonların tüm girişlerini, sonradan eklenenler dahil, etkinleştirir."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Bir cihazı devre dışı bırak",
+            "description": "Bir cihazı anında devre dışı bırakır.",
+            "fields": {
+                "device_id": {
+                    "name": "Cihaz",
+                    "description": "Devre dışı bırakılacak cihaz(lar)."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Bir cihazı etkinleştir",
+            "description": "Bir cihazı anında etkinleştirir.",
+            "fields": {
+                "device_id": {
+                    "name": "Cihaz kimliği",
+                    "description": "Etkinleştirilecek ham cihaz kimliği. Devre dışı bırakılmış cihazlar Home Assistant'ın cihaz seçicisinde gösterilmez. Birden fazla kimlik YAML listesi olarak verilebilir."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Bir kullanıcıyı devre dışı bırak",
+            "description": "Bir kullanıcı hesabını devre dışı bırakır ve oturum açmasını engeller.",
+            "fields": {
+                "user_id": {
+                    "name": "Kullanıcı kimliği",
+                    "description": "Devre dışı bırakılacak kullanıcı(lar)ın kimliği."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Bir kullanıcıyı etkinleştir",
+            "description": "Bir kullanıcı hesabını etkinleştirir ve oturum açmasına izin verir.",
+            "fields": {
+                "user_id": {
+                    "name": "Kullanıcı kimliği",
+                    "description": "Etkinleştirilecek kullanıcı(lar)ın kimliği."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Bir varlığın kimliğini güncelle",
+            "description": "Bir varlığın kimliğini anında günceller.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Güncellenecek varlık/varlıklar."
+                },
+                "new_entity_id": {
+                    "name": "Yeni varlık kimliği",
+                    "description": "Varlığın yeni kimliği."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Bir varlığı devre dışı bırak",
+            "description": "Bir varlığı (ya da varlıkları) anında devre dışı bırakır.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Devre dışı bırakılacak varlık/varlıklar."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Bir varlığı etkinleştir",
+            "description": "Bir varlığı (ya da varlıkları) anında etkinleştirir.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Etkinleştirilecek varlık/varlıklar."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Bir varlığı asistanlara aç",
+            "description": "Bir varlığı (ya da varlıkları) sesli asistanlara açar.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Açılacak varlık/varlıklar."
+                },
+                "assistants": {
+                    "name": "Asistanlar",
+                    "description": "Bunun uygulanacağı asistan(lar)."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Bir varlığı gizle",
+            "description": "Bir varlığı (ya da varlıkları) anında gizler.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Gizlenecek varlık/varlıklar."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Bir varlığı yeniden adlandır",
+            "description": "Bir varlığı (ya da varlıkları) anında yeniden adlandırır.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Yeniden adlandırılacak varlık/varlıklar."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "Varlık/varlıklar için yeni ad."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Bir varlığın simgesini ayarla",
+            "description": "Bir varlığın (ya da varlıkların) simgesini anında ayarlar. Entegrasyonun verdiği simgeye dönmek için null yapın.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Simgesi ayarlanacak varlık/varlıklar."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni simge, ya da entegrasyonun kendi simgesi için null."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Bir varlığa takma ad ekle",
+            "description": "Bir varlığa (ya da varlıklara), sesli asistanların onu çağırabileceği bir ya da daha fazla takma ad ekler.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Takma ad(lar)ın ekleneceği varlık/varlıklar."
+                },
+                "alias": {
+                    "name": "Takma ad",
+                    "description": "Eklenecek takma ad(lar)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Bir varlıktan takma ad kaldır",
+            "description": "Bir varlıktan (ya da varlıklardan) bir ya da daha fazla takma adı kaldırır.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Takma ad(lar)ın kaldırılacağı varlık/varlıklar."
+                },
+                "alias": {
+                    "name": "Takma ad",
+                    "description": "Kaldırılacak takma ad(lar)."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Bir varlığın takma adlarını ayarla",
+            "description": "Bir varlığın (ya da varlıkların) takma adlarını değiştirir. Varlığın kendi adının takma ad sayılıp sayılmadığı olduğu gibi kalır.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Takma adları ayarlanacak varlık/varlıklar."
+                },
+                "aliases": {
+                    "name": "Takma adlar",
+                    "description": "Ayarlanacak takma adlar."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Bir varlığı asistanlara açmayı durdur",
+            "description": "Bir varlığı (ya da varlıkları) sesli asistanlara açmayı durdurur.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Açılması durdurulacak varlık/varlıklar."
+                },
+                "assistants": {
+                    "name": "Asistanlar",
+                    "description": "Bunun uygulanacağı asistan(lar)."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Bir varlığı göster",
+            "description": "Gizlenmiş bir varlığı (ya da varlıkları) anında yeniden gösterir.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Yeniden gösterilecek varlık/varlıklar."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Kat oluştur",
+            "description": "Anında yeni bir kat oluşturur.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Oluşturulacak katın adı."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Kat için kullanılacak simge."
+                },
+                "level": {
+                    "name": "Düzey",
+                    "description": "Katın evinizde bulunduğu düzey."
+                },
+                "aliases": {
+                    "name": "Takma adlar",
+                    "description": "Kat için takma adların listesi. Katı farklı bir dilde ya da farklı bir lakapla kullanmak istiyorsanız işe yarar."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Bir kata takma ad ekle",
+            "description": "Bir kata takma ad ekler.",
+            "fields": {
+                "floor_id": {
+                    "name": "Kat kimliği",
+                    "description": "Takma adın ekleneceği katın kimliği."
+                },
+                "alias": {
+                    "name": "Takma ad",
+                    "description": "Kata eklenecek takma ad (ya da takma adlar listesi)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Bir kattan takma ad kaldır",
+            "description": "Bir kattan takma ad kaldırır.",
+            "fields": {
+                "floor_id": {
+                    "name": "Kat kimliği",
+                    "description": "Takma adın kaldırılacağı katın kimliği."
+                },
+                "alias": {
+                    "name": "Takma ad",
+                    "description": "Kattan kaldırılacak takma ad (ya da takma adlar listesi)."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Bir katın takma adlarını ayarla",
+            "description": "Bir katın takma adlarını ayarlar. Mevcut tüm takma adların üzerine yazar ve onları kaldırarak tamamen yenileriyle değiştirir.",
+            "fields": {
+                "floor_id": {
+                    "name": "Kat kimliği",
+                    "description": "Takma adların ayarlanacağı katın kimliği."
+                },
+                "aliases": {
+                    "name": "Takma adlar",
+                    "description": "Kat için ayarlanacak takma adlar."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Bir kata alan ekle",
+            "description": "Bir kata alan ekler. Not: alan zaten bir kattaysa önceki kattan çıkarılır.",
+            "fields": {
+                "floor_id": {
+                    "name": "Kat kimliği",
+                    "description": "Alanın ekleneceği katın kimliği."
+                },
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Kata eklenecek alan(lar)ın kimliği."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Bir alanı kattan çıkar",
+            "description": "Bir alanı katından çıkarır. Bir alan yalnızca tek bir katta olabildiği için bu çağrıda katı belirtmeye gerek yoktur.",
+            "fields": {
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Katından çıkarılacak alanın kimliği."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Katı sil",
+            "description": "Bir katı anında siler.",
+            "fields": {
+                "floor_id": {
+                    "name": "Kat kimliği",
+                    "description": "Silinecek katın kimliği."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Etiket oluştur",
+            "description": "Anında yeni bir etiket oluşturur.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Oluşturulacak etiketin adı."
+                },
+                "description": {
+                    "name": "Açıklama",
+                    "description": "Etiketin açıklaması."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Etiket için kullanılacak simge."
+                },
+                "color": {
+                    "name": "Renk",
+                    "description": "Etiket için kullanılacak renk. Listeden bir renk adı ya da bir hex renk kodu (örneğin #FF0000) olabilir."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Etiketi güncelle",
+            "description": "Mevcut bir etiketi anında günceller. Boş bıraktığınız her şey mevcut değerini korur. Açıklama, simge ve renk null yapılarak temizlenebilir.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiket kimliği",
+                    "description": "Güncellenecek etiketin kimliği."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "Etiketin yeni adı."
+                },
+                "description": {
+                    "name": "Açıklama",
+                    "description": "Etiketin yeni açıklaması."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Etiket için kullanılacak yeni simge."
+                },
+                "color": {
+                    "name": "Renk",
+                    "description": "Etiket için kullanılacak renk. Listeden bir renk adı ya da bir hex renk kodu (örneğin #FF0000) olabilir."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Bir alana etiket ekle",
+            "description": "Bir alana etiket ekler. Birden fazla etiket ya da birden fazla alan verilirse tüm kombinasyonlar eklenir.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiket kimliği",
+                    "description": "Alan(lar)a eklenecek etiket(ler)in kimliği."
+                },
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Etiket(ler)in ekleneceği alan(lar)ın kimliği."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Bir cihaza etiket ekle",
+            "description": "Bir cihaza etiket ekler. Birden fazla etiket ya da birden fazla cihaz verilirse tüm kombinasyonlar eklenir.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiket kimliği",
+                    "description": "Cihaz(lar)a eklenecek etiket(ler)in kimliği."
+                },
+                "device_id": {
+                    "name": "Cihaz kimliği",
+                    "description": "Etiket(ler)in ekleneceği cihaz(lar)ın kimliği."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Bir varlığa etiket ekle",
+            "description": "Bir varlığa etiket ekler. Birden fazla etiket ya da birden fazla varlık verilirse tüm kombinasyonlar eklenir.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiket kimliği",
+                    "description": "Varlık/varlıklara eklenecek etiket(ler)in kimliği."
+                },
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Etiket(ler)in ekleneceği varlık/varlıkların kimliği."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Bir alandan etiket kaldır",
+            "description": "Bir alandan etiket kaldırır. Birden fazla etiket ya da birden fazla alan verilirse tüm kombinasyonlar kaldırılır.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiket kimliği",
+                    "description": "Alan(lar)dan kaldırılacak etiket(ler)in kimliği."
+                },
+                "area_id": {
+                    "name": "Alan kimliği",
+                    "description": "Etiket(ler)in kaldırılacağı alan(lar)ın kimliği."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Bir cihazdan etiket kaldır",
+            "description": "Bir cihazdan etiket kaldırır. Birden fazla etiket ya da birden fazla cihaz verilirse tüm kombinasyonlar kaldırılır.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiket kimliği",
+                    "description": "Cihaz(lar)dan kaldırılacak etiket(ler)in kimliği."
+                },
+                "device_id": {
+                    "name": "Cihaz kimliği",
+                    "description": "Etiket(ler)in kaldırılacağı cihaz(lar)ın kimliği."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Bir varlıktan etiket kaldır",
+            "description": "Bir varlıktan etiket kaldırır. Birden fazla etiket ya da birden fazla varlık verilirse tüm kombinasyonlar kaldırılır.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiket kimliği",
+                    "description": "Varlık/varlıklardan kaldırılacak etiket(ler)in kimliği."
+                },
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Etiket(ler)in kaldırılacağı varlık/varlıkların kimliği."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Kategori oluştur",
+            "description": "Otomasyonlar, senaryolar, sahneler ya da yardımcılar için anında yeni bir kategori oluşturur. Yeni kategorinin kimliğini döndürür.",
+            "fields": {
+                "scope": {
+                    "name": "Kapsam",
+                    "description": "Kategorinin kullanıldığı yer."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "Oluşturulacak kategorinin adı."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Kategori için kullanılacak simge."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Kategoriyi güncelle",
+            "description": "Mevcut bir kategoriyi anında günceller. Boş bıraktığınız her şey mevcut değerini korur. Simge null yapılarak temizlenebilir.",
+            "fields": {
+                "scope": {
+                    "name": "Kapsam",
+                    "description": "Kategorinin kullanıldığı yer."
+                },
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "Güncellenecek kategorinin kimliği ya da adı."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "Kategorinin yeni adı."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Kategorinin yeni simgesi."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Kategoriyi sil",
+            "description": "Bir kategoriyi siler. İçindeki her şey kategorisiz kalır.",
+            "fields": {
+                "scope": {
+                    "name": "Kapsam",
+                    "description": "Kategorinin kullanıldığı yer."
+                },
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "Silinecek kategorinin kimliği ya da adı."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Bir varlığa kategori ekle",
+            "description": "Bir otomasyonu, senaryoyu, sahneyi ya da yardımcıyı bir kategoriye koyar. Her biri yalnızca tek bir kategoride olabildiği için önceki kategorisinin yerini alır.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "Kategorinin kimliği ya da adı."
+                },
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Kategoriye konulacak otomasyon(lar), senaryo(lar), sahne(ler) ya da yardımcı(lar)."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Bir varlıktan kategori kaldır",
+            "description": "Bir otomasyonu, senaryoyu, sahneyi ya da yardımcıyı bir kategoriden çıkarır. Farklı bir kategoride olan her şeye dokunulmaz.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "Kategorinin kimliği ya da adı."
+                },
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Kategoriden çıkarılacak otomasyon(lar), senaryo(lar), sahne(ler) ya da yardımcı(lar)."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Etiketi sil",
+            "description": "Bir etiketi anında siler.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiket kimliği",
+                    "description": "Silinecek etiketin kimliği."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Şu anda keşfedilmiş tüm cihazları yoksay",
+            "description": "Entegrasyonlar panelinde gösterilen, şu anda keşfedilmiş tüm cihazları yoksayar. Bundan sonra keşfedilen cihazlar yoksayılmaz.",
+            "fields": {
+                "domain": {
+                    "name": "Entegrasyon alan adı",
+                    "description": "Keşfedilen tüm cihazlarının yoksayılacağı entegrasyon alan adı. Verilmezse tüm alan adları yoksayılır."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Güncellemeler için yoklamayı devre dışı bırak",
+            "description": "Bir entegrasyon girişi için güncelleme yoklamasını devre dışı bırakır.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entegrasyon girişi",
+                    "description": "Yoklamanın devre dışı bırakılacağı entegrasyon girişi."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Güncellemeler için yoklamayı etkinleştir",
+            "description": "Bir entegrasyon girişi için güncelleme yoklamasını etkinleştirir.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entegrasyon girişi",
+                    "description": "Yoklamanın etkinleştirileceği entegrasyon girişi."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Tüm sahipsiz varlıkları sil",
+            "description": "Artık onları sahiplenen ya da sağlayan bir entegrasyonu olmayan tüm sahipsiz varlıkları siler. Not: entegrasyon az önce kaldırıldıysa, Home Assistant'ın onların sahipsiz olduğunu anlaması için yeniden başlatma gerekebilir.\n**UYARI** Varlıklar, bir entegrasyon Home Assistant başladığından beri çevrimdışı olduğu ya da çalışmadığı için sahipsiz olarak işaretlenmiş olabilir. Bu eylemi çağırmak o varlıkları da siler."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Veritabanındaki tüm sahipsiz varlıkları listele",
+            "description": "Veritabanında hiçbir entegrasyonun sahiplenmediği tüm sahipsiz varlıkları listeler."
+        },
+        "homeassistant_restart": {
+            "name": "Yeniden başlat",
+            "description": "Home Assistant'ı yeniden başlatma eylemi.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Güvenli mod",
+                    "description": "Yeniden başlatmanın güvenli modda yapılıp yapılmayacağı. Bu, tüm özel entegrasyonları ve ön yüz modüllerini devre dışı bırakır."
+                },
+                "force": {
+                    "name": "Yeniden başlatmayı zorla",
+                    "description": "Yeniden başlatmayı zorlar. UYARI! Bu, Home Assistant'ı düzgün bir şekilde kapatmaz; yapılandırma kontrollerini atlar ve devam eden veritabanı geçişlerini yok sayar. Yalnızca ne yaptığınızı biliyorsanız kullanın."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "İstatistikleri içe aktar",
+            "description": "Uzun vadeli istatistikleri içe aktarır.",
+            "fields": {
+                "statistic_id": {
+                    "name": "İstatistik kimliği",
+                    "description": "İçe aktarılacak istatistik kimliği (varlık kimliği)."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "İstatistiklerin adı."
+                },
+                "source": {
+                    "name": "Kaynak",
+                    "description": "İstatistik verilerinin kaynağı."
+                },
+                "unit_of_measurement": {
+                    "name": "Ölçü birimi",
+                    "description": "İstatistiklerin ölçü birimi."
+                },
+                "has_mean": {
+                    "name": "Ortalaması var",
+                    "description": "İstatistiklerin bir ortalama değeri olup olmadığı."
+                },
+                "has_sum": {
+                    "name": "Toplamı var",
+                    "description": "İstatistiklerin bir toplam değeri olup olmadığı."
+                },
+                "stats": {
+                    "name": "İstatistikler",
+                    "description": "İçe aktarılacak istatistikleri içeren eşleme/sözlük listesi. Sözlükler, tarih-saat dizesi içeren bir \"start\" anahtarı içermelidir; diğer geçerli seçenekler \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" ve \"state\". Bunların hepsi isteğe bağlıdır ve tamsayı ya da ondalık sayıdır; tarih-saat dizesi olan \"last_reset\" hariç."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Rastgele seçenek seç",
+            "description": "Bir seçim varlığı için rastgele bir seçenek seçer.",
+            "fields": {
+                "options": {
+                    "name": "Seçenekler",
+                    "description": "Aralarından seçim yapılacak seçenekleri sınırlar. Verilmezse tüm seçenekler dikkate alınır."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Giriş seçimi oluştur",
+            "description": "Anında yeni bir giriş seçimi (açılır liste) yardımcısı oluşturur. Yeni giriş seçiminin varlık kimliğini döndürür.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni giriş seçiminin adı."
+                },
+                "input_select_id": {
+                    "name": "Giriş seçimi varlık kimliği",
+                    "description": "Yeni giriş seçiminin varlık kimliği. input_select. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "options": {
+                    "name": "Seçenekler",
+                    "description": "Aralarından seçim yapılacak seçenekler. Her seçenek yalnızca bir kez bulunabilir."
+                },
+                "initial": {
+                    "name": "Başlangıç seçeneği",
+                    "description": "Başlangıçta seçili olan seçenek; seçeneklerden biri olmalı. Boş bırakılırsa Home Assistant yeniden başlamadan önceki seçeneği korur."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni giriş seçiminin simgesi."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Giriş seçimini sil",
+            "description": "Arayüzde ya da giriş seçimi oluştur eylemiyle yapılmış giriş seçimi yardımcılarını siler. YAML ile kurulmuş giriş seçimleri Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek giriş seçim(ler)i."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Rastgele seçenek seç",
+            "description": "Bir input_select varlığı için rastgele bir seçenek seçer.",
+            "fields": {
+                "options": {
+                    "name": "Seçenekler",
+                    "description": "Aralarından seçim yapılacak seçenekleri sınırlar. Verilmezse tüm seçenekler dikkate alınır."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Seçenekleri ters çevir",
+            "description": "Bir `input_select` varlığının seçilebilir seçeneklerinin sırasını sondan başa çevirir. Bu kalıcı değildir; yeniden yüklendiğinde ya da Home Assistant yeniden başladığında geri alınır."
+        },
+        "input_select_shuffle": {
+            "name": "Seçenekleri karıştır",
+            "description": "Bir `input_select` varlığının seçilebilir seçenekler listesini karıştırır. Bu kalıcı değildir; yeniden yüklendiğinde ya da Home Assistant yeniden başladığında geri alınır."
+        },
+        "input_select_sort": {
+            "name": "Seçenekleri sırala",
+            "description": "Bir `input_select` varlığının seçilebilir seçenekler listesini sıralar. Bu kalıcı değildir; yeniden yüklendiğinde ya da Home Assistant yeniden başladığında geri alınır."
+        },
+        "number_decrement": {
+            "name": "Değeri azalt",
+            "description": "Bir sayı varlığının değerini belirli bir miktar azaltır.",
+            "fields": {
+                "amount": {
+                    "name": "Miktar",
+                    "description": "Sayının azaltılacağı miktar. Verilmezse sayı varlığının adımı kullanılır."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Değeri artır",
+            "description": "Bir sayı varlığının değerini belirli bir miktar artırır.",
+            "fields": {
+                "amount": {
+                    "name": "Miktar",
+                    "description": "Sayının artırılacağı miktar. Verilmezse sayı varlığının adımı kullanılır."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Maksimum değere ayarla",
+            "description": "Bir sayı varlığını maksimum değerine ayarlar."
+        },
+        "number_min": {
+            "name": "Minimum değere ayarla",
+            "description": "Bir sayı varlığını minimum değerine ayarlar."
+        },
+        "input_number_decrement": {
+            "name": "Değeri azalt",
+            "description": "Bir sayı girişi varlığının değerini belirli bir miktar azaltır.",
+            "fields": {
+                "amount": {
+                    "name": "Miktar",
+                    "description": "Sayı girişinin azaltılacağı miktar. Verilmezse sayı varlığının adımı kullanılır."
+                },
+                "cycle": {
+                    "name": "Döngü",
+                    "description": "Bu uçta durmak yerine aralığın öbür ucundan devam eder; bir seçimde sonraki seçeneği seçmenin döngü yapması gibi."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Değeri artır",
+            "description": "Bir sayı girişi varlığının değerini belirli bir miktar artırır.",
+            "fields": {
+                "amount": {
+                    "name": "Miktar",
+                    "description": "Sayı girişinin artırılacağı miktar. Verilmezse sayı varlığının adımı kullanılır."
+                },
+                "cycle": {
+                    "name": "Döngü",
+                    "description": "Bu uçta durmak yerine aralığın öbür ucundan devam eder; bir seçimde sonraki seçeneği seçmenin döngü yapması gibi."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Maksimum değere ayarla",
+            "description": "Bir sayı girişi varlığını maksimum değerine ayarlar."
+        },
+        "input_number_min": {
+            "name": "Minimum değere ayarla",
+            "description": "Bir sayı girişi varlığını minimum değerine ayarlar."
+        },
+        "input_number_set_range": {
+            "name": "Aralığı ayarla",
+            "description": "Arayüzde yapılmış bir sayı girişinin minimumunu, maksimumunu ya da adımını, onu düzenlemekle aynı şekilde değiştirir. Yeni aralığın dışındaki bir değer aralığın içine taşınır.",
+            "fields": {
+                "min": {
+                    "name": "Minimum",
+                    "description": "Yeni minimum değer."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Yeni maksimum değer."
+                },
+                "step": {
+                    "name": "Adım",
+                    "description": "Yeni adım büyüklüğü."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Sayaç oluştur",
+            "description": "Anında yeni bir sayaç yardımcısı oluşturur. Yeni sayacın varlık kimliğini döndürür.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni sayacın adı."
+                },
+                "counter_id": {
+                    "name": "Sayaç varlık kimliği",
+                    "description": "Yeni sayacın varlık kimliği. counter. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "initial": {
+                    "name": "Başlangıç değeri",
+                    "description": "Sayacın başladığı ve sıfırlandığında döndüğü değer."
+                },
+                "minimum": {
+                    "name": "Minimum",
+                    "description": "Sayacın inebileceği en düşük değer. Sınır olmaması için boş bırakın."
+                },
+                "maximum": {
+                    "name": "Maksimum",
+                    "description": "Sayacın çıkabileceği en yüksek değer. Sınır olmaması için boş bırakın."
+                },
+                "step": {
+                    "name": "Adım",
+                    "description": "Sayacın her seferinde ne kadar artacağı ya da azalacağı."
+                },
+                "restore": {
+                    "name": "Geri yükle",
+                    "description": "Home Assistant başladığında başlangıç değerinden yeniden başlamak yerine sayacın değerini geri yükler."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni sayacın simgesi."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Sayacı sil",
+            "description": "Arayüzde ya da sayaç oluştur eylemiyle yapılmış sayaç yardımcılarını siler. YAML ile kurulmuş sayaçlar Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek sayaç(lar)."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Giriş mantıksalı oluştur",
+            "description": "Anında yeni bir giriş mantıksalı (aç/kapa) yardımcısı oluşturur. Yeni giriş mantıksalının varlık kimliğini döndürür.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni giriş mantıksalının adı."
+                },
+                "input_boolean_id": {
+                    "name": "Giriş mantıksalı varlık kimliği",
+                    "description": "Yeni giriş mantıksalının varlık kimliği. input_boolean. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "initial": {
+                    "name": "Başlangıç değeri",
+                    "description": "Başlangıç değeri. Boş bırakılırsa Home Assistant yeniden başlamadan önceki değeri korur."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni giriş mantıksalının simgesi."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Giriş mantıksalını sil",
+            "description": "Arayüzde ya da giriş mantıksalı oluştur eylemiyle yapılmış giriş mantıksalı yardımcılarını siler. YAML ile kurulmuş giriş mantıksalları Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek giriş mantıksal(lar)ı."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Giriş metni oluştur",
+            "description": "Anında yeni bir giriş metni yardımcısı oluşturur. Yeni giriş metninin varlık kimliğini döndürür.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni giriş metninin adı."
+                },
+                "input_text_id": {
+                    "name": "Giriş metni varlık kimliği",
+                    "description": "Yeni giriş metninin varlık kimliği. input_text. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "initial": {
+                    "name": "Başlangıç değeri",
+                    "description": "Başlangıç metni. Boş bırakılırsa Home Assistant yeniden başlamadan önceki metni korur."
+                },
+                "min": {
+                    "name": "Minimum uzunluk",
+                    "description": "Metnin olabileceği en kısa uzunluk."
+                },
+                "max": {
+                    "name": "Maksimum uzunluk",
+                    "description": "Metnin olabileceği en uzun uzunluk."
+                },
+                "pattern": {
+                    "name": "Desen",
+                    "description": "Metnin eşleşmesi gereken bir düzenli ifade."
+                },
+                "mode": {
+                    "name": "Mod",
+                    "description": "Metni olduğu gibi göster ya da bir parola gibi gizle."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni giriş metninin simgesi."
+                },
+                "unit_of_measurement": {
+                    "name": "Ölçü birimi",
+                    "description": "Metnin yanında gösterilecek birim."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Giriş metnini sil",
+            "description": "Arayüzde ya da giriş metni oluştur eylemiyle yapılmış giriş metni yardımcılarını siler. YAML ile kurulmuş giriş metinleri Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek giriş metin(ler)i."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Giriş düğmesi oluştur",
+            "description": "Anında yeni bir giriş düğmesi yardımcısı oluşturur. Yeni giriş düğmesinin varlık kimliğini döndürür.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni giriş düğmesinin adı."
+                },
+                "input_button_id": {
+                    "name": "Giriş düğmesi varlık kimliği",
+                    "description": "Yeni giriş düğmesinin varlık kimliği. input_button. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni giriş düğmesinin simgesi."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Giriş düğmesini sil",
+            "description": "Arayüzde ya da giriş düğmesi oluştur eylemiyle yapılmış giriş düğmesi yardımcılarını siler. YAML ile kurulmuş giriş düğmeleri Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek giriş düğme(ler)i."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Giriş tarih/saati oluştur",
+            "description": "Anında bir tarih, bir saat ya da ikisini birden tutan yeni bir giriş tarih/saati yardımcısı oluşturur. Yeni giriş tarih/saatinin varlık kimliğini döndürür.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni giriş tarih/saatinin adı."
+                },
+                "input_datetime_id": {
+                    "name": "Giriş tarih/saati varlık kimliği",
+                    "description": "Yeni giriş tarih/saatinin varlık kimliği. input_datetime. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "has_date": {
+                    "name": "Tarih içerir",
+                    "description": "Bir tarih tutup tutmadığı. Tarih ve saatten en az biri açık olmalı."
+                },
+                "has_time": {
+                    "name": "Saat içerir",
+                    "description": "Bir saat tutup tutmadığı. Tarih ve saatten en az biri açık olmalı."
+                },
+                "initial": {
+                    "name": "Başlangıç değeri",
+                    "description": "Başlangıçtaki tarih ve/veya saat; örneğin 2026-12-31, 08:30:00 ya da 2026-12-31 08:30:00. Boş bırakılırsa Home Assistant yeniden başlamadan önceki değeri korur."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni giriş tarih/saatinin simgesi."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Giriş tarih/saatini sil",
+            "description": "Arayüzde ya da giriş tarih/saati oluştur eylemiyle yapılmış giriş tarih/saati yardımcılarını siler. YAML ile kurulmuş giriş tarih/saatleri Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek giriş tarih/saat(ler)i."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "Sayı girişi oluştur",
+            "description": "Anında yeni bir sayı girişi yardımcısı oluşturur. Yeni sayı girişinin varlık kimliğini döndürür.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni sayı girişi yardımcısının adı."
+                },
+                "input_number_id": {
+                    "name": "Sayı girişi varlık kimliği",
+                    "description": "Yeni sayı girişi yardımcısının varlık kimliği. input_number. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "min": {
+                    "name": "Minimum",
+                    "description": "Sayı girişinin minimum değeri."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Sayı girişinin maksimum değeri."
+                },
+                "initial": {
+                    "name": "Başlangıç değeri",
+                    "description": "Home Assistant başladığında sayı girişinin başlangıç değeri."
+                },
+                "step": {
+                    "name": "Adım büyüklüğü",
+                    "description": "Sayı girişinin adım büyüklüğü."
+                },
+                "mode": {
+                    "name": "Görüntüleme modu",
+                    "description": "Sayı girişinin görüntüleme modu; kaydırıcı ya da giriş kutusu olabilir."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Sayı girişi yardımcısı için kullanılacak simge."
+                },
+                "unit_of_measurement": {
+                    "name": "Ölçü birimi",
+                    "description": "Sayı girişinin ölçü birimi."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Sayı girişini sil",
+            "description": "Arayüzde ya da sayı girişi oluştur eylemiyle yapılmış sayı girişi yardımcılarını siler. YAML ile kurulmuş sayı girişleri Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek sayı giriş(ler)i."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Cihaz izleyici ekle",
+            "description": "Bir kişiye cihaz izleyici ekler.",
+            "fields": {
+                "entity_id": {
+                    "name": "Kişi",
+                    "description": "Cihaz izleyicinin ekleneceği kişinin varlık kimliği."
+                },
+                "device_tracker": {
+                    "name": "Cihaz izleyici",
+                    "description": "Kişiye eklenecek cihaz izleyicinin varlık kimliği."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Cihaz izleyiciyi kaldır",
+            "description": "Bir kişiden cihaz izleyici kaldırır.",
+            "fields": {
+                "entity_id": {
+                    "name": "Kişi",
+                    "description": "Cihaz izleyicinin kaldırılacağı kişinin varlık kimliği."
+                },
+                "device_tracker": {
+                    "name": "Cihaz izleyici",
+                    "description": "Kişiden kaldırılacak cihaz izleyicinin varlık kimliği."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Sorun oluştur",
+            "description": "Home Assistant onarımlarında elle bir sorun oluşturup bildirir.",
+            "fields": {
+                "title": {
+                    "name": "Başlık",
+                    "description": "Sorunun başlığı."
+                },
+                "description": {
+                    "name": "Açıklama",
+                    "description": "Sorunun açıklaması. Markdown destekler."
+                },
+                "issue_id": {
+                    "name": "Sorun kimliği",
+                    "description": "Sorunun bir tanımlayıcısı olabilir; gerekirse daha sonra bu kimlikle onu iptal edebilirsiniz. Ayrıca aynı sorunun iki kez oluşturulmasını önler. Verilmezse rastgele bir kimlik oluşturulur."
+                },
+                "domain": {
+                    "name": "Alan adı",
+                    "description": "Bu alan, sorunun alan adını ayarlamak için kullanılabilir. Örneğin varsayılan olarak (ayarlanmazsa) \"spook\" kullanılır. Bu da sorunun logosunda/görselinde Spook'un gösterilmesini sağlar. \"homeassistant\" olarak ayarlarsanız Home Assistant logosu kullanılır; o entegrasyonun logosunu kullanmak için \"hue\", \"zwave_js\", \"mqtt\" gibi değerler kullanın."
+                },
+                "severity": {
+                    "name": "Önem derecesi",
+                    "description": "Sorunun önem derecesi. Sorunun önceliğini belirlemek için kullanılır. Ayarlanmazsa \"warning\" kullanılır."
+                },
+                "persistent": {
+                    "name": "Kalıcı",
+                    "description": "Sorunun kalıcı olup olmayacağı, yani Home Assistant yeniden başlatmalarından sağ çıkıp çıkmayacağı. Varsayılan olarak sorunlar kalıcı değildir."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Tüm sorunları yoksay",
+            "description": "Home Assistant Onarımlar'da şu anda bildirilmiş tüm sorunları ya da yalnızca belirli entegrasyonların bildirdiklerini yoksayar.",
+            "fields": {
+                "domain": {
+                    "name": "Alan adı",
+                    "description": "Yalnızca bu entegrasyonların bildirdiği sorunları yoksay."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Sorunları listele",
+            "description": "Home Assistant Onarımlar'da şu anda bildirilmiş sorunları başlıklarıyla birlikte listeler; bir otomasyonun harekete geçmesi ya da bir gösterge panelinin göstermesi için.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Yoksayılanları dahil et",
+                    "description": "Yoksayılmış sorunları da listele."
+                },
+                "domain": {
+                    "name": "Alan adı",
+                    "description": "Yalnızca bu entegrasyonların bildirdiği sorunları listele."
+                },
+                "severity": {
+                    "name": "Önem derecesi",
+                    "description": "Yalnızca bu önem derecelerindeki sorunları listele."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Sorunu kaldır",
+            "description": "Elle oluşturulmuş bir Home Assistant onarım sorununu kaldırır. Bu eylem yalnızca `repairs_create` eylemiyle oluşturulmuş sorunları kaldırabilir.",
+            "fields": {
+                "issue_id": {
+                    "name": "Sorun kimliği",
+                    "description": "Kaldırılacak sorun kimliği."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Tüm sorunları yoksaymayı bırak",
+            "description": "Home Assistant Onarımlar'da şu anda bildirilmiş tüm sorunları ya da yalnızca belirli entegrasyonların bildirdiklerini yeniden dikkate alır.",
+            "fields": {
+                "domain": {
+                    "name": "Alan adı",
+                    "description": "Yalnızca bu entegrasyonların bildirdiği sorunları yoksaymayı bırak."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Görüntüleme hassasiyetini ayarla",
+            "description": "Bir ya da daha fazla sensör için gösterilen ondalık basamak sayısını ayarlar.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık",
+                    "description": "Güncellenecek sensör varlığı/varlıkları."
+                },
+                "display_precision": {
+                    "name": "Görüntüleme hassasiyeti",
+                    "description": "Sensör için gösterilecek ondalık basamak sayısı."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Zamanlayıcı oluştur",
+            "description": "Anında yeni bir zamanlayıcı yardımcısı oluşturur. Yeni zamanlayıcının varlık kimliğini döndürür.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Yeni zamanlayıcının adı."
+                },
+                "timer_id": {
+                    "name": "Zamanlayıcı varlık kimliği",
+                    "description": "Yeni zamanlayıcının varlık kimliği. timer. öneki otomatik olarak eklenir. Verilmezse varlık kimliği ada göre oluşturulur."
+                },
+                "duration": {
+                    "name": "Süre",
+                    "description": "Zamanlayıcı başlatıldığında ne kadar süre çalışacağı."
+                },
+                "restore": {
+                    "name": "Geri yükle",
+                    "description": "Home Assistant başladığında zamanlayıcının durumunu geri yükler, böylece çalışan bir zamanlayıcı yeniden başlatmadan sonra da çalışmaya devam eder."
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Yeni zamanlayıcının simgesi."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Zamanlayıcıyı sil",
+            "description": "Arayüzde ya da zamanlayıcı oluştur eylemiyle yapılmış zamanlayıcı yardımcılarını siler. YAML ile kurulmuş zamanlayıcılar Spook tarafından silinemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Silinecek zamanlayıcı(lar)."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Süreyi ayarla",
+            "description": "Mevcut bir zamanlayıcının süresini ayarlar.",
+            "fields": {
+                "duration": {
+                    "name": "Süre",
+                    "description": "Zamanlayıcının yeni süresi, timedelta dizesi olarak."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Bölge oluştur",
+            "description": "Home Assistant'ta anında yeni bir bölge oluşturur.",
+            "fields": {
+                "name": {
+                    "name": "Ad",
+                    "description": "Bölgenin adı"
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Bölge için kullanılacak simge"
+                },
+                "latitude": {
+                    "name": "Enlem",
+                    "description": "Bölgenin enlemi. Bir şablon olabilir."
+                },
+                "longitude": {
+                    "name": "Boylam",
+                    "description": "Bölgenin boylamı. Bir şablon olabilir."
+                },
+                "radius": {
+                    "name": "Yarıçap",
+                    "description": "Bölgenin yarıçapı"
+                },
+                "passive": {
+                    "name": "Pasif",
+                    "description": "Pasif bir bölge yalnızca otomasyonlar için vardır: haritada gösterilmez ve kişilerin ve cihaz izleyicilerin nerede olduğunu değiştirmez."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Bölgeyi güncelle",
+            "description": "Bir bölgenin özelliklerini anında günceller.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Güncellenecek varlığın (ya da varlıkların) kimliği."
+                },
+                "name": {
+                    "name": "Ad",
+                    "description": "Bölgenin adı"
+                },
+                "icon": {
+                    "name": "Simge",
+                    "description": "Bölge için kullanılacak simge"
+                },
+                "latitude": {
+                    "name": "Enlem",
+                    "description": "Bölgenin enlemi. Bir şablon olabilir."
+                },
+                "longitude": {
+                    "name": "Boylam",
+                    "description": "Bölgenin boylamı. Bir şablon olabilir."
+                },
+                "radius": {
+                    "name": "Yarıçap",
+                    "description": "Bölgenin yarıçapı"
+                },
+                "passive": {
+                    "name": "Pasif",
+                    "description": "Pasif bir bölge yalnızca otomasyonlar için vardır: haritada gösterilmez ve kişilerin ve cihaz izleyicilerin nerede olduğunu değiştirmez."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Bölgeyi sil",
+            "description": "Bir bölgeyi siler. Bu yalnızca arayüzden oluşturulup yönetilen bölgelerle çalışır. YAML ile oluşturulup yönetilen bölgeler Spook tarafından yönetilemez.",
+            "fields": {
+                "entity_id": {
+                    "name": "Varlık kimliği",
+                    "description": "Kaldırılacak varlığın (ya da varlıkların) kimliği."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Sıcaklığı artır",
+            "description": "Bir su ısıtıcının ayar noktasını sınırları içinde bir adım yükseltir.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Ne kadar değiştirileceği. Su ısıtıcının kendi adımını kullanmak için boş bırakın; adımı yoksa yarım derece (Fahrenheit'ta bir)."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Sıcaklığı düşür",
+            "description": "Bir su ısıtıcının ayar noktasını sınırları içinde bir adım düşürür.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Ne kadar değiştirileceği. Su ısıtıcının kendi adımını kullanmak için boş bırakın; adımı yoksa yarım derece (Fahrenheit'ta bir)."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Nemi artır",
+            "description": "Bir nemlendiricinin hedef nemini sınırları içinde bir adım yükseltir.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Yüzde kaç değiştirileceği. Nemlendiricinin kendi adımını kullanmak için boş bırakın; adımı yoksa yüzde bir."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Nemi azalt",
+            "description": "Bir nemlendiricinin hedef nemini sınırları içinde bir adım düşürür.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Yüzde kaç değiştirileceği. Nemlendiricinin kendi adımını kullanmak için boş bırakın; adımı yoksa yüzde bir."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Pozisyonu artır",
+            "description": "Bir panjuru bir adım daha açar, tamamen açıkta durur.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Yüzde kaç hareket ettirileceği. Boş bırakılırsa yüzde on."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Pozisyonu azalt",
+            "description": "Bir panjuru bir adım daha kapatır, tamamen kapalıda durur.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Yüzde kaç hareket ettirileceği. Boş bırakılırsa yüzde on."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Pozisyonu artır",
+            "description": "Bir vanayı bir adım daha açar, tamamen açıkta durur.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Yüzde kaç hareket ettirileceği. Boş bırakılırsa yüzde on."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Pozisyonu azalt",
+            "description": "Bir vanayı bir adım daha kapatır, tamamen kapalıda durur.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Yüzde kaç hareket ettirileceği. Boş bırakılırsa yüzde on."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Sesi artır",
+            "description": "Bir medya oynatıcının sesini verdiğiniz adım kadar açar, tam seste durur.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Sesin yüzde kaç değiştirileceği."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Sesi azalt",
+            "description": "Bir medya oynatıcının sesini verdiğiniz adım kadar kısar, sessizde durur.",
+            "fields": {
+                "step": {
+                    "name": "Adım",
+                    "description": "Sesin yüzde kaç değiştirileceği."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Öğeyi taşı",
+            "description": "Bir yapılacaklar listesindeki bir öğeyi en üste, en alta ya da başka bir öğenin arkasına taşır.",
+            "fields": {
+                "item": {
+                    "name": "Öğe",
+                    "description": "Taşınacak öğenin başlığı ya da uid'si."
+                },
+                "after": {
+                    "name": "Arkasına",
+                    "description": "Arkasına konulacağı öğenin başlığı ya da uid'si. Bunu ya da bir pozisyon verin."
+                },
+                "position": {
+                    "name": "Pozisyon",
+                    "description": "Listenin en üstüne ya da en altına taşır. Bunu ya da arkasına konulacağı bir öğe verin."
                 }
             }
         }

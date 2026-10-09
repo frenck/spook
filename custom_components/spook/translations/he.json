@@ -1,17 +1,348 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "אוטומציה כובתה",
+            "description": "מופעל כאשר מישהו, או משהו, מכבה אוטומציה. השאר את היעד ריק כדי לעקוב אחרי כל האוטומציות."
+        },
+        "debounce": {
+            "name": "ברגע שזה נרגע",
+            "description": "מופעל ברגע שטריגר הפסיק לפעול לזמן מה, כך שפרץ של הפעלות מגיע כאחת. חיישן תנועה לא מדווח על תנועה פעם אחת, הוא מדווח עליה עשרים פעם.",
+            "fields": {
+                "triggers": {
+                    "name": "טריגרים",
+                    "description": "הטריגרים שיש להמתין שיירגעו. כל אחד מהם שמופעל מתחיל פרץ, וכל הפעלה נוספת ממשיכה אותו, כך שכמה טריגרים מאוחדים יחד ולא כל אחד בנפרד."
+                },
+                "for": {
+                    "name": "למשך",
+                    "description": "כמה זמן צריך להיות שקט לפני שזה מופעל. כל הפעלה מתחילה את ההמתנה מחדש, כך שמשהו שאף פעם לא מפסיק לפעול לעולם לא ידווח."
+                }
+            }
+        },
+        "all_of": {
+            "name": "כל אלה קרו",
+            "description": "מופעל כאשר כל אחד מכמה טריגרים הופעל בתוך אותו חלון זמן, בכל סדר. הטריגרים של Home Assistant עצמו הם רשימה שבה מספיק אחד מהם; זה ההפך.",
+            "fields": {
+                "triggers": {
+                    "name": "טריגרים",
+                    "description": "הטריגרים שכולם צריכים להיות מופעלים. הסדר לא משנה, וטריגר שמופעל שוב מחליף את הפעם הקודמת שלו במקום להיספר פעמיים."
+                },
+                "within": {
+                    "name": "בטווח של",
+                    "description": "כמה קרובים זה לזה הם צריכים להיות. החלון נע, כך שטריגר שהופעל לפני יותר מזה נשכח בזמן שהאחרים ממשיכים להיספר."
+                }
+            }
+        },
+        "recovered": {
+            "name": "ישות חזרה",
+            "description": "מופעל כאשר ישות חוזרת אחרי שהייתה לא זמינה לזמן מה, כך שאתחול של הנתב לא נראה כאילו כל הבית התאושש.",
+            "fields": {
+                "for": {
+                    "name": "למשך",
+                    "description": "כמה זמן הישות צריכה להיעדר לפני שהחזרה נחשבת. כל דבר קצר יותר הוא הבהוב: טעינה מחדש של שילוב מעבירה את כל הישויות שלו דרך לא זמין וחזרה בתוך שנייה."
+                }
+            }
+        },
+        "device_added": {
+            "name": "מכשיר נוסף",
+            "description": "מופעל כאשר מכשיר חדש נוסף ל-Home Assistant, כמו שקע שזה עתה צומד."
+        },
+        "sequence": {
+            "name": "טריגרים לפי סדר",
+            "description": "מופעל כאשר כמה טריגרים קורים בזה אחר זה, בסדר שנקבע.",
+            "fields": {
+                "steps": {
+                    "name": "שלבים",
+                    "description": "הטריגרים שצריכים לקרות, לפי הסדר. רק זה שממתינים לו מאזין, כך ששלב מאוחר יותר שמופעל מוקדם לא נחשב להתאמה."
+                },
+                "timeout": {
+                    "name": "זמן קצוב",
+                    "description": "כמה זמן כל הרצף יכול להימשך, מהשלב הראשון. אם לא צוין, הוא ממתין ללא הגבלה."
+                },
+                "reset": {
+                    "name": "איפוס",
+                    "description": "טריגרים שנוטשים רצף שכבר בעיצומו, ומחזירים אותו להמתנה לשלב הראשון."
+                }
+            }
+        },
+        "while": {
+            "name": "כל עוד תנאי מתקיים",
+            "description": "מופעל כאשר תנאי הופך לאמת, וממשיך לפעול במרווחים כל עוד הוא נשאר אמת.",
+            "fields": {
+                "condition": {
+                    "name": "תנאי",
+                    "description": "התנאי למעקב. ההפעלות מתחילות כשהוא הופך לאמת ונעצרות כשהוא מפסיק להיות אמת."
+                },
+                "every": {
+                    "name": "כל",
+                    "description": "כמה זמן להמתין בין הפעלה אחת לבאה, כל עוד התנאי מתקיים."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "כלב שמירה",
+            "description": "מופעל כאשר משהו שהיה צפוי לקרות לא קורה בזמן.",
+            "fields": {
+                "arm": {
+                    "name": "דריכה",
+                    "description": "מה מתחיל את השמירה. ההמתנה נמדדת מכאן, ודריכה חוזרת בזמן המתנה מתחילה את ההמתנה מחדש."
+                },
+                "expect": {
+                    "name": "צפוי",
+                    "description": "מה צפוי לבוא אחר כך. הגעה בזמן מבטלת את השמירה, ושום דבר לא מופעל."
+                },
+                "within": {
+                    "name": "בטווח של",
+                    "description": "כמה זמן יש לדבר הצפוי להגיע. זה מופעל כשהזמן הזה עובר והוא לא הגיע."
+                }
+            }
+        },
+        "flapping": {
+            "name": "ישות לא נרגעת",
+            "description": "מופעל כאשר ישות משנה מצב לעתים קרובות יותר ממה שהיא אמורה בפרק זמן מסוים.",
+            "fields": {
+                "changes": {
+                    "name": "שינויים",
+                    "description": "כמה שינויי מצב נדרשים לפני שזה מופעל. שינויי מאפיינים לא נספרים, וגם לא ישות שמופיעה או נעלמת."
+                },
+                "within": {
+                    "name": "בטווח של",
+                    "description": "פרק הזמן שבו השינויים האלה צריכים לקרות. הוא נע, כך שזה תמיד נוגע לשינויים האחרונים."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "תנאי הפך לאמת",
+            "description": "מופעל כאשר תנאי עובר משקר לאמת, עם אותן אבני בניין של תנאים כמו בכל מקום אחר.",
+            "fields": {
+                "condition": {
+                    "name": "תנאי",
+                    "description": "התנאי למעקב."
+                }
+            }
+        },
+        "cron": {
+            "name": "תזמון Cron",
+            "description": "מופעל לפי תזמון crontab, לזמנים שטריגרי הזמן של Home Assistant עצמו לא יכולים לבטא, כמו כל יום חול בשבע או יום שישי האחרון בחודש.",
+            "fields": {
+                "schedule": {
+                    "name": "תזמון",
+                    "description": "ביטוי crontab עם חמישה שדות: דקה, שעה, יום בחודש, חודש, יום בשבוע. תומך בטווחים ובצעדים, ובהרחבות של יום בשבוע, כך ש-\"MON#2\" הוא יום שני השני ו-\"5L\" יום שישי האחרון. כינויים כמו \"@daily\" אינם נתמכים."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "מכשיר התגלה",
+            "description": "מופעל כאשר Home Assistant מגלה משהו חדש שהוא יכול להגדיר, כמו מכשיר שזה עתה הופיע ברשת שלך."
+        },
+        "integration_added": {
+            "name": "שילוב נוסף",
+            "description": "מופעל כאשר שילוב נוסף ל-Home Assistant, לא משנה מי או מה הוסיף אותו."
+        },
+        "integration_failed": {
+            "name": "הגדרת שילוב נכשלה",
+            "description": "מופעל כאשר רשומת תצורה לא מצליחה להגדיר את עצמה כבר זמן מה, מעבר לנקודה שבה הניסיונות החוזרים של Home Assistant עצמו היו פותרים את זה.",
+            "fields": {
+                "for": {
+                    "name": "למשך",
+                    "description": "כמה זמן רשומה צריכה להמשיך להיכשל לפני שזה מופעל. Home Assistant מנסה שוב רשומה כושלת לכל המאוחר כל עשר דקות, כך שכל דבר קצר מזה מדווח על בעיה שעשויה עוד לפתור את עצמה."
+                },
+                "entry_id": {
+                    "name": "רשומות",
+                    "description": "הגבל את זה לרשומות תצורה מסוימות. השאר ריק כדי לעקוב אחרי כולן."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "נוצרה בעיית תיקון",
+            "description": "מופעל כאשר מופיעה בעיית תיקון חדשה, כך שתוכל לשמוע עליה בלי להיכנס לדף התיקונים.",
+            "fields": {
+                "domain": {
+                    "name": "שילובים",
+                    "description": "הגבל את זה לבעיות שדווחו על ידי שילובים מסוימים, לפי הדומיין שלהם. השאר ריק עבור כולם."
+                },
+                "severity": {
+                    "name": "חומרה",
+                    "description": "הגבל את זה לבעיות בדרגת חומרה מסוימת. השאר ריק עבור כולן."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "בעיית תיקון נפתרה",
+            "description": "מופעל כאשר בעיית תיקון נעלמת, בין אם תוקנה ובין אם כבר לא מדווחת.",
+            "fields": {
+                "domain": {
+                    "name": "שילובים",
+                    "description": "הגבל את זה לבעיות שדווחו על ידי שילובים מסוימים, לפי הדומיין שלהם. השאר ריק עבור כולם."
+                }
+            }
+        },
+        "stale": {
+            "name": "ישות השתתקה",
+            "description": "מופעל כאשר שום דבר לא כתב לישות כבר זמן מה, מה שתופס מכשיר שמת בשקט במקום להפוך ללא זמין.",
+            "fields": {
+                "for": {
+                    "name": "למשך",
+                    "description": "כמה זמן ישות צריכה לשתוק לפני שזה מופעל. ישות שממשיכה לדווח את אותו ערך לא שותקת."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "טמפרטורת היעד הושגה",
+            "description": "מופעל כאשר הטמפרטורה של תרמוסטט או דוד מים מגיעה ליעד שלה, או קופצת מעבר לו. שינוי היעד לא נחשב, וגם לא מכשיר כבוי.",
+            "fields": {
+                "tolerance": {
+                    "name": "סבילות",
+                    "description": "כמה קרוב ליעד עדיין נחשב כהגעה, ביחידה של המכשיר. מיועד לתרמוסטט שמתייצב קצת לפני נקודת ההגדרה שלו. אפס פירושו היעד עצמו."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "עדכון הותקן",
+            "description": "מופעל כאשר ישות עדכון מדווחת על גרסה מותקנת אחרת, בין אם מישהו לחץ על התקנה, המכשיר עדכן את עצמו, או שהוא עודכן מחוץ ל-Home Assistant."
+        },
+        "position_reached": {
+            "name": "המיקום הושג",
+            "description": "מופעל כאשר כיסוי או שסתום מגיע למיקום, או עובר אותו. כזה שכבר נמצא שם, או חוזר ממצב לא זמין כשהוא שם, לא נחשב.",
+            "fields": {
+                "position": {
+                    "name": "מיקום",
+                    "description": "המיקום שיש להגיע אליו, מ-0 (סגור) עד 100 (פתוח)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "סקריפט התחיל",
+            "description": "מופעל כאשר סקריפט מתחיל ריצה. ריצה שהסקריפט מסרב לה, כי הוא כבר רץ, לא נחשבת. השאר את היעד ריק כדי לעקוב אחרי כל הסקריפטים."
+        },
+        "user_added": {
+            "name": "משתמש נוסף",
+            "description": "מופעל כאשר מישהו מקבל פרטי כניסה ל-Home Assistant. משתמשים ש-Home Assistant יוצר עבור השילובים שלו לא נכללים."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "קריטי",
+                "error": "שגיאה",
+                "warning": "אזהרה"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "תחתית",
+                "top": "ראש"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "הטמפרטורה ביעד שלה",
+            "description": "מתקיים כאשר הטמפרטורה של תרמוסטט או דוד מים נמצאת ביעד שלה. מכשיר כבוי לא נמצא ביעד שלו, ומכשיר לא זמין לא נלקח בחשבון.",
+            "fields": {
+                "behavior": {
+                    "name": "התנהגות",
+                    "description": "האם מספיק שאחד המכשירים נמצא שם, או שכולם צריכים להיות."
+                },
+                "tolerance": {
+                    "name": "סבילות",
+                    "description": "כמה קרוב ליעד עדיין נחשב כהגעה, ביחידה של המכשיר. מיועד לתרמוסטט שמתייצב קצת לפני נקודת ההגדרה שלו. אפס פירושו היעד עצמו."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "בעיית תיקון פתוחה",
+            "description": "מתקיים כל עוד בעיית תיקון פתוחה. בעיות שמישהו התעלם מהן לא נחשבות.",
+            "fields": {
+                "domain": {
+                    "name": "שילובים",
+                    "description": "הגבל את זה לבעיות שדווחו על ידי שילובים מסוימים, לפי הדומיין שלהם. השאר ריק עבור כולם."
+                },
+                "severity": {
+                    "name": "חומרה",
+                    "description": "הגבל את זה לבעיות בדרגת חומרה מסוימת. השאר ריק עבור כולן."
+                }
+            }
+        },
+        "quota": {
+            "name": "נותרו ריצות במכסה",
+            "description": "מתקיים כל עוד האוטומציה הזו רצה פחות ממספר פעמים נתון בתוך פרק זמן נתון. סקריפטים לא נספרים.",
+            "fields": {
+                "limit": {
+                    "name": "מגבלה",
+                    "description": "כמה ריצות מותרות בתוך פרק הזמן."
+                },
+                "period": {
+                    "name": "פרק זמן",
+                    "description": "החלון שעליו חלה המגבלה. הוא מתגלגל, כך שיום פירושו כל עשרים וארבע שעות ולא בין חצות לחצות."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "הופעל על ידי אוטומציה",
+            "description": "מתקיים כאשר אוטומציה אחרת התניעה את הריצה הזו, בין אם ישירות ובין אם דרך סקריפט.",
+            "fields": {
+                "automation": {
+                    "name": "אוטומציות",
+                    "description": "הגבל את זה לאוטומציות מסוימות. השאר ריק כדי לקבל כל אחת מהן."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "הופעל על ידי משתמש",
+            "description": "מתקיים כאשר אדם עומד מאחורי מה שהתניע את זה: שינוי מצב או אירוע שהוא גרם, כולל כזה שגרם לטריגר תבנית להפוך לאמת. תזמון, השמש, או שילוב שפועל בעצמו לא נושאים אף אחד, וגם לא הפעלה בכוח עם כפתור ההרצה.",
+            "fields": {
+                "person": {
+                    "name": "אנשים",
+                    "description": "להתקיים רק כאשר אחד מהאנשים האלה התחיל את זה. השאר ריק כדי להתקיים עבור כל אחד. לאדם חייב להיות מקושר חשבון משתמש, אחרת אין מול מה להתאים."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "לא הופעל על ידי משתמש",
+            "description": "מתקיים כאשר אף אחד לא אחראי לריצה הזו: תזמון, השמש, שילוב שפועל בעצמו, או כפתור ההרצה. בכוונה אין לו אפשרויות. כדי להחריג אנשים מסוימים, שים את \"הופעל על ידי משתמש\" בתוך תנאי Not."
+        },
+        "chance": {
+            "name": "סיכוי",
+            "description": "מתקיים באחוז קבוע מהפעמים, שנבחר באקראי בכל בדיקה. שימושי כדי להוסיף קצת גיוון לאוטומציות שלך.",
+            "fields": {
+                "percentage": {
+                    "name": "אחוז",
+                    "description": "באיזו תדירות התנאי הזה צריך להתקיים, באחוזים."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "זמן צינון",
+            "description": "מתקיים רק אם האוטומציה או הסקריפט הזה לא רצו בתוך הזמן הנתון (או מעולם לא רצו). זמן צינון מובנה, כדי שזה לא יופעל שוב לעתים קרובות מדי.",
+            "fields": {
+                "duration": {
+                    "name": "משך",
+                    "description": "כמה זמן להמתין אחרי הריצה האחרונה לפני שהתנאי הזה מתקיים שוב."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "כן, טוב, לא.קי!"
+            "already_spooked": "Spook כבר רודף את המקום הזה 👻\n\nרוח רפאים אחת לבית זה די והותר. אפשר למצוא את Spook תחת [מכשירים ושירותים](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook ער שוב 👻\n\nתן לו רגע להסתכל מסביב. כל מה שהוא מוצא מופיע תחת [תיקונים](/config/repairs).",
+            "enable_failed": "Spook לא רצה להתעורר 👻\n\nנסה להפעיל אותו מחדש בעצמך תחת [מכשירים ושירותים](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook ממשיך לישון 👻\n\nמתגעגע? אפשר להעיר אותו בכל זמן תחת [מכשירים ושירותים](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Spook מרחף מסביב 👻\n\nתן לו רגע להסתכל מסביב. כל מה שהוא מוצא מופיע תחת [תיקונים](/config/repairs).\n\nהפעולות, הטריגרים והתנאים הנוספים מחכים לך בעורכי האוטומציות והסקריפטים. סקרן מה עוד Spook יודע לעשות? ב[תיעוד]({documentation_url}) יש הכל.\n\nנהנה מ-Spook? 👻 ⭐ ב-[GitHub]({repository_url}) מספר לאחרים ש-Spook דווקא די מעולה. [חסות ל-Frenck]({sponsor_url}) שומרת על הרוח הזו שבעה. ו[הניוזלטר]({newsletter_url}) הדו-שבועי והחינמי שלו שומר על הרוח הפנימית שלך שבעה."
         },
         "step": {
             "user": {
-                "description": "קראת את הקריאה? קראת את הרישיון? אתה באמת בטוח?"
+                "title": "בו! הכירו את Spook, החבר שלך 👻",
+                "description": "Spook מרחף ברחבי ה-Home Assistant שלך ומחפש רוחות רפאים: הפניות לדברים שכבר לא קיימים, ושאריות שאף אחד לא ניקה. כל מה שהוא מוצא, הוא מדווח תחת תיקונים.\n\nהוא גם מרחיב את מה שהאוטומציות והסקריפטים שלך יכולים לעשות, עם פעולות, גורמים מפעילים, תנאים ועוזרים נוספים, לאוטומציות חזקות עוד יותר.\n\nאזהרה מראש: Spook אינו חלק מ-Home Assistant. זהו שילוב מותאם אישית שנכנס למקומות שאף אחד לא הזמין אותו אליהם. אם קורה משהו מוזר, תחשוד קודם ב-Spook, ו[ספר לנו]({issue_tracker_url}).\n\nמוכן להיבהל?"
             },
-            "choice_restart": {
-                "description": "על מנת שספוק יסיים את הקמתו, עוזר הבית צריך להתחיל מחדש.\n\nרוצים לחדש את עוזר הבית עכשיו?",
+            "already_configured": {
+                "title": "Spook ישן 👻",
+                "description": "Spook כבר מוגדר, אבל מישהו כיבה אותו. להעיר אותו?",
                 "menu_options": {
-                    "restart_now": "מנוחה עכשיו",
-                    "restart_later": "מנוחה מאוחר יותר"
+                    "enable_existing": "להעיר את Spook",
+                    "keep_sleeping": "לתת לו לישון"
                 }
             }
         }
@@ -19,16 +350,16 @@
     "entity": {
         "button": {
             "homeassistant_reload": {
-                "name": "Reload"
+                "name": "טעינה מחדש"
             },
             "homeassistant_restart": {
-                "name": "מנוחה"
+                "name": "הפעלה מחדש"
             },
             "repairs_ignore_all": {
-                "name": "להתעלם מכל"
+                "name": "התעלם מהכול"
             },
             "repairs_unignore_all": {
-                "name": "כל"
+                "name": "בטל התעלמות מהכול"
             }
         },
         "event": {
@@ -36,16 +367,16 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "נושא שנוצר",
-                            "remove": "המונחים:",
-                            "update": "נושא מעודכן"
+                            "create": "בעיה נוצרה",
+                            "remove": "בעיה הוסרה",
+                            "update": "בעיה עודכנה"
                         }
                     },
                     "domain": {
-                        "name": "נושא"
+                        "name": "מדווח הבעיה"
                     },
                     "issue_id": {
-                        "name": "מזהה"
+                        "name": "מזהה בעיה"
                     }
                 }
             }
@@ -58,31 +389,34 @@
                 "name": "לוחות בקרת אזעקה"
             },
             "homeassistant_area": {
-                "name": "אזורים"
+                "name": "מרחבים"
             },
             "homeassistant_automation": {
-                "name": "אוטומציה"
+                "name": "אוטומציות"
             },
             "homeassistant_binary_sensor": {
-                "name": "חיישניים"
+                "name": "חיישנים בינאריים"
             },
             "homeassistant_button": {
-                "name": "Buttons"
+                "name": "לחצנים"
             },
             "homeassistant_calendar": {
-                "name": "לוח שנה"
+                "name": "לוחות שנה"
             },
             "homeassistant_camera": {
                 "name": "מצלמות"
             },
             "homeassistant_climate": {
-                "name": "אקלים אקלים"
+                "name": "אקלים"
+            },
+            "homeassistant_counter": {
+                "name": "מונים"
             },
             "homeassistant_cover": {
-                "name": "מכסה"
+                "name": "כיסויים"
             },
             "homeassistant_custom_component": {
-                "name": "אינטגרציה אישית"
+                "name": "שילובים מותאמים אישית"
             },
             "homeassistant_date": {
                 "name": "תאריכים"
@@ -94,40 +428,43 @@
                 "name": "מכשירים"
             },
             "homeassistant_device_tracker": {
-                "name": "עקבו"
+                "name": "מכשירי מעקב"
             },
             "homeassistant_entities": {
-                "name": "Entities"
+                "name": "ישויות"
             },
             "homeassistant_fan": {
-                "name": "אוהדים"
+                "name": "מאווררים"
+            },
+            "homeassistant_group": {
+                "name": "קבוצות"
             },
             "homeassistant_humidifier": {
-                "name": "הומור"
+                "name": "מכשירי אדים"
             },
             "homeassistant_image": {
                 "name": "תמונות"
             },
             "homeassistant_input_boolean": {
-                "name": "תגית: Input"
+                "name": "קלט בוליאני"
             },
             "homeassistant_input_button": {
-                "name": "כפתורים Input"
+                "name": "לחצני קלט"
             },
             "homeassistant_input_datetime": {
-                "name": "תאריך/שעה"
+                "name": "קלט תאריך וזמן"
             },
             "homeassistant_input_number": {
-                "name": "מספר Input"
+                "name": "קלט מספרים"
             },
             "homeassistant_input_select": {
-                "name": "Input בוחרת"
+                "name": "קלט בחירה"
             },
             "homeassistant_input_text": {
-                "name": "טקסטים"
+                "name": "קלט טקסט"
             },
             "homeassistant_integration": {
-                "name": "אינטגרציה"
+                "name": "שילובים"
             },
             "homeassistant_light": {
                 "name": "אורות"
@@ -136,34 +473,34 @@
                 "name": "מנעולים"
             },
             "homeassistant_media_player": {
-                "name": "שחקני מדיה"
+                "name": "נגני מדיה"
             },
             "homeassistant_number": {
-                "name": "מספרים מספרים"
+                "name": "מספרים"
             },
             "homeassistant_persistent_notification": {
-                "name": "הודעות עקביות"
+                "name": "התראות קבועות"
             },
             "homeassistant_person": {
                 "name": "אנשים"
             },
             "homeassistant_remote": {
-                "name": "מרוחקים"
+                "name": "שלטים"
             },
             "homeassistant_scene": {
                 "name": "סצנות"
             },
             "homeassistant_script": {
-                "name": "תסריטים"
+                "name": "סקריפטים"
             },
             "homeassistant_select": {
-                "name": "בוחרים"
+                "name": "רשימות בחירה"
             },
             "homeassistant_sensor": {
                 "name": "חיישנים"
             },
             "homeassistant_siren": {
-                "name": "סרנס"
+                "name": "צופרים"
             },
             "homeassistant_stt": {
                 "name": "דיבור לטקסט"
@@ -172,25 +509,31 @@
                 "name": "השמש"
             },
             "homeassistant_switch": {
-                "name": "Switches"
+                "name": "מתגים"
             },
             "homeassistant_text": {
-                "name": "הודעות טקסט"
+                "name": "טקסטים"
             },
             "homeassistant_time": {
-                "name": "הזמנים"
+                "name": "זמנים"
+            },
+            "homeassistant_timer": {
+                "name": "טיימרים"
+            },
+            "homeassistant_todo": {
+                "name": "רשימות מטלות"
             },
             "homeassistant_tts": {
-                "name": "טקסט-to-speech"
+                "name": "טקסט לדיבור"
             },
             "homeassistant_update": {
-                "name": "עדכון Update"
+                "name": "עדכונים"
             },
             "homeassistant_vacuum": {
-                "name": "Vacuums"
+                "name": "שואבי אבק"
             },
             "homeassistant_water_heater": {
-                "name": "מחמם מים"
+                "name": "מחממי מים"
             },
             "homeassistant_weather": {
                 "name": "מזג אוויר"
@@ -199,10 +542,10 @@
                 "name": "אזורים"
             },
             "repairs_total_issues": {
-                "name": "Total Total"
+                "name": "סה\"כ"
             },
             "repairs_ignored_issues": {
-                "name": "התעלמו"
+                "name": "בהתעלמות"
             },
             "repairs_active_issues": {
                 "name": "פעיל"
@@ -210,87 +553,597 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Microsoft State Report"
+                "name": "דיווח מצב ל-Alexa"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistant"
+                "name": "דיווח מצב ל-Google Assistant"
             },
             "cloud_remote": {
                 "name": "מרחוק"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "לא ניתן היה לחבר את כל הטריגרים של טריגר \"כל אלה\"."
+        },
+        "area_not_found": {
+            "message": "המרחב {area_id} לא נמצא."
+        },
+        "blueprint_backup_failed": {
+            "message": "לא ניתן היה לשמור עותק של {path} בצד: {error}. שום דבר לא נכתב."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} לא יכול לרוץ כאן: {errors}. שום דבר לא נכתב."
+        },
+        "blueprint_could_not_write": {
+            "message": "לא ניתן היה לכתוב את {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "דומיין לא נתמך: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "שגיאה בהבאת השרטוט מכתובת ה-URL."
+        },
+        "blueprint_file_exists": {
+            "message": "הקובץ כבר קיים."
+        },
+        "blueprint_gone": {
+            "message": "{name} כבר לא כאן, כך שאין מה לעדכן. שום דבר לא נכתב."
+        },
+        "blueprint_url_not_supported": {
+            "message": "כתובת URL זו אינה נתמכת."
+        },
+        "blueprint_write_failed": {
+            "message": "שגיאה בכתיבת הקובץ."
+        },
+        "blueprints_not_loaded": {
+            "message": "שרטוטי {domain} אינם טעונים כרגע."
+        },
+        "calendar_events_which": {
+            "message": "ציין אילו אירועים: תן תקציר, uid, או את שניהם."
+        },
+        "calendar_range_backwards": {
+            "message": "סוף טווח החיפוש חייב לבוא אחרי תחילתו."
+        },
+        "calendar_range_required": {
+            "message": "ציין כמה רחוק לחפש: תן תאריך ושעת סיום, או משך."
+        },
+        "cannot_disable_system_user": {
+            "message": "לא ניתן להשבית משתמש שנוצר על ידי המערכת: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "לא ניתן להפעיל משתמש שנוצר על ידי המערכת: {user_id}."
+        },
+        "category_not_found": {
+            "message": "הקטגוריה {category} לא נמצאה עבור {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "אין מה לעדכן בקטגוריה {category}: תן לפחות אחד מתוך {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "בתבנית שבתנאי הזה לא נשאר Jinja, כך שהיא קבועה ולעולם לא יכולה להשתנות. בדרך כלל זה אומר שסקריפט עיבד אותה לפני שהפעולה הזו רצה, מה שקורה לכל תבנית בנתוני פעולה. השתמש בתנאי בלי תבניות, או המתן לתבנית עצמה עם 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "רשומת השילוב {config_entry_id} לא נמצאה."
+        },
+        "debounce_attach_failed": {
+            "message": "לא ניתן היה לחבר את כל הטריגרים של טריגר \"ברגע שזה נרגע\"."
+        },
+        "device_not_found": {
+            "message": "המכשיר {device_id} לא נמצא."
+        },
+        "entity_id_taken": {
+            "message": "מזהה הישות {entity_id} כבר תפוס."
+        },
+        "entity_not_found": {
+            "message": "הישות {entity_id} לא נמצאה."
+        },
+        "entity_without_unique_id": {
+            "message": "לישות {entity_id} אין מזהה ייחודי, כך ש-Home Assistant לא יכול לשמור עבורה סמל או כינויים."
+        },
+        "event_cannot_change": {
+            "message": "לא ניתן לשנות את {summary} כך: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "ציין מה לשנות: תקציר חדש, מקום, או זמנים חדשים."
+        },
+        "event_shift_or_times": {
+            "message": "הזז אירוע בהיסט, או תן לו זמנים חדשים, לא את שניהם."
+        },
+        "event_whole_days": {
+            "message": "{summary} נמשך ימים שלמים, כך שאפשר להזיז אותו רק בימים שלמים."
+        },
+        "floor_not_found": {
+            "message": "הקומה {floor_id} לא נמצאה."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} לא יכול להצטרף לקבוצה הזו: היא מכילה ישויות {domains}."
+        },
+        "group_not_found_behind": {
+            "message": "לא ניתן היה למצוא את הקבוצה שמאחורי {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "לא ניתן היה להגיע לעוזרי {domain} ש-Home Assistant מחזיק."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "לא ניתן להחזיק את {entity_id} עד זמן שאינו קיים."
+        },
+        "home_zone_radius": {
+            "message": "אזור הבית מקבל את הרדיוס שלו במטרים שלמים, אפס או יותר."
+        },
+        "home_zone_unsupported": {
+            "message": "אזור הבית מקבל רק קו רוחב, קו אורך ורדיוס, לא: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "מספר הקלט הזה אינו ניתן לעריכה: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "ציין את רשומות השילוב לשינוי, או את השילוב שלהן."
+        },
+        "integration_without_entries": {
+            "message": "לשילוב {domain} אין רשומות."
+        },
+        "label_not_found": {
+            "message": "התווית {label_id} לא נמצאה."
+        },
+        "label_nothing_to_update": {
+            "message": "אין מה לעדכן בתווית {label_id}: תן לפחות אחד מתוך {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "המקסימום ({maximum}) חייב להיות מעל המינימום ({minimum})."
+        },
+        "no_max_value": {
+            "message": "לישות {entity_id} אין ערך מקסימלי."
+        },
+        "no_min_value": {
+            "message": "לישות {entity_id} אין ערך מינימלי."
+        },
+        "not_a_group": {
+            "message": "{entity_id} אינו קבוצה."
+        },
+        "person_not_editable": {
+            "message": "האדם הזה אינו ניתן לעריכה: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook נתקל בשגיאה בזמן הפעלה מחדש של Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "לא ניתן היה לחבר את השלב הראשון של טריגר רצף."
+        },
+        "set_range_nothing_to_change": {
+            "message": "תן מינימום, מקסימום או צעד לשינוי."
+        },
+        "spooked": {
+            "message": "בו! 👻"
+        },
+        "timer_not_editable": {
+            "message": "הטיימר הזה אינו ניתן לעריכה: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "אי אפשר להזיז פריט אחרי עצמו."
+        },
+        "todo_item_not_found": {
+            "message": "אין פריט {item} ב-{entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "אי אפשר להזיז שום דבר אחרי הפריט האחרון ב-{entity_id}."
+        },
+        "todo_move_where": {
+            "message": "ציין לאן: אחרי פריט אחר, או לראש או לתחתית."
+        },
+        "user_not_found": {
+            "message": "לא ניתן היה למצוא את המשתמש: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "הערך {value} עבור {entity_id} אינו מספר."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "לא ניתן היה לחבר את טריגרי הדריכה של טריגר כלב שמירה."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "לא ניתן היה לחבר את הטריגרים הצפויים של טריגר כלב שמירה."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} היא קבוצה מתצורת ה-YAML שלך, ש-Spook לא יכול לשנות. ערוך אותה בתצורה שלך, או השתמש ב-group.set, שעדיין עובד על סוג קבוצה כזה."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} מוגדר ב-YAML ולא ניתן למחוק אותו."
+        },
+        "zone_not_editable": {
+            "message": "האזור הזה אינו ניתן לעריכה: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "ישות לא מוכרת במעקב של התראה: {alert}",
+            "description": "Spook מצא רוח רפאים בהתראות שלך 👻\n\nההתראה {alert} (`{entity_id}`) עוקבת אחרי ישות שאינה מוכרת ל-Home Assistant:\n\n{entities}\n\nהתראה יכולה לפעול רק על הישות שהיא עוקבת אחריה, כך שזו לעולם לא תפעל שוב. היא נראית בדיוק כמו התראה שאין לה על מה לדווח.\n\nכדי לתקן את השגיאה, ערוך את מקטע `alert:` בתצורה שלך והפנה את ההתראה הזו לישות שקיימת.\n\nSpook 👻 החבר שלך."
+        },
+        "alert_unknown_notifiers": {
+            "title": "שירותי התראה לא מוכרים בשימוש של התראה: {alert}",
+            "description": "Spook מצא רוח רפאים בהתראות שלך 👻\n\nההתראה {alert} (`{entity_id}`) שולחת הודעות דרך הפעולות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{notifiers}\n\nההתראה עדיין פועלת ועדיין עושה את הסבבים שלה, אבל ההודעות האלה לא מגיעות לשום מקום. Home Assistant רושם את זה ביומן רק ברגע שההתראה פועלת, שזה רגע גרוע לגלות שאף אחד לא מקשיב.\n\nכדי לתקן את השגיאה, ערוך את רשימת `notifiers:` של ההתראה הזו בתצורה שלך והסר או תקן את הרשומות האלה.\n\nSpook 👻 החבר שלך."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {automation}"
+            "description": "Spook מצא רוח רפאים באוטומציות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל באוטומציה הבאה:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nהאוטומציה הזו מפנה אל המרחבים הבאים, שאינם מוכרים ל-Home Assistant:\n\n{areas}\n\n\n\nכדי לתקן את השגיאה, [ערוך את האוטומציה]({edit}) והסר את השימוש במרחבים שאינם קיימים.\n\nSpook 👻 החבר שלך.",
+            "title": "מרחבים לא מוכרים בשימוש ב: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook מצא רוח רפאים באוטומציות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל באוטומציה הבאה:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nהאוטומציה הזו משתמשת בתנאים הבאים, ששום שילוב הזמין ל-Home Assistant לא יכול לספק:\n\n{conditions}\n\n\n\nזה קורה לעתים קרובות כשהשילוב שמספק תנאי הוסר. כדי לתקן את השגיאה, [ערוך את האוטומציה]({edit}) והסר את השימוש בתנאים הלא זמינים האלה, או החזר את השילוב שמספק אותם.\n\nSpook 👻 החבר שלך.",
+            "title": "תנאים לא מוכרים בשימוש ב: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {automation}"
+            "description": "Spook מצא רוח רפאים באוטומציות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל באוטומציה הבאה:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nהאוטומציה הזו מפנה אל המכשירים הבאים, שאינם מוכרים ל-Home Assistant:\n\n{devices}\n\n\n\nכדי לתקן את השגיאה, [ערוך את האוטומציה]({edit}) והסר את השימוש במכשירים שאינם קיימים.\n\nSpook 👻 החבר שלך.",
+            "title": "מכשירים לא מוכרים בשימוש ב: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {automation}"
+            "description": "Spook מצא רוח רפאים באוטומציות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל באוטומציה הבאה:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nהאוטומציה הזו מפנה אל הישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\n\n\nכדי לתקן את השגיאה, [ערוך את האוטומציה]({edit}) והסר את השימוש בישויות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות לא מוכרות בשימוש ב: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook מצא רוח רפאים באוטומציות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל באוטומציה הבאה:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nהאוטומציה הזו מפנה אל הקומות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{floors}\n\n\n\nכדי לתקן את השגיאה, [ערוך את האוטומציה]({edit}) והסר את השימוש בקומות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "קומות לא מוכרות בשימוש ב: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook מצא רוח רפאים באוטומציות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל באוטומציה הבאה:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nהאוטומציה הזו מפנה אל התוויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{labels}\n\n\n\nכדי לתקן את השגיאה, [ערוך את האוטומציה]({edit}) והסר את השימוש בתוויות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "תוויות לא מוכרות בשימוש ב: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook מצא רוח רפאים באוטומציות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל באוטומציה הבאה:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nהאוטומציה הזו מפנה אל הפעולות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{services}\n\n\n\nכדי לתקן את השגיאה, [ערוך את האוטומציה]({edit}) והסר את השימוש בפעולות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "פעולות לא מוכרות בשימוש ב: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook מצא רוח רפאים באוטומציות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל באוטומציה הבאה:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nהאוטומציה הזו משתמשת בטריגרים הבאים, ששום שילוב הזמין ל-Home Assistant לא יכול לספק:\n\n{triggers}\n\n\n\nזה קורה לעתים קרובות כשהשילוב שמספק טריגר הוסר. כדי לתקן את השגיאה, [ערוך את האוטומציה]({edit}) והסר את השימוש בטריגרים הלא זמינים האלה, או החזר את השילוב שמספק אותם.\n\nSpook 👻 החבר שלך.",
+            "title": "טריגרים לא מוכרים בשימוש ב: {automation}"
+        },
+        "empty_areas": {
+            "title": "מרחב ריק: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "מרחב ריק: {area}",
+                        "description": "במרחב {area} אין מכשירים, אין ישויות, ואף אוטומציה או סקריפט לא מכוונים אליו.\n\nהסר אותו, או השאר אותו, ו-Spook יפסיק להצביע עליו.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הסר את המרחב הריק הזה",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר",
+                            "manage": "אני אתקן את זה בעצמי"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי המרחב הזה.",
+                    "manage": "אפשר לנהל את המרחב הזה בעצמך ב[דף המרחבים](/config/areas/dashboard).",
+                    "changed": "המרחב הזה שוב בשימוש מאז ש-Spook בדק: יש בו משהו, או שאוטומציה או סקריפט משתמשים בו. לכן הוא נשאר כמו שהוא. Spook יבדוק שוב בעצמו ויעדכן את התיקון הזה."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "קומה ריקה: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "קומה ריקה: {floor}",
+                        "description": "בקומה {floor} אין מרחבים, ואף אוטומציה או סקריפט לא מכוונים אליה.\n\nהסר אותה, או השאר אותה, ו-Spook יפסיק להצביע עליה.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הסר את הקומה הריקה הזו",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר",
+                            "manage": "אני אתקן את זה בעצמי"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי הקומה הזו.",
+                    "manage": "אפשר לנהל את הקומה הזו בעצמך ב[דף המרחבים](/config/areas/dashboard).",
+                    "changed": "הקומה הזו שוב בשימוש מאז ש-Spook בדק: יש בה מרחב, או שאוטומציה או סקריפט משתמשים בה. לכן היא נשארה כמו שהיא. Spook יבדוק שוב בעצמו ויעדכן את התיקון הזה."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "ישויות לא מוכרות בשימוש בלוח המחוונים של האנרגיה",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "ישויות לא מוכרות בשימוש בלוח המחוונים של האנרגיה",
+                        "description": "Spook מצא רוח רפאים בלוח המחוונים של האנרגיה שלך 👻\n\nלוח המחוונים של האנרגיה מפנה אל הישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\nזה קורה בדרך כלל כשישות שבשימוש בתצורת האנרגיה שונה שמה או הוסרה. שונה שמה? אז פתח את [הגדרות > לוחות מחוונים > אנרגיה](/config/energy) ובחר את החדשה, כדי שההיסטוריה שלה תישאר בלוח המחוונים.\n\nהוסרה לתמיד? Spook יכול להוציא אותן מתצורת האנרגיה בשבילך. מונה חסר לוקח איתו את המקור או המכשיר שלו, מחיר או עלות חסרים רק מתאפסים. לוח המחוונים מפסיק אז להציג את ההיסטוריה של מה שהוצא; הסטטיסטיקה עצמה נשארת.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הוצא אותן מתצורת האנרגיה",
+                            "manage": "אני אעשה את זה בעצמי",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי הישויות האלה.",
+                    "manage": "אפשר לעדכן או להסיר אותן בעצמך ב[תצורת האנרגיה](/config/energy).",
+                    "nothing_to_remove": "אף אחת מהן כבר לא לא מוכרת, כך ששום דבר לא הוצא. ייתכן שהן חזרו, או שמישהו כבר שינה את תצורת האנרגיה."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "חברי קבוצה לא מוכרים ב: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "חברי קבוצה לא מוכרים ב: {group}",
+                        "description": "Spook מצא רוח רפאים בקבוצות שלך 👻\n\nלקבוצה {group} (`{entity_id}`) יש חברים שאינם מוכרים ל-Home Assistant:\n\n{entities}\n\nהסר אותם מהקבוצה, או השאר אותם, ו-Spook יפסיק להצביע עליהם.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הסר את החברים האלה",
+                            "manage": "אני אתקן את זה בעצמי",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי הקבוצה הזו.",
+                    "not_editable": "הקבוצה הזו מוגדרת ב-YAML, כך ש-Spook לא יכול לערוך אותה. עדכן את הקבוצה בתצורה שלך במקום זאת.",
+                    "manage": "אפשר לנהל את הקבוצה הזו בעצמך ב[דף העוזרים](/config/helpers).",
+                    "changed": "החברים שהתיקון הזה ציין חזרו, או השתנו, מאז ש-Spook בדק, כך ששום דבר לא הוסר מהקבוצה. Spook יבדוק שוב בעצמו ויעדכן את התיקון הזה."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook מצא רוח רפאים בגשר HomeKit שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בגשר HomeKit הבא:\n\n{bridge}\n\nהגשר הזה מציין את הישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\n\n\nHomeKit לא עוקב אחרי ישות ששמה שונה. ישות כלולה ששמה שונה או שהוסרה נעלמת מאפליקציית Home; ישות מוחרגת ששמה שונה מופיעה בה שוב.\n\nכדי לתקן את השגיאה, עבור אל [שילוב HomeKit Bridge](/config/integrations/integration/homekit), בחר **הגדרה** בגשר הזה, ובחר שוב את הישויות.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות לא מוכרות בשימוש בגשר HomeKit: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook מצא רוח רפאים בגשר HomeKit שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בגשר HomeKit הבא:\n\n{bridge}\n\nהגשר הזה מציין את הישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\n\n\nHomeKit לא עוקב אחרי ישות ששמה שונה. ישות כלולה ששמה שונה או שהוסרה נעלמת מאפליקציית Home; ישות מוחרגת ששמה שונה מופיעה בה שוב.\n\nהגשר הזה מוגדר בתצורת ה-YAML שלך. כדי לתקן את השגיאה, ערוך את ה-`filter` של הגשר הזה תחת `homekit:` והסר או תקן את הישויות האלה.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות לא מוכרות בשימוש בגשר HomeKit: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook מצא רוח רפאים בלוחות המחוונים שלך 👻\n\nמשאבי לוח המחוונים הבאים מצביעים על קבצים שאינם קיימים:\n\n{resources}\n\n\n\nזה קורה בדרך כלל כשכרטיס מותאם אישית או הקבצים שלו הוסרו אבל המשאב נשאר מאחור. כדי לתקן את השגיאה, פתח את [דף המשאבים](/config/lovelace/resources) והסר או תקן את המשאבים האלה. אין לו לשונית משלו: בדף לוחות המחוונים הוא נמצא מאחורי שלוש הנקודות, למעלה מימין.\n\nSpook 👻 החבר שלך.",
+            "title": "משאבי לוח מחוונים מצביעים על קבצים חסרים"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook מצא רוח רפאים בלוחות המחוונים שלך 👻\n\nמשאבי לוח המחוונים הבאים מצביעים על קבצים שאינם קיימים:\n\n{resources}\n\n\n\nזה קורה בדרך כלל כשכרטיס מותאם אישית או הקבצים שלו הוסרו אבל המשאב נשאר מאחור.\n\nהמשאבים האלה רשומים בתצורת ה-YAML שלך, כך שדף המשאבים לא יכול לשנות אותם. ערוך את מקטע `resources:` בתצורת ה-Lovelace שלך והסר או תקן את הרשומות האלה.\n\nSpook 👻 החבר שלך.",
+            "title": "משאבי לוח מחוונים מצביעים על קבצים חסרים"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "משאב לוח מחוונים רשום יותר מפעם אחת: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "משאב לוח מחוונים רשום יותר מפעם אחת: {resource}",
+                        "description": "Spook מצא רוח רפאים בלוחות המחוונים שלך 👻\n\nמשאב לוח המחוונים הזה רשום {count} פעמים:\n\n{resources}\n\nזה קורה בדרך כלל כשכרטיס מותאם אישית עודכן על ידי הוספת משאב לגרסה החדשה במקום עריכת זה שכבר קיים. הדפדפן טוען את שניהם, הכרטיס מנסה לרשום את עצמו פעמיים, והניסיון השני נכשל, מה שנראה כמו כרטיס שבור ולא כמו משאב כפול.\n\nSpook יכול לנקות את העותקים המיותרים ולשמור את זה שנוסף אחרון.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "נקה את העותקים המיותרים, שמור את האחרון",
+                            "ignore": "לעזוב, ולא לשמוע על זה יותר",
+                            "manage": "אני אתקן את זה בעצמי"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי המשאב הזה.",
+                    "manage": "אפשר לנהל את משאבי לוח המחוונים שלך בעצמך ב[דף המשאבים](/config/lovelace/resources).",
+                    "yaml": "המשאבים האלה רשומים בתצורת ה-YAML שלך, כך ש-Spook לא יכול לשנות אותם בשבילך. ערוך את מקטע `resources:` בתצורת ה-Lovelace שלך והסר את העותקים של `{resource}` שאינך צריך עוד."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook מצא רוח רפאים בלוחות המחוונים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בלוח המחוונים הבא:\n\n{dashboard}\n\nלוח המחוונים הזה מפנה אל המרחבים הבאים, שאינם מוכרים ל-Home Assistant:\n\n{areas}\n\n\n\nזה קורה לעתים קרובות כשמרחב שונה שמו או הוסר. כדי לתקן את השגיאה, [ערוך את לוח המחוונים]({edit}) והסר את השימוש במרחבים שאינם קיימים.\n\nSpook 👻 החבר שלך.",
+            "title": "מרחבים לא מוכרים בשימוש בלוח המחוונים: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {dashboard}"
+            "description": "Spook מצא רוח רפאים בלוחות המחוונים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בלוח המחוונים הבא:\n\n[{dashboard}]({edit})\n\nלוח המחוונים הזה מפנה אל הישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\n\n\nכדי לתקן את השגיאה, [ערוך את לוח המחוונים]({edit}) והסר את השימוש בישויות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות לא מוכרות בשימוש ב: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook מצא רוח רפאים בלוחות המחוונים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בלוח המחוונים הבא:\n\n[{dashboard}]({edit})\n\nלוח המחוונים הזה מבצע את הפעולות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{services}\n\n\n\nכפתור או כרטיס שמשתמשים באחת מהן לא עושים כלום כשלוחצים עליהם. זה קורה לעתים קרובות כשסקריפט שונה שמו או הוסר, או ששילוב הוסר. כדי לתקן את השגיאה, [ערוך את לוח המחוונים]({edit}) והסר או החלף את הפעולות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "פעולות לא מוכרות בשימוש בלוח המחוונים: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "חברים לא מוכרים בשימוש בעוזר מינימום/מקסימום: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "חברים לא מוכרים בשימוש בעוזר מינימום/מקסימום: {helper}",
+                        "description": "Spook מצא רוח רפאים בעוזרים שלך 👻\n\nעוזר המינימום/מקסימום {helper} (`{entity_id}`) משלב את החברים הבאים, שאינם מוכרים ל-Home Assistant:\n\n{sources}\n\nהסר אותם כדי שהעוזר ימשיך עם החברים שנותרו, או השאר אותם, ו-Spook יפסיק להצביע עליהם.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הסר את החברים האלה",
+                            "manage": "אני אתקן את זה בעצמי",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי העוזר הזה.",
+                    "manage": "אפשר לנהל את העוזר הזה בעצמך ב[דף העוזרים](/config/helpers).",
+                    "changed": "החברים שהתיקון הזה ציין חזרו, או השתנו, מאז ש-Spook בדק, כך ששום דבר לא הוסר מהעוזר. Spook יבדוק שוב בעצמו ויעדכן את התיקון הזה.",
+                    "too_few_members": "עוזר מינימום/מקסימום צריך לפחות שני חברים, כך שהסרת החסרים תשאיר מעט מדי. הגדר מחדש או הסר את העוזר בעצמך ב[דף העוזרים](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook מצא רוח רפאים בקבוצות ההתראה שלך 👻\n\nקבוצת ההתראה `{group}` מעבירה אל הפעולות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{members}\n\nהקבוצה עדיין שולחת לשאר החברים שלה, והיא עדיין מדווחת על הצלחה למי שקרא לה, כך שאף אחד במעלה הזרם לא שם לב. הכישלון מופיע רק כשורת \"Task exception was never retrieved\" תועה ביומן, שלא מציינת שום קבוצה ונראית כמו באג. מי שעמד מאחורי החבר הזה פשוט מפסיק לקבל התראות.\n\nכדי לתקן את השגיאה, ערוך את רשימת `services:` של הקבוצה הזו בתצורה שלך והסר או תקן את הרשומות האלה.\n\nSpook 👻 החבר שלך.",
+            "title": "חברים לא מוכרים בקבוצת ההתראה: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "נמצאה סטטיסטיקה ארוכת טווח יתומה",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "נמצאה סטטיסטיקה ארוכת טווח יתומה",
+                        "description": "Spook מצא רוח רפאים במקליט שלך 👻\n\nHome Assistant שומר סטטיסטיקה ארוכת טווח עבור הפריטים הבאים, אבל כבר אין להם ישות תואמת:\n\n{statistics}\n\nזה קורה בדרך כלל כשחיישן הוסר בזמן שהסטטיסטיקה שלו נשמרה. ניקוי שלה זורק את ההיסטוריה הזו לתמיד, לכן Spook בודק שוב לפני כן, ולא נוגע בשום דבר שחזר בינתיים.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "נקה את הסטטיסטיקה הזו",
+                            "manage": "אני אעשה את זה בעצמי",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי הסטטיסטיקה הזו.",
+                    "manage": "אפשר לנקות אותה בעצמך ב[דף הסטטיסטיקה](/config/tools/statistics).",
+                    "nothing_to_clear": "שום דבר ברשימה הזו כבר לא צריך ניקוי, כך ששום דבר לא נזרק. או שלסטטיסטיקה יש שוב ישות מאחוריה, או שהיא כבר נעלמה.",
+                    "clearing_took_too_long": "Spook ביקש לנקות את הסטטיסטיקה והמקליט עוד לא אמר שסיים. העבודה בתור וכנראה תתבצע, לכן התיקון הזה נשאר עד ש-Spook יבדוק שוב."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "עוקבי מכשירים לא מוכרים במעקב של: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "עוקבי מכשירים לא מוכרים במעקב של: {person}",
+                        "description": "Spook מצא רוח רפאים באנשים שלך 👻\n\n{person} עוקב אחרי עוקבי המכשירים הבאים, שאינם מוכרים ל-Home Assistant:\n\n{device_trackers}\n\nזה קורה לעתים קרובות כשעוקב מכשיר שונה שמו או שהשילוב שלו הוסר.\n\nהסר אותם מ-{person}, או השאר אותם, ו-Spook יפסיק להצביע עליהם.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הסר את עוקבי המכשירים האלה",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר",
+                            "manage": "אני אתקן את זה בעצמי"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי האדם הזה.",
+                    "not_editable": "האדם הזה מוגדר ב-YAML, כך ש-Spook לא יכול לערוך אותו. עדכן את האדם בתצורה שלך במקום זאת.",
+                    "manage": "אפשר לנהל את האדם הזה בעצמך ב[דף האנשים](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook מצא רוח רפאים בתצורת הקרבה שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בתצורת הקרבה הבאה:\n\n{name}\n\nהתצורה הזו מתעלמת מאזורים שאינם מוכרים ל-Home Assistant:\n\n{zones}\n\n\n\nכדי לתקן את השגיאה, ערוך את התצורה והסר את האזור או האזורים האלה.\n\nSpook 👻 החבר שלך.",
+            "title": "אזורים מוחרגים לא מוכרים: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook מצא רוח רפאים בתצורת הקרבה שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בתצורת הקרבה הבאה:\n\n{name}\n\nהתצורה הזו עוקבת אחרי אנשים או עוקבי מכשירים שאינם מוכרים ל-Home Assistant:\n\n{entities}\n\n\n\nכדי לתקן את השגיאה, ערוך את התצורה והסר את הישות או הישויות האלה.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות במעקב לא מוכרות: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook מצא רוח רפאים בתצורת הקרבה שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בתצורת הקרבה הבאה:\n\n{name}\n\nהתצורה הזו מבוססת על אזור שאינו מוכר ל-Home Assistant:\n\n`{zone}`\n\n\n\nמכיוון שאי אפשר לשנות את האזור של תצורת קרבה, האפשרות היחידה לתקן את השגיאה היא להסיר את מופע שילוב הקרבה הספציפי הזה.\n\nSpook 👻 החבר שלך.",
+            "title": "אזור לא מוכר: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spook מצא רוח רפאים בסצנות שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסצנה הבאה:\n\n[{scene}]({edit})\n\nהסצנה הזו מפנה אל הישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\n\n\nכדי לתקן את השגיאה, [ערוך את הסצנה]({edit}) והסר את השימוש בישויות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות לא מוכרות בשימוש ב: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {script}"
+            "description": "Spook מצא רוח רפאים בסקריפטים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסקריפט הבא:\n\n[{script}]({edit}) (`{entity_id}`)\n\nהסקריפט הזה מפנה אל המרחבים הבאים, שאינם מוכרים ל-Home Assistant:\n\n{areas}\n\n\n\nכדי לתקן את השגיאה, [ערוך את הסקריפט]({edit}) והסר את השימוש במרחבים שאינם קיימים.\n\nSpook 👻 החבר שלך.",
+            "title": "מרחבים לא מוכרים בשימוש ב: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook מצא רוח רפאים בסקריפטים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסקריפט הבא:\n\n[{script}]({edit}) (`{entity_id}`)\n\nהסקריפט הזה משתמש בתנאים הבאים, ששום שילוב הזמין ל-Home Assistant לא יכול לספק:\n\n{conditions}\n\n\n\nזה קורה לעתים קרובות כשהשילוב שמספק תנאי הוסר. כדי לתקן את השגיאה, [ערוך את הסקריפט]({edit}) והסר את השימוש בתנאים הלא זמינים האלה, או החזר את השילוב שמספק אותם.\n\nSpook 👻 החבר שלך.",
+            "title": "תנאים לא מוכרים בשימוש ב: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {script}"
+            "description": "Spook מצא רוח רפאים בסקריפטים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסקריפט הבא:\n\n[{script}]({edit}) (`{entity_id}`)\n\nהסקריפט הזה מפנה אל המכשירים הבאים, שאינם מוכרים ל-Home Assistant:\n\n{devices}\n\n\n\nכדי לתקן את השגיאה, [ערוך את הסקריפט]({edit}) והסר את השימוש במכשירים שאינם קיימים.\n\nSpook 👻 החבר שלך.",
+            "title": "מכשירים לא מוכרים בשימוש ב: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {script}"
+            "description": "Spook מצא רוח רפאים בסקריפטים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסקריפט הבא:\n\n[{script}]({edit}) (`{entity_id}`)\n\nהסקריפט הזה מפנה אל הישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\n\n\nכדי לתקן את השגיאה, [ערוך את הסקריפט]({edit}) והסר את השימוש בישויות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות לא מוכרות בשימוש ב: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook מצא רוח רפאים בסקריפטים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסקריפט הבא:\n\n[{script}]({edit}) (`{entity_id}`)\n\nהסקריפט הזה מפנה אל הקומות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{floors}\n\n\n\nכדי לתקן את השגיאה, [ערוך את הסקריפט]({edit}) והסר את השימוש בקומות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "קומות לא מוכרות בשימוש ב: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook מצא רוח רפאים בסקריפטים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסקריפט הבא:\n\n[{script}]({edit}) (`{entity_id}`)\n\nהסקריפט הזה מפנה אל התוויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{labels}\n\n\n\nכדי לתקן את השגיאה, [ערוך את הסקריפט]({edit}) והסר את השימוש בתוויות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "תוויות לא מוכרות בשימוש ב: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spook מצא רוח רפאים בסקריפטים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסקריפט הבא:\n\n[{script}]({edit}) (`{entity_id}`)\n\nהסקריפט הזה מפנה אל הפעולות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{services}\n\n\n\nכדי לתקן את השגיאה, [ערוך את הסקריפט]({edit}) והסר את השימוש בפעולות שאינן קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "פעולות לא מוכרות בשימוש ב: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook מצא רוח רפאים בסקריפטים שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בסקריפט הבא:\n\n[{script}]({edit}) (`{entity_id}`)\n\nהסקריפט הזה משתמש בטריגרים הבאים, ששום שילוב הזמין ל-Home Assistant לא יכול לספק:\n\n{triggers}\n\n\n\nזה קורה לעתים קרובות כשהשילוב שמספק טריגר הוסר. כדי לתקן את השגיאה, [ערוך את הסקריפט]({edit}) והסר את השימוש בטריגרים הלא זמינים האלה, או החזר את השילוב שמספק אותם.\n\nSpook 👻 החבר שלך.",
+            "title": "טריגרים לא מוכרים בשימוש ב: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook מצא רוח רפאים בעוזרי התבנית שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בעוזר התבנית הבא:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nהתצורה שלו מפנה אל הישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\n\n\nזה קורה לעתים קרובות כשישות שונה שמה או הוסרה. כדי לתקן את השגיאה, הגדר מחדש את עוזר התבנית כך שיפנה לישויות קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות לא מוכרות בשימוש בעוזר התבנית: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook מצא רוח רפאים בעוזרי התבנית שלך 👻\n\nתוך כדי ריחוף, Spook נתקל בעוזר התבנית הבא:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nהוא מפנה אל הפעולות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{services}\n\n\n\nזה קורה לעתים קרובות כשספק פעולה הוסר, או שסקריפט שונה שמו או נמחק. כדי לתקן את השגיאה, הגדר מחדש את עוזר התבנית כך שישתמש בפעולות קיימות.\n\nSpook 👻 החבר שלך.",
+            "title": "פעולות לא מוכרות בשימוש בעוזר התבנית: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "חיישן {sensors} לא מוכר עבור המרחב: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "חיישן {sensors} לא מוכר עבור המרחב: {area}",
+                        "description": "Spook מצא רוח רפאים במרחבים שלך 👻\n\nהמרחב {area} משתמש בחיישן {sensors} שאינו מוכר ל-Home Assistant:\n\n{entities}\n\nHome Assistant בודק את החיישן הזה רק כשהוא נבחר, כך שכשהוא הוסר או שונה שמו, המרחב המשיך להצביע על כלום. Assist וכרטיסי מרחב כבר לא מקבלים ממנו קריאה.\n\nנקה את ההגדרה כדי שתוכל לבחור חיישן שוב, או השאר אותה, ו-Spook יפסיק להצביע עליה.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "נקה את ההגדרה",
+                            "manage": "אני אתקן את זה בעצמי",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי המרחב הזה.",
+                    "manage": "אפשר לבחור חיישן אחר בהגדרות של המרחב הזה ב[דף המרחבים](/config/areas/dashboard).",
+                    "changed": "החיישנים האלה חזרו, או שההגדרות מצביעות עכשיו למקום אחר, מאז ש-Spook בדק. לכן שום דבר לא נוקה. Spook יבדוק שוב בעצמו ויעדכן את התיקון הזה."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook מצא רוח רפאים בהתאמות האישיות שלך 👻\n\nמקטע `customize:` מצמיד מאפיינים לישויות הבאות, שאינן מוכרות ל-Home Assistant:\n\n{entities}\n\n\n\nזה קורה לעתים קרובות כשישות שונה שמה או הוסרה בזמן שההתאמה האישית שלה נשארה מאחור. כדי לתקן את השגיאה, ערוך את מקטע `customize:` בתצורה שלך והסר את הישויות האלה.\n\nSpook 👻 החבר שלך.",
+            "title": "ישויות לא מוכרות בהתאמות האישיות שלך"
+        },
+        "unknown_engines": {
+            "title": "צינור Assist משתמש במנועים שנעלמו: {pipeline}",
+            "description": "Spook מצא רוח רפאים בעוזרים הקוליים שלך 👻\n\nצינור ה-Assist {pipeline} משתמש בפריטים הבאים, שאינם מוכרים ל-Home Assistant:\n\n{engines}\n\nזה בדרך כלל אומר שהשילוב שמאחוריהם הוסר. לצינור לא סופר, כך שבפעם הבאה שישתמשו בו הוא ייכשל עם שגיאה על ספק או סוכן חסר, ושום דבר לפני כן לא מפנה לכאן.\n\nכדי לתקן את זה, פתח את ההגדרות של העוזר הזה תחת [עוזרים קוליים](/config/voice-assistants/assistants) ובחר מנוע שעדיין קיים עבור כל אחד מאלה.\n\nSpook 👻 החבר שלך."
+        },
+        "unknown_helper_source_references": {
+            "title": "ישויות מקור לא מוכרות בשימוש בעוזר: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "ישויות מקור לא מוכרות בשימוש בעוזר: {helper}",
+                        "description": "Spook מצא רוח רפאים בעוזרים שלך 👻\n\nהעוזר {helper} (`{domain}`, `{entity_id}`) מפנה אל ישויות המקור הבאות, שאינן מוכרות ל-Home Assistant:\n\n{sources}\n\nבלי המקורות שלו העוזר הזה לא יכול לעבוד. {usage}\n\nהסר את העוזר, או השאר אותו, ו-Spook יפסיק להצביע עליו.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הסר את העוזר הזה",
+                            "manage": "אני אתקן את זה בעצמי",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי העוזר הזה.",
+                    "manage": "אפשר לנהל את העוזר הזה בעצמך ב[דף העוזרים](/config/helpers).",
+                    "changed": "המקורות של העוזר הזה השתנו מאז ש-Spook בדק, לכן העוזר נשאר כמו שהוא. Spook יבדוק שוב בעצמו ויעדכן את התיקון הזה."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "שרטוט שאינו בשימוש: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "שרטוט שאינו בשימוש: {blueprint}",
+                        "description": "השרטוט {blueprint} אינו בשימוש של אף {domain}.\n\nהסר אותו, או השאר אותו, ו-Spook יפסיק להצביע עליו.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הסר את השרטוט שאינו בשימוש",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר",
+                            "manage": "אני אתקן את זה בעצמי"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי השרטוט הזה.",
+                    "manage": "אפשר לנהל את השרטוט הזה בעצמך ב[דף השרטוטים](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "תווית שאינה בשימוש: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "תווית שאינה בשימוש: {label}",
+                        "description": "התווית {label} אינה מוחלת על אף ישות, מכשיר או מרחב, ואף אוטומציה או סקריפט לא מכוונים אליה.\n\nהסר אותה, או השאר אותה, ו-Spook יפסיק להצביע עליה.\n\nSpook 👻 החבר שלך.",
+                        "menu_options": {
+                            "remove": "הסר את התווית שאינה בשימוש",
+                            "ignore": "להשאיר, ולא לשמוע על זה יותר",
+                            "manage": "אני אתקן את זה בעצמי"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "מעכשיו Spook ישתוק לגבי התווית הזו.",
+                    "manage": "אפשר לנהל את התווית הזו בעצמך ב[דף התוויות](/config/labels).",
+                    "changed": "התווית הזו שוב בשימוש מאז ש-Spook בדק: משהו נושא אותה, או שאוטומציה או סקריפט משתמשים בה. לכן היא נשארה כמו שהיא. Spook יבדוק שוב בעצמו ויעדכן את התיקון הזה."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -304,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "מנוחה הנדרשת",
+            "title": "נדרשת הפעלה מחדש",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "מנוחה הנדרשת",
-                        "description": "על מנת ש- Spook 👻 לסיים את הקמתה, עוזר הבית צריך להתחיל מחדש.\n\nבחר להגיש מחדש את עוזר הבית עכשיו."
+                        "title": "נדרשת הפעלה מחדש",
+                        "description": "כדי ש-Spook 👻 יסיים את ההגדרה, צריך להפעיל מחדש את Home Assistant.\n\nבחר \"שלח\" כדי להפעיל מחדש את Home Assistant עכשיו.\n\nSpook 👻 החבר שלך."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "גרסה",
+            "ghosts_found": "רוחות רפאים שנמצאו",
+            "ghosts_ignored": "רוחות רפאים שהתעלמו מהן",
+            "helpers_linked": "עוזרים מקושרים"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "הוספת חברים לקבוצה",
+            "description": "מוסיף ישויות לקבוצה שנוצרה דרך הממשק, בזמן ש-Home Assistant פועל. ישויות שכבר נמצאות בקבוצה נשארות במקומן.",
+            "fields": {
+                "group": {
+                    "name": "קבוצה",
+                    "description": "הקבוצה שאליה מוסיפים."
+                },
+                "members": {
+                    "name": "חברים",
+                    "description": "הישויות להוספה לקבוצה."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "הסרת חברים מקבוצה",
+            "description": "מוציא ישויות מקבוצה שנוצרה דרך הממשק, בזמן ש-Home Assistant פועל. ציון משהו שאינו בקבוצה לא עושה כלום, כך שזו גם הדרך לנקות חבר שכבר לא קיים.",
+            "fields": {
+                "group": {
+                    "name": "קבוצה",
+                    "description": "הקבוצה שממנה מוציאים אותן."
+                },
+                "members": {
+                    "name": "חברים",
+                    "description": "הישויות להסרה מהקבוצה."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "הגדרת החברים של קבוצה",
+            "description": "מחליף את החברים של קבוצה שנוצרה דרך הממשק באלה שניתנו, בזמן ש-Home Assistant פועל.",
+            "fields": {
+                "group": {
+                    "name": "קבוצה",
+                    "description": "הקבוצה לשינוי."
+                },
+                "members": {
+                    "name": "חברים",
+                    "description": "הישויות שהקבוצה צריכה להכיל מעכשיו."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "המתנה לתנאי",
+            "description": "ממתין עד שתנאי מתקיים. חוזר מיד אם הוא כבר מתקיים.",
+            "fields": {
+                "condition": {
+                    "name": "תנאי",
+                    "description": "התנאי שלו ממתינים."
+                },
+                "timeout": {
+                    "name": "זמן קצוב",
+                    "description": "כמה זמן להמתין לפני שמוותרים. אם לא צוין, ממתין ללא הגבלה."
+                }
+            }
+        },
+        "boo": {
+            "name": "בו!",
+            "description": "קריאה לפעולה הזו מפחידה את Home Assistant. ביצוע הפעולה הזו תמיד ייכשל."
+        },
+        "random_fail": {
+            "name": "כישלון אקראי",
+            "description": "ביצוע הפעולה הזו ייכשל באופן אקראי."
+        },
+        "blueprint_import": {
+            "name": "ייבוא שרטוט",
+            "description": "מייבא שרטוט.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "כתובת ה-URL שממנה מייבאים את השרטוט."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "נודניק",
+            "description": "מכבה אוטומציה לזמן מה, ומדליק אותה שוב כשהזמן נגמר.",
+            "fields": {
+                "duration": {
+                    "name": "משך",
+                    "description": "כמה זמן האוטומציה נשארת כבויה. היא נדלקת שוב מעצמה כשהזמן נגמר, גם אם Home Assistant הופעל מחדש בינתיים."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "הדלקה למשך",
+            "description": "מדליק אוטומציה לזמן מה, ומכבה אותה שוב כשהזמן נגמר.",
+            "fields": {
+                "duration": {
+                    "name": "משך",
+                    "description": "כמה זמן האוטומציה נשארת דלוקה. היא נכבית שוב מעצמה כשהזמן נגמר, גם אם Home Assistant הופעל מחדש בינתיים."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "הגדרת בהירות",
+            "description": "מגדיר את הבהירות של אורות שכבר דולקים, ולא נוגע באלה שכבויים.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "בהירות",
+                    "description": "הבהירות להגדרה, באחוזים. קבוצות מכוונות אור אחר אור, כך שאור כבוי נשאר כבוי."
+                },
+                "transition": {
+                    "name": "מעבר",
+                    "description": "כמה זמן השינוי צריך להימשך, בשניות."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "הגברת בהירות",
+            "description": "מגביר את האורות שכבר דולקים, ולא נוגע באלה שכבויים.",
+            "fields": {
+                "step_pct": {
+                    "name": "צעד",
+                    "description": "בכמה להגביר, באחוזים. כל אור עולה מהרמה שלו, כך שקבוצה שומרת על הצורה שלה במקום להתיישר."
+                },
+                "transition": {
+                    "name": "מעבר",
+                    "description": "כמה זמן השינוי צריך להימשך, בשניות."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "הנמכת בהירות",
+            "description": "מעמעם את האורות שכבר דולקים, ועוצר ברמה העמומה ביותר שלהם במקום לכבות אותם.",
+            "fields": {
+                "step_pct": {
+                    "name": "צעד",
+                    "description": "בכמה לעמעם, באחוזים. כל אור יורד מהרמה שלו, כך שקבוצה שומרת על הצורה שלה במקום להתיישר."
+                },
+                "transition": {
+                    "name": "מעבר",
+                    "description": "כמה זמן השינוי צריך להימשך, בשניות."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "הגדרת צבע",
+            "description": "מגדיר את הצבע של אורות שכבר דולקים, ולא נוגע באלה שכבויים או שלא תומכים בצבע.",
+            "fields": {
+                "rgb_color": {
+                    "name": "צבע",
+                    "description": "הצבע להגדרה. אורות שלא תומכים בצבע מדולגים במקום להפוך ללבנים."
+                },
+                "transition": {
+                    "name": "מעבר",
+                    "description": "כמה זמן השינוי צריך להימשך, בשניות."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "הגדרת טמפרטורת צבע",
+            "description": "מגדיר את טמפרטורת הצבע של אורות שכבר דולקים, כל אחד בתוך הטווח שהוא באמת יכול להגיע אליו.",
+            "fields": {
+                "kelvin": {
+                    "name": "טמפרטורת צבע",
+                    "description": "טמפרטורת הצבע להגדרה. כל אור מוגבל לטווח שלו, כי לבן חם במנורה אחת הוא מספר שמנורה אחרת לא יכולה להגיע אליו."
+                },
+                "transition": {
+                    "name": "מעבר",
+                    "description": "כמה זמן השינוי צריך להימשך, בשניות."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "הגדרת אפקט",
+            "description": "מגדיר אפקט על האורות שכבר דולקים ושבאמת יש להם אותו.",
+            "fields": {
+                "effect": {
+                    "name": "אפקט",
+                    "description": "שם האפקט להגדרה. שמות אפקטים שונים בין יצרנים, כך שאורות שאין להם את האפקט הזה נשארים כמו שהם."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "מחיקת אירוע",
+            "description": "מוחק אירועים מלוח שנה, שנמצאו לפי הכותרת או ה-uid שלהם בפרק זמן מסוים. מחזיר את מה שנמחק, כולל ה-uid.",
+            "fields": {
+                "summary": {
+                    "name": "תקציר",
+                    "description": "הכותרת של האירועים למחיקה, בדיוק כמו שהיא מופיעה בלוח השנה."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "המזהה של האירוע למחיקה, אם יש לך אותו."
+                },
+                "start_date_time": {
+                    "name": "תאריך ושעת התחלה",
+                    "description": "מאיפה להתחיל לחפש. ברירת המחדל היא עכשיו."
+                },
+                "end_date_time": {
+                    "name": "תאריך ושעת סיום",
+                    "description": "איפה להפסיק לחפש. יש לתת את זה או משך."
+                },
+                "duration": {
+                    "name": "משך",
+                    "description": "כמה רחוק לחפש מההתחלה. יש לתת את זה או תאריך ושעת סיום."
+                },
+                "whole_series": {
+                    "name": "כל הסדרה",
+                    "description": "עבור אירוע חוזר, למחוק את כל הסדרה ולא רק את המופע שנמצא."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "עדכון אירוע",
+            "description": "משנה אירועים בלוח שנה, שנמצאו לפי הכותרת או ה-uid שלהם בפרק זמן מסוים. מחזיר את מה ששונה, כולל ה-uid.",
+            "fields": {
+                "summary": {
+                    "name": "תקציר",
+                    "description": "הכותרת של האירועים לשינוי, בדיוק כמו שהיא מופיעה בלוח השנה."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "המזהה של האירוע לשינוי, אם יש לך אותו."
+                },
+                "start_date_time": {
+                    "name": "תאריך ושעת התחלה",
+                    "description": "מאיפה להתחיל לחפש. ברירת המחדל היא עכשיו."
+                },
+                "end_date_time": {
+                    "name": "תאריך ושעת סיום",
+                    "description": "איפה להפסיק לחפש. יש לתת את זה או משך."
+                },
+                "duration": {
+                    "name": "משך",
+                    "description": "כמה רחוק לחפש מההתחלה. יש לתת את זה או תאריך ושעת סיום."
+                },
+                "new_summary": {
+                    "name": "תקציר חדש",
+                    "description": "הכותרת שתינתן לאירועים."
+                },
+                "description": {
+                    "name": "תיאור",
+                    "description": "התיאור שיינתן לאירועים."
+                },
+                "location": {
+                    "name": "מיקום",
+                    "description": "המיקום שיינתן לאירועים."
+                },
+                "new_start": {
+                    "name": "התחלה חדשה",
+                    "description": "מתי האירועים מתחילים במקום זאת. הם שומרים על האורך שלהם, אלא אם ניתן גם סוף חדש."
+                },
+                "new_end": {
+                    "name": "סוף חדש",
+                    "description": "מתי האירועים מסתיימים במקום זאת."
+                },
+                "shift": {
+                    "name": "הזזה",
+                    "description": "הזז את האירועים בשיעור הזה, מאוחר יותר, או מוקדם יותר כשהוא שלילי. במקום התחלה או סוף חדשים."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "העלאת טמפרטורה",
+            "description": "מעלה את נקודת ההגדרה של תרמוסטט בצעד אחד, את שתי נקודות ההגדרה עבור כזה שמחמם ומקרר. תרמוסטט כבוי נשאר כבוי.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה לשנות. השמט כדי להשתמש בצעד של התרמוסטט עצמו, או בחצי מעלה (אחת בפרנהייט) כשאין לו."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "הורדת טמפרטורה",
+            "description": "מוריד את נקודת ההגדרה של תרמוסטט בצעד אחד, את שתי נקודות ההגדרה עבור כזה שמחמם ומקרר. תרמוסטט כבוי נשאר כבוי.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה לשנות. השמט כדי להשתמש בצעד של התרמוסטט עצמו, או בחצי מעלה (אחת בפרנהייט) כשאין לו."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "יצירת מרחב",
+            "description": "יוצר מרחב חדש תוך כדי ריצה.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "שם המרחב שייווצר."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל לשימוש עבור המרחב."
+                },
+                "aliases": {
+                    "name": "כינויים",
+                    "description": "רשימת כינויים למרחב. שימושי אם רוצים להשתמש במרחב בשפה אחרת או בכינוי אחר."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "הוספת כינוי למרחב",
+            "description": "מוסיף כינוי למרחב.",
+            "fields": {
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה של המרחב שאליו יתווסף הכינוי."
+                },
+                "alias": {
+                    "name": "כינוי",
+                    "description": "הכינוי (או רשימת הכינויים) להוספה למרחב."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "הסרת כינוי ממרחב",
+            "description": "מסיר כינוי ממרחב.",
+            "fields": {
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה של המרחב שממנו יוסר הכינוי."
+                },
+                "alias": {
+                    "name": "כינוי",
+                    "description": "הכינוי (או רשימת הכינויים) להסרה מהמרחב."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "הגדרת כינויים למרחב",
+            "description": "מגדיר כינויים למרחב. דורס ומסיר כל כינוי קיים, ומחליף אותם לגמרי בחדשים.",
+            "fields": {
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה של המרחב שעבורו יוגדרו הכינויים."
+                },
+                "aliases": {
+                    "name": "כינויים",
+                    "description": "הכינויים להגדרה עבור המרחב."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "הוספת מכשיר למרחב",
+            "description": "מוסיף מכשיר למרחב. שים לב, אם המכשיר כבר נמצא במרחב, הוא יוסר מהמרחב הקודם.",
+            "fields": {
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה של המרחב שאליו יתווסף המכשיר."
+                },
+                "device_id": {
+                    "name": "מזהה מכשיר",
+                    "description": "המזהה של המכשיר (או המכשירים) להוספה למרחב."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "הסרת מכשיר ממרחב",
+            "description": "מסיר מכשיר ממרחב. מכיוון שמכשיר יכול להיות רק במרחב אחד, אין צורך לציין את המרחב בקריאה הזו.",
+            "fields": {
+                "device_id": {
+                    "name": "מזהה מכשיר",
+                    "description": "המזהה של המכשיר שממנו יוסר המרחב."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "הוספת ישות למרחב",
+            "description": "מוסיף ישות למרחב. שים לב, אם הישות כבר נמצאת במרחב, היא תוסר מהמרחב הקודם. זה עוקף את המרחב שבו נמצא המכשיר שמספק את הישות.",
+            "fields": {
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה של המרחב שאליו תתווסף הישות."
+                },
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "המזהה של הישות (או הישויות) להוספה למרחב."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "הסרת ישות ממרחב",
+            "description": "מסיר ישות ממרחב. מכיוון שישות יכולה להיות רק במרחב אחד, אין צורך לציין את המרחב בקריאה הזו. שים לב, אחרי הקריאה הזו הישות עדיין תהיה במרחב של המכשיר שמספק אותה.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "המזהה של הישות (או הישויות) שמהן יוסר המרחב."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "מחיקת מרחב",
+            "description": "מוחק מרחב תוך כדי ריצה.",
+            "fields": {
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה של המרחב למחיקה."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "השבתת שילוב",
+            "description": "משבית רשומות שילוב, לפי רשומה או את כל הרשומות של שילוב.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "רשומת שילוב",
+                    "description": "רשומת השילוב להשבתה."
+                },
+                "domain": {
+                    "name": "שילוב",
+                    "description": "השבת את כל הרשומות של השילובים האלה, כולל אלה שיתווספו בהמשך."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "הפעלת שילוב",
+            "description": "מפעיל רשומות שילוב, לפי רשומה או את כל הרשומות של שילוב.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "רשומת שילוב",
+                    "description": "רשומת השילוב להפעלה."
+                },
+                "domain": {
+                    "name": "שילוב",
+                    "description": "הפעל את כל הרשומות של השילובים האלה, כולל אלה שיתווספו בהמשך."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "השבתת מכשיר",
+            "description": "משבית מכשיר תוך כדי ריצה.",
+            "fields": {
+                "device_id": {
+                    "name": "מכשיר",
+                    "description": "המכשיר (או המכשירים) להשבתה."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "הפעלת מכשיר",
+            "description": "מפעיל מכשיר תוך כדי ריצה.",
+            "fields": {
+                "device_id": {
+                    "name": "מזהה מכשיר",
+                    "description": "מזהה המכשיר הגולמי להפעלה. מכשירים מושבתים לא מוצגים בבורר המכשירים של Home Assistant. אפשר לספק כמה מזהים כרשימת YAML."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "השבתת משתמש",
+            "description": "משבית חשבון משתמש, ומונע ממנו להתחבר.",
+            "fields": {
+                "user_id": {
+                    "name": "מזהה משתמש",
+                    "description": "המזהה (או המזהים) של המשתמש (או המשתמשים) להשבתה."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "הפעלת משתמש",
+            "description": "מפעיל חשבון משתמש, ומאפשר לו להתחבר.",
+            "fields": {
+                "user_id": {
+                    "name": "מזהה משתמש",
+                    "description": "המזהה (או המזהים) של המשתמש (או המשתמשים) להפעלה."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "עדכון מזהה של ישות",
+            "description": "מעדכן מזהה של ישות תוך כדי ריצה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות לעדכון."
+                },
+                "new_entity_id": {
+                    "name": "מזהה ישות חדש",
+                    "description": "המזהה החדש של הישות."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "השבתת ישות",
+            "description": "משבית ישות (או ישויות) תוך כדי ריצה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות להשבתה."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "הפעלת ישות",
+            "description": "מפעיל ישות (או ישויות) תוך כדי ריצה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות להפעלה."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "חשיפת ישות לעוזרים",
+            "description": "חושף ישות (או ישויות) לעוזרים קוליים.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות לחשיפה."
+                },
+                "assistants": {
+                    "name": "עוזרים",
+                    "description": "העוזר (או העוזרים) שעליהם זה חל."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "הסתרת ישות",
+            "description": "מסתיר ישות (או ישויות) תוך כדי ריצה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות להסתרה."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "שינוי שם של ישות",
+            "description": "משנה את השם של ישות (או ישויות) תוך כדי ריצה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות לשינוי שם."
+                },
+                "name": {
+                    "name": "שם",
+                    "description": "השם החדש של הישות או הישויות."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "הגדרת הסמל של ישות",
+            "description": "מגדיר את הסמל של ישות (או ישויות) תוך כדי ריצה. הגדר ל-null כדי לחזור לסמל שהשילוב נותן לה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות שהסמל שלהן יוגדר."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל החדש, או null עבור הסמל של השילוב עצמו."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "הוספת כינוי לישות",
+            "description": "מוסיף כינוי אחד או יותר לישות (או ישויות), שבו עוזרים קוליים יכולים לקרוא לה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות שאליהן יתווספו הכינויים."
+                },
+                "alias": {
+                    "name": "כינוי",
+                    "description": "הכינוי (או הכינויים) להוספה."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "הסרת כינוי מישות",
+            "description": "מסיר כינוי אחד או יותר מישות (או ישויות).",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות שמהן יוסרו הכינויים."
+                },
+                "alias": {
+                    "name": "כינוי",
+                    "description": "הכינוי (או הכינויים) להסרה."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "הגדרת כינויים לישות",
+            "description": "מחליף את הכינויים של ישות (או ישויות). האם השם של הישות עצמה נחשב לכינוי נשאר כמו שהיה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות שהכינויים שלהן יוגדרו."
+                },
+                "aliases": {
+                    "name": "כינויים",
+                    "description": "הכינויים להגדרה."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "הפסקת חשיפת ישות לעוזרים",
+            "description": "מפסיק לחשוף ישות (או ישויות) לעוזרים קוליים.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות שחשיפתן תופסק."
+                },
+                "assistants": {
+                    "name": "עוזרים",
+                    "description": "העוזר (או העוזרים) שעליהם זה חל."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "ביטול הסתרת ישות",
+            "description": "מבטל הסתרה של ישות (או ישויות) תוך כדי ריצה.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "הישות או הישויות שהסתרתן תבוטל."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "יצירת קומה",
+            "description": "יוצר קומה חדשה תוך כדי ריצה.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "שם הקומה שתיווצר."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל לשימוש עבור הקומה."
+                },
+                "level": {
+                    "name": "רמה",
+                    "description": "הרמה שבה הקומה נמצאת בבית שלך."
+                },
+                "aliases": {
+                    "name": "כינויים",
+                    "description": "רשימת כינויים לקומה. שימושי אם רוצים להשתמש בקומה בשפה אחרת או בכינוי אחר."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "הוספת כינוי לקומה",
+            "description": "מוסיף כינוי לקומה.",
+            "fields": {
+                "floor_id": {
+                    "name": "מזהה קומה",
+                    "description": "המזהה של הקומה שאליה יתווסף הכינוי."
+                },
+                "alias": {
+                    "name": "כינוי",
+                    "description": "הכינוי (או רשימת הכינויים) להוספה לקומה."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "הסרת כינוי מקומה",
+            "description": "מסיר כינוי מקומה.",
+            "fields": {
+                "floor_id": {
+                    "name": "מזהה קומה",
+                    "description": "המזהה של הקומה שממנה יוסר הכינוי."
+                },
+                "alias": {
+                    "name": "כינוי",
+                    "description": "הכינוי (או רשימת הכינויים) להסרה מהקומה."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "הגדרת כינויים לקומה",
+            "description": "מגדיר כינויים לקומה. דורס ומסיר כל כינוי קיים, ומחליף אותם לגמרי בחדשים.",
+            "fields": {
+                "floor_id": {
+                    "name": "מזהה קומה",
+                    "description": "המזהה של הקומה שעבורה יוגדרו הכינויים."
+                },
+                "aliases": {
+                    "name": "כינויים",
+                    "description": "הכינויים להגדרה עבור הקומה."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "הוספת מרחב לקומה",
+            "description": "מוסיף מרחב לקומה. שים לב, אם המרחב כבר נמצא בקומה, הוא יוסר מהקומה הקודמת.",
+            "fields": {
+                "floor_id": {
+                    "name": "מזהה קומה",
+                    "description": "המזהה של הקומה שאליה יתווסף המרחב."
+                },
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה של המרחב (או המרחבים) להוספה לקומה."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "הסרת מרחב מקומה",
+            "description": "מסיר מרחב מקומה. מכיוון שמרחב יכול להיות רק בקומה אחת, אין צורך לציין את הקומה בקריאה הזו.",
+            "fields": {
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה של המרחב שממנו תוסר הקומה."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "מחיקת קומה",
+            "description": "מוחק קומה תוך כדי ריצה.",
+            "fields": {
+                "floor_id": {
+                    "name": "מזהה קומה",
+                    "description": "המזהה של הקומה למחיקה."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "יצירת תווית",
+            "description": "יוצר תווית חדשה תוך כדי ריצה.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "שם התווית שתיווצר."
+                },
+                "description": {
+                    "name": "תיאור",
+                    "description": "תיאור לתווית."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל לשימוש עבור התווית."
+                },
+                "color": {
+                    "name": "צבע",
+                    "description": "הצבע לשימוש עבור התווית. יכול להיות שם צבע מהרשימה, או קוד צבע הקסדצימלי (כמו #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "עדכון תווית",
+            "description": "מעדכן תווית קיימת תוך כדי ריצה. כל מה שתשמיט שומר על הערך שכבר יש לו. אפשר לנקות את התיאור, הסמל והצבע על ידי הגדרתם ל-null.",
+            "fields": {
+                "label_id": {
+                    "name": "מזהה תווית",
+                    "description": "המזהה של התווית לעדכון."
+                },
+                "name": {
+                    "name": "שם",
+                    "description": "שם חדש לתווית."
+                },
+                "description": {
+                    "name": "תיאור",
+                    "description": "תיאור חדש לתווית."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "סמל חדש לשימוש עבור התווית."
+                },
+                "color": {
+                    "name": "צבע",
+                    "description": "הצבע לשימוש עבור התווית. יכול להיות שם צבע מהרשימה, או קוד צבע הקסדצימלי (כמו #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "הוספת תווית למרחב",
+            "description": "מוסיף תווית למרחב. אם ניתנו כמה תוויות או כמה מרחבים, כל הצירופים יתווספו.",
+            "fields": {
+                "label_id": {
+                    "name": "מזהה תווית",
+                    "description": "המזהה (או המזהים) של התווית (או התוויות) להוספה למרחב (או למרחבים)."
+                },
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה (או המזהים) של המרחב (או המרחבים) שאליהם יתווספו התוויות."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "הוספת תווית למכשיר",
+            "description": "מוסיף תווית למכשיר. אם ניתנו כמה תוויות או כמה מכשירים, כל הצירופים יתווספו.",
+            "fields": {
+                "label_id": {
+                    "name": "מזהה תווית",
+                    "description": "המזהה (או המזהים) של התווית (או התוויות) להוספה למכשיר (או למכשירים)."
+                },
+                "device_id": {
+                    "name": "מזהה מכשיר",
+                    "description": "המזהה (או המזהים) של המכשיר (או המכשירים) שאליהם יתווספו התוויות."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "הוספת תווית לישות",
+            "description": "מוסיף תווית לישות. אם ניתנו כמה תוויות או כמה ישויות, כל הצירופים יתווספו.",
+            "fields": {
+                "label_id": {
+                    "name": "מזהה תווית",
+                    "description": "המזהה (או המזהים) של התווית (או התוויות) להוספה לישות (או לישויות)."
+                },
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "המזהה (או המזהים) של הישות או הישויות שאליהן יתווספו התוויות."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "הסרת תווית ממרחב",
+            "description": "מסיר תווית ממרחב. אם ניתנו כמה תוויות או כמה מרחבים, כל הצירופים יוסרו.",
+            "fields": {
+                "label_id": {
+                    "name": "מזהה תווית",
+                    "description": "המזהה (או המזהים) של התווית (או התוויות) להסרה מהמרחב (או מהמרחבים)."
+                },
+                "area_id": {
+                    "name": "מזהה מרחב",
+                    "description": "המזהה (או המזהים) של המרחב (או המרחבים) שמהם יוסרו התוויות."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "הסרת תווית ממכשיר",
+            "description": "מסיר תווית ממכשיר. אם ניתנו כמה תוויות או כמה מכשירים, כל הצירופים יוסרו.",
+            "fields": {
+                "label_id": {
+                    "name": "מזהה תווית",
+                    "description": "המזהה (או המזהים) של התווית (או התוויות) להסרה מהמכשיר (או מהמכשירים)."
+                },
+                "device_id": {
+                    "name": "מזהה מכשיר",
+                    "description": "המזהה (או המזהים) של המכשיר (או המכשירים) שמהם יוסרו התוויות."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "הסרת תווית מישות",
+            "description": "מסיר תווית מישות. אם ניתנו כמה תוויות או כמה ישויות, כל הצירופים יוסרו.",
+            "fields": {
+                "label_id": {
+                    "name": "מזהה תווית",
+                    "description": "המזהה (או המזהים) של התווית (או התוויות) להסרה מהישות או מהישויות."
+                },
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "המזהה (או המזהים) של הישות או הישויות שמהן יוסרו התוויות."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "יצירת קטגוריה",
+            "description": "יוצר קטגוריה חדשה תוך כדי ריצה, עבור אוטומציות, סקריפטים, סצנות או עוזרים. מחזיר את המזהה של הקטגוריה החדשה.",
+            "fields": {
+                "scope": {
+                    "name": "היקף",
+                    "description": "איפה הקטגוריה בשימוש."
+                },
+                "name": {
+                    "name": "שם",
+                    "description": "שם הקטגוריה שתיווצר."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל לשימוש עבור הקטגוריה."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "עדכון קטגוריה",
+            "description": "מעדכן קטגוריה קיימת תוך כדי ריצה. כל מה שתשמיט שומר על הערך שכבר יש לו. אפשר לנקות את הסמל על ידי הגדרתו ל-null.",
+            "fields": {
+                "scope": {
+                    "name": "היקף",
+                    "description": "איפה הקטגוריה בשימוש."
+                },
+                "category_id": {
+                    "name": "קטגוריה",
+                    "description": "המזהה או השם של הקטגוריה לעדכון."
+                },
+                "name": {
+                    "name": "שם",
+                    "description": "השם החדש של הקטגוריה."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל החדש של הקטגוריה."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "מחיקת קטגוריה",
+            "description": "מוחק קטגוריה. כל מה שהיה בה נשאר בלי קטגוריה.",
+            "fields": {
+                "scope": {
+                    "name": "היקף",
+                    "description": "איפה הקטגוריה בשימוש."
+                },
+                "category_id": {
+                    "name": "קטגוריה",
+                    "description": "המזהה או השם של הקטגוריה למחיקה."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "הוספת קטגוריה לישות",
+            "description": "משייך אוטומציה, סקריפט, סצנה או עוזר לקטגוריה. זה מחליף את הקטגוריה שבה היה קודם, כי כל אחד יכול להיות רק באחת.",
+            "fields": {
+                "category_id": {
+                    "name": "קטגוריה",
+                    "description": "המזהה או השם של הקטגוריה."
+                },
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "האוטומציות, הסקריפטים, הסצנות או העוזרים לשיוך לקטגוריה."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "הסרת קטגוריה מישות",
+            "description": "מוציא אוטומציה, סקריפט, סצנה או עוזר מקטגוריה. כל מה שנמצא בקטגוריה אחרת לא מושפע.",
+            "fields": {
+                "category_id": {
+                    "name": "קטגוריה",
+                    "description": "המזהה או השם של הקטגוריה."
+                },
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "האוטומציות, הסקריפטים, הסצנות או העוזרים להוצאה מהקטגוריה."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "מחיקת תווית",
+            "description": "מוחק תווית תוך כדי ריצה.",
+            "fields": {
+                "label_id": {
+                    "name": "מזהה תווית",
+                    "description": "המזהה של התווית למחיקה."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "התעלמות מכל המכשירים שהתגלו כעת",
+            "description": "מתעלם מכל המכשירים שהתגלו כעת ומוצגים בלוח השילובים. זה לא יתעלם ממכשירים שיתגלו אחרי כן.",
+            "fields": {
+                "domain": {
+                    "name": "דומיין השילוב",
+                    "description": "דומיין השילוב שעבורו יש להתעלם מכל המכשירים שהתגלו. אם לא צוין, ההתעלמות תחול על כל הדומיינים."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "השבתת תשאול לעדכונים",
+            "description": "משבית תשאול לעדכונים עבור רשומת שילוב.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "רשומת שילוב",
+                    "description": "רשומת השילוב שעבורה יושבת התשאול."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "הפעלת תשאול לעדכונים",
+            "description": "מפעיל תשאול לעדכונים עבור רשומת שילוב.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "רשומת שילוב",
+                    "description": "רשומת השילוב שעבורה יופעל התשאול."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "מחיקת כל הישויות היתומות",
+            "description": "מוחק את כל הישויות היתומות שכבר אין שילוב שטוען להן או מספק אותן. שים לב, אם השילוב הוסר זה עתה, ייתכן שיידרש אתחול כדי ש-Home Assistant יבין שהן יתומות.\n**אזהרה** ייתכן שישויות סומנו כיתומות כי שילוב לא מקוון או לא עובד מאז ש-Home Assistant הופעל. קריאה לפעולה הזו תמחק גם את הישויות האלה."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "רשימת כל ישויות מסד הנתונים היתומות",
+            "description": "מציג את כל ישויות מסד הנתונים היתומות שאף שילוב לא טוען להן."
+        },
+        "homeassistant_restart": {
+            "name": "הפעלה מחדש",
+            "description": "מפעיל מחדש את Home Assistant.",
+            "fields": {
+                "safe_mode": {
+                    "name": "מצב בטוח",
+                    "description": "האם ההפעלה מחדש תתבצע במצב בטוח. זה ישבית את כל השילובים המותאמים אישית ומודולי הממשק."
+                },
+                "force": {
+                    "name": "הפעלה מחדש בכוח",
+                    "description": "מאלץ את ההפעלה מחדש. אזהרה! זה לא יכבה את Home Assistant בצורה מסודרת, ידלג על בדיקות התצורה ויתעלם מהעברות מסד נתונים שרצות. השתמש בזה רק אם אתה יודע מה אתה עושה."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "ייבוא סטטיסטיקה",
+            "description": "מייבא סטטיסטיקה ארוכת טווח.",
+            "fields": {
+                "statistic_id": {
+                    "name": "מזהה סטטיסטיקה",
+                    "description": "מזהה הסטטיסטיקה (מזהה הישות) שעבורו מייבאים."
+                },
+                "name": {
+                    "name": "שם",
+                    "description": "השם של הסטטיסטיקה."
+                },
+                "source": {
+                    "name": "מקור",
+                    "description": "המקור של נתוני הסטטיסטיקה."
+                },
+                "unit_of_measurement": {
+                    "name": "יחידת מידה",
+                    "description": "יחידת המידה של הסטטיסטיקה."
+                },
+                "has_mean": {
+                    "name": "יש ממוצע",
+                    "description": "האם לסטטיסטיקה יש ערך ממוצע."
+                },
+                "has_sum": {
+                    "name": "יש סכום",
+                    "description": "האם לסטטיסטיקה יש ערך סכום."
+                },
+                "stats": {
+                    "name": "סטטיסטיקה",
+                    "description": "רשימה של מיפויים/מילונים עם סטטיסטיקה לייבוא. המילונים חייבים להכיל מפתח \"start\" עם מחרוזת תאריך ושעה; אפשרויות תקפות נוספות הן \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" ו-\"state\". כולן אופציונליות ומספר שלם או עשרוני, מלבד \"last_reset\" שהיא מחרוזת תאריך ושעה."
+                }
+            }
+        },
+        "select_random": {
+            "name": "בחירת אפשרות אקראית",
+            "description": "בוחר אפשרות אקראית עבור ישות בחירה.",
+            "fields": {
+                "options": {
+                    "name": "אפשרויות",
+                    "description": "מגביל את האפשרויות שמהן בוחרים. אם לא צוין, כל האפשרויות יילקחו בחשבון."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "יצירת קלט בחירה",
+            "description": "יוצר עוזר קלט בחירה (תיבת בחירה) חדש תוך כדי ריצה. מחזיר את מזהה הישות של קלט הבחירה החדש.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "השם של קלט הבחירה החדש."
+                },
+                "input_select_id": {
+                    "name": "מזהה הישות של קלט הבחירה",
+                    "description": "מזהה הישות של קלט הבחירה החדש. הקידומת input_select. מתווספת אוטומטית. אם לא צוין, מזהה הישות ייווצר על סמך השם."
+                },
+                "options": {
+                    "name": "אפשרויות",
+                    "description": "האפשרויות לבחירה. כל אפשרות יכולה להופיע רק פעם אחת."
+                },
+                "initial": {
+                    "name": "אפשרות התחלתית",
+                    "description": "האפשרות שבה הוא מתחיל, שחייבת להיות אחת מהאפשרויות. אם לא צוין, הוא שומר על האפשרות שהייתה לו לפני ש-Home Assistant הופעל מחדש."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל של קלט הבחירה החדש."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "מחיקת קלט בחירה",
+            "description": "מוחק עוזרי קלט בחירה שנוצרו בממשק או עם הפעולה ליצירת קלט בחירה. Spook לא יכול למחוק קלטי בחירה שהוגדרו ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "קלט הבחירה (או קלטי הבחירה) למחיקה."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "בחירת אפשרות אקראית",
+            "description": "בוחר אפשרות אקראית עבור ישות input_select.",
+            "fields": {
+                "options": {
+                    "name": "אפשרויות",
+                    "description": "מגביל את האפשרויות שמהן בוחרים. אם לא צוין, כל האפשרויות יילקחו בחשבון."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "היפוך אפשרויות",
+            "description": "הופך את סדר האפשרויות לבחירה של ישות `input_select`, מהסוף להתחלה. זה לא קבוע ויבוטל בטעינה מחדש או כש-Home Assistant יופעל מחדש."
+        },
+        "input_select_shuffle": {
+            "name": "ערבוב אפשרויות",
+            "description": "מערבב את רשימת האפשרויות לבחירה של ישות `input_select`. זה לא קבוע ויבוטל בטעינה מחדש או כש-Home Assistant יופעל מחדש."
+        },
+        "input_select_sort": {
+            "name": "מיון אפשרויות",
+            "description": "ממיין את רשימת האפשרויות לבחירה של ישות `input_select`. זה לא קבוע ויבוטל בטעינה מחדש או כש-Home Assistant יופעל מחדש."
+        },
+        "number_decrement": {
+            "name": "הקטנת ערך",
+            "description": "מקטין את הערך של ישות מספר בשיעור מסוים.",
+            "fields": {
+                "amount": {
+                    "name": "כמות",
+                    "description": "הכמות שבה יש להקטין את המספר. אם לא צוין, ישמש הצעד של ישות המספר."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "הגדלת ערך",
+            "description": "מגדיל את הערך של ישות מספר בשיעור מסוים.",
+            "fields": {
+                "amount": {
+                    "name": "כמות",
+                    "description": "הכמות שבה יש להגדיל את המספר. אם לא צוין, ישמש הצעד של ישות המספר."
+                }
+            }
+        },
+        "number_max": {
+            "name": "הגדרת ערך מקסימלי",
+            "description": "מגדיר ישות מספר לערך המקסימלי שלה."
+        },
+        "number_min": {
+            "name": "הגדרת ערך מינימלי",
+            "description": "מגדיר ישות מספר לערך המינימלי שלה."
+        },
+        "input_number_decrement": {
+            "name": "הקטנת ערך",
+            "description": "מקטין את הערך של ישות קלט מספר בשיעור מסוים.",
+            "fields": {
+                "amount": {
+                    "name": "כמות",
+                    "description": "הכמות שבה יש להקטין את קלט המספר. אם לא צוין, ישמש הצעד של ישות המספר."
+                },
+                "cycle": {
+                    "name": "מחזורי",
+                    "description": "המשך מהקצה השני של הטווח במקום לעצור בקצה הזה, באותו אופן שבחירת האפשרות הבאה עוברת במחזוריות על ישות בחירה."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "הגדלת ערך",
+            "description": "מגדיל את הערך של ישות קלט מספר בשיעור מסוים.",
+            "fields": {
+                "amount": {
+                    "name": "כמות",
+                    "description": "הכמות שבה יש להגדיל את קלט המספר. אם לא צוין, ישמש הצעד של ישות המספר."
+                },
+                "cycle": {
+                    "name": "מחזורי",
+                    "description": "המשך מהקצה השני של הטווח במקום לעצור בקצה הזה, באותו אופן שבחירת האפשרות הבאה עוברת במחזוריות על ישות בחירה."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "הגדרת ערך מקסימלי",
+            "description": "מגדיר ישות קלט מספר לערך המקסימלי שלה."
+        },
+        "input_number_min": {
+            "name": "הגדרת ערך מינימלי",
+            "description": "מגדיר ישות קלט מספר לערך המינימלי שלה."
+        },
+        "input_number_set_range": {
+            "name": "הגדרת טווח",
+            "description": "משנה את המינימום, המקסימום או הצעד של קלט מספר שנוצר בממשק, בדיוק כמו עריכה שלו. ערך מחוץ לטווח החדש מוזז לתוכו.",
+            "fields": {
+                "min": {
+                    "name": "מינימום",
+                    "description": "הערך המינימלי החדש."
+                },
+                "max": {
+                    "name": "מקסימום",
+                    "description": "הערך המקסימלי החדש."
+                },
+                "step": {
+                    "name": "צעד",
+                    "description": "גודל הצעד החדש."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "יצירת מונה",
+            "description": "יוצר עוזר מונה חדש תוך כדי ריצה. מחזיר את מזהה הישות של המונה החדש.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "השם של המונה החדש."
+                },
+                "counter_id": {
+                    "name": "מזהה הישות של המונה",
+                    "description": "מזהה הישות של המונה החדש. הקידומת counter. מתווספת אוטומטית. אם לא צוין, מזהה הישות ייווצר על סמך השם."
+                },
+                "initial": {
+                    "name": "ערך התחלתי",
+                    "description": "הערך שבו המונה מתחיל, ושאליו הוא חוזר באיפוס."
+                },
+                "minimum": {
+                    "name": "מינימום",
+                    "description": "הערך הנמוך ביותר שהמונה יכול לרדת אליו. השמט כדי שלא תהיה מגבלה."
+                },
+                "maximum": {
+                    "name": "מקסימום",
+                    "description": "הערך הגבוה ביותר שהמונה יכול לעלות אליו. השמט כדי שלא תהיה מגבלה."
+                },
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה המונה עולה או יורד בכל פעם."
+                },
+                "restore": {
+                    "name": "שחזור",
+                    "description": "שחזר את ערך המונה כש-Home Assistant מופעל, במקום להתחיל מחדש מהערך ההתחלתי."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל של המונה החדש."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "מחיקת מונה",
+            "description": "מוחק עוזרי מונה שנוצרו בממשק או עם הפעולה ליצירת מונה. Spook לא יכול למחוק מונים שהוגדרו ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "המונה (או המונים) למחיקה."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "יצירת קלט בוליאני",
+            "description": "יוצר עוזר קלט בוליאני (מתג) חדש תוך כדי ריצה. מחזיר את מזהה הישות של הקלט הבוליאני החדש.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "השם של הקלט הבוליאני החדש."
+                },
+                "input_boolean_id": {
+                    "name": "מזהה הישות של הקלט הבוליאני",
+                    "description": "מזהה הישות של הקלט הבוליאני החדש. הקידומת input_boolean. מתווספת אוטומטית. אם לא צוין, מזהה הישות ייווצר על סמך השם."
+                },
+                "initial": {
+                    "name": "ערך התחלתי",
+                    "description": "הערך שבו הוא מתחיל. אם לא צוין, הוא שומר על הערך שהיה לו לפני ש-Home Assistant הופעל מחדש."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל של הקלט הבוליאני החדש."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "מחיקת קלט בוליאני",
+            "description": "מוחק עוזרי קלט בוליאני שנוצרו בממשק או עם הפעולה ליצירת קלט בוליאני. Spook לא יכול למחוק קלטים בוליאניים שהוגדרו ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "הקלט הבוליאני (או הקלטים הבוליאניים) למחיקה."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "יצירת קלט טקסט",
+            "description": "יוצר עוזר קלט טקסט חדש תוך כדי ריצה. מחזיר את מזהה הישות של קלט הטקסט החדש.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "השם של קלט הטקסט החדש."
+                },
+                "input_text_id": {
+                    "name": "מזהה הישות של קלט הטקסט",
+                    "description": "מזהה הישות של קלט הטקסט החדש. הקידומת input_text. מתווספת אוטומטית. אם לא צוין, מזהה הישות ייווצר על סמך השם."
+                },
+                "initial": {
+                    "name": "ערך התחלתי",
+                    "description": "הטקסט שבו הוא מתחיל. אם לא צוין, הוא שומר על הטקסט שהיה לו לפני ש-Home Assistant הופעל מחדש."
+                },
+                "min": {
+                    "name": "אורך מינימלי",
+                    "description": "האורך הקצר ביותר שהטקסט יכול להיות."
+                },
+                "max": {
+                    "name": "אורך מקסימלי",
+                    "description": "האורך הארוך ביותר שהטקסט יכול להיות."
+                },
+                "pattern": {
+                    "name": "תבנית",
+                    "description": "ביטוי רגולרי שהטקסט חייב להתאים לו."
+                },
+                "mode": {
+                    "name": "מצב",
+                    "description": "הצג את הטקסט כמו שהוא, או הסתר אותו כמו סיסמה."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל של קלט הטקסט החדש."
+                },
+                "unit_of_measurement": {
+                    "name": "יחידת מידה",
+                    "description": "היחידה שתוצג ליד הטקסט."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "מחיקת קלט טקסט",
+            "description": "מוחק עוזרי קלט טקסט שנוצרו בממשק או עם הפעולה ליצירת קלט טקסט. Spook לא יכול למחוק קלטי טקסט שהוגדרו ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "קלט הטקסט (או קלטי הטקסט) למחיקה."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "יצירת קלט לחצן",
+            "description": "יוצר עוזר קלט לחצן חדש תוך כדי ריצה. מחזיר את מזהה הישות של קלט הלחצן החדש.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "השם של קלט הלחצן החדש."
+                },
+                "input_button_id": {
+                    "name": "מזהה הישות של קלט הלחצן",
+                    "description": "מזהה הישות של קלט הלחצן החדש. הקידומת input_button. מתווספת אוטומטית. אם לא צוין, מזהה הישות ייווצר על סמך השם."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל של קלט הלחצן החדש."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "מחיקת קלט לחצן",
+            "description": "מוחק עוזרי קלט לחצן שנוצרו בממשק או עם הפעולה ליצירת קלט לחצן. Spook לא יכול למחוק קלטי לחצן שהוגדרו ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "קלט הלחצן (או קלטי הלחצן) למחיקה."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "יצירת קלט תאריך ושעה",
+            "description": "יוצר עוזר קלט תאריך ושעה חדש תוך כדי ריצה, שמחזיק תאריך, שעה או את שניהם. מחזיר את מזהה הישות של קלט התאריך והשעה החדש.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "השם של קלט התאריך והשעה החדש."
+                },
+                "input_datetime_id": {
+                    "name": "מזהה הישות של קלט התאריך והשעה",
+                    "description": "מזהה הישות של קלט התאריך והשעה החדש. הקידומת input_datetime. מתווספת אוטומטית. אם לא צוין, מזהה הישות ייווצר על סמך השם."
+                },
+                "has_date": {
+                    "name": "יש תאריך",
+                    "description": "האם הוא מחזיק תאריך. לפחות אחד מהתאריך והשעה חייב להיות מופעל."
+                },
+                "has_time": {
+                    "name": "יש שעה",
+                    "description": "האם הוא מחזיק שעה. לפחות אחד מהתאריך והשעה חייב להיות מופעל."
+                },
+                "initial": {
+                    "name": "ערך התחלתי",
+                    "description": "התאריך ו/או השעה שבהם הוא מתחיל, כמו 2026-12-31, 08:30:00, או 2026-12-31 08:30:00. אם לא צוין, הוא שומר על הערך שהיה לו לפני ש-Home Assistant הופעל מחדש."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל של קלט התאריך והשעה החדש."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "מחיקת קלט תאריך ושעה",
+            "description": "מוחק עוזרי קלט תאריך ושעה שנוצרו בממשק או עם הפעולה ליצירת קלט תאריך ושעה. Spook לא יכול למחוק קלטי תאריך ושעה שהוגדרו ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "קלט התאריך והשעה (או הקלטים) למחיקה."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "יצירת קלט מספר",
+            "description": "יוצר עוזר קלט מספר חדש תוך כדי ריצה. מחזיר את מזהה הישות של קלט המספר החדש.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "השם של עוזר קלט המספר החדש."
+                },
+                "input_number_id": {
+                    "name": "מזהה הישות של קלט המספר",
+                    "description": "מזהה הישות של עוזר קלט המספר החדש. הקידומת input_number. מתווספת אוטומטית. אם לא צוין, מזהה הישות ייווצר על סמך השם."
+                },
+                "min": {
+                    "name": "מינימום",
+                    "description": "הערך המינימלי של קלט המספר."
+                },
+                "max": {
+                    "name": "מקסימום",
+                    "description": "הערך המקסימלי של קלט המספר."
+                },
+                "initial": {
+                    "name": "ערך התחלתי",
+                    "description": "הערך ההתחלתי של קלט המספר כש-Home Assistant מופעל."
+                },
+                "step": {
+                    "name": "גודל צעד",
+                    "description": "גודל הצעד של קלט המספר."
+                },
+                "mode": {
+                    "name": "מצב תצוגה",
+                    "description": "מצב התצוגה של קלט המספר, שיכול להיות מחוון או תיבת קלט."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל לשימוש עבור עוזר קלט המספר."
+                },
+                "unit_of_measurement": {
+                    "name": "יחידת מידה",
+                    "description": "יחידת המידה של קלט המספר."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "מחיקת קלט מספר",
+            "description": "מוחק עוזרי קלט מספר שנוצרו בממשק או עם הפעולה ליצירת קלט מספר. Spook לא יכול למחוק קלטי מספר שהוגדרו ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "קלט המספר (או קלטי המספר) למחיקה."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "הוספת עוקב מכשיר",
+            "description": "מוסיף עוקב מכשיר לאדם.",
+            "fields": {
+                "entity_id": {
+                    "name": "אדם",
+                    "description": "מזהה הישות של האדם שאליו יתווסף עוקב המכשיר."
+                },
+                "device_tracker": {
+                    "name": "עוקב מכשיר",
+                    "description": "מזהה הישות של עוקב המכשיר להוספה לאדם."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "הסרת עוקב מכשיר",
+            "description": "מסיר עוקב מכשיר מאדם.",
+            "fields": {
+                "entity_id": {
+                    "name": "אדם",
+                    "description": "מזהה הישות של האדם שממנו יוסר עוקב המכשיר."
+                },
+                "device_tracker": {
+                    "name": "עוקב מכשיר",
+                    "description": "מזהה הישות של עוקב המכשיר להסרה מהאדם."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "יצירת בעיה",
+            "description": "יוצר ומעלה ידנית בעיה בתיקונים של Home Assistant.",
+            "fields": {
+                "title": {
+                    "name": "כותרת",
+                    "description": "הכותרת של הבעיה."
+                },
+                "description": {
+                    "name": "תיאור",
+                    "description": "התיאור של הבעיה. תומך ב-Markdown."
+                },
+                "issue_id": {
+                    "name": "מזהה בעיה",
+                    "description": "לבעיה יכול להיות מזהה, שמאפשר לך לבטל אותה מאוחר יותר עם המזהה הזה אם צריך. הוא גם מונע יצירה של בעיות כפולות. אם לא צוין, ייווצר מזהה אקראי."
+                },
+                "domain": {
+                    "name": "דומיין",
+                    "description": "אפשר להשתמש בשדה הזה כדי להגדיר את הדומיין של הבעיה. לדוגמה, כברירת מחדל (אם לא הוגדר), הוא ישתמש ב-\"spook\". זה גורם ל-Spook להופיע בלוגו/בתמונה של הבעיה. אם תגדיר אותו ל-\"homeassistant\", ישמש הלוגו של Home Assistant, או השתמש ב-\"hue\", \"zwave_js\", \"mqtt\" וכדומה כדי להשתמש בלוגו של השילוב הזה."
+                },
+                "severity": {
+                    "name": "חומרה",
+                    "description": "החומרה של הבעיה. היא תשמש לקביעת העדיפות של הבעיה. אם לא הוגדרה, ישמש \"warning\"."
+                },
+                "persistent": {
+                    "name": "קבועה",
+                    "description": "האם הבעיה צריכה להיות קבועה, כלומר היא תשרוד הפעלות מחדש של Home Assistant. כברירת מחדל, בעיות אינן קבועות."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "התעלמות מכל הבעיות",
+            "description": "מתעלם מכל הבעיות שמוצגות כעת בתיקונים של Home Assistant, או רק מאלה שהועלו על ידי שילובים מסוימים.",
+            "fields": {
+                "domain": {
+                    "name": "דומיין",
+                    "description": "התעלם רק מהבעיות שהועלו על ידי השילובים האלה."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "רשימת בעיות",
+            "description": "מציג את הבעיות שמוצגות כעת בתיקונים של Home Assistant, עם הכותרות שלהן, כדי שאוטומציה תפעל לפיהן או שלוח מחוונים יציג אותן.",
+            "fields": {
+                "include_ignored": {
+                    "name": "כולל בעיות שהתעלמו מהן",
+                    "description": "הצג גם את הבעיות שהתעלמו מהן."
+                },
+                "domain": {
+                    "name": "דומיין",
+                    "description": "הצג רק את הבעיות שהועלו על ידי השילובים האלה."
+                },
+                "severity": {
+                    "name": "חומרה",
+                    "description": "הצג רק את הבעיות בדרגות החומרה האלה."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "הסרת בעיה",
+            "description": "מסיר בעיית תיקון של Home Assistant שנוצרה ידנית. הפעולה הזו יכולה להסיר רק בעיות שנוצרו עם הפעולה `repairs_create`.",
+            "fields": {
+                "issue_id": {
+                    "name": "מזהה בעיה",
+                    "description": "מזהה הבעיה להסרה."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "ביטול התעלמות מכל הבעיות",
+            "description": "מבטל את ההתעלמות מכל הבעיות שמוצגות כעת בתיקונים של Home Assistant, או רק מאלה שהועלו על ידי שילובים מסוימים.",
+            "fields": {
+                "domain": {
+                    "name": "דומיין",
+                    "description": "בטל את ההתעלמות רק מהבעיות שהועלו על ידי השילובים האלה."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "הגדרת דיוק תצוגה",
+            "description": "מגדיר את מספר הספרות העשרוניות שמוצגות עבור חיישן אחד או יותר.",
+            "fields": {
+                "entity_id": {
+                    "name": "ישות",
+                    "description": "ישות החיישן או ישויות החיישנים לעדכון."
+                },
+                "display_precision": {
+                    "name": "דיוק תצוגה",
+                    "description": "מספר הספרות העשרוניות שיוצגו עבור החיישן."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "יצירת טיימר",
+            "description": "יוצר עוזר טיימר חדש תוך כדי ריצה. מחזיר את מזהה הישות של הטיימר החדש.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "השם של הטיימר החדש."
+                },
+                "timer_id": {
+                    "name": "מזהה הישות של הטיימר",
+                    "description": "מזהה הישות של הטיימר החדש. הקידומת timer. מתווספת אוטומטית. אם לא צוין, מזהה הישות ייווצר על סמך השם."
+                },
+                "duration": {
+                    "name": "משך",
+                    "description": "כמה זמן הטיימר רץ כשהוא מופעל."
+                },
+                "restore": {
+                    "name": "שחזור",
+                    "description": "שחזר את מצב הטיימר כש-Home Assistant מופעל, כך שטיימר שרץ ממשיך לרוץ גם אחרי הפעלה מחדש."
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל של הטיימר החדש."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "מחיקת טיימר",
+            "description": "מוחק עוזרי טיימר שנוצרו בממשק או עם הפעולה ליצירת טיימר. Spook לא יכול למחוק טיימרים שהוגדרו ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "הטיימר (או הטיימרים) למחיקה."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "הגדרת משך",
+            "description": "מגדיר משך לטיימר קיים.",
+            "fields": {
+                "duration": {
+                    "name": "משך",
+                    "description": "משך חדש לטיימר, כמחרוזת timedelta."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "יצירת אזור",
+            "description": "יוצר אזור חדש ב-Home Assistant תוך כדי ריצה.",
+            "fields": {
+                "name": {
+                    "name": "שם",
+                    "description": "שם האזור"
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל לשימוש עבור האזור"
+                },
+                "latitude": {
+                    "name": "קו רוחב",
+                    "description": "קו הרוחב של האזור. יכול להיות תבנית."
+                },
+                "longitude": {
+                    "name": "קו אורך",
+                    "description": "קו האורך של האזור. יכול להיות תבנית."
+                },
+                "radius": {
+                    "name": "רדיוס",
+                    "description": "הרדיוס של האזור"
+                },
+                "passive": {
+                    "name": "פסיבי",
+                    "description": "אזור פסיבי קיים רק עבור אוטומציות: הוא לא מוצג במפה, ולא משנה איפה נמצאים אנשים ועוקבי מכשירים."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "עדכון אזור",
+            "description": "מעדכן מאפיינים של אזור תוך כדי ריצה.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "המזהה של הישות (או הישויות) לעדכון."
+                },
+                "name": {
+                    "name": "שם",
+                    "description": "שם האזור"
+                },
+                "icon": {
+                    "name": "סמל",
+                    "description": "הסמל לשימוש עבור האזור"
+                },
+                "latitude": {
+                    "name": "קו רוחב",
+                    "description": "קו הרוחב של האזור. יכול להיות תבנית."
+                },
+                "longitude": {
+                    "name": "קו אורך",
+                    "description": "קו האורך של האזור. יכול להיות תבנית."
+                },
+                "radius": {
+                    "name": "רדיוס",
+                    "description": "הרדיוס של האזור"
+                },
+                "passive": {
+                    "name": "פסיבי",
+                    "description": "אזור פסיבי קיים רק עבור אוטומציות: הוא לא מוצג במפה, ולא משנה איפה נמצאים אנשים ועוקבי מכשירים."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "מחיקת אזור",
+            "description": "מוחק אזור. זה עובד רק עם אזורים שנוצרו ומנוהלים דרך הממשק. Spook לא יכול לנהל אזורים שנוצרו ומנוהלים ב-YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "מזהה ישות",
+                    "description": "המזהה של הישות (או הישויות) להסרה."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "העלאת טמפרטורה",
+            "description": "מעלה את נקודת ההגדרה של דוד מים בצעד אחד, בתוך הגבולות שלו.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה לשנות. השמט כדי להשתמש בצעד של דוד המים עצמו, או בחצי מעלה (אחת בפרנהייט) כשאין לו."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "הורדת טמפרטורה",
+            "description": "מוריד את נקודת ההגדרה של דוד מים בצעד אחד, בתוך הגבולות שלו.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה לשנות. השמט כדי להשתמש בצעד של דוד המים עצמו, או בחצי מעלה (אחת בפרנהייט) כשאין לו."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "הגברת לחות",
+            "description": "מעלה את לחות היעד של מכשיר אדים בצעד אחד, בתוך הגבולות שלו.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה אחוזים לשנות. השמט כדי להשתמש בצעד של מכשיר האדים עצמו, או באחוז אחד כשאין לו."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "הפחתת לחות",
+            "description": "מוריד את לחות היעד של מכשיר אדים בצעד אחד, בתוך הגבולות שלו.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה אחוזים לשנות. השמט כדי להשתמש בצעד של מכשיר האדים עצמו, או באחוז אחד כשאין לו."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "הגדלת מיקום",
+            "description": "פותח כיסוי עוד צעד, ועוצר בפתיחה מלאה.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה אחוזים להזיז. עשרה אחוזים אם לא צוין."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "הקטנת מיקום",
+            "description": "סוגר כיסוי עוד צעד, ועוצר בסגירה מלאה.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה אחוזים להזיז. עשרה אחוזים אם לא צוין."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "הגדלת מיקום",
+            "description": "פותח שסתום עוד צעד, ועוצר בפתיחה מלאה.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה אחוזים להזיז. עשרה אחוזים אם לא צוין."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "הקטנת מיקום",
+            "description": "סוגר שסתום עוד צעד, ועוצר בסגירה מלאה.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה אחוזים להזיז. עשרה אחוזים אם לא צוין."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "הגברת עוצמת קול",
+            "description": "מגביר את עוצמת הקול של נגן מדיה בצעד שנתת, ועוצר בעוצמה מלאה.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה אחוזים לשנות את עוצמת הקול."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "הנמכת עוצמת קול",
+            "description": "מנמיך את עוצמת הקול של נגן מדיה בצעד שנתת, ועוצר בשקט מוחלט.",
+            "fields": {
+                "step": {
+                    "name": "צעד",
+                    "description": "בכמה אחוזים לשנות את עוצמת הקול."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "הזזת פריט",
+            "description": "מזיז פריט ברשימת מטלות לראש, לתחתית, או אחרי פריט אחר.",
+            "fields": {
+                "item": {
+                    "name": "פריט",
+                    "description": "הכותרת או ה-uid של הפריט להזזה."
+                },
+                "after": {
+                    "name": "אחרי",
+                    "description": "הכותרת או ה-uid של הפריט שאחריו יש לשים אותו. יש לתת את זה או מיקום."
+                },
+                "position": {
+                    "name": "מיקום",
+                    "description": "הזז אותו לראש או לתחתית הרשימה. יש לתת את זה או פריט לשים אותו אחריו."
                 }
             }
         }

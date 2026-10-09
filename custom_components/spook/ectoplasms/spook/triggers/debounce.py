@@ -16,6 +16,7 @@ from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.trigger import Trigger
 from homeassistant.util import dt as dt_util
 
+from ....const import DOMAIN
 from ....trigger_nesting import async_attach_nested
 
 if TYPE_CHECKING:
@@ -130,8 +131,10 @@ class _BurstWatcher:
             # asked about. Raising is what gets the automation marked
             # unavailable instead of leaving it looking healthy and silent.
             self.async_stop()
-            msg = "Could not attach every trigger of a debounce trigger"
-            raise HomeAssistantError(msg)
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="debounce_attach_failed",
+            )
 
         return self.async_stop
 

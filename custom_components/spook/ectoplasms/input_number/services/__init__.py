@@ -10,6 +10,8 @@ import voluptuous as vol
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
+from ....const import DOMAIN
+
 if TYPE_CHECKING:
     from homeassistant.components.input_number import InputNumber
     from homeassistant.core import ServiceCall
@@ -31,8 +33,14 @@ def native_value_as_float(entity: InputNumber) -> float:
     try:
         return float(entity.native_value)
     except (TypeError, ValueError) as err:
-        msg = f"Value {entity.native_value!r} for {entity.entity_id} is not a number"
-        raise HomeAssistantError(msg) from err
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="value_not_a_number",
+            translation_placeholders={
+                "value": repr(entity.native_value),
+                "entity_id": entity.entity_id,
+            },
+        ) from err
 
 
 def step_amount(entity: InputNumber, call: ServiceCall) -> float:

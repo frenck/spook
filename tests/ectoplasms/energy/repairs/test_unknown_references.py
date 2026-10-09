@@ -12,8 +12,7 @@ from homeassistant.components.energy.validate import (
     ValidationIssues,
 )
 
-from custom_components.spook import statistics_sources
-from custom_components.spook.ectoplasms.energy.repairs import unknown_references
+from custom_components.spook import energy_preferences, statistics_sources
 from custom_components.spook.ectoplasms.energy.repairs.unknown_references import (
     SpookRepair,
 )
@@ -38,7 +37,7 @@ def _install_validation(
     async def _async_validate(_hass: HomeAssistant) -> EnergyPreferencesValidation:
         return result
 
-    monkeypatch.setattr(unknown_references, "async_validate", _async_validate)
+    monkeypatch.setattr(energy_preferences, "async_validate", _async_validate)
 
 
 async def test_missing_energy_entity_creates_issue(
@@ -63,6 +62,11 @@ async def test_missing_energy_entity_creates_issue(
     assert issue.translation_placeholders
     assert "sensor.ghost_meter" in issue.translation_placeholders["entities"]
     assert "sensor.flaky" not in issue.translation_placeholders["entities"]
+    # Fixable, and the fix knows exactly what was shown.
+    assert issue.is_fixable
+    assert issue.data
+    assert issue.data["energy_unknown_entity_ids"] == "sensor.ghost_meter"
+    assert issue.data["entities"] == issue.translation_placeholders["entities"]
 
 
 async def test_only_transient_issues_create_no_issue(
@@ -307,6 +311,51 @@ async def test_a_price_entity_is_not_let_off_by_statistics(
                 "type": "gas",
                 "stat_energy_from": "sensor.gas_from_a_service",
                 "entity_energy_price": "sensor.the_price",
+            },
+        ],
+        "device_consumption": [],
+    }
+
+    result = EnergyPreferencesValidation()
+    source_issues = ValidationIssues()
+    source_issues.add_issue(hass, "entity_not_defined", "sensor.the_price")
+    result.energy_sources.append(source_issues)
+
+    _install_validation(hass, monkeypatch, result)
+    marker = _install_statistics(monkeypatch, {"sensor.the_price": "Priced elsewhere"})
+    hass.data[marker] = object()
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, _ISSUE_ID)
+    assert issue
+    assert issue.translation_placeholders
+    assert "sensor.the_price" in issue.translation_placeholders["entities"]
+
+
+async def test_a_price_in_the_older_grid_form_is_not_let_off_either(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A grid connection in the older form keeps its prices inside its flows.
+
+    Home Assistant up to 2026.9 keeps the grid that way, and a price there is
+    read off the state just the same.
+    """
+    manager = await async_get_manager(hass)
+    manager.data = {
+        "energy_sources": [
+            {
+                "type": "grid",
+                "flow_from": [
+                    {
+                        "stat_energy_from": "sensor.imported",
+                        "entity_energy_price": "sensor.the_price",
+                    }
+                ],
+                "flow_to": [],
+                "cost_adjustment_day": 0.0,
             },
         ],
         "device_consumption": [],

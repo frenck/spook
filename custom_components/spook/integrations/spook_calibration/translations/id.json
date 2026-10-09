@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Entitas sumber",
+                    "name": "Nama",
+                    "offset": "Selisih",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Ditambahkan ke nilai sumber. Sensor yang membaca 1,5 derajat terlalu tinggi diberi -1,5. Dalam satuan yang dilaporkan sumber.",
+                    "factor": "Nilai sumber dikalikan dengan ini terlebih dahulu. Biarkan 1 untuk hanya menambahkan selisih."
+                },
+                "description": "Pembantu ini mengoreksi sensor yang pembacaannya meleset: suhu satu derajat terlalu tinggi, kelembaban beberapa persen terlalu rendah. Pembantu ini menampilkan nilai sumber dikali faktor, ditambah selisih.",
+                "title": "Kalibrasi 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Entitas sumber",
+                    "offset": "Selisih",
+                    "factor": "Faktor"
+                },
+                "data_description": {
+                    "offset": "Ditambahkan ke nilai sumber. Sensor yang membaca 1,5 derajat terlalu tinggi diberi -1,5. Dalam satuan yang dilaporkan sumber.",
+                    "factor": "Nilai sumber dikalikan dengan ini terlebih dahulu. Biarkan 1 untuk hanya menambahkan selisih."
+                },
+                "title": "Kalibrasi 👻"
+            }
+        }
+    },
+    "title": "Kalibrasi 👻"
+}

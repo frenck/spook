@@ -7,12 +7,12 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     config_validation as cv,
     entity_registry as er,
 )
 
+from ....errors import entity_not_found
 from ....services import AbstractSpookAdminService
 from ..labels import async_check_labels_exist
 
@@ -41,8 +41,7 @@ class SpookService(AbstractSpookAdminService):
         updates: dict[str, set[str]] = {}
         for entity_id in call.data["entity_id"]:
             if (entity_entry := entity_registry.async_get(entity_id)) is None:
-                msg = f"Entity {entity_id} not found"
-                raise HomeAssistantError(msg)
+                raise entity_not_found(entity_id)
 
             labels = entity_entry.labels.copy()
             labels.difference_update(call.data["label_id"])

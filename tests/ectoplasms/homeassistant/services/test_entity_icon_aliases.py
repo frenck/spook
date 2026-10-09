@@ -23,6 +23,9 @@ if TYPE_CHECKING:
 
     from tests.common import MockUser
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 OWN_NAME = er.COMPUTED_NAME
 
 

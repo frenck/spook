@@ -7,13 +7,13 @@ from typing import TYPE_CHECKING
 import voluptuous as vol
 
 from homeassistant.components.homeassistant import DOMAIN
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import (
     area_registry as ar,
     config_validation as cv,
     entity_registry as er,
 )
 
+from ....errors import area_not_found
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -34,8 +34,7 @@ class SpookService(AbstractSpookAdminService):
         """Handle the service call."""
         area_registry = ar.async_get(self.hass)
         if not area_registry.async_get_area(call.data["area_id"]):
-            msg = f"Area {call.data['area_id']} not found"
-            raise HomeAssistantError(msg)
+            raise area_not_found(call.data["area_id"])
 
         entity_registry = er.async_get(self.hass)
         for entity_id in call.data["entity_id"]:

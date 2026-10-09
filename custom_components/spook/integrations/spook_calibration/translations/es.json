@@ -3,7 +3,7 @@
         "step": {
             "user": {
                 "data": {
-                    "entity_id": "Entidad origen",
+                    "entity_id": "Entidad de origen",
                     "name": "Nombre",
                     "offset": "Desplazamiento",
                     "factor": "Factor"
@@ -12,7 +12,7 @@
                     "offset": "Se suma al valor del origen. Un sensor que mide 1,5 grados de más recibe -1,5. En la unidad en la que informa el origen.",
                     "factor": "El valor del origen se multiplica primero por este número. Déjalo en 1 para solo sumar el desplazamiento."
                 },
-                "description": "Este ayudante corrige un sensor que no mide bien: una temperatura un grado demasiado alta, una humedad unos puntos demasiado baja. Muestra el valor del origen multiplicado por el factor, más el desplazamiento.",
+                "description": "Este asistente corrige un sensor que no mide bien: una temperatura un grado demasiado alta, una humedad unos puntos demasiado baja. Muestra el valor del origen multiplicado por el factor, más el desplazamiento.",
                 "title": "Calibración 👻"
             }
         }
@@ -21,7 +21,7 @@
         "step": {
             "init": {
                 "data": {
-                    "entity_id": "Entidad origen",
+                    "entity_id": "Entidad de origen",
                     "offset": "Desplazamiento",
                     "factor": "Factor"
                 },

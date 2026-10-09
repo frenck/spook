@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Encja źródłowa",
+                    "name": "Nazwa",
+                    "offset": "Przesunięcie",
+                    "factor": "Współczynnik"
+                },
+                "data_description": {
+                    "offset": "Dodawane do wartości źródła. Czujnik, który zawyża o 1,5 stopnia, dostaje -1,5. W jednostce, w której raportuje źródło.",
+                    "factor": "Wartość źródła jest najpierw mnożona przez tę liczbę. Zostaw 1, aby tylko dodać przesunięcie."
+                },
+                "description": "Ten pomocnik poprawia czujnik, który się myli: temperaturę o stopień za wysoką, wilgotność o kilka procent za niską. Pokazuje wartość źródła razy współczynnik, plus przesunięcie.",
+                "title": "Kalibracja 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Encja źródłowa",
+                    "offset": "Przesunięcie",
+                    "factor": "Współczynnik"
+                },
+                "data_description": {
+                    "offset": "Dodawane do wartości źródła. Czujnik, który zawyża o 1,5 stopnia, dostaje -1,5. W jednostce, w której raportuje źródło.",
+                    "factor": "Wartość źródła jest najpierw mnożona przez tę liczbę. Zostaw 1, aby tylko dodać przesunięcie."
+                },
+                "title": "Kalibracja 👻"
+            }
+        }
+    },
+    "title": "Kalibracja 👻"
+}

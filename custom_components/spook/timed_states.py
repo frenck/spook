@@ -253,8 +253,13 @@ class TimedStates:  # pylint: disable=too-many-instance-attributes
             # number of days lands past the end of the calendar. Worked out
             # here rather than at the door, because the answer depends on what
             # time it is by the time the call actually happens.
-            msg = f"Cannot hold {entity_id} until a time that does not exist"
-            raise ServiceValidationError(msg) from err
+            raise ServiceValidationError(
+                translation_domain=DOMAIN,
+                translation_key="hold_until_nonexistent_time",
+                translation_placeholders={
+                    "entity_id": entity_id,
+                },
+            ) from err
 
         holding = _Held(until=deadline, state=state)
         self._held[entity_id] = holding

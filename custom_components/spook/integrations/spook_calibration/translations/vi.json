@@ -1,1 +1,37 @@
-{}
+{
+    "config": {
+        "step": {
+            "user": {
+                "data": {
+                    "entity_id": "Thực thể nguồn",
+                    "name": "Tên",
+                    "offset": "Độ lệch",
+                    "factor": "Hệ số"
+                },
+                "data_description": {
+                    "offset": "Được cộng vào giá trị của nguồn. Cảm biến đọc cao hơn 1,5 độ thì nhập -1,5. Tính theo đơn vị mà nguồn báo cáo.",
+                    "factor": "Giá trị của nguồn được nhân với số này trước. Để 1 nếu chỉ muốn cộng độ lệch."
+                },
+                "description": "Biến trợ giúp này hiệu chỉnh một cảm biến đọc sai: nhiệt độ cao hơn một độ, độ ẩm thấp hơn vài phần trăm. Nó hiển thị giá trị của nguồn nhân với hệ số, cộng với độ lệch.",
+                "title": "Hiệu chỉnh 👻"
+            }
+        }
+    },
+    "options": {
+        "step": {
+            "init": {
+                "data": {
+                    "entity_id": "Thực thể nguồn",
+                    "offset": "Độ lệch",
+                    "factor": "Hệ số"
+                },
+                "data_description": {
+                    "offset": "Được cộng vào giá trị của nguồn. Cảm biến đọc cao hơn 1,5 độ thì nhập -1,5. Tính theo đơn vị mà nguồn báo cáo.",
+                    "factor": "Giá trị của nguồn được nhân với số này trước. Để 1 nếu chỉ muốn cộng độ lệch."
+                },
+                "title": "Hiệu chỉnh 👻"
+            }
+        }
+    },
+    "title": "Hiệu chỉnh 👻"
+}

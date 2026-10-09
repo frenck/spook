@@ -1,17 +1,348 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Otomasi dimatikan",
+            "description": "Dipicu ketika seseorang, atau sesuatu, mematikan sebuah otomasi. Biarkan target kosong untuk memantau semua otomasi."
+        },
+        "debounce": {
+            "name": "Setelah reda",
+            "description": "Dipicu setelah sebuah pemicu berhenti terpicu selama beberapa waktu, sehingga rentetan pemicu datang sebagai satu. Sensor gerak tidak melaporkan gerakan sekali, tetapi dua puluh kali.",
+            "fields": {
+                "triggers": {
+                    "name": "Pemicu",
+                    "description": "Pemicu yang ditunggu sampai reda. Salah satunya terpicu memulai sebuah rentetan, dan salah satunya terpicu lagi membuatnya terus berlanjut, sehingga beberapa pemicu digabung menjadi satu, bukan satu per satu."
+                },
+                "for": {
+                    "name": "Selama",
+                    "description": "Berapa lama harus sepi sebelum ini dipicu. Setiap kali terpicu, penantian itu dimulai dari awal, jadi sesuatu yang tidak pernah berhenti terpicu tidak akan pernah dilaporkan."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Semua ini sudah terjadi",
+            "description": "Dipicu ketika setiap pemicu dari beberapa pemicu sudah terpicu dalam rentang waktu yang sama, dalam urutan apa pun. Pemicu bawaan Home Assistant adalah daftar di mana salah satu saja sudah cukup; ini kebalikannya.",
+            "fields": {
+                "triggers": {
+                    "name": "Pemicu",
+                    "description": "Pemicu yang semuanya harus sudah terpicu. Urutan tidak penting, dan pemicu yang terpicu lagi menggantikan gilirannya yang sebelumnya, bukan dihitung dua kali."
+                },
+                "within": {
+                    "name": "Dalam",
+                    "description": "Seberapa berdekatan semuanya harus terjadi. Rentang waktunya bergeser, jadi pemicu yang terpicu lebih lama dari ini akan dilupakan, sementara yang lain tetap dihitung."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entitas kembali",
+            "description": "Dipicu ketika sebuah entitas kembali setelah tidak tersedia selama beberapa waktu, sehingga router yang dimulai ulang tidak terbaca seolah semua yang ada di rumah pulih.",
+            "fields": {
+                "for": {
+                    "name": "Selama",
+                    "description": "Berapa lama entitas harus menghilang sebelum kembalinya dihitung. Yang lebih singkat hanyalah kedipan: memuat ulang sebuah integrasi membuat semua entitasnya tidak tersedia lalu kembali dalam waktu kurang dari satu detik."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Perangkat ditambahkan",
+            "description": "Dipicu ketika perangkat baru ditambahkan ke Home Assistant, seperti steker yang baru saja dipasangkan."
+        },
+        "sequence": {
+            "name": "Pemicu berurutan",
+            "description": "Dipicu ketika beberapa pemicu terjadi satu demi satu, sesuai urutan yang diberikan.",
+            "fields": {
+                "steps": {
+                    "name": "Langkah",
+                    "description": "Pemicu yang harus terjadi, secara berurutan. Hanya langkah yang sedang ditunggu yang mendengarkan, jadi langkah berikutnya yang terpicu terlalu awal tidak dihitung cocok."
+                },
+                "timeout": {
+                    "name": "Batas waktu",
+                    "description": "Berapa lama seluruh urutan boleh berlangsung, dihitung dari langkah pertama. Jika dikosongkan, penantiannya tanpa batas."
+                },
+                "reset": {
+                    "name": "Atur ulang",
+                    "description": "Pemicu yang membatalkan urutan yang sedang berjalan, sehingga kembali menunggu langkah pertama."
+                }
+            }
+        },
+        "while": {
+            "name": "Selama kondisi terpenuhi",
+            "description": "Dipicu ketika sebuah kondisi menjadi true, dan terus dipicu secara berkala selama kondisi itu tetap true.",
+            "fields": {
+                "condition": {
+                    "name": "Kondisi",
+                    "description": "Kondisi yang dipantau. Pemicuan dimulai ketika kondisi menjadi true dan berhenti ketika kondisi tidak lagi true."
+                },
+                "every": {
+                    "name": "Setiap",
+                    "description": "Berapa lama menunggu antara satu pemicuan dan berikutnya, selama kondisi terpenuhi."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Watchdog",
+            "description": "Dipicu ketika sesuatu yang diharapkan terjadi tidak terjadi tepat waktu.",
+            "fields": {
+                "arm": {
+                    "name": "Aktifkan",
+                    "description": "Apa yang memulai pengawasan. Penantian dihitung dari sini, dan mengaktifkan lagi saat sedang menunggu akan memulai penantian dari awal."
+                },
+                "expect": {
+                    "name": "Harapkan",
+                    "description": "Apa yang diharapkan menyusul. Jika datang tepat waktu, pengawasan dibatalkan dan tidak ada yang dipicu."
+                },
+                "within": {
+                    "name": "Dalam",
+                    "description": "Berapa lama waktu yang dimiliki hal yang diharapkan untuk datang. Ini dipicu ketika waktu itu habis dan hal tersebut belum datang."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entitas tidak mau tenang",
+            "description": "Dipicu ketika sebuah entitas berubah status lebih sering dari seharusnya dalam suatu rentang waktu.",
+            "fields": {
+                "changes": {
+                    "name": "Perubahan",
+                    "description": "Berapa banyak perubahan status yang diperlukan sebelum ini dipicu. Perubahan atribut tidak dihitung, begitu juga entitas yang muncul atau menghilang."
+                },
+                "within": {
+                    "name": "Dalam",
+                    "description": "Rentang waktu tempat perubahan itu harus terjadi. Rentangnya ikut bergeser, jadi ini selalu tentang perubahan terbaru."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Kondisi menjadi true",
+            "description": "Dipicu ketika sebuah kondisi berubah dari false menjadi true, menggunakan blok pembangun kondisi yang sama seperti di tempat lain.",
+            "fields": {
+                "condition": {
+                    "name": "Kondisi",
+                    "description": "Kondisi yang dipantau."
+                }
+            }
+        },
+        "cron": {
+            "name": "Jadwal cron",
+            "description": "Dipicu sesuai jadwal crontab, untuk waktu yang tidak bisa diungkapkan oleh pemicu waktu bawaan Home Assistant, seperti setiap hari kerja pukul tujuh atau hari Jumat terakhir setiap bulan.",
+            "fields": {
+                "schedule": {
+                    "name": "Jadwal",
+                    "description": "Ekspresi crontab dengan lima kolom: menit, jam, tanggal, bulan, hari dalam minggu. Mendukung rentang dan langkah, serta ekstensi hari dalam minggu, jadi \"MON#2\" adalah Senin kedua dan \"5L\" adalah Jumat terakhir. Nama panggilan seperti \"@daily\" tidak didukung."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Perangkat ditemukan",
+            "description": "Dipicu ketika Home Assistant menemukan sesuatu yang baru yang bisa disiapkan, seperti perangkat yang baru saja muncul di jaringan Anda."
+        },
+        "integration_added": {
+            "name": "Integrasi ditambahkan",
+            "description": "Dipicu ketika sebuah integrasi ditambahkan ke Home Assistant, siapa pun atau apa pun yang menambahkannya."
+        },
+        "integration_failed": {
+            "name": "Integrasi gagal disiapkan",
+            "description": "Dipicu ketika sebuah entri konfigurasi tidak berhasil menyiapkan dirinya selama beberapa waktu, melewati titik di mana percobaan ulang Home Assistant sendiri seharusnya sudah membereskannya.",
+            "fields": {
+                "for": {
+                    "name": "Selama",
+                    "description": "Berapa lama sebuah entri harus terus gagal sebelum ini dipicu. Home Assistant mencoba ulang entri yang gagal paling lambat setiap sepuluh menit, jadi apa pun yang lebih singkat dari itu melaporkan masalah yang mungkin masih bisa beres sendiri."
+                },
+                "entry_id": {
+                    "name": "Entri",
+                    "description": "Batasi ini ke entri konfigurasi tertentu. Biarkan kosong untuk memantau semuanya."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Masalah perbaikan dibuat",
+            "description": "Dipicu ketika muncul masalah perbaikan baru, sehingga Anda bisa mengetahuinya tanpa membuka halaman perbaikan.",
+            "fields": {
+                "domain": {
+                    "name": "Integrasi",
+                    "description": "Batasi ini ke masalah yang dilaporkan oleh integrasi tertentu, berdasarkan domainnya. Biarkan kosong untuk semuanya."
+                },
+                "severity": {
+                    "name": "Tingkat keparahan",
+                    "description": "Batasi ini ke masalah dengan tingkat keparahan tertentu. Biarkan kosong untuk semuanya."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Masalah perbaikan terselesaikan",
+            "description": "Dipicu ketika sebuah masalah perbaikan hilang, entah karena diperbaiki atau tidak lagi dilaporkan.",
+            "fields": {
+                "domain": {
+                    "name": "Integrasi",
+                    "description": "Batasi ini ke masalah yang dilaporkan oleh integrasi tertentu, berdasarkan domainnya. Biarkan kosong untuk semuanya."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entitas membisu",
+            "description": "Dipicu ketika tidak ada yang menulis ke sebuah entitas selama beberapa waktu, sehingga perangkat yang mati diam-diam, bukannya menjadi tidak tersedia, tetap ketahuan.",
+            "fields": {
+                "for": {
+                    "name": "Selama",
+                    "description": "Berapa lama sebuah entitas harus diam sebelum ini dipicu. Entitas yang terus melaporkan nilai yang sama tidak dianggap diam."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Suhu target tercapai",
+            "description": "Dipicu ketika suhu termostat atau pemanas air mencapai targetnya, atau melompatinya. Mengubah target tidak dihitung, begitu juga perangkat yang mati.",
+            "fields": {
+                "tolerance": {
+                    "name": "Toleransi",
+                    "description": "Seberapa dekat ke target yang masih dianggap sampai, dalam satuan perangkat. Untuk termostat yang berhenti sedikit sebelum setpoint-nya. Nol berarti target itu sendiri."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Pembaruan terpasang",
+            "description": "Dipicu ketika entitas pembaruan melaporkan versi terpasang yang berbeda, entah seseorang menekan pasang, perangkatnya memperbarui diri sendiri, atau diperbarui di luar Home Assistant."
+        },
+        "position_reached": {
+            "name": "Posisi tercapai",
+            "description": "Dipicu ketika penutup atau katup mencapai suatu posisi, atau melewatinya. Yang sudah berada di sana, atau kembali dari tidak tersedia di posisi itu, tidak dihitung.",
+            "fields": {
+                "position": {
+                    "name": "Posisi",
+                    "description": "Posisi yang ingin dicapai, dari 0 (tertutup) hingga 100 (terbuka)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Skrip dimulai",
+            "description": "Dipicu ketika sebuah skrip memulai eksekusi. Eksekusi yang ditolak skrip karena sudah berjalan tidak dihitung. Biarkan target kosong untuk memantau semua skrip."
+        },
+        "user_added": {
+            "name": "Pengguna ditambahkan",
+            "description": "Dipicu ketika seseorang diberi akses masuk ke Home Assistant. Pengguna yang dibuat Home Assistant untuk integrasinya sendiri tidak disertakan."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritis",
+                "error": "Kesalahan",
+                "warning": "Peringatan"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Bawah",
+                "top": "Atas"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Suhu pada targetnya",
+            "description": "Terpenuhi ketika suhu termostat atau pemanas air berada pada targetnya. Perangkat yang mati tidak berada pada targetnya, dan yang tidak tersedia diabaikan.",
+            "fields": {
+                "behavior": {
+                    "name": "Perilaku",
+                    "description": "Apakah cukup salah satu perangkat yang sudah sampai, atau semuanya harus sampai."
+                },
+                "tolerance": {
+                    "name": "Toleransi",
+                    "description": "Seberapa dekat ke target yang masih dianggap sampai, dalam satuan perangkat. Untuk termostat yang berhenti sedikit sebelum setpoint-nya. Nol berarti target itu sendiri."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Masalah perbaikan belum selesai",
+            "description": "Terpenuhi selama ada masalah perbaikan yang belum selesai. Masalah yang sudah diabaikan seseorang tidak dihitung.",
+            "fields": {
+                "domain": {
+                    "name": "Integrasi",
+                    "description": "Batasi ini ke masalah yang dilaporkan oleh integrasi tertentu, berdasarkan domainnya. Biarkan kosong untuk semuanya."
+                },
+                "severity": {
+                    "name": "Tingkat keparahan",
+                    "description": "Batasi ini ke masalah dengan tingkat keparahan tertentu. Biarkan kosong untuk semuanya."
+                }
+            }
+        },
+        "quota": {
+            "name": "Jatah eksekusi tersisa",
+            "description": "Terpenuhi selama otomasi ini telah berjalan kurang dari jumlah tertentu dalam periode tertentu. Skrip tidak dihitung.",
+            "fields": {
+                "limit": {
+                    "name": "Batas",
+                    "description": "Berapa kali eksekusi yang diizinkan dalam periode tersebut."
+                },
+                "period": {
+                    "name": "Periode",
+                    "description": "Rentang waktu tempat batas itu berlaku. Rentangnya bergulir, jadi satu hari berarti dua puluh empat jam mana saja, bukan dari tengah malam ke tengah malam."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Dipicu oleh otomasi",
+            "description": "Terpenuhi ketika otomasi lain yang menjalankan eksekusi ini, baik secara langsung maupun melalui skrip.",
+            "fields": {
+                "automation": {
+                    "name": "Otomasi",
+                    "description": "Batasi ini ke otomasi tertentu. Biarkan kosong untuk menerima semuanya."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Dipicu oleh pengguna",
+            "description": "Terpenuhi ketika ada orang di balik apa yang memicunya: perubahan status atau peristiwa yang mereka sebabkan, termasuk yang membuat pemicu templat menjadi true. Jadwal, matahari, atau integrasi yang bertindak sendiri tidak membawa siapa pun, begitu juga memaksa eksekusi dengan tombol Jalankan.",
+            "fields": {
+                "person": {
+                    "name": "Orang",
+                    "description": "Hanya terpenuhi jika salah satu dari orang-orang ini yang memulainya. Biarkan kosong agar terpenuhi untuk siapa saja. Seseorang harus memiliki akun pengguna yang ditautkan, jika tidak, tidak ada yang bisa dicocokkan."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Tidak dipicu oleh pengguna",
+            "description": "Terpenuhi ketika tidak ada yang bisa dimintai tanggung jawab atas eksekusi ini: jadwal, matahari, integrasi yang bertindak sendiri, atau tombol Jalankan. Sengaja tidak punya opsi. Untuk mengecualikan orang tertentu, letakkan \"Dipicu oleh pengguna\" di dalam kondisi Tidak."
+        },
+        "chance": {
+            "name": "Peluang",
+            "description": "Terpenuhi dalam persentase waktu tertentu, dipilih secara acak setiap kali diperiksa. Berguna untuk menambahkan sedikit variasi pada otomasi Anda.",
+            "fields": {
+                "percentage": {
+                    "name": "Persentase",
+                    "description": "Seberapa sering kondisi ini harus terpenuhi, dalam persentase."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Masa jeda",
+            "description": "Hanya terpenuhi jika otomasi atau skrip ini belum berjalan dalam waktu yang ditentukan (atau belum pernah berjalan). Masa jeda bawaan, agar tidak terpicu terlalu sering.",
+            "fields": {
+                "duration": {
+                    "name": "Durasi",
+                    "description": "Berapa lama menunggu setelah eksekusi terakhir sebelum kondisi ini terpenuhi lagi."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Yeah... well... no. K, thx, bye!"
+            "already_spooked": "Spook sudah menghantui tempat ini 👻\n\nSatu hantu per rumah sudah lebih dari cukup. Anda bisa menemukan Spook di [Perangkat & layanan](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook sudah bangun lagi 👻\n\nBeri waktu sebentar untuk melihat-lihat. Apa pun yang ditemukannya akan muncul di [Perbaikan](/config/repairs).",
+            "enable_failed": "Spook tidak mau bangun 👻\n\nCoba nyalakan kembali sendiri di [Perangkat & layanan](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook tetap tidur 👻\n\nKangen? Anda bisa membangunkannya kapan saja di [Perangkat & layanan](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Spook sedang melayang-layang 👻\n\nBeri waktu sebentar untuk melihat-lihat. Apa pun yang ditemukannya akan muncul di [Perbaikan](/config/repairs).\n\nAksi, pemicu, dan kondisi tambahan sudah menunggu Anda di editor otomasi dan skrip. Penasaran apa lagi yang bisa dilakukan Spook? Semuanya ada di [dokumentasi]({documentation_url}).\n\nSuka dengan Spook? 👻 Sebuah ⭐ di [GitHub]({repository_url}) memberi tahu orang lain bahwa Spook sebenarnya cukup hebat. [Mensponsori Frenck]({sponsor_url}) membuat hantu ini tetap kenyang. Dan [buletin]({newsletter_url}) gratis dua mingguan miliknya membuat hantu dalam diri Anda tetap kenyang."
         },
         "step": {
             "user": {
-                "description": "Did you read the readme? Did you read the license? Are you really sure?"
+                "title": "Boo! Kenalan dengan Spook, sobat Anda 👻",
+                "description": "Spook melayang-layang di Home Assistant Anda mencari hantu: referensi ke hal-hal yang sudah tidak ada, dan sisa-sisa yang tidak pernah dibersihkan siapa pun. Apa pun yang ditemukannya akan dilaporkan di Perbaikan.\n\nSpook juga memperluas kemampuan otomasi dan skrip Anda dengan aksi, pemicu, kondisi, dan pembantu tambahan, untuk otomasi yang lebih canggih lagi.\n\nPeringatan dari awal: Spook bukan bagian dari Home Assistant. Ini adalah integrasi khusus yang menjangkau tempat-tempat yang tidak pernah mengundangnya. Jika terjadi sesuatu yang aneh, curigai Spook terlebih dahulu, dan [beri tahu kami]({issue_tracker_url}).\n\nSiap dihantui?"
             },
-            "choice_restart": {
-                "description": "In order for Spook to finish setting up, Home Assistant needs to be restarted.\n\nDo you want to restart Home Assistant now?",
+            "already_configured": {
+                "title": "Spook sedang tidur 👻",
+                "description": "Spook sudah disiapkan, tetapi seseorang mematikannya. Bangunkan?",
                 "menu_options": {
-                    "restart_now": "Restart now",
-                    "restart_later": "Restart later"
+                    "enable_existing": "Bangunkan Spook",
+                    "keep_sleeping": "Biarkan tidur"
                 }
             }
         }
@@ -19,16 +350,16 @@
     "entity": {
         "button": {
             "homeassistant_reload": {
-                "name": "Reload"
+                "name": "Muat ulang"
             },
             "homeassistant_restart": {
-                "name": "Restart"
+                "name": "Mulai ulang"
             },
             "repairs_ignore_all": {
-                "name": "Ignore all"
+                "name": "Abaikan semua"
             },
             "repairs_unignore_all": {
-                "name": "Unignore all"
+                "name": "Batalkan pengabaian semua"
             }
         },
         "event": {
@@ -36,16 +367,16 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Issue created",
-                            "remove": "Issue removed",
-                            "update": "Issue updated"
+                            "create": "Masalah dibuat",
+                            "remove": "Masalah dihapus",
+                            "update": "Masalah diperbarui"
                         }
                     },
                     "domain": {
-                        "name": "Issue issuer"
+                        "name": "Sumber masalah"
                     },
                     "issue_id": {
-                        "name": "Issue ID"
+                        "name": "ID masalah"
                     }
                 }
             }
@@ -58,16 +389,16 @@
                 "name": "Panel kontrol alarm"
             },
             "homeassistant_area": {
-                "name": "Login"
+                "name": "Area"
             },
             "homeassistant_automation": {
-                "name": "Sitemap"
+                "name": "Otomasi"
             },
             "homeassistant_binary_sensor": {
                 "name": "Sensor biner"
             },
             "homeassistant_button": {
-                "name": "Login"
+                "name": "Tombol"
             },
             "homeassistant_calendar": {
                 "name": "Kalender"
@@ -76,221 +407,743 @@
                 "name": "Kamera"
             },
             "homeassistant_climate": {
-                "name": "Login"
+                "name": "Iklim"
+            },
+            "homeassistant_counter": {
+                "name": "Pencacah"
             },
             "homeassistant_cover": {
-                "name": "Login"
+                "name": "Penutup"
             },
             "homeassistant_custom_component": {
                 "name": "Integrasi khusus"
             },
             "homeassistant_date": {
-                "name": "Sitemap"
+                "name": "Tanggal"
             },
             "homeassistant_datetime": {
-                "name": "Sitemap"
+                "name": "Tanggal/waktu"
             },
             "homeassistant_device": {
-                "name": "Login"
+                "name": "Perangkat"
             },
             "homeassistant_device_tracker": {
                 "name": "Pelacak perangkat"
             },
             "homeassistant_entities": {
-                "name": "Sitemap"
+                "name": "Entitas"
             },
             "homeassistant_fan": {
-                "name": "Login"
+                "name": "Kipas angin"
+            },
+            "homeassistant_group": {
+                "name": "Grup"
             },
             "homeassistant_humidifier": {
-                "name": "Login"
+                "name": "Pelembap"
             },
             "homeassistant_image": {
-                "name": "Sitemap"
+                "name": "Gambar"
             },
             "homeassistant_input_boolean": {
-                "name": "Login"
+                "name": "Input boolean"
             },
             "homeassistant_input_button": {
                 "name": "Tombol input"
             },
             "homeassistant_input_datetime": {
-                "name": "Tanggal input / waktu"
+                "name": "Input tanggal dan waktu"
             },
             "homeassistant_input_number": {
-                "name": "Nomor masukan"
+                "name": "Input bilangan"
             },
             "homeassistant_input_select": {
-                "name": "Pilih input"
+                "name": "Input pilihan"
             },
             "homeassistant_input_text": {
-                "name": "Login"
+                "name": "Input teks"
             },
             "homeassistant_integration": {
-                "name": "Sitemap"
+                "name": "Integrasi"
             },
             "homeassistant_light": {
-                "name": "Login"
+                "name": "Lampu"
             },
             "homeassistant_lock": {
-                "name": "Login"
+                "name": "Kunci"
             },
             "homeassistant_media_player": {
-                "name": "Media pemain"
+                "name": "Pemutar media"
             },
             "homeassistant_number": {
-                "name": "Login"
+                "name": "Bilangan"
             },
             "homeassistant_persistent_notification": {
-                "name": "Pemberitahuan terus-menerus"
+                "name": "Notifikasi persisten"
             },
             "homeassistant_person": {
-                "name": "Login"
+                "name": "Orang"
             },
             "homeassistant_remote": {
-                "name": "Login"
+                "name": "Remote"
             },
             "homeassistant_scene": {
-                "name": "Sitemap"
+                "name": "Skenario"
             },
             "homeassistant_script": {
-                "name": "Login"
+                "name": "Skrip"
             },
             "homeassistant_select": {
-                "name": "Login"
+                "name": "Pilihan"
             },
             "homeassistant_sensor": {
-                "name": "Login"
+                "name": "Sensor"
             },
             "homeassistant_siren": {
-                "name": "Login"
+                "name": "Sirene"
             },
             "homeassistant_stt": {
-                "name": "Sitemap"
+                "name": "Ucapan-ke-teks"
             },
             "homeassistant_sun": {
-                "name": "Login"
+                "name": "Matahari"
             },
             "homeassistant_switch": {
-                "name": "Login"
+                "name": "Sakelar"
             },
             "homeassistant_text": {
-                "name": "Login"
+                "name": "Teks"
             },
             "homeassistant_time": {
-                "name": "Login"
+                "name": "Waktu"
+            },
+            "homeassistant_timer": {
+                "name": "Timer"
+            },
+            "homeassistant_todo": {
+                "name": "Daftar tugas"
             },
             "homeassistant_tts": {
-                "name": "Sitemap"
+                "name": "Teks-ke-ucapan"
             },
             "homeassistant_update": {
-                "name": "Sitemap"
+                "name": "Pembaruan"
             },
             "homeassistant_vacuum": {
-                "name": "Login"
+                "name": "Vakum"
             },
             "homeassistant_water_heater": {
                 "name": "Pemanas air"
             },
             "homeassistant_weather": {
-                "name": "Sitemap"
+                "name": "Cuaca"
             },
             "homeassistant_zone": {
-                "name": "Login"
+                "name": "Zona"
             },
             "repairs_total_issues": {
-                "name": "Sitemap"
+                "name": "Total"
             },
             "repairs_ignored_issues": {
-                "name": "Login"
+                "name": "Diabaikan"
             },
             "repairs_active_issues": {
-                "name": "Sitemap"
+                "name": "Aktif"
             }
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Laporan keadaan Alexa"
+                "name": "Pelaporan status Alexa"
             },
             "cloud_google_report_state": {
-                "name": "Google Asisten pelaporan negara"
+                "name": "Pelaporan status Google Assistant"
             },
             "cloud_remote": {
-                "name": "Login"
+                "name": "Akses jarak jauh"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Tidak dapat memasang setiap pemicu dari pemicu semua-dari."
+        },
+        "area_not_found": {
+            "message": "Area {area_id} tidak ditemukan."
+        },
+        "blueprint_backup_failed": {
+            "message": "Tidak dapat menyimpan salinan {path}: {error}. Tidak ada yang ditulis."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} tidak dapat berjalan di sini: {errors}. Tidak ada yang ditulis."
+        },
+        "blueprint_could_not_write": {
+            "message": "Tidak dapat menulis {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Domain tidak didukung: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Kesalahan saat mengambil blueprint dari URL."
+        },
+        "blueprint_file_exists": {
+            "message": "File sudah ada."
+        },
+        "blueprint_gone": {
+            "message": "{name} sudah tidak ada di sini, jadi tidak ada yang perlu diperbarui. Tidak ada yang ditulis."
+        },
+        "blueprint_url_not_supported": {
+            "message": "URL ini tidak didukung."
+        },
+        "blueprint_write_failed": {
+            "message": "Kesalahan saat menulis file."
+        },
+        "blueprints_not_loaded": {
+            "message": "Blueprint {domain} sedang tidak dimuat."
+        },
+        "calendar_events_which": {
+            "message": "Sebutkan acara yang mana: berikan ringkasan, uid, atau keduanya."
+        },
+        "calendar_range_backwards": {
+            "message": "Akhir rentang pencarian harus setelah awalnya."
+        },
+        "calendar_range_required": {
+            "message": "Sebutkan seberapa jauh mencari: berikan tanggal dan waktu akhir, atau durasi."
+        },
+        "cannot_disable_system_user": {
+            "message": "Tidak dapat menonaktifkan pengguna buatan sistem: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Tidak dapat mengaktifkan pengguna buatan sistem: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Kategori {category} tidak ditemukan untuk {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Tidak ada yang perlu diperbarui pada kategori {category}: berikan setidaknya salah satu dari {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Sebuah templat dalam kondisi ini sudah tidak berisi Jinja, jadi nilainya konstan dan tidak akan pernah berubah. Biasanya itu berarti sebuah skrip sudah merendernya sebelum aksi ini berjalan, yang terjadi pada setiap templat di data aksi. Gunakan kondisi tanpa templat, atau tunggu templatnya sendiri dengan 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Entri integrasi {config_entry_id} tidak ditemukan."
+        },
+        "debounce_attach_failed": {
+            "message": "Tidak dapat memasang setiap pemicu dari pemicu debounce."
+        },
+        "device_not_found": {
+            "message": "Perangkat {device_id} tidak ditemukan."
+        },
+        "entity_id_taken": {
+            "message": "ID entitas {entity_id} sudah dipakai."
+        },
+        "entity_not_found": {
+            "message": "Entitas {entity_id} tidak ditemukan."
+        },
+        "entity_without_unique_id": {
+            "message": "Entitas {entity_id} tidak memiliki ID unik, jadi Home Assistant tidak dapat menyimpan ikon atau alias untuknya."
+        },
+        "event_cannot_change": {
+            "message": "{summary} tidak dapat diubah seperti itu: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Sebutkan apa yang diubah: ringkasan baru, tempat, atau waktu baru."
+        },
+        "event_shift_or_times": {
+            "message": "Geser sebuah acara dengan selisih waktu, atau berikan waktu baru, jangan keduanya."
+        },
+        "event_whole_days": {
+            "message": "{summary} berlangsung sepanjang hari, jadi hanya bisa digeser per hari penuh."
+        },
+        "floor_not_found": {
+            "message": "Lantai {floor_id} tidak ditemukan."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} tidak dapat bergabung dengan grup ini: grup ini berisi entitas {domains}."
+        },
+        "group_not_found_behind": {
+            "message": "Tidak dapat menemukan grup di balik {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "Tidak dapat menjangkau pembantu {domain} yang disimpan Home Assistant."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Tidak dapat menahan {entity_id} sampai waktu yang tidak ada."
+        },
+        "home_zone_radius": {
+            "message": "Zona rumah menerima radius dalam meter bulat, nol atau lebih."
+        },
+        "home_zone_unsupported": {
+            "message": "Zona rumah hanya menerima lintang, bujur, dan radius, bukan: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Input bilangan ini tidak dapat diedit: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Sebutkan entri integrasi yang ingin diubah, atau integrasinya."
+        },
+        "integration_without_entries": {
+            "message": "Integrasi {domain} tidak memiliki entri."
+        },
+        "label_not_found": {
+            "message": "Label {label_id} tidak ditemukan."
+        },
+        "label_nothing_to_update": {
+            "message": "Tidak ada yang perlu diperbarui pada label {label_id}: berikan setidaknya salah satu dari {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Nilai maksimum ({maximum}) harus lebih besar dari minimum ({minimum})."
+        },
+        "no_max_value": {
+            "message": "Entitas {entity_id} tidak memiliki nilai maksimum."
+        },
+        "no_min_value": {
+            "message": "Entitas {entity_id} tidak memiliki nilai minimum."
+        },
+        "not_a_group": {
+            "message": "{entity_id} bukan sebuah grup."
+        },
+        "person_not_editable": {
+            "message": "Orang ini tidak dapat diedit: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook mengalami kesalahan saat memulai ulang Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "Tidak dapat memasang langkah pertama dari pemicu berurutan."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Berikan minimum, maksimum, atau langkah yang ingin diubah."
+        },
+        "spooked": {
+            "message": "Kena Spook! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Timer ini tidak dapat diedit: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Sebuah item tidak dapat dipindahkan ke setelah dirinya sendiri."
+        },
+        "todo_item_not_found": {
+            "message": "Tidak ada item {item} di {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "Tidak ada yang bisa dipindahkan ke setelah item terakhir di {entity_id}."
+        },
+        "todo_move_where": {
+            "message": "Sebutkan ke mana: setelah item lain, atau ke paling atas atau paling bawah."
+        },
+        "user_not_found": {
+            "message": "Tidak dapat menemukan pengguna: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Nilai {value} untuk {entity_id} bukan angka."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Tidak dapat memasang pemicu pengaktif dari pemicu watchdog."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Tidak dapat memasang pemicu yang diharapkan dari pemicu watchdog."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} adalah grup dari konfigurasi YAML Anda, yang tidak dapat diubah Spook. Edit di konfigurasi Anda, atau gunakan group.set, yang masih berfungsi untuk grup jenis itu."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} disiapkan di YAML dan tidak dapat dihapus."
+        },
+        "zone_not_editable": {
+            "message": "Zona ini tidak dapat diedit: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Entitas tidak dikenal dipantau oleh peringatan: {alert}",
+            "description": "Spook menemukan hantu di peringatan Anda 👻\n\nPeringatan {alert} (`{entity_id}`) memantau entitas yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\nSebuah peringatan hanya bisa berbunyi berdasarkan entitas yang dipantaunya, jadi peringatan ini tidak akan pernah berbunyi lagi. Tampilannya sama persis dengan peringatan yang tidak punya apa-apa untuk dilaporkan.\n\nUntuk memperbaiki kesalahan ini, edit bagian `alert:` di konfigurasi Anda dan arahkan peringatan ini ke entitas yang ada.\n\nSpook 👻 Sobat Anda."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Notifier tidak dikenal digunakan oleh peringatan: {alert}",
+            "description": "Spook menemukan hantu di peringatan Anda 👻\n\nPeringatan {alert} (`{entity_id}`) mengirim notifikasi melalui aksi berikut, yang tidak dikenal oleh Home Assistant:\n\n{notifiers}\n\nPeringatan ini tetap berbunyi dan tetap berulang, tetapi notifikasi ini tidak sampai ke mana pun. Home Assistant hanya mencatatnya di log saat peringatan berbunyi, yang merupakan saat yang buruk untuk mengetahui bahwa tidak ada yang mendengarkan.\n\nUntuk memperbaiki kesalahan ini, edit daftar `notifiers:` dari peringatan ini di konfigurasi Anda dan hapus atau perbaiki entri-entri ini.\n\nSpook 👻 Sobat Anda."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {automation}"
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini merujuk ke area berikut, yang tidak dikenal oleh Home Assistant:\n\n{areas}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan hapus penggunaan area yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Area tidak dikenal digunakan di: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini menggunakan kondisi berikut, yang tidak dapat disediakan oleh integrasi mana pun yang tersedia di Home Assistant:\n\n{conditions}\n\n\n\nIni sering terjadi ketika integrasi yang menyediakan kondisi tersebut telah dihapus. Untuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan hapus penggunaan kondisi yang tidak tersedia ini, atau pulihkan integrasi yang menyediakannya.\n\nSpook 👻 Sobat Anda.",
+            "title": "Kondisi tidak dikenal digunakan di: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {automation}"
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini merujuk ke perangkat berikut, yang tidak dikenal oleh Home Assistant:\n\n{devices}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan hapus penggunaan perangkat yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Perangkat tidak dikenal digunakan di: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {automation}"
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini merujuk ke entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan hapus penggunaan entitas yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas tidak dikenal digunakan di: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini merujuk ke lantai berikut, yang tidak dikenal oleh Home Assistant:\n\n{floors}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan hapus penggunaan lantai yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Lantai tidak dikenal digunakan di: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini merujuk ke label berikut, yang tidak dikenal oleh Home Assistant:\n\n{labels}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan hapus penggunaan label yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Label tidak dikenal digunakan di: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini merujuk ke aksi berikut, yang tidak dikenal oleh Home Assistant:\n\n{services}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan hapus penggunaan aksi yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Aksi tidak dikenal digunakan di: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook menemukan hantu di otomasi Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan otomasi berikut:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nOtomasi ini menggunakan pemicu berikut, yang tidak dapat disediakan oleh integrasi mana pun yang tersedia di Home Assistant:\n\n{triggers}\n\n\n\nIni sering terjadi ketika integrasi yang menyediakan pemicu tersebut telah dihapus. Untuk memperbaiki kesalahan ini, [edit otomasi]({edit}) dan hapus penggunaan pemicu yang tidak tersedia ini, atau pulihkan integrasi yang menyediakannya.\n\nSpook 👻 Sobat Anda.",
+            "title": "Pemicu tidak dikenal digunakan di: {automation}"
+        },
+        "empty_areas": {
+            "title": "Area kosong: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Area kosong: {area}",
+                        "description": "Area {area} tidak memiliki perangkat, entitas, atau otomasi maupun skrip yang menargetkannya.\n\nHapus area ini, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Hapus area kosong ini",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi",
+                            "manage": "Biar saya perbaiki sendiri"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit area ini lagi.",
+                    "manage": "Anda bisa mengelola area ini sendiri di [halaman Area](/config/areas/dashboard).",
+                    "changed": "Area ini sudah dipakai lagi sejak Spook memeriksanya: ada sesuatu di dalamnya, atau ada otomasi atau skrip yang menggunakannya. Jadi area ini dibiarkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Lantai kosong: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Lantai kosong: {floor}",
+                        "description": "Lantai {floor} tidak memiliki area, dan tidak ada otomasi maupun skrip yang menargetkannya.\n\nHapus lantai ini, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Hapus lantai kosong ini",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi",
+                            "manage": "Biar saya perbaiki sendiri"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit lantai ini lagi.",
+                    "manage": "Anda bisa mengelola lantai ini sendiri di [halaman Area](/config/areas/dashboard).",
+                    "changed": "Lantai ini sudah dipakai lagi sejak Spook memeriksanya: ada area di dalamnya, atau ada otomasi atau skrip yang menggunakannya. Jadi lantai ini dibiarkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Entitas tidak dikenal digunakan di dasbor energi",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Entitas tidak dikenal digunakan di dasbor energi",
+                        "description": "Spook menemukan hantu di dasbor energi Anda 👻\n\nDasbor energi merujuk ke entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\nIni biasanya terjadi ketika entitas yang digunakan di konfigurasi energi diganti nama atau dihapus. Diganti nama? Buka [Pengaturan > Dasbor > Energi](/config/energy) dan pilih yang baru, agar riwayatnya tetap ada di dasbor.\n\nDihapus untuk selamanya? Spook bisa mengeluarkannya dari konfigurasi energi untuk Anda. Meter yang hilang ikut membawa sumber atau perangkatnya, sedangkan harga atau biaya yang hilang hanya dikosongkan. Setelah itu dasbor tidak lagi menampilkan riwayat dari yang dikeluarkan; statistiknya sendiri tetap ada.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Keluarkan dari konfigurasi energi",
+                            "manage": "Biar saya lakukan sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit entitas ini lagi.",
+                    "manage": "Anda bisa memperbarui atau menghapusnya sendiri di [konfigurasi energi](/config/energy).",
+                    "nothing_to_remove": "Tidak ada satu pun yang masih tidak dikenal, jadi tidak ada yang dikeluarkan. Mungkin entitasnya sudah kembali, atau seseorang sudah mengubah konfigurasi energi."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "Anggota grup tidak dikenal di: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Anggota grup tidak dikenal di: {group}",
+                        "description": "Spook menemukan hantu di grup Anda 👻\n\nGrup {group} (`{entity_id}`) memiliki anggota yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\nHapus mereka dari grup, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Hapus anggota ini",
+                            "manage": "Biar saya perbaiki sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit grup ini lagi.",
+                    "not_editable": "Grup ini disiapkan di YAML, jadi Spook tidak dapat mengeditnya. Perbarui grup di konfigurasi Anda.",
+                    "manage": "Anda bisa mengelola grup ini sendiri di [halaman Pembantu](/config/helpers).",
+                    "changed": "Anggota yang disebutkan perbaikan ini sudah kembali, atau sudah berubah, sejak Spook memeriksanya, jadi tidak ada yang dihapus dari grup. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook menemukan hantu di bridge HomeKit Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan bridge HomeKit berikut:\n\n{bridge}\n\nBridge ini menyebut entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nHomeKit tidak mengikuti entitas yang diganti namanya. Entitas yang disertakan lalu diganti nama atau dihapus akan hilang dari aplikasi Home; entitas yang dikecualikan lalu diganti nama akan muncul lagi di sana.\n\nUntuk memperbaiki kesalahan ini, buka [integrasi HomeKit Bridge](/config/integrations/integration/homekit), pilih **Konfigurasikan** pada bridge ini, dan pilih ulang entitasnya.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas tidak dikenal digunakan di bridge HomeKit: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook menemukan hantu di bridge HomeKit Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan bridge HomeKit berikut:\n\n{bridge}\n\nBridge ini menyebut entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nHomeKit tidak mengikuti entitas yang diganti namanya. Entitas yang disertakan lalu diganti nama atau dihapus akan hilang dari aplikasi Home; entitas yang dikecualikan lalu diganti nama akan muncul lagi di sana.\n\nBridge ini disiapkan di konfigurasi YAML Anda. Untuk memperbaiki kesalahan ini, edit `filter` dari bridge ini di bawah `homekit:` dan hapus atau perbaiki entitas-entitas ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas tidak dikenal digunakan di bridge HomeKit: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSumber daya dasbor berikut menunjuk ke file yang tidak ada:\n\n{resources}\n\n\n\nIni biasanya terjadi ketika sebuah kartu kustom atau file-filenya dihapus, tetapi sumber dayanya tertinggal. Untuk memperbaiki kesalahan ini, buka [halaman Sumber daya](/config/lovelace/resources) dan hapus atau perbaiki sumber daya ini. Halaman ini tidak punya tab sendiri: di halaman Dasbor, letaknya di balik tiga titik di kanan atas.\n\nSpook 👻 Sobat Anda.",
+            "title": "Sumber daya dasbor menunjuk ke file yang hilang"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSumber daya dasbor berikut menunjuk ke file yang tidak ada:\n\n{resources}\n\n\n\nIni biasanya terjadi ketika sebuah kartu kustom atau file-filenya dihapus, tetapi sumber dayanya tertinggal.\n\nSumber daya ini tercantum di konfigurasi YAML Anda, jadi halaman Sumber daya tidak dapat mengubahnya. Edit bagian `resources:` di konfigurasi Lovelace Anda dan hapus atau perbaiki entri-entri ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Sumber daya dasbor menunjuk ke file yang hilang"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Sumber daya dasbor tercantum lebih dari sekali: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sumber daya dasbor tercantum lebih dari sekali: {resource}",
+                        "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSumber daya dasbor ini tercantum sebanyak {count} kali:\n\n{resources}\n\nIni biasanya terjadi ketika sebuah kartu kustom diperbarui dengan menambahkan sumber daya untuk versi baru, alih-alih mengedit yang sudah ada. Peramban memuat keduanya, kartu mencoba mendaftarkan dirinya dua kali, dan percobaan kedua gagal, sehingga terlihat seperti kartu yang rusak, bukan sumber daya yang ganda.\n\nSpook bisa membersihkan salinan tambahannya dan menyimpan yang paling baru ditambahkan.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Bersihkan salinan tambahan, simpan yang terbaru",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi",
+                            "manage": "Biar saya perbaiki sendiri"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit sumber daya ini lagi.",
+                    "manage": "Anda bisa mengelola sumber daya dasbor sendiri di [halaman Sumber daya](/config/lovelace/resources).",
+                    "yaml": "Sumber daya ini tercantum di konfigurasi YAML Anda, jadi Spook tidak dapat mengubahnya untuk Anda. Edit bagian `resources:` di konfigurasi Lovelace Anda dan hapus salinan `{resource}` yang tidak lagi Anda perlukan."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n{dashboard}\n\nDasbor ini merujuk ke area berikut, yang tidak dikenal oleh Home Assistant:\n\n{areas}\n\n\n\nIni sering terjadi ketika sebuah area diganti nama atau dihapus. Untuk memperbaiki kesalahan ini, [edit dasbor]({edit}) dan hapus penggunaan area yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Area tidak dikenal digunakan di dasbor: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {dashboard}"
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini merujuk ke entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit dasbor]({edit}) dan hapus penggunaan entitas yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas tidak dikenal digunakan di: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook menemukan hantu di dasbor Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan dasbor berikut:\n\n[{dashboard}]({edit})\n\nDasbor ini menjalankan aksi berikut, yang tidak dikenal oleh Home Assistant:\n\n{services}\n\n\n\nTombol atau kartu yang menggunakan salah satunya tidak melakukan apa-apa saat diketuk. Ini sering terjadi ketika sebuah skrip diganti nama atau dihapus, atau sebuah integrasi dihapus. Untuk memperbaiki kesalahan ini, [edit dasbor]({edit}) dan hapus atau ganti aksi yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Aksi tidak dikenal digunakan di dasbor: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Anggota tidak dikenal digunakan di pembantu min/maks: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Anggota tidak dikenal digunakan di pembantu min/maks: {helper}",
+                        "description": "Spook menemukan hantu di pembantu Anda 👻\n\nPembantu min/maks {helper} (`{entity_id}`) menggabungkan anggota berikut, yang tidak dikenal oleh Home Assistant:\n\n{sources}\n\nHapus mereka agar pembantu ini berlanjut dengan anggota yang tersisa, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Hapus anggota ini",
+                            "manage": "Biar saya perbaiki sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit pembantu ini lagi.",
+                    "manage": "Anda bisa mengelola pembantu ini sendiri di [halaman Pembantu](/config/helpers).",
+                    "changed": "Anggota yang disebutkan perbaikan ini sudah kembali, atau sudah berubah, sejak Spook memeriksanya, jadi tidak ada yang dihapus dari pembantu. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini.",
+                    "too_few_members": "Pembantu min/maks membutuhkan setidaknya dua anggota, jadi menghapus yang hilang akan menyisakan terlalu sedikit. Konfigurasikan ulang atau hapus pembantu ini sendiri di [halaman Pembantu](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook menemukan hantu di grup notifikasi Anda 👻\n\nGrup notifikasi `{group}` meneruskan ke aksi berikut, yang tidak dikenal oleh Home Assistant:\n\n{members}\n\nGrup ini tetap mengirim ke anggota lainnya, dan tetap melaporkan berhasil kepada apa pun yang memanggilnya, jadi tidak ada yang menyadarinya. Kegagalannya hanya muncul sebagai \"Task exception was never retrieved\" yang nyasar di log, tanpa menyebut grup apa pun dan terbaca seperti bug. Siapa pun yang ada di balik anggota itu begitu saja tidak lagi menerima notifikasi.\n\nUntuk memperbaiki kesalahan ini, edit daftar `services:` dari grup ini di konfigurasi Anda dan hapus atau perbaiki entri-entri ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Anggota tidak dikenal di grup notifikasi: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Statistik jangka panjang yatim piatu ditemukan",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Statistik jangka panjang yatim piatu ditemukan",
+                        "description": "Spook menemukan hantu di perekam Anda 👻\n\nHome Assistant menyimpan statistik jangka panjang untuk yang berikut ini, tetapi sudah tidak ada entitas yang cocok untuknya:\n\n{statistics}\n\nIni biasanya terjadi ketika sebuah sensor dihapus sementara statistiknya tetap disimpan. Membersihkannya akan membuang riwayat itu untuk selamanya, jadi Spook memeriksa lagi sebelum melakukannya, dan membiarkan apa pun yang sudah kembali sementara itu.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Bersihkan statistik ini",
+                            "manage": "Biar saya lakukan sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit statistik ini lagi.",
+                    "manage": "Anda bisa membersihkannya sendiri di [halaman Statistik](/config/tools/statistics).",
+                    "nothing_to_clear": "Tidak ada yang di daftar itu yang masih perlu dibersihkan, jadi tidak ada yang dibuang. Entah statistiknya sudah punya entitas lagi, atau memang sudah hilang.",
+                    "clearing_took_too_long": "Spook sudah meminta statistik ini dibersihkan, dan perekam belum mengatakan sudah selesai. Pekerjaannya sudah masuk antrean dan kemungkinan besar akan terlaksana, jadi perbaikan ini tetap ada sampai Spook memeriksa lagi."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Pelacak perangkat tidak dikenal dilacak oleh: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Pelacak perangkat tidak dikenal dilacak oleh: {person}",
+                        "description": "Spook menemukan hantu di daftar orang Anda 👻\n\n{person} melacak pelacak perangkat berikut, yang tidak dikenal oleh Home Assistant:\n\n{device_trackers}\n\nIni sering terjadi ketika sebuah pelacak perangkat diganti nama atau integrasinya dihapus.\n\nHapus dari {person}, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Hapus pelacak perangkat ini",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi",
+                            "manage": "Biar saya perbaiki sendiri"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit orang ini lagi.",
+                    "not_editable": "Orang ini disiapkan di YAML, jadi Spook tidak dapat mengeditnya. Perbarui orang ini di konfigurasi Anda.",
+                    "manage": "Anda bisa mengelola orang ini sendiri di [halaman Orang](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook menemukan hantu di konfigurasi proximity Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan konfigurasi proximity berikut:\n\n{name}\n\nKonfigurasi ini mengabaikan zona yang tidak dikenal oleh Home Assistant:\n\n{zones}\n\n\n\nUntuk memperbaiki kesalahan ini, edit konfigurasinya dan hapus zona-zona ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Zona diabaikan tidak dikenal: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook menemukan hantu di konfigurasi proximity Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan konfigurasi proximity berikut:\n\n{name}\n\nKonfigurasi ini melacak orang atau pelacak perangkat yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, edit konfigurasinya dan hapus entitas-entitas ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas dilacak tidak dikenal: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook menemukan hantu di konfigurasi proximity Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan konfigurasi proximity berikut:\n\n{name}\n\nKonfigurasi ini didasarkan pada zona yang tidak dikenal oleh Home Assistant:\n\n`{zone}`\n\n\n\nZona dari sebuah konfigurasi proximity tidak dapat diubah, jadi satu-satunya cara untuk memperbaiki kesalahan ini adalah menghapus instans integrasi proximity yang bersangkutan.\n\nSpook 👻 Sobat Anda.",
+            "title": "Zona tidak dikenal: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spook menemukan hantu di skenario Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skenario berikut:\n\n[{scene}]({edit})\n\nSkenario ini merujuk ke entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit skenario]({edit}) dan hapus penggunaan entitas yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas tidak dikenal digunakan di: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {script}"
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini merujuk ke area berikut, yang tidak dikenal oleh Home Assistant:\n\n{areas}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan hapus penggunaan area yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Area tidak dikenal digunakan di: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini menggunakan kondisi berikut, yang tidak dapat disediakan oleh integrasi mana pun yang tersedia di Home Assistant:\n\n{conditions}\n\n\n\nIni sering terjadi ketika integrasi yang menyediakan kondisi tersebut telah dihapus. Untuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan hapus penggunaan kondisi yang tidak tersedia ini, atau pulihkan integrasi yang menyediakannya.\n\nSpook 👻 Sobat Anda.",
+            "title": "Kondisi tidak dikenal digunakan di: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {script}"
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini merujuk ke perangkat berikut, yang tidak dikenal oleh Home Assistant:\n\n{devices}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan hapus penggunaan perangkat yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Perangkat tidak dikenal digunakan di: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {script}"
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini merujuk ke entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan hapus penggunaan entitas yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas tidak dikenal digunakan di: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini merujuk ke lantai berikut, yang tidak dikenal oleh Home Assistant:\n\n{floors}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan hapus penggunaan lantai yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Lantai tidak dikenal digunakan di: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini merujuk ke label berikut, yang tidak dikenal oleh Home Assistant:\n\n{labels}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan hapus penggunaan label yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Label tidak dikenal digunakan di: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini merujuk ke aksi berikut, yang tidak dikenal oleh Home Assistant:\n\n{services}\n\n\n\nUntuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan hapus penggunaan aksi yang tidak ada ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Aksi tidak dikenal digunakan di: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook menemukan hantu di skrip Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan skrip berikut:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSkrip ini menggunakan pemicu berikut, yang tidak dapat disediakan oleh integrasi mana pun yang tersedia di Home Assistant:\n\n{triggers}\n\n\n\nIni sering terjadi ketika integrasi yang menyediakan pemicu tersebut telah dihapus. Untuk memperbaiki kesalahan ini, [edit skrip]({edit}) dan hapus penggunaan pemicu yang tidak tersedia ini, atau pulihkan integrasi yang menyediakannya.\n\nSpook 👻 Sobat Anda.",
+            "title": "Pemicu tidak dikenal digunakan di: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook menemukan hantu di pembantu templat Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan pembantu templat berikut:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nKonfigurasinya merujuk ke entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nIni sering terjadi ketika sebuah entitas diganti nama atau dihapus. Untuk memperbaiki kesalahan ini, konfigurasikan ulang pembantu templat agar merujuk ke entitas yang ada.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas tidak dikenal digunakan di pembantu templat: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook menemukan hantu di pembantu templat Anda 👻\n\nSaat melayang-layang, Spook berpapasan dengan pembantu templat berikut:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nPembantu ini merujuk ke aksi berikut, yang tidak dikenal oleh Home Assistant:\n\n{services}\n\n\n\nIni sering terjadi ketika penyedia aksi dihapus, atau sebuah skrip diganti nama atau dihapus. Untuk memperbaiki kesalahan ini, konfigurasikan ulang pembantu templat agar menggunakan aksi yang ada.\n\nSpook 👻 Sobat Anda.",
+            "title": "Aksi tidak dikenal digunakan di pembantu templat: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Sensor {sensors} tidak dikenal untuk area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor {sensors} tidak dikenal untuk area: {area}",
+                        "description": "Spook menemukan hantu di area Anda 👻\n\nArea {area} menggunakan sensor {sensors} yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\nHome Assistant hanya memeriksa sensor ini saat dipilih, jadi ketika sensornya dihapus atau diganti nama, area ini tetap menunjuk ke kekosongan. Assist dan kartu area tidak lagi mendapat pembacaan darinya.\n\nKosongkan pengaturan ini agar Anda bisa memilih sensor lagi, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Kosongkan pengaturan",
+                            "manage": "Biar saya perbaiki sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit area ini lagi.",
+                    "manage": "Anda bisa memilih sensor lain di pengaturan area ini di [halaman Area](/config/areas/dashboard).",
+                    "changed": "Sensor-sensor ini sudah kembali, atau pengaturannya kini menunjuk ke tempat lain, sejak Spook memeriksanya. Jadi tidak ada yang dikosongkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook menemukan hantu di kustomisasi Anda 👻\n\nBagian `customize:` menyematkan atribut pada entitas berikut, yang tidak dikenal oleh Home Assistant:\n\n{entities}\n\n\n\nIni sering terjadi ketika sebuah entitas diganti nama atau dihapus sementara kustomisasinya tertinggal. Untuk memperbaiki kesalahan ini, edit bagian `customize:` di konfigurasi Anda dan hapus entitas-entitas ini.\n\nSpook 👻 Sobat Anda.",
+            "title": "Entitas tidak dikenal di kustomisasi Anda"
+        },
+        "unknown_engines": {
+            "title": "Pipeline Assist menggunakan mesin yang sudah tidak ada: {pipeline}",
+            "description": "Spook menemukan hantu di asisten suara Anda 👻\n\nPipeline Assist {pipeline} menggunakan yang berikut ini, yang tidak dikenal oleh Home Assistant:\n\n{engines}\n\nIni biasanya berarti integrasi di baliknya sudah dihapus. Pipeline-nya tidak diberi tahu, jadi saat berikutnya digunakan, pipeline ini gagal dengan kesalahan tentang penyedia atau agen yang hilang, dan tidak ada apa pun sebelumnya yang menunjuk ke sini.\n\nUntuk memperbaikinya, buka pengaturan asisten ini di [Asisten suara](/config/voice-assistants/assistants) dan pilih mesin yang masih ada untuk masing-masing.\n\nSpook 👻 Sobat Anda."
+        },
+        "unknown_helper_source_references": {
+            "title": "Entitas sumber tidak dikenal digunakan di pembantu: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Entitas sumber tidak dikenal digunakan di pembantu: {helper}",
+                        "description": "Spook menemukan hantu di pembantu Anda 👻\n\nPembantu {helper} (`{domain}`, `{entity_id}`) merujuk ke entitas sumber berikut, yang tidak dikenal oleh Home Assistant:\n\n{sources}\n\nTanpa sumbernya, pembantu ini tidak dapat bekerja. {usage}\n\nHapus pembantu ini, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Hapus pembantu ini",
+                            "manage": "Biar saya perbaiki sendiri",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit pembantu ini lagi.",
+                    "manage": "Anda bisa mengelola pembantu ini sendiri di [halaman Pembantu](/config/helpers).",
+                    "changed": "Sumber pembantu ini sudah berubah sejak Spook memeriksanya, jadi pembantu ini dibiarkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Blueprint tidak terpakai: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Blueprint tidak terpakai: {blueprint}",
+                        "description": "Blueprint {blueprint} tidak digunakan oleh {domain} mana pun.\n\nHapus blueprint ini, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Hapus blueprint tidak terpakai ini",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi",
+                            "manage": "Biar saya perbaiki sendiri"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit blueprint ini lagi.",
+                    "manage": "Anda bisa mengelola blueprint ini sendiri di [halaman Blueprint](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Label tidak terpakai: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Label tidak terpakai: {label}",
+                        "description": "Label {label} tidak diterapkan pada entitas, perangkat, atau area mana pun, dan tidak ada otomasi maupun skrip yang menargetkannya.\n\nHapus label ini, atau biarkan saja dan Spook akan berhenti mengungkitnya.\n\nSpook 👻 Sobat Anda.",
+                        "menu_options": {
+                            "remove": "Hapus label tidak terpakai ini",
+                            "ignore": "Biarkan saja, jangan beri tahu saya lagi",
+                            "manage": "Biar saya perbaiki sendiri"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Mulai sekarang Spook tidak akan mengungkit label ini lagi.",
+                    "manage": "Anda bisa mengelola label ini sendiri di [halaman Label](/config/labels).",
+                    "changed": "Label ini sudah dipakai lagi sejak Spook memeriksanya: ada sesuatu yang memakainya, atau ada otomasi atau skrip yang menggunakannya. Jadi label ini dibiarkan. Spook akan memeriksa lagi dengan sendirinya dan memperbarui perbaikan ini."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -304,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "Restart required",
+            "title": "Perlu dimulai ulang",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "Restart required",
-                        "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+                        "title": "Perlu dimulai ulang",
+                        "description": "Agar Spook 👻 dapat menyelesaikan penyiapan, Home Assistant perlu dimulai ulang.\n\nPilih kirim untuk memulai ulang Home Assistant sekarang.\n\nSpook 👻 Sobat Anda."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Versi",
+            "ghosts_found": "Hantu ditemukan",
+            "ghosts_ignored": "Hantu diabaikan",
+            "helpers_linked": "Pembantu ditautkan"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Tambahkan anggota ke grup",
+            "description": "Menambahkan entitas ke grup yang dibuat melalui antarmuka, saat Home Assistant sedang berjalan. Entitas yang sudah ada di grup dibiarkan di tempatnya.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "Grup yang ingin ditambahi."
+                },
+                "members": {
+                    "name": "Anggota",
+                    "description": "Entitas yang ingin ditambahkan ke grup."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Hapus anggota dari grup",
+            "description": "Mengeluarkan entitas dari grup yang dibuat melalui antarmuka, saat Home Assistant sedang berjalan. Menyebut sesuatu yang tidak ada di grup tidak berpengaruh apa-apa, jadi ini juga cara membersihkan anggota yang sudah tidak ada.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "Grup tempat entitas dikeluarkan."
+                },
+                "members": {
+                    "name": "Anggota",
+                    "description": "Entitas yang ingin dihapus dari grup."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Atur anggota grup",
+            "description": "Mengganti anggota grup yang dibuat melalui antarmuka dengan yang diberikan, saat Home Assistant sedang berjalan.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "Grup yang ingin diubah."
+                },
+                "members": {
+                    "name": "Anggota",
+                    "description": "Entitas yang menjadi isi grup mulai sekarang."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Tunggu sebuah kondisi",
+            "description": "Menunggu sampai sebuah kondisi bernilai true. Langsung kembali jika kondisinya sudah true.",
+            "fields": {
+                "condition": {
+                    "name": "Kondisi",
+                    "description": "Kondisi yang ditunggu."
+                },
+                "timeout": {
+                    "name": "Batas waktu",
+                    "description": "Berapa lama menunggu sebelum menyerah. Menunggu tanpa batas jika dikosongkan."
+                }
+            }
+        },
+        "boo": {
+            "name": "Boo!",
+            "description": "Memanggil aksi ini menakut-nakuti Home Assistant. Menjalankan aksi ini akan selalu gagal."
+        },
+        "random_fail": {
+            "name": "Gagal acak",
+            "description": "Menjalankan aksi ini akan gagal secara acak."
+        },
+        "blueprint_import": {
+            "name": "Impor blueprint",
+            "description": "Mengimpor sebuah blueprint.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "URL tempat blueprint diimpor."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Tunda",
+            "description": "Mematikan otomasi untuk sementara, dan menyalakannya kembali saat waktunya habis.",
+            "fields": {
+                "duration": {
+                    "name": "Durasi",
+                    "description": "Berapa lama otomasi tetap mati. Otomasi akan menyala sendiri saat waktu ini habis, termasuk jika Home Assistant dimulai ulang di tengahnya."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Nyalakan selama",
+            "description": "Menyalakan otomasi untuk sementara, dan mematikannya kembali saat waktunya habis.",
+            "fields": {
+                "duration": {
+                    "name": "Durasi",
+                    "description": "Berapa lama otomasi tetap menyala. Otomasi akan mati sendiri saat waktu ini habis, termasuk jika Home Assistant dimulai ulang di tengahnya."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Atur kecerahan",
+            "description": "Mengatur kecerahan lampu yang sudah menyala, dan membiarkan yang mati.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Kecerahan",
+                    "description": "Kecerahan yang ingin diatur, dalam persentase. Grup disesuaikan per lampu, jadi lampu yang mati tetap mati."
+                },
+                "transition": {
+                    "name": "Transisi",
+                    "description": "Berapa lama perubahan berlangsung, dalam detik."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Tambah kecerahan",
+            "description": "Menerangkan lampu yang sudah menyala, dan membiarkan yang mati.",
+            "fields": {
+                "step_pct": {
+                    "name": "Langkah",
+                    "description": "Seberapa banyak lebih terang, dalam persentase. Setiap lampu naik dari tingkatnya sendiri, jadi sebuah grup tetap mempertahankan bentuknya alih-alih menjadi rata."
+                },
+                "transition": {
+                    "name": "Transisi",
+                    "description": "Berapa lama perubahan berlangsung, dalam detik."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Kurangi kecerahan",
+            "description": "Meredupkan lampu yang sudah menyala, berhenti pada tingkat paling redup alih-alih mematikannya.",
+            "fields": {
+                "step_pct": {
+                    "name": "Langkah",
+                    "description": "Seberapa banyak lebih redup, dalam persentase. Setiap lampu turun dari tingkatnya sendiri, jadi sebuah grup tetap mempertahankan bentuknya alih-alih menjadi rata."
+                },
+                "transition": {
+                    "name": "Transisi",
+                    "description": "Berapa lama perubahan berlangsung, dalam detik."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Atur warna",
+            "description": "Mengatur warna lampu yang sudah menyala, dan membiarkan yang mati atau yang tidak mendukung warna.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Warna",
+                    "description": "Warna yang ingin diatur. Lampu yang tidak mendukung warna dilewati, bukan dijadikan putih."
+                },
+                "transition": {
+                    "name": "Transisi",
+                    "description": "Berapa lama perubahan berlangsung, dalam detik."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Atur suhu warna",
+            "description": "Mengatur suhu warna lampu yang sudah menyala, masing-masing dalam rentang yang benar-benar bisa dicapainya.",
+            "fields": {
+                "kelvin": {
+                    "name": "Suhu warna",
+                    "description": "Suhu warna yang ingin diatur. Setiap lampu dibatasi pada rentangnya sendiri, karena putih hangat pada satu lampu bisa jadi angka yang tidak bisa dicapai lampu lain."
+                },
+                "transition": {
+                    "name": "Transisi",
+                    "description": "Berapa lama perubahan berlangsung, dalam detik."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Atur efek",
+            "description": "Mengatur efek pada lampu yang sudah menyala dan memang memiliki efek tersebut.",
+            "fields": {
+                "effect": {
+                    "name": "Efek",
+                    "description": "Nama efek yang ingin diatur. Nama efek berbeda per produsen, jadi lampu yang tidak memiliki efek ini dibiarkan apa adanya."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Hapus acara",
+            "description": "Menghapus acara dari kalender, dicari berdasarkan judul atau uid-nya dalam suatu rentang waktu. Mengembalikan apa yang dihapus, termasuk uid.",
+            "fields": {
+                "summary": {
+                    "name": "Ringkasan",
+                    "description": "Judul acara yang ingin dihapus, persis seperti yang ada di kalender."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Pengenal acara yang ingin dihapus, jika Anda memilikinya."
+                },
+                "start_date_time": {
+                    "name": "Tanggal dan waktu mulai",
+                    "description": "Dari mana mulai mencari. Bawaannya adalah sekarang."
+                },
+                "end_date_time": {
+                    "name": "Tanggal dan waktu akhir",
+                    "description": "Di mana berhenti mencari. Berikan ini atau durasi."
+                },
+                "duration": {
+                    "name": "Durasi",
+                    "description": "Seberapa jauh mencari dari awal. Berikan ini atau tanggal dan waktu akhir."
+                },
+                "whole_series": {
+                    "name": "Seluruh rangkaian",
+                    "description": "Untuk acara berulang, hapus seluruh rangkaiannya, bukan hanya kejadian yang ditemukan."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Perbarui acara",
+            "description": "Mengubah acara di kalender, dicari berdasarkan judul atau uid-nya dalam suatu rentang waktu. Mengembalikan apa yang diubah, termasuk uid.",
+            "fields": {
+                "summary": {
+                    "name": "Ringkasan",
+                    "description": "Judul acara yang ingin diubah, persis seperti yang ada di kalender."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Pengenal acara yang ingin diubah, jika Anda memilikinya."
+                },
+                "start_date_time": {
+                    "name": "Tanggal dan waktu mulai",
+                    "description": "Dari mana mulai mencari. Bawaannya adalah sekarang."
+                },
+                "end_date_time": {
+                    "name": "Tanggal dan waktu akhir",
+                    "description": "Di mana berhenti mencari. Berikan ini atau durasi."
+                },
+                "duration": {
+                    "name": "Durasi",
+                    "description": "Seberapa jauh mencari dari awal. Berikan ini atau tanggal dan waktu akhir."
+                },
+                "new_summary": {
+                    "name": "Ringkasan baru",
+                    "description": "Judul yang diberikan untuk acara."
+                },
+                "description": {
+                    "name": "Deskripsi",
+                    "description": "Deskripsi yang diberikan untuk acara."
+                },
+                "location": {
+                    "name": "Lokasi",
+                    "description": "Lokasi yang diberikan untuk acara."
+                },
+                "new_start": {
+                    "name": "Mulai baru",
+                    "description": "Waktu mulai acara yang baru. Durasinya tetap sama, kecuali jika akhir baru juga diberikan."
+                },
+                "new_end": {
+                    "name": "Akhir baru",
+                    "description": "Waktu berakhir acara yang baru."
+                },
+                "shift": {
+                    "name": "Geser",
+                    "description": "Geser acara sebanyak ini, lebih lambat, atau lebih awal jika negatif. Sebagai pengganti mulai atau akhir baru."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Naikkan suhu",
+            "description": "Menaikkan setpoint termostat satu langkah, kedua setpoint untuk termostat yang memanaskan dan mendinginkan. Termostat yang mati tetap mati.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Seberapa banyak perubahannya. Kosongkan untuk memakai langkah termostat itu sendiri, atau setengah derajat (satu di Fahrenheit) jika tidak punya."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Turunkan suhu",
+            "description": "Menurunkan setpoint termostat satu langkah, kedua setpoint untuk termostat yang memanaskan dan mendinginkan. Termostat yang mati tetap mati.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Seberapa banyak perubahannya. Kosongkan untuk memakai langkah termostat itu sendiri, atau setengah derajat (satu di Fahrenheit) jika tidak punya."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Buat area",
+            "description": "Membuat area baru secara langsung.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama area yang ingin dibuat."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon yang digunakan untuk area."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Daftar alias untuk area. Berguna jika Anda ingin menggunakan area dalam bahasa lain atau dengan nama panggilan lain."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Tambahkan alias ke area",
+            "description": "Menambahkan alias ke area.",
+            "fields": {
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang ingin ditambahi alias."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Alias (atau daftar alias) yang ingin ditambahkan ke area."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Hapus alias dari area",
+            "description": "Menghapus alias dari area.",
+            "fields": {
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang aliasnya ingin dihapus."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Alias (atau daftar alias) yang ingin dihapus dari area."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Atur alias untuk area",
+            "description": "Mengatur alias untuk area. Menimpa dan menghapus semua alias yang ada, menggantinya sepenuhnya dengan yang baru.",
+            "fields": {
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang aliasnya ingin diatur."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Alias yang ingin diatur untuk area."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Tambahkan perangkat ke area",
+            "description": "Menambahkan perangkat ke area. Perlu diingat, jika perangkat sudah berada di sebuah area, perangkat itu akan dikeluarkan dari area sebelumnya.",
+            "fields": {
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area tempat perangkat ditambahkan."
+                },
+                "device_id": {
+                    "name": "ID perangkat",
+                    "description": "ID perangkat yang ingin ditambahkan ke area."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Hapus perangkat dari area",
+            "description": "Mengeluarkan perangkat dari area. Karena sebuah perangkat hanya bisa berada di satu area, panggilan ini tidak perlu menyebutkan areanya.",
+            "fields": {
+                "device_id": {
+                    "name": "ID perangkat",
+                    "description": "ID perangkat yang ingin dikeluarkan dari areanya."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Tambahkan entitas ke area",
+            "description": "Menambahkan entitas ke area. Perlu diingat, jika entitas sudah berada di sebuah area, entitas itu akan dikeluarkan dari area sebelumnya. Ini akan mengesampingkan area tempat perangkat penyedia entitas ini berada.",
+            "fields": {
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area tempat entitas ditambahkan."
+                },
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "ID entitas (satu atau lebih) yang ingin ditambahkan ke area."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Hapus entitas dari area",
+            "description": "Mengeluarkan entitas dari area. Karena sebuah entitas hanya bisa berada di satu area, panggilan ini tidak perlu menyebutkan areanya. Perlu diingat, setelah panggilan ini entitas tetap berada di area perangkat yang menyediakannya.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "ID entitas (satu atau lebih) yang ingin dikeluarkan dari areanya."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Hapus area",
+            "description": "Menghapus area secara langsung.",
+            "fields": {
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang ingin dihapus."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Nonaktifkan integrasi",
+            "description": "Menonaktifkan entri integrasi, per entri atau semua entri dari sebuah integrasi.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entri integrasi",
+                    "description": "Entri integrasi yang ingin dinonaktifkan."
+                },
+                "domain": {
+                    "name": "Integrasi",
+                    "description": "Nonaktifkan semua entri dari integrasi ini, termasuk yang ditambahkan kemudian."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Aktifkan integrasi",
+            "description": "Mengaktifkan entri integrasi, per entri atau semua entri dari sebuah integrasi.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entri integrasi",
+                    "description": "Entri integrasi yang ingin diaktifkan."
+                },
+                "domain": {
+                    "name": "Integrasi",
+                    "description": "Aktifkan semua entri dari integrasi ini, termasuk yang ditambahkan kemudian."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Nonaktifkan perangkat",
+            "description": "Menonaktifkan perangkat secara langsung.",
+            "fields": {
+                "device_id": {
+                    "name": "Perangkat",
+                    "description": "Perangkat yang ingin dinonaktifkan."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Aktifkan perangkat",
+            "description": "Mengaktifkan perangkat secara langsung.",
+            "fields": {
+                "device_id": {
+                    "name": "ID perangkat",
+                    "description": "ID perangkat mentah yang ingin diaktifkan. Perangkat yang dinonaktifkan tidak ditampilkan oleh pemilih perangkat Home Assistant. Beberapa ID dapat diberikan sebagai daftar YAML."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Nonaktifkan pengguna",
+            "description": "Menonaktifkan akun pengguna, sehingga pengguna tersebut tidak bisa masuk.",
+            "fields": {
+                "user_id": {
+                    "name": "ID pengguna",
+                    "description": "ID pengguna yang ingin dinonaktifkan."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Aktifkan pengguna",
+            "description": "Mengaktifkan akun pengguna, sehingga pengguna tersebut bisa masuk.",
+            "fields": {
+                "user_id": {
+                    "name": "ID pengguna",
+                    "description": "ID pengguna yang ingin diaktifkan."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Perbarui ID entitas",
+            "description": "Memperbarui ID entitas secara langsung.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ingin diperbarui."
+                },
+                "new_entity_id": {
+                    "name": "ID entitas baru",
+                    "description": "ID baru untuk entitas."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Nonaktifkan entitas",
+            "description": "Menonaktifkan entitas (satu atau lebih) secara langsung.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ingin dinonaktifkan."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Aktifkan entitas",
+            "description": "Mengaktifkan entitas (satu atau lebih) secara langsung.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ingin diaktifkan."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Paparkan entitas ke asisten",
+            "description": "Memaparkan entitas (satu atau lebih) ke asisten suara.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ingin dipaparkan."
+                },
+                "assistants": {
+                    "name": "Asisten",
+                    "description": "Asisten yang dikenai pengaturan ini."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Sembunyikan entitas",
+            "description": "Menyembunyikan entitas (satu atau lebih) secara langsung.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ingin disembunyikan."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Ganti nama entitas",
+            "description": "Mengganti nama entitas (satu atau lebih) secara langsung.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ingin diganti namanya."
+                },
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama baru untuk entitas."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Atur ikon entitas",
+            "description": "Mengatur ikon entitas (satu atau lebih) secara langsung. Atur ke null untuk kembali ke ikon yang diberikan oleh integrasi.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ikonnya ingin diatur."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon baru, atau null untuk ikon bawaan integrasi."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Tambahkan alias ke entitas",
+            "description": "Menambahkan satu atau lebih alias ke entitas (satu atau lebih), yang bisa dipakai asisten suara untuk memanggilnya.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ingin ditambahi alias."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Alias yang ingin ditambahkan."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Hapus alias dari entitas",
+            "description": "Menghapus satu atau lebih alias dari entitas (satu atau lebih).",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang aliasnya ingin dihapus."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Alias yang ingin dihapus."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Atur alias untuk entitas",
+            "description": "Mengganti alias entitas (satu atau lebih). Apakah nama entitas itu sendiri dihitung sebagai alias tetap seperti sebelumnya.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang aliasnya ingin diatur."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Alias yang ingin diatur."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Berhenti memaparkan entitas ke asisten",
+            "description": "Berhenti memaparkan entitas (satu atau lebih) ke asisten suara.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang tidak lagi ingin dipaparkan."
+                },
+                "assistants": {
+                    "name": "Asisten",
+                    "description": "Asisten yang dikenai pengaturan ini."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Munculkan entitas",
+            "description": "Memunculkan kembali entitas (satu atau lebih) yang tersembunyi secara langsung.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas yang ingin dimunculkan."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Buat lantai",
+            "description": "Membuat lantai baru secara langsung.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama lantai yang ingin dibuat."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon yang digunakan untuk lantai."
+                },
+                "level": {
+                    "name": "Level",
+                    "description": "Level tempat lantai ini berada di rumah Anda."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Daftar alias untuk lantai. Berguna jika Anda ingin menggunakan lantai dalam bahasa lain atau dengan nama panggilan lain."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Tambahkan alias ke lantai",
+            "description": "Menambahkan alias ke lantai.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID lantai",
+                    "description": "ID lantai yang ingin ditambahi alias."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Alias (atau daftar alias) yang ingin ditambahkan ke lantai."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Hapus alias dari lantai",
+            "description": "Menghapus alias dari lantai.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID lantai",
+                    "description": "ID lantai yang aliasnya ingin dihapus."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Alias (atau daftar alias) yang ingin dihapus dari lantai."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Atur alias untuk lantai",
+            "description": "Mengatur alias untuk lantai. Menimpa dan menghapus semua alias yang ada, menggantinya sepenuhnya dengan yang baru.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID lantai",
+                    "description": "ID lantai yang aliasnya ingin diatur."
+                },
+                "aliases": {
+                    "name": "Alias",
+                    "description": "Alias yang ingin diatur untuk lantai."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Tambahkan area ke lantai",
+            "description": "Menambahkan area ke lantai. Perlu diingat, jika area sudah berada di sebuah lantai, area itu akan dikeluarkan dari lantai sebelumnya.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID lantai",
+                    "description": "ID lantai tempat area ditambahkan."
+                },
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang ingin ditambahkan ke lantai."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Hapus area dari lantai",
+            "description": "Mengeluarkan area dari lantai. Karena sebuah area hanya bisa berada di satu lantai, panggilan ini tidak perlu menyebutkan lantainya.",
+            "fields": {
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang ingin dikeluarkan dari lantainya."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Hapus lantai",
+            "description": "Menghapus lantai secara langsung.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID lantai",
+                    "description": "ID lantai yang ingin dihapus."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Buat label",
+            "description": "Membuat label baru secara langsung.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama label yang ingin dibuat."
+                },
+                "description": {
+                    "name": "Deskripsi",
+                    "description": "Deskripsi untuk label."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon yang digunakan untuk label."
+                },
+                "color": {
+                    "name": "Warna",
+                    "description": "Warna yang digunakan untuk label. Bisa berupa nama warna dari daftar, atau kode warna hex (seperti #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Perbarui label",
+            "description": "Memperbarui label yang ada secara langsung. Apa pun yang Anda kosongkan tetap memakai nilai yang sudah ada. Deskripsi, ikon, dan warna bisa dikosongkan dengan mengaturnya ke null.",
+            "fields": {
+                "label_id": {
+                    "name": "ID label",
+                    "description": "ID label yang ingin diperbarui."
+                },
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama baru untuk label."
+                },
+                "description": {
+                    "name": "Deskripsi",
+                    "description": "Deskripsi baru untuk label."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon baru yang digunakan untuk label."
+                },
+                "color": {
+                    "name": "Warna",
+                    "description": "Warna yang digunakan untuk label. Bisa berupa nama warna dari daftar, atau kode warna hex (seperti #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Tambahkan label ke area",
+            "description": "Menambahkan label ke area. Jika beberapa label atau beberapa area diberikan, semua kombinasinya akan ditambahkan.",
+            "fields": {
+                "label_id": {
+                    "name": "ID label",
+                    "description": "ID label yang ingin ditambahkan ke area."
+                },
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang ingin ditambahi label."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Tambahkan label ke perangkat",
+            "description": "Menambahkan label ke perangkat. Jika beberapa label atau beberapa perangkat diberikan, semua kombinasinya akan ditambahkan.",
+            "fields": {
+                "label_id": {
+                    "name": "ID label",
+                    "description": "ID label yang ingin ditambahkan ke perangkat."
+                },
+                "device_id": {
+                    "name": "ID perangkat",
+                    "description": "ID perangkat yang ingin ditambahi label."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Tambahkan label ke entitas",
+            "description": "Menambahkan label ke entitas. Jika beberapa label atau beberapa entitas diberikan, semua kombinasinya akan ditambahkan.",
+            "fields": {
+                "label_id": {
+                    "name": "ID label",
+                    "description": "ID label yang ingin ditambahkan ke entitas."
+                },
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "ID entitas yang ingin ditambahi label."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Hapus label dari area",
+            "description": "Menghapus label dari area. Jika beberapa label atau beberapa area diberikan, semua kombinasinya akan dihapus.",
+            "fields": {
+                "label_id": {
+                    "name": "ID label",
+                    "description": "ID label yang ingin dihapus dari area."
+                },
+                "area_id": {
+                    "name": "ID area",
+                    "description": "ID area yang labelnya ingin dihapus."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Hapus label dari perangkat",
+            "description": "Menghapus label dari perangkat. Jika beberapa label atau beberapa perangkat diberikan, semua kombinasinya akan dihapus.",
+            "fields": {
+                "label_id": {
+                    "name": "ID label",
+                    "description": "ID label yang ingin dihapus dari perangkat."
+                },
+                "device_id": {
+                    "name": "ID perangkat",
+                    "description": "ID perangkat yang labelnya ingin dihapus."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Hapus label dari entitas",
+            "description": "Menghapus label dari entitas. Jika beberapa label atau beberapa entitas diberikan, semua kombinasinya akan dihapus.",
+            "fields": {
+                "label_id": {
+                    "name": "ID label",
+                    "description": "ID label yang ingin dihapus dari entitas."
+                },
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "ID entitas yang labelnya ingin dihapus."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Buat kategori",
+            "description": "Membuat kategori baru secara langsung, untuk otomasi, skrip, skenario, atau pembantu. Mengembalikan ID kategori baru.",
+            "fields": {
+                "scope": {
+                    "name": "Cakupan",
+                    "description": "Tempat kategori ini digunakan."
+                },
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama kategori yang ingin dibuat."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon yang digunakan untuk kategori."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Perbarui kategori",
+            "description": "Memperbarui kategori yang ada secara langsung. Apa pun yang Anda kosongkan tetap memakai nilai yang sudah ada. Ikon bisa dikosongkan dengan mengaturnya ke null.",
+            "fields": {
+                "scope": {
+                    "name": "Cakupan",
+                    "description": "Tempat kategori ini digunakan."
+                },
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "ID atau nama kategori yang ingin diperbarui."
+                },
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama baru untuk kategori."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon baru untuk kategori."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Hapus kategori",
+            "description": "Menghapus kategori. Semua yang ada di dalamnya menjadi tanpa kategori.",
+            "fields": {
+                "scope": {
+                    "name": "Cakupan",
+                    "description": "Tempat kategori ini digunakan."
+                },
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "ID atau nama kategori yang ingin dihapus."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Tambahkan kategori ke entitas",
+            "description": "Memasukkan otomasi, skrip, skenario, atau pembantu ke sebuah kategori. Ini menggantikan kategori sebelumnya, karena masing-masing hanya bisa berada di satu kategori.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "ID atau nama kategori."
+                },
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Otomasi, skrip, skenario, atau pembantu yang ingin dimasukkan ke kategori."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Hapus kategori dari entitas",
+            "description": "Mengeluarkan otomasi, skrip, skenario, atau pembantu dari sebuah kategori. Apa pun yang ada di kategori lain dibiarkan.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategori",
+                    "description": "ID atau nama kategori."
+                },
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Otomasi, skrip, skenario, atau pembantu yang ingin dikeluarkan dari kategori."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Hapus label",
+            "description": "Menghapus label secara langsung.",
+            "fields": {
+                "label_id": {
+                    "name": "ID label",
+                    "description": "ID label yang ingin dihapus."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Abaikan semua perangkat yang saat ini ditemukan",
+            "description": "Mengabaikan semua perangkat yang saat ini ditemukan dan ditampilkan di dasbor integrasi. Ini tidak akan mengabaikan perangkat yang ditemukan setelahnya.",
+            "fields": {
+                "domain": {
+                    "name": "Domain integrasi",
+                    "description": "Domain integrasi yang semua perangkat temuannya ingin diabaikan. Jika tidak diberikan, semua domain akan diabaikan."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Nonaktifkan polling untuk pembaruan",
+            "description": "Menonaktifkan polling untuk pembaruan pada sebuah entri integrasi.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entri integrasi",
+                    "description": "Entri integrasi yang polling-nya ingin dinonaktifkan."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Aktifkan polling untuk pembaruan",
+            "description": "Mengaktifkan polling untuk pembaruan pada sebuah entri integrasi.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entri integrasi",
+                    "description": "Entri integrasi yang polling-nya ingin diaktifkan."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Hapus semua entitas yatim piatu",
+            "description": "Menghapus semua entitas yatim piatu yang tidak lagi memiliki integrasi yang mengklaim/menyediakannya. Perlu diingat, jika integrasinya baru saja dihapus, Home Assistant mungkin perlu dimulai ulang untuk menyadari bahwa entitas itu yatim piatu.\n**PERINGATAN** Entitas mungkin ditandai yatim piatu karena sebuah integrasi sedang offline atau tidak berfungsi sejak Home Assistant dimulai. Memanggil aksi ini juga akan menghapus entitas tersebut."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Daftar semua entitas basis data yatim piatu",
+            "description": "Menampilkan daftar semua entitas basis data yatim piatu yang tidak diklaim oleh integrasi mana pun."
+        },
+        "homeassistant_restart": {
+            "name": "Mulai ulang",
+            "description": "Aksi untuk memulai ulang Home Assistant.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Mode aman",
+                    "description": "Apakah mulai ulang dilakukan dalam mode aman. Ini akan menonaktifkan semua integrasi khusus dan modul frontend."
+                },
+                "force": {
+                    "name": "Paksa mulai ulang",
+                    "description": "Paksa mulai ulang. PERINGATAN! Ini tidak akan mematikan Home Assistant dengan rapi, akan melewati pemeriksaan konfigurasi, dan mengabaikan migrasi basis data yang sedang berjalan. Gunakan ini hanya jika Anda tahu apa yang Anda lakukan."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Impor statistik",
+            "description": "Mengimpor statistik jangka panjang.",
+            "fields": {
+                "statistic_id": {
+                    "name": "ID statistik",
+                    "description": "ID statistik (ID entitas) yang ingin diimpor."
+                },
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama statistik."
+                },
+                "source": {
+                    "name": "Sumber",
+                    "description": "Sumber data statistik."
+                },
+                "unit_of_measurement": {
+                    "name": "Satuan pengukuran",
+                    "description": "Satuan pengukuran statistik."
+                },
+                "has_mean": {
+                    "name": "Memiliki rata-rata",
+                    "description": "Apakah statistik memiliki nilai rata-rata."
+                },
+                "has_sum": {
+                    "name": "Memiliki jumlah",
+                    "description": "Apakah statistik memiliki nilai jumlah."
+                },
+                "stats": {
+                    "name": "Statistik",
+                    "description": "Daftar pemetaan/kamus berisi statistik yang ingin diimpor. Kamus harus berisi kunci \"start\" dengan string tanggal waktu, opsi valid lainnya adalah \"mean\", \"sum\", \"min\", \"max\", \"last_reset\", dan \"state\". Semuanya opsional dan berupa bilangan bulat atau desimal, kecuali \"last_reset\" yang berupa string tanggal waktu."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Pilih opsi acak",
+            "description": "Memilih opsi acak untuk entitas pilihan.",
+            "fields": {
+                "options": {
+                    "name": "Opsi",
+                    "description": "Membatasi opsi yang bisa dipilih. Jika tidak diberikan, semua opsi akan dipertimbangkan."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Buat input pilihan",
+            "description": "Membuat pembantu input pilihan (tarik-turun) baru secara langsung. Mengembalikan ID entitas input pilihan baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama input pilihan baru."
+                },
+                "input_select_id": {
+                    "name": "ID entitas input pilihan",
+                    "description": "ID entitas untuk input pilihan baru. Awalan input_select. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "options": {
+                    "name": "Opsi",
+                    "description": "Opsi yang bisa dipilih. Setiap opsi hanya boleh muncul sekali."
+                },
+                "initial": {
+                    "name": "Opsi awal",
+                    "description": "Opsi saat mulai, yang harus salah satu dari opsi yang ada. Jika dikosongkan, opsi yang dimilikinya sebelum Home Assistant dimulai ulang tetap dipertahankan."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon untuk input pilihan baru."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Hapus input pilihan",
+            "description": "Menghapus pembantu input pilihan yang dibuat di UI atau dengan aksi buat input pilihan. Input pilihan yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Input pilihan yang ingin dihapus."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Pilih opsi acak",
+            "description": "Memilih opsi acak untuk entitas input_select.",
+            "fields": {
+                "options": {
+                    "name": "Opsi",
+                    "description": "Membatasi opsi yang bisa dipilih. Jika tidak diberikan, semua opsi akan dipertimbangkan."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Balik urutan opsi",
+            "description": "Membalik urutan opsi yang bisa dipilih untuk entitas `input_select`, dari belakang ke depan. Ini tidak permanen dan akan dibatalkan setelah dimuat ulang atau Home Assistant dimulai ulang."
+        },
+        "input_select_shuffle": {
+            "name": "Acak opsi",
+            "description": "Mengacak daftar opsi yang bisa dipilih untuk entitas `input_select`. Ini tidak permanen dan akan dibatalkan setelah dimuat ulang atau Home Assistant dimulai ulang."
+        },
+        "input_select_sort": {
+            "name": "Urutkan opsi",
+            "description": "Mengurutkan daftar opsi yang bisa dipilih untuk entitas `input_select`. Ini tidak permanen dan akan dibatalkan setelah dimuat ulang atau Home Assistant dimulai ulang."
+        },
+        "number_decrement": {
+            "name": "Kurangi nilai",
+            "description": "Mengurangi nilai entitas bilangan sebanyak jumlah tertentu.",
+            "fields": {
+                "amount": {
+                    "name": "Jumlah",
+                    "description": "Jumlah pengurangan bilangan. Jika tidak diberikan, langkah dari entitas bilangan akan digunakan."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Tambah nilai",
+            "description": "Menambah nilai entitas bilangan sebanyak jumlah tertentu.",
+            "fields": {
+                "amount": {
+                    "name": "Jumlah",
+                    "description": "Jumlah penambahan bilangan. Jika tidak diberikan, langkah dari entitas bilangan akan digunakan."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Atur nilai maksimum",
+            "description": "Mengatur entitas bilangan ke nilai maksimumnya."
+        },
+        "number_min": {
+            "name": "Atur nilai minimum",
+            "description": "Mengatur entitas bilangan ke nilai minimumnya."
+        },
+        "input_number_decrement": {
+            "name": "Kurangi nilai",
+            "description": "Mengurangi nilai entitas input bilangan sebanyak jumlah tertentu.",
+            "fields": {
+                "amount": {
+                    "name": "Jumlah",
+                    "description": "Jumlah pengurangan input bilangan. Jika tidak diberikan, langkah dari entitas bilangan akan digunakan."
+                },
+                "cycle": {
+                    "name": "Berputar",
+                    "description": "Lanjutkan dari ujung rentang yang lain alih-alih berhenti di ujung ini, sama seperti memilih opsi berikutnya berputar pada sebuah pilihan."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Tambah nilai",
+            "description": "Menambah nilai entitas input bilangan sebanyak jumlah tertentu.",
+            "fields": {
+                "amount": {
+                    "name": "Jumlah",
+                    "description": "Jumlah penambahan input bilangan. Jika tidak diberikan, langkah dari entitas bilangan akan digunakan."
+                },
+                "cycle": {
+                    "name": "Berputar",
+                    "description": "Lanjutkan dari ujung rentang yang lain alih-alih berhenti di ujung ini, sama seperti memilih opsi berikutnya berputar pada sebuah pilihan."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Atur nilai maksimum",
+            "description": "Mengatur entitas input bilangan ke nilai maksimumnya."
+        },
+        "input_number_min": {
+            "name": "Atur nilai minimum",
+            "description": "Mengatur entitas input bilangan ke nilai minimumnya."
+        },
+        "input_number_set_range": {
+            "name": "Atur rentang",
+            "description": "Mengubah minimum, maksimum, atau langkah dari input bilangan yang dibuat di UI, sama seperti mengeditnya. Nilai di luar rentang baru dipindahkan ke dalamnya.",
+            "fields": {
+                "min": {
+                    "name": "Minimum",
+                    "description": "Nilai minimum baru."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Nilai maksimum baru."
+                },
+                "step": {
+                    "name": "Langkah",
+                    "description": "Ukuran langkah baru."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Buat pencacah",
+            "description": "Membuat pembantu pencacah baru secara langsung. Mengembalikan ID entitas pencacah baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama pencacah baru."
+                },
+                "counter_id": {
+                    "name": "ID entitas pencacah",
+                    "description": "ID entitas untuk pencacah baru. Awalan counter. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "initial": {
+                    "name": "Nilai awal",
+                    "description": "Nilai awal pencacah, dan nilai yang dituju saat diatur ulang."
+                },
+                "minimum": {
+                    "name": "Minimum",
+                    "description": "Nilai terendah yang bisa dicapai pencacah. Kosongkan untuk tanpa batas."
+                },
+                "maximum": {
+                    "name": "Maksimum",
+                    "description": "Nilai tertinggi yang bisa dicapai pencacah. Kosongkan untuk tanpa batas."
+                },
+                "step": {
+                    "name": "Langkah",
+                    "description": "Seberapa banyak pencacah naik atau turun setiap kali."
+                },
+                "restore": {
+                    "name": "Pulihkan",
+                    "description": "Memulihkan nilai pencacah saat Home Assistant dimulai, alih-alih mulai lagi dari nilai awal."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon untuk pencacah baru."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Hapus pencacah",
+            "description": "Menghapus pembantu pencacah yang dibuat di UI atau dengan aksi buat pencacah. Pencacah yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Pencacah yang ingin dihapus."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Buat input boolean",
+            "description": "Membuat pembantu input boolean (sakelar) baru secara langsung. Mengembalikan ID entitas input boolean baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama input boolean baru."
+                },
+                "input_boolean_id": {
+                    "name": "ID entitas input boolean",
+                    "description": "ID entitas untuk input boolean baru. Awalan input_boolean. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "initial": {
+                    "name": "Nilai awal",
+                    "description": "Nilai saat mulai. Jika dikosongkan, nilai yang dimilikinya sebelum Home Assistant dimulai ulang tetap dipertahankan."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon untuk input boolean baru."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Hapus input boolean",
+            "description": "Menghapus pembantu input boolean yang dibuat di UI atau dengan aksi buat input boolean. Input boolean yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Input boolean yang ingin dihapus."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Buat input teks",
+            "description": "Membuat pembantu input teks baru secara langsung. Mengembalikan ID entitas input teks baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama input teks baru."
+                },
+                "input_text_id": {
+                    "name": "ID entitas input teks",
+                    "description": "ID entitas untuk input teks baru. Awalan input_text. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "initial": {
+                    "name": "Nilai awal",
+                    "description": "Teks saat mulai. Jika dikosongkan, teks yang dimilikinya sebelum Home Assistant dimulai ulang tetap dipertahankan."
+                },
+                "min": {
+                    "name": "Panjang minimum",
+                    "description": "Panjang teks paling pendek."
+                },
+                "max": {
+                    "name": "Panjang maksimum",
+                    "description": "Panjang teks paling panjang."
+                },
+                "pattern": {
+                    "name": "Pola",
+                    "description": "Ekspresi reguler yang harus cocok dengan teks."
+                },
+                "mode": {
+                    "name": "Mode",
+                    "description": "Tampilkan teks apa adanya, atau sembunyikan seperti kata sandi."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon untuk input teks baru."
+                },
+                "unit_of_measurement": {
+                    "name": "Satuan pengukuran",
+                    "description": "Satuan yang ditampilkan di samping teks."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Hapus input teks",
+            "description": "Menghapus pembantu input teks yang dibuat di UI atau dengan aksi buat input teks. Input teks yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Input teks yang ingin dihapus."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Buat tombol input",
+            "description": "Membuat pembantu tombol input baru secara langsung. Mengembalikan ID entitas tombol input baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama tombol input baru."
+                },
+                "input_button_id": {
+                    "name": "ID entitas tombol input",
+                    "description": "ID entitas untuk tombol input baru. Awalan input_button. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon untuk tombol input baru."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Hapus tombol input",
+            "description": "Menghapus pembantu tombol input yang dibuat di UI atau dengan aksi buat tombol input. Tombol input yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Tombol input yang ingin dihapus."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Buat input tanggal waktu",
+            "description": "Membuat pembantu input tanggal waktu baru secara langsung, yang menyimpan tanggal, waktu, atau keduanya. Mengembalikan ID entitas input tanggal waktu baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama input tanggal waktu baru."
+                },
+                "input_datetime_id": {
+                    "name": "ID entitas input tanggal waktu",
+                    "description": "ID entitas untuk input tanggal waktu baru. Awalan input_datetime. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "has_date": {
+                    "name": "Memiliki tanggal",
+                    "description": "Apakah menyimpan tanggal. Setidaknya salah satu dari tanggal dan waktu harus aktif."
+                },
+                "has_time": {
+                    "name": "Memiliki waktu",
+                    "description": "Apakah menyimpan waktu. Setidaknya salah satu dari tanggal dan waktu harus aktif."
+                },
+                "initial": {
+                    "name": "Nilai awal",
+                    "description": "Tanggal dan/atau waktu saat mulai, seperti 2026-12-31, 08:30:00, atau 2026-12-31 08:30:00. Jika dikosongkan, nilai yang dimilikinya sebelum Home Assistant dimulai ulang tetap dipertahankan."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon untuk input tanggal waktu baru."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Hapus input tanggal waktu",
+            "description": "Menghapus pembantu input tanggal waktu yang dibuat di UI atau dengan aksi buat input tanggal waktu. Input tanggal waktu yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Input tanggal waktu yang ingin dihapus."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "Buat input bilangan",
+            "description": "Membuat pembantu input bilangan baru secara langsung. Mengembalikan ID entitas input bilangan baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama pembantu input bilangan baru."
+                },
+                "input_number_id": {
+                    "name": "ID entitas input bilangan",
+                    "description": "ID entitas untuk pembantu input bilangan baru. Awalan input_number. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "min": {
+                    "name": "Minimum",
+                    "description": "Nilai minimum input bilangan."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Nilai maksimum input bilangan."
+                },
+                "initial": {
+                    "name": "Nilai awal",
+                    "description": "Nilai awal input bilangan saat Home Assistant dimulai."
+                },
+                "step": {
+                    "name": "Ukuran langkah",
+                    "description": "Ukuran langkah input bilangan."
+                },
+                "mode": {
+                    "name": "Mode tampilan",
+                    "description": "Mode tampilan input bilangan, bisa berupa penggeser atau kotak input."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon yang digunakan untuk pembantu input bilangan."
+                },
+                "unit_of_measurement": {
+                    "name": "Satuan pengukuran",
+                    "description": "Satuan pengukuran input bilangan."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Hapus input bilangan",
+            "description": "Menghapus pembantu input bilangan yang dibuat di UI atau dengan aksi buat input bilangan. Input bilangan yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Input bilangan yang ingin dihapus."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Tambahkan pelacak perangkat",
+            "description": "Menambahkan pelacak perangkat ke seseorang.",
+            "fields": {
+                "entity_id": {
+                    "name": "Orang",
+                    "description": "ID entitas orang yang ingin ditambahi pelacak perangkat."
+                },
+                "device_tracker": {
+                    "name": "Pelacak perangkat",
+                    "description": "ID entitas pelacak perangkat yang ingin ditambahkan ke orang tersebut."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Hapus pelacak perangkat",
+            "description": "Menghapus pelacak perangkat dari seseorang.",
+            "fields": {
+                "entity_id": {
+                    "name": "Orang",
+                    "description": "ID entitas orang yang pelacak perangkatnya ingin dihapus."
+                },
+                "device_tracker": {
+                    "name": "Pelacak perangkat",
+                    "description": "ID entitas pelacak perangkat yang ingin dihapus dari orang tersebut."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Buat masalah",
+            "description": "Membuat dan memunculkan masalah secara manual di Perbaikan Home Assistant.",
+            "fields": {
+                "title": {
+                    "name": "Judul",
+                    "description": "Judul masalah."
+                },
+                "description": {
+                    "name": "Deskripsi",
+                    "description": "Deskripsi masalah. Mendukung Markdown."
+                },
+                "issue_id": {
+                    "name": "ID masalah",
+                    "description": "Masalah bisa memiliki pengenal, sehingga Anda bisa membatalkannya nanti dengan ID tersebut jika perlu. Ini juga mencegah masalah ganda dibuat. Jika tidak diberikan, ID acak akan dibuat."
+                },
+                "domain": {
+                    "name": "Domain",
+                    "description": "Kolom ini bisa digunakan untuk mengatur domain masalah. Misalnya, secara bawaan (jika tidak diatur), \"spook\" yang akan digunakan. Ini membuat Spook ditampilkan di logo/gambar masalah. Jika Anda mengaturnya ke \"homeassistant\", logo Home Assistant akan digunakan, atau gunakan \"hue\", \"zwave_js\", \"mqtt\", dan sebagainya untuk memakai logo integrasi tersebut."
+                },
+                "severity": {
+                    "name": "Tingkat keparahan",
+                    "description": "Tingkat keparahan masalah. Ini digunakan untuk menentukan prioritas masalah. Jika tidak diatur, \"warning\" yang akan digunakan."
+                },
+                "persistent": {
+                    "name": "Persisten",
+                    "description": "Apakah masalah ini persisten, artinya tetap ada meskipun Home Assistant dimulai ulang. Secara bawaan, masalah tidak persisten."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Abaikan semua masalah",
+            "description": "Mengabaikan semua masalah yang saat ini muncul di Perbaikan Home Assistant, atau hanya yang dimunculkan oleh integrasi tertentu.",
+            "fields": {
+                "domain": {
+                    "name": "Domain",
+                    "description": "Hanya abaikan masalah yang dimunculkan oleh integrasi ini."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Daftar masalah",
+            "description": "Menampilkan daftar masalah yang saat ini muncul di Perbaikan Home Assistant, beserta judulnya, untuk ditindaklanjuti otomasi atau ditampilkan di dasbor.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Sertakan yang diabaikan",
+                    "description": "Juga tampilkan masalah yang sudah diabaikan."
+                },
+                "domain": {
+                    "name": "Domain",
+                    "description": "Hanya tampilkan masalah yang dimunculkan oleh integrasi ini."
+                },
+                "severity": {
+                    "name": "Tingkat keparahan",
+                    "description": "Hanya tampilkan masalah dengan tingkat keparahan ini."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Hapus masalah",
+            "description": "Menghapus masalah perbaikan Home Assistant yang dibuat secara manual. Aksi ini hanya bisa menghapus masalah yang dibuat dengan aksi `repairs_create`.",
+            "fields": {
+                "issue_id": {
+                    "name": "ID masalah",
+                    "description": "ID masalah yang ingin dihapus."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Batalkan pengabaian semua masalah",
+            "description": "Membatalkan pengabaian semua masalah yang saat ini muncul di Perbaikan Home Assistant, atau hanya yang dimunculkan oleh integrasi tertentu.",
+            "fields": {
+                "domain": {
+                    "name": "Domain",
+                    "description": "Hanya batalkan pengabaian masalah yang dimunculkan oleh integrasi ini."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Atur presisi tampilan",
+            "description": "Mengatur jumlah desimal yang ditampilkan untuk satu atau lebih sensor.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitas",
+                    "description": "Entitas sensor yang ingin diperbarui."
+                },
+                "display_precision": {
+                    "name": "Presisi tampilan",
+                    "description": "Jumlah desimal yang ditampilkan untuk sensor."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Buat timer",
+            "description": "Membuat pembantu timer baru secara langsung. Mengembalikan ID entitas timer baru.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama timer baru."
+                },
+                "timer_id": {
+                    "name": "ID entitas timer",
+                    "description": "ID entitas untuk timer baru. Awalan timer. ditambahkan secara otomatis. Jika tidak diberikan, ID entitas akan dibuat berdasarkan nama."
+                },
+                "duration": {
+                    "name": "Durasi",
+                    "description": "Berapa lama timer berjalan saat dimulai."
+                },
+                "restore": {
+                    "name": "Pulihkan",
+                    "description": "Memulihkan status timer saat Home Assistant dimulai, sehingga timer yang sedang berjalan tetap berjalan setelah dimulai ulang."
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon untuk timer baru."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Hapus timer",
+            "description": "Menghapus pembantu timer yang dibuat di UI atau dengan aksi buat timer. Timer yang disiapkan di YAML tidak dapat dihapus oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "Timer yang ingin dihapus."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Atur durasi",
+            "description": "Mengatur durasi untuk timer yang sudah ada.",
+            "fields": {
+                "duration": {
+                    "name": "Durasi",
+                    "description": "Durasi baru untuk timer, sebagai string timedelta."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Buat zona",
+            "description": "Membuat zona baru di Home Assistant secara langsung.",
+            "fields": {
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama zona"
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon yang digunakan untuk zona"
+                },
+                "latitude": {
+                    "name": "Lintang",
+                    "description": "Lintang zona. Bisa berupa templat."
+                },
+                "longitude": {
+                    "name": "Bujur",
+                    "description": "Bujur zona. Bisa berupa templat."
+                },
+                "radius": {
+                    "name": "Radius",
+                    "description": "Radius zona"
+                },
+                "passive": {
+                    "name": "Pasif",
+                    "description": "Zona pasif hanya ada untuk otomasi: tidak ditampilkan di peta, dan tidak mengubah keberadaan orang dan pelacak perangkat."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Perbarui zona",
+            "description": "Memperbarui properti zona secara langsung.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "ID entitas (satu atau lebih) yang ingin diperbarui."
+                },
+                "name": {
+                    "name": "Nama",
+                    "description": "Nama zona"
+                },
+                "icon": {
+                    "name": "Ikon",
+                    "description": "Ikon yang digunakan untuk zona"
+                },
+                "latitude": {
+                    "name": "Lintang",
+                    "description": "Lintang zona. Bisa berupa templat."
+                },
+                "longitude": {
+                    "name": "Bujur",
+                    "description": "Bujur zona. Bisa berupa templat."
+                },
+                "radius": {
+                    "name": "Radius",
+                    "description": "Radius zona"
+                },
+                "passive": {
+                    "name": "Pasif",
+                    "description": "Zona pasif hanya ada untuk otomasi: tidak ditampilkan di peta, dan tidak mengubah keberadaan orang dan pelacak perangkat."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Hapus zona",
+            "description": "Menghapus zona. Ini hanya berfungsi untuk zona yang dibuat dan dikelola melalui UI. Zona yang dibuat dan dikelola di YAML tidak dapat dikelola oleh Spook.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID entitas",
+                    "description": "ID entitas (satu atau lebih) yang ingin dihapus."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Naikkan suhu",
+            "description": "Menaikkan setpoint pemanas air satu langkah, dalam batasnya.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Seberapa banyak perubahannya. Kosongkan untuk memakai langkah pemanas air itu sendiri, atau setengah derajat (satu di Fahrenheit) jika tidak punya."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Turunkan suhu",
+            "description": "Menurunkan setpoint pemanas air satu langkah, dalam batasnya.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Seberapa banyak perubahannya. Kosongkan untuk memakai langkah pemanas air itu sendiri, atau setengah derajat (satu di Fahrenheit) jika tidak punya."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Naikkan kelembaban",
+            "description": "Menaikkan target kelembaban pelembab satu langkah, dalam batasnya.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Berapa persen perubahannya. Kosongkan untuk memakai langkah pelembab itu sendiri, atau satu persen jika tidak punya."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Turunkan kelembaban",
+            "description": "Menurunkan target kelembaban pelembab satu langkah, dalam batasnya.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Berapa persen perubahannya. Kosongkan untuk memakai langkah pelembab itu sendiri, atau satu persen jika tidak punya."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Naikkan posisi",
+            "description": "Membuka penutup satu langkah lebih lebar, berhenti saat terbuka penuh.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Berapa persen pergerakannya. Sepuluh persen jika dikosongkan."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Turunkan posisi",
+            "description": "Menutup penutup satu langkah lebih rapat, berhenti saat tertutup penuh.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Berapa persen pergerakannya. Sepuluh persen jika dikosongkan."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Naikkan posisi",
+            "description": "Membuka katup satu langkah lebih lebar, berhenti saat terbuka penuh.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Berapa persen pergerakannya. Sepuluh persen jika dikosongkan."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Turunkan posisi",
+            "description": "Menutup katup satu langkah lebih rapat, berhenti saat tertutup penuh.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Berapa persen pergerakannya. Sepuluh persen jika dikosongkan."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Naikkan volume",
+            "description": "Menaikkan volume pemutar media sebesar langkah yang Anda berikan, berhenti pada volume penuh.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Berapa persen perubahan volumenya."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Turunkan volume",
+            "description": "Menurunkan volume pemutar media sebesar langkah yang Anda berikan, berhenti saat senyap.",
+            "fields": {
+                "step": {
+                    "name": "Langkah",
+                    "description": "Berapa persen perubahan volumenya."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Pindahkan item",
+            "description": "Memindahkan item di daftar tugas ke paling atas, paling bawah, atau setelah item lain.",
+            "fields": {
+                "item": {
+                    "name": "Item",
+                    "description": "Judul atau uid item yang ingin dipindahkan."
+                },
+                "after": {
+                    "name": "Setelah",
+                    "description": "Judul atau uid item tempat item ini diletakkan setelahnya. Berikan ini atau posisi."
+                },
+                "position": {
+                    "name": "Posisi",
+                    "description": "Pindahkan ke paling atas atau paling bawah daftar. Berikan ini atau item tempat meletakkannya setelahnya."
                 }
             }
         }

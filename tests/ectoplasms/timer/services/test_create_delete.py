@@ -24,6 +24,9 @@ if TYPE_CHECKING:
     from tests.common import MockUser
 
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 @pytest.fixture(autouse=True)
 async def _timers(hass: HomeAssistant, hass_storage: dict[str, Any]) -> None:
     """Set up one timer from the UI and one from YAML, and the Spook actions."""
@@ -238,7 +241,7 @@ async def test_delete_the_same_timer_twice_in_a_list(hass: HomeAssistant) -> Non
 @pytest.mark.parametrize(
     ("bad", "message"),
     [
-        ("timer.nope", "Could not find timer.nope"),
+        ("timer.nope", "Entity timer.nope not found"),
         ("timer.from_yaml", "set up in YAML"),
     ],
 )

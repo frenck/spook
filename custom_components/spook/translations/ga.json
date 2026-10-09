@@ -1,17 +1,348 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Uathoibriú múchta",
+            "description": "Spreagann sé nuair a mhúchann duine éigin, nó rud éigin, uathoibriú. Fág an sprioc folamh chun súil a choinneáil ar gach uathoibriú."
+        },
+        "debounce": {
+            "name": "Nuair a shocraíonn sé",
+            "description": "Spreagann sé nuair a stopann truicear ag spreagadh ar feadh tamaill, ionas go dtagann rois acu isteach mar cheann amháin. Ní thuairiscíonn braiteoir gluaiseachta gluaiseacht uair amháin, tuairiscíonn sé fiche uair í.",
+            "fields": {
+                "triggers": {
+                    "name": "Truicir",
+                    "description": "Na truicir le fanacht amach. Cuireann ceann ar bith acu rois ar siúl agus coinníonn ceann ar bith acu ag spreagadh arís í ag dul, ionas go gcnuasaítear roinnt truicear le chéile seachas ceann ar cheann."
+                },
+                "for": {
+                    "name": "Ar feadh",
+                    "description": "An fad ama a chaithfidh sé a bheith ciúin sula spreagann sé seo. Tosaíonn gach spreagadh an fanacht sin as an nua, mar sin ní thuairiscítear riamh rud nach stopann ag spreagadh."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Tharla iad seo go léir",
+            "description": "Spreagann sé nuair a spreag gach ceann de roinnt truicear laistigh den fhuinneog ama chéanna, in ord ar bith. Is liosta iad truicir Home Assistant féin ina leor ceann ar bith acu; seo an ceann eile.",
+            "fields": {
+                "triggers": {
+                    "name": "Truicir",
+                    "description": "Na truicir a chaithfidh a bheith spreagtha go léir. Is cuma faoin ord, agus má spreagann truicear arís glacann sé áit a sheal roimhe seo in ionad é a chomhaireamh faoi dhó."
+                },
+                "within": {
+                    "name": "Laistigh de",
+                    "description": "Cé chomh gar dá chéile a chaithfidh siad a bheith. Sleamhnaíonn an fhuinneog, mar sin déantar dearmad ar thruicear a spreag níos faide siar ná seo agus leanann na cinn eile ag comhaireamh."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Tháinig an t-aonán ar ais",
+            "description": "Spreagann sé nuair a thagann aonán ar ais tar éis dó a bheith gan fáil ar feadh tamaill, ionas nach léitear ródaire á atosú mar gach rud sa teach ag teacht chuige féin.",
+            "fields": {
+                "for": {
+                    "name": "Ar feadh",
+                    "description": "An fad ama a chaithfidh an t-aonán a bheith ar iarraidh sula gcomhairtear a theacht ar ais. Preabadh is ea aon rud níos giorra: nuair a athlódáiltear comhtháthú, téann gach ceann dá aonáin trí bheith gan fáil agus ar ais laistigh de shoicind."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Gléas curtha leis",
+            "description": "Spreagann sé nuair a chuirtear gléas nua le Home Assistant, cosúil le plocóid a péireáladh díreach."
+        },
+        "sequence": {
+            "name": "Truicir in ord",
+            "description": "Spreagann sé nuair a tharlaíonn roinnt truicear ceann i ndiaidh a chéile, san ord a tugadh.",
+            "fields": {
+                "steps": {
+                    "name": "Céimeanna",
+                    "description": "Na truicir a chaithfidh tarlú, in ord. Níl ach an ceann a bhfuiltear ag fanacht air ag éisteacht, mar sin ní comhoiriúnú é céim níos déanaí a spreagann go luath."
+                },
+                "timeout": {
+                    "name": "Teorainn ama",
+                    "description": "An fad ama a fhéadfaidh an seicheamh iomlán a thógáil, á chomhaireamh ón gcéad chéim. Má fhágtar amach é, fanann sé go deo."
+                },
+                "reset": {
+                    "name": "Athshocraigh",
+                    "description": "Truicir a thréigeann seicheamh atá ar siúl cheana, agus a chuireann ar ais é ag fanacht ar an gcéad chéim."
+                }
+            }
+        },
+        "while": {
+            "name": "Fad is atá coinníoll fíor",
+            "description": "Spreagann sé nuair a éiríonn coinníoll fíor, agus coinníonn sé ag spreagadh ar eatramh fad is a fhanann sé fíor.",
+            "fields": {
+                "condition": {
+                    "name": "Coinníoll",
+                    "description": "An coinníoll le faire. Tosaíonn an spreagadh nuair a éiríonn sé fíor agus stopann sé nuair nach bhfuil sé fíor a thuilleadh."
+                },
+                "every": {
+                    "name": "Gach",
+                    "description": "An fad ama le fanacht idir spreagadh amháin agus an chéad cheann eile, fad is atá an coinníoll fíor."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Cú faire",
+            "description": "Spreagann sé nuair nach dtarlaíonn rud a rabhthas ag súil leis in am.",
+            "fields": {
+                "arm": {
+                    "name": "Armáil",
+                    "description": "An rud a thosaíonn an faire. Tomhaistear an fanacht as seo, agus má armáiltear arís le linn fanachta tosaíonn an fanacht as an nua."
+                },
+                "expect": {
+                    "name": "Ag súil le",
+                    "description": "An rud a bhfuiltear ag súil leis ina dhiaidh. Má thagann sé in am, cuirtear an faire ar ceal, agus ní spreagann aon rud."
+                },
+                "within": {
+                    "name": "Laistigh de",
+                    "description": "An fad ama atá ag an rud a bhfuiltear ag súil leis teacht. Spreagann sé seo nuair a théann an t-am sin thart agus nár tháinig sé."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Ní shocróidh an t-aonán",
+            "description": "Spreagann sé nuair a athraíonn aonán a staid níos minice ná mar ba chóir laistigh de thréimhse ama.",
+            "fields": {
+                "changes": {
+                    "name": "Athruithe",
+                    "description": "Cé mhéad athrú staide a theastaíonn sula spreagann sé seo. Ní chomhairtear athruithe tréithe, ná aonán ag teacht chun solais nó ag imeacht."
+                },
+                "within": {
+                    "name": "Laistigh de",
+                    "description": "An tréimhse ama a chaithfidh na hathruithe sin titim laistigh di. Sleamhnaíonn sí ar aghaidh, mar sin baineann sé seo i gcónaí leis na hathruithe is déanaí."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "D'éirigh coinníoll fíor",
+            "description": "Spreagann sé nuair a athraíonn coinníoll ó bhréagach go fíor, ag úsáid na mbloc tógála coinníll céanna is atá in áit ar bith eile.",
+            "fields": {
+                "condition": {
+                    "name": "Coinníoll",
+                    "description": "An coinníoll le faire."
+                }
+            }
+        },
+        "cron": {
+            "name": "Sceideal cron",
+            "description": "Spreagann sé de réir sceideal crontab, do na hamanna nach féidir le truicir ama Home Assistant féin a chur in iúl, cosúil le gach lá oibre ag a seacht nó an Aoine dheireanach den mhí.",
+            "fields": {
+                "schedule": {
+                    "name": "Sceideal",
+                    "description": "Slonn crontab le cúig réimse: nóiméad, uair, lá den mhí, mí, lá den tseachtain. Tacaítear le raonta agus céimeanna, agus le síntí lá na seachtaine, mar sin is é \"MON#2\" an dara Luan agus \"5L\" an Aoine dheireanach. Ní thacaítear le leasainmneacha cosúil le \"@daily\"."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Gléas aimsithe",
+            "description": "Spreagann sé nuair a aimsíonn Home Assistant rud nua a d'fhéadfadh sé a shocrú, cosúil le gléas a nocht díreach ar do líonra."
+        },
+        "integration_added": {
+            "name": "Comhtháthú curtha leis",
+            "description": "Spreagann sé nuair a chuirtear comhtháthú le Home Assistant, cibé duine nó rud a chuir leis é."
+        },
+        "integration_failed": {
+            "name": "Theip ar shocrú an chomhtháthaithe",
+            "description": "Spreagann sé nuair nár éirigh le hiontráil chumraíochta í féin a shocrú ar feadh tamaill, thar an bpointe ina mbeadh atriailacha Home Assistant féin tar éis é a réiteach.",
+            "fields": {
+                "for": {
+                    "name": "Ar feadh",
+                    "description": "An fad ama a chaithfidh iontráil leanúint ag teip sula spreagann sé seo. Déanann Home Assistant iontráil atá ag teip a atriail gach deich nóiméad ar a mhoille, mar sin tuairiscíonn aon rud níos giorra ná sin trioblóid a d'fhéadfadh í féin a réiteach fós."
+                },
+                "entry_id": {
+                    "name": "Iontrálacha",
+                    "description": "Teorannaigh seo d'iontrálacha cumraíochta áirithe. Fág folamh é chun súil a choinneáil ar gach ceann acu."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Saincheist deisiúcháin cruthaithe",
+            "description": "Spreagann sé nuair a nochtann saincheist deisiúcháin nua, ionas gur féidir leat cloisteáil faoi gan cuairt a thabhairt ar leathanach na ndeisiúchán.",
+            "fields": {
+                "domain": {
+                    "name": "Comhtháthaithe",
+                    "description": "Teorannaigh seo do shaincheisteanna a thuairiscíonn comhtháthaithe áirithe, de réir a bhfearainn. Fág folamh é le haghaidh gach ceann acu."
+                },
+                "severity": {
+                    "name": "Déine",
+                    "description": "Teorannaigh seo do shaincheisteanna de dhéine áirithe. Fág folamh é le haghaidh gach ceann acu."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Saincheist deisiúcháin réitithe",
+            "description": "Spreagann sé nuair a imíonn saincheist deisiúcháin, bíodh sí deisithe nó gan í a bheith á tuairisciú a thuilleadh.",
+            "fields": {
+                "domain": {
+                    "name": "Comhtháthaithe",
+                    "description": "Teorannaigh seo do shaincheisteanna a thuairiscíonn comhtháthaithe áirithe, de réir a bhfearainn. Fág folamh é le haghaidh gach ceann acu."
+                }
+            }
+        },
+        "stale": {
+            "name": "Thit an t-aonán ina thost",
+            "description": "Spreagann sé nuair nár scríobh aon rud chuig aonán ar feadh tamaill, rud a bheireann ar ghléas a fuair bás go ciúin seachas a bheith gan fáil.",
+            "fields": {
+                "for": {
+                    "name": "Ar feadh",
+                    "description": "An fad ama a chaithfidh aonán fanacht ina thost sula spreagann sé seo. Níl aonán a choinníonn ag tuairisciú an luach céanna ina thost."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Sprioctheocht bainte amach",
+            "description": "Spreagann sé nuair a shroicheann teocht teirmeastait nó téitheora uisce a sprioc, nó nuair a léimeann sí thairis. Ní chomhairtear athrú na sprice, ná gléas atá múchta.",
+            "fields": {
+                "tolerance": {
+                    "name": "Lamháltas",
+                    "description": "Cé chomh gar don sprioc a chomhairtear fós mar ann, in aonad an ghléis. Do theirmeastat a shocraíonn díreach gearr dá phointe socraithe. Ciallaíonn nialas an sprioc féin."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Nuashonrú suiteáilte",
+            "description": "Spreagann sé nuair a thuairiscíonn aonán nuashonraithe leagan suiteáilte difriúil, cibé ar bhrúigh duine éigin suiteáil, ar nuashonraigh an gléas é féin, nó ar nuashonraíodh é lasmuigh de Home Assistant."
+        },
+        "position_reached": {
+            "name": "Seasamh bainte amach",
+            "description": "Spreagann sé nuair a shroicheann clúdach nó comhla seasamh, nó nuair a bhogann sé thairis. Ní chomhairtear ceann atá ann cheana, nó a thagann ar ais ó bheith gan fáil ag an seasamh sin.",
+            "fields": {
+                "position": {
+                    "name": "Seasamh",
+                    "description": "An seasamh le baint amach, ó 0 (dúnta) go 100 (oscailte)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Script tosaithe",
+            "description": "Spreagann sé nuair a thosaíonn script rith. Ní chomhairtear rith a dhiúltaíonn an script, toisc go bhfuil sí ag rith cheana. Fág an sprioc folamh chun súil a choinneáil ar gach script."
+        },
+        "user_added": {
+            "name": "Úsáideoir curtha leis",
+            "description": "Spreagann sé nuair a thugtar logáil isteach do Home Assistant do dhuine éigin. Fágtar amach úsáideoirí a chruthaíonn Home Assistant dá chomhtháthaithe féin."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Criticiúil",
+                "error": "Earráid",
+                "warning": "Rabhadh"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Bun",
+                "top": "Barr"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Teocht ag a sprioc",
+            "description": "Fíor nuair atá teocht teirmeastait nó téitheora uisce ag a sprioc. Níl gléas atá múchta ag a sprioc, agus fágtar amach ceann nach bhfuil fáil air.",
+            "fields": {
+                "behavior": {
+                    "name": "Iompar",
+                    "description": "Cibé an leor gléas ar bith acu a bheith ann, nó an gcaithfidh gach ceann acu a bheith ann."
+                },
+                "tolerance": {
+                    "name": "Lamháltas",
+                    "description": "Cé chomh gar don sprioc a chomhairtear fós mar ann, in aonad an ghléis. Do theirmeastat a shocraíonn díreach gearr dá phointe socraithe. Ciallaíonn nialas an sprioc féin."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Saincheist deisiúcháin gan réiteach",
+            "description": "Fíor fad is atá saincheist deisiúcháin gan réiteach. Ní chomhairtear saincheisteanna ar rinne duine éigin neamhaird díobh.",
+            "fields": {
+                "domain": {
+                    "name": "Comhtháthaithe",
+                    "description": "Teorannaigh seo do shaincheisteanna a thuairiscíonn comhtháthaithe áirithe, de réir a bhfearainn. Fág folamh é le haghaidh gach ceann acu."
+                },
+                "severity": {
+                    "name": "Déine",
+                    "description": "Teorannaigh seo do shaincheisteanna de dhéine áirithe. Fág folamh é le haghaidh gach ceann acu."
+                }
+            }
+        },
+        "quota": {
+            "name": "Rití fágtha",
+            "description": "Fíor fad is a rith an t-uathoibriú seo níos lú ná líon áirithe uaireanta laistigh de thréimhse áirithe. Ní chomhairtear scripteanna.",
+            "fields": {
+                "limit": {
+                    "name": "Teorainn",
+                    "description": "Cé mhéad rith a cheadaítear laistigh den tréimhse."
+                },
+                "period": {
+                    "name": "Tréimhse",
+                    "description": "An fhuinneog lena mbaineann an teorainn. Rollann sí, mar sin ciallaíonn lá aon cheithre huaire fichead seachas idir dhá mheán oíche."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Spreagtha ag uathoibriú",
+            "description": "Fíor nuair a chuir uathoibriú eile an rith seo ar siúl, go díreach nó trí script.",
+            "fields": {
+                "automation": {
+                    "name": "Uathoibrithe",
+                    "description": "Teorannaigh seo d'uathoibrithe áirithe. Fág folamh é chun glacadh le ceann ar bith acu."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Spreagtha ag úsáideoir",
+            "description": "Fíor nuair atá duine taobh thiar den rud a chuir seo ar siúl: athrú staide nó imeacht ba chúis leo, lena n-áirítear ceann a d'fhág truicear teimpléid fíor. Ní iompraíonn sceideal, an ghrian, ná comhtháthú atá ag gníomhú as a stuaim féin duine ar bith, agus ní iompraíonn rith a chuirtear i bhfeidhm leis an gcnaipe Rith ach oiread.",
+            "fields": {
+                "person": {
+                    "name": "Daoine",
+                    "description": "Ná bí fíor ach nuair a thosaigh duine de na daoine seo é. Fág folamh é le bheith fíor do dhuine ar bith. Caithfidh cuntas úsáideora a bheith nasctha le duine, nó níl aon rud le comhoiriúnú leis."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Gan spreagadh ag úsáideoir",
+            "description": "Fíor nuair nach féidir duine ar bith a chur i gcuntas as an rith seo: sceideal, an ghrian, comhtháthú atá ag gníomhú as a stuaim féin, nó an cnaipe Rith. Ní ghlacann sé aon roghanna d'aon ghnó. Chun daoine áirithe a eisiamh ina ionad sin, cuir \"Spreagtha ag úsáideoir\" taobh istigh de choinníoll Ní."
+        },
+        "chance": {
+            "name": "Seans",
+            "description": "Fíor ar feadh céatadán socraithe den am, roghnaithe go randamach ag gach seiceáil. Áisiúil chun beagán éagsúlachta a chur le d'uathoibrithe.",
+            "fields": {
+                "percentage": {
+                    "name": "Céatadán",
+                    "description": "Cé chomh minic ba chóir don choinníoll seo a bheith fíor, mar chéatadán."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Fuarú",
+            "description": "Fíor ach amháin mura bhfuil an t-uathoibriú nó an script seo rite laistigh den am a tugadh (nó nár rith riamh). Fuarú ionsuite, ionas nach spreagann sé arís ró-mhinic.",
+            "fields": {
+                "duration": {
+                    "name": "Fad",
+                    "description": "An fad ama le fanacht tar éis an rith deireanaigh sula mbeidh an coinníoll seo fíor arís."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Sea... bhuel... níl. Ceart go leor, go raibh maith agat, slán!"
+            "already_spooked": "Tá Spook ag tathaigh na háite seo cheana féin 👻\n\nIs leor taibhse amháin in aghaidh an tí. Gheobhaidh tú Spook faoi [Gléasanna & seirbhísí](/config/integrations/integration/spook).",
+            "enabled_existing": "Tá Spook ina dhúiseacht arís 👻\n\nTabhair nóiméad dó breathnú thart. Taispeántar aon rud a aimsíonn sé faoi [Deisiúcháin](/config/repairs).",
+            "enable_failed": "Ní dhúiseodh Spook 👻\n\nBain triail as é a chasadh air arís tú féin faoi [Gléasanna & seirbhísí](/config/integrations/integration/spook).",
+            "kept_sleeping": "Fanann Spook ina chodladh 👻\n\nAn mbraitheann tú uait é? Is féidir leat é a dhúiseacht am ar bith faoi [Gléasanna & seirbhísí](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Tá Spook ag foluain thart 👻\n\nTabhair nóiméad dó breathnú thart. Taispeántar aon rud a aimsíonn sé faoi [Deisiúcháin](/config/repairs).\n\nTá na gníomhartha, na truicir agus na coinníollacha breise ag fanacht leat in eagarthóirí na n-uathoibrithe agus na scripteanna. Fiosrach faoi cad eile is féidir le Spook a dhéanamh? Tá sé go léir sa [doiciméadú]({documentation_url}).\n\nAn dtaitníonn Spook leat? 👻 Cuireann ⭐ ar [GitHub]({repository_url}) in iúl do dhaoine eile go bhfuil Spook go maith i ndáiríre. Coinníonn [urraíocht do Frenck]({sponsor_url}) an taibhse seo cothaithe go maith. Agus coinníonn a [nuachtlitir]({newsletter_url}) saor in aisce gach coicís do thaibhse inmheánach cothaithe go maith."
         },
         "step": {
             "user": {
-                "description": "Ar léigh tú an readme? Ar léigh tú an ceadúnas? An bhfuil tú cinnte?"
+                "title": "Bú! Seo Spook, do chara 👻",
+                "description": "Bíonn Spook ag foluain timpeall do Home Assistant ag lorg taibhsí: tagairtí do rudaí nach ann dóibh a thuilleadh, agus fuílleach nár ghlan aon duine suas. Cibé rud a aimsíonn sé, tuairiscíonn sé faoi Deisiúcháin é.\n\nLeathnaíonn sé freisin a bhfuil ar chumas d'uathoibrithe agus do scripteanna, le gníomhartha, truicearacha, coinníollacha agus cúntóirí breise, le haghaidh uathoibrithe níos cumhachtaí fós.\n\nRabhadh roimh ré: ní cuid de Home Assistant é Spook. Is comhtháthú saincheaptha é a shíneann isteach in áiteanna nár tugadh cuireadh dó riamh. Má tharlaíonn rud aisteach, bíodh amhras ort faoi Spook ar dtús, agus [cuir in iúl dúinn]({issue_tracker_url}).\n\nAn bhfuil tú réidh le scanradh a fháil?"
             },
-            "choice_restart": {
-                "description": "Chun go gcríochnódh Spook an socrú, ní mór Home Assistant a atosú.\n\nAn mian leat Home Assistant a atosú anois?",
+            "already_configured": {
+                "title": "Tá Spook ina chodladh 👻",
+                "description": "Tá Spook socraithe cheana, ach mhúch duine éigin é. Dúisigh é?",
                 "menu_options": {
-                    "restart_now": "Atosaigh anois",
-                    "restart_later": "Atosaigh níos déanaí"
+                    "enable_existing": "Dúisigh Spook",
+                    "keep_sleeping": "Lig dó codladh"
                 }
             }
         }
@@ -25,10 +356,10 @@
                 "name": "Atosaigh"
             },
             "repairs_ignore_all": {
-                "name": "Déan neamhaird ar gach rud"
+                "name": "Déan neamhaird de gach rud"
             },
             "repairs_unignore_all": {
-                "name": "Ná déan neamhaird ar aon rud"
+                "name": "Cuir deireadh leis an neamhaird ar gach rud"
             }
         },
         "event": {
@@ -36,173 +367,185 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Issue created",
-                            "remove": "Issue removed",
-                            "update": "Issue updated"
+                            "create": "Saincheist cruthaithe",
+                            "remove": "Saincheist bainte",
+                            "update": "Saincheist nuashonraithe"
                         }
                     },
                     "domain": {
-                        "name": "Issue issuer"
+                        "name": "Foinse na saincheiste"
                     },
                     "issue_id": {
-                        "name": "Issue ID"
+                        "name": "Aitheantas na saincheiste"
                     }
                 }
             }
         },
         "sensor": {
             "homeassistant_air_quality": {
-                "name": "Air quality"
+                "name": "Cáilíocht an aeir"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Alarm control panels"
+                "name": "Painéil rialaithe aláraim"
             },
             "homeassistant_area": {
-                "name": "Ceantair"
+                "name": "Limistéir"
             },
             "homeassistant_automation": {
                 "name": "Uathoibriúcháin"
             },
             "homeassistant_binary_sensor": {
-                "name": "Binary sensors"
+                "name": "Braiteoirí dénártha"
             },
             "homeassistant_button": {
-                "name": "Buttons"
+                "name": "Cnaipí"
             },
             "homeassistant_calendar": {
-                "name": "Calendars"
+                "name": "Féilirí"
             },
             "homeassistant_camera": {
-                "name": "Cameras"
+                "name": "Ceamaraí"
             },
             "homeassistant_climate": {
-                "name": "Climate"
+                "name": "Aeráid"
+            },
+            "homeassistant_counter": {
+                "name": "Cuntair"
             },
             "homeassistant_cover": {
-                "name": "Covers"
+                "name": "Clúdaigh"
             },
             "homeassistant_custom_component": {
-                "name": "Custom integrations"
+                "name": "Comhtháthaithe saincheaptha"
             },
             "homeassistant_date": {
-                "name": "Dates"
+                "name": "Dátaí"
             },
             "homeassistant_datetime": {
-                "name": "Date/times"
+                "name": "Dátaí/amanna"
             },
             "homeassistant_device": {
                 "name": "Gléasanna"
             },
             "homeassistant_device_tracker": {
-                "name": "Device trackers"
+                "name": "Rianaitheoirí gléasanna"
             },
             "homeassistant_entities": {
                 "name": "Aonáin"
             },
             "homeassistant_fan": {
-                "name": "Fans"
+                "name": "Feananna"
+            },
+            "homeassistant_group": {
+                "name": "Grúpaí"
             },
             "homeassistant_humidifier": {
-                "name": "Humidifiers"
+                "name": "Taiseoirí"
             },
             "homeassistant_image": {
-                "name": "Images"
+                "name": "Íomhánna"
             },
             "homeassistant_input_boolean": {
-                "name": "Input booleans"
+                "name": "Booleans ionchuir"
             },
             "homeassistant_input_button": {
-                "name": "Input buttons"
+                "name": "Cnaipí ionchuir"
             },
             "homeassistant_input_datetime": {
-                "name": "Input date/times"
+                "name": "Ionchur dátaí agus amanna"
             },
             "homeassistant_input_number": {
-                "name": "Input numbers"
+                "name": "Uimhreacha ionchuir"
             },
             "homeassistant_input_select": {
-                "name": "Input selects"
+                "name": "Roghanna ionchuir"
             },
             "homeassistant_input_text": {
-                "name": "Input texts"
+                "name": "Téacsanna ionchuir"
             },
             "homeassistant_integration": {
-                "name": "Integrations"
+                "name": "Comhtháthaithe"
             },
             "homeassistant_light": {
                 "name": "Soilse"
             },
             "homeassistant_lock": {
-                "name": "Locks"
+                "name": "Glais"
             },
             "homeassistant_media_player": {
-                "name": "Media players"
+                "name": "Seinnteoirí meán"
             },
             "homeassistant_number": {
-                "name": "Numbers"
+                "name": "Uimhreacha"
             },
             "homeassistant_persistent_notification": {
-                "name": "Persistent notifications"
+                "name": "Fógraí leanúnacha"
             },
             "homeassistant_person": {
-                "name": "Persons"
+                "name": "Daoine"
             },
             "homeassistant_remote": {
-                "name": "Remotes"
+                "name": "Cianrialtáin"
             },
             "homeassistant_scene": {
-                "name": "Scenes"
+                "name": "Radhairc"
             },
             "homeassistant_script": {
-                "name": "Scripts"
+                "name": "Scripteanna"
             },
             "homeassistant_select": {
-                "name": "Selects"
+                "name": "Roghanna"
             },
             "homeassistant_sensor": {
-                "name": "Braiteoir"
+                "name": "Braiteoirí"
             },
             "homeassistant_siren": {
-                "name": "Sirens"
+                "name": "Bonnáin"
             },
             "homeassistant_stt": {
-                "name": "Speech-to-text"
+                "name": "Urlabhra-go-téacs"
             },
             "homeassistant_sun": {
-                "name": "Suns"
+                "name": "Grianta"
             },
             "homeassistant_switch": {
-                "name": "Lasc"
+                "name": "Lasca"
             },
             "homeassistant_text": {
-                "name": "Texts"
+                "name": "Téacsanna"
             },
             "homeassistant_time": {
-                "name": "Times"
+                "name": "Amanna"
+            },
+            "homeassistant_timer": {
+                "name": "Amaireadóirí"
+            },
+            "homeassistant_todo": {
+                "name": "Liostaí le déanamh"
             },
             "homeassistant_tts": {
-                "name": "Text-to-speech"
+                "name": "Téacs-go-hurlabhra"
             },
             "homeassistant_update": {
-                "name": "Update"
+                "name": "Nuashonruithe"
             },
             "homeassistant_vacuum": {
-                "name": "Vacuums"
+                "name": "Folúsghlantóirí"
             },
             "homeassistant_water_heater": {
-                "name": "Water heaters"
+                "name": "Téitheoirí uisce"
             },
             "homeassistant_weather": {
-                "name": "Weather"
+                "name": "Aimsir"
             },
             "homeassistant_zone": {
-                "name": "Zones"
+                "name": "Zóin"
             },
             "repairs_total_issues": {
                 "name": "Iomlán"
             },
             "repairs_ignored_issues": {
-                "name": "Déanta neamhaird orthu"
+                "name": "A ndearnadh neamhaird díobh"
             },
             "repairs_active_issues": {
                 "name": "Gníomhach"
@@ -210,87 +553,597 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa state reporting"
+                "name": "Tuairisciú staide Alexa"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistant state reporting"
+                "name": "Tuairisciú staide Google Assistant"
             },
             "cloud_remote": {
-                "name": "Remote"
+                "name": "Rochtain iargúlta"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Níorbh fhéidir gach truicear de thruicear \"iad go léir\" a cheangal."
+        },
+        "area_not_found": {
+            "message": "Níor aimsíodh an limistéar {area_id}."
+        },
+        "blueprint_backup_failed": {
+            "message": "Níorbh fhéidir cóip de {path} a chur i leataobh: {error}. Níor scríobhadh aon rud."
+        },
+        "blueprint_cannot_run": {
+            "message": "Ní féidir le {name} rith anseo: {errors}. Níor scríobhadh aon rud."
+        },
+        "blueprint_could_not_write": {
+            "message": "Níorbh fhéidir {path} a scríobh."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Fearann nach dtacaítear leis: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Earráid agus an gormchló á fháil ón URL."
+        },
+        "blueprint_file_exists": {
+            "message": "Tá an comhad ann cheana."
+        },
+        "blueprint_gone": {
+            "message": "Níl {name} anseo a thuilleadh, mar sin níl aon rud le nuashonrú. Níor scríobhadh aon rud."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Ní thacaítear leis an URL seo."
+        },
+        "blueprint_write_failed": {
+            "message": "Earráid agus an comhad á scríobh."
+        },
+        "blueprints_not_loaded": {
+            "message": "Níl gormchlónna {domain} lódáilte faoi láthair."
+        },
+        "calendar_events_which": {
+            "message": "Abair cé na himeachtaí: tabhair achoimre, uid, nó an dá cheann."
+        },
+        "calendar_range_backwards": {
+            "message": "Caithfidh deireadh an réimse cuardaigh teacht i ndiaidh a thúis."
+        },
+        "calendar_range_required": {
+            "message": "Abair cé chomh fada le cuardach: tabhair dáta agus am deiridh, nó fad."
+        },
+        "cannot_disable_system_user": {
+            "message": "Ní féidir úsáideoir a ghin an córas a dhíchumasú: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Ní féidir úsáideoir a ghin an córas a chumasú: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Níor aimsíodh an chatagóir {category} do {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Níl aon rud le nuashonrú ar an gcatagóir {category}: tabhair ceann amháin ar a laghad de {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Níl aon Jinja fágtha i dteimpléad sa choinníoll seo, mar sin is tairiseach é agus ní féidir leis athrú riamh. De ghnáth ciallaíonn sé sin gur rindreáil script é sular rith an gníomh seo, rud a tharlaíonn do gach teimpléad i sonraí gnímh. Úsáid coinníoll gan teimpléid, nó fan ar an teimpléad féin le 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Níor aimsíodh an iontráil chomhtháthaithe {config_entry_id}."
+        },
+        "debounce_attach_failed": {
+            "message": "Níorbh fhéidir gach truicear de thruicear díphreabtha a cheangal."
+        },
+        "device_not_found": {
+            "message": "Níor aimsíodh an gléas {device_id}."
+        },
+        "entity_id_taken": {
+            "message": "Tá an ID aonáin {entity_id} tógtha cheana."
+        },
+        "entity_not_found": {
+            "message": "Níor aimsíodh an t-aonán {entity_id}."
+        },
+        "entity_without_unique_id": {
+            "message": "Níl aon ID uathúil ag an aonán {entity_id}, mar sin ní féidir le Home Assistant deilbhín ná ailiasanna a choinneáil dó."
+        },
+        "event_cannot_change": {
+            "message": "Ní féidir {summary} a athrú mar sin: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Abair cad atá le hathrú: achoimre nua, áit, nó amanna nua."
+        },
+        "event_shift_or_times": {
+            "message": "Bog imeacht le hathrú ama, nó tabhair amanna nua dó, ach ní an dá rud."
+        },
+        "event_whole_days": {
+            "message": "Maireann {summary} laethanta iomlána, mar sin ní féidir é a bhogadh ach le laethanta iomlána."
+        },
+        "floor_not_found": {
+            "message": "Níor aimsíodh an t-urlár {floor_id}."
+        },
+        "group_member_not_allowed": {
+            "message": "Ní féidir le {entity_id} dul isteach sa ghrúpa seo: tá aonáin {domains} ann."
+        },
+        "group_not_found_behind": {
+            "message": "Níorbh fhéidir an grúpa taobh thiar de {entity_id} a aimsiú."
+        },
+        "helpers_unreachable": {
+            "message": "Níorbh fhéidir na cúntóirí {domain} a choinníonn Home Assistant a shroicheadh."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Ní féidir {entity_id} a choinneáil go dtí am nach ann dó."
+        },
+        "home_zone_radius": {
+            "message": "Glacann zón an bhaile a gha i méadair iomlána, nialas nó níos mó."
+        },
+        "home_zone_unsupported": {
+            "message": "Ní ghlacann zón an bhaile ach domhanleithead, domhanfhad agus ga, ní: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Ní féidir an uimhir ionchuir seo a chur in eagar: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Ainmnigh na hiontrálacha comhtháthaithe le hathrú, nó a gcomhtháthú."
+        },
+        "integration_without_entries": {
+            "message": "Níl aon iontrálacha ag an gcomhtháthú {domain}."
+        },
+        "label_not_found": {
+            "message": "Níor aimsíodh an lipéad {label_id}."
+        },
+        "label_nothing_to_update": {
+            "message": "Níl aon rud le nuashonrú ar an lipéad {label_id}: tabhair ceann amháin ar a laghad de {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Caithfidh an t-uasmhéid ({maximum}) a bheith os cionn an íosmhéid ({minimum})."
+        },
+        "no_max_value": {
+            "message": "Níl aon uasluach ag an aonán {entity_id}."
+        },
+        "no_min_value": {
+            "message": "Níl aon íosluach ag an aonán {entity_id}."
+        },
+        "not_a_group": {
+            "message": "Ní grúpa é {entity_id}."
+        },
+        "person_not_editable": {
+            "message": "Ní féidir an duine seo a chur in eagar: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Tharla earráid do Spook agus Home Assistant á atosú."
+        },
+        "sequence_attach_failed": {
+            "message": "Níorbh fhéidir an chéad chéim de thruicear seichimh a cheangal."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Tabhair íosmhéid, uasmhéid nó céim le hathrú."
+        },
+        "spooked": {
+            "message": "Spookáilte! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Ní féidir an t-amaireadóir seo a chur in eagar: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Ní féidir mír a bhogadh i ndiaidh í féin."
+        },
+        "todo_item_not_found": {
+            "message": "Níl aon mhír {item} in {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "Ní féidir aon rud a bhogadh i ndiaidh na míre deireanaí in {entity_id}."
+        },
+        "todo_move_where": {
+            "message": "Abair cá háit: i ndiaidh míre eile, nó go dtí an barr nó an bun."
+        },
+        "user_not_found": {
+            "message": "Níorbh fhéidir an t-úsáideoir a aimsiú: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Ní uimhir é an luach {value} do {entity_id}."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Níorbh fhéidir truicir armála truicir chú faire a cheangal."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Níorbh fhéidir na truicir a bhfuiltear ag súil leo de thruicear cú faire a cheangal."
+        },
+        "yaml_group_not_editable": {
+            "message": "Is grúpa ó do chumraíocht YAML é {entity_id}, rud nach féidir le Spook a athrú. Cuir in eagar é i do chumraíocht, nó úsáid group.set, a oibríonn fós ar an gcineál sin grúpa."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "Tá {entity_id} socraithe in YAML agus ní féidir é a scriosadh."
+        },
+        "zone_not_editable": {
+            "message": "Ní féidir an zón seo a chur in eagar: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Aonán anaithnid á fhaire ag foláireamh: {alert}",
+            "description": "Tá taibhse aimsithe ag Spook i d'fholáirimh 👻\n\nTá an foláireamh {alert} (`{entity_id}`) ag faire ar aonán nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\nNí féidir le foláireamh spreagadh ach ar an aonán a bhfuil sé ag faire air, mar sin ní féidir leis an gceann seo spreagadh arís choíche. Breathnaíonn sé díreach cosúil le foláireamh nach bhfuil aon rud le tuairisciú aige.\n\nChun an earráid seo a réiteach, cuir an chuid `alert:` i do chumraíocht in eagar agus dírigh an foláireamh seo ar aonán atá ann.\n\nSpook 👻 Do chara."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Fógróirí anaithnide in úsáid ag foláireamh: {alert}",
+            "description": "Tá taibhse aimsithe ag Spook i d'fholáirimh 👻\n\nSeolann an foláireamh {alert} (`{entity_id}`) fógraí trí na gníomhartha seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{notifiers}\n\nSpreagann an foláireamh fós agus déanann sé a chuid babhtaí fós, ach ní théann na fógraí seo áit ar bith. Ní logálann Home Assistant é sin ach nuair a spreagann an foláireamh, agus is droch-nóiméad é sin le fáil amach nach bhfuil aon duine ag éisteacht.\n\nChun an earráid seo a réiteach, cuir liosta `notifiers:` an fholáirimh seo in eagar i do chumraíocht agus bain nó ceartaigh na hiontrálacha seo.\n\nSpook 👻 Do chara."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {automation}"
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTagraíonn an t-uathoibriú seo do na limistéir seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{areas}\n\n\n\nChun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus bain amach na limistéir seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Limistéir anaithnide in úsáid in: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nÚsáideann an t-uathoibriú seo na coinníollacha seo a leanas, nach féidir le comhtháthú ar bith atá ar fáil do Home Assistant a sholáthar:\n\n{conditions}\n\n\n\nTarlaíonn sé seo go minic nuair a baineadh an comhtháthú a sholáthraíonn coinníoll. Chun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus bain amach na coinníollacha seo nach bhfuil ar fáil, nó cuir ar ais an comhtháthú a sholáthraíonn iad.\n\nSpook 👻 Do chara.",
+            "title": "Coinníollacha anaithnide in úsáid in: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {automation}"
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTagraíonn an t-uathoibriú seo do na gléasanna seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{devices}\n\n\n\nChun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus bain amach na gléasanna seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Gléasanna anaithnide in úsáid in: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {automation}"
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTagraíonn an t-uathoibriú seo do na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nChun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus bain amach na haonáin seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide in úsáid in: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTagraíonn an t-uathoibriú seo do na hurláir seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{floors}\n\n\n\nChun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus bain amach na hurláir seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Urláir anaithnide in úsáid in: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTagraíonn an t-uathoibriú seo do na lipéid seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{labels}\n\n\n\nChun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus bain amach na lipéid seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Lipéid anaithnide in úsáid in: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTagraíonn an t-uathoibriú seo do na gníomhartha seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{services}\n\n\n\nChun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus bain amach na gníomhartha seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Gníomhartha anaithnide in úsáid in: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Tá taibhse aimsithe ag Spook i d'uathoibrithe 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an uathoibriú seo a leanas:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nÚsáideann an t-uathoibriú seo na truicir seo a leanas, nach féidir le comhtháthú ar bith atá ar fáil do Home Assistant a sholáthar:\n\n{triggers}\n\n\n\nTarlaíonn sé seo go minic nuair a baineadh an comhtháthú a sholáthraíonn truicear. Chun an earráid seo a réiteach, [cuir an t-uathoibriú in eagar]({edit}) agus bain amach na truicir seo nach bhfuil ar fáil, nó cuir ar ais an comhtháthú a sholáthraíonn iad.\n\nSpook 👻 Do chara.",
+            "title": "Truicir anaithnide in úsáid in: {automation}"
+        },
+        "empty_areas": {
+            "title": "Limistéar folamh: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Limistéar folamh: {area}",
+                        "description": "Níl aon ghléasanna, aon aonáin, ná aon uathoibriú nó script dírithe ar an limistéar {area}.\n\nBain é, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain an limistéar folamh seo",
+                            "ignore": "Coinnigh é, ná habair liom é arís",
+                            "manage": "Réiteoidh mé féin é"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin limistéar seo as seo amach.",
+                    "manage": "Is féidir leat an limistéar seo a bhainistiú tú féin ar an [leathanach Limistéar](/config/areas/dashboard).",
+                    "changed": "Tá an limistéar seo in úsáid arís ó d'fhéach Spook: tá rud éigin ann, nó úsáideann uathoibriú nó script é. Mar sin fágadh é mar atá. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Urlár folamh: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Urlár folamh: {floor}",
+                        "description": "Níl aon limistéir, ná aon uathoibriú nó script dírithe ar an urlár {floor}.\n\nBain é, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain an t-urlár folamh seo",
+                            "ignore": "Coinnigh é, ná habair liom é arís",
+                            "manage": "Réiteoidh mé féin é"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin urlár seo as seo amach.",
+                    "manage": "Is féidir leat an t-urlár seo a bhainistiú tú féin ar an [leathanach Limistéar](/config/areas/dashboard).",
+                    "changed": "Tá an t-urlár seo in úsáid arís ó d'fhéach Spook: tá limistéar air, nó úsáideann uathoibriú nó script é. Mar sin fágadh é mar atá. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Aonáin anaithnide in úsáid sa phainéal fuinnimh",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Aonáin anaithnide in úsáid sa phainéal fuinnimh",
+                        "description": "Tá taibhse aimsithe ag Spook i do phainéal fuinnimh 👻\n\nTagraíonn an painéal fuinnimh do na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\nTarlaíonn sé seo de ghnáth nuair a athainmníodh nó a baineadh aonán a úsáidtear sa chumraíocht fuinnimh. Athainmnithe? Ansin oscail [Socruithe > Deais > Fuinneamh](/config/energy) agus roghnaigh an ceann nua, ionas go bhfanann a stair ar an bpainéal.\n\nBainte go deo? Is féidir le Spook iad seo a bhaint as an gcumraíocht fuinnimh duit. Tógann méadar atá ar iarraidh a fhoinse nó a ghléas leis, ní ghlantar ach praghas nó costas atá ar iarraidh. Stopann an painéal ansin ag taispeáint stair an ruda a baineadh; fanann na staitisticí féin.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain iad seo as an gcumraíocht fuinnimh",
+                            "manage": "Déanfaidh mé féin é",
+                            "ignore": "Coinnigh iad, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoi na haonáin seo as seo amach.",
+                    "manage": "Is féidir leat iad seo a nuashonrú nó a bhaint tú féin sa [chumraíocht fuinnimh](/config/energy).",
+                    "nothing_to_remove": "Níl aon cheann díobh seo anaithnid a thuilleadh, mar sin níor baineadh aon rud. B'fhéidir go bhfuil siad ar ais, nó d'athraigh duine éigin an chumraíocht fuinnimh cheana."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "Baill anaithnide an ghrúpa in: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Baill anaithnide an ghrúpa in: {group}",
+                        "description": "Tá taibhse aimsithe ag Spook i do ghrúpaí 👻\n\nTá baill ag an ngrúpa {group} (`{entity_id}`) nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\nBain as an ngrúpa iad, nó coinnigh iad agus stopfaidh Spook ag tarraingt airde orthu.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain na baill seo",
+                            "manage": "Réiteoidh mé féin é",
+                            "ignore": "Coinnigh iad, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin ngrúpa seo as seo amach.",
+                    "not_editable": "Tá an grúpa seo socraithe in YAML, mar sin ní féidir le Spook é a chur in eagar. Nuashonraigh an grúpa i do chumraíocht ina ionad sin.",
+                    "manage": "Is féidir leat an grúpa seo a bhainistiú tú féin ar an [leathanach Cúntóirí](/config/helpers).",
+                    "changed": "Tá na baill a liostaigh an deisiúchán seo ar ais, nó tá siad athraithe, ó d'fhéach Spook, mar sin níor baineadh aon rud as an ngrúpa. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do dhroichead HomeKit 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an droichead HomeKit seo a leanas:\n\n{bridge}\n\nAinmníonn an droichead seo na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nNí leanann HomeKit aonán a athainmnítear. Tá aonán san áireamh a athainmníodh nó a baineadh imithe ón aip Home; nochtann aonán eisiata a athainmníodh ann arís.\n\nChun an earráid seo a réiteach, téigh chuig [an comhtháthú HomeKit Bridge](/config/integrations/integration/homekit), roghnaigh **Cumraigh** ar an droichead seo, agus roghnaigh na haonáin arís.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide in úsáid i ndroichead HomeKit: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Tá taibhse aimsithe ag Spook i do dhroichead HomeKit 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an droichead HomeKit seo a leanas:\n\n{bridge}\n\nAinmníonn an droichead seo na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nNí leanann HomeKit aonán a athainmnítear. Tá aonán san áireamh a athainmníodh nó a baineadh imithe ón aip Home; nochtann aonán eisiata a athainmníodh ann arís.\n\nTá an droichead seo socraithe i do chumraíocht YAML. Chun an earráid seo a réiteach, cuir `filter` an droichid seo in eagar faoi `homekit:` agus bain nó ceartaigh na haonáin seo.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide in úsáid i ndroichead HomeKit: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nDíríonn na hacmhainní deais seo a leanas ar chomhaid nach ann dóibh:\n\n{resources}\n\n\n\nTarlaíonn sé seo de ghnáth nuair a baineadh cárta saincheaptha nó a chomhaid ach gur fhan an acmhainn ina dhiaidh. Chun an earráid seo a réiteach, oscail an [leathanach Acmhainní](/config/lovelace/resources) agus bain nó ceartaigh na hacmhainní seo. Níl cluaisín dá chuid féin aige: ar an leathanach Deais tá sé taobh thiar de na trí phonc, ag an mbarr ar dheis.\n\nSpook 👻 Do chara.",
+            "title": "Díríonn acmhainní deais ar chomhaid atá ar iarraidh"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nDíríonn na hacmhainní deais seo a leanas ar chomhaid nach ann dóibh:\n\n{resources}\n\n\n\nTarlaíonn sé seo de ghnáth nuair a baineadh cárta saincheaptha nó a chomhaid ach gur fhan an acmhainn ina dhiaidh.\n\nTá na hacmhainní seo liostaithe i do chumraíocht YAML, mar sin ní féidir leis an leathanach Acmhainní iad a athrú. Cuir an chuid `resources:` de do chumraíocht Lovelace in eagar agus bain nó ceartaigh na hiontrálacha seo.\n\nSpook 👻 Do chara.",
+            "title": "Díríonn acmhainní deais ar chomhaid atá ar iarraidh"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Acmhainn deais liostaithe níos mó ná uair amháin: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Acmhainn deais liostaithe níos mó ná uair amháin: {resource}",
+                        "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nTá an acmhainn deais seo liostaithe {count} uair:\n\n{resources}\n\nTarlaíonn sé seo de ghnáth nuair a nuashonraíodh cárta saincheaptha trí acmhainn a chur leis don leagan nua in ionad an ceann a bhí ann cheana a chur in eagar. Lódálann an brabhsálaí an dá cheann, déanann an cárta iarracht é féin a chlárú faoi dhó, agus teipeann ar an dara hiarracht, rud a bhreathnaíonn cosúil le cárta briste seachas acmhainn dhúblach.\n\nIs féidir le Spook na cóipeanna breise a ghlanadh agus an ceann is déanaí a cuireadh leis a choinneáil.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Glan na cóipeanna breise, coinnigh an ceann is déanaí",
+                            "ignore": "Fág iad, ná habair liom é arís",
+                            "manage": "Réiteoidh mé féin é"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin acmhainn seo as seo amach.",
+                    "manage": "Is féidir leat d'acmhainní deais a bhainistiú tú féin ar an [leathanach Acmhainní](/config/lovelace/resources).",
+                    "yaml": "Tá na hacmhainní seo liostaithe i do chumraíocht YAML, mar sin ní féidir le Spook iad a athrú duit. Cuir an chuid `resources:` de do chumraíocht Lovelace in eagar agus bain na cóipeanna de `{resource}` nach bhfuil uait a thuilleadh."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n{dashboard}\n\nTagraíonn an deais seo do na limistéir seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{areas}\n\n\n\nTarlaíonn sé seo go minic nuair a athainmníodh nó a baineadh limistéar. Chun an earráid seo a réiteach, [cuir an deais in eagar]({edit}) agus bain amach na limistéir seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Limistéir anaithnide in úsáid sa deais: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {dashboard}"
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n[{dashboard}]({edit})\n\nTagraíonn an deais seo do na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nChun an earráid seo a réiteach, [cuir an deais in eagar]({edit}) agus bain amach na haonáin seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide in úsáid in: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do dheaiseanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an deais seo a leanas:\n\n[{dashboard}]({edit})\n\nDéanann an deais seo na gníomhartha seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{services}\n\n\n\nNí dhéanann cnaipe nó cárta a úsáideann ceann acu seo aon rud nuair a thapáiltear é. Tarlaíonn sé seo go minic nuair a athainmníodh nó a baineadh script, nó nuair a baineadh comhtháthú. Chun an earráid seo a réiteach, [cuir an deais in eagar]({edit}) agus bain nó athchuir na gníomhartha seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Gníomhartha anaithnide in úsáid sa deais: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Baill anaithnide in úsáid i gcúntóir íos/uas: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Baill anaithnide in úsáid i gcúntóir íos/uas: {helper}",
+                        "description": "Tá taibhse aimsithe ag Spook i do chúntóirí 👻\n\nCuireann an cúntóir íos/uas {helper} (`{entity_id}`) na baill seo a leanas le chéile, nach bhfuil ar eolas ag Home Assistant:\n\n{sources}\n\nBain iad ionas go leanann an cúntóir ar aghaidh leis na baill atá fágtha, nó coinnigh iad agus stopfaidh Spook ag tarraingt airde orthu.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain na baill seo",
+                            "manage": "Réiteoidh mé féin é",
+                            "ignore": "Coinnigh iad, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin gcúntóir seo as seo amach.",
+                    "manage": "Is féidir leat an cúntóir seo a bhainistiú tú féin ar an [leathanach Cúntóirí](/config/helpers).",
+                    "changed": "Tá na baill a liostaigh an deisiúchán seo ar ais, nó tá siad athraithe, ó d'fhéach Spook, mar sin níor baineadh aon rud as an gcúntóir. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo.",
+                    "too_few_members": "Teastaíonn dhá bhall ar a laghad ó chúntóir íos/uas, mar sin d'fhágfadh baint na mball atá ar iarraidh ró-bheagán. Athchumraigh nó bain an cúntóir tú féin ar an [leathanach Cúntóirí](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Tá taibhse aimsithe ag Spook i do ghrúpaí fógraí 👻\n\nCuireann an grúpa fógraí `{group}` ar aghaidh chuig na gníomhartha seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{members}\n\nSeachadann an grúpa fós chuig an gcuid eile dá bhaill, agus tuairiscíonn sé fós go n-éiríonn leis don rud ar bith a ghlaoigh air, mar sin ní thugann aon rud níos airde suas faoi deara é. Ní nochtann an teip ach mar \"Task exception was never retrieved\" fánach sa log, nach n-ainmníonn aon ghrúpa agus a léann cosúil le fabht. Stopann cibé duine a bhí taobh thiar den bhall sin ag fáil fógraí, gan focal.\n\nChun an earráid seo a réiteach, cuir liosta `services:` an ghrúpa seo in eagar i do chumraíocht agus bain nó ceartaigh na hiontrálacha seo.\n\nSpook 👻 Do chara.",
+            "title": "Baill anaithnide sa ghrúpa fógraí: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Staitisticí fadtéarmacha dílleachta aimsithe",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Staitisticí fadtéarmacha dílleachta aimsithe",
+                        "description": "Tá taibhse aimsithe ag Spook i do thaifeadán 👻\n\nTá Home Assistant ag coinneáil staitisticí fadtéarmacha do na nithe seo a leanas, ach níl aonán comhfhreagrach ann dóibh a thuilleadh:\n\n{statistics}\n\nTarlaíonn sé seo de ghnáth nuair a baineadh braiteoir ach gur coinníodh a staitisticí. Caitheann a nglanadh an stair sin uait go deo, mar sin féachann Spook arís sula ndéanann sé é, agus fágann sé aon rud a tháinig ar ais idir an dá linn mar atá.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Glan na staitisticí seo",
+                            "manage": "Déanfaidh mé féin é",
+                            "ignore": "Coinnigh iad, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoi na staitisticí seo as seo amach.",
+                    "manage": "Is féidir leat iad seo a ghlanadh tú féin ar an [leathanach Staitisticí](/config/tools/statistics).",
+                    "nothing_to_clear": "Níl aon rud ar an liosta sin le glanadh a thuilleadh, mar sin níor caitheadh aon rud uait. Tá aonán taobh thiar de na staitisticí arís, nó tá siad imithe cheana.",
+                    "clearing_took_too_long": "D'iarr Spook go nglanfaí na staitisticí agus níor dúirt an taifeadán go bhfuil sé déanta. Tá an obair sa scuaine agus is dócha go dtarlóidh sí, mar sin fanann an deisiúchán seo ann go dtí go mbeidh Spook tar éis féachaint arís."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Rianaitheoirí gléasanna anaithnide á rianú ag: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Rianaitheoirí gléasanna anaithnide á rianú ag: {person}",
+                        "description": "Tá taibhse aimsithe ag Spook i measc do dhaoine 👻\n\nRianaíonn {person} na rianaitheoirí gléasanna seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{device_trackers}\n\nTarlaíonn sé seo go minic nuair a athainmníodh rianaitheoir gléis nó nuair a baineadh a chomhtháthú.\n\nBain iad ó {person}, nó coinnigh iad agus stopfaidh Spook ag tarraingt airde orthu.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain na rianaitheoirí gléasanna seo",
+                            "ignore": "Coinnigh iad, ná habair liom é arís",
+                            "manage": "Réiteoidh mé féin é"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin duine seo as seo amach.",
+                    "not_editable": "Tá an duine seo socraithe in YAML, mar sin ní féidir le Spook é a chur in eagar. Nuashonraigh an duine i do chumraíocht ina ionad sin.",
+                    "manage": "Is féidir leat an duine seo a bhainistiú tú féin ar an [leathanach Daoine](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Tá taibhse aimsithe ag Spook i do chumraíocht gaireachta 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an gcumraíocht gaireachta seo a leanas:\n\n{name}\n\nTá an chumraíocht seo ag déanamh neamhaird de zóin nach bhfuil ar eolas ag Home Assistant:\n\n{zones}\n\n\n\nChun an earráid seo a réiteach, cuir an chumraíocht in eagar agus bain an zón nó na zóin seo.\n\nSpook 👻 Do chara.",
+            "title": "Zóin anaithnide a ndéantar neamhaird díobh: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Tá taibhse aimsithe ag Spook i do chumraíocht gaireachta 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an gcumraíocht gaireachta seo a leanas:\n\n{name}\n\nTá an chumraíocht seo ag rianú daoine nó rianaitheoirí gléasanna nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nChun an earráid seo a réiteach, cuir an chumraíocht in eagar agus bain an t-aonán nó na haonáin seo.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin rianaithe anaithnide: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Tá taibhse aimsithe ag Spook i do chumraíocht gaireachta 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an gcumraíocht gaireachta seo a leanas:\n\n{name}\n\nTá an chumraíocht seo bunaithe ar zón nach bhfuil ar eolas ag Home Assistant:\n\n`{zone}`\n\n\n\nChun an earráid seo a réiteach: ós rud é nach féidir leat zón cumraíochta gaireachta a athrú, is é an t-aon rogha atá ann an cás áirithe seo den chomhtháthú gaireachta a bhaint.\n\nSpook 👻 Do chara.",
+            "title": "Zón anaithnid: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Tá taibhse aimsithe ag Spook i do radhairc 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an radharc seo a leanas:\n\n[{scene}]({edit})\n\nTagraíonn an radharc seo do na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nChun an earráid seo a réiteach, [cuir an radharc in eagar]({edit}) agus bain amach na haonáin seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide in úsáid in: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {script}"
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTagraíonn an script seo do na limistéir seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{areas}\n\n\n\nChun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus bain amach na limistéir seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Limistéir anaithnide in úsáid in: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nÚsáideann an script seo na coinníollacha seo a leanas, nach féidir le comhtháthú ar bith atá ar fáil do Home Assistant a sholáthar:\n\n{conditions}\n\n\n\nTarlaíonn sé seo go minic nuair a baineadh an comhtháthú a sholáthraíonn coinníoll. Chun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus bain amach na coinníollacha seo nach bhfuil ar fáil, nó cuir ar ais an comhtháthú a sholáthraíonn iad.\n\nSpook 👻 Do chara.",
+            "title": "Coinníollacha anaithnide in úsáid in: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {script}"
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTagraíonn an script seo do na gléasanna seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{devices}\n\n\n\nChun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus bain amach na gléasanna seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Gléasanna anaithnide in úsáid in: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {script}"
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTagraíonn an script seo do na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nChun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus bain amach na haonáin seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide in úsáid in: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTagraíonn an script seo do na hurláir seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{floors}\n\n\n\nChun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus bain amach na hurláir seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Urláir anaithnide in úsáid in: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTagraíonn an script seo do na lipéid seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{labels}\n\n\n\nChun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus bain amach na lipéid seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Lipéid anaithnide in úsáid in: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTagraíonn an script seo do na gníomhartha seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{services}\n\n\n\nChun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus bain amach na gníomhartha seo nach ann dóibh.\n\nSpook 👻 Do chara.",
+            "title": "Gníomhartha anaithnide in úsáid in: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do scripteanna 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an script seo a leanas:\n\n[{script}]({edit}) (`{entity_id}`)\n\nÚsáideann an script seo na truicir seo a leanas, nach féidir le comhtháthú ar bith atá ar fáil do Home Assistant a sholáthar:\n\n{triggers}\n\n\n\nTarlaíonn sé seo go minic nuair a baineadh an comhtháthú a sholáthraíonn truicear. Chun an earráid seo a réiteach, [cuir an script in eagar]({edit}) agus bain amach na truicir seo nach bhfuil ar fáil, nó cuir ar ais an comhtháthú a sholáthraíonn iad.\n\nSpook 👻 Do chara.",
+            "title": "Truicir anaithnide in úsáid in: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do chúntóirí teimpléid 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an gcúntóir teimpléid seo a leanas:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nTagraíonn a chumraíocht do na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nTarlaíonn sé seo go minic nuair a athainmníodh nó a baineadh aonán. Chun an earráid seo a réiteach, athchumraigh an cúntóir teimpléid ionas go dtagraíonn sé d'aonáin atá ann.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide in úsáid i gcúntóir teimpléid: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Tá taibhse aimsithe ag Spook i do chúntóirí teimpléid 👻\n\nAgus é ag foluain thart, tháinig Spook trasna ar an gcúntóir teimpléid seo a leanas:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nTagraíonn sé do na gníomhartha seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{services}\n\n\n\nTarlaíonn sé seo go minic nuair a baineadh soláthraí gnímh, nó nuair a athainmníodh nó a scriosadh script. Chun an earráid seo a réiteach, athchumraigh an cúntóir teimpléid ionas go n-úsáideann sé gníomhartha atá ann.\n\nSpook 👻 Do chara.",
+            "title": "Gníomhartha anaithnide in úsáid i gcúntóir teimpléid: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Braiteoir {sensors} anaithnid don limistéar: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Braiteoir {sensors} anaithnid don limistéar: {area}",
+                        "description": "Tá taibhse aimsithe ag Spook i do limistéir 👻\n\nÚsáideann an limistéar {area} braiteoir {sensors} nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\nNí sheiceálann Home Assistant an braiteoir seo ach nuair a roghnaítear é, mar sin nuair a baineadh nó a athainmníodh é, choinnigh an limistéar ag díriú ar rud nach ann dó. Ní fhaigheann Assist ná cártaí limistéir léamh uaidh a thuilleadh.\n\nGlan an socrú ionas gur féidir leat braiteoir a roghnú arís, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Glan an socrú",
+                            "manage": "Réiteoidh mé féin é",
+                            "ignore": "Coinnigh é, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin limistéar seo as seo amach.",
+                    "manage": "Is féidir leat braiteoir eile a roghnú i socruithe an limistéir seo ar an [leathanach Limistéar](/config/areas/dashboard).",
+                    "changed": "Tá na braiteoirí seo ar ais, nó díríonn na socruithe ar áit eile anois, ó d'fhéach Spook. Mar sin níor glanadh aon rud. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Tá taibhse aimsithe ag Spook i do shaincheapacháin 👻\n\nSocraíonn an chuid `customize:` tréithe ar na haonáin seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\n\n\nTarlaíonn sé seo go minic nuair a athainmníodh nó a baineadh aonán agus gur fhan a shaincheapadh ina dhiaidh. Chun an earráid seo a réiteach, cuir an chuid `customize:` i do chumraíocht in eagar agus bain na haonáin seo.\n\nSpook 👻 Do chara.",
+            "title": "Aonáin anaithnide i do shaincheapacháin"
+        },
+        "unknown_engines": {
+            "title": "Úsáideann píblíne Assist innill atá imithe: {pipeline}",
+            "description": "Tá taibhse aimsithe ag Spook i do chúntóirí gutha 👻\n\nÚsáideann píblíne Assist {pipeline} na nithe seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{engines}\n\nCiallaíonn sé seo de ghnáth gur baineadh an comhtháthú taobh thiar de. Níor insíodh don phíblíne, mar sin an chéad uair eile a úsáidtear í teipeann sí le hearráid faoi sholáthraí nó gníomhaire atá ar iarraidh, agus ní dhíríonn aon rud roimhe sin anseo.\n\nChun é seo a réiteach, oscail socruithe an chúntóra seo faoi [Cúntóirí gutha](/config/voice-assistants/assistants) agus roghnaigh inneall atá fós ann do gach ceann acu seo.\n\nSpook 👻 Do chara."
+        },
+        "unknown_helper_source_references": {
+            "title": "Aonáin foinse anaithnide in úsáid i gcúntóir: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Aonáin foinse anaithnide in úsáid i gcúntóir: {helper}",
+                        "description": "Tá taibhse aimsithe ag Spook i do chúntóirí 👻\n\nTagraíonn an cúntóir {helper} (`{domain}`, `{entity_id}`) do na haonáin foinse seo a leanas, nach bhfuil ar eolas ag Home Assistant:\n\n{sources}\n\nGan a fhoinsí ní féidir leis an gcúntóir seo oibriú. {usage}\n\nBain an cúntóir, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain an cúntóir seo",
+                            "manage": "Réiteoidh mé féin é",
+                            "ignore": "Coinnigh é, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin gcúntóir seo as seo amach.",
+                    "manage": "Is féidir leat an cúntóir seo a bhainistiú tú féin ar an [leathanach Cúntóirí](/config/helpers).",
+                    "changed": "D'athraigh foinsí an chúntóra seo ó d'fhéach Spook, mar sin fágadh an cúntóir mar atá. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Gormchló gan úsáid: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Gormchló gan úsáid: {blueprint}",
+                        "description": "Níl an gormchló {blueprint} in úsáid ag aon {domain}.\n\nBain é, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain an gormchló seo nach bhfuil in úsáid",
+                            "ignore": "Coinnigh é, ná habair liom é arís",
+                            "manage": "Réiteoidh mé féin é"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin ngormchló seo as seo amach.",
+                    "manage": "Is féidir leat an gormchló seo a bhainistiú tú féin ar an [leathanach Gormchlónna](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Lipéad gan úsáid: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Lipéad gan úsáid: {label}",
+                        "description": "Níl an lipéad {label} curtha ar aon aonán, gléas ná limistéar, agus níl aon uathoibriú ná script dírithe air.\n\nBain é, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Bain an lipéad seo nach bhfuil in úsáid",
+                            "ignore": "Coinnigh é, ná habair liom é arís",
+                            "manage": "Réiteoidh mé féin é"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin lipéad seo as seo amach.",
+                    "manage": "Is féidir leat an lipéad seo a bhainistiú tú féin ar an [leathanach Lipéid](/config/labels).",
+                    "changed": "Tá an lipéad seo in úsáid arís ó d'fhéach Spook: tá sé ar rud éigin, nó úsáideann uathoibriú nó script é. Mar sin fágadh é mar atá. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -304,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "Restart required",
+            "title": "Atosú ag teastáil",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "Restart required",
-                        "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+                        "title": "Atosú ag teastáil",
+                        "description": "Ionas gur féidir le Spook 👻 an socrú a chríochnú, ní mór Home Assistant a atosú.\n\nRoghnaigh cuir isteach chun Home Assistant a atosú anois.\n\nSpook 👻 Do chara."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Leagan",
+            "ghosts_found": "Taibhsí aimsithe",
+            "ghosts_ignored": "Taibhsí a ndearnadh neamhaird díobh",
+            "helpers_linked": "Cúntóirí nasctha"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Cuir baill le grúpa",
+            "description": "Cuireann sé aonáin le grúpa a rinneadh tríd an gcomhéadan, agus Home Assistant ag rith. Fágtar aonáin atá sa ghrúpa cheana mar atá siad.",
+            "fields": {
+                "group": {
+                    "name": "Grúpa",
+                    "description": "An grúpa le cur leis."
+                },
+                "members": {
+                    "name": "Baill",
+                    "description": "Na haonáin le cur leis an ngrúpa."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Bain baill as grúpa",
+            "description": "Tógann sé aonáin as grúpa a rinneadh tríd an gcomhéadan, agus Home Assistant ag rith. Ní dhéanann sé aon rud má ainmnítear rud nach bhfuil sa ghrúpa, mar sin seo freisin an bealach le ball nach ann dó a thuilleadh a ghlanadh amach.",
+            "fields": {
+                "group": {
+                    "name": "Grúpa",
+                    "description": "An grúpa lena dtógáil as."
+                },
+                "members": {
+                    "name": "Baill",
+                    "description": "Na haonáin le baint as an ngrúpa."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Socraigh baill grúpa",
+            "description": "Cuireann sé na cinn a tugadh in áit bhaill grúpa a rinneadh tríd an gcomhéadan, agus Home Assistant ag rith.",
+            "fields": {
+                "group": {
+                    "name": "Grúpa",
+                    "description": "An grúpa le hathrú."
+                },
+                "members": {
+                    "name": "Baill",
+                    "description": "Na haonáin ba chóir a bheith sa ghrúpa as seo amach."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Fan le coinníoll",
+            "description": "Fan go dtí go bhfuil coinníoll fíor. Filleann sé láithreach má tá sé fíor cheana.",
+            "fields": {
+                "condition": {
+                    "name": "Coinníoll",
+                    "description": "An coinníoll le fanacht air."
+                },
+                "timeout": {
+                    "name": "Teorainn ama",
+                    "description": "An fad ama le fanacht sula n-éirítear as. Fanann sé go deo má fhágtar amach é."
+                }
+            }
+        },
+        "boo": {
+            "name": "Bú!",
+            "description": "Spookálann glaoch ar an ngníomh seo Home Assistant. Teipfidh an gníomh seo i gcónaí."
+        },
+        "random_fail": {
+            "name": "Teip randamach",
+            "description": "Teipfidh an gníomh seo go randamach."
+        },
+        "blueprint_import": {
+            "name": "Iompórtáil gormchló",
+            "description": "Iompórtáil gormchló.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "An URL ónar féidir an gormchló a iompórtáil."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Cuir ar sos",
+            "description": "Múchann sé uathoibriú ar feadh tamaill, agus casann sé ar ais air é nuair atá an t-am istigh.",
+            "fields": {
+                "duration": {
+                    "name": "Fad",
+                    "description": "An fad ama a fhanann an t-uathoibriú múchta. Casann sé air arís as a stuaim féin nuair atá sé seo istigh, fiú má atosaítear Home Assistant idir an dá linn."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Cas air ar feadh",
+            "description": "Casann sé uathoibriú air ar feadh tamaill, agus múchann sé arís é nuair atá an t-am istigh.",
+            "fields": {
+                "duration": {
+                    "name": "Fad",
+                    "description": "An fad ama a fhanann an t-uathoibriú casta air. Múchann sé arís as a stuaim féin nuair atá sé seo istigh, fiú má atosaítear Home Assistant idir an dá linn."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Socraigh gile",
+            "description": "Socraíonn sé gile na soilse atá ar siúl cheana, agus fágann sé na cinn atá múchta mar atá.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Gile",
+                    "description": "An ghile le socrú, mar chéatadán. Coigeartaítear grúpaí solas ar sholas, mar sin fanann solas atá múchta múchta."
+                },
+                "transition": {
+                    "name": "Aistriú",
+                    "description": "An fad ama ba chóir don athrú a thógáil, i soicindí."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Méadaigh gile",
+            "description": "Ardaíonn sé na soilse atá ar siúl cheana, agus fágann sé na cinn atá múchta mar atá.",
+            "fields": {
+                "step_pct": {
+                    "name": "Céim",
+                    "description": "Cé mhéad níos gile le dul, mar chéatadán. Céimníonn gach solas óna leibhéal féin, mar sin coinníonn grúpa a chruth in ionad a bheith cothromaithe."
+                },
+                "transition": {
+                    "name": "Aistriú",
+                    "description": "An fad ama ba chóir don athrú a thógáil, i soicindí."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Laghdaigh gile",
+            "description": "Íslíonn sé na soilse atá ar siúl cheana, ag stopadh ag an leibhéal is laige is féidir leo seachas iad a mhúchadh.",
+            "fields": {
+                "step_pct": {
+                    "name": "Céim",
+                    "description": "Cé mhéad níos laige le dul, mar chéatadán. Céimníonn gach solas óna leibhéal féin, mar sin coinníonn grúpa a chruth in ionad a bheith cothromaithe."
+                },
+                "transition": {
+                    "name": "Aistriú",
+                    "description": "An fad ama ba chóir don athrú a thógáil, i soicindí."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Socraigh dath",
+            "description": "Socraíonn sé dath na soilse atá ar siúl cheana, agus fágann sé na cinn atá múchta nó nach féidir leo dath a dhéanamh mar atá.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Dath",
+                    "description": "An dath le socrú. Scipeáiltear soilse nach féidir leo dath a dhéanamh seachas iad a chasadh bán."
+                },
+                "transition": {
+                    "name": "Aistriú",
+                    "description": "An fad ama ba chóir don athrú a thógáil, i soicindí."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Socraigh teocht datha",
+            "description": "Socraíonn sé teocht datha na soilse atá ar siúl cheana, gach ceann laistigh den raon is féidir leis a bhaint amach i ndáiríre.",
+            "fields": {
+                "kelvin": {
+                    "name": "Teocht datha",
+                    "description": "An teocht datha le socrú. Coinnítear gach solas laistigh dá raon féin, mar is uimhir é bán te ar lampa amháin nach féidir le lampa eile a bhaint amach."
+                },
+                "transition": {
+                    "name": "Aistriú",
+                    "description": "An fad ama ba chóir don athrú a thógáil, i soicindí."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Socraigh éifeacht",
+            "description": "Socraíonn sé éifeacht ar na soilse atá ar siúl cheana agus a bhfuil an éifeacht sin acu i ndáiríre.",
+            "fields": {
+                "effect": {
+                    "name": "Éifeacht",
+                    "description": "Ainm na héifeachta le socrú. Bíonn ainmneacha éifeachtaí difriúil ó mhonaróir go monaróir, mar sin fágtar soilse nach bhfuil an ceann seo acu mar atá siad."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Scrios imeacht",
+            "description": "Scriosann sé imeachtaí ó fhéilire, aimsithe de réir a dteidil nó a uid i dtréimhse ama. Tugann sé ar ais an rud a scrios sé, an uid san áireamh.",
+            "fields": {
+                "summary": {
+                    "name": "Achoimre",
+                    "description": "Teideal na n-imeachtaí le scriosadh, díreach mar atá sé san fhéilire."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Aitheantóir an imeachta le scriosadh, má tá sé agat."
+                },
+                "start_date_time": {
+                    "name": "Dáta agus am tosaigh",
+                    "description": "Cá háit le tosú ag cuardach. Is é an t-am i láthair an réamhshocrú."
+                },
+                "end_date_time": {
+                    "name": "Dáta agus am deiridh",
+                    "description": "Cá háit le stopadh ag cuardach. Tabhair é seo nó fad."
+                },
+                "duration": {
+                    "name": "Fad",
+                    "description": "Cé chomh fada le cuardach ón tús. Tabhair é seo nó dáta agus am deiridh."
+                },
+                "whole_series": {
+                    "name": "An tsraith iomlán",
+                    "description": "D'imeacht athfhillteach, scrios an tsraith iomlán seachas an t-aon tarlú amháin a aimsíodh."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Nuashonraigh imeacht",
+            "description": "Athraíonn sé imeachtaí i bhféilire, aimsithe de réir a dteidil nó a uid i dtréimhse ama. Tugann sé ar ais an rud a d'athraigh sé, an uid san áireamh.",
+            "fields": {
+                "summary": {
+                    "name": "Achoimre",
+                    "description": "Teideal na n-imeachtaí le hathrú, díreach mar atá sé san fhéilire."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Aitheantóir an imeachta le hathrú, má tá sé agat."
+                },
+                "start_date_time": {
+                    "name": "Dáta agus am tosaigh",
+                    "description": "Cá háit le tosú ag cuardach. Is é an t-am i láthair an réamhshocrú."
+                },
+                "end_date_time": {
+                    "name": "Dáta agus am deiridh",
+                    "description": "Cá háit le stopadh ag cuardach. Tabhair é seo nó fad."
+                },
+                "duration": {
+                    "name": "Fad",
+                    "description": "Cé chomh fada le cuardach ón tús. Tabhair é seo nó dáta agus am deiridh."
+                },
+                "new_summary": {
+                    "name": "Achoimre nua",
+                    "description": "An teideal le tabhairt do na himeachtaí."
+                },
+                "description": {
+                    "name": "Cur síos",
+                    "description": "An cur síos le tabhairt do na himeachtaí."
+                },
+                "location": {
+                    "name": "Suíomh",
+                    "description": "An suíomh le tabhairt do na himeachtaí."
+                },
+                "new_start": {
+                    "name": "Tús nua",
+                    "description": "An t-am a thosaíonn na himeachtaí ina ionad sin. Coinníonn siad a bhfad, mura dtugtar deireadh nua freisin."
+                },
+                "new_end": {
+                    "name": "Deireadh nua",
+                    "description": "An t-am a chríochnaíonn na himeachtaí ina ionad sin."
+                },
+                "shift": {
+                    "name": "Aistriú ama",
+                    "description": "Bog na himeachtaí an méid seo, níos déanaí, nó níos luaithe nuair atá sé diúltach. In ionad tús nó deireadh nua."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Méadaigh teocht",
+            "description": "Ardaíonn sé pointe socraithe teirmeastait céim amháin, an dá phointe socraithe do cheann a théann agus a fhuaraíonn. Fanann teirmeastat atá múchta múchta.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad lena athrú. Fág amach é chun céim an teirmeastait féin a úsáid, nó leathchéim (céim amháin i Fahrenheit) mura bhfuil ceann aige."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Laghdaigh teocht",
+            "description": "Íslíonn sé pointe socraithe teirmeastait céim amháin, an dá phointe socraithe do cheann a théann agus a fhuaraíonn. Fanann teirmeastat atá múchta múchta.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad lena athrú. Fág amach é chun céim an teirmeastait féin a úsáid, nó leathchéim (céim amháin i Fahrenheit) mura bhfuil ceann aige."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Cruthaigh limistéar",
+            "description": "Cruthaíonn sé limistéar nua ar an toirt.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an limistéir le cruthú."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín le húsáid don limistéar."
+                },
+                "aliases": {
+                    "name": "Ailiasanna",
+                    "description": "Liosta ailiasanna don limistéar. Áisiúil más mian leat an limistéar a úsáid i dteanga eile nó le leasainm eile."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Cuir ailias le limistéar",
+            "description": "Cuireann sé ailias le limistéar.",
+            "fields": {
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir lena gcuirfear an t-ailias."
+                },
+                "alias": {
+                    "name": "Ailias",
+                    "description": "An t-ailias (nó liosta ailiasanna) le cur leis an limistéar."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Bain ailias ó limistéar",
+            "description": "Baineann sé ailias ó limistéar.",
+            "fields": {
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir óna mbainfear an t-ailias."
+                },
+                "alias": {
+                    "name": "Ailias",
+                    "description": "An t-ailias (nó liosta ailiasanna) le baint ón limistéar."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Socraigh ailiasanna do limistéar",
+            "description": "Socraíonn sé ailiasanna do limistéar. Scríobhann sé thar aon ailiasanna atá ann agus baineann sé iad, agus cuireann sé na cinn nua ina n-áit go hiomlán.",
+            "fields": {
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir dá socrófar na hailiasanna."
+                },
+                "aliases": {
+                    "name": "Ailiasanna",
+                    "description": "Na hailiasanna le socrú don limistéar."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Cuir gléas le limistéar",
+            "description": "Cuireann sé gléas le limistéar. Tabhair faoi deara, má tá an gléas i limistéar cheana, bainfear é ón limistéar roimhe sin.",
+            "fields": {
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir lena gcuirfear an gléas."
+                },
+                "device_id": {
+                    "name": "ID an ghléis",
+                    "description": "ID an ghléis (nó na ngléasanna) le cur leis an limistéar."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Bain gléas ó limistéar",
+            "description": "Baineann sé gléas ó limistéar. Ós rud é nach féidir le gléas a bheith ach i limistéar amháin, ní gá an limistéar a shonrú leis an nglao seo.",
+            "fields": {
+                "device_id": {
+                    "name": "ID an ghléis",
+                    "description": "ID an ghléis óna mbainfear an limistéar."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Cuir aonán le limistéar",
+            "description": "Cuireann sé aonán le limistéar. Tabhair faoi deara, má tá an t-aonán i limistéar cheana, bainfear é ón limistéar roimhe sin. Sáraíonn sé seo an limistéar ina bhfuil an gléas a sholáthraíonn an t-aonán seo.",
+            "fields": {
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir lena gcuirfear an t-aonán."
+                },
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "ID an aonáin (nó na n-aonán) le cur leis an limistéar."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Bain aonán ó limistéar",
+            "description": "Baineann sé aonán ó limistéar. Ós rud é nach féidir le haonán a bheith ach i limistéar amháin, ní gá an limistéar a shonrú leis an nglao seo. Tabhair faoi deara, beidh an t-aonán fós i limistéar an ghléis a sholáthraíonn é tar éis an ghlao seo.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "ID an aonáin (nó na n-aonán) óna mbainfear an limistéar."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Scrios limistéar",
+            "description": "Scriosann sé limistéar ar an toirt.",
+            "fields": {
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir le scriosadh."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Díchumasaigh comhtháthú",
+            "description": "Díchumasaíonn sé iontrálacha comhtháthaithe, de réir iontrála nó gach iontráil de chomhtháthú.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Iontráil chomhtháthaithe",
+                    "description": "An iontráil chomhtháthaithe le díchumasú."
+                },
+                "domain": {
+                    "name": "Comhtháthú",
+                    "description": "Díchumasaigh gach iontráil de na comhtháthaithe seo, na cinn a chuirfear leis níos déanaí san áireamh."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Cumasaigh comhtháthú",
+            "description": "Cumasaíonn sé iontrálacha comhtháthaithe, de réir iontrála nó gach iontráil de chomhtháthú.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Iontráil chomhtháthaithe",
+                    "description": "An iontráil chomhtháthaithe le cumasú."
+                },
+                "domain": {
+                    "name": "Comhtháthú",
+                    "description": "Cumasaigh gach iontráil de na comhtháthaithe seo, na cinn a chuirfear leis níos déanaí san áireamh."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Díchumasaigh gléas",
+            "description": "Díchumasaíonn sé gléas ar an toirt.",
+            "fields": {
+                "device_id": {
+                    "name": "Gléas",
+                    "description": "An gléas (nó na gléasanna) le díchumasú."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Cumasaigh gléas",
+            "description": "Cumasaíonn sé gléas ar an toirt.",
+            "fields": {
+                "device_id": {
+                    "name": "ID an ghléis",
+                    "description": "ID amh an ghléis le cumasú. Ní thaispeánann roghnóir gléasanna Home Assistant gléasanna díchumasaithe. Is féidir roinnt ID a thabhairt mar liosta YAML."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Díchumasaigh úsáideoir",
+            "description": "Díchumasaíonn sé cuntas úsáideora, rud a chuireann cosc air logáil isteach.",
+            "fields": {
+                "user_id": {
+                    "name": "ID an úsáideora",
+                    "description": "ID an úsáideora (nó na n-úsáideoirí) le díchumasú."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Cumasaigh úsáideoir",
+            "description": "Cumasaíonn sé cuntas úsáideora, rud a ligeann dó logáil isteach.",
+            "fields": {
+                "user_id": {
+                    "name": "ID an úsáideora",
+                    "description": "ID an úsáideora (nó na n-úsáideoirí) le cumasú."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Nuashonraigh ID aonáin",
+            "description": "Nuashonraíonn sé ID aonáin ar an toirt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin le nuashonrú."
+                },
+                "new_entity_id": {
+                    "name": "ID Aonáin nua",
+                    "description": "An ID nua don aonán."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Díchumasaigh aonán",
+            "description": "Díchumasaíonn sé aonán (nó aonáin) ar an toirt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin le díchumasú."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Cumasaigh aonán",
+            "description": "Cumasaíonn sé aonán (nó aonáin) ar an toirt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin le cumasú."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Nocht aonán do chúntóirí",
+            "description": "Nochtann sé aonán (nó aonáin) do chúntóirí gutha.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin le nochtadh."
+                },
+                "assistants": {
+                    "name": "Cúntóirí",
+                    "description": "An cúntóir (nó na cúntóirí) lena mbaineann sé seo."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Folaigh aonán",
+            "description": "Folaíonn sé aonán (nó aonáin) ar an toirt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin le folú."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Athainmnigh aonán",
+            "description": "Athainmníonn sé aonán (nó aonáin) ar an toirt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin le hathainmniú."
+                },
+                "name": {
+                    "name": "Ainm",
+                    "description": "An t-ainm nua don aonán nó do na haonáin."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Socraigh deilbhín aonáin",
+            "description": "Socraíonn sé deilbhín aonáin (nó aonán) ar an toirt. Socraigh é go null chun dul ar ais chuig an deilbhín a thugann an comhtháthú dó.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin a socrófar a ndeilbhín."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín nua, nó null do dheilbhín an chomhtháthaithe féin."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Cuir ailias le haonán",
+            "description": "Cuireann sé ailias amháin nó níos mó le haonán (nó aonáin), ar féidir le cúntóirí gutha é a ghlaoch air.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin lena gcuirfear na hailiasanna."
+                },
+                "alias": {
+                    "name": "Ailias",
+                    "description": "An t-ailias (nó na hailiasanna) le cur leis."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Bain ailias ó aonán",
+            "description": "Baineann sé ailias amháin nó níos mó ó aonán (nó aonáin).",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin óna mbainfear na hailiasanna."
+                },
+                "alias": {
+                    "name": "Ailias",
+                    "description": "An t-ailias (nó na hailiasanna) le baint."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Socraigh ailiasanna d'aonán",
+            "description": "Cuireann sé ailiasanna nua in áit ailiasanna aonáin (nó aonán). Fanann sé mar a bhí cibé an gcomhairtear ainm an aonáin féin mar ailias.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin a socrófar a n-ailiasanna."
+                },
+                "aliases": {
+                    "name": "Ailiasanna",
+                    "description": "Na hailiasanna le socrú."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Stop ag nochtadh aonáin do chúntóirí",
+            "description": "Stopann sé ag nochtadh aonáin (nó aonán) do chúntóirí gutha.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin le stopadh á nochtadh."
+                },
+                "assistants": {
+                    "name": "Cúntóirí",
+                    "description": "An cúntóir (nó na cúntóirí) lena mbaineann sé seo."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Dífholaigh aonán",
+            "description": "Dífholaíonn sé aonán (nó aonáin) ar an toirt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán nó na haonáin le dífholú."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Cruthaigh urlár",
+            "description": "Cruthaíonn sé urlár nua ar an toirt.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an urláir le cruthú."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín le húsáid don urlár."
+                },
+                "level": {
+                    "name": "Leibhéal",
+                    "description": "An leibhéal ar a bhfuil an t-urlár i do theach."
+                },
+                "aliases": {
+                    "name": "Ailiasanna",
+                    "description": "Liosta ailiasanna don urlár. Áisiúil más mian leat an t-urlár a úsáid i dteanga eile nó le leasainm eile."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Cuir ailias le hurlár",
+            "description": "Cuireann sé ailias le hurlár.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID an urláir",
+                    "description": "ID an urláir lena gcuirfear an t-ailias."
+                },
+                "alias": {
+                    "name": "Ailias",
+                    "description": "An t-ailias (nó liosta ailiasanna) le cur leis an urlár."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Bain ailias ó urlár",
+            "description": "Baineann sé ailias ó urlár.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID an urláir",
+                    "description": "ID an urláir óna mbainfear an t-ailias."
+                },
+                "alias": {
+                    "name": "Ailias",
+                    "description": "An t-ailias (nó liosta ailiasanna) le baint ón urlár."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Socraigh ailiasanna d'urlár",
+            "description": "Socraíonn sé ailiasanna d'urlár. Scríobhann sé thar aon ailiasanna atá ann agus baineann sé iad, agus cuireann sé na cinn nua ina n-áit go hiomlán.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID an urláir",
+                    "description": "ID an urláir dá socrófar na hailiasanna."
+                },
+                "aliases": {
+                    "name": "Ailiasanna",
+                    "description": "Na hailiasanna le socrú don urlár."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Cuir limistéar le hurlár",
+            "description": "Cuireann sé limistéar le hurlár. Tabhair faoi deara, má tá an limistéar ar urlár cheana, bainfear é ón urlár roimhe sin.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID an urláir",
+                    "description": "ID an urláir ar a gcuirfear an limistéar."
+                },
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir (nó na limistéar) le cur leis an urlár."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Bain limistéar ó urlár",
+            "description": "Baineann sé limistéar ó urlár. Ós rud é nach féidir le limistéar a bheith ach ar urlár amháin, ní gá an t-urlár a shonrú leis an nglao seo.",
+            "fields": {
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir óna mbainfear an t-urlár."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Scrios urlár",
+            "description": "Scriosann sé urlár ar an toirt.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID an urláir",
+                    "description": "ID an urláir le scriosadh."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Cruthaigh lipéad",
+            "description": "Cruthaíonn sé lipéad nua ar an toirt.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an lipéid le cruthú."
+                },
+                "description": {
+                    "name": "Cur síos",
+                    "description": "Cur síos ar an lipéad."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín le húsáid don lipéad."
+                },
+                "color": {
+                    "name": "Dath",
+                    "description": "An dath le húsáid don lipéad. Is féidir gur ainm datha ón liosta é, nó cód datha heics (cosúil le #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Nuashonraigh lipéad",
+            "description": "Nuashonraíonn sé lipéad atá ann cheana ar an toirt. Coinníonn aon rud a fhágann tú amach an luach atá aige cheana. Is féidir an cur síos, an deilbhín agus an dath a ghlanadh trína socrú go null.",
+            "fields": {
+                "label_id": {
+                    "name": "ID an lipéid",
+                    "description": "ID an lipéid le nuashonrú."
+                },
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm nua don lipéad."
+                },
+                "description": {
+                    "name": "Cur síos",
+                    "description": "Cur síos nua don lipéad."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "Deilbhín nua le húsáid don lipéad."
+                },
+                "color": {
+                    "name": "Dath",
+                    "description": "An dath le húsáid don lipéad. Is féidir gur ainm datha ón liosta é, nó cód datha heics (cosúil le #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Cuir lipéad le limistéar",
+            "description": "Cuireann sé lipéad le limistéar. Má thugtar roinnt lipéad nó roinnt limistéar, cuirfear gach teaglaim leis.",
+            "fields": {
+                "label_id": {
+                    "name": "ID an lipéid",
+                    "description": "ID an lipéid (nó na lipéad) le cur leis an limistéar (nó na limistéir)."
+                },
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir (nó na limistéar) lena gcuirfear an lipéad (nó na lipéid)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Cuir lipéad le gléas",
+            "description": "Cuireann sé lipéad le gléas. Má thugtar roinnt lipéad nó roinnt gléasanna, cuirfear gach teaglaim leis.",
+            "fields": {
+                "label_id": {
+                    "name": "ID an lipéid",
+                    "description": "ID an lipéid (nó na lipéad) le cur leis an ngléas (nó na gléasanna)."
+                },
+                "device_id": {
+                    "name": "ID an ghléis",
+                    "description": "ID an ghléis (nó na ngléasanna) lena gcuirfear an lipéad (nó na lipéid)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Cuir lipéad le haonán",
+            "description": "Cuireann sé lipéad le haonán. Má thugtar roinnt lipéad nó roinnt aonán, cuirfear gach teaglaim leis.",
+            "fields": {
+                "label_id": {
+                    "name": "ID an lipéid",
+                    "description": "ID an lipéid (nó na lipéad) le cur leis an aonán (nó na haonáin)."
+                },
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "ID an aonáin (nó na n-aonán) lena gcuirfear an lipéad (nó na lipéid)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Bain lipéad ó limistéar",
+            "description": "Baineann sé lipéad ó limistéar. Má thugtar roinnt lipéad nó roinnt limistéar, bainfear gach teaglaim.",
+            "fields": {
+                "label_id": {
+                    "name": "ID an lipéid",
+                    "description": "ID an lipéid (nó na lipéad) le baint ón limistéar (nó ó na limistéir)."
+                },
+                "area_id": {
+                    "name": "ID an limistéir",
+                    "description": "ID an limistéir (nó na limistéar) óna mbainfear an lipéad (nó na lipéid)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Bain lipéad ó ghléas",
+            "description": "Baineann sé lipéad ó ghléas. Má thugtar roinnt lipéad nó roinnt gléasanna, bainfear gach teaglaim.",
+            "fields": {
+                "label_id": {
+                    "name": "ID an lipéid",
+                    "description": "ID an lipéid (nó na lipéad) le baint ón ngléas (nó ó na gléasanna)."
+                },
+                "device_id": {
+                    "name": "ID an ghléis",
+                    "description": "ID an ghléis (nó na ngléasanna) óna mbainfear an lipéad (nó na lipéid)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Bain lipéad ó aonán",
+            "description": "Baineann sé lipéad ó aonán. Má thugtar roinnt lipéad nó roinnt aonán, bainfear gach teaglaim.",
+            "fields": {
+                "label_id": {
+                    "name": "ID an lipéid",
+                    "description": "ID an lipéid (nó na lipéad) le baint ón aonán (nó ó na haonáin)."
+                },
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "ID an aonáin (nó na n-aonán) óna mbainfear an lipéad (nó na lipéid)."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Cruthaigh catagóir",
+            "description": "Cruthaíonn sé catagóir nua ar an toirt, d'uathoibrithe, scripteanna, radhairc nó cúntóirí. Tugann sé ar ais ID na catagóire nua.",
+            "fields": {
+                "scope": {
+                    "name": "Raon feidhme",
+                    "description": "An áit a n-úsáidtear an chatagóir."
+                },
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm na catagóire le cruthú."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín le húsáid don chatagóir."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Nuashonraigh catagóir",
+            "description": "Nuashonraíonn sé catagóir atá ann cheana ar an toirt. Coinníonn aon rud a fhágann tú amach an luach atá aige cheana. Is féidir an deilbhín a ghlanadh trína shocrú go null.",
+            "fields": {
+                "scope": {
+                    "name": "Raon feidhme",
+                    "description": "An áit a n-úsáidtear an chatagóir."
+                },
+                "category_id": {
+                    "name": "Catagóir",
+                    "description": "ID nó ainm na catagóire le nuashonrú."
+                },
+                "name": {
+                    "name": "Ainm",
+                    "description": "An t-ainm nua don chatagóir."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín nua don chatagóir."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Scrios catagóir",
+            "description": "Scriosann sé catagóir. Fágtar gach rud a bhí inti gan chatagóir.",
+            "fields": {
+                "scope": {
+                    "name": "Raon feidhme",
+                    "description": "An áit a n-úsáidtear an chatagóir."
+                },
+                "category_id": {
+                    "name": "Catagóir",
+                    "description": "ID nó ainm na catagóire le scriosadh."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Cuir catagóir le haonán",
+            "description": "Cuireann sé uathoibriú, script, radharc nó cúntóir i gcatagóir. Tagann sé in áit na catagóire ina raibh sé roimhe, mar ní féidir le gach ceann a bheith ach i gceann amháin.",
+            "fields": {
+                "category_id": {
+                    "name": "Catagóir",
+                    "description": "ID nó ainm na catagóire."
+                },
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An t-uathoibriú, an script, an radharc nó an cúntóir (amháin nó níos mó) le cur sa chatagóir."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Bain catagóir ó aonán",
+            "description": "Tógann sé uathoibriú, script, radharc nó cúntóir as catagóir. Fágtar aon rud i gcatagóir eile mar atá.",
+            "fields": {
+                "category_id": {
+                    "name": "Catagóir",
+                    "description": "ID nó ainm na catagóire."
+                },
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An t-uathoibriú, an script, an radharc nó an cúntóir (amháin nó níos mó) le tógáil as an gcatagóir."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Scrios lipéad",
+            "description": "Scriosann sé lipéad ar an toirt.",
+            "fields": {
+                "label_id": {
+                    "name": "ID an lipéid",
+                    "description": "ID an lipéid le scriosadh."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Déan neamhaird de gach gléas atá aimsithe faoi láthair",
+            "description": "Déan neamhaird de gach gléas atá aimsithe faoi láthair agus atá le feiceáil ar phainéal na gcomhtháthaithe. Ní dhéanfar neamhaird de ghléasanna a aimsítear ina dhiaidh seo.",
+            "fields": {
+                "domain": {
+                    "name": "Fearann an chomhtháthaithe",
+                    "description": "Fearann an chomhtháthaithe a ndéanfar neamhaird de gach gléas aimsithe dó. Mura dtugtar é, déanfar neamhaird ar gach fearann."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Díchumasaigh ceistiú le haghaidh nuashonruithe",
+            "description": "Díchumasaíonn sé ceistiú le haghaidh nuashonruithe d'iontráil chomhtháthaithe.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Iontráil chomhtháthaithe",
+                    "description": "An iontráil chomhtháthaithe le ceistiú a dhíchumasú di."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Cumasaigh ceistiú le haghaidh nuashonruithe",
+            "description": "Cumasaíonn sé ceistiú le haghaidh nuashonruithe d'iontráil chomhtháthaithe.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Iontráil chomhtháthaithe",
+                    "description": "An iontráil chomhtháthaithe le ceistiú a chumasú di."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Scrios gach aonán dílleachta",
+            "description": "Scriosann sé gach aonán dílleachta nach bhfuil comhtháthú ann a éilíonn nó a sholáthraíonn iad a thuilleadh. Tabhair faoi deara, má baineadh an comhtháthú díreach, b'fhéidir go mbeidh atosú ag teastáil sula dtuigeann Home Assistant gur dílleachtaí iad.\n**RABHADH** B'fhéidir gur marcáladh aonáin mar dhílleachtaí toisc go bhfuil comhtháthú as líne nó nach bhfuil sé ag obair ó thosaigh Home Assistant. Scriosfaidh glaoch ar an ngníomh seo na haonáin sin freisin."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Liostaigh gach aonán dílleachta sa bhunachar sonraí",
+            "description": "Liostaíonn sé gach aonán dílleachta sa bhunachar sonraí nach n-éilíonn comhtháthú ar bith."
+        },
+        "homeassistant_restart": {
+            "name": "Atosaigh",
+            "description": "An gníomh chun Home Assistant a atosú.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Mód sábháilte",
+                    "description": "Cibé ar cheart an t-atosú a dhéanamh i mód sábháilte. Díchumasóidh sé seo gach comhtháthú saincheaptha agus gach modúl tosaigh."
+                },
+                "force": {
+                    "name": "Atosú éigeantach",
+                    "description": "Cuir iallach ar an atosú. RABHADH! Ní mhúchfaidh sé seo Home Assistant go réidh, scipeálfaidh sé seiceálacha cumraíochta agus déanfaidh sé neamhaird d'imirce bunachair sonraí atá ar siúl. Ná húsáid é seo ach má tá a fhios agat cad atá á dhéanamh agat."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Iompórtáil staitisticí",
+            "description": "Iompórtáil staitisticí fadtéarmacha.",
+            "fields": {
+                "statistic_id": {
+                    "name": "ID na staitisticí",
+                    "description": "ID na staitisticí (ID an aonáin) lena n-iompórtáil."
+                },
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm na staitisticí."
+                },
+                "source": {
+                    "name": "Foinse",
+                    "description": "Foinse shonraí na staitisticí."
+                },
+                "unit_of_measurement": {
+                    "name": "Aonad tomhais",
+                    "description": "Aonad tomhais na staitisticí."
+                },
+                "has_mean": {
+                    "name": "Tá meán aige",
+                    "description": "Má tá meánluach ag na staitisticí."
+                },
+                "has_sum": {
+                    "name": "Tá suim aige",
+                    "description": "Má tá luach suime ag na staitisticí."
+                },
+                "stats": {
+                    "name": "Staitisticí",
+                    "description": "Liosta mapálacha/foclóirí le staitisticí le hiompórtáil. Caithfidh eochair \"start\" le teaghrán dáta agus ama a bheith sna foclóirí; is iad na roghanna bailí eile ná \"mean\", \"sum\", \"min\", \"max\", \"last_reset\", agus \"state\". Tá siad sin go léir roghnach agus is slánuimhir nó snámhphointe iad, seachas \"last_reset\" ar teaghrán dáta agus ama é."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Roghnaigh rogha randamach",
+            "description": "Roghnaigh rogha randamach d'aonán roghnaithe.",
+            "fields": {
+                "options": {
+                    "name": "Roghanna",
+                    "description": "Teorannaíonn sé na roghanna le roghnú astu. Mura dtugtar iad, cuirfear gach rogha san áireamh."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Cruthaigh roghnóir ionchuir",
+            "description": "Cruthaíonn sé cúntóir roghnóra ionchuir (liosta anuas) nua ar an toirt. Tugann sé ar ais ID aonáin an roghnóra ionchuir nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an roghnóra ionchuir nua."
+                },
+                "input_select_id": {
+                    "name": "ID aonáin an roghnóra ionchuir",
+                    "description": "An ID aonáin don roghnóir ionchuir nua. Cuirtear an réimír input_select. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "options": {
+                    "name": "Roghanna",
+                    "description": "Na roghanna le roghnú astu. Ní féidir le gach rogha a bheith ann ach uair amháin."
+                },
+                "initial": {
+                    "name": "Rogha tosaigh",
+                    "description": "An rogha a dtosaíonn sé uirthi, agus caithfidh sí a bheith ar cheann de na roghanna. Má fhágtar amach í, coinníonn sé an rogha a bhí aige sular atosaíodh Home Assistant."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín don roghnóir ionchuir nua."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Scrios roghnóir ionchuir",
+            "description": "Scriosann sé cúntóirí roghnóra ionchuir a rinneadh sa chomhéadan nó leis an ngníomh cruthaigh roghnóir ionchuir. Ní féidir le Spook roghnóirí ionchuir atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An roghnóir ionchuir (nó na roghnóirí ionchuir) le scriosadh."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Roghnaigh rogha randamach",
+            "description": "Roghnaigh rogha randamach d'aonán input_select.",
+            "fields": {
+                "options": {
+                    "name": "Roghanna",
+                    "description": "Teorannaíonn sé na roghanna le roghnú astu. Mura dtugtar iad, cuirfear gach rogha san áireamh."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Droim ar ais na roghanna",
+            "description": "Cuireann sé ord na roghanna inroghnaithe d'aonán `input_select` droim ar ais, ón deireadh go dtí an tús. Níl sé seo buan agus cuirfear ar ceal é nuair a athlódáiltear é nó nuair a atosaíonn Home Assistant."
+        },
+        "input_select_shuffle": {
+            "name": "Measc na roghanna",
+            "description": "Meascann sé liosta na roghanna inroghnaithe d'aonán `input_select`. Níl sé seo buan agus cuirfear ar ceal é nuair a athlódáiltear é nó nuair a atosaíonn Home Assistant."
+        },
+        "input_select_sort": {
+            "name": "Sórtáil na roghanna",
+            "description": "Sórtálann sé liosta na roghanna inroghnaithe d'aonán `input_select`. Níl sé seo buan agus cuirfear ar ceal é nuair a athlódáiltear é nó nuair a atosaíonn Home Assistant."
+        },
+        "number_decrement": {
+            "name": "Laghdaigh luach",
+            "description": "Laghdaigh luach aonáin uimhreach méid áirithe.",
+            "fields": {
+                "amount": {
+                    "name": "Méid",
+                    "description": "An méid lena laghdófar an uimhir. Mura dtugtar é, úsáidfear céim an aonáin uimhreach."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Méadaigh luach",
+            "description": "Méadaigh luach aonáin uimhreach méid áirithe.",
+            "fields": {
+                "amount": {
+                    "name": "Méid",
+                    "description": "An méid lena méadófar an uimhir. Mura dtugtar é, úsáidfear céim an aonáin uimhreach."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Socraigh an t-uasluach",
+            "description": "Socraigh aonán uimhreach go dtí a uasluach."
+        },
+        "number_min": {
+            "name": "Socraigh an t-íosluach",
+            "description": "Socraigh aonán uimhreach go dtí a íosluach."
+        },
+        "input_number_decrement": {
+            "name": "Laghdaigh luach",
+            "description": "Laghdaigh luach aonáin uimhreach ionchuir méid áirithe.",
+            "fields": {
+                "amount": {
+                    "name": "Méid",
+                    "description": "An méid lena laghdófar an uimhir ionchuir. Mura dtugtar é, úsáidfear céim an aonáin uimhreach."
+                },
+                "cycle": {
+                    "name": "Timthriall",
+                    "description": "Lean ar aghaidh ón taobh eile den raon in ionad stopadh ag an taobh seo, ar an mbealach céanna a dtéann an chéad rogha eile timpeall i roghnóir."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Méadaigh luach",
+            "description": "Méadaigh luach aonáin uimhreach ionchuir méid áirithe.",
+            "fields": {
+                "amount": {
+                    "name": "Méid",
+                    "description": "An méid lena méadófar an uimhir ionchuir. Mura dtugtar é, úsáidfear céim an aonáin uimhreach."
+                },
+                "cycle": {
+                    "name": "Timthriall",
+                    "description": "Lean ar aghaidh ón taobh eile den raon in ionad stopadh ag an taobh seo, ar an mbealach céanna a dtéann an chéad rogha eile timpeall i roghnóir."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Socraigh an t-uasluach",
+            "description": "Socraigh aonán uimhreach ionchuir go dtí a uasluach."
+        },
+        "input_number_min": {
+            "name": "Socraigh an t-íosluach",
+            "description": "Socraigh aonán uimhreach ionchuir go dtí a íosluach."
+        },
+        "input_number_set_range": {
+            "name": "Socraigh raon",
+            "description": "Athraíonn sé íosmhéid, uasmhéid nó céim uimhreach ionchuir a rinneadh sa chomhéadan, díreach cosúil lena chur in eagar. Bogtar luach atá lasmuigh den raon nua isteach ann.",
+            "fields": {
+                "min": {
+                    "name": "Íosmhéid",
+                    "description": "An t-íosluach nua."
+                },
+                "max": {
+                    "name": "Uasmhéid",
+                    "description": "An t-uasluach nua."
+                },
+                "step": {
+                    "name": "Céim",
+                    "description": "Méid nua na céime."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Cruthaigh cuntar",
+            "description": "Cruthaíonn sé cúntóir cuntair nua ar an toirt. Tugann sé ar ais ID aonáin an chuntair nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an chuntair nua."
+                },
+                "counter_id": {
+                    "name": "ID aonáin an chuntair",
+                    "description": "An ID aonáin don chuntar nua. Cuirtear an réimír counter. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "initial": {
+                    "name": "Luach tosaigh",
+                    "description": "An luach a dtosaíonn an cuntar air, agus a dtéann sé ar ais chuige nuair a athshocraítear é."
+                },
+                "minimum": {
+                    "name": "Íosmhéid",
+                    "description": "An luach is ísle ar féidir leis an gcuntar dul síos chuige. Fág amach é le haghaidh gan teorainn."
+                },
+                "maximum": {
+                    "name": "Uasmhéid",
+                    "description": "An luach is airde ar féidir leis an gcuntar dul suas chuige. Fág amach é le haghaidh gan teorainn."
+                },
+                "step": {
+                    "name": "Céim",
+                    "description": "An méid a théann an cuntar suas nó síos gach uair."
+                },
+                "restore": {
+                    "name": "Athchóirigh",
+                    "description": "Athchóirigh luach an chuntair nuair a thosaíonn Home Assistant, seachas tosú as an nua ag an luach tosaigh."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín don chuntar nua."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Scrios cuntar",
+            "description": "Scriosann sé cúntóirí cuntair a rinneadh sa chomhéadan nó leis an ngníomh cruthaigh cuntar. Ní féidir le Spook cuntair atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An cuntar (nó na cuntair) le scriosadh."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Cruthaigh ionchur Booleánach",
+            "description": "Cruthaíonn sé cúntóir ionchuir Bhooleánaigh (scoránaigh) nua ar an toirt. Tugann sé ar ais ID aonáin an ionchuir Bhooleánaigh nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an ionchuir Bhooleánaigh nua."
+                },
+                "input_boolean_id": {
+                    "name": "ID aonáin an ionchuir Bhooleánaigh",
+                    "description": "An ID aonáin don ionchur Booleánach nua. Cuirtear an réimír input_boolean. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "initial": {
+                    "name": "Luach tosaigh",
+                    "description": "An luach a dtosaíonn sé leis. Má fhágtar amach é, coinníonn sé an luach a bhí aige sular atosaíodh Home Assistant."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín don ionchur Booleánach nua."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Scrios ionchur Booleánach",
+            "description": "Scriosann sé cúntóirí ionchuir Bhooleánaigh a rinneadh sa chomhéadan nó leis an ngníomh cruthaigh ionchur Booleánach. Ní féidir le Spook ionchuir Bhooleánacha atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An t-ionchur Booleánach (nó na hionchuir Bhooleánacha) le scriosadh."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Cruthaigh téacs ionchuir",
+            "description": "Cruthaíonn sé cúntóir téacs ionchuir nua ar an toirt. Tugann sé ar ais ID aonáin an téacs ionchuir nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an téacs ionchuir nua."
+                },
+                "input_text_id": {
+                    "name": "ID aonáin an téacs ionchuir",
+                    "description": "An ID aonáin don téacs ionchuir nua. Cuirtear an réimír input_text. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "initial": {
+                    "name": "Luach tosaigh",
+                    "description": "An téacs a dtosaíonn sé leis. Má fhágtar amach é, coinníonn sé an téacs a bhí aige sular atosaíodh Home Assistant."
+                },
+                "min": {
+                    "name": "Fad íosta",
+                    "description": "An fad is giorra is féidir leis an téacs a bheith."
+                },
+                "max": {
+                    "name": "Fad uasta",
+                    "description": "An fad is faide is féidir leis an téacs a bheith."
+                },
+                "pattern": {
+                    "name": "Patrún",
+                    "description": "Slonn rialta a chaithfidh an téacs a chomhoiriúnú."
+                },
+                "mode": {
+                    "name": "Mód",
+                    "description": "Taispeáin an téacs mar atá, nó folaigh é cosúil le pasfhocal."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín don téacs ionchuir nua."
+                },
+                "unit_of_measurement": {
+                    "name": "Aonad tomhais",
+                    "description": "An t-aonad le taispeáint in aice leis an téacs."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Scrios téacs ionchuir",
+            "description": "Scriosann sé cúntóirí téacs ionchuir a rinneadh sa chomhéadan nó leis an ngníomh cruthaigh téacs ionchuir. Ní féidir le Spook téacsanna ionchuir atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An téacs ionchuir (nó na téacsanna ionchuir) le scriosadh."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Cruthaigh cnaipe ionchuir",
+            "description": "Cruthaíonn sé cúntóir cnaipe ionchuir nua ar an toirt. Tugann sé ar ais ID aonáin an chnaipe ionchuir nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an chnaipe ionchuir nua."
+                },
+                "input_button_id": {
+                    "name": "ID aonáin an chnaipe ionchuir",
+                    "description": "An ID aonáin don chnaipe ionchuir nua. Cuirtear an réimír input_button. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín don chnaipe ionchuir nua."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Scrios cnaipe ionchuir",
+            "description": "Scriosann sé cúntóirí cnaipe ionchuir a rinneadh sa chomhéadan nó leis an ngníomh cruthaigh cnaipe ionchuir. Ní féidir le Spook cnaipí ionchuir atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An cnaipe ionchuir (nó na cnaipí ionchuir) le scriosadh."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Cruthaigh ionchur dáta agus am",
+            "description": "Cruthaíonn sé cúntóir ionchuir dáta agus am nua ar an toirt, a choinníonn dáta, am, nó an dá cheann. Tugann sé ar ais ID aonáin an ionchuir dáta agus am nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an ionchuir dáta agus am nua."
+                },
+                "input_datetime_id": {
+                    "name": "ID aonáin an ionchuir dáta agus am",
+                    "description": "An ID aonáin don ionchur dáta agus am nua. Cuirtear an réimír input_datetime. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "has_date": {
+                    "name": "Tá dáta aige",
+                    "description": "Cibé an gcoinníonn sé dáta. Caithfidh ceann amháin ar a laghad de dháta agus am a bheith ar siúl."
+                },
+                "has_time": {
+                    "name": "Tá am aige",
+                    "description": "Cibé an gcoinníonn sé am. Caithfidh ceann amháin ar a laghad de dháta agus am a bheith ar siúl."
+                },
+                "initial": {
+                    "name": "Luach tosaigh",
+                    "description": "An dáta agus/nó an t-am a dtosaíonn sé leis, cosúil le 2026-12-31, 08:30:00, nó 2026-12-31 08:30:00. Má fhágtar amach é, coinníonn sé an luach a bhí aige sular atosaíodh Home Assistant."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín don ionchur dáta agus am nua."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Scrios ionchur dáta agus am",
+            "description": "Scriosann sé cúntóirí ionchuir dáta agus am a rinneadh sa chomhéadan nó leis an ngníomh cruthaigh ionchur dáta agus am. Ní féidir le Spook ionchuir dáta agus am atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An t-ionchur dáta agus am (nó na hionchuir dáta agus am) le scriosadh."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "Cruthaigh uimhir ionchuir",
+            "description": "Cruthaigh cúntóir uimhreach ionchuir nua ar an toirt. Tugann sé ar ais ID aonáin na huimhreach ionchuir nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an chúntóra uimhreach ionchuir nua."
+                },
+                "input_number_id": {
+                    "name": "ID aonáin na huimhreach ionchuir",
+                    "description": "An ID aonáin don chúntóir uimhreach ionchuir nua. Cuirtear an réimír input_number. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "min": {
+                    "name": "Íosmhéid",
+                    "description": "Íosluach na huimhreach ionchuir."
+                },
+                "max": {
+                    "name": "Uasmhéid",
+                    "description": "Uasluach na huimhreach ionchuir."
+                },
+                "initial": {
+                    "name": "Luach tosaigh",
+                    "description": "Luach tosaigh na huimhreach ionchuir nuair a thosaíonn Home Assistant."
+                },
+                "step": {
+                    "name": "Méid na céime",
+                    "description": "Méid céime na huimhreach ionchuir."
+                },
+                "mode": {
+                    "name": "Mód taispeána",
+                    "description": "Mód taispeána na huimhreach ionchuir, ar féidir leis a bheith ina shleamhnán nó ina bhosca ionchuir."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín le húsáid don chúntóir uimhreach ionchuir."
+                },
+                "unit_of_measurement": {
+                    "name": "Aonad tomhais",
+                    "description": "Aonad tomhais na huimhreach ionchuir."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Scrios uimhir ionchuir",
+            "description": "Scriosann sé cúntóirí uimhreach ionchuir a rinneadh sa chomhéadan nó leis an ngníomh cruthaigh uimhir ionchuir. Ní féidir le Spook uimhreacha ionchuir atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An uimhir ionchuir (nó na huimhreacha ionchuir) le scriosadh."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Cuir rianaitheoir gléis leis",
+            "description": "Cuir rianaitheoir gléis le duine.",
+            "fields": {
+                "entity_id": {
+                    "name": "Duine",
+                    "description": "ID aonáin an duine lena gcuirfear an rianaitheoir gléis."
+                },
+                "device_tracker": {
+                    "name": "Rianaitheoir gléis",
+                    "description": "ID aonáin an rianaitheora gléis le cur leis an duine."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Bain rianaitheoir gléis",
+            "description": "Bain rianaitheoir gléis ó dhuine.",
+            "fields": {
+                "entity_id": {
+                    "name": "Duine",
+                    "description": "ID aonáin an duine óna mbainfear an rianaitheoir gléis."
+                },
+                "device_tracker": {
+                    "name": "Rianaitheoir gléis",
+                    "description": "ID aonáin an rianaitheora gléis le baint ón duine."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Cruthaigh saincheist",
+            "description": "Cruthaigh agus ardaigh saincheist de láimh i nDeisiúcháin Home Assistant.",
+            "fields": {
+                "title": {
+                    "name": "Teideal",
+                    "description": "Teideal na saincheiste."
+                },
+                "description": {
+                    "name": "Cur síos",
+                    "description": "Cur síos na saincheiste. Tacaíonn sé le Markdown."
+                },
+                "issue_id": {
+                    "name": "ID na saincheiste",
+                    "description": "Is féidir aitheantóir a bheith ag an tsaincheist, rud a ligeann duit í a chealú níos déanaí leis an ID sin más gá. Cuireann sé cosc freisin ar shaincheisteanna dúblacha a chruthú. Mura dtugtar é, ginfear ID randamach."
+                },
+                "domain": {
+                    "name": "Fearann",
+                    "description": "Is féidir an réimse seo a úsáid chun fearann na saincheiste a shocrú. Mar shampla, de réir réamhshocraithe (mura bhfuil sé socraithe), úsáidfidh sé \"spook\". Taispeántar Spook i lógó/íomhá na saincheiste dá bharr. Má shocraíonn tú é go \"homeassistant\", úsáidfear lógó Home Assistant, nó úsáid \"hue\", \"zwave_js\", \"mqtt\", agus mar sin de chun lógó an chomhtháthaithe sin a úsáid."
+                },
+                "severity": {
+                    "name": "Déine",
+                    "description": "Déine na saincheiste. Úsáidfear é seo chun tosaíocht na saincheiste a chinneadh. Mura bhfuil sé socraithe, úsáidfear \"warning\"."
+                },
+                "persistent": {
+                    "name": "Buan",
+                    "description": "Cibé ar cheart don tsaincheist a bheith buan, rud a chiallaíonn go maireann sí tar éis atosuithe Home Assistant. De réir réamhshocraithe, níl saincheisteanna buan."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Déan neamhaird de gach saincheist",
+            "description": "Déan neamhaird de gach saincheist atá ardaithe faoi láthair i nDeisiúcháin Home Assistant, nó díobh siúd amháin a d'ardaigh comhtháthaithe áirithe.",
+            "fields": {
+                "domain": {
+                    "name": "Fearann",
+                    "description": "Ná déan neamhaird ach de na saincheisteanna a d'ardaigh na comhtháthaithe seo."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Liostaigh saincheisteanna",
+            "description": "Liostaíonn sé na saincheisteanna atá ardaithe faoi láthair i nDeisiúcháin Home Assistant, lena dteidil, le go ngníomhóidh uathoibriú orthu nó le go dtaispeánfaidh deais iad.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Cuir na cinn a ndearnadh neamhaird díobh san áireamh",
+                    "description": "Liostaigh freisin na saincheisteanna a ndearnadh neamhaird díobh."
+                },
+                "domain": {
+                    "name": "Fearann",
+                    "description": "Ná liostaigh ach na saincheisteanna a d'ardaigh na comhtháthaithe seo."
+                },
+                "severity": {
+                    "name": "Déine",
+                    "description": "Ná liostaigh ach na saincheisteanna leis na déine seo."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Bain saincheist",
+            "description": "Baineann sé saincheist deisiúcháin Home Assistant a cruthaíodh de láimh. Ní féidir leis an ngníomh seo ach saincheisteanna a cruthaíodh leis an ngníomh `repairs_create` a bhaint.",
+            "fields": {
+                "issue_id": {
+                    "name": "ID na saincheiste",
+                    "description": "ID na saincheiste le baint."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Cuir deireadh leis an neamhaird ar gach saincheist",
+            "description": "Cuir deireadh leis an neamhaird ar gach saincheist atá ardaithe faoi láthair i nDeisiúcháin Home Assistant, nó orthu siúd amháin a d'ardaigh comhtháthaithe áirithe.",
+            "fields": {
+                "domain": {
+                    "name": "Fearann",
+                    "description": "Ná cuir deireadh leis an neamhaird ach ar na saincheisteanna a d'ardaigh na comhtháthaithe seo."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Socraigh cruinneas taispeána",
+            "description": "Socraíonn sé líon na ndeachúlacha a thaispeántar do bhraiteoir amháin nó níos mó.",
+            "fields": {
+                "entity_id": {
+                    "name": "Aonán",
+                    "description": "An t-aonán braiteora (nó na haonáin bhraiteora) le nuashonrú."
+                },
+                "display_precision": {
+                    "name": "Cruinneas taispeána",
+                    "description": "Líon na ndeachúlacha le taispeáint don bhraiteoir."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Cruthaigh amaireadóir",
+            "description": "Cruthaíonn sé cúntóir amaireadóra nua ar an toirt. Tugann sé ar ais ID aonáin an amaireadóra nua.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an amaireadóra nua."
+                },
+                "timer_id": {
+                    "name": "ID aonáin an amaireadóra",
+                    "description": "An ID aonáin don amaireadóir nua. Cuirtear an réimír timer. leis go huathoibríoch. Mura dtugtar é, ginfear an ID aonáin bunaithe ar an ainm."
+                },
+                "duration": {
+                    "name": "Fad",
+                    "description": "An fad ama a ritheann an t-amaireadóir nuair a thosaítear é."
+                },
+                "restore": {
+                    "name": "Athchóirigh",
+                    "description": "Athchóirigh staid an amaireadóra nuair a thosaíonn Home Assistant, ionas go leanann amaireadóir atá ag rith ag rith thar atosú."
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín don amaireadóir nua."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Scrios amaireadóir",
+            "description": "Scriosann sé cúntóirí amaireadóra a rinneadh sa chomhéadan nó leis an ngníomh cruthaigh amaireadóir. Ní féidir le Spook amaireadóirí atá socraithe in YAML a scriosadh.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "An t-amaireadóir (nó na hamaireadóirí) le scriosadh."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Socraigh fad",
+            "description": "Socraigh fad d'amaireadóir atá ann cheana.",
+            "fields": {
+                "duration": {
+                    "name": "Fad",
+                    "description": "Fad nua don amaireadóir, mar theaghrán timedelta."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Cruthaigh zón",
+            "description": "Cruthaigh zón nua in Home Assistant ar an toirt.",
+            "fields": {
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an zóin"
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín le húsáid don zón"
+                },
+                "latitude": {
+                    "name": "Domhanleithead",
+                    "description": "Domhanleithead an zóin. Is féidir gur teimpléad é seo."
+                },
+                "longitude": {
+                    "name": "Domhanfhad",
+                    "description": "Domhanfhad an zóin. Is féidir gur teimpléad é seo."
+                },
+                "radius": {
+                    "name": "Ga",
+                    "description": "Ga an zóin"
+                },
+                "passive": {
+                    "name": "Éighníomhach",
+                    "description": "Níl zón éighníomhach ann ach d'uathoibrithe: ní thaispeántar ar an léarscáil é, agus ní athraíonn sé cá bhfuil daoine agus rianaitheoirí gléasanna."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Nuashonraigh zón",
+            "description": "Nuashonraigh airíonna zóin ar an toirt.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "ID an aonáin (nó na n-aonán) le nuashonrú."
+                },
+                "name": {
+                    "name": "Ainm",
+                    "description": "Ainm an zóin"
+                },
+                "icon": {
+                    "name": "Deilbhín",
+                    "description": "An deilbhín le húsáid don zón"
+                },
+                "latitude": {
+                    "name": "Domhanleithead",
+                    "description": "Domhanleithead an zóin. Is féidir gur teimpléad é seo."
+                },
+                "longitude": {
+                    "name": "Domhanfhad",
+                    "description": "Domhanfhad an zóin. Is féidir gur teimpléad é seo."
+                },
+                "radius": {
+                    "name": "Ga",
+                    "description": "Ga an zóin"
+                },
+                "passive": {
+                    "name": "Éighníomhach",
+                    "description": "Níl zón éighníomhach ann ach d'uathoibrithe: ní thaispeántar ar an léarscáil é, agus ní athraíonn sé cá bhfuil daoine agus rianaitheoirí gléasanna."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Scrios zón",
+            "description": "Scrios zón. Ní oibríonn sé seo ach le zóin a cruthaíodh agus a bhainistítear tríd an gcomhéadan. Ní féidir le Spook zóin a cruthaíodh agus a bhainistítear in YAML a bhainistiú.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID Aonáin",
+                    "description": "ID an aonáin (nó na n-aonán) le baint."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Méadaigh teocht",
+            "description": "Ardaíonn sé pointe socraithe téitheora uisce céim amháin, laistigh dá theorainneacha.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad lena athrú. Fág amach é chun céim an téitheora uisce féin a úsáid, nó leathchéim (céim amháin i Fahrenheit) mura bhfuil ceann aige."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Laghdaigh teocht",
+            "description": "Íslíonn sé pointe socraithe téitheora uisce céim amháin, laistigh dá theorainneacha.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad lena athrú. Fág amach é chun céim an téitheora uisce féin a úsáid, nó leathchéim (céim amháin i Fahrenheit) mura bhfuil ceann aige."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Méadaigh taiseachas",
+            "description": "Ardaíonn sé sprioctaiseachas taiseora céim amháin, laistigh dá theorainneacha.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad faoin gcéad lena athrú. Fág amach é chun céim an taiseora féin a úsáid, nó faoin gcéad amháin mura bhfuil ceann aige."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Laghdaigh taiseachas",
+            "description": "Íslíonn sé sprioctaiseachas taiseora céim amháin, laistigh dá theorainneacha.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad faoin gcéad lena athrú. Fág amach é chun céim an taiseora féin a úsáid, nó faoin gcéad amháin mura bhfuil ceann aige."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Méadaigh seasamh",
+            "description": "Bogann sé clúdach céim níos oscailte, ag stopadh nuair atá sé oscailte go hiomlán.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad faoin gcéad lena bhogadh. Deich faoin gcéad má fhágtar amach é."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Laghdaigh seasamh",
+            "description": "Bogann sé clúdach céim níos dúnta, ag stopadh nuair atá sé dúnta go hiomlán.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad faoin gcéad lena bhogadh. Deich faoin gcéad má fhágtar amach é."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Méadaigh seasamh",
+            "description": "Bogann sé comhla céim níos oscailte, ag stopadh nuair atá sí oscailte go hiomlán.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad faoin gcéad lena bhogadh. Deich faoin gcéad má fhágtar amach é."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Laghdaigh seasamh",
+            "description": "Bogann sé comhla céim níos dúnta, ag stopadh nuair atá sí dúnta go hiomlán.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad faoin gcéad lena bhogadh. Deich faoin gcéad má fhágtar amach é."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Ardaigh an fhuaim",
+            "description": "Ardaíonn sé fuaim seinnteora meán leis an gcéim a thugann tú, ag stopadh ag an bhfuaim iomlán.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad faoin gcéad leis an bhfuaim a athrú."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Ísligh an fhuaim",
+            "description": "Íslíonn sé fuaim seinnteora meán leis an gcéim a thugann tú, ag stopadh ag ciúnas.",
+            "fields": {
+                "step": {
+                    "name": "Céim",
+                    "description": "Cé mhéad faoin gcéad leis an bhfuaim a athrú."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Bog mír",
+            "description": "Bogann sé mír i liosta le déanamh go dtí an barr, an bun, nó i ndiaidh míre eile.",
+            "fields": {
+                "item": {
+                    "name": "Mír",
+                    "description": "Teideal nó uid na míre le bogadh."
+                },
+                "after": {
+                    "name": "I ndiaidh",
+                    "description": "Teideal nó uid na míre lena cur ina diaidh. Tabhair é seo nó seasamh."
+                },
+                "position": {
+                    "name": "Seasamh",
+                    "description": "Bog go dtí barr nó bun an liosta í. Tabhair é seo nó mír lena cur ina diaidh."
                 }
             }
         }

@@ -23,6 +23,9 @@ import custom_components.spook  # noqa: F401  # pylint: disable=unused-import
 if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 GATE = {"condition": "state", "entity_id": "input_boolean.gate", "state": "on"}
 SETTLE = 0.05
 

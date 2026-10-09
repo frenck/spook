@@ -29,6 +29,9 @@ if TYPE_CHECKING:
     from homeassistant.core import HomeAssistant
     from homeassistant.helpers import label_registry as lr
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 _ADD = (add_label_to_entity, add_label_to_area, add_label_to_device)
 _REMOVE = (remove_label_from_entity, remove_label_from_area, remove_label_from_device)
 _FIELD = {

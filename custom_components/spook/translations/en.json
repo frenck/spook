@@ -324,18 +324,25 @@
   },
   "config": {
     "abort": {
-      "already_spooked": "Spook is already configured.",
-      "enabled_existing": "The existing Spook entry has been enabled.",
-      "enable_failed": "The existing Spook entry could not be enabled."
+      "already_spooked": "Spook is already haunting this place 👻\n\nOne ghost per house is plenty. You can find Spook under [Devices & services](/config/integrations/integration/spook).",
+      "enabled_existing": "Spook is awake again 👻\n\nGive it a moment to look around. Anything it finds shows up under [Repairs](/config/repairs).",
+      "enable_failed": "Spook would not wake up 👻\n\nTry switching it back on yourself under [Devices & services](/config/integrations/integration/spook).",
+      "kept_sleeping": "Spook stays asleep 👻\n\nMiss it? You can wake it up any time under [Devices & services](/config/integrations/integration/spook)."
+    },
+    "create_entry": {
+      "spooked": "Spook is floating around 👻\n\nGive it a moment to look around. Anything it finds shows up under [Repairs](/config/repairs).\n\nThe extra actions, triggers and conditions are waiting for you in the automation and script editors. Curious what else Spook can do? The [documentation]({documentation_url}) has it all.\n\nEnjoying Spook? 👻 A ⭐ on [GitHub]({repository_url}) lets others know Spook is actually pretty great. [Sponsoring Frenck]({sponsor_url}) keeps this ghost well fed. And his free bi-weekly [newsletter]({newsletter_url}) keeps your inner ghost well fed."
     },
     "step": {
       "user": {
-        "description": "Did you read the readme? Did you read the license? Are you really sure?"
+        "title": "Boo! Meet Spook, your homie 👻",
+        "description": "Spook floats around your Home Assistant looking for ghosts: references to things that no longer exist, and leftovers nobody cleaned up. Whatever it finds, it reports under Repairs.\n\nIt also extends what your automations and scripts can do, with extra actions, triggers, conditions and helpers, for even more powerful automations.\n\nFair warning: Spook is not part of Home Assistant. It is a custom integration that reaches into places it was never invited. If something odd happens, suspect Spook first, and [let us know]({issue_tracker_url}).\n\nReady to get spooked?"
       },
       "already_configured": {
-        "description": "Spook is already configured, but the existing entry is disabled. Do you want to enable it?",
+        "title": "Spook is sleeping 👻",
+        "description": "Spook is already set up, but someone switched it off. Wake it up?",
         "menu_options": {
-          "enable_existing": "Enable existing entry"
+          "enable_existing": "Wake Spook up",
+          "keep_sleeping": "Let it sleep"
         }
       }
     }
@@ -556,6 +563,197 @@
       }
     }
   },
+  "exceptions": {
+    "all_of_attach_failed": {
+      "message": "Could not attach every trigger of an all-of trigger."
+    },
+    "area_not_found": {
+      "message": "Area {area_id} not found."
+    },
+    "blueprint_backup_failed": {
+      "message": "Could not put a copy of {path} aside: {error}. Nothing has been written."
+    },
+    "blueprint_cannot_run": {
+      "message": "{name} cannot run here: {errors}. Nothing has been written."
+    },
+    "blueprint_could_not_write": {
+      "message": "Could not write {path}."
+    },
+    "blueprint_domain_not_supported": {
+      "message": "Unsupported domain: {domain}."
+    },
+    "blueprint_fetch_failed": {
+      "message": "Error fetching blueprint from URL."
+    },
+    "blueprint_file_exists": {
+      "message": "File already exists."
+    },
+    "blueprint_gone": {
+      "message": "{name} is no longer here, so there is nothing to update. Nothing has been written."
+    },
+    "blueprint_url_not_supported": {
+      "message": "This URL is not supported."
+    },
+    "blueprint_write_failed": {
+      "message": "Error writing file."
+    },
+    "blueprints_not_loaded": {
+      "message": "{domain} blueprints are not loaded right now."
+    },
+    "calendar_events_which": {
+      "message": "Say which events: give a summary, a uid, or both."
+    },
+    "calendar_range_backwards": {
+      "message": "The end of where to look has to come after its start."
+    },
+    "calendar_range_required": {
+      "message": "Say how far to look: give an end date and time, or a duration."
+    },
+    "cannot_disable_system_user": {
+      "message": "Cannot disable a system-generated user: {user_id}."
+    },
+    "cannot_enable_system_user": {
+      "message": "Cannot enable a system-generated user: {user_id}."
+    },
+    "category_not_found": {
+      "message": "Category {category} not found for {scope}."
+    },
+    "category_nothing_to_update": {
+      "message": "Nothing to update on category {category}: give at least one of {fields}."
+    },
+    "condition_template_is_constant": {
+      "message": "A template in this condition has no Jinja left in it, so it is a constant and can never turn. Usually that means a script rendered it before this action ran, which happens to every template in action data. Use a condition without templates, or wait on the template itself with 'wait_template'."
+    },
+    "config_entry_not_found": {
+      "message": "Integration entry {config_entry_id} not found."
+    },
+    "debounce_attach_failed": {
+      "message": "Could not attach every trigger of a debounce trigger."
+    },
+    "device_not_found": {
+      "message": "Device {device_id} not found."
+    },
+    "entity_id_taken": {
+      "message": "Entity ID {entity_id} is already taken."
+    },
+    "entity_not_found": {
+      "message": "Entity {entity_id} not found."
+    },
+    "entity_without_unique_id": {
+      "message": "Entity {entity_id} has no unique ID, so Home Assistant cannot keep an icon or aliases for it."
+    },
+    "event_cannot_change": {
+      "message": "{summary} cannot be changed like that: {error}."
+    },
+    "event_nothing_to_change": {
+      "message": "Say what to change: a new summary, a place, or new times."
+    },
+    "event_shift_or_times": {
+      "message": "Move an event by a shift, or give it new times, not both."
+    },
+    "event_whole_days": {
+      "message": "{summary} lasts whole days, so it can only be moved by whole days."
+    },
+    "floor_not_found": {
+      "message": "Floor {floor_id} not found."
+    },
+    "group_member_not_allowed": {
+      "message": "{entity_id} cannot join this group: it holds {domains} entities."
+    },
+    "group_not_found_behind": {
+      "message": "Could not find the group behind {entity_id}."
+    },
+    "helpers_unreachable": {
+      "message": "Could not reach the {domain} helpers Home Assistant keeps."
+    },
+    "hold_until_nonexistent_time": {
+      "message": "Cannot hold {entity_id} until a time that does not exist."
+    },
+    "home_zone_radius": {
+      "message": "The home zone takes its radius in whole meters, zero or more."
+    },
+    "home_zone_unsupported": {
+      "message": "The home zone only takes a latitude, longitude and radius, not: {fields}."
+    },
+    "input_number_not_editable": {
+      "message": "This input number is not editable: {entity_id}."
+    },
+    "integration_entries_required": {
+      "message": "Name the integration entries to change, or their integration."
+    },
+    "integration_without_entries": {
+      "message": "The {domain} integration has no entries."
+    },
+    "label_not_found": {
+      "message": "Label {label_id} not found."
+    },
+    "label_nothing_to_update": {
+      "message": "Nothing to update on label {label_id}: give at least one of {fields}."
+    },
+    "maximum_not_above_minimum": {
+      "message": "The maximum ({maximum}) has to be above the minimum ({minimum})."
+    },
+    "no_max_value": {
+      "message": "Entity {entity_id} has no max value."
+    },
+    "no_min_value": {
+      "message": "Entity {entity_id} has no min value."
+    },
+    "not_a_group": {
+      "message": "{entity_id} is not a group."
+    },
+    "person_not_editable": {
+      "message": "This person is not editable: {entity_id}."
+    },
+    "restart_failed": {
+      "message": "Spook encountered an error while restarting Home Assistant."
+    },
+    "sequence_attach_failed": {
+      "message": "Could not attach the first step of a sequence trigger."
+    },
+    "set_range_nothing_to_change": {
+      "message": "Give a minimum, a maximum or a step to change."
+    },
+    "spooked": {
+      "message": "Spooked! 👻"
+    },
+    "timer_not_editable": {
+      "message": "This timer is not editable: {entity_id}."
+    },
+    "todo_item_after_itself": {
+      "message": "An item cannot be moved after itself."
+    },
+    "todo_item_not_found": {
+      "message": "There is no item {item} in {entity_id}."
+    },
+    "todo_last_item_after": {
+      "message": "Nothing can be moved after the last item in {entity_id}."
+    },
+    "todo_move_where": {
+      "message": "Say where to: after another item, or the top or bottom."
+    },
+    "user_not_found": {
+      "message": "Could not find user: {user_id}."
+    },
+    "value_not_a_number": {
+      "message": "Value {value} for {entity_id} is not a number."
+    },
+    "watchdog_arming_attach_failed": {
+      "message": "Could not attach the arming triggers of a watchdog trigger."
+    },
+    "watchdog_expected_attach_failed": {
+      "message": "Could not attach the expected triggers of a watchdog trigger."
+    },
+    "yaml_group_not_editable": {
+      "message": "{entity_id} is a group from your YAML configuration, which Spook cannot change. Edit it in your configuration, or use group.set, which still works on that kind of group."
+    },
+    "yaml_helper_cannot_be_deleted": {
+      "message": "{entity_id} is set up in YAML and cannot be deleted."
+    },
+    "zone_not_editable": {
+      "message": "This zone is not editable: {entity_id}."
+    }
+  },
   "issues": {
     "alert_unknown_entity_references": {
       "title": "Unknown entity watched by alert: {alert}",
@@ -640,8 +838,25 @@
       }
     },
     "energy_unknown_references": {
-      "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. To fix this error, open Settings > Dashboards > Energy and update or remove these entities.\n\nSpook 👻 Your homie.",
-      "title": "Unknown entities used in the energy dashboard"
+      "title": "Unknown entities used in the energy dashboard",
+      "fix_flow": {
+        "step": {
+          "init": {
+            "title": "Unknown entities used in the energy dashboard",
+            "description": "Spook has found a ghost in your energy dashboard 👻\n\nThe energy dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\nThis usually happens when an entity used in the energy configuration was renamed or removed. Renamed? Then open [Settings > Dashboards > Energy](/config/energy) and pick the new one, so its history stays on the dashboard.\n\nRemoved for good? Spook can take these out of the energy configuration for you. A missing meter takes its source or device along, a missing price or cost is only cleared. The dashboard then stops showing the history of what is taken out; the statistics themselves stay.\n\nSpook 👻 Your homie.",
+            "menu_options": {
+              "remove": "Take these out of the energy configuration",
+              "manage": "Let me do it myself",
+              "ignore": "Keep them, stop telling me"
+            }
+          }
+        },
+        "abort": {
+          "issue_ignored": "Spook will keep quiet about these entities from now on.",
+          "manage": "You can update or remove these yourself in the [energy configuration](/config/energy).",
+          "nothing_to_remove": "None of these is still unknown, so nothing has been taken out. They may be back, or somebody already changed the energy configuration."
+        }
+      }
     },
     "group_unknown_members": {
       "title": "Unknown group members in: {group}",
@@ -801,7 +1016,7 @@
         "step": {
           "confirm_restart": {
             "title": "Restart required",
-            "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+            "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now.\n\nSpook 👻 Your homie."
           }
         }
       }
@@ -951,6 +1166,14 @@
         }
       },
       "title": "{title}"
+    }
+  },
+  "system_health": {
+    "info": {
+      "version": "Version",
+      "ghosts_found": "Ghosts found",
+      "ghosts_ignored": "Ghosts ignored",
+      "helpers_linked": "Helpers linked"
     }
   },
   "services": {

@@ -9,9 +9,9 @@ import voluptuous as vol
 from homeassistant.components.sensor import DOMAIN
 from homeassistant.const import ATTR_ENTITY_ID
 from homeassistant.core import split_entity_id
-from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv, entity_registry as er
 
+from ....errors import entity_not_found
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -52,8 +52,7 @@ class SpookService(AbstractSpookAdminService):
         for entity_id in call.data[ATTR_ENTITY_ID]:
             entry = entity_registry.async_get(entity_id)
             if entry is None or split_entity_id(entity_id)[0] != DOMAIN:
-                msg = f"Unknown sensor entity: {entity_id}"
-                raise HomeAssistantError(msg)
+                raise entity_not_found(entity_id)
             entries.append(entry)
 
         display_precision = call.data[CONF_DISPLAY_PRECISION]
