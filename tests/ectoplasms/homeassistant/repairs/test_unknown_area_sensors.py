@@ -75,8 +75,24 @@ async def test_a_removed_temperature_sensor_is_reported(
     assert issue
     assert issue.is_fixable
     assert issue.translation_placeholders
-    assert issue.translation_placeholders["sensors"] == "temperature"
+    assert issue.translation_key == "unknown_area_sensors_temperature"
     assert "sensor.kitchen_temperature" in issue.translation_placeholders["entities"]
+
+
+async def test_a_removed_humidity_sensor_is_reported(
+    hass: HomeAssistant,
+    area_registry: ar.AreaRegistry,
+    issue_registry: ir.IssueRegistry,
+) -> None:
+    """The humidity setting gets its own text, not the temperature one."""
+    area = _kitchen(hass, area_registry, humidity="sensor.kitchen_humidity")
+    hass.states.async_remove("sensor.kitchen_humidity")
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, _issue_id(area))
+    assert issue
+    assert issue.translation_key == "unknown_area_sensors_humidity"
 
 
 async def test_both_sensors_gone_are_named_together(
@@ -98,8 +114,7 @@ async def test_both_sensors_gone_are_named_together(
 
     issue = async_issue_about(issue_registry, _issue_id(area))
     assert issue
-    assert issue.translation_placeholders
-    assert issue.translation_placeholders["sensors"] == "temperature and humidity"
+    assert issue.translation_key == "unknown_area_sensors_both"
 
 
 async def test_sensors_that_exist_are_left_alone(
@@ -218,7 +233,7 @@ async def test_fix_flow_menu_names_the_area_and_the_sensor(
     placeholders = result["description_placeholders"]
     assert placeholders is not None
     assert placeholders["area"] == "Kitchen"
-    assert placeholders["sensors"] == "temperature"
+    assert "sensors" not in placeholders
     assert "sensor.kitchen_temperature" in placeholders["entities"]
 
 
