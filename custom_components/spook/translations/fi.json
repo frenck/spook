@@ -1118,7 +1118,7 @@
         },
         "homeassistant_disable_config_entry": {
             "name": "Poista integraatio käytöstä",
-            "description": "Poistaa integraatiomerkinnän käytöstä.",
+            "description": "Poistaa integraatiomerkintöjä käytöstä, yksittäisen merkinnän tai integraation kaikki merkinnät.",
             "fields": {
                 "config_entry_id": {
                     "name": "Integraatiomerkintä",
@@ -1132,7 +1132,7 @@
         },
         "homeassistant_enable_config_entry": {
             "name": "Ota integraatio käyttöön",
-            "description": "Ottaa integraatiomerkinnän käyttöön.",
+            "description": "Ottaa integraatiomerkintöjä käyttöön, yksittäisen merkinnän tai integraation kaikki merkinnät.",
             "fields": {
                 "config_entry_id": {
                     "name": "Integraatiomerkintä",
@@ -1922,7 +1922,7 @@
         },
         "input_number_create": {
             "name": "Luo syötenumero",
-            "description": "Luo lennossa uuden syötenumeroapurin.",
+            "description": "Luo lennossa uuden syötenumeroapurin. Palauttaa uuden syötenumeron entiteetin ID:n.",
             "fields": {
                 "name": {
                     "name": "Nimi",
@@ -1964,7 +1964,7 @@
         },
         "input_number_delete": {
             "name": "Poista syötenumero",
-            "description": "Poista syötenumeroapuri. Tämä toimii vain sellaisten syöttönumeroiden kanssa, jotka on luotu käyttöliittymän kautta. YAML:in kautta luotuja ja hallittuja syöttönumeroita ei voi hallita Spookilla.",
+            "description": "Poistaa käyttöliittymässä tai luo syötenumero -toiminnolla tehtyjä syötenumeroapureita. YAML:issa määritettyjä syötenumeroita Spook ei voi poistaa.",
             "fields": {
                 "entity_id": {
                     "name": "Entiteetin ID",
@@ -2018,7 +2018,7 @@
         },
         "repairs_ignore_all": {
             "name": "Sivuuta kaikki ongelmat",
-            "description": "Sivuuttaa kaikki ongelmat, jotka tällä hetkellä ovat Home Assistant -korjauksissa.",
+            "description": "Sivuuttaa kaikki ongelmat, jotka tällä hetkellä ovat Home Assistant -korjauksissa, tai vain tiettyjen integraatioiden ilmoittamat ongelmat.",
             "fields": {
                 "domain": {
                     "name": "Domain",
@@ -2056,7 +2056,7 @@
         },
         "repairs_unignore_all": {
             "name": "Poista kaikkien ongelmien sivuutus",
-            "description": "Poistaa kaikkien ongelmien sivuutukset.",
+            "description": "Poistaa kaikkien Home Assistant -korjauksissa tällä hetkellä olevien ongelmien sivuutukset, tai vain tiettyjen integraatioiden ilmoittamien ongelmien.",
             "fields": {
                 "domain": {
                     "name": "Domain",
