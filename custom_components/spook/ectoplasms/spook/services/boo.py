@@ -21,5 +21,7 @@ class SpookService(AbstractSpookService):
 
     async def async_handle_service(self, _: ServiceCall) -> None:
         """Handle the service call."""
-        msg = "Spooked!"
-        raise HomeAssistantError(msg)
+        raise HomeAssistantError(
+            translation_domain=DOMAIN,
+            translation_key="spooked",
+        )

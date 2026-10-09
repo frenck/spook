@@ -17,6 +17,8 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.util import dt as dt_util
 
+from ...const import DOMAIN
+
 if TYPE_CHECKING:
     from datetime import datetime
 
@@ -49,12 +51,16 @@ def _window_of(call: ServiceCall) -> tuple[datetime, datetime]:
     elif (end_at := call.data.get(EVENT_END_DATETIME)) is not None:
         end = end_at
     else:
-        msg = "Say how far to look: give an end date and time, or a duration"
-        raise ServiceValidationError(msg)
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="calendar_range_required",
+        )
 
     if end <= start:
-        msg = "The end of where to look has to come after its start"
-        raise ServiceValidationError(msg)
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="calendar_range_backwards",
+        )
 
     return dt_util.as_local(start), dt_util.as_local(end)
 
@@ -74,8 +80,10 @@ async def async_find_events(
     summary: str | None = call.data.get(EVENT_SUMMARY)
     uid: str | None = call.data.get(EVENT_UID)
     if summary is None and uid is None:
-        msg = "Say which events: give a summary, a uid, or both"
-        raise ServiceValidationError(msg)
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="calendar_events_which",
+        )
 
     start, end = _window_of(call)
     events = await entity.async_get_events(entity.hass, start, end)

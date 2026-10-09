@@ -15,6 +15,7 @@ from homeassistant.helpers import config_validation as cv, trigger as trigger_he
 from homeassistant.helpers.event import async_call_later
 from homeassistant.helpers.trigger import Trigger
 
+from ....const import DOMAIN
 from ....trigger_nesting import async_attach_nested
 
 if TYPE_CHECKING:
@@ -101,9 +102,19 @@ class _Watchdog:
         # thing arriving would be missed and barked about. The other way round
         # is harmless, because the expected trigger arriving while nothing is
         # armed is inert by design.
-        for configs, action, name in (
-            (self._watch.expect, self._async_expected, "the expected triggers"),
-            (self._watch.arm, self._async_armed, "the arming triggers"),
+        for configs, action, name, failed in (
+            (
+                self._watch.expect,
+                self._async_expected,
+                "the expected triggers",
+                "watchdog_expected_attach_failed",
+            ),
+            (
+                self._watch.arm,
+                self._async_armed,
+                "the arming triggers",
+                "watchdog_arming_attach_failed",
+            ),
         ):
             unsub = await async_attach_nested(
                 self._hass,
@@ -127,8 +138,10 @@ class _Watchdog:
                 # Refusing is what gets the automation marked unavailable
                 # rather than leaving it looking healthy.
                 self.async_stop()
-                msg = f"Could not attach {name} of a watchdog trigger"
-                raise HomeAssistantError(msg)
+                raise HomeAssistantError(
+                    translation_domain=DOMAIN,
+                    translation_key=failed,
+                )
 
             self._unsubs.append(unsub)
 

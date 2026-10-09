@@ -48,9 +48,22 @@ def _raised_translations() -> list[tuple[str, str, set[str] | None]]:
             if not (
                 isinstance(domain, ast.Name)
                 and domain.id in spook_domain
-                and isinstance(key, ast.Constant)
+                and key is not None
             ):
                 continue
+
+            # A key picked at run time, from texts the module spells out
+            # itself, stands for each of the error texts it spells out.
+            keys = (
+                [key.value]
+                if isinstance(key, ast.Constant)
+                else sorted(
+                    constant.value
+                    for constant in ast.walk(tree)
+                    if isinstance(constant, ast.Constant)
+                    and constant.value in EXCEPTIONS
+                )
+            )
 
             placeholders: set[str] | None = set()
             if (given := keywords.get("translation_placeholders")) is not None:
@@ -63,10 +76,35 @@ def _raised_translations() -> list[tuple[str, str, set[str] | None]]:
                     if isinstance(given, ast.Dict)
                     else None
                 )
-            found.append(
-                (f"{path.relative_to(SPOOK)}:{node.lineno}", key.value, placeholders)
+            found.extend(
+                (f"{path.relative_to(SPOOK)}:{node.lineno}", each, placeholders)
+                for each in keys
             )
     return found
+
+
+def test_every_error_uses_spooks_own_texts() -> None:
+    """Test a translated error never names another integration's domain.
+
+    Many modules import their integration's `DOMAIN` from Home Assistant and
+    Spook's as `SPOOK_DOMAIN`. An error passing the wrong one looks for its
+    text in an integration that does not have it, and shows the bare key.
+    """
+    problems = []
+    for path in sorted(SPOOK.rglob("*.py")):
+        tree = ast.parse(path.read_text())
+        spook_domain = _spook_domain_names(tree)
+        problems.extend(
+            f"{path.relative_to(SPOOK)}:{node.lineno}"
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            for keyword in node.keywords
+            if keyword.arg == "translation_domain"
+            and isinstance(keyword.value, ast.Name)
+            and keyword.value.id not in spook_domain
+        )
+
+    assert not problems
 
 
 def test_every_raised_error_has_its_text() -> None:

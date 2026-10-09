@@ -28,6 +28,9 @@ if TYPE_CHECKING:
 
     from homeassistant.core import HomeAssistant
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 DOOR = {"trigger": "state", "entity_id": "binary_sensor.door", "to": "on"}
 MOTION = {"trigger": "state", "entity_id": "binary_sensor.motion", "to": "on"}
 PHONE = {"trigger": "state", "entity_id": "device_tracker.phone", "to": "home"}
