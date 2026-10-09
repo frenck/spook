@@ -126,6 +126,24 @@ def test_tools_only_for_the_admin_api(hass: HomeAssistant) -> None:
     assert "spook__list_features" in offered.prompt
 
 
+def test_no_tools_where_core_cannot_hold_them(
+    hass: HomeAssistant, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a Home Assistant without the tool parts gets nothing, quietly.
+
+    Home Assistant 2026.8 and 2026.9 load this platform, but have neither the
+    tool results nor the annotations the tools are made of.
+    """
+    monkeypatch.setattr(spook_llm, "async_get_spook_tools", None)
+
+    assert (
+        spook_llm.async_get_tools(
+            hass, _context(None), spook_llm.LLM_API_HOME_ASSISTANT
+        )
+        is None
+    )
+
+
 def test_every_tool_is_prefixed_and_tagged(hass: HomeAssistant) -> None:
     """Test core's requirements hold for every tool, and the annotations tell."""
     tools = _tools(hass)
