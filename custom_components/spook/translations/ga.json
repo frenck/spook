@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Braiteoir teochta anaithnid don limistéar: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Braiteoir teochta anaithnid don limistéar: {area}",
+                        "description": "Tá taibhse aimsithe ag Spook i do limistéir 👻\n\nÚsáideann an limistéar {area} braiteoir teochta nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\nNí sheiceálann Home Assistant an braiteoir seo ach nuair a roghnaítear é, mar sin nuair a baineadh nó a athainmníodh é, choinnigh an limistéar ag díriú ar rud nach ann dó. Ní fhaigheann Assist ná cártaí limistéir léamh teochta uaidh a thuilleadh.\n\nGlan an socrú ionas gur féidir leat braiteoir a roghnú arís, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Glan an socrú",
+                            "manage": "Réiteoidh mé féin é",
+                            "ignore": "Coinnigh é, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin limistéar seo as seo amach.",
+                    "manage": "Is féidir leat braiteoir eile a roghnú i socruithe an limistéir seo ar an [leathanach Limistéar](/config/areas/dashboard).",
+                    "changed": "Tá an braiteoir seo ar ais, nó díríonn an socrú ar áit eile anois, ó d'fhéach Spook. Mar sin níor glanadh aon rud. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Braiteoir taiseachta anaithnid don limistéar: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Braiteoir taiseachta anaithnid don limistéar: {area}",
+                        "description": "Tá taibhse aimsithe ag Spook i do limistéir 👻\n\nÚsáideann an limistéar {area} braiteoir taiseachta nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\nNí sheiceálann Home Assistant an braiteoir seo ach nuair a roghnaítear é, mar sin nuair a baineadh nó a athainmníodh é, choinnigh an limistéar ag díriú ar rud nach ann dó. Ní fhaigheann Assist ná cártaí limistéir léamh taiseachta uaidh a thuilleadh.\n\nGlan an socrú ionas gur féidir leat braiteoir a roghnú arís, nó coinnigh é agus stopfaidh Spook ag tarraingt airde air.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Glan an socrú",
+                            "manage": "Réiteoidh mé féin é",
+                            "ignore": "Coinnigh é, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin limistéar seo as seo amach.",
+                    "manage": "Is féidir leat braiteoir eile a roghnú i socruithe an limistéir seo ar an [leathanach Limistéar](/config/areas/dashboard).",
+                    "changed": "Tá an braiteoir seo ar ais, nó díríonn an socrú ar áit eile anois, ó d'fhéach Spook. Mar sin níor glanadh aon rud. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Braiteoirí teochta agus taiseachta anaithnide don limistéar: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Braiteoirí teochta agus taiseachta anaithnide don limistéar: {area}",
+                        "description": "Tá taibhse aimsithe ag Spook i do limistéir 👻\n\nÚsáideann an limistéar {area} braiteoir teochta agus braiteoir taiseachta nach bhfuil ar eolas ag Home Assistant:\n\n{entities}\n\nNí sheiceálann Home Assistant na braiteoirí seo ach nuair a roghnaítear iad, mar sin nuair a baineadh nó a athainmníodh iad, choinnigh an limistéar ag díriú ar rud nach ann dó. Ní fhaigheann Assist ná cártaí limistéir léamh uathu a thuilleadh.\n\nGlan na socruithe ionas gur féidir leat braiteoirí a roghnú arís, nó coinnigh iad agus stopfaidh Spook ag tarraingt airde orthu.\n\nSpook 👻 Do chara.",
+                        "menu_options": {
+                            "remove": "Glan na socruithe",
+                            "manage": "Réiteoidh mé féin é",
+                            "ignore": "Coinnigh iad, ná habair liom é arís"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Fanfaidh Spook ciúin faoin limistéar seo as seo amach.",
+                    "manage": "Is féidir leat braiteoirí eile a roghnú i socruithe an limistéir seo ar an [leathanach Limistéar](/config/areas/dashboard).",
+                    "changed": "Tá na braiteoirí seo ar ais, nó díríonn na socruithe ar áit eile anois, ó d'fhéach Spook. Mar sin níor glanadh aon rud. Féachann Spook arís as a stuaim féin agus nuashonraíonn sé an deisiúchán seo."
+                }
+            }
         }
     },
     "system_health": {
