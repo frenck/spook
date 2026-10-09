@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Cảm biến nhiệt độ không xác định cho khu vực: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Cảm biến nhiệt độ không xác định cho khu vực: {area}",
+                        "description": "Spook đã tìm thấy một con ma trong các khu vực của bạn 👻\n\nKhu vực {area} dùng một cảm biến nhiệt độ mà Home Assistant không biết đến:\n\n{entities}\n\nHome Assistant chỉ kiểm tra cảm biến này lúc nó được chọn, nên khi nó bị gỡ bỏ hoặc đổi tên, khu vực vẫn trỏ vào khoảng không. Assist và các thẻ khu vực không còn nhận được số đo nhiệt độ từ nó nữa.\n\nXóa trống thiết lập để bạn có thể chọn lại cảm biến, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa trống thiết lập",
+                            "manage": "Để tôi tự sửa",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về khu vực này.",
+                    "manage": "Bạn có thể chọn một cảm biến khác trong phần cài đặt của khu vực này trên [trang Khu vực](/config/areas/dashboard).",
+                    "changed": "Cảm biến này đã quay lại, hoặc thiết lập giờ đã trỏ đi nơi khác, kể từ lúc Spook xem. Vì vậy chưa có gì bị xóa. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Cảm biến độ ẩm không xác định cho khu vực: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Cảm biến độ ẩm không xác định cho khu vực: {area}",
+                        "description": "Spook đã tìm thấy một con ma trong các khu vực của bạn 👻\n\nKhu vực {area} dùng một cảm biến độ ẩm mà Home Assistant không biết đến:\n\n{entities}\n\nHome Assistant chỉ kiểm tra cảm biến này lúc nó được chọn, nên khi nó bị gỡ bỏ hoặc đổi tên, khu vực vẫn trỏ vào khoảng không. Assist và các thẻ khu vực không còn nhận được số đo độ ẩm từ nó nữa.\n\nXóa trống thiết lập để bạn có thể chọn lại cảm biến, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa trống thiết lập",
+                            "manage": "Để tôi tự sửa",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về khu vực này.",
+                    "manage": "Bạn có thể chọn một cảm biến khác trong phần cài đặt của khu vực này trên [trang Khu vực](/config/areas/dashboard).",
+                    "changed": "Cảm biến này đã quay lại, hoặc thiết lập giờ đã trỏ đi nơi khác, kể từ lúc Spook xem. Vì vậy chưa có gì bị xóa. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Cảm biến nhiệt độ và độ ẩm không xác định cho khu vực: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Cảm biến nhiệt độ và độ ẩm không xác định cho khu vực: {area}",
+                        "description": "Spook đã tìm thấy một con ma trong các khu vực của bạn 👻\n\nKhu vực {area} dùng một cảm biến nhiệt độ và một cảm biến độ ẩm mà Home Assistant không biết đến:\n\n{entities}\n\nHome Assistant chỉ kiểm tra các cảm biến này lúc chúng được chọn, nên khi chúng bị gỡ bỏ hoặc đổi tên, khu vực vẫn trỏ vào khoảng không. Assist và các thẻ khu vực không còn nhận được số đo từ chúng nữa.\n\nXóa trống các thiết lập để bạn có thể chọn lại cảm biến, hoặc giữ lại và Spook sẽ thôi nhắc về chúng.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa trống các thiết lập",
+                            "manage": "Để tôi tự sửa",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về khu vực này.",
+                    "manage": "Bạn có thể chọn các cảm biến khác trong phần cài đặt của khu vực này trên [trang Khu vực](/config/areas/dashboard).",
+                    "changed": "Các cảm biến này đã quay lại, hoặc thiết lập giờ đã trỏ đi nơi khác, kể từ lúc Spook xem. Vì vậy chưa có gì bị xóa. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
         }
     },
     "system_health": {
