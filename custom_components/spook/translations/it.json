@@ -822,6 +822,69 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "Entità sconosciute usate nel bridge HomeKit: {bridge}",
             "description": "👻 Spook ha trovato un fantasma nel tuo bridge HomeKit\n\nMentre fluttuava qua e là, Spook ha incrociato il seguente bridge HomeKit:\n\n{bridge}\n\nQuesto bridge indica le seguenti entità, che non sono riconosciute da Home Assistant:\n\n{entities}\n\nHomeKit non segue un'entità che viene rinominata. Un'entità inclusa che è stata rinominata o rimossa sparisce dall'app Casa. Un'entità esclusa che è stata rinominata vi ricompare.\n\nQuesto bridge è definito nella tua configurazione YAML. Per risolvere questo errore, modifica il `filter` di questo bridge sotto `homekit:` e rimuovi o correggi queste entità.\n\nSpook 👻 Il tuo compare."
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Sensore di temperatura sconosciuto per l'area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensore di temperatura sconosciuto per l'area: {area}",
+                        "description": "Spook ha trovato un fantasma nelle tue aree 👻\n\nL'area {area} usa un sensore di temperatura che non è riconosciuto da Home Assistant:\n\n{entities}\n\nHome Assistant controlla questo sensore solo quando viene scelto, quindi quando è stato rimosso o rinominato l'area ha continuato a puntare al nulla. Assist e le card delle aree non ricevono più una lettura della temperatura da lì.\n\nSvuota l'impostazione così puoi scegliere di nuovo un sensore, oppure tienila e Spook smetterà di fartelo notare.\n\nSpook 👻 Il tuo compare.",
+                        "menu_options": {
+                            "remove": "Svuota l'impostazione",
+                            "manage": "Lo sistemo da solo",
+                            "ignore": "Tienilo e non dirmelo più"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "D'ora in poi Spook non dirà più niente su quest'area.",
+                    "manage": "Puoi scegliere un sensore diverso nelle impostazioni di quest'area nella [pagina Aree](/config/areas/dashboard).",
+                    "changed": "Questo sensore è tornato, o l'impostazione ora punta altrove, da quando Spook ha controllato. Quindi non è stato svuotato niente. Spook ricontrolla da solo e aggiorna questa riparazione."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Sensore di umidità sconosciuto per l'area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensore di umidità sconosciuto per l'area: {area}",
+                        "description": "Spook ha trovato un fantasma nelle tue aree 👻\n\nL'area {area} usa un sensore di umidità che non è riconosciuto da Home Assistant:\n\n{entities}\n\nHome Assistant controlla questo sensore solo quando viene scelto, quindi quando è stato rimosso o rinominato l'area ha continuato a puntare al nulla. Assist e le card delle aree non ricevono più una lettura dell'umidità da lì.\n\nSvuota l'impostazione così puoi scegliere di nuovo un sensore, oppure tienila e Spook smetterà di fartelo notare.\n\nSpook 👻 Il tuo compare.",
+                        "menu_options": {
+                            "remove": "Svuota l'impostazione",
+                            "manage": "Lo sistemo da solo",
+                            "ignore": "Tienilo e non dirmelo più"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "D'ora in poi Spook non dirà più niente su quest'area.",
+                    "manage": "Puoi scegliere un sensore diverso nelle impostazioni di quest'area nella [pagina Aree](/config/areas/dashboard).",
+                    "changed": "Questo sensore è tornato, o l'impostazione ora punta altrove, da quando Spook ha controllato. Quindi non è stato svuotato niente. Spook ricontrolla da solo e aggiorna questa riparazione."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Sensori di temperatura e umidità sconosciuti per l'area: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensori di temperatura e umidità sconosciuti per l'area: {area}",
+                        "description": "Spook ha trovato un fantasma nelle tue aree 👻\n\nL'area {area} usa un sensore di temperatura e uno di umidità che non sono riconosciuti da Home Assistant:\n\n{entities}\n\nHome Assistant controlla questi sensori solo quando vengono scelti, quindi quando sono stati rimossi o rinominati l'area ha continuato a puntare al nulla. Assist e le card delle aree non ricevono più una lettura da lì.\n\nSvuota le impostazioni così puoi scegliere di nuovo i sensori, oppure tienile e Spook smetterà di fartelo notare.\n\nSpook 👻 Il tuo compare.",
+                        "menu_options": {
+                            "remove": "Svuota le impostazioni",
+                            "manage": "Lo sistemo da solo",
+                            "ignore": "Tienili e non dirmelo più"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "D'ora in poi Spook non dirà più niente su quest'area.",
+                    "manage": "Puoi scegliere sensori diversi nelle impostazioni di quest'area nella [pagina Aree](/config/areas/dashboard).",
+                    "changed": "Questi sensori sono tornati, o le impostazioni ora puntano altrove, da quando Spook ha controllato. Quindi non è stato svuotato niente. Spook ricontrolla da solo e aggiorna questa riparazione."
+                }
+            }
         }
     },
     "conditions": {
