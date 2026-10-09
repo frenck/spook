@@ -1145,6 +1145,69 @@
                     }
                 }
             }
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Neznámý senzor teploty pro oblast: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Neznámý senzor teploty pro oblast: {area}",
+                        "description": "Spook našel ducha ve vašich oblastech 👻\n\nOblast {area} používá senzor teploty, který Home Assistant nezná:\n\n{entities}\n\nHome Assistant tento senzor kontroluje jen ve chvíli, kdy se vybírá, takže když byl odstraněn nebo přejmenován, oblast dál ukazovala do prázdna. Assist ani karty oblastí z něj už nedostávají žádné hodnoty teploty.\n\nVymažte nastavení, abyste mohli senzor vybrat znovu, nebo si ho nechte a Spook na něj přestane upozorňovat.\n\nSpook 👻 Váš kámoš.",
+                        "menu_options": {
+                            "remove": "Vymazat nastavení",
+                            "manage": "Opravím si to sám",
+                            "ignore": "Nechat ho, už mi to neříkej"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bude o této oblasti od teď mlčet.",
+                    "manage": "Jiný senzor můžete vybrat v nastavení této oblasti na [stránce Oblasti](/config/areas/dashboard).",
+                    "changed": "Od chvíle, kdy se Spook díval, je tento senzor zpět, nebo nastavení teď ukazuje jinam. Proto nebylo nic vymazáno. Spook se podívá znovu sám a tuto opravu aktualizuje."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Neznámý senzor vlhkosti pro oblast: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Neznámý senzor vlhkosti pro oblast: {area}",
+                        "description": "Spook našel ducha ve vašich oblastech 👻\n\nOblast {area} používá senzor vlhkosti, který Home Assistant nezná:\n\n{entities}\n\nHome Assistant tento senzor kontroluje jen ve chvíli, kdy se vybírá, takže když byl odstraněn nebo přejmenován, oblast dál ukazovala do prázdna. Assist ani karty oblastí z něj už nedostávají žádné hodnoty vlhkosti.\n\nVymažte nastavení, abyste mohli senzor vybrat znovu, nebo si ho nechte a Spook na něj přestane upozorňovat.\n\nSpook 👻 Váš kámoš.",
+                        "menu_options": {
+                            "remove": "Vymazat nastavení",
+                            "manage": "Opravím si to sám",
+                            "ignore": "Nechat ho, už mi to neříkej"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bude o této oblasti od teď mlčet.",
+                    "manage": "Jiný senzor můžete vybrat v nastavení této oblasti na [stránce Oblasti](/config/areas/dashboard).",
+                    "changed": "Od chvíle, kdy se Spook díval, je tento senzor zpět, nebo nastavení teď ukazuje jinam. Proto nebylo nic vymazáno. Spook se podívá znovu sám a tuto opravu aktualizuje."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Neznámé senzory teploty a vlhkosti pro oblast: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Neznámé senzory teploty a vlhkosti pro oblast: {area}",
+                        "description": "Spook našel ducha ve vašich oblastech 👻\n\nOblast {area} používá senzory teploty a vlhkosti, které Home Assistant nezná:\n\n{entities}\n\nHome Assistant tyto senzory kontroluje jen ve chvíli, kdy se vybírají, takže když byly odstraněny nebo přejmenovány, oblast dál ukazovala do prázdna. Assist ani karty oblastí z nich už nedostávají žádné hodnoty.\n\nVymažte nastavení, abyste mohli senzory vybrat znovu, nebo si je nechte a Spook na ně přestane upozorňovat.\n\nSpook 👻 Váš kámoš.",
+                        "menu_options": {
+                            "remove": "Vymazat nastavení",
+                            "manage": "Opravím si to sám",
+                            "ignore": "Nechat je, už mi to neříkej"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook bude o této oblasti od teď mlčet.",
+                    "manage": "Jiné senzory můžete vybrat v nastavení této oblasti na [stránce Oblasti](/config/areas/dashboard).",
+                    "changed": "Od chvíle, kdy se Spook díval, jsou tyto senzory zpět, nebo nastavení teď ukazuje jinam. Proto nebylo nic vymazáno. Spook se podívá znovu sám a tuto opravu aktualizuje."
+                }
+            }
         }
     },
     "system_health": {
