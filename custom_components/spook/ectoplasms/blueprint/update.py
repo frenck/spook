@@ -1713,8 +1713,13 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             {},
         )
         if (domain_blueprint := domain_blueprints.get(self.blueprint_domain)) is None:
-            msg = f"{self.blueprint_domain} blueprints are not loaded right now"
-            raise HomeAssistantError(msg)
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="blueprints_not_loaded",
+                translation_placeholders={
+                    "domain": self.blueprint_domain,
+                },
+            )
 
         # Installing over a blueprint that is not there any more would write
         # it back, which is Spook restoring a file somebody deleted on
@@ -1735,11 +1740,13 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
             if self._gone is not None:
                 await self._gone(self.blueprint_domain, self.blueprint_path)
 
-            msg = (
-                f"{self._said.name} is no longer here, so there is nothing to "
-                f"update. Nothing has been written."
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="blueprint_gone",
+                translation_placeholders={
+                    "name": self._said.name,
+                },
             )
-            raise HomeAssistantError(msg)
 
         fetched = (
             self._fetched if self._fetched is not None else await self._async_fetch()
@@ -1749,11 +1756,14 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
         # Writing it anyway would break every consumer on a version that is
         # never going to work.
         if errors := fetched.validate():
-            msg = (
-                f"{self._said.name} cannot run here: {'; '.join(errors)}. "
-                f"Nothing has been written."
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="blueprint_cannot_run",
+                translation_placeholders={
+                    "name": self._said.name,
+                    "errors": "; ".join(errors),
+                },
             )
-            raise HomeAssistantError(msg)
 
         if backup:
             try:
@@ -1762,11 +1772,14 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 # Asked for a copy and did not get one. Writing anyway would
                 # take the version that works with nothing to fall back on,
                 # which is the opposite of what was asked for.
-                msg = (
-                    f"Could not put a copy of {self.blueprint_path} aside: "
-                    f"{err}. Nothing has been written."
-                )
-                raise HomeAssistantError(msg) from err
+                raise HomeAssistantError(
+                    translation_domain=DOMAIN,
+                    translation_key="blueprint_backup_failed",
+                    translation_placeholders={
+                        "path": self.blueprint_path,
+                        "error": str(err),
+                    },
+                ) from err
 
         try:
             await domain_blueprint.async_add_blueprint(
@@ -1775,8 +1788,13 @@ class BlueprintUpdateEntity(  # pylint: disable=too-many-instance-attributes
                 allow_override=True,
             )
         except OSError as err:
-            msg = f"Could not write {self.blueprint_path}"
-            raise HomeAssistantError(msg) from err
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="blueprint_could_not_write",
+                translation_placeholders={
+                    "path": self.blueprint_path,
+                },
+            ) from err
 
         # A fetch that worked, so whatever the last one could not do is no
         # longer the news. Left standing, the dialog would go on saying the
