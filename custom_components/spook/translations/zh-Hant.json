@@ -822,6 +822,69 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "HomeKit 橋接器 {bridge} 中使用了未知實體",
             "description": "Spook 在您的 HomeKit 橋接器中發現了一個幽靈 👻\n\n在四處漂浮時，Spook 遇到了以下 HomeKit 橋接器：\n\n{bridge}\n\n該橋接器列出了以下 Home Assistant 無法辨識的實體：\n\n{entities}\n\n\n\nHomeKit 不會跟隨被重新命名的實體。被包含的實體在重新命名或刪除後會從「家庭」App 中消失。被排除的實體在重新命名後會重新出現在其中。\n\n此橋接器是在您的 YAML 設定中設置的。要修復此錯誤，請編輯 `homekit:` 下此橋接器的 `filter`，並移除或更正這些實體。\n\nSpook 👻 您的好夥伴。"
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "區域 {area} 使用了未知的溫度感測器",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "區域 {area} 使用了未知的溫度感測器",
+                        "description": "Spook 在您的區域中發現了一個幽靈 👻\n\n區域 {area} 使用了一個 Home Assistant 無法辨識的溫度感測器：\n\n{entities}\n\nHome Assistant 只會在選擇此感測器時檢查它，因此當它被移除或重新命名後，該區域就一直指向不存在的東西。Assist 和區域卡片將無法再從它取得溫度讀數。\n\n清除此設定以便重新選擇感測器，或者保留它（Spook 將不再提示）。\n\nSpook 👻 您的好夥伴。",
+                        "menu_options": {
+                            "remove": "清除此設定",
+                            "manage": "讓我自己處理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "從現在起，Spook 將不再就此區域發聲。",
+                    "manage": "您可以在 [區域頁面](/config/areas/dashboard) 的此區域設定中選擇其他感測器。",
+                    "changed": "自從 Spook 上次檢查後，這個感測器已經回來，或設定已改為指向其他地方，因此沒有清除任何東西。Spook 會自行再檢查一次並更新此修復。"
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "區域 {area} 使用了未知的濕度感測器",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "區域 {area} 使用了未知的濕度感測器",
+                        "description": "Spook 在您的區域中發現了一個幽靈 👻\n\n區域 {area} 使用了一個 Home Assistant 無法辨識的濕度感測器：\n\n{entities}\n\nHome Assistant 只會在選擇此感測器時檢查它，因此當它被移除或重新命名後，該區域就一直指向不存在的東西。Assist 和區域卡片將無法再從它取得濕度讀數。\n\n清除此設定以便重新選擇感測器，或者保留它（Spook 將不再提示）。\n\nSpook 👻 您的好夥伴。",
+                        "menu_options": {
+                            "remove": "清除此設定",
+                            "manage": "讓我自己處理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "從現在起，Spook 將不再就此區域發聲。",
+                    "manage": "您可以在 [區域頁面](/config/areas/dashboard) 的此區域設定中選擇其他感測器。",
+                    "changed": "自從 Spook 上次檢查後，這個感測器已經回來，或設定已改為指向其他地方，因此沒有清除任何東西。Spook 會自行再檢查一次並更新此修復。"
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "區域 {area} 使用了未知的溫度和濕度感測器",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "區域 {area} 使用了未知的溫度和濕度感測器",
+                        "description": "Spook 在您的區域中發現了一個幽靈 👻\n\n區域 {area} 使用了 Home Assistant 無法辨識的溫度感測器和濕度感測器：\n\n{entities}\n\nHome Assistant 只會在選擇這些感測器時檢查它們，因此當它們被移除或重新命名後，該區域就一直指向不存在的東西。Assist 和區域卡片將無法再從它們取得讀數。\n\n清除這些設定以便重新選擇感測器，或者保留它們（Spook 將不再提示）。\n\nSpook 👻 您的好夥伴。",
+                        "menu_options": {
+                            "remove": "清除這些設定",
+                            "manage": "讓我自己處理",
+                            "ignore": "保留，不要再提示我"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "從現在起，Spook 將不再就此區域發聲。",
+                    "manage": "您可以在 [區域頁面](/config/areas/dashboard) 的此區域設定中選擇其他感測器。",
+                    "changed": "自從 Spook 上次檢查後，這些感測器已經回來，或設定已改為指向其他地方，因此沒有清除任何東西。Spook 會自行再檢查一次並更新此修復。"
+                }
+            }
         }
     },
     "services": {
