@@ -22,6 +22,9 @@ from custom_components.spook.ectoplasms.sensor.services.set_display_precision im
 if TYPE_CHECKING:
     from tests.common import MockUser
 
+pytestmark = pytest.mark.usefixtures("spook_translations")
+
+
 _PRECISION = 2
 _OTHER_PRECISION = 3
 

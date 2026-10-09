@@ -564,6 +564,9 @@
     }
   },
   "exceptions": {
+    "all_of_attach_failed": {
+      "message": "Could not attach every trigger of an all-of trigger."
+    },
     "area_not_found": {
       "message": "Area {area_id} not found."
     },
@@ -597,6 +600,15 @@
     "blueprints_not_loaded": {
       "message": "{domain} blueprints are not loaded right now."
     },
+    "calendar_events_which": {
+      "message": "Say which events: give a summary, a uid, or both."
+    },
+    "calendar_range_backwards": {
+      "message": "The end of where to look has to come after its start."
+    },
+    "calendar_range_required": {
+      "message": "Say how far to look: give an end date and time, or a duration."
+    },
     "cannot_disable_system_user": {
       "message": "Cannot disable a system-generated user: {user_id}."
     },
@@ -609,8 +621,14 @@
     "category_nothing_to_update": {
       "message": "Nothing to update on category {category}: give at least one of {fields}."
     },
+    "condition_template_is_constant": {
+      "message": "A template in this condition has no Jinja left in it, so it is a constant and can never turn. Usually that means a script rendered it before this action ran, which happens to every template in action data. Use a condition without templates, or wait on the template itself with 'wait_template'."
+    },
     "config_entry_not_found": {
       "message": "Integration entry {config_entry_id} not found."
+    },
+    "debounce_attach_failed": {
+      "message": "Could not attach every trigger of a debounce trigger."
     },
     "device_not_found": {
       "message": "Device {device_id} not found."
@@ -624,6 +642,18 @@
     "entity_without_unique_id": {
       "message": "Entity {entity_id} has no unique ID, so Home Assistant cannot keep an icon or aliases for it."
     },
+    "event_cannot_change": {
+      "message": "{summary} cannot be changed like that: {error}."
+    },
+    "event_nothing_to_change": {
+      "message": "Say what to change: a new summary, a place, or new times."
+    },
+    "event_shift_or_times": {
+      "message": "Move an event by a shift, or give it new times, not both."
+    },
+    "event_whole_days": {
+      "message": "{summary} lasts whole days, so it can only be moved by whole days."
+    },
     "floor_not_found": {
       "message": "Floor {floor_id} not found."
     },
@@ -635,6 +665,9 @@
     },
     "helpers_unreachable": {
       "message": "Could not reach the {domain} helpers Home Assistant keeps."
+    },
+    "hold_until_nonexistent_time": {
+      "message": "Cannot hold {entity_id} until a time that does not exist."
     },
     "home_zone_radius": {
       "message": "The home zone takes its radius in whole meters, zero or more."
@@ -675,17 +708,41 @@
     "restart_failed": {
       "message": "Spook encountered an error while restarting Home Assistant."
     },
+    "sequence_attach_failed": {
+      "message": "Could not attach the first step of a sequence trigger."
+    },
     "set_range_nothing_to_change": {
       "message": "Give a minimum, a maximum or a step to change."
     },
+    "spooked": {
+      "message": "Spooked! 👻"
+    },
     "timer_not_editable": {
       "message": "This timer is not editable: {entity_id}."
+    },
+    "todo_item_after_itself": {
+      "message": "An item cannot be moved after itself."
+    },
+    "todo_item_not_found": {
+      "message": "There is no item {item} in {entity_id}."
+    },
+    "todo_last_item_after": {
+      "message": "The last item in {entity_id} cannot be moved after."
+    },
+    "todo_move_where": {
+      "message": "Say where to: after another item, or the top or bottom."
     },
     "user_not_found": {
       "message": "Could not find user: {user_id}."
     },
     "value_not_a_number": {
       "message": "Value {value} for {entity_id} is not a number."
+    },
+    "watchdog_arming_attach_failed": {
+      "message": "Could not attach the arming triggers of a watchdog trigger."
+    },
+    "watchdog_expected_attach_failed": {
+      "message": "Could not attach the expected triggers of a watchdog trigger."
     },
     "yaml_group_not_editable": {
       "message": "{entity_id} is a group from your YAML configuration, which Spook cannot change. Edit it in your configuration, or use group.set, which still works on that kind of group."

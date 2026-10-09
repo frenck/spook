@@ -29,6 +29,21 @@ def _spook_domain_names(tree: ast.Module) -> set[str]:
     }
 
 
+def _possible_keys(key: ast.expr) -> list[str] | None:
+    """Return each translation key an error can ask for, None if unclear.
+
+    Written out, or a choice between keys that are. Anything picked in a way
+    this cannot follow is reported, rather than trusted.
+    """
+    if isinstance(key, ast.Constant) and isinstance(key.value, str):
+        return [key.value]
+    if isinstance(key, ast.IfExp):
+        body, orelse = _possible_keys(key.body), _possible_keys(key.orelse)
+        if body is not None and orelse is not None:
+            return body + orelse
+    return None
+
+
 def _raised_translations() -> list[tuple[str, str, set[str] | None]]:
     """Return each translated error Spook raises.
 
@@ -48,8 +63,15 @@ def _raised_translations() -> list[tuple[str, str, set[str] | None]]:
             if not (
                 isinstance(domain, ast.Name)
                 and domain.id in spook_domain
-                and isinstance(key, ast.Constant)
+                and key is not None
             ):
+                continue
+
+            keys = _possible_keys(key)
+            if keys is None:
+                found.append(
+                    (f"{path.relative_to(SPOOK)}:{node.lineno}", "<run time>", None)
+                )
                 continue
 
             placeholders: set[str] | None = set()
@@ -63,10 +85,36 @@ def _raised_translations() -> list[tuple[str, str, set[str] | None]]:
                     if isinstance(given, ast.Dict)
                     else None
                 )
-            found.append(
-                (f"{path.relative_to(SPOOK)}:{node.lineno}", key.value, placeholders)
+            found.extend(
+                (f"{path.relative_to(SPOOK)}:{node.lineno}", each, placeholders)
+                for each in keys
             )
     return found
+
+
+def test_every_error_uses_spooks_own_texts() -> None:
+    """Test a translated error never names another integration's domain.
+
+    Many modules import their integration's `DOMAIN` from Home Assistant and
+    Spook's as `SPOOK_DOMAIN`. An error passing the wrong one looks for its
+    text in an integration that does not have it, and shows the bare key.
+    """
+    problems = []
+    for path in sorted(SPOOK.rglob("*.py")):
+        tree = ast.parse(path.read_text())
+        spook_domain = _spook_domain_names(tree)
+        problems.extend(
+            f"{path.relative_to(SPOOK)}:{node.lineno}"
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Call)
+            for keyword in node.keywords
+            if keyword.arg == "translation_domain"
+            and not (
+                isinstance(keyword.value, ast.Name) and keyword.value.id in spook_domain
+            )
+        )
+
+    assert not problems
 
 
 def test_every_raised_error_has_its_text() -> None:

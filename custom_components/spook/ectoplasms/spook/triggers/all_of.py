@@ -14,6 +14,7 @@ from homeassistant.helpers import config_validation as cv, trigger as trigger_he
 from homeassistant.helpers.trigger import Trigger
 from homeassistant.util import dt as dt_util
 
+from ....const import DOMAIN
 from ....trigger_nesting import async_attach_nested
 
 if TYPE_CHECKING:
@@ -120,8 +121,10 @@ class _AllOfWatcher:
             # can never fire. Raising is what gets the automation marked
             # unavailable instead of leaving it looking healthy and silent.
             self.async_stop()
-            msg = "Could not attach every trigger of an all-of trigger"
-            raise HomeAssistantError(msg)
+            raise HomeAssistantError(
+                translation_domain=DOMAIN,
+                translation_key="all_of_attach_failed",
+            )
 
         return self.async_stop
 

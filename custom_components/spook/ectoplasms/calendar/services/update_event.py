@@ -25,6 +25,7 @@ from homeassistant.exceptions import ServiceValidationError
 from homeassistant.helpers import config_validation as cv
 from homeassistant.util import dt as dt_util
 
+from ....const import DOMAIN as SPOOK_DOMAIN
 from ....services import AbstractSpookEntityComponentService
 from .. import FIND_SCHEMA, async_find_events, describe
 
@@ -97,12 +98,16 @@ class SpookService(AbstractSpookEntityComponentService[CalendarEntity]):
     ) -> ServiceResponse:
         """Handle the service call."""
         if not any(change in call.data for change in _CHANGES):
-            msg = "Say what to change: a new summary, a place, or new times"
-            raise ServiceValidationError(msg)
+            raise ServiceValidationError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="event_nothing_to_change",
+            )
 
         if ATTR_NEW_END in call.data and ATTR_SHIFT in call.data:
-            msg = "Move an event by a shift, or give it new times, not both"
-            raise ServiceValidationError(msg)
+            raise ServiceValidationError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="event_shift_or_times",
+            )
 
         updated = []
         for event in await async_find_events(entity, call):
@@ -144,11 +149,11 @@ class SpookService(AbstractSpookEntityComponentService[CalendarEntity]):
             # of a day added to it: an hour later would change nothing, and
             # still be reported as done.
             if not hasattr(start, "tzinfo") and shift % timedelta(days=1):
-                msg = (
-                    f"{event.summary} lasts whole days, so it can only be "
-                    "moved by whole days"
+                raise ServiceValidationError(
+                    translation_domain=SPOOK_DOMAIN,
+                    translation_key="event_whole_days",
+                    translation_placeholders={"summary": str(event.summary)},
                 )
-                raise ServiceValidationError(msg)
             start, end = start + shift, end + shift
         if (new_start := data.get(ATTR_NEW_START)) is not None:
             new_start = _local(new_start)
@@ -169,5 +174,11 @@ class SpookService(AbstractSpookEntityComponentService[CalendarEntity]):
         try:
             return WEBSOCKET_EVENT_SCHEMA(changed)  # type: ignore[no-any-return]
         except vol.Invalid as err:
-            msg = f"{event.summary} cannot be changed like that: {err}"
-            raise ServiceValidationError(msg) from err
+            raise ServiceValidationError(
+                translation_domain=SPOOK_DOMAIN,
+                translation_key="event_cannot_change",
+                translation_placeholders={
+                    "summary": str(event.summary),
+                    "error": str(err),
+                },
+            ) from err

@@ -42,14 +42,10 @@ def _reject_static_templates(config: ConfigType) -> None:
     names the likely cause without claiming to know.
     """
     if any(template.is_static for template in iter_templates(config)):
-        msg = (
-            "A template in this condition has no Jinja left in it, so it is a "
-            "constant and can never turn. Usually that means a script rendered "
-            "it before this action ran, which happens to every template in "
-            "action data. Use a condition without templates, or wait on the "
-            "template itself with 'wait_template'."
+        raise ServiceValidationError(
+            translation_domain=DOMAIN,
+            translation_key="condition_template_is_constant",
         )
-        raise ServiceValidationError(msg)
 
 
 class SpookService(AbstractSpookService):
