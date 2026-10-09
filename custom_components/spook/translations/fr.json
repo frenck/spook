@@ -822,6 +822,69 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "Entités inconnues utilisées dans la passerelle HomeKit : {bridge}",
             "description": "Spook a trouvé un fantôme dans votre passerelle HomeKit 👻\n\nEn flottant dans les parages, Spook est tombé sur la passerelle HomeKit suivante :\n\n{bridge}\n\nCette passerelle désigne les entités suivantes, qui sont inconnues de Home Assistant :\n\n{entities}\n\n\n\nHomeKit ne suit pas une entité renommée. Une entité incluse qui a été renommée ou supprimée disparaît de l'app Maison. Une entité exclue qui a été renommée y réapparaît.\n\nCette passerelle est définie dans votre configuration YAML. Pour résoudre cette erreur, modifiez le `filter` de cette passerelle sous `homekit:` et supprimez ou corrigez ces entités.\n\nSpook 👻 Votre pote."
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Capteur de température inconnu pour la pièce : {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Capteur de température inconnu pour la pièce : {area}",
+                        "description": "Spook a trouvé un fantôme dans vos pièces 👻\n\nLa pièce {area} utilise un capteur de température qui est inconnu de Home Assistant :\n\n{entities}\n\nHome Assistant ne vérifie ce capteur qu'au moment où il est choisi : lorsqu'il a été supprimé ou renommé, la pièce a continué à pointer dans le vide. Assist et les cartes de pièce n'en reçoivent plus aucune valeur de température.\n\nEffacez le réglage pour pouvoir choisir à nouveau un capteur, ou gardez-le et Spook cessera de le signaler.\n\nSpook 👻 Votre pote.",
+                        "menu_options": {
+                            "remove": "Effacer le réglage",
+                            "manage": "Je le corrige moi-même",
+                            "ignore": "Le garder, ne plus m'en parler"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook ne dira plus rien au sujet de cette pièce.",
+                    "manage": "Vous pouvez choisir un autre capteur dans les paramètres de cette pièce sur la [page Pièces](/config/areas/dashboard).",
+                    "changed": "Ce capteur est revenu, ou le réglage pointe maintenant ailleurs, depuis que Spook a regardé. Rien n'a donc été effacé. Spook regarde de nouveau de lui-même et met à jour cette réparation."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Capteur d'humidité inconnu pour la pièce : {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Capteur d'humidité inconnu pour la pièce : {area}",
+                        "description": "Spook a trouvé un fantôme dans vos pièces 👻\n\nLa pièce {area} utilise un capteur d'humidité qui est inconnu de Home Assistant :\n\n{entities}\n\nHome Assistant ne vérifie ce capteur qu'au moment où il est choisi : lorsqu'il a été supprimé ou renommé, la pièce a continué à pointer dans le vide. Assist et les cartes de pièce n'en reçoivent plus aucune valeur d'humidité.\n\nEffacez le réglage pour pouvoir choisir à nouveau un capteur, ou gardez-le et Spook cessera de le signaler.\n\nSpook 👻 Votre pote.",
+                        "menu_options": {
+                            "remove": "Effacer le réglage",
+                            "manage": "Je le corrige moi-même",
+                            "ignore": "Le garder, ne plus m'en parler"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook ne dira plus rien au sujet de cette pièce.",
+                    "manage": "Vous pouvez choisir un autre capteur dans les paramètres de cette pièce sur la [page Pièces](/config/areas/dashboard).",
+                    "changed": "Ce capteur est revenu, ou le réglage pointe maintenant ailleurs, depuis que Spook a regardé. Rien n'a donc été effacé. Spook regarde de nouveau de lui-même et met à jour cette réparation."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Capteurs de température et d'humidité inconnus pour la pièce : {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Capteurs de température et d'humidité inconnus pour la pièce : {area}",
+                        "description": "Spook a trouvé un fantôme dans vos pièces 👻\n\nLa pièce {area} utilise un capteur de température et un capteur d'humidité qui sont inconnus de Home Assistant :\n\n{entities}\n\nHome Assistant ne vérifie ces capteurs qu'au moment où ils sont choisis : lorsqu'ils ont été supprimés ou renommés, la pièce a continué à pointer dans le vide. Assist et les cartes de pièce n'en reçoivent plus aucune valeur.\n\nEffacez les réglages pour pouvoir choisir à nouveau des capteurs, ou gardez-les et Spook cessera de les signaler.\n\nSpook 👻 Votre pote.",
+                        "menu_options": {
+                            "remove": "Effacer les réglages",
+                            "manage": "Je le corrige moi-même",
+                            "ignore": "Les garder, ne plus m'en parler"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook ne dira plus rien au sujet de cette pièce.",
+                    "manage": "Vous pouvez choisir d'autres capteurs dans les paramètres de cette pièce sur la [page Pièces](/config/areas/dashboard).",
+                    "changed": "Ces capteurs sont revenus, ou les réglages pointent maintenant ailleurs, depuis que Spook a regardé. Rien n'a donc été effacé. Spook regarde de nouveau de lui-même et met à jour cette réparation."
+                }
+            }
         }
     },
     "services": {
@@ -1970,8 +2033,8 @@
             }
         },
         "repairs_ignore_all": {
-            "name": "Ignorer tout les corrections",
-            "description": "Ignore toutes les corrections actuellement signalées dans l'espace de réparations de Home Assistant, ou seulement celles signalées par certaines intégrations.",
+            "name": "Ignorer tous les problèmes",
+            "description": "Ignore tous les problèmes actuellement signalés dans les Réparations de Home Assistant, ou seulement ceux signalés par certaines intégrations.",
             "fields": {
                 "domain": {
                     "name": "Domaine",
@@ -2256,8 +2319,8 @@
             "name": "Définir la valeur minimale"
         },
         "repairs_unignore_all": {
-            "name": "Ne plus ignorer les corrections",
-            "description": "Ne plus ignorer les corrections actuellement signalées dans les corrections Home Assistant, ou seulement celles signalées par certaines intégrations.",
+            "name": "Ne plus ignorer les problèmes",
+            "description": "Ne plus ignorer les problèmes actuellement signalés dans les Réparations de Home Assistant, ou seulement ceux signalés par certaines intégrations.",
             "fields": {
                 "domain": {
                     "name": "Domaine",
