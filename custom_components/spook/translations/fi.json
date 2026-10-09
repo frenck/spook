@@ -822,6 +822,69 @@
         "homekit_unknown_entity_references_yaml": {
             "title": "Tuntemattomia entiteettejä HomeKit-sillassa: {bridge}",
             "description": "Spook on löytänyt kummituksen HomeKit-sillastasi 👻\n\nLeijuessaan ympäriinsä, Spook törmäsi seuraavaan HomeKit-siltaan:\n\n{bridge}\n\nTämä silta mainitsee seuraavat entiteetit, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\n\n\nHomeKit ei seuraa entiteettiä, joka nimetään uudelleen. Mukaan otettu entiteetti, joka on nimetty uudelleen tai poistettu, katoaa Koti-apista. Pois jätetty entiteetti, joka on nimetty uudelleen, ilmestyy sinne takaisin.\n\nTämä silta on määritetty YAML-määrityksissäsi. Korjataksesi tämän ongelman, muokkaa tämän sillan `filter`-asetusta kohdassa `homekit:` ja poista tai korjaa nämä entiteetit.\n\nSpook 👻 Kamusi."
+        },
+        "unknown_area_sensors_temperature": {
+            "title": "Tuntematon lämpötilasensori alueella: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tuntematon lämpötilasensori alueella: {area}",
+                        "description": "Spook on löytänyt kummituksen alueistasi 👻\n\nAlue {area} käyttää lämpötilasensoria, joka on Home Assistantille tuntematon:\n\n{entities}\n\nHome Assistant tarkistaa tämän sensorin vain silloin kun se valitaan, joten kun se poistettiin tai uudelleennimettiin, alue jäi osoittamaan tyhjään. Assist ja aluekortit eivät enää saa siitä lämpötilalukemaa.\n\nTyhjennä asetus, jotta voit valita sensorin uudelleen, tai säilytä se ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
+                        "menu_options": {
+                            "remove": "Tyhjennä asetus",
+                            "manage": "Korjaan asian itse",
+                            "ignore": "Säilytä se, lopeta asiasta ilmoittelu"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook pysyy tästä eteenpäin hiljaa tästä alueesta.",
+                    "manage": "Voit valita toisen sensorin tämän alueen asetuksista [Alueet-sivulla](/config/areas/dashboard).",
+                    "changed": "Tämä sensori on palannut, tai asetus osoittaa nyt muualle, sen jälkeen kun Spook katsoi. Joten mitään ei tyhjennetty. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
+                }
+            }
+        },
+        "unknown_area_sensors_humidity": {
+            "title": "Tuntematon kosteussensori alueella: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tuntematon kosteussensori alueella: {area}",
+                        "description": "Spook on löytänyt kummituksen alueistasi 👻\n\nAlue {area} käyttää kosteussensoria, joka on Home Assistantille tuntematon:\n\n{entities}\n\nHome Assistant tarkistaa tämän sensorin vain silloin kun se valitaan, joten kun se poistettiin tai uudelleennimettiin, alue jäi osoittamaan tyhjään. Assist ja aluekortit eivät enää saa siitä kosteuslukemaa.\n\nTyhjennä asetus, jotta voit valita sensorin uudelleen, tai säilytä se ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
+                        "menu_options": {
+                            "remove": "Tyhjennä asetus",
+                            "manage": "Korjaan asian itse",
+                            "ignore": "Säilytä se, lopeta asiasta ilmoittelu"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook pysyy tästä eteenpäin hiljaa tästä alueesta.",
+                    "manage": "Voit valita toisen sensorin tämän alueen asetuksista [Alueet-sivulla](/config/areas/dashboard).",
+                    "changed": "Tämä sensori on palannut, tai asetus osoittaa nyt muualle, sen jälkeen kun Spook katsoi. Joten mitään ei tyhjennetty. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
+                }
+            }
+        },
+        "unknown_area_sensors_both": {
+            "title": "Tuntemattomat lämpötila- ja kosteussensorit alueella: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tuntemattomat lämpötila- ja kosteussensorit alueella: {area}",
+                        "description": "Spook on löytänyt kummituksen alueistasi 👻\n\nAlue {area} käyttää lämpötila- ja kosteussensoria, jotka ovat Home Assistantille tuntemattomia:\n\n{entities}\n\nHome Assistant tarkistaa nämä sensorit vain silloin kun ne valitaan, joten kun ne poistettiin tai uudelleennimettiin, alue jäi osoittamaan tyhjään. Assist ja aluekortit eivät enää saa niistä lukemaa.\n\nTyhjennä asetukset, jotta voit valita sensorit uudelleen, tai säilytä ne ja Spook lopettaa asiasta ilmoittelun.\n\nSpook 👻 Kamusi.",
+                        "menu_options": {
+                            "remove": "Tyhjennä asetukset",
+                            "manage": "Korjaan asian itse",
+                            "ignore": "Säilytä ne, lopeta asiasta ilmoittelu"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook pysyy tästä eteenpäin hiljaa tästä alueesta.",
+                    "manage": "Voit valita toiset sensorit tämän alueen asetuksista [Alueet-sivulla](/config/areas/dashboard).",
+                    "changed": "Nämä sensorit ovat palanneet, tai asetukset osoittavat nyt muualle, sen jälkeen kun Spook katsoi. Joten mitään ei tyhjennetty. Spook katsoo uudelleen omin päin ja päivittää tämän korjauksen."
+                }
+            }
         }
     },
     "services": {
