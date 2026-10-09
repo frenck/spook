@@ -624,7 +624,7 @@
             }
         },
         "lovelace_missing_resources": {
-            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nOs seguintes recursos de painel apontam para arquivos que não existem:\n\n{resources}\n\nIsso costuma acontecer quando um cartão personalizado ou os arquivos dele foram removidos, mas o recurso ficou. Para corrigir esse erro, abra Configurações > Painéis > Recursos e remova ou corrija esses recursos.\n\nSpook 👻 Seu mano.",
+            "description": "Spook encontrou um fantasma em seus painéis 👻\n\nOs seguintes recursos de painel apontam para arquivos que não existem:\n\n{resources}\n\n\n\nIsso costuma acontecer quando um cartão personalizado ou os arquivos dele foram removidos, mas o recurso ficou. Para corrigir esse erro, abra a [página de Recursos](/config/lovelace/resources) e remova ou corrija esses recursos. Ela não tem uma aba própria: na página de Painéis, fica atrás dos três pontinhos, no canto superior direito.\n\nSpook 👻 Seu mano.",
             "title": "Recursos do painel apontando para arquivos que faltam"
         },
         "lovelace_missing_resources_yaml": {
@@ -1199,7 +1199,7 @@
             "name": "Excluir uma etiqueta"
         },
         "homeassistant_disable_config_entry": {
-            "description": "Desativa uma entrada de integração.",
+            "description": "Desativa entradas de integração, uma entrada específica ou todas as entradas de uma integração.",
             "fields": {
                 "config_entry_id": {
                     "description": "A entrada de integração a desativar.",
@@ -1253,7 +1253,7 @@
             "name": "Desativar um usuário"
         },
         "homeassistant_enable_config_entry": {
-            "description": "Ativa uma entrada de integração.",
+            "description": "Ativa entradas de integração, uma entrada específica ou todas as entradas de uma integração.",
             "fields": {
                 "config_entry_id": {
                     "description": "A entrada de integração a ativar.",
@@ -1677,7 +1677,7 @@
             "name": "Alterar o ID de uma entidade"
         },
         "input_number_create": {
-            "description": "Cria um auxiliar de entrada numérica na hora.",
+            "description": "Cria um auxiliar de entrada numérica na hora. Devolve o ID de entidade da nova entrada numérica.",
             "fields": {
                 "icon": {
                     "description": "O ícone a usar para o auxiliar de entrada numérica.",
@@ -1733,7 +1733,7 @@
             "name": "Reduzir o valor"
         },
         "input_number_delete": {
-            "description": "Exclui um auxiliar de entrada numérica. Isso só funciona com entradas numéricas criadas e gerenciadas pela interface. O Spook não pode gerenciar as que são criadas e gerenciadas em YAML.",
+            "description": "Exclui auxiliares de entrada numérica criados pela interface ou com a ação de criar uma entrada numérica. O Spook não pode excluir entradas numéricas configuradas em YAML.",
             "fields": {
                 "entity_id": {
                     "name": "ID da entidade",
@@ -2129,7 +2129,7 @@
             "name": "Criar um problema"
         },
         "repairs_ignore_all": {
-            "description": "Ignora todos os problemas que existem agora nos Reparos do Home Assistant.",
+            "description": "Ignora todos os problemas que existem agora nos Reparos do Home Assistant, ou apenas os criados por determinadas integrações.",
             "fields": {
                 "domain": {
                     "name": "Domínio",
@@ -2167,7 +2167,7 @@
             "name": "Remover um problema"
         },
         "repairs_unignore_all": {
-            "description": "Para de ignorar todos os problemas que existem agora nos Reparos do Home Assistant.",
+            "description": "Para de ignorar todos os problemas que existem agora nos Reparos do Home Assistant, ou apenas os criados por determinadas integrações.",
             "fields": {
                 "domain": {
                     "name": "Domínio",
