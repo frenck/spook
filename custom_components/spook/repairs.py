@@ -935,7 +935,7 @@ class AreaUnknownSensorsFixFlow(_RemoveOrIgnoreFixFlow):
     def _menu_placeholders(self) -> dict[str, str]:
         """Name the area and its missing sensors in the menu step."""
         data = self.data or {}
-        return {key: str(data.get(key, "")) for key in ("area", "sensors", "entities")}
+        return {key: str(data.get(key, "")) for key in ("area", "entities")}
 
     @callback
     def _remove(self, thing_id: str) -> bool:
