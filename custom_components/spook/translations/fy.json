@@ -1,11 +1,349 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Automatisearring útskeakele",
+            "description": "Giet ôf as ien, of eat, in automatisearring útskeakelet. Lit it doel leech om elke automatisearring yn 'e gaten te hâlden."
+        },
+        "debounce": {
+            "name": "As it ta rêst kommen is",
+            "description": "Giet ôf as in trigger in skoft net mear ôfgien is, sadat in hiele rits as ien oankomt. In bewegingssensor meldt beweging net ien kear, hy meldt it tweintich kear.",
+            "fields": {
+                "triggers": {
+                    "name": "Triggers",
+                    "description": "De triggers dêr't op wachte wurdt. Elk fan harren kin in rits begjinne en elk fan harren hâldt dy geande, sadat ferskate triggers tegearre nommen wurde en net ien foar ien."
+                },
+                "for": {
+                    "name": "Foar",
+                    "description": "Hoe lang it stil west hawwe moat foardat dit ôfgiet. Elke kear dat der wat ôfgiet, begjint dat wachtsjen opnij, dus eat dat noait ophâldt, wurdt ek noait meld."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Dit is allegear bard",
+            "description": "Giet ôf as elk fan ferskate triggers binnen itselde tiidsfinster ôfgien is, yn hokker folchoarder dan ek. De eigen triggers fan Home Assistant binne in list dêr't ien fan genôch is; dit is de oare.",
+            "fields": {
+                "triggers": {
+                    "name": "Triggers",
+                    "description": "De triggers dy't allegear ôfgien wêze moatte. De folchoarder makket neat út, en in trigger dy't nochris ôfgiet, ferfangt syn eardere beurt ynstee fan twa kear te tellen."
+                },
+                "within": {
+                    "name": "Binnen",
+                    "description": "Hoe ticht se byinoar lizze moatte. It finster skoot mei, dus in trigger dy't langer lyn ôfgie as dit, wurdt fergetten wylst de oaren trochtelle."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entiteit wer werom",
+            "description": "Giet ôf as in entiteit weromkomt nei't er in skoft net beskikber west hat, sadat in router dy't opnij opstart net liket op alles yn hûs dat tagelyk herstelt.",
+            "fields": {
+                "for": {
+                    "name": "Foar",
+                    "description": "Hoe lang de entiteit fuort west hawwe moat foardat it weromkommen telt. Alles wat koarter is, is in flikkering: it opnij laden fan in yntegraasje stjoert elk fan har entiteiten binnen in sekonde troch net beskikber en wer werom."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Apparaat tafoege",
+            "description": "Giet ôf as der in nij apparaat oan Home Assistant tafoege wurdt, lykas in stekker dy't krekt keppele is."
+        },
+        "sequence": {
+            "name": "Triggers op folchoarder",
+            "description": "Giet ôf as ferskate triggers efter elkoar barre, yn de opjûne folchoarder.",
+            "fields": {
+                "steps": {
+                    "name": "Stappen",
+                    "description": "De triggers dy't barre moatte, op folchoarder. Allinnich dejinge dêr't op wachte wurdt, harket, dus in lettere stap dy't te betiid ôfgiet, telt net."
+                },
+                "timeout": {
+                    "name": "Tiidslimyt",
+                    "description": "Hoe lang de hiele rige duorje mei, rekkene fan de earste stap ôf. Litst it leech, dan wachtet er sûnder ein."
+                },
+                "reset": {
+                    "name": "Weromsette",
+                    "description": "Triggers dy't in rige dy't al geande is ôfbrekke, en him werom sette op wachtsjen op de earste stap."
+                }
+            }
+        },
+        "while": {
+            "name": "Salang't in betingst jildt",
+            "description": "Giet ôf as in betingst wier wurdt, en giet mei in ynterfal ôf salang't er wier bliuwt.",
+            "fields": {
+                "condition": {
+                    "name": "Betingst",
+                    "description": "De betingst dy't yn 'e gaten hâlden wurdt. It ôfgean begjint as er wier wurdt en hâldt op as er net mear wier is."
+                },
+                "every": {
+                    "name": "Elke",
+                    "description": "Hoe lang der wachte wurdt tusken de iene kear ôfgean en de folgjende, salang't de betingst jildt."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Wachthûn",
+            "description": "Giet ôf as eat dat ferwachte waard, net op 'e tiid bart.",
+            "fields": {
+                "arm": {
+                    "name": "Op skerp",
+                    "description": "Wat it wachtsjen begjint. De tiid wurdt fan hjirút mjitten, en wer op skerp sette wylst er al wachtet, begjint it wachtsjen opnij."
+                },
+                "expect": {
+                    "name": "Ferwachtsje",
+                    "description": "Wat der neitiid komme moat. Komt it op 'e tiid, dan wurdt it wachtsjen ôfblaasd en giet der neat ôf."
+                },
+                "within": {
+                    "name": "Binnen",
+                    "description": "Hoe lang it ferwachte ding hat om oan te kommen. Dit giet ôf as dy tiid om is en it der net is."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entiteit komt net ta rêst",
+            "description": "Giet ôf as in entiteit binnen in tiidsrom faker fan steat feroaret as goed is.",
+            "fields": {
+                "changes": {
+                    "name": "Wizigingen",
+                    "description": "Hoefolle steatwizigingen it nimt foardat dit ôfgiet. Wizigingen fan attributen telle net, en in entiteit dy't ferskynt of ferdwynt ek net."
+                },
+                "within": {
+                    "name": "Binnen",
+                    "description": "De tiidsrom dêr't dy wizigingen binnen falle moatte. Dy skoot mei, dus it giet altyd om de lêste wizigingen."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Betingst wier wurden",
+            "description": "Giet ôf as in betingst fan net wier nei wier giet, mei deselde betingst-boustiennen as oeral oars.",
+            "fields": {
+                "condition": {
+                    "name": "Betingst",
+                    "description": "De betingst dy't yn 'e gaten hâlden wurdt."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron-skema",
+            "description": "Giet ôf op in crontab-skema, foar de tiden dy't de eigen tiidtriggers fan Home Assistant net útdrukke kinne, lykas elke wurkdei om sân oere of de lêste freed fan de moanne.",
+            "fields": {
+                "schedule": {
+                    "name": "Skema",
+                    "description": "In crontab-útdrukking mei fiif fjilden: minút, oere, dei fan de moanne, moanne, dei fan de wike. Stipet berikken en stappen, en de útwreidingen foar de dei fan de wike, dus \"MON#2\" is de twadde moandei en \"5L\" de lêste freed. Bynammen lykas \"@daily\" wurde net stipe."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Apparaat ûntdutsen",
+            "description": "Giet ôf as Home Assistant eat nijs ûntdekt dat it ynstelle kin, lykas in apparaat dat krekt op dyn netwurk opdûkt is."
+        },
+        "integration_added": {
+            "name": "Yntegraasje tafoege",
+            "description": "Giet ôf as der in yntegraasje oan Home Assistant tafoege wurdt, wa of wat dy ek tafoege hat."
+        },
+        "integration_failed": {
+            "name": "Yntegraasje koe net ynsteld wurde",
+            "description": "Giet ôf as in konfiguraasje-item him in skoft net ynstelle kinnen hat, foarby it punt dêr't de eigen nije besykjes fan Home Assistant it oplost hawwe soene.",
+            "fields": {
+                "for": {
+                    "name": "Foar",
+                    "description": "Hoe lang in item mislearje bliuwe moat foardat dit ôfgiet. Home Assistant besiket in mislearjend item op syn traagst elke tsien minuten opnij, dus alles wat koarter is, meldt problemen dy't harsels noch oplosse kinne."
+                },
+                "entry_id": {
+                    "name": "Items",
+                    "description": "Beheine dit ta bepaalde konfiguraasje-items. Lit it leech om se allegear yn 'e gaten te hâlden."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Reparaasjemelding oanmakke",
+            "description": "Giet ôf as der in nije reparaasjemelding opdûkt, sadat it dy berikt sûnder dat de reparaasjeside besocht hoecht te wurden.",
+            "fields": {
+                "domain": {
+                    "name": "Yntegraasjes",
+                    "description": "Beheine dit ta meldingen fan bepaalde yntegraasjes, op harren domein. Lit it leech foar allegearre."
+                },
+                "severity": {
+                    "name": "Earnst",
+                    "description": "Beheine dit ta meldingen fan in bepaalde earnst. Lit it leech foar allegearre."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Reparaasjemelding oplost",
+            "description": "Giet ôf as in reparaasjemelding ferdwynt, omdat er reparearre is of net mear meld wurdt.",
+            "fields": {
+                "domain": {
+                    "name": "Yntegraasjes",
+                    "description": "Beheine dit ta meldingen fan bepaalde yntegraasjes, op harren domein. Lit it leech foar allegearre."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entiteit is stil fallen",
+            "description": "Giet ôf as der in skoft neat nei in entiteit skreaun is. Sa fangst in apparaat dat stil stoarn is ynstee fan net beskikber te wurden.",
+            "fields": {
+                "for": {
+                    "name": "Foar",
+                    "description": "Hoe lang in entiteit stil bliuwe moat foardat dit ôfgiet. In entiteit dy't hieltyd deselde wearde meldt, is net stil."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Doeltemperatuer berikt",
+            "description": "Giet ôf as de temperatuer fan in termostaat of wetterferwaarmer syn doel berikt, of der oerhinne springt. It doel feroarje telt net, en in apparaat dat út stiet ek net.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolerânsje",
+                    "description": "Hoe ticht by it doel noch as berikt telt, yn de ienheid fan it apparaat. Foar in termostaat dy't krekt ûnder syn ynstelpunt bliuwt hingjen. Nul betsjut it doel sels."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Update ynstallearre",
+            "description": "Giet ôf as in update-entiteit in oare ynstallearre ferzje meldt, oft ien no op ynstallearje drukt hat, it apparaat himsels bywurke hat, of it bûten Home Assistant om bywurke is."
+        },
+        "position_reached": {
+            "name": "Posysje berikt",
+            "description": "Giet ôf as in bedekking of klep in posysje berikt, of der foarby giet. Ien dy't der al is, of dêr weromkomt nei net beskikber, telt net.",
+            "fields": {
+                "position": {
+                    "name": "Posysje",
+                    "description": "De posysje dy't berikt wurde moat, fan 0 (ticht) oant 100 (iepen)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Script start",
+            "description": "Giet ôf as in script begjint te rinnen. In run dy't it script wegeret, omdat it al rint, telt net. Lit it doel leech om elk script yn 'e gaten te hâlden."
+        },
+        "user_added": {
+            "name": "Brûker tafoege",
+            "description": "Giet ôf as ien in oanmelding foar Home Assistant krijt. Brûkers dy't Home Assistant foar syn eigen yntegraasjes oanmakket, wurde oerslein."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritysk",
+                "error": "Flater",
+                "warning": "Warskôging"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Ûnderoan",
+                "top": "Boppe-oan"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Temperatuer op it doel",
+            "description": "Is wier as de temperatuer fan in termostaat of wetterferwaarmer op syn doel is. In apparaat dat út stiet, is net op syn doel, en ien dy't net beskikber is, wurdt oerslein.",
+            "fields": {
+                "behavior": {
+                    "name": "Gedrach",
+                    "description": "Oft it genôch is dat ien fan de apparaten der is, of dat se der allegear wêze moatte."
+                },
+                "tolerance": {
+                    "name": "Tolerânsje",
+                    "description": "Hoe ticht by it doel noch as berikt telt, yn de ienheid fan it apparaat. Foar in termostaat dy't krekt ûnder syn ynstelpunt bliuwt hingjen. Nul betsjut it doel sels."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Reparaasjemelding iepen",
+            "description": "Is wier salang't der in reparaasjemelding iepen stiet. Meldingen dy't ien negearre hat, telle net.",
+            "fields": {
+                "domain": {
+                    "name": "Yntegraasjes",
+                    "description": "Beheine dit ta meldingen fan bepaalde yntegraasjes, op harren domein. Lit it leech foar allegearre."
+                },
+                "severity": {
+                    "name": "Earnst",
+                    "description": "Beheine dit ta meldingen fan in bepaalde earnst. Lit it leech foar allegearre."
+                }
+            }
+        },
+        "quota": {
+            "name": "Noch runs oer",
+            "description": "Is wier salang't dizze automatisearring binnen in bepaalde perioade minder as in bepaald oantal kearen rûn hat. Scripts telle net mei.",
+            "fields": {
+                "limit": {
+                    "name": "Limyt",
+                    "description": "Hoefolle runs der binnen de perioade tastien binne."
+                },
+                "period": {
+                    "name": "Perioade",
+                    "description": "It finster dêr't de limyt foar jildt. It skoot mei, dus in dei betsjut elke fjouwerentweintich oeren en net fan middernacht oant middernacht."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Triggere troch in automatisearring",
+            "description": "Is wier as in oare automatisearring dizze run yn gong set hat, streekrjocht of fia in script.",
+            "fields": {
+                "automation": {
+                    "name": "Automatisearringen",
+                    "description": "Beheine dit ta bepaalde automatisearringen. Lit it leech om se allegear goed te keuren."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Triggere troch in brûker",
+            "description": "Is wier as der in persoan efter sit wat dit yn gong sette: in steatwiziging of in barren dat dy feroarsake hat, ynklusyf ien dy't in sjabloantrigger wier wurde liet. In skema, de sinne, of in yntegraasje dy't op eigen hâning wat docht, draacht gjinien mei, en in run ôftwinge mei de knop Útfiere ek net.",
+            "fields": {
+                "person": {
+                    "name": "Persoanen",
+                    "description": "Allinnich wier as ien fan dizze persoanen it begûn is. Lit it leech om foar elkenien wier te wêzen. In persoan moat in brûkersakkount oan him keppele hawwe, oars is der neat om mei te ferlykjen."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Net triggere troch in brûker",
+            "description": "Is wier as nimmen ferantwurdlik hâlden wurde kin foar dizze run: in skema, de sinne, in yntegraasje dy't op eigen hâning wat docht, of de knop Útfiere. Hat mei opsetsin gjin opsjes. Wolst ynstee bepaalde persoanen útslute, set \"Triggere troch in brûker\" dan yn in Net-betingst."
+        },
+        "chance": {
+            "name": "Kâns",
+            "description": "Is in fêst persintaazje fan de tiid wier, by elke kontrôle willekeurich keazen. Handich om in bytsje fariaasje yn dyn automatisearringen te bringen.",
+            "fields": {
+                "percentage": {
+                    "name": "Persintaazje",
+                    "description": "Hoe faak dizze betingst wier wêze moat, as persintaazje."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Ofkoelperioade",
+            "description": "Allinnich wier as dizze automatisearring of dit script binnen de opjûne tiid net rûn hat (of noch noait rûn hat). In ynboude ôfkoelperioade, sadat er net te faak opnij ôfgiet.",
+            "fields": {
+                "duration": {
+                    "name": "Doer",
+                    "description": "Hoe lang der nei de lêste run wachte wurdt foardat dizze betingst wer wier is."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Ja... goed... nee. Oké, tank, oant sjen!"
+            "already_spooked": "Spook spoeket hjir al 👻\n\nIen spoek per hûs is mear as genôch. Do fynst Spook ûnder [Apparaten & tsjinsten](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook is wer wekker 👻\n\nJou it efkes de tiid om om him hinne te sjen. Alles wat it fynt, komt ûnder [Reparaasjes](/config/repairs) te stean.",
+            "enable_failed": "Spook woe net wekker wurde 👻\n\nProbearje it sels wer yn te skeakeljen ûnder [Apparaten & tsjinsten](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook bliuwt sliepen 👻\n\nMiste it? Do kinst it op elk momint wekker meitsje ûnder [Apparaten & tsjinsten](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Spook sweeft om 👻\n\nJou it efkes de tiid om om him hinne te sjen. Alles wat it fynt, komt ûnder [Reparaasjes](/config/repairs) te stean.\n\nDe ekstra aksjes, triggers en betingsten wachtsje op dy yn de automatisearrings- en scriptbewurker. Benijd wat Spook noch mear kin? De [dokumintaasje]({documentation_url}) hat it allegear.\n\nHast wille fan Spook? 👻 In ⭐ op [GitHub]({repository_url}) lit oaren witte dat Spook eins hiel moai is. [Frenck sponsorje]({sponsor_url}) hâldt dit spoek goed fuorre. En syn fergese [nijsbrief]({newsletter_url}), elke twa wiken, hâldt it spoek yn dysels goed fuorre."
         },
         "step": {
             "user": {
-                "description": "Hawwe jo de readme lêzen? Hawwe jo de lisinsje lêzen? Binne jo wis?"
+                "title": "Boe! Dit is Spook, dyn maat 👻",
+                "description": "Spook sweeft troch dyn Home Assistant op syk nei spoeken: ferwizings nei dingen dy't net mear besteane, en oerbliuwsels dy't nimmen opromme hat. Alles wat it fynt, meldt it ûnder Reparaasjes.\n\nIt wreidet ek út wat dyn automatisearringen en scripts kinne, mei ekstra aksjes, triggers, betingsten en helpers, foar noch krêftiger automatisearringen.\n\nEarlike warskôging: Spook is gjin part fan Home Assistant. It is in oanpaste yntegraasje dy't op plakken komt dêr't it nea foar útnoege is. As der wat nuvers bart, fertink dan earst Spook, en [lit it ús witte]({issue_tracker_url}).\n\nKlear foar wat spoekerij?"
+            },
+            "already_configured": {
+                "title": "Spook leit te sliepen 👻",
+                "description": "Spook is al ynsteld, mar ien hat it útskeakele. Wekker meitsje?",
+                "menu_options": {
+                    "enable_existing": "Spook wekker meitsje",
+                    "keep_sleeping": "Lit it mar sliepe"
+                }
             }
         }
     },
@@ -21,7 +359,7 @@
                 "name": "Alles negearje"
             },
             "repairs_unignore_all": {
-                "name": "Neat negearje"
+                "name": "Alles net mear negearje"
             }
         },
         "event": {
@@ -29,167 +367,179 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Issue created",
-                            "remove": "Issue removed",
-                            "update": "Issue updated"
+                            "create": "Melding oanmakke",
+                            "remove": "Melding fuorthelle",
+                            "update": "Melding bywurke"
                         }
                     },
                     "domain": {
-                        "name": "Issue issuer"
+                        "name": "Boarne fan de melding"
                     },
                     "issue_id": {
-                        "name": "Issue ID"
+                        "name": "Meldings-ID"
                     }
                 }
             }
         },
         "sensor": {
             "homeassistant_air_quality": {
-                "name": "Air quality"
+                "name": "Luchtkwaliteit"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Alarm control panels"
+                "name": "Alarmpanielen"
             },
             "homeassistant_area": {
-                "name": "Gebieden"
+                "name": "Romten"
             },
             "homeassistant_automation": {
-                "name": "Automatisearring"
+                "name": "Automatisearringen"
             },
             "homeassistant_binary_sensor": {
-                "name": "Binary sensors"
+                "name": "Binêre sensoren"
             },
             "homeassistant_button": {
-                "name": "Buttons"
+                "name": "Knoppen"
             },
             "homeassistant_calendar": {
-                "name": "Calendars"
+                "name": "Aginda's"
             },
             "homeassistant_camera": {
-                "name": "Cameras"
+                "name": "Kamera's"
             },
             "homeassistant_climate": {
-                "name": "Climate"
+                "name": "Klimaat"
+            },
+            "homeassistant_counter": {
+                "name": "Tellers"
             },
             "homeassistant_cover": {
-                "name": "Covers"
+                "name": "Rútbeklaaiïngen"
             },
             "homeassistant_custom_component": {
-                "name": "Custom integrations"
+                "name": "Oanpaste yntegraasjes"
             },
             "homeassistant_date": {
-                "name": "Dates"
+                "name": "Datums"
             },
             "homeassistant_datetime": {
-                "name": "Date/times"
+                "name": "Datums/tiden"
             },
             "homeassistant_device": {
                 "name": "Apparaten"
             },
             "homeassistant_device_tracker": {
-                "name": "Device trackers"
+                "name": "Apparaattrackers"
             },
             "homeassistant_entities": {
                 "name": "Entiteiten"
             },
             "homeassistant_fan": {
-                "name": "Fans"
+                "name": "Fentilatoren"
+            },
+            "homeassistant_group": {
+                "name": "Groepen"
             },
             "homeassistant_humidifier": {
-                "name": "Humidifiers"
+                "name": "Luchtbefochtigers"
             },
             "homeassistant_image": {
-                "name": "Images"
+                "name": "Ofbyldings"
             },
             "homeassistant_input_boolean": {
-                "name": "Input booleans"
+                "name": "Ynfier-booleans"
             },
             "homeassistant_input_button": {
-                "name": "Input buttons"
+                "name": "Ynfierknoppen"
             },
             "homeassistant_input_datetime": {
-                "name": "Input date/times"
+                "name": "Ynfier-datum/tiden"
             },
             "homeassistant_input_number": {
-                "name": "Input numbers"
+                "name": "Ynfiernûmers"
             },
             "homeassistant_input_select": {
-                "name": "Input selects"
+                "name": "Ynfierseleksjes"
             },
             "homeassistant_input_text": {
-                "name": "Input texts"
+                "name": "Tekstynfier"
             },
             "homeassistant_integration": {
-                "name": "Integrations"
+                "name": "Yntegraasjes"
             },
             "homeassistant_light": {
                 "name": "Ljochten"
             },
             "homeassistant_lock": {
-                "name": "Locks"
+                "name": "Sloten"
             },
             "homeassistant_media_player": {
-                "name": "Media players"
+                "name": "Mediaspilers"
             },
             "homeassistant_number": {
-                "name": "Numbers"
+                "name": "Nûmers"
             },
             "homeassistant_persistent_notification": {
-                "name": "Persistent notifications"
+                "name": "Permaninte meldingen"
             },
             "homeassistant_person": {
-                "name": "Persons"
+                "name": "Persoanen"
             },
             "homeassistant_remote": {
-                "name": "Remotes"
+                "name": "Ôfstânsbetsjinningen"
             },
             "homeassistant_scene": {
-                "name": "Scenes"
+                "name": "Sênes"
             },
             "homeassistant_script": {
                 "name": "Scripts"
             },
             "homeassistant_select": {
-                "name": "Selects"
+                "name": "Seleksjes"
             },
             "homeassistant_sensor": {
-                "name": "Sensors"
+                "name": "Sensoren"
             },
             "homeassistant_siren": {
-                "name": "Sirens"
+                "name": "Sirenes"
             },
             "homeassistant_stt": {
-                "name": "Speech-to-text"
+                "name": "Spraak-nei-tekst"
             },
             "homeassistant_sun": {
-                "name": "Suns"
+                "name": "Sinnen"
             },
             "homeassistant_switch": {
                 "name": "Skakelaars"
             },
             "homeassistant_text": {
-                "name": "Texts"
+                "name": "Teksten"
             },
             "homeassistant_time": {
-                "name": "Times"
+                "name": "Tiden"
+            },
+            "homeassistant_timer": {
+                "name": "Timers"
+            },
+            "homeassistant_todo": {
+                "name": "Takelisten"
             },
             "homeassistant_tts": {
-                "name": "Text-to-speech"
+                "name": "Tekst-nei-spraak"
             },
             "homeassistant_update": {
                 "name": "Update"
             },
             "homeassistant_vacuum": {
-                "name": "Vacuums"
+                "name": "Stofsûgers"
             },
             "homeassistant_water_heater": {
-                "name": "Water heaters"
+                "name": "Wetterferwaarmers"
             },
             "homeassistant_weather": {
-                "name": "Weather"
+                "name": "Waar"
             },
             "homeassistant_zone": {
-                "name": "Zones"
+                "name": "Sônes"
             },
             "repairs_total_issues": {
                 "name": "Totaal"
@@ -203,87 +553,597 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa state reporting"
+                "name": "Steat melde oan Alexa"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistant state reporting"
+                "name": "Steat melde oan Google Assistant"
             },
             "cloud_remote": {
-                "name": "Remote"
+                "name": "Eksterne tagong"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Koe net elke trigger fan in alles-fan-trigger keppelje."
+        },
+        "area_not_found": {
+            "message": "Romte {area_id} net fûn."
+        },
+        "blueprint_backup_failed": {
+            "message": "Koe gjin kopy fan {path} oan 'e kant lizze: {error}. Der is neat skreaun."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} kin hjir net rinne: {errors}. Der is neat skreaun."
+        },
+        "blueprint_could_not_write": {
+            "message": "Koe {path} net skriuwe."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Net stipe domein: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Flater by it opheljen fan de blueprint fan de URL."
+        },
+        "blueprint_file_exists": {
+            "message": "Bestân bestiet al."
+        },
+        "blueprint_gone": {
+            "message": "{name} is der net mear, dus der is neat om by te wurkjen. Der is neat skreaun."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Dizze URL wurdt net stipe."
+        },
+        "blueprint_write_failed": {
+            "message": "Flater by it skriuwen fan it bestân."
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain}-blueprints binne op dit stuit net laden."
+        },
+        "calendar_events_which": {
+            "message": "Sis hokker barrens: jou in gearfetting, in uid, of beide."
+        },
+        "calendar_range_backwards": {
+            "message": "It ein fan wêr't socht wurdt, moat nei it begjin komme."
+        },
+        "calendar_range_required": {
+            "message": "Sis hoe fier't socht wurde moat: jou in eindatum en -tiid, of in doer."
+        },
+        "cannot_disable_system_user": {
+            "message": "In troch it systeem oanmakke brûker kin net útskeakele wurde: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "In troch it systeem oanmakke brûker kin net ynskeakele wurde: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Kategory {category} net fûn foar {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Neat om by te wurkjen oan kategory {category}: jou op syn minst ien fan {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "In sjabloan yn dizze betingst hat gjin Jinja mear yn him, dus it is in konstante dy't noait omslaan kin. Meastal betsjut dat, dat in script it al útrekkene hat foardat dizze aksje rûn, en dat bart mei elk sjabloan yn aksjegegevens. Brûk in betingst sûnder sjabloanen, of wachtsje op it sjabloan sels mei 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Yntegraasje-item {config_entry_id} net fûn."
+        },
+        "debounce_attach_failed": {
+            "message": "Koe net elke trigger fan in debounce-trigger keppelje."
+        },
+        "device_not_found": {
+            "message": "Apparaat {device_id} net fûn."
+        },
+        "entity_id_taken": {
+            "message": "Entiteits-ID {entity_id} is al yn gebrûk."
+        },
+        "entity_not_found": {
+            "message": "Entiteit {entity_id} net fûn."
+        },
+        "entity_without_unique_id": {
+            "message": "Entiteit {entity_id} hat gjin unike ID, dus Home Assistant kin der gjin piktogram of aliassen foar bewarje."
+        },
+        "event_cannot_change": {
+            "message": "{summary} kin net sa feroare wurde: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Sis wat der feroare wurde moat: in nije gearfetting, in plak, of nije tiden."
+        },
+        "event_shift_or_times": {
+            "message": "Ferskow in barren mei in ferskowing, of jou it nije tiden, net beide."
+        },
+        "event_whole_days": {
+            "message": "{summary} duorret hiele dagen, dus it kin allinnich mei hiele dagen ferskood wurde."
+        },
+        "floor_not_found": {
+            "message": "Ferdjipping {floor_id} net fûn."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} kin net by dizze groep: dy befettet {domains}-entiteiten."
+        },
+        "group_not_found_behind": {
+            "message": "Koe de groep efter {entity_id} net fine."
+        },
+        "helpers_unreachable": {
+            "message": "Koe de {domain}-helpers dy't Home Assistant bewarret net berikke."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Kin {entity_id} net fêsthâlde oant in tiid dy't net bestiet."
+        },
+        "home_zone_radius": {
+            "message": "De thússône nimt syn straal yn hiele meters, nul of mear."
+        },
+        "home_zone_unsupported": {
+            "message": "De thússône nimt allinnich in breedtegraad, lingtegraad en straal, net: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Dit ynfiernûmer kin net bewurke wurde: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Neam de yntegraasje-items dy't feroare wurde moatte, of harren yntegraasje."
+        },
+        "integration_without_entries": {
+            "message": "De yntegraasje {domain} hat gjin items."
+        },
+        "label_not_found": {
+            "message": "Label {label_id} net fûn."
+        },
+        "label_nothing_to_update": {
+            "message": "Neat om by te wurkjen oan label {label_id}: jou op syn minst ien fan {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "It maksimum ({maximum}) moat boppe it minimum ({minimum}) lizze."
+        },
+        "no_max_value": {
+            "message": "Entiteit {entity_id} hat gjin maksimale wearde."
+        },
+        "no_min_value": {
+            "message": "Entiteit {entity_id} hat gjin minimale wearde."
+        },
+        "not_a_group": {
+            "message": "{entity_id} is gjin groep."
+        },
+        "person_not_editable": {
+            "message": "Dizze persoan kin net bewurke wurde: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook rûn tsjin in flater oan by it opnij starten fan Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "Koe de earste stap fan in folchoarder-trigger net keppelje."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Jou in minimum, in maksimum of in stap om te feroarjen."
+        },
+        "spooked": {
+            "message": "Spoekt! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Dizze timer kin net bewurke wurde: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "In item kin net efter himsels set wurde."
+        },
+        "todo_item_not_found": {
+            "message": "Der is gjin item {item} yn {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "Neat kin efter it lêste item yn {entity_id} set wurde."
+        },
+        "todo_move_where": {
+            "message": "Sis wêrhinne: efter in oar item, of boppe-oan of ûnderoan."
+        },
+        "user_not_found": {
+            "message": "Koe brûker net fine: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Wearde {value} foar {entity_id} is gjin getal."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Koe de triggers dy't in wachthûn-trigger op skerp sette net keppelje."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Koe de ferwachte triggers fan in wachthûn-trigger net keppelje."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} is in groep út dyn YAML-konfiguraasje, en dy kin Spook net feroarje. Bewurkje him yn dyn konfiguraasje, of brûk group.set, dy't op sa'n groep noch wol wurket."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} is ynsteld yn YAML en kin net fuortsmiten wurde."
+        },
+        "zone_not_editable": {
+            "message": "Dizze sône kin net bewurke wurde: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Ûnbekende entiteit yn 'e gaten hâlden troch alarm: {alert}",
+            "description": "Spook hat in spoek fûn yn dyn alarms 👻\n\nIt alarm {alert} (`{entity_id}`) hâldt in entiteit yn 'e gaten dy't Home Assistant net ken:\n\n{entities}\n\nIn alarm kin allinnich ôfgean op de entiteit dy't it yn 'e gaten hâldt, dus dit alarm kin noait wer ôfgean. It sjocht der krekt sa út as in alarm dat neat te melden hat.\n\nOm dizze flater op te lossen, bewurkje de seksje `alert:` yn dyn konfiguraasje en lit dit alarm nei in entiteit wize dy't wol bestiet.\n\nSpook 👻 Dyn maat."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Ûnbekende notifiers brûkt troch alarm: {alert}",
+            "description": "Spook hat in spoek fûn yn dyn alarms 👻\n\nIt alarm {alert} (`{entity_id}`) stjoert meldingen fia de folgjende aksjes, dy't Home Assistant net ken:\n\n{notifiers}\n\nIt alarm giet noch hieltyd ôf en docht noch hieltyd syn rûntsjes, mar dizze meldingen komme nergens oan. Home Assistant logt dat pas op it momint dat it alarm ôfgiet, en dat is in min momint om derachter te kommen dat nimmen harket.\n\nOm dizze flater op te lossen, bewurkje de list `notifiers:` fan dit alarm yn dyn konfiguraasje en smyt dizze items fuort of ferbetterje se.\n\nSpook 👻 Dyn maat."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {automation}"
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring ferwiist nei de folgjende romten, dy't Home Assistant net ken:\n\n{areas}\n\n\n\nOm dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en smyt it gebrûk fan dizze net-besteande romten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende romten brûkt yn: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring brûkt de folgjende betingsten, dy't troch gjin inkele yntegraasje yn Home Assistant levere wurde kinne:\n\n{conditions}\n\n\n\nDit bart faak as de yntegraasje dy't in betingst leveret fuortsmiten is. Om dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en smyt it gebrûk fan dizze net-beskikbere betingsten der út, of set de yntegraasje dy't se leveret werom.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende betingsten brûkt yn: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {automation}"
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring ferwiist nei de folgjende apparaten, dy't Home Assistant net ken:\n\n{devices}\n\n\n\nOm dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en smyt it gebrûk fan dizze net-besteande apparaten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende apparaten brûkt yn: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {automation}"
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring ferwiist nei de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nOm dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en smyt it gebrûk fan dizze net-besteande entiteiten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten brûkt yn: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring ferwiist nei de folgjende ferdjippingen, dy't Home Assistant net ken:\n\n{floors}\n\n\n\nOm dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en smyt it gebrûk fan dizze net-besteande ferdjippingen der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende ferdjippingen brûkt yn: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring ferwiist nei de folgjende labels, dy't Home Assistant net ken:\n\n{labels}\n\n\n\nOm dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en smyt it gebrûk fan dizze net-besteande labels der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende labels brûkt yn: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring ferwiist nei de folgjende aksjes, dy't Home Assistant net ken:\n\n{services}\n\n\n\nOm dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en smyt it gebrûk fan dizze net-besteande aksjes der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende aksjes brûkt yn: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook hat in spoek fûn yn dyn automatisearringen 👻\n\nÛnder it omswalkjen kaam Spook de folgjende automatisearring tsjin:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nDizze automatisearring brûkt de folgjende triggers, dy't troch gjin inkele yntegraasje yn Home Assistant levere wurde kinne:\n\n{triggers}\n\n\n\nDit bart faak as de yntegraasje dy't in trigger leveret fuortsmiten is. Om dizze flater op te lossen, [bewurkje de automatisearring]({edit}) en smyt it gebrûk fan dizze net-beskikbere triggers der út, of set de yntegraasje dy't se leveret werom.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende triggers brûkt yn: {automation}"
+        },
+        "empty_areas": {
+            "title": "Lege romte: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Lege romte: {area}",
+                        "description": "De romte {area} hat gjin apparaten, gjin entiteiten, en gjin automatisearring of script dat him as doel hat.\n\nSmyt him fuort, of hâld him en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dizze lege romte fuortsmite",
+                            "ignore": "Hâld him, hâld der oer op",
+                            "manage": "Ik reparearje it sels"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze romte.",
+                    "manage": "Do kinst dizze romte sels beheare op de [side Romten](/config/areas/dashboard).",
+                    "changed": "Dizze romte is wer yn gebrûk sûnt Spook seach: der is wat yn, of in automatisearring of script brûkt him. Dêrom is er mei rêst litten. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Lege ferdjipping: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Lege ferdjipping: {floor}",
+                        "description": "De ferdjipping {floor} hat gjin romten, en gjin automatisearring of script dat him as doel hat.\n\nSmyt him fuort, of hâld him en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dizze lege ferdjipping fuortsmite",
+                            "ignore": "Hâld him, hâld der oer op",
+                            "manage": "Ik reparearje it sels"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze ferdjipping.",
+                    "manage": "Do kinst dizze ferdjipping sels beheare op de [side Romten](/config/areas/dashboard).",
+                    "changed": "Dizze ferdjipping is wer yn gebrûk sûnt Spook seach: der leit in romte op, of in automatisearring of script brûkt him. Dêrom is er mei rêst litten. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Ûnbekende entiteiten brûkt yn it enerzjydashboerd",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ûnbekende entiteiten brûkt yn it enerzjydashboerd",
+                        "description": "Spook hat in spoek fûn yn dyn enerzjydashboerd 👻\n\nIt enerzjydashboerd ferwiist nei de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\nDit bart meastal as in entiteit dy't yn de enerzjykonfiguraasje brûkt wurdt, omneamd of fuortsmiten is. Omneamd? Iepenje dan [Konfiguraasje > Dashboerden > Enerzjy](/config/energy) en kies de nije, sadat syn skiednis op it dashboerd bliuwt.\n\nFoar goed fuortsmiten? Spook kin dizze foar dy út de enerzjykonfiguraasje helje. In ûntbrekkende meter nimt syn boarne of apparaat mei, in ûntbrekkende priis of kosten wurdt allinnich leechmakke. It dashboerd lit dan de skiednis fan wat der útheljen is net mear sjen; de statistiken sels bliuwe.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Helje dizze út de enerzjykonfiguraasje",
+                            "manage": "Ik doch it sels",
+                            "ignore": "Hâld se, hâld der oer op"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze entiteiten.",
+                    "manage": "Do kinst dizze sels bywurkje of fuortsmite yn de [enerzjykonfiguraasje](/config/energy).",
+                    "nothing_to_remove": "Gjinien fan dizze is noch ûnbekend, dus der is neat útheljen. Miskien binne se werom, of hat ien de enerzjykonfiguraasje al feroare."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "Ûnbekende groepsleden yn: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ûnbekende groepsleden yn: {group}",
+                        "description": "Spook hat in spoek fûn yn dyn groepen 👻\n\nDe groep {group} (`{entity_id}`) hat leden dy't Home Assistant net ken:\n\n{entities}\n\nHelje se út de groep, of hâld se en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dizze leden fuortsmite",
+                            "manage": "Ik reparearje it sels",
+                            "ignore": "Hâld se, hâld der oer op"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze groep.",
+                    "not_editable": "Dizze groep is ynsteld yn YAML, dus Spook kin him net bewurkje. Wurkje de groep ynstee yn dyn konfiguraasje by.",
+                    "manage": "Do kinst dizze groep sels beheare op de [side Helpers](/config/helpers).",
+                    "changed": "De leden dy't dizze reparaasje neamde, binne werom of feroare sûnt Spook seach, dus der is neat út de groep helle. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook hat in spoek fûn yn dyn HomeKit-brêge 👻\n\nÛnder it omswalkjen kaam Spook de folgjende HomeKit-brêge tsjin:\n\n{bridge}\n\nDizze brêge neamt de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nHomeKit folget in entiteit net as dy omneamd wurdt. In opnommen entiteit dy't omneamd of fuortsmiten is, is fuort út de Home-app; in útsletten entiteit dy't omneamd is, komt der wer yn te stean.\n\nOm dizze flater op te lossen, gean nei [de yntegraasje HomeKit Bridge](/config/integrations/integration/homekit), selektearje **Konfigurearje** by dizze brêge, en kies de entiteiten opnij.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten brûkt yn HomeKit-brêge: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook hat in spoek fûn yn dyn HomeKit-brêge 👻\n\nÛnder it omswalkjen kaam Spook de folgjende HomeKit-brêge tsjin:\n\n{bridge}\n\nDizze brêge neamt de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nHomeKit folget in entiteit net as dy omneamd wurdt. In opnommen entiteit dy't omneamd of fuortsmiten is, is fuort út de Home-app; in útsletten entiteit dy't omneamd is, komt der wer yn te stean.\n\nDizze brêge is ynsteld yn dyn YAML-konfiguraasje. Om dizze flater op te lossen, bewurkje it `filter` fan dizze brêge ûnder `homekit:` en smyt dizze entiteiten fuort of ferbetterje se.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten brûkt yn HomeKit-brêge: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nDe folgjende dashboerdboarnen wize nei bestannen dy't net besteane:\n\n{resources}\n\n\n\nDit bart meastal as in oanpaste kaart of syn bestannen fuortsmiten binne, mar de boarne efterbleaun is. Om dizze flater op te lossen, iepenje de [side Boarnen](/config/lovelace/resources) en smyt dizze boarnen fuort of ferbetterje se. Dy side hat gjin eigen ljepper: op de side Dashboerden sit er efter de trije puntsjes, rjochtsboppe.\n\nSpook 👻 Dyn maat.",
+            "title": "Dashboerdboarnen wize nei ûntbrekkende bestannen"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nDe folgjende dashboerdboarnen wize nei bestannen dy't net besteane:\n\n{resources}\n\n\n\nDit bart meastal as in oanpaste kaart of syn bestannen fuortsmiten binne, mar de boarne efterbleaun is.\n\nDizze boarnen steane yn dyn YAML-konfiguraasje, dus de side Boarnen kin se net feroarje. Bewurkje de seksje `resources:` fan dyn Lovelace-konfiguraasje en smyt dizze items fuort of ferbetterje se.\n\nSpook 👻 Dyn maat.",
+            "title": "Dashboerdboarnen wize nei ûntbrekkende bestannen"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Dashboerdboarne mear as ien kear opnommen: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Dashboerdboarne mear as ien kear opnommen: {resource}",
+                        "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nDizze dashboerdboarne stiet {count} kear yn de list:\n\n{resources}\n\nDit bart meastal as in oanpaste kaart bywurke is troch in boarne foar de nije ferzje ta te foegjen ynstee fan de besteande te bewurkjen. De browser laadt se beide, de kaart besiket himsels twa kear te registrearjen, en de twadde poging mislearret. Dat liket op in stikkene kaart en net op in dûbele boarne.\n\nSpook kin de ekstra kopyen opromje en de lêst tafoege hâlde.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "De ekstra kopyen opromje, de nijste hâlde",
+                            "ignore": "Lit se stean, hâld der oer op",
+                            "manage": "Ik reparearje it sels"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze boarne.",
+                    "manage": "Do kinst dyn dashboerdboarnen sels beheare op de [side Boarnen](/config/lovelace/resources).",
+                    "yaml": "Dizze boarnen steane yn dyn YAML-konfiguraasje, dus Spook kin se net foar dy feroarje. Bewurkje de seksje `resources:` fan dyn Lovelace-konfiguraasje en smyt de kopyen fan `{resource}` dy'tst net mear nedich hast fuort."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n{dashboard}\n\nDit dashboerd ferwiist nei de folgjende romten, dy't Home Assistant net ken:\n\n{areas}\n\n\n\nDit bart faak as in romte omneamd of fuortsmiten is. Om dizze flater op te lossen, [bewurkje it dashboerd]({edit}) en smyt it gebrûk fan dizze net-besteande romten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende romten brûkt yn dashboerd: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {dashboard}"
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n[{dashboard}]({edit})\n\nDit dashboerd ferwiist nei de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nOm dizze flater op te lossen, [bewurkje it dashboerd]({edit}) en smyt it gebrûk fan dizze net-besteande entiteiten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten brûkt yn: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook hat in spoek fûn yn dyn dashboerden 👻\n\nÛnder it omswalkjen kaam Spook it folgjende dashboerd tsjin:\n\n[{dashboard}]({edit})\n\nDit dashboerd fiert de folgjende aksjes út, dy't Home Assistant net ken:\n\n{services}\n\n\n\nIn knop of kaart dy't ien fan dizze brûkt, docht neat as derop tikke wurdt. Dit bart faak as in script omneamd of fuortsmiten is, of in yntegraasje fuortsmiten is. Om dizze flater op te lossen, [bewurkje it dashboerd]({edit}) en smyt dizze net-besteande aksjes fuort of ferfang se.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende aksjes brûkt yn dashboerd: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Ûnbekende leden brûkt yn min/max-helper: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ûnbekende leden brûkt yn min/max-helper: {helper}",
+                        "description": "Spook hat in spoek fûn yn dyn helpers 👻\n\nDe min/max-helper {helper} (`{entity_id}`) kombinearret de folgjende leden, dy't Home Assistant net ken:\n\n{sources}\n\nSmyt se fuort, sadat de helper trochgiet mei de leden dy't oerbliuwe, of hâld se en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dizze leden fuortsmite",
+                            "manage": "Ik reparearje it sels",
+                            "ignore": "Hâld se, hâld der oer op"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze helper.",
+                    "manage": "Do kinst dizze helper sels beheare op de [side Helpers](/config/helpers).",
+                    "changed": "De leden dy't dizze reparaasje neamde, binne werom of feroare sûnt Spook seach, dus der is neat út de helper helle. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by.",
+                    "too_few_members": "In min/max-helper hat op syn minst twa leden nedich, dus as de ûntbrekkende fuortsmiten wurde, bliuwe der te min oer. Konfigurearje de helper sels opnij of smyt him fuort op de [side Helpers](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook hat in spoek fûn yn dyn meldingsgroepen 👻\n\nDe meldingsgroep `{group}` stjoert troch nei de folgjende aksjes, dy't Home Assistant net ken:\n\n{members}\n\nDe groep leveret noch hieltyd oan de rest fan syn leden, en meldt noch hieltyd sukses oan wat him oanroppen hat, dus fierder op merkt nimmen wat. De flater komt allinnich boppe as in losse \"Task exception was never retrieved\" yn it log, dy't gjin groep neamt en liket op in bug. Wa't efter dat lid siet, krijt gewoan gjin meldingen mear.\n\nOm dizze flater op te lossen, bewurkje de list `services:` fan dizze groep yn dyn konfiguraasje en smyt dizze items fuort of ferbetterje se.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende leden yn meldingsgroep: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Wees langetermynstatistiken fûn",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Wees langetermynstatistiken fûn",
+                        "description": "Spook hat in spoek fûn yn dyn recorder 👻\n\nHome Assistant hâldt langetermynstatistiken by foar it folgjende, mar der is gjin passende entiteit mear foar:\n\n{statistics}\n\nDit bart meastal as in sensor fuortsmiten is wylst syn statistiken bewarre bleaunen. Se opromje smyt dy skiednis foar goed fuort, dus Spook sjocht earst nochris, en lit alles mei rêst dat yntusken werom kommen is.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dizze statistiken opromje",
+                            "manage": "Ik doch it sels",
+                            "ignore": "Hâld se, hâld der oer op"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze statistiken.",
+                    "manage": "Do kinst dizze sels opromje op de [side Statistiken](/config/tools/statistics).",
+                    "nothing_to_clear": "Neat op dy list hoecht noch opromme te wurden, dus der is neat fuortsmiten. Of de statistiken hawwe wer in entiteit efter har, of se binne al fuort.",
+                    "clearing_took_too_long": "Spook hat frege om de statistiken op te romjen, en de recorder hat noch net sein dat er klear is. It wurk stiet yn 'e wachtrige en komt nei alle gedachten troch, dus dizze reparaasje bliuwt stean oant Spook nochris sjoen hat."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Ûnbekende apparaattrackers folge troch: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ûnbekende apparaattrackers folge troch: {person}",
+                        "description": "Spook hat in spoek fûn by dyn persoanen 👻\n\n{person} folget de folgjende apparaattrackers, dy't Home Assistant net ken:\n\n{device_trackers}\n\nDit bart faak as in apparaattracker omneamd is of syn yntegraasje fuortsmiten is.\n\nHelje se by {person} wei, of hâld se en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dizze apparaattrackers fuortsmite",
+                            "ignore": "Hâld se, hâld der oer op",
+                            "manage": "Ik reparearje it sels"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze persoan.",
+                    "not_editable": "Dizze persoan is ynsteld yn YAML, dus Spook kin him net bewurkje. Wurkje de persoan ynstee yn dyn konfiguraasje by.",
+                    "manage": "Do kinst dizze persoan sels beheare op de [side Persoanen](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook hat in spoek fûn yn dyn neiheidskonfiguraasje 👻\n\nÛnder it omswalkjen kaam Spook de folgjende neiheidskonfiguraasje tsjin:\n\n{name}\n\nDizze konfiguraasje negearret sônes dy't Home Assistant net ken:\n\n{zones}\n\n\n\nOm dizze flater op te lossen, bewurkje de konfiguraasje en smyt dizze sône(s) fuort.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende negearre sônes: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook hat in spoek fûn yn dyn neiheidskonfiguraasje 👻\n\nÛnder it omswalkjen kaam Spook de folgjende neiheidskonfiguraasje tsjin:\n\n{name}\n\nDizze konfiguraasje folget persoanen of apparaattrackers dy't Home Assistant net ken:\n\n{entities}\n\n\n\nOm dizze flater op te lossen, bewurkje de konfiguraasje en smyt dizze entiteit(en) fuort.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende folge entiteiten: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook hat in spoek fûn yn dyn neiheidskonfiguraasje 👻\n\nÛnder it omswalkjen kaam Spook de folgjende neiheidskonfiguraasje tsjin:\n\n{name}\n\nDizze konfiguraasje is basearre op in sône dy't Home Assistant net ken:\n\n`{zone}`\n\n\n\nOmdatst de sône fan in neiheidskonfiguraasje net feroarje kinst, is de ienige manier om dizze flater op te lossen dit spesifike eksimplaar fan de neiheidsyntegraasje fuort te smiten.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende sône: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spook hat in spoek fûn yn dyn sênes 👻\n\nÛnder it omswalkjen kaam Spook de folgjende sêne tsjin:\n\n[{scene}]({edit})\n\nDizze sêne ferwiist nei de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nOm dizze flater op te lossen, [bewurkje de sêne]({edit}) en smyt it gebrûk fan dizze net-besteande entiteiten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten brûkt yn: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {script}"
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script ferwiist nei de folgjende romten, dy't Home Assistant net ken:\n\n{areas}\n\n\n\nOm dizze flater op te lossen, [bewurkje it script]({edit}) en smyt it gebrûk fan dizze net-besteande romten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende romten brûkt yn: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script brûkt de folgjende betingsten, dy't troch gjin inkele yntegraasje yn Home Assistant levere wurde kinne:\n\n{conditions}\n\n\n\nDit bart faak as de yntegraasje dy't in betingst leveret fuortsmiten is. Om dizze flater op te lossen, [bewurkje it script]({edit}) en smyt it gebrûk fan dizze net-beskikbere betingsten der út, of set de yntegraasje dy't se leveret werom.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende betingsten brûkt yn: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {script}"
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script ferwiist nei de folgjende apparaten, dy't Home Assistant net ken:\n\n{devices}\n\n\n\nOm dizze flater op te lossen, [bewurkje it script]({edit}) en smyt it gebrûk fan dizze net-besteande apparaten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende apparaten brûkt yn: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {script}"
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script ferwiist nei de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nOm dizze flater op te lossen, [bewurkje it script]({edit}) en smyt it gebrûk fan dizze net-besteande entiteiten der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten brûkt yn: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script ferwiist nei de folgjende ferdjippingen, dy't Home Assistant net ken:\n\n{floors}\n\n\n\nOm dizze flater op te lossen, [bewurkje it script]({edit}) en smyt it gebrûk fan dizze net-besteande ferdjippingen der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende ferdjippingen brûkt yn: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script ferwiist nei de folgjende labels, dy't Home Assistant net ken:\n\n{labels}\n\n\n\nOm dizze flater op te lossen, [bewurkje it script]({edit}) en smyt it gebrûk fan dizze net-besteande labels der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende labels brûkt yn: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script ferwiist nei de folgjende aksjes, dy't Home Assistant net ken:\n\n{services}\n\n\n\nOm dizze flater op te lossen, [bewurkje it script]({edit}) en smyt it gebrûk fan dizze net-besteande aksjes der út.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende aksjes brûkt yn: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook hat in spoek fûn yn dyn scripts 👻\n\nÛnder it omswalkjen kaam Spook it folgjende script tsjin:\n\n[{script}]({edit}) (`{entity_id}`)\n\nDit script brûkt de folgjende triggers, dy't troch gjin inkele yntegraasje yn Home Assistant levere wurde kinne:\n\n{triggers}\n\n\n\nDit bart faak as de yntegraasje dy't in trigger leveret fuortsmiten is. Om dizze flater op te lossen, [bewurkje it script]({edit}) en smyt it gebrûk fan dizze net-beskikbere triggers der út, of set de yntegraasje dy't se leveret werom.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende triggers brûkt yn: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook hat in spoek fûn yn dyn sjabloanhelpers 👻\n\nÛnder it omswalkjen kaam Spook de folgjende sjabloanhelper tsjin:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSyn konfiguraasje ferwiist nei de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nDit bart faak as in entiteit omneamd of fuortsmiten is. Om dizze flater op te lossen, konfigurearje de sjabloanhelper opnij sadat er nei besteande entiteiten ferwiist.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten brûkt yn sjabloanhelper: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook hat in spoek fûn yn dyn sjabloanhelpers 👻\n\nÛnder it omswalkjen kaam Spook de folgjende sjabloanhelper tsjin:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nHy ferwiist nei de folgjende aksjes, dy't Home Assistant net ken:\n\n{services}\n\n\n\nDit bart faak as eat dat in aksje levere fuortsmiten is, of as in script omneamd of fuortsmiten is. Om dizze flater op te lossen, konfigurearje de sjabloanhelper opnij sadat er besteande aksjes brûkt.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende aksjes brûkt yn sjabloanhelper: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Ûnbekende {sensors}-sensor foar romte: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ûnbekende {sensors}-sensor foar romte: {area}",
+                        "description": "Spook hat in spoek fûn yn dyn romten 👻\n\nDe romte {area} brûkt in {sensors}-sensor dy't Home Assistant net ken:\n\n{entities}\n\nHome Assistant kontrolearret dizze sensor allinnich as er keazen wurdt, dus doe't er fuortsmiten of omneamd waard, bleau de romte nei neat wizen. Assist en romtekaarten krije der gjin mjitting mear fan.\n\nMeitsje de ynstelling leech, sadatst opnij in sensor kieze kinst, of hâld him en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "De ynstelling leechmeitsje",
+                            "manage": "Ik reparearje it sels",
+                            "ignore": "Hâld him, hâld der oer op"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze romte.",
+                    "manage": "Do kinst in oare sensor kieze yn de ynstellingen fan dizze romte op de [side Romten](/config/areas/dashboard).",
+                    "changed": "Dizze sensoren binne werom, of de ynstellingen wize no earne oars hinne, sûnt Spook seach. Dêrom is der neat leechmakke. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook hat in spoek fûn yn dyn oanpassingen 👻\n\nDe seksje `customize:` set attributen fêst op de folgjende entiteiten, dy't Home Assistant net ken:\n\n{entities}\n\n\n\nDit bart faak as in entiteit omneamd of fuortsmiten is wylst syn oanpassing efterbleau. Om dizze flater op te lossen, bewurkje de seksje `customize:` yn dyn konfiguraasje en smyt dizze entiteiten fuort.\n\nSpook 👻 Dyn maat.",
+            "title": "Ûnbekende entiteiten yn dyn oanpassingen"
+        },
+        "unknown_engines": {
+            "title": "Assist-pipeline brûkt engines dy't fuort binne: {pipeline}",
+            "description": "Spook hat in spoek fûn yn dyn spraakassistinten 👻\n\nDe Assist-pipeline {pipeline} brûkt it folgjende, dat Home Assistant net ken:\n\n{engines}\n\nDit betsjut meastal dat de yntegraasje dy't derefter siet fuortsmiten is. De pipeline hat dat net te hearren krigen, dus de folgjende kear dat er brûkt wurdt, mislearret er mei in flater oer in ûntbrekkende provider of agent, en neat wiist foar dy tiid hjirhinne.\n\nOm dit op te lossen, iepenje de ynstellingen fan dizze assistint ûnder [Spraakassistinten](/config/voice-assistants/assistants) en kies foar elk fan dizze in engine dy't der noch wol is.\n\nSpook 👻 Dyn maat."
+        },
+        "unknown_helper_source_references": {
+            "title": "Ûnbekende boarne-entiteiten brûkt yn helper: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Ûnbekende boarne-entiteiten brûkt yn helper: {helper}",
+                        "description": "Spook hat in spoek fûn yn dyn helpers 👻\n\nDe helper {helper} (`{domain}`, `{entity_id}`) ferwiist nei de folgjende boarne-entiteiten, dy't Home Assistant net ken:\n\n{sources}\n\nSûnder syn boarnen kin dizze helper net wurkje. {usage}\n\nSmyt de helper fuort, of hâld him en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dizze helper fuortsmite",
+                            "manage": "Ik reparearje it sels",
+                            "ignore": "Hâld him, hâld der oer op"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze helper.",
+                    "manage": "Do kinst dizze helper sels beheare op de [side Helpers](/config/helpers).",
+                    "changed": "De boarnen fan dizze helper binne feroare sûnt Spook seach, dus de helper is mei rêst litten. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Net brûkte blueprint: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Net brûkte blueprint: {blueprint}",
+                        "description": "De blueprint {blueprint} wurdt troch gjin inkele {domain} brûkt.\n\nSmyt him fuort, of hâld him en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dizze net brûkte blueprint fuortsmite",
+                            "ignore": "Hâld him, hâld der oer op",
+                            "manage": "Ik reparearje it sels"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dizze blueprint.",
+                    "manage": "Do kinst dizze blueprint sels beheare op de [side Blueprints](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Net brûkt label: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Net brûkt label: {label}",
+                        "description": "It label {label} sit op gjin inkele entiteit, apparaat of romte, en gjin automatisearring of script hat it as doel.\n\nSmyt it fuort, of hâld it en Spook hâldt op der oer te begjinnen.\n\nSpook 👻 Dyn maat.",
+                        "menu_options": {
+                            "remove": "Dit net brûkte label fuortsmite",
+                            "ignore": "Hâld it, hâld der oer op",
+                            "manage": "Ik reparearje it sels"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook hâldt fan no ôf de mûle oer dit label.",
+                    "manage": "Do kinst dit label sels beheare op de [side Labels](/config/labels).",
+                    "changed": "Dit label is wer yn gebrûk sûnt Spook seach: der draacht eat it, of in automatisearring of script brûkt it. Dêrom is it mei rêst litten. Spook sjocht op eigen hâning nochris en wurket dizze reparaasje by."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -297,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "Restart required",
+            "title": "Opnij starte fereaske",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "Restart required",
-                        "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+                        "title": "Opnij starte fereaske",
+                        "description": "Om Spook 👻 de ynstallaasje ôfmeitsje te litten, moat Home Assistant opnij start wurde.\n\nSelektearje yntsjinje om Home Assistant no opnij te starten.\n\nSpook 👻 Dyn maat."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Ferzje",
+            "ghosts_found": "Spoeken fûn",
+            "ghosts_ignored": "Spoeken negearre",
+            "helpers_linked": "Helpers keppele"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Leden oan in groep tafoegje",
+            "description": "Foeget entiteiten ta oan in groep dy't fia de ynterface makke is, wylst Home Assistant rint. Entiteiten dy't al yn de groep sitte, bliuwe dêr't se binne.",
+            "fields": {
+                "group": {
+                    "name": "Groep",
+                    "description": "De groep dêr't oan tafoege wurdt."
+                },
+                "members": {
+                    "name": "Leden",
+                    "description": "De entiteiten dy't oan de groep tafoege wurde."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Leden út in groep fuortsmite",
+            "description": "Hellet entiteiten út in groep dy't fia de ynterface makke is, wylst Home Assistant rint. Eat neame dat net yn de groep sit, docht neat, dus sa helst ek in lid op dat net mear bestiet.",
+            "fields": {
+                "group": {
+                    "name": "Groep",
+                    "description": "De groep dêr't se út helle wurde."
+                },
+                "members": {
+                    "name": "Leden",
+                    "description": "De entiteiten dy't út de groep helle wurde."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "De leden fan in groep ynstelle",
+            "description": "Ferfangt de leden fan in groep dy't fia de ynterface makke is troch de opjûne, wylst Home Assistant rint.",
+            "fields": {
+                "group": {
+                    "name": "Groep",
+                    "description": "De groep dy't feroare wurdt."
+                },
+                "members": {
+                    "name": "Leden",
+                    "description": "De entiteiten dy't de groep fan no ôf befetsje moat."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Op in betingst wachtsje",
+            "description": "Wachtsje oant in betingst wier is. Komt fuortendaliks werom as dat al sa is.",
+            "fields": {
+                "condition": {
+                    "name": "Betingst",
+                    "description": "De betingst dêr't op wachte wurdt."
+                },
+                "timeout": {
+                    "name": "Tiidslimyt",
+                    "description": "Hoe lang der wachte wurdt foardat it opjûn wurdt. Wachtet sûnder ein as it leech litten wurdt."
+                }
+            }
+        },
+        "boo": {
+            "name": "Boe!",
+            "description": "Dizze aksje oanroppe lit Home Assistant skrikke. Dizze aksje útfiere mislearret altyd."
+        },
+        "random_fail": {
+            "name": "Willekeurich mislearje",
+            "description": "Dizze aksje útfiere mislearret samar ris."
+        },
+        "blueprint_import": {
+            "name": "Blueprint ymportearje",
+            "description": "In blueprint ymportearje.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "De URL dêr't de blueprint fan ymportearre wurdt."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Efkes útskeakelje",
+            "description": "Skeakelet in automatisearring in skoft út, en skeakelet him wer yn as de tiid om is.",
+            "fields": {
+                "duration": {
+                    "name": "Doer",
+                    "description": "Hoe lang de automatisearring út bliuwt. Hy giet fansels wer oan as dizze tiid om is, ek as Home Assistant tuskentroch opnij start."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Ynskeakelje foar",
+            "description": "Skeakelet in automatisearring in skoft yn, en skeakelet him wer út as de tiid om is.",
+            "fields": {
+                "duration": {
+                    "name": "Doer",
+                    "description": "Hoe lang de automatisearring oan bliuwt. Hy giet fansels wer út as dizze tiid om is, ek as Home Assistant tuskentroch opnij start."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Helderheid ynstelle",
+            "description": "Stelt de helderheid yn fan ljochten dy't al oan binne, en lit de ljochten dy't út binne mei rêst.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Helderheid",
+                    "description": "De helderheid dy't ynsteld wurdt, as persintaazje. Groepen wurde ljocht foar ljocht oanpast, dus in ljocht dat út is, bliuwt út."
+                },
+                "transition": {
+                    "name": "Oergong",
+                    "description": "Hoe lang de feroaring duorje moat, yn sekonden."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Helderheid ferheegje",
+            "description": "Draait de ljochten dy't al oan binne heger, en lit de ljochten dy't út binne mei rêst.",
+            "fields": {
+                "step_pct": {
+                    "name": "Stap",
+                    "description": "Hoefolle helderder it wurde moat, as persintaazje. Elk ljocht stapt fan syn eigen nivo út, dus in groep hâldt syn foarm ynstee fan gelyk te lûken."
+                },
+                "transition": {
+                    "name": "Oergong",
+                    "description": "Hoe lang de feroaring duorje moat, yn sekonden."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Helderheid ferleegje",
+            "description": "Draait de ljochten dy't al oan binne leger, en stoppet by it dimste dat se kinne ynstee fan se út te skeakeljen.",
+            "fields": {
+                "step_pct": {
+                    "name": "Stap",
+                    "description": "Hoefolle dimmer it wurde moat, as persintaazje. Elk ljocht stapt fan syn eigen nivo út, dus in groep hâldt syn foarm ynstee fan gelyk te lûken."
+                },
+                "transition": {
+                    "name": "Oergong",
+                    "description": "Hoe lang de feroaring duorje moat, yn sekonden."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Kleur ynstelle",
+            "description": "Stelt de kleur yn fan ljochten dy't al oan binne, en lit de ljochten dy't út binne of gjin kleur kinne mei rêst.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Kleur",
+                    "description": "De kleur dy't ynsteld wurdt. Ljochten dy't gjin kleur kinne, wurde oerslein ynstee fan wyt makke."
+                },
+                "transition": {
+                    "name": "Oergong",
+                    "description": "Hoe lang de feroaring duorje moat, yn sekonden."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Kleurtemperatuer ynstelle",
+            "description": "Stelt de kleurtemperatuer yn fan ljochten dy't al oan binne, elk binnen it berik dat er echt helje kin.",
+            "fields": {
+                "kelvin": {
+                    "name": "Kleurtemperatuer",
+                    "description": "De kleurtemperatuer dy't ynsteld wurdt. Elk ljocht wurdt binnen syn eigen berik hâlden, want waarm wyt op de iene lampe is in getal dat in oare net helje kin."
+                },
+                "transition": {
+                    "name": "Oergong",
+                    "description": "Hoe lang de feroaring duorje moat, yn sekonden."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Effekt ynstelle",
+            "description": "Stelt in effekt yn op de ljochten dy't al oan binne en it effekt ek echt hawwe.",
+            "fields": {
+                "effect": {
+                    "name": "Effekt",
+                    "description": "De namme fan it effekt dat ynsteld wurdt. Effektnammen ferskille per fabrikant, dus ljochten dy't dit effekt net hawwe, bliuwe sa't se binne."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Barren fuortsmite",
+            "description": "Smyt barrens út in kalinder fuort, fûn op harren titel of uid binnen in tiidsrom. Jout werom wat der fuortsmiten is, mei uid.",
+            "fields": {
+                "summary": {
+                    "name": "Gearfetting",
+                    "description": "De titel fan de barrens dy't fuortsmiten wurde moatte, krekt sa't er yn de kalinder stiet."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "De identifikaasje fan it barren dat fuortsmiten wurde moat, foar as'tst dy hast."
+                },
+                "start_date_time": {
+                    "name": "Begjindatum en -tiid",
+                    "description": "Wêr't it sykjen begjint. Standert no."
+                },
+                "end_date_time": {
+                    "name": "Eindatum en -tiid",
+                    "description": "Wêr't it sykjen ophâldt. Jou dit of in doer."
+                },
+                "duration": {
+                    "name": "Doer",
+                    "description": "Hoe fier't fan it begjin ôf socht wurdt. Jou dit of in eindatum en -tiid."
+                },
+                "whole_series": {
+                    "name": "Hiele rige",
+                    "description": "Smyt by in weromkommend barren de hiele rige fuort ynstee fan allinnich it fûne foarkommen."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Barren bywurkje",
+            "description": "Feroaret barrens yn in kalinder, fûn op harren titel of uid binnen in tiidsrom. Jout werom wat der feroare is, mei uid.",
+            "fields": {
+                "summary": {
+                    "name": "Gearfetting",
+                    "description": "De titel fan de barrens dy't feroare wurde moatte, krekt sa't er yn de kalinder stiet."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "De identifikaasje fan it barren dat feroare wurde moat, foar as'tst dy hast."
+                },
+                "start_date_time": {
+                    "name": "Begjindatum en -tiid",
+                    "description": "Wêr't it sykjen begjint. Standert no."
+                },
+                "end_date_time": {
+                    "name": "Eindatum en -tiid",
+                    "description": "Wêr't it sykjen ophâldt. Jou dit of in doer."
+                },
+                "duration": {
+                    "name": "Doer",
+                    "description": "Hoe fier't fan it begjin ôf socht wurdt. Jou dit of in eindatum en -tiid."
+                },
+                "new_summary": {
+                    "name": "Nije gearfetting",
+                    "description": "De titel dy't de barrens krije."
+                },
+                "description": {
+                    "name": "Beskriuwing",
+                    "description": "De beskriuwing dy't de barrens krije."
+                },
+                "location": {
+                    "name": "Lokaasje",
+                    "description": "De lokaasje dy't de barrens krije."
+                },
+                "new_start": {
+                    "name": "Nij begjin",
+                    "description": "Wannear't de barrens ynstee begjinne. Se hâlde harren lingte, of der moat ek in nij ein jûn wurde."
+                },
+                "new_end": {
+                    "name": "Nij ein",
+                    "description": "Wannear't de barrens ynstee einigje."
+                },
+                "shift": {
+                    "name": "Ferskowing",
+                    "description": "Ferskow de barrens mei safolle, letter, of earder as it negatyf is. Ynstee fan in nij begjin of ein."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Temperatuer ferheegje",
+            "description": "Set it ynstelpunt fan in termostaat in stap heger, beide ynstelpunten foar ien dy't ferwaarmet en koelet. In termostaat dy't út stiet, bliuwt út.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Hoefolle it feroare wurdt. Lit it leech om de eigen stap fan de termostaat te brûken, of in heale graad (ien yn Fahrenheit) as er gjin hat."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Temperatuer ferleegje",
+            "description": "Set it ynstelpunt fan in termostaat in stap leger, beide ynstelpunten foar ien dy't ferwaarmet en koelet. In termostaat dy't út stiet, bliuwt út.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Hoefolle it feroare wurdt. Lit it leech om de eigen stap fan de termostaat te brûken, of in heale graad (ien yn Fahrenheit) as er gjin hat."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "In romte oanmeitsje",
+            "description": "Makket daliks in nije romte oan.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de romte dy't oanmakke wurdt."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Piktogram foar de romte."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "In list mei aliassen foar de romte. Handich ast de romte yn in oare taal of mei in oare bynamme brûke wolst."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "In alias oan in romte tafoegje",
+            "description": "Foeget in alias ta oan in romte.",
+            "fields": {
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dêr't de alias oan tafoege wurdt."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias (of list mei aliassen) dy't oan de romte tafoege wurdt."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "In alias fan in romte fuortsmite",
+            "description": "Smyt in alias fan in romte fuort.",
+            "fields": {
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dêr't de alias fan fuortsmiten wurdt."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias (of list mei aliassen) dy't fan de romte fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Aliassen foar in romte ynstelle",
+            "description": "Stelt aliassen foar in romte yn. Oerskriuwt en smyt alle besteande aliassen fuort, en ferfangt se folslein troch de nije.",
+            "fields": {
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dêr't de aliassen foar ynsteld wurde."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen dy't foar de romte ynsteld wurde."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "In apparaat oan in romte tafoegje",
+            "description": "Foeget in apparaat ta oan in romte. Tink derom: as it apparaat al yn in romte sit, wurdt it út de foarige romte helle.",
+            "fields": {
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dêr't it apparaat oan tafoege wurdt."
+                },
+                "device_id": {
+                    "name": "Apparaat-ID",
+                    "description": "De ID fan it apparaat (of de apparaten) dat oan de romte tafoege wurdt."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "In apparaat út in romte fuortsmite",
+            "description": "Hellet in apparaat út in romte. Omdat in apparaat mar yn ien romte sitte kin, hoecht dizze oanrop de romte net te neamen.",
+            "fields": {
+                "device_id": {
+                    "name": "Apparaat-ID",
+                    "description": "De ID fan it apparaat dêr't de romte fan fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "In entiteit oan in romte tafoegje",
+            "description": "Foeget in entiteit ta oan in romte. Tink derom: as de entiteit al yn in romte sit, wurdt se út de foarige romte helle. Dit giet boppe de romte dêr't it apparaat dat dizze entiteit leveret yn sit.",
+            "fields": {
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dêr't de entiteit oan tafoege wurdt."
+                },
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ID fan de entiteit (of entiteiten) dy't oan de romte tafoege wurdt."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "In entiteit út in romte fuortsmite",
+            "description": "Hellet in entiteit út in romte. Omdat in entiteit mar yn ien romte sitte kin, hoecht dizze oanrop de romte net te neamen. Tink derom: nei dizze oanrop sit de entiteit noch hieltyd yn de romte fan it apparaat dat har leveret.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ID fan de entiteit (of entiteiten) dêr't de romte fan fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "In romte fuortsmite",
+            "description": "Smyt daliks in romte fuort.",
+            "fields": {
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dy't fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "In yntegraasje útskeakelje",
+            "description": "Skeakelet yntegraasje-items út, per item of alle items fan in yntegraasje.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Yntegraasje-item",
+                    "description": "It yntegraasje-item dat útskeakele wurdt."
+                },
+                "domain": {
+                    "name": "Yntegraasje",
+                    "description": "Skeakelje alle items fan dizze yntegraasjes út, ek dy't letter tafoege binne."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "In yntegraasje ynskeakelje",
+            "description": "Skeakelet yntegraasje-items yn, per item of alle items fan in yntegraasje.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Yntegraasje-item",
+                    "description": "It yntegraasje-item dat ynskeakele wurdt."
+                },
+                "domain": {
+                    "name": "Yntegraasje",
+                    "description": "Skeakelje alle items fan dizze yntegraasjes yn, ek dy't letter tafoege binne."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "In apparaat útskeakelje",
+            "description": "Skeakelet daliks in apparaat út.",
+            "fields": {
+                "device_id": {
+                    "name": "Apparaat",
+                    "description": "It apparaat (of de apparaten) dat útskeakele wurdt."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "In apparaat ynskeakelje",
+            "description": "Skeakelet daliks in apparaat yn.",
+            "fields": {
+                "device_id": {
+                    "name": "Apparaat-ID",
+                    "description": "De rauwe apparaat-ID dy't ynskeakele wurdt. Útskeakele apparaten wurde net toand yn de apparaatkiezer fan Home Assistant. Meardere ID's kinne as YAML-list jûn wurde."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "In brûker útskeakelje",
+            "description": "Skeakelet in brûkersakkount út, sadat dy net mear oanmelde kin.",
+            "fields": {
+                "user_id": {
+                    "name": "Brûkers-ID",
+                    "description": "De ID('s) fan de brûker(s) dy't útskeakele wurde."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "In brûker ynskeakelje",
+            "description": "Skeakelet in brûkersakkount yn, sadat dy wer oanmelde kin.",
+            "fields": {
+                "user_id": {
+                    "name": "Brûkers-ID",
+                    "description": "De ID('s) fan de brûker(s) dy't ynskeakele wurde."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "De ID fan in entiteit bywurkje",
+            "description": "Wurket daliks de ID fan in entiteit by.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dy't bywurke wurde."
+                },
+                "new_entity_id": {
+                    "name": "Nije entiteits-ID",
+                    "description": "De nije ID foar de entiteit."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "In entiteit útskeakelje",
+            "description": "Skeakelet daliks in entiteit (of entiteiten) út.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dy't útskeakele wurde."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "In entiteit ynskeakelje",
+            "description": "Skeakelet daliks in entiteit (of entiteiten) yn.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dy't ynskeakele wurde."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "In entiteit foar assistinten ûntslute",
+            "description": "Ûntslút in entiteit (of entiteiten) foar spraakassistinten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dy't ûntsletten wurde."
+                },
+                "assistants": {
+                    "name": "Assistinten",
+                    "description": "De assistint(en) dêr't dit foar jildt."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "In entiteit ferstopje",
+            "description": "Ferstoppet daliks in entiteit (of entiteiten).",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dy't ferstoppe wurde."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "In entiteit omneame",
+            "description": "Neamt daliks in entiteit (of entiteiten) om.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dy't omneamd wurde."
+                },
+                "name": {
+                    "name": "Namme",
+                    "description": "De nije namme foar de entiteit(en)."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "It piktogram fan in entiteit ynstelle",
+            "description": "Stelt daliks it piktogram fan in entiteit (of entiteiten) yn. Set it op null om werom te gean nei it piktogram dat de yntegraasje him jout.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dêr't it piktogram fan ynsteld wurdt."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It nije piktogram, of null foar it eigen piktogram fan de yntegraasje."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "In alias oan in entiteit tafoegje",
+            "description": "Foeget ien of mear aliassen ta oan in entiteit (of entiteiten), dêr't spraakassistinten him mei oansprekke kinne.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dêr't de alias(sen) oan tafoege wurde."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias(sen) dy't tafoege wurde."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "In alias fan in entiteit fuortsmite",
+            "description": "Smyt ien of mear aliassen fan in entiteit (of entiteiten) fuort.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dêr't de alias(sen) fan fuortsmiten wurde."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias(sen) dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Aliassen foar in entiteit ynstelle",
+            "description": "Ferfangt de aliassen fan in entiteit (of entiteiten). Oft de eigen namme fan de entiteit as alias telt, bliuwt sa't it wie.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dêr't de aliassen fan ynsteld wurde."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen dy't ynsteld wurde."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "In entiteit net mear foar assistinten ûntslute",
+            "description": "Hâldt op mei it ûntsluten fan in entiteit (of entiteiten) foar spraakassistinten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dy't net mear ûntsletten wurde."
+                },
+                "assistants": {
+                    "name": "Assistinten",
+                    "description": "De assistint(en) dêr't dit foar jildt."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "In entiteit wer sichtber meitsje",
+            "description": "Makket daliks in ferstoppe entiteit (of entiteiten) wer sichtber.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De entiteit(en) dy't wer sichtber makke wurde."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "In ferdjipping oanmeitsje",
+            "description": "Makket daliks in nije ferdjipping oan.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de ferdjipping dy't oanmakke wurdt."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Piktogram foar de ferdjipping."
+                },
+                "level": {
+                    "name": "Nivo",
+                    "description": "It nivo dêr't de ferdjipping op leit yn dyn hûs."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "In list mei aliassen foar de ferdjipping. Handich ast de ferdjipping yn in oare taal of mei in oare bynamme brûke wolst."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "In alias oan in ferdjipping tafoegje",
+            "description": "Foeget in alias ta oan in ferdjipping.",
+            "fields": {
+                "floor_id": {
+                    "name": "Ferdjippings-ID",
+                    "description": "De ID fan de ferdjipping dêr't de alias oan tafoege wurdt."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias (of list mei aliassen) dy't oan de ferdjipping tafoege wurdt."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "In alias fan in ferdjipping fuortsmite",
+            "description": "Smyt in alias fan in ferdjipping fuort.",
+            "fields": {
+                "floor_id": {
+                    "name": "Ferdjippings-ID",
+                    "description": "De ID fan de ferdjipping dêr't de alias fan fuortsmiten wurdt."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "De alias (of list mei aliassen) dy't fan de ferdjipping fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Aliassen foar in ferdjipping ynstelle",
+            "description": "Stelt aliassen foar in ferdjipping yn. Oerskriuwt en smyt alle besteande aliassen fuort, en ferfangt se folslein troch de nije.",
+            "fields": {
+                "floor_id": {
+                    "name": "Ferdjippings-ID",
+                    "description": "De ID fan de ferdjipping dêr't de aliassen foar ynsteld wurde."
+                },
+                "aliases": {
+                    "name": "Aliassen",
+                    "description": "De aliassen dy't foar de ferdjipping ynsteld wurde."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "In romte oan in ferdjipping tafoegje",
+            "description": "Foeget in romte ta oan in ferdjipping. Tink derom: as de romte al op in ferdjipping leit, wurdt er fan de foarige ferdjipping helle.",
+            "fields": {
+                "floor_id": {
+                    "name": "Ferdjippings-ID",
+                    "description": "De ID fan de ferdjipping dêr't de romte op set wurdt."
+                },
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte(n) dy't oan de ferdjipping tafoege wurde."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "In romte fan in ferdjipping fuortsmite",
+            "description": "Hellet in romte fan in ferdjipping. Omdat in romte mar op ien ferdjipping lizze kin, hoecht dizze oanrop de ferdjipping net te neamen.",
+            "fields": {
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID fan de romte dêr't de ferdjipping fan fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "In ferdjipping fuortsmite",
+            "description": "Smyt daliks in ferdjipping fuort.",
+            "fields": {
+                "floor_id": {
+                    "name": "Ferdjippings-ID",
+                    "description": "De ID fan de ferdjipping dy't fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "In label oanmeitsje",
+            "description": "Makket daliks in nij label oan.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan it label dat oanmakke wurdt."
+                },
+                "description": {
+                    "name": "Beskriuwing",
+                    "description": "Beskriuwing foar it label."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Piktogram foar it label."
+                },
+                "color": {
+                    "name": "Kleur",
+                    "description": "Kleur foar it label. Kin in kleurnamme út de list wêze, of in heks-kleurkoade (lykas #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "In label bywurkje",
+            "description": "Wurket daliks in besteand label by. Alles watst leech litst, hâldt de wearde dy't it al hat. De beskriuwing, it piktogram en de kleur kinne leechmakke wurde troch se op null te setten.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID fan it label dat bywurke wurdt."
+                },
+                "name": {
+                    "name": "Namme",
+                    "description": "Nije namme foar it label."
+                },
+                "description": {
+                    "name": "Beskriuwing",
+                    "description": "Nije beskriuwing foar it label."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Nij piktogram foar it label."
+                },
+                "color": {
+                    "name": "Kleur",
+                    "description": "Kleur foar it label. Kin in kleurnamme út de list wêze, of in heks-kleurkoade (lykas #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "In label oan in romte tafoegje",
+            "description": "Foeget in label ta oan in romte. As der meardere labels of meardere romten jûn wurde, wurde alle kombinaasjes tafoege.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID('s) fan it label (of de labels) dat oan de romte(n) tafoege wurdt."
+                },
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID('s) fan de romte(n) dêr't it label (of de labels) oan tafoege wurdt."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "In label oan in apparaat tafoegje",
+            "description": "Foeget in label ta oan in apparaat. As der meardere labels of meardere apparaten jûn wurde, wurde alle kombinaasjes tafoege.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID('s) fan it label (of de labels) dat oan it apparaat (of de apparaten) tafoege wurdt."
+                },
+                "device_id": {
+                    "name": "Apparaat-ID",
+                    "description": "De ID('s) fan it apparaat (of de apparaten) dêr't it label (of de labels) oan tafoege wurdt."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "In label oan in entiteit tafoegje",
+            "description": "Foeget in label ta oan in entiteit. As der meardere labels of meardere entiteiten jûn wurde, wurde alle kombinaasjes tafoege.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID('s) fan it label (of de labels) dat oan de entiteit(en) tafoege wurdt."
+                },
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ID('s) fan de entiteit(en) dêr't it label (of de labels) oan tafoege wurdt."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "In label fan in romte fuortsmite",
+            "description": "Smyt in label fan in romte fuort. As der meardere labels of meardere romten jûn wurde, wurde alle kombinaasjes fuortsmiten.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID('s) fan it label (of de labels) dat fan de romte(n) fuortsmiten wurdt."
+                },
+                "area_id": {
+                    "name": "Romte-ID",
+                    "description": "De ID('s) fan de romte(n) dêr't it label (of de labels) fan fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "In label fan in apparaat fuortsmite",
+            "description": "Smyt in label fan in apparaat fuort. As der meardere labels of meardere apparaten jûn wurde, wurde alle kombinaasjes fuortsmiten.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID('s) fan it label (of de labels) dat fan it apparaat (of de apparaten) fuortsmiten wurdt."
+                },
+                "device_id": {
+                    "name": "Apparaat-ID",
+                    "description": "De ID('s) fan it apparaat (of de apparaten) dêr't it label (of de labels) fan fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "In label fan in entiteit fuortsmite",
+            "description": "Smyt in label fan in entiteit fuort. As der meardere labels of meardere entiteiten jûn wurde, wurde alle kombinaasjes fuortsmiten.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID('s) fan it label (of de labels) dat fan de entiteit(en) fuortsmiten wurdt."
+                },
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ID('s) fan de entiteit(en) dêr't it label (of de labels) fan fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "In kategory oanmeitsje",
+            "description": "Makket daliks in nije kategory oan, foar automatisearringen, scripts, sênes of helpers. Jout de ID fan de nije kategory werom.",
+            "fields": {
+                "scope": {
+                    "name": "Berik",
+                    "description": "Wêr't de kategory brûkt wurdt."
+                },
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de kategory dy't oanmakke wurdt."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Piktogram foar de kategory."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "In kategory bywurkje",
+            "description": "Wurket daliks in besteande kategory by. Alles watst leech litst, hâldt de wearde dy't it al hat. It piktogram kin leechmakke wurde troch it op null te setten.",
+            "fields": {
+                "scope": {
+                    "name": "Berik",
+                    "description": "Wêr't de kategory brûkt wurdt."
+                },
+                "category_id": {
+                    "name": "Kategory",
+                    "description": "De ID of de namme fan de kategory dy't bywurke wurdt."
+                },
+                "name": {
+                    "name": "Namme",
+                    "description": "De nije namme foar de kategory."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It nije piktogram foar de kategory."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "In kategory fuortsmite",
+            "description": "Smyt in kategory fuort. Alles wat deryn siet, bliuwt sûnder kategory oer.",
+            "fields": {
+                "scope": {
+                    "name": "Berik",
+                    "description": "Wêr't de kategory brûkt wurdt."
+                },
+                "category_id": {
+                    "name": "Kategory",
+                    "description": "De ID of de namme fan de kategory dy't fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "In kategory oan in entiteit tafoegje",
+            "description": "Set in automatisearring, script, sêne of helper yn in kategory. Dit ferfangt de kategory dêr't er earder yn siet, want elk kin mar yn ien sitte.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategory",
+                    "description": "De ID of de namme fan de kategory."
+                },
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De automatisearring(en), script(s), sêne(s) of helper(s) dy't yn de kategory set wurde."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "In kategory fan in entiteit fuortsmite",
+            "description": "Hellet in automatisearring, script, sêne of helper út in kategory. Alles yn in oare kategory wurdt mei rêst litten.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategory",
+                    "description": "De ID of de namme fan de kategory."
+                },
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De automatisearring(en), script(s), sêne(s) of helper(s) dy't út de kategory helle wurde."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "In label fuortsmite",
+            "description": "Smyt daliks in label fuort.",
+            "fields": {
+                "label_id": {
+                    "name": "Label-ID",
+                    "description": "De ID fan it label dat fuortsmiten wurdt."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Alle no ûntdutsen apparaten negearje",
+            "description": "Negearje alle no ûntdutsen apparaten dy't op it yntegraasjedashboerd toand wurde. Apparaten dy't hjirnei ûntdutsen wurde, wurde net negearre.",
+            "fields": {
+                "domain": {
+                    "name": "Yntegraasjedomein",
+                    "description": "It yntegraasjedomein dêr't alle ûntdutsen apparaten foar negearre wurde. As it net jûn wurdt, wurde alle domeinen negearre."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Polling foar updates útskeakelje",
+            "description": "Skeakelet polling foar updates út foar in yntegraasje-item.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Yntegraasje-item",
+                    "description": "It yntegraasje-item dêr't polling foar útskeakele wurdt."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Polling foar updates ynskeakelje",
+            "description": "Skeakelet polling foar updates yn foar in yntegraasje-item.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Yntegraasje-item",
+                    "description": "It yntegraasje-item dêr't polling foar ynskeakele wurdt."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Alle wees entiteiten fuortsmite",
+            "description": "Smyt alle wees entiteiten fuort dy't gjin yntegraasje mear hawwe dy't se opeasket of leveret. Tink derom: as de yntegraasje krekt fuortsmiten is, kin Home Assistant in herstart nedich hawwe om troch te hawwen dat se wees binne.\n**WARSKÔGING** Entiteiten kinne as wees markearre wêze omdat in yntegraasje offline is of net wurket sûnt Home Assistant start is. Dizze aksje oanroppe smyt dy entiteiten ek fuort."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Alle wees database-entiteiten opsomje",
+            "description": "Somt alle wees database-entiteiten op dy't troch gjin inkele yntegraasje opeaske wurde."
+        },
+        "homeassistant_restart": {
+            "name": "Opnij starte",
+            "description": "De aksje om Home Assistant opnij te starten.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Feilige modus",
+                    "description": "Oft it opnij starten yn feilige modus barre moat. Dit skeakelet alle oanpaste yntegraasjes en frontend-modules út."
+                },
+                "force": {
+                    "name": "Opnij starte ôftwinge",
+                    "description": "It opnij starten ôftwinge. WARSKÔGING! Dit slút Home Assistant net netsjes ôf, it slaat konfiguraasjekontrôles oer en negearret rinnende databasemigraasjes. Brûk dit allinnich ast witst watst dochst."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Statistiken ymportearje",
+            "description": "Langetermynstatistiken ymportearje.",
+            "fields": {
+                "statistic_id": {
+                    "name": "Statistyk-ID",
+                    "description": "De statistyk-ID (entiteits-ID) dêr't foar ymportearre wurdt."
+                },
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de statistiken."
+                },
+                "source": {
+                    "name": "Boarne",
+                    "description": "De boarne fan de statistykgegevens."
+                },
+                "unit_of_measurement": {
+                    "name": "Mjitienheid",
+                    "description": "De mjitienheid fan de statistiken."
+                },
+                "has_mean": {
+                    "name": "Hat in gemiddelde",
+                    "description": "Oft de statistiken in gemiddelde wearde hawwe."
+                },
+                "has_sum": {
+                    "name": "Hat in som",
+                    "description": "Oft de statistiken in somwearde hawwe."
+                },
+                "stats": {
+                    "name": "Statistiken",
+                    "description": "In list mei mappings/dictionaries mei statistiken om te ymportearjen. De dictionaries moatte in kaai \"start\" befetsje mei in datetime-string; oare jildige opsjes binne \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" en \"state\". Dy binne allegear opsjoneel en in integer of in float, útsein \"last_reset\", dat in datetime-string is."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Willekeurige opsje selektearje",
+            "description": "Selektearje in willekeurige opsje foar in seleksje-entiteit.",
+            "fields": {
+                "options": {
+                    "name": "Opsjes",
+                    "description": "Beheint de opsjes dêr't út keazen wurdt. As it net jûn wurdt, dogge alle opsjes mei."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "In ynfierseleksje oanmeitsje",
+            "description": "Makket daliks in nije helper foar in ynfierseleksje (karlist) oan. Jout de entiteits-ID fan de nije ynfierseleksje werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de nije ynfierseleksje."
+                },
+                "input_select_id": {
+                    "name": "Entiteits-ID fan de ynfierseleksje",
+                    "description": "De entiteits-ID foar de nije ynfierseleksje. It foarheaksel input_select. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "options": {
+                    "name": "Opsjes",
+                    "description": "De opsjes dêr't út keazen wurde kin. Elke opsje kin der mar ien kear yn stean."
+                },
+                "initial": {
+                    "name": "Begjinopsje",
+                    "description": "De opsje dêr't er mei begjint, en dy moat ien fan de opsjes wêze. Litst it leech, dan hâldt er de opsje dy't er hie foardat Home Assistant opnij start."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar de nije ynfierseleksje."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "In ynfierseleksje fuortsmite",
+            "description": "Smyt helpers foar ynfierseleksjes fuort dy't yn de brûkersinterface of mei de aksje om in ynfierseleksje oan te meitsjen makke binne. Ynfierseleksjes dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ynfierseleksje(s) dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Willekeurige opsje selektearje",
+            "description": "Selektearje in willekeurige opsje foar in input_select-entiteit.",
+            "fields": {
+                "options": {
+                    "name": "Opsjes",
+                    "description": "Beheint de opsjes dêr't út keazen wurdt. As it net jûn wurdt, dogge alle opsjes mei."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Opsjes omdraaie",
+            "description": "Draait de folchoarder fan de selektearbere opsjes fan in `input_select`-entiteit om, fan efter nei foaren. Dit wurdt net bewarre en wurdt ûngedien makke sa gau't der opnij laden wurdt of Home Assistant opnij start."
+        },
+        "input_select_shuffle": {
+            "name": "Opsjes trochinoar skodzje",
+            "description": "Skoddet de list mei selektearbere opsjes fan in `input_select`-entiteit trochinoar. Dit wurdt net bewarre en wurdt ûngedien makke sa gau't der opnij laden wurdt of Home Assistant opnij start."
+        },
+        "input_select_sort": {
+            "name": "Opsjes sortearje",
+            "description": "Sortearret de list mei selektearbere opsjes fan in `input_select`-entiteit. Dit wurdt net bewarre en wurdt ûngedien makke sa gau't der opnij laden wurdt of Home Assistant opnij start."
+        },
+        "number_decrement": {
+            "name": "Wearde ferleegje",
+            "description": "Ferleegje de wearde fan in nûmer-entiteit mei in bepaald bedrach.",
+            "fields": {
+                "amount": {
+                    "name": "Bedrach",
+                    "description": "It bedrach dêr't it nûmer mei ferlege wurdt. As it net jûn wurdt, wurdt de stap fan de nûmer-entiteit brûkt."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Wearde ferheegje",
+            "description": "Ferheegje de wearde fan in nûmer-entiteit mei in bepaald bedrach.",
+            "fields": {
+                "amount": {
+                    "name": "Bedrach",
+                    "description": "It bedrach dêr't it nûmer mei ferhege wurdt. As it net jûn wurdt, wurdt de stap fan de nûmer-entiteit brûkt."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Maksimale wearde ynstelle",
+            "description": "Set in nûmer-entiteit op syn maksimale wearde."
+        },
+        "number_min": {
+            "name": "Minimale wearde ynstelle",
+            "description": "Set in nûmer-entiteit op syn minimale wearde."
+        },
+        "input_number_decrement": {
+            "name": "Wearde ferleegje",
+            "description": "Ferleegje de wearde fan in ynfiernûmer-entiteit mei in bepaald bedrach.",
+            "fields": {
+                "amount": {
+                    "name": "Bedrach",
+                    "description": "It bedrach dêr't it ynfiernûmer mei ferlege wurdt. As it net jûn wurdt, wurdt de stap fan de nûmer-entiteit brûkt."
+                },
+                "cycle": {
+                    "name": "Rûnom",
+                    "description": "Gean troch fan it oare ein fan it berik ynstee fan hjir te stopjen, krekt sa't de folgjende opsje selektearje by in seleksje rûnom giet."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Wearde ferheegje",
+            "description": "Ferheegje de wearde fan in ynfiernûmer-entiteit mei in bepaald bedrach.",
+            "fields": {
+                "amount": {
+                    "name": "Bedrach",
+                    "description": "It bedrach dêr't it ynfiernûmer mei ferhege wurdt. As it net jûn wurdt, wurdt de stap fan de nûmer-entiteit brûkt."
+                },
+                "cycle": {
+                    "name": "Rûnom",
+                    "description": "Gean troch fan it oare ein fan it berik ynstee fan hjir te stopjen, krekt sa't de folgjende opsje selektearje by in seleksje rûnom giet."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Maksimale wearde ynstelle",
+            "description": "Set in ynfiernûmer-entiteit op syn maksimale wearde."
+        },
+        "input_number_min": {
+            "name": "Minimale wearde ynstelle",
+            "description": "Set in ynfiernûmer-entiteit op syn minimale wearde."
+        },
+        "input_number_set_range": {
+            "name": "Berik ynstelle",
+            "description": "Feroaret it minimum, maksimum of de stap fan in ynfiernûmer dat yn de brûkersinterface makke is, krekt as by it bewurkjen. In wearde bûten it nije berik wurdt deryn skood.",
+            "fields": {
+                "min": {
+                    "name": "Minimum",
+                    "description": "De nije minimale wearde."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "De nije maksimale wearde."
+                },
+                "step": {
+                    "name": "Stap",
+                    "description": "De nije stapgrutte."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "In teller oanmeitsje",
+            "description": "Makket daliks in nije tellerhelper oan. Jout de entiteits-ID fan de nije teller werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de nije teller."
+                },
+                "counter_id": {
+                    "name": "Entiteits-ID fan de teller",
+                    "description": "De entiteits-ID foar de nije teller. It foarheaksel counter. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "initial": {
+                    "name": "Begjinwearde",
+                    "description": "De wearde dêr't de teller mei begjint, en dêr't er by in reset nei weromgiet."
+                },
+                "minimum": {
+                    "name": "Minimum",
+                    "description": "De leechste wearde dêr't de teller nei ta sakje kin. Lit it leech foar gjin limyt."
+                },
+                "maximum": {
+                    "name": "Maksimum",
+                    "description": "De heechste wearde dêr't de teller nei ta stige kin. Lit it leech foar gjin limyt."
+                },
+                "step": {
+                    "name": "Stap",
+                    "description": "Hoefolle de teller elke kear omheech of omleech giet."
+                },
+                "restore": {
+                    "name": "Herstelle",
+                    "description": "Herstel de wearde fan de teller as Home Assistant start, ynstee fan opnij te begjinnen by de begjinwearde."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar de nije teller."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "In teller fuortsmite",
+            "description": "Smyt tellerhelpers fuort dy't yn de brûkersinterface of mei de aksje om in teller oan te meitsjen makke binne. Tellers dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De teller(s) dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "In ynfier-boolean oanmeitsje",
+            "description": "Makket daliks in nije helper foar in ynfier-boolean (skeakelder) oan. Jout de entiteits-ID fan de nije ynfier-boolean werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de nije ynfier-boolean."
+                },
+                "input_boolean_id": {
+                    "name": "Entiteits-ID fan de ynfier-boolean",
+                    "description": "De entiteits-ID foar de nije ynfier-boolean. It foarheaksel input_boolean. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "initial": {
+                    "name": "Begjinwearde",
+                    "description": "De wearde dêr't er mei begjint. Litst it leech, dan hâldt er de wearde dy't er hie foardat Home Assistant opnij start."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar de nije ynfier-boolean."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "In ynfier-boolean fuortsmite",
+            "description": "Smyt helpers foar ynfier-booleans fuort dy't yn de brûkersinterface of mei de aksje om in ynfier-boolean oan te meitsjen makke binne. Ynfier-booleans dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ynfier-boolean(s) dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "In ynfiertekst oanmeitsje",
+            "description": "Makket daliks in nije helper foar in ynfiertekst oan. Jout de entiteits-ID fan de nije ynfiertekst werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de nije ynfiertekst."
+                },
+                "input_text_id": {
+                    "name": "Entiteits-ID fan de ynfiertekst",
+                    "description": "De entiteits-ID foar de nije ynfiertekst. It foarheaksel input_text. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "initial": {
+                    "name": "Begjinwearde",
+                    "description": "De tekst dêr't er mei begjint. Litst it leech, dan hâldt er de tekst dy't er hie foardat Home Assistant opnij start."
+                },
+                "min": {
+                    "name": "Minimale lingte",
+                    "description": "Hoe koart de tekst op syn koartst wêze mei."
+                },
+                "max": {
+                    "name": "Maksimale lingte",
+                    "description": "Hoe lang de tekst op syn langst wêze mei."
+                },
+                "pattern": {
+                    "name": "Patroan",
+                    "description": "In reguliere ekspresje dêr't de tekst oan foldwaan moat."
+                },
+                "mode": {
+                    "name": "Modus",
+                    "description": "Lit de tekst sjen sa't er is, of ferstopje him lykas in wachtwurd."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar de nije ynfiertekst."
+                },
+                "unit_of_measurement": {
+                    "name": "Mjitienheid",
+                    "description": "De ienheid dy't neist de tekst toand wurdt."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "In ynfiertekst fuortsmite",
+            "description": "Smyt helpers foar ynfierteksten fuort dy't yn de brûkersinterface of mei de aksje om in ynfiertekst oan te meitsjen makke binne. Ynfierteksten dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ynfiertekst(en) dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "In ynfierknop oanmeitsje",
+            "description": "Makket daliks in nije helper foar in ynfierknop oan. Jout de entiteits-ID fan de nije ynfierknop werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de nije ynfierknop."
+                },
+                "input_button_id": {
+                    "name": "Entiteits-ID fan de ynfierknop",
+                    "description": "De entiteits-ID foar de nije ynfierknop. It foarheaksel input_button. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar de nije ynfierknop."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "In ynfierknop fuortsmite",
+            "description": "Smyt helpers foar ynfierknoppen fuort dy't yn de brûkersinterface of mei de aksje om in ynfierknop oan te meitsjen makke binne. Ynfierknoppen dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ynfierknop(pen) dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "In ynfier-datum/tiid oanmeitsje",
+            "description": "Makket daliks in nije helper foar in ynfier-datum/tiid oan, mei in datum, in tiid of beide. Jout de entiteits-ID fan de nije ynfier-datum/tiid werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de nije ynfier-datum/tiid."
+                },
+                "input_datetime_id": {
+                    "name": "Entiteits-ID fan de ynfier-datum/tiid",
+                    "description": "De entiteits-ID foar de nije ynfier-datum/tiid. It foarheaksel input_datetime. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "has_date": {
+                    "name": "Hat in datum",
+                    "description": "Oft er in datum befettet. Op syn minst ien fan datum en tiid moat oan stean."
+                },
+                "has_time": {
+                    "name": "Hat in tiid",
+                    "description": "Oft er in tiid befettet. Op syn minst ien fan datum en tiid moat oan stean."
+                },
+                "initial": {
+                    "name": "Begjinwearde",
+                    "description": "De datum en/of tiid dêr't er mei begjint, lykas 2026-12-31, 08:30:00 of 2026-12-31 08:30:00. Litst it leech, dan hâldt er de wearde dy't er hie foardat Home Assistant opnij start."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar de nije ynfier-datum/tiid."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "In ynfier-datum/tiid fuortsmite",
+            "description": "Smyt helpers foar ynfier-datum/tiden fuort dy't yn de brûkersinterface of mei de aksje om in ynfier-datum/tiid oan te meitsjen makke binne. Ynfier-datum/tiden dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ynfier-datum/tiid(en) dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "In ynfiernûmer oanmeitsje",
+            "description": "Meitsje daliks in nije helper foar in ynfiernûmer oan. Jout de entiteits-ID fan it nije ynfiernûmer werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de nije ynfiernûmerhelper."
+                },
+                "input_number_id": {
+                    "name": "Entiteits-ID fan it ynfiernûmer",
+                    "description": "De entiteits-ID foar de nije ynfiernûmerhelper. It foarheaksel input_number. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "min": {
+                    "name": "Minimum",
+                    "description": "De minimale wearde fan it ynfiernûmer."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "De maksimale wearde fan it ynfiernûmer."
+                },
+                "initial": {
+                    "name": "Begjinwearde",
+                    "description": "De begjinwearde fan it ynfiernûmer as Home Assistant start."
+                },
+                "step": {
+                    "name": "Stapgrutte",
+                    "description": "De stapgrutte fan it ynfiernûmer."
+                },
+                "mode": {
+                    "name": "Werjeftemodus",
+                    "description": "De werjeftemodus fan it ynfiernûmer: in skowregeler of in ynfierfjild."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar de ynfiernûmerhelper."
+                },
+                "unit_of_measurement": {
+                    "name": "Mjitienheid",
+                    "description": "De mjitienheid fan it ynfiernûmer."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "In ynfiernûmer fuortsmite",
+            "description": "Smyt helpers foar ynfiernûmers fuort dy't yn de brûkersinterface of mei de aksje om in ynfiernûmer oan te meitsjen makke binne. Ynfiernûmers dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "It ynfiernûmer (of de ynfiernûmers) dat fuortsmiten wurdt."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "In apparaattracker tafoegje",
+            "description": "Foegje in apparaattracker ta oan in persoan.",
+            "fields": {
+                "entity_id": {
+                    "name": "Persoan",
+                    "description": "De entiteits-ID fan de persoan dêr't de apparaattracker oan tafoege wurdt."
+                },
+                "device_tracker": {
+                    "name": "Apparaattracker",
+                    "description": "De entiteits-ID fan de apparaattracker dy't oan de persoan tafoege wurdt."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "In apparaattracker fuortsmite",
+            "description": "Smyt in apparaattracker fan in persoan fuort.",
+            "fields": {
+                "entity_id": {
+                    "name": "Persoan",
+                    "description": "De entiteits-ID fan de persoan dêr't de apparaattracker fan fuortsmiten wurdt."
+                },
+                "device_tracker": {
+                    "name": "Apparaattracker",
+                    "description": "De entiteits-ID fan de apparaattracker dy't fan de persoan fuortsmiten wurdt."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Melding oanmeitsje",
+            "description": "Meitsje mei de hân in melding oan en set dy yn de reparaasjes fan Home Assistant.",
+            "fields": {
+                "title": {
+                    "name": "Titel",
+                    "description": "De titel fan de melding."
+                },
+                "description": {
+                    "name": "Beskriuwing",
+                    "description": "De beskriuwing fan de melding. Stipet Markdown."
+                },
+                "issue_id": {
+                    "name": "Meldings-ID",
+                    "description": "De melding kin in identifikaasje hawwe, sadatst him letter mei dy ID annulearje kinst as dat nedich is. It foarkomt ek dat der dûbele meldingen oanmakke wurde. As it net jûn wurdt, wurdt der in willekeurige ID makke."
+                },
+                "domain": {
+                    "name": "Domein",
+                    "description": "Mei dit fjild kin it domein fan de melding ynsteld wurde. Standert (as it net ynsteld is) wurdt bygelyks \"spook\" brûkt. Dêrtroch stiet Spook yn it logo/de ôfbylding fan de melding. Setst it op \"homeassistant\", dan wurdt it logo fan Home Assistant brûkt, of brûk \"hue\", \"zwave_js\", \"mqtt\" en sa fierder foar it logo fan dy yntegraasje."
+                },
+                "severity": {
+                    "name": "Earnst",
+                    "description": "De earnst fan de melding. Hjirmei wurdt de prioriteit fan de melding bepaald. As it net ynsteld is, wurdt \"warning\" brûkt."
+                },
+                "persistent": {
+                    "name": "Permanint",
+                    "description": "Oft de melding permanint wêze moat, wat betsjut dat er in herstart fan Home Assistant oerlibbet. Standert binne meldingen net permanint."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Alle meldingen negearje",
+            "description": "Negearje alle meldingen dy't no yn de reparaasjes fan Home Assistant steane, of allinnich dy fan bepaalde yntegraasjes.",
+            "fields": {
+                "domain": {
+                    "name": "Domein",
+                    "description": "Negearje allinnich de meldingen fan dizze yntegraasjes."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Meldingen opsomje",
+            "description": "Somt de meldingen op dy't no yn de reparaasjes fan Home Assistant steane, mei harren titels, foar in automatisearring om wat mei te dwaan of in dashboerd om te toanen.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Negearre meinimme",
+                    "description": "Som ek de meldingen op dy't negearre binne."
+                },
+                "domain": {
+                    "name": "Domein",
+                    "description": "Som allinnich de meldingen fan dizze yntegraasjes op."
+                },
+                "severity": {
+                    "name": "Earnst",
+                    "description": "Som allinnich de meldingen mei dizze earnst op."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Melding fuortsmite",
+            "description": "Smyt in mei de hân oanmakke reparaasjemelding fan Home Assistant fuort. Dizze aksje kin allinnich meldingen fuortsmite dy't mei de aksje `repairs_create` oanmakke binne.",
+            "fields": {
+                "issue_id": {
+                    "name": "Meldings-ID",
+                    "description": "De ID fan de melding dy't fuortsmiten wurdt."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Alle meldingen net mear negearje",
+            "description": "Hâld op mei it negearjen fan alle meldingen dy't no yn de reparaasjes fan Home Assistant steane, of allinnich dy fan bepaalde yntegraasjes.",
+            "fields": {
+                "domain": {
+                    "name": "Domein",
+                    "description": "Hâld allinnich op mei it negearjen fan de meldingen fan dizze yntegraasjes."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Werjeftepresyzje ynstelle",
+            "description": "Stelt it oantal desimalen yn dat foar ien of mear sensoren toand wurdt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteit",
+                    "description": "De sensorentiteit(en) dy't bywurke wurde."
+                },
+                "display_precision": {
+                    "name": "Werjeftepresyzje",
+                    "description": "It oantal desimalen dat foar de sensor toand wurdt."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "In timer oanmeitsje",
+            "description": "Makket daliks in nije timerhelper oan. Jout de entiteits-ID fan de nije timer werom.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "De namme fan de nije timer."
+                },
+                "timer_id": {
+                    "name": "Entiteits-ID fan de timer",
+                    "description": "De entiteits-ID foar de nije timer. It foarheaksel timer. wurdt automatysk tafoege. As it net jûn wurdt, wurdt de entiteits-ID op basis fan de namme makke."
+                },
+                "duration": {
+                    "name": "Doer",
+                    "description": "Hoe lang de timer rint as er start wurdt."
+                },
+                "restore": {
+                    "name": "Herstelle",
+                    "description": "Herstel de steat fan de timer as Home Assistant start, sadat in rinnende timer by in herstart trochrint."
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "It piktogram foar de nije timer."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "In timer fuortsmite",
+            "description": "Smyt timerhelpers fuort dy't yn de brûkersinterface of mei de aksje om in timer oan te meitsjen makke binne. Timers dy't yn YAML ynsteld binne, kin Spook net fuortsmite.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De timer(s) dy't fuortsmiten wurde."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Doer ynstelle",
+            "description": "Stel de doer yn foar in besteande timer.",
+            "fields": {
+                "duration": {
+                    "name": "Doer",
+                    "description": "Nije doer foar de timer, as timedelta-string."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "In sône oanmeitsje",
+            "description": "Meitsje daliks in nije sône oan yn Home Assistant.",
+            "fields": {
+                "name": {
+                    "name": "Namme",
+                    "description": "Namme fan de sône"
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Piktogram foar de sône"
+                },
+                "latitude": {
+                    "name": "Breedtegraad",
+                    "description": "Breedtegraad fan de sône. Dit kin in sjabloan wêze."
+                },
+                "longitude": {
+                    "name": "Lingtegraad",
+                    "description": "Lingtegraad fan de sône. Dit kin in sjabloan wêze."
+                },
+                "radius": {
+                    "name": "Straal",
+                    "description": "Straal fan de sône"
+                },
+                "passive": {
+                    "name": "Passyf",
+                    "description": "In passive sône is der allinnich foar automatisearringen: hy wurdt net op de kaart toand, en feroaret neat oan wêr't persoanen en apparaattrackers binne."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "In sône bywurkje",
+            "description": "Wurkje daliks eigenskippen fan in sône by.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ID fan de entiteit (of entiteiten) dy't bywurke wurdt."
+                },
+                "name": {
+                    "name": "Namme",
+                    "description": "Namme fan de sône"
+                },
+                "icon": {
+                    "name": "Piktogram",
+                    "description": "Piktogram foar de sône"
+                },
+                "latitude": {
+                    "name": "Breedtegraad",
+                    "description": "Breedtegraad fan de sône. Dit kin in sjabloan wêze."
+                },
+                "longitude": {
+                    "name": "Lingtegraad",
+                    "description": "Lingtegraad fan de sône. Dit kin in sjabloan wêze."
+                },
+                "radius": {
+                    "name": "Straal",
+                    "description": "Straal fan de sône"
+                },
+                "passive": {
+                    "name": "Passyf",
+                    "description": "In passive sône is der allinnich foar automatisearringen: hy wurdt net op de kaart toand, en feroaret neat oan wêr't persoanen en apparaattrackers binne."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "In sône fuortsmite",
+            "description": "Smyt in sône fuort. Dit wurket allinnich mei sônes dy't fia de brûkersinterface oanmakke en behearde wurde. Sônes dy't yn YAML oanmakke en behearde wurde, kin Spook net beheare.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entiteits-ID",
+                    "description": "De ID fan de entiteit (of entiteiten) dy't fuortsmiten wurdt."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Temperatuer ferheegje",
+            "description": "Set it ynstelpunt fan in wetterferwaarmer in stap heger, binnen syn grinzen.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Hoefolle it feroare wurdt. Lit it leech om de eigen stap fan de wetterferwaarmer te brûken, of in heale graad (ien yn Fahrenheit) as er gjin hat."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Temperatuer ferleegje",
+            "description": "Set it ynstelpunt fan in wetterferwaarmer in stap leger, binnen syn grinzen.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Hoefolle it feroare wurdt. Lit it leech om de eigen stap fan de wetterferwaarmer te brûken, of in heale graad (ien yn Fahrenheit) as er gjin hat."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Fochtigens ferheegje",
+            "description": "Set de doelfochtigens fan in befochtiger in stap heger, binnen syn grinzen.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Mei hoefolle persint it feroare wurdt. Lit it leech om de eigen stap fan de befochtiger te brûken, of ien persint as er gjin hat."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Fochtigens ferleegje",
+            "description": "Set de doelfochtigens fan in befochtiger in stap leger, binnen syn grinzen.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Mei hoefolle persint it feroare wurdt. Lit it leech om de eigen stap fan de befochtiger te brûken, of ien persint as er gjin hat."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Posysje ferheegje",
+            "description": "Set in bedekking in stap fierder iepen, en stoppet as er hielendal iepen is.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Mei hoefolle persint er ferpleatst wurdt. Tsien persint as it leech litten wurdt."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Posysje ferleegje",
+            "description": "Set in bedekking in stap fierder ticht, en stoppet as er hielendal ticht is.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Mei hoefolle persint er ferpleatst wurdt. Tsien persint as it leech litten wurdt."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Posysje ferheegje",
+            "description": "Set in klep in stap fierder iepen, en stoppet as er hielendal iepen is.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Mei hoefolle persint er ferpleatst wurdt. Tsien persint as it leech litten wurdt."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Posysje ferleegje",
+            "description": "Set in klep in stap fierder ticht, en stoppet as er hielendal ticht is.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Mei hoefolle persint er ferpleatst wurdt. Tsien persint as it leech litten wurdt."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Folume ferheegje",
+            "description": "Set it folume fan in mediaspiler omheech mei de stap dy'tst opjoust, en stoppet by folslein folume.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Mei hoefolle persint it folume feroare wurdt."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Folume ferleegje",
+            "description": "Set it folume fan in mediaspiler omleech mei de stap dy'tst opjoust, en stoppet by stil.",
+            "fields": {
+                "step": {
+                    "name": "Stap",
+                    "description": "Mei hoefolle persint it folume feroare wurdt."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Item ferpleatse",
+            "description": "Ferpleatst in item yn in takelist nei boppe-oan, nei ûnderoan, of efter in oar item.",
+            "fields": {
+                "item": {
+                    "name": "Item",
+                    "description": "De titel of uid fan it item dat ferpleatst wurdt."
+                },
+                "after": {
+                    "name": "Efter",
+                    "description": "De titel of uid fan it item dêr't it efter set wurdt. Jou dit of in posysje."
+                },
+                "position": {
+                    "name": "Posysje",
+                    "description": "Ferpleats it nei boppe-oan of ûnderoan de list. Jou dit of in item dêr't it efter set wurdt."
                 }
             }
         }

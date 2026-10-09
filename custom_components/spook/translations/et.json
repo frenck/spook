@@ -1,11 +1,349 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Automatiseering lülitati välja",
+            "description": "Käivitub, kui keegi või miski lülitab automatiseeringu välja. Jäta siht tühjaks, et jälgida kõiki automatiseeringuid."
+        },
+        "debounce": {
+            "name": "Kui asi rahuneb",
+            "description": "Käivitub, kui päästik on mõnda aega vaikinud, nii et terve hulk käivitumisi jõuab kohale ühena. Liikumisandur ei teata liikumisest üks kord, ta teatab sellest kakskümmend korda.",
+            "fields": {
+                "triggers": {
+                    "name": "Päästikud",
+                    "description": "Päästikud, mille vaibumist oodatakse. Ükskõik milline neist käivitab hoo ja ükskõik milline neist hoiab seda uuesti käivitudes käimas, nii et mitu päästikut liidetakse kokku, mitte ükshaaval."
+                },
+                "for": {
+                    "name": "Kestus",
+                    "description": "Kui kaua peab vaikne olema, enne kui see käivitub. Iga käivitumine alustab ootamist otsast peale, nii et millestki, mis kunagi ei vaiki, ei teatata kunagi."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Kõik need juhtusid",
+            "description": "Käivitub, kui kõik mitmest päästikust on käivitunud sama ajaakna sees, suvalises järjekorras. Home Assistanti enda päästikud on loend, kus piisab ükskõik millisest; see on teistpidi.",
+            "fields": {
+                "triggers": {
+                    "name": "Päästikud",
+                    "description": "Päästikud, mis peavad kõik olema käivitunud. Järjekord pole oluline ja uuesti käivituv päästik asendab oma varasema korra, mitte ei loe kaks korda."
+                },
+                "within": {
+                    "name": "Aja jooksul",
+                    "description": "Kui lähestikku need peavad olema. Aken liigub kaasa, nii et sellest kauem aega tagasi käivitunud päästik unustatakse, samal ajal kui teised loevad edasi."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Olem tuli tagasi",
+            "description": "Käivitub, kui olem tuleb tagasi pärast seda, kui see on mõnda aega olnud kättesaamatu, nii et ruuteri taaskäivitus ei paista nagu kogu maja taastuks.",
+            "fields": {
+                "for": {
+                    "name": "Kestus",
+                    "description": "Kui kaua peab olem eemal olema, et tagasitulek arvesse läheks. Kõik lühem on vilkumine: sidumise uuesti laadimine viib kõik selle olemid sekundi jooksul kättesaamatuks ja tagasi."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Seade lisatud",
+            "description": "Käivitub, kui Home Assistanti lisatakse uus seade, näiteks äsja seotud pistik."
+        },
+        "sequence": {
+            "name": "Päästikud järjekorras",
+            "description": "Käivitub, kui mitu päästikut juhtuvad üksteise järel, antud järjekorras.",
+            "fields": {
+                "steps": {
+                    "name": "Sammud",
+                    "description": "Päästikud, mis peavad juhtuma, järjekorras. Kuulab ainult see, mida parajasti oodatakse, nii et varakult käivituv hilisem samm ei lähe arvesse."
+                },
+                "timeout": {
+                    "name": "Ajalõpp",
+                    "description": "Kui kaua võib kogu jada kesta, arvestades esimesest sammust. Kui see puudub, ootab see lõputult."
+                },
+                "reset": {
+                    "name": "Lähtesta",
+                    "description": "Päästikud, mis katkestavad juba pooleli oleva jada ja panevad selle uuesti esimest sammu ootama."
+                }
+            }
+        },
+        "while": {
+            "name": "Kuni tingimus kehtib",
+            "description": "Käivitub, kui tingimus muutub tõeseks, ja käivitub intervalli järel uuesti seni, kuni see tõeseks jääb.",
+            "fields": {
+                "condition": {
+                    "name": "Tingimus",
+                    "description": "Jälgitav tingimus. Käivitumine algab, kui see muutub tõeseks, ja lõpeb, kui see enam tõene pole."
+                },
+                "every": {
+                    "name": "Intervall",
+                    "description": "Kui kaua oodata ühe käivitumise ja järgmise vahel, seni kuni tingimus kehtib."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Valvekoer",
+            "description": "Käivitub, kui midagi, mis pidi juhtuma, ei juhtu õigel ajal.",
+            "fields": {
+                "arm": {
+                    "name": "Valvesse panek",
+                    "description": "Mis alustab valvamist. Ootamist mõõdetakse siit ja uuesti valvesse panemine ootamise ajal alustab ootamist otsast peale."
+                },
+                "expect": {
+                    "name": "Oodatav",
+                    "description": "Mis peaks järgnema. Kui see jõuab õigel ajal, valve lõpetatakse ja midagi ei käivitu."
+                },
+                "within": {
+                    "name": "Aja jooksul",
+                    "description": "Kui kaua on oodataval asjal aega kohale jõuda. See käivitub, kui see aeg möödub ja seda pole tulnud."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Olem ei rahune",
+            "description": "Käivitub, kui olem muudab olekut mingi aja jooksul sagedamini, kui peaks.",
+            "fields": {
+                "changes": {
+                    "name": "Muutused",
+                    "description": "Mitu olekumuutust on vaja, enne kui see käivitub. Atribuudimuutused ei lähe arvesse, samuti mitte olemi ilmumine ega kadumine."
+                },
+                "within": {
+                    "name": "Aja jooksul",
+                    "description": "Ajavahemik, mille sisse need muutused peavad jääma. See liigub kaasa, nii et jutt on alati kõige viimastest muutustest."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Tingimus muutus tõeseks",
+            "description": "Käivitub, kui tingimus muutub väärast tõeseks, kasutades samu tingimuste ehitusplokke nagu mujalgi.",
+            "fields": {
+                "condition": {
+                    "name": "Tingimus",
+                    "description": "Jälgitav tingimus."
+                }
+            }
+        },
+        "cron": {
+            "name": "Croni ajakava",
+            "description": "Käivitub crontab-ajakava järgi, nende aegade jaoks, mida Home Assistanti enda ajapäästikud väljendada ei suuda, näiteks igal tööpäeval kell seitse või kuu viimasel reedel.",
+            "fields": {
+                "schedule": {
+                    "name": "Ajakava",
+                    "description": "Viie väljaga crontab-avaldis: minut, tund, kuupäev, kuu, nädalapäev. Toetab vahemikke ja samme ning nädalapäeva laiendusi, nii et \"MON#2\" on kuu teine esmaspäev ja \"5L\" viimane reede. Hüüdnimesid nagu \"@daily\" ei toetata."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Seade avastatud",
+            "description": "Käivitub, kui Home Assistant avastab midagi uut, mida saaks seadistada, näiteks seadme, mis just sinu võrku ilmus."
+        },
+        "integration_added": {
+            "name": "Sidumine lisatud",
+            "description": "Käivitub, kui Home Assistanti lisatakse sidumine, ükskõik kes või mis selle lisas."
+        },
+        "integration_failed": {
+            "name": "Sidumise seadistamine nurjus",
+            "description": "Käivitub, kui konfiguratsioonikirje pole end mõnda aega seadistada suutnud, kauem kui Home Assistanti enda korduskatsed oleksid asja korda ajanud.",
+            "fields": {
+                "for": {
+                    "name": "Kestus",
+                    "description": "Kui kaua peab kirje nurjuma, enne kui see käivitub. Home Assistant proovib nurjuvat kirjet uuesti kõige aeglasemalt iga kümne minuti järel, nii et kõik lühem teatab murest, mis võib veel iseenesest laheneda."
+                },
+                "entry_id": {
+                    "name": "Kirjed",
+                    "description": "Piira see kindlate konfiguratsioonikirjetega. Jäta tühjaks, et jälgida neid kõiki."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Parandusprobleem loodud",
+            "description": "Käivitub, kui ilmub uus parandusprobleem, nii et saad sellest teada ilma paranduste lehte külastamata.",
+            "fields": {
+                "domain": {
+                    "name": "Sidumised",
+                    "description": "Piira see kindlate sidumiste teatatud probleemidega, nende domeeni järgi. Jäta tühjaks, et hõlmata kõiki."
+                },
+                "severity": {
+                    "name": "Tõsidus",
+                    "description": "Piira see kindla tõsidusega probleemidega. Jäta tühjaks, et hõlmata kõiki."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Parandusprobleem lahendatud",
+            "description": "Käivitub, kui parandusprobleem kaob, olgu see parandatud või enam mitte teatatud.",
+            "fields": {
+                "domain": {
+                    "name": "Sidumised",
+                    "description": "Piira see kindlate sidumiste teatatud probleemidega, nende domeeni järgi. Jäta tühjaks, et hõlmata kõiki."
+                }
+            }
+        },
+        "stale": {
+            "name": "Olem jäi vaikseks",
+            "description": "Käivitub, kui olemisse pole mõnda aega midagi kirjutatud. See tabab seadme, mis suri vaikselt, selle asemel et kättesaamatuks muutuda.",
+            "fields": {
+                "for": {
+                    "name": "Kestus",
+                    "description": "Kui kaua peab olem vaikne olema, enne kui see käivitub. Olem, mis teatab pidevalt sama väärtust, pole vaikne."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Sihttemperatuur saavutatud",
+            "description": "Käivitub, kui termostaadi või veesoojendi temperatuur jõuab sihtväärtuseni või hüppab sellest üle. Sihtväärtuse muutmine ei lähe arvesse, samuti mitte väljalülitatud seade.",
+            "fields": {
+                "tolerance": {
+                    "name": "Lubatud hälve",
+                    "description": "Kui lähedal sihtväärtusele loetakse veel kohale jõudnuks, seadme ühikus. Termostaadile, mis jääb seadeväärtusest napilt alla. Null tähendab sihtväärtust ennast."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Värskendus paigaldatud",
+            "description": "Käivitub, kui värskenduse olem teatab teistsugusest paigaldatud versioonist, olgu keegi vajutanud paigalda, seade end ise värskendanud või värskendati seda väljaspool Home Assistanti."
+        },
+        "position_reached": {
+            "name": "Asend saavutatud",
+            "description": "Käivitub, kui kardin või ventiil jõuab asendisse või liigub sellest mööda. See, mis on juba seal või naaseb seal kättesaamatust olekust, ei lähe arvesse.",
+            "fields": {
+                "position": {
+                    "name": "Asend",
+                    "description": "Saavutatav asend, 0-st (suletud) 100-ni (avatud)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Skript käivitus",
+            "description": "Käivitub, kui skript alustab käivitust. Käivitus, millest skript keeldub, kuna see juba töötab, ei lähe arvesse. Jäta siht tühjaks, et jälgida kõiki skripte."
+        },
+        "user_added": {
+            "name": "Kasutaja lisatud",
+            "description": "Käivitub, kui kellelegi antakse Home Assistanti sisselogimine. Kasutajad, mille Home Assistant loob oma sidumiste jaoks, jäetakse välja."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kriitiline",
+                "error": "Viga",
+                "warning": "Hoiatus"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Loendi lõppu",
+                "top": "Loendi algusesse"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Temperatuur on sihtväärtusel",
+            "description": "Kehtib, kui termostaadi või veesoojendi temperatuur on sihtväärtusel. Väljalülitatud seade pole sihtväärtusel ja kättesaamatu seade jäetakse välja.",
+            "fields": {
+                "behavior": {
+                    "name": "Käitumine",
+                    "description": "Kas piisab sellest, et ükskõik milline seade on kohal, või peavad kõik olema."
+                },
+                "tolerance": {
+                    "name": "Lubatud hälve",
+                    "description": "Kui lähedal sihtväärtusele loetakse veel kohale jõudnuks, seadme ühikus. Termostaadile, mis jääb seadeväärtusest napilt alla. Null tähendab sihtväärtust ennast."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Parandusprobleem on lahtine",
+            "description": "Kehtib seni, kuni parandusprobleem on lahtine. Probleemid, mida keegi on eiranud, ei lähe arvesse.",
+            "fields": {
+                "domain": {
+                    "name": "Sidumised",
+                    "description": "Piira see kindlate sidumiste teatatud probleemidega, nende domeeni järgi. Jäta tühjaks, et hõlmata kõiki."
+                },
+                "severity": {
+                    "name": "Tõsidus",
+                    "description": "Piira see kindla tõsidusega probleemidega. Jäta tühjaks, et hõlmata kõiki."
+                }
+            }
+        },
+        "quota": {
+            "name": "Käivituskvoot alles",
+            "description": "Kehtib seni, kuni see automatiseering on antud perioodi jooksul käivitunud vähem kui antud arv kordi. Skripte ei loeta.",
+            "fields": {
+                "limit": {
+                    "name": "Piirang",
+                    "description": "Mitu käivitust on perioodi jooksul lubatud."
+                },
+                "period": {
+                    "name": "Periood",
+                    "description": "Aken, millele piirang kehtib. See liigub kaasa, nii et päev tähendab mis tahes kahtekümmend nelja tundi, mitte keskööde vahelist aega."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Käivitas automatiseering",
+            "description": "Kehtib, kui selle käivituse pani tööle teine automatiseering, kas otse või skripti kaudu.",
+            "fields": {
+                "automation": {
+                    "name": "Automatiseeringud",
+                    "description": "Piira see kindlate automatiseeringutega. Jäta tühjaks, et lubada neist ükskõik millist."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Käivitas kasutaja",
+            "description": "Kehtib, kui selle käivitamise taga on inimene: olekumuutus või sündmus, mille ta põhjustas, sealhulgas selline, mis muutis mallipäästiku tõeseks. Ajakava, päike või omapäi tegutsev sidumine ei kanna kedagi kaasas, samuti mitte käivituse sundimine nupuga Käivita.",
+            "fields": {
+                "person": {
+                    "name": "Inimesed",
+                    "description": "Kehtib ainult siis, kui selle alustas üks neist inimestest. Jäta tühjaks, et kehtiks igaühe puhul. Isikul peab olema temaga seotud kasutajakonto, muidu pole millegagi võrrelda."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Ei käivitanud kasutaja",
+            "description": "Kehtib, kui selle käivituse eest ei saa kedagi vastutavaks pidada: ajakava, päike, omapäi tegutsev sidumine või nupp Käivita. Valikuid sel meelega pole. Kindlate inimeste välistamiseks pane hoopis \"Käivitas kasutaja\" tingimuse Mitte sisse."
+        },
+        "chance": {
+            "name": "Juhus",
+            "description": "Kehtib määratud protsendil kordadest, igal kontrollil juhuslikult valituna. Mugav, et oma automatiseeringutesse veidi vaheldust tuua.",
+            "fields": {
+                "percentage": {
+                    "name": "Protsent",
+                    "description": "Kui sageli see tingimus peaks kehtima, protsentides."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Jahtumisaeg",
+            "description": "Kehtib ainult siis, kui see automatiseering või skript pole antud aja jooksul käivitunud (või pole kunagi käivitunud). Sisseehitatud jahtumisaeg, et see liiga tihti uuesti ei käivituks.",
+            "fields": {
+                "duration": {
+                    "name": "Kestus",
+                    "description": "Kui kaua pärast viimast käivitust oodata, enne kui see tingimus uuesti kehtib."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Yeah... well... no. K, thx, bye!"
+            "already_spooked": "Spook juba kummitab siin 👻\n\nÜhest kummitusest maja kohta piisab küll. Spook asub jaotises [Seadmed ja teenused](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook on jälle ärkvel 👻\n\nAnna talle hetk ringi vaatamiseks. Kõik, mis ta leiab, ilmub jaotisse [Parandused](/config/repairs).",
+            "enable_failed": "Spook ei tahtnud ärgata 👻\n\nProovi see ise uuesti sisse lülitada jaotises [Seadmed ja teenused](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook magab edasi 👻\n\nIgatsed teda? Saad ta igal ajal äratada jaotises [Seadmed ja teenused](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Spook hõljub ringi 👻\n\nAnna talle hetk ringi vaatamiseks. Kõik, mis ta leiab, ilmub jaotisse [Parandused](/config/repairs).\n\nLisatoimingud, päästikud ja tingimused ootavad sind automatiseeringute ja skriptide redaktorites. Tahad teada, mida Spook veel oskab? [Dokumentatsioonis]({documentation_url}) on kõik kirjas.\n\nMeeldib Spook? 👻 ⭐ [GitHubis]({repository_url}) annab teistele teada, et Spook on tegelikult päris äge. [Frencki toetamine]({sponsor_url}) hoiab selle kummituse kõhu täis. Ja tema tasuta iga kahe nädala tagant ilmuv [uudiskiri]({newsletter_url}) hoiab sinu sisemise kummituse kõhu täis."
         },
         "step": {
             "user": {
-                "description": "Did you read the readme? Did you read the license? Are you really sure?"
+                "title": "Põõ! Tutvu Spookiga, oma semuga 👻",
+                "description": "Spook hõljub su Home Assistantis ringi ja otsib kummitusi: viiteid asjadele, mida enam pole, ja jääke, mida keegi ära ei koristanud. Kõigest, mis ta leiab, annab ta teada jaotises Parandused.\n\nLisaks laiendab ta seda, mida su automatiseeringud ja skriptid teha saavad, lisategevuste, päästikute, tingimuste ja mallidega, et automatiseeringud oleksid veelgi võimsamad.\n\nAus hoiatus: Spook ei ole Home Assistanti osa. See on kohandatud sidumine, mis ulatub kohtadesse, kuhu seda kunagi ei kutsutud. Kui juhtub midagi veidrat, kahtlusta kõigepealt Spooki ja [anna meile teada]({issue_tracker_url}).\n\nValmis kummitamiseks?"
+            },
+            "already_configured": {
+                "title": "Spook magab 👻",
+                "description": "Spook on juba seadistatud, aga keegi lülitas selle välja. Kas äratada?",
+                "menu_options": {
+                    "enable_existing": "Ärata Spook",
+                    "keep_sleeping": "Las magab"
+                }
             }
         }
     },
@@ -18,10 +356,10 @@
                 "name": "Taaskäivita"
             },
             "repairs_ignore_all": {
-                "name": "Ignoreeri kõiki"
+                "name": "Eira kõiki"
             },
             "repairs_unignore_all": {
-                "name": "Ära ignoreeri ühtegi"
+                "name": "Lõpeta kõigi eiramine"
             }
         },
         "event": {
@@ -29,41 +367,41 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Issue created",
-                            "remove": "Issue removed",
-                            "update": "Issue updated"
+                            "create": "Probleem loodud",
+                            "remove": "Probleem eemaldatud",
+                            "update": "Probleem uuendatud"
                         }
                     },
                     "domain": {
-                        "name": "Issue issuer"
+                        "name": "Probleemi allikas"
                     },
                     "issue_id": {
-                        "name": "Issue ID"
+                        "name": "Probleemi ID"
                     }
                 }
             }
         },
         "sensor": {
             "homeassistant_air_quality": {
-                "name": "Air quality"
+                "name": "Õhukvaliteet"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Alarm control panels"
+                "name": "Valvekeskuse juhtpaneelid"
             },
             "homeassistant_area": {
                 "name": "Alad"
             },
             "homeassistant_automation": {
-                "name": "Automations"
+                "name": "Automatiseeringud"
             },
             "homeassistant_binary_sensor": {
-                "name": "Binary sensors"
+                "name": "Binaarsed andurid"
             },
             "homeassistant_button": {
-                "name": "Buttons"
+                "name": "Nupud"
             },
             "homeassistant_calendar": {
-                "name": "Calendars"
+                "name": "Kalendrid"
             },
             "homeassistant_camera": {
                 "name": "Kaamerad"
@@ -71,219 +409,741 @@
             "homeassistant_climate": {
                 "name": "Kliima"
             },
+            "homeassistant_counter": {
+                "name": "Loendurid"
+            },
             "homeassistant_cover": {
-                "name": "Covers"
+                "name": "Kardinad"
             },
             "homeassistant_custom_component": {
-                "name": "Custom integrations"
+                "name": "Kohandatud sidumised"
             },
             "homeassistant_date": {
-                "name": "Dates"
+                "name": "Kuupäevad"
             },
             "homeassistant_datetime": {
-                "name": "Date/times"
+                "name": "Kuupäevad/kellaajad"
             },
             "homeassistant_device": {
                 "name": "Seadmed"
             },
             "homeassistant_device_tracker": {
-                "name": "Device trackers"
+                "name": "Seadme jälgijad"
             },
             "homeassistant_entities": {
-                "name": "Üksused"
+                "name": "Olemid"
             },
             "homeassistant_fan": {
-                "name": "Fans"
+                "name": "Ventilaatorid"
+            },
+            "homeassistant_group": {
+                "name": "Grupid"
             },
             "homeassistant_humidifier": {
-                "name": "Humidifiers"
+                "name": "Õhuniisutajad"
             },
             "homeassistant_image": {
-                "name": "Images"
+                "name": "Pildid"
             },
             "homeassistant_input_boolean": {
-                "name": "Input booleans"
+                "name": "Tõeväärtuse abilised"
             },
             "homeassistant_input_button": {
-                "name": "Input buttons"
+                "name": "Sisestusnupud"
             },
             "homeassistant_input_datetime": {
-                "name": "Input date/times"
+                "name": "Kuupäeva ja kellaaja abilised"
             },
             "homeassistant_input_number": {
-                "name": "Input numbers"
+                "name": "Arvväärtuse abilised"
             },
             "homeassistant_input_select": {
-                "name": "Input selects"
+                "name": "Valikmenüü abilised"
             },
             "homeassistant_input_text": {
-                "name": "Input texts"
+                "name": "Tekstisisestuse abilised"
             },
             "homeassistant_integration": {
-                "name": "Integrations"
+                "name": "Sidumised"
             },
             "homeassistant_light": {
                 "name": "Tuled"
             },
             "homeassistant_lock": {
-                "name": "Locks"
+                "name": "Lukud"
             },
             "homeassistant_media_player": {
-                "name": "Media players"
+                "name": "Meediamängijad"
             },
             "homeassistant_number": {
-                "name": "Numbers"
+                "name": "Numbrid"
             },
             "homeassistant_persistent_notification": {
-                "name": "Persistent notifications"
+                "name": "Püsivad teatised"
             },
             "homeassistant_person": {
-                "name": "Persons"
+                "name": "Isikud"
             },
             "homeassistant_remote": {
-                "name": "Remotes"
+                "name": "Kaugjuhtimispuldid"
             },
             "homeassistant_scene": {
-                "name": "Scenes"
+                "name": "Stseenid"
             },
             "homeassistant_script": {
-                "name": "Scripts"
+                "name": "Skriptid"
             },
             "homeassistant_select": {
-                "name": "Selects"
+                "name": "Valikud"
             },
             "homeassistant_sensor": {
                 "name": "Andurid"
             },
             "homeassistant_siren": {
-                "name": "Sirens"
+                "name": "Sireenid"
             },
             "homeassistant_stt": {
-                "name": "Speech-to-text"
+                "name": "Kõne tekstiks"
             },
             "homeassistant_sun": {
-                "name": "Suns"
+                "name": "Päikesed"
             },
             "homeassistant_switch": {
                 "name": "Lülitid"
             },
             "homeassistant_text": {
-                "name": "Texts"
+                "name": "Tekstid"
             },
             "homeassistant_time": {
-                "name": "Times"
+                "name": "Kellaajad"
+            },
+            "homeassistant_timer": {
+                "name": "Taimerid"
+            },
+            "homeassistant_todo": {
+                "name": "Ülesannete loendid"
             },
             "homeassistant_tts": {
-                "name": "Text-to-speech"
+                "name": "Tekst kõneks"
             },
             "homeassistant_update": {
-                "name": "Update"
+                "name": "Uuendused"
             },
             "homeassistant_vacuum": {
-                "name": "Vacuums"
+                "name": "Tolmuimejad"
             },
             "homeassistant_water_heater": {
-                "name": "Water heaters"
+                "name": "Veesoojendid"
             },
             "homeassistant_weather": {
-                "name": "Weather"
+                "name": "Ilm"
             },
             "homeassistant_zone": {
-                "name": "Zones"
+                "name": "Tsoonid"
             },
             "repairs_total_issues": {
                 "name": "Kokku"
             },
             "repairs_ignored_issues": {
-                "name": "Ignoreeritud"
+                "name": "Eiratud"
             },
             "repairs_active_issues": {
-                "name": "Aktiivne"
+                "name": "Aktiivsed"
             }
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa state reporting"
+                "name": "Alexa olekuteavitus"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistant state reporting"
+                "name": "Google Assistanti olekuteavitus"
             },
             "cloud_remote": {
-                "name": "Remote"
+                "name": "Kaugjuurdepääs"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Kõigi-päästiku kõiki päästikuid ei õnnestunud ühendada."
+        },
+        "area_not_found": {
+            "message": "Ala {area_id} ei leitud."
+        },
+        "blueprint_backup_failed": {
+            "message": "Faili {path} koopiat ei õnnestunud kõrvale panna: {error}. Midagi ei kirjutatud."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} ei saa siin töötada: {errors}. Midagi ei kirjutatud."
+        },
+        "blueprint_could_not_write": {
+            "message": "Faili {path} ei õnnestunud kirjutada."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Toetamata domeen: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Viga kavandi hankimisel URL-ilt."
+        },
+        "blueprint_file_exists": {
+            "message": "Fail on juba olemas."
+        },
+        "blueprint_gone": {
+            "message": "{name} pole enam siin, nii et pole midagi uuendada. Midagi ei kirjutatud."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Seda URL-i ei toetata."
+        },
+        "blueprint_write_failed": {
+            "message": "Viga faili kirjutamisel."
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain} kavandid pole praegu laaditud."
+        },
+        "calendar_events_which": {
+            "message": "Ütle, millised sündmused: anna kokkuvõte, uid või mõlemad."
+        },
+        "calendar_range_backwards": {
+            "message": "Otsingu lõpp peab tulema pärast selle algust."
+        },
+        "calendar_range_required": {
+            "message": "Ütle, kui kaugele otsida: anna lõpu kuupäev ja kellaaeg või kestus."
+        },
+        "cannot_disable_system_user": {
+            "message": "Süsteemi loodud kasutajat ei saa keelata: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Süsteemi loodud kasutajat ei saa lubada: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Kategooriat {category} ei leitud ulatuses {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Kategoorias {category} pole midagi uuendada: anna vähemalt üks väljadest {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Selle tingimuse mallis pole enam Jinjat, nii et see on konstant ega saa kunagi muutuda. Tavaliselt tähendab see, et skript renderdas selle enne selle toimingu käivitumist, mis juhtub iga malliga toimingu andmetes. Kasuta malliteta tingimust või oota malli ennast 'wait_template' abil."
+        },
+        "config_entry_not_found": {
+            "message": "Sidumise kirjet {config_entry_id} ei leitud."
+        },
+        "debounce_attach_failed": {
+            "message": "Rahunemispäästiku kõiki päästikuid ei õnnestunud ühendada."
+        },
+        "device_not_found": {
+            "message": "Seadet {device_id} ei leitud."
+        },
+        "entity_id_taken": {
+            "message": "Olemi ID {entity_id} on juba kasutusel."
+        },
+        "entity_not_found": {
+            "message": "Olemit {entity_id} ei leitud."
+        },
+        "entity_without_unique_id": {
+            "message": "Olemil {entity_id} pole unikaalset ID-d, nii et Home Assistant ei saa selle ikooni ega aliaseid säilitada."
+        },
+        "event_cannot_change": {
+            "message": "Sündmust {summary} ei saa nii muuta: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Ütle, mida muuta: uus kokkuvõte, koht või uued ajad."
+        },
+        "event_shift_or_times": {
+            "message": "Nihuta sündmust nihke võrra või anna sellele uued ajad, mitte mõlemat."
+        },
+        "event_whole_days": {
+            "message": "{summary} kestab terveid päevi, nii et seda saab nihutada ainult terve päeva kaupa."
+        },
+        "floor_not_found": {
+            "message": "Korrust {floor_id} ei leitud."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} ei saa selle grupiga liituda: see sisaldab {domains} olemeid."
+        },
+        "group_not_found_behind": {
+            "message": "Olemi {entity_id} taga olevat gruppi ei leitud."
+        },
+        "helpers_unreachable": {
+            "message": "Home Assistanti hoitud {domain} abilisteni ei õnnestunud jõuda."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Olemit {entity_id} ei saa hoida ajani, mida pole olemas."
+        },
+        "home_zone_radius": {
+            "message": "Kodutsoon võtab raadiuse täismeetrites, null või rohkem."
+        },
+        "home_zone_unsupported": {
+            "message": "Kodutsoon võtab ainult laiuskraadi, pikkuskraadi ja raadiuse, mitte: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "See arvväärtuse abiline pole muudetav: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Nimeta muudetavad sidumise kirjed või nende sidumine."
+        },
+        "integration_without_entries": {
+            "message": "Sidumisel {domain} pole kirjeid."
+        },
+        "label_not_found": {
+            "message": "Silti {label_id} ei leitud."
+        },
+        "label_nothing_to_update": {
+            "message": "Sildil {label_id} pole midagi uuendada: anna vähemalt üks väljadest {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Maksimum ({maximum}) peab olema miinimumist ({minimum}) suurem."
+        },
+        "no_max_value": {
+            "message": "Olemil {entity_id} pole maksimumväärtust."
+        },
+        "no_min_value": {
+            "message": "Olemil {entity_id} pole miinimumväärtust."
+        },
+        "not_a_group": {
+            "message": "{entity_id} pole grupp."
+        },
+        "person_not_editable": {
+            "message": "See isik pole muudetav: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook sattus Home Assistanti taaskäivitamisel veale."
+        },
+        "sequence_attach_failed": {
+            "message": "Jadapäästiku esimest sammu ei õnnestunud ühendada."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Anna muudetav miinimum, maksimum või samm."
+        },
+        "spooked": {
+            "message": "Kummitab! 👻"
+        },
+        "timer_not_editable": {
+            "message": "See taimer pole muudetav: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Kirjet ei saa iseenda järele liigutada."
+        },
+        "todo_item_not_found": {
+            "message": "Olemis {entity_id} pole kirjet {item}."
+        },
+        "todo_last_item_after": {
+            "message": "Olemis {entity_id} ei saa midagi viimase kirje järele liigutada."
+        },
+        "todo_move_where": {
+            "message": "Ütle, kuhu: teise kirje järele või üles või alla."
+        },
+        "user_not_found": {
+            "message": "Kasutajat ei leitud: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Olemi {entity_id} väärtus {value} pole arv."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Valvekoera päästiku valvesse panemise päästikuid ei õnnestunud ühendada."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Valvekoera päästiku oodatud päästikuid ei õnnestunud ühendada."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} on grupp sinu YAML-konfiguratsioonist ja Spook ei saa seda muuta. Muuda seda oma konfiguratsioonis või kasuta group.set, mis seda tüüpi grupiga endiselt töötab."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} on seadistatud YAML-is ja seda ei saa kustutada."
+        },
+        "zone_not_editable": {
+            "message": "See tsoon pole muudetav: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Hoiatuse jälgitav tundmatu olem: {alert}",
+            "description": "Spook leidis su hoiatustest kummituse 👻\n\nHoiatus {alert} (`{entity_id}`) jälgib olemit, mida Home Assistant ei tunne:\n\n{entities}\n\nHoiatus saab käivituda ainult jälgitava olemi peale, nii et see siin ei käivitu enam kunagi. Väljast paistab see täpselt nagu hoiatus, millel pole midagi teatada.\n\nVea parandamiseks muuda oma konfiguratsioonis jaotist `alert:` ja suuna see hoiatus olemile, mis on olemas.\n\nSpook 👻 Sinu semu."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Hoiatuse kasutatavad tundmatud teavitajad: {alert}",
+            "description": "Spook leidis su hoiatustest kummituse 👻\n\nHoiatus {alert} (`{entity_id}`) teavitab järgmiste toimingute kaudu, mida Home Assistant ei tunne:\n\n{notifiers}\n\nHoiatus käivitub ikka ja teeb ikka oma ringe, aga need teavitused ei jõua kuhugi. Home Assistant logib seda ainult hetkel, kui hoiatus käivitub, ja see on halb hetk avastamaks, et keegi ei kuula.\n\nVea parandamiseks muuda oma konfiguratsioonis selle hoiatuse loendit `notifiers:` ja eemalda või paranda need kirjed.\n\nSpook 👻 Sinu semu."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {automation}"
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering viitab järgmistele aladele, mida Home Assistant ei tunne:\n\n{areas}\n\n\n\nVea parandamiseks [muuda automatiseeringut]({edit}) ja eemalda nende olematute alade kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud alad kasutusel: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering kasutab järgmisi tingimusi, mida ükski Home Assistantile saadaolev sidumine ei paku:\n\n{conditions}\n\n\n\nSee juhtub sageli siis, kui tingimust pakkuv sidumine eemaldati. Vea parandamiseks [muuda automatiseeringut]({edit}) ja eemalda nende kättesaamatute tingimuste kasutamine või taasta neid pakkuv sidumine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud tingimused kasutusel: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {automation}"
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering viitab järgmistele seadmetele, mida Home Assistant ei tunne:\n\n{devices}\n\n\n\nVea parandamiseks [muuda automatiseeringut]({edit}) ja eemalda nende olematute seadmete kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud seadmed kasutusel: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {automation}"
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering viitab järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nVea parandamiseks [muuda automatiseeringut]({edit}) ja eemalda nende olematute olemite kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud olemid kasutusel: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering viitab järgmistele korrustele, mida Home Assistant ei tunne:\n\n{floors}\n\n\n\nVea parandamiseks [muuda automatiseeringut]({edit}) ja eemalda nende olematute korruste kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud korrused kasutusel: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering viitab järgmistele siltidele, mida Home Assistant ei tunne:\n\n{labels}\n\n\n\nVea parandamiseks [muuda automatiseeringut]({edit}) ja eemalda nende olematute siltide kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud sildid kasutusel: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering viitab järgmistele toimingutele, mida Home Assistant ei tunne:\n\n{services}\n\n\n\nVea parandamiseks [muuda automatiseeringut]({edit}) ja eemalda nende olematute toimingute kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud toimingud kasutusel: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook leidis su automatiseeringutest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise automatiseeringu otsa:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nSee automatiseering kasutab järgmisi päästikuid, mida ükski Home Assistantile saadaolev sidumine ei paku:\n\n{triggers}\n\n\n\nSee juhtub sageli siis, kui päästikut pakkuv sidumine eemaldati. Vea parandamiseks [muuda automatiseeringut]({edit}) ja eemalda nende kättesaamatute päästikute kasutamine või taasta neid pakkuv sidumine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud päästikud kasutusel: {automation}"
+        },
+        "empty_areas": {
+            "title": "Tühi ala: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tühi ala: {area}",
+                        "description": "Alal {area} pole seadmeid ega olemeid ning ükski automatiseering ega skript ei sihi seda.\n\nEemalda see või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda see tühi ala",
+                            "ignore": "Jäta alles, ära enam ütle",
+                            "manage": "Las ma parandan ise"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest alast nüüdsest peale.",
+                    "manage": "Saad seda ala ise hallata [alade lehel](/config/areas/dashboard).",
+                    "changed": "See ala on pärast Spooki vaatamist jälle kasutusel: selles on midagi või kasutab seda automatiseering või skript. Seega jäeti see rahule. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Tühi korrus: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tühi korrus: {floor}",
+                        "description": "Korrusel {floor} pole alasid ja ükski automatiseering ega skript ei sihi seda.\n\nEemalda see või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda see tühi korrus",
+                            "ignore": "Jäta alles, ära enam ütle",
+                            "manage": "Las ma parandan ise"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest korrusest nüüdsest peale.",
+                    "manage": "Saad seda korrust ise hallata [alade lehel](/config/areas/dashboard).",
+                    "changed": "See korrus on pärast Spooki vaatamist jälle kasutusel: sellel on ala või kasutab seda automatiseering või skript. Seega jäeti see rahule. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Energiapaneelil kasutatud tundmatud olemid",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Energiapaneelil kasutatud tundmatud olemid",
+                        "description": "Spook leidis su energiapaneelilt kummituse 👻\n\nEnergiapaneel viitab järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\nTavaliselt juhtub see siis, kui energiaseadetes kasutatud olem nimetati ümber või eemaldati. Ümber nimetatud? Siis ava [Seaded > Vaated > Energia](/config/energy) ja vali uus, et selle ajalugu paneelile jääks.\n\nLõplikult eemaldatud? Spook saab need sinu eest energiaseadetest välja võtta. Puuduv arvesti võtab kaasa oma allika või seadme, puuduv hind või kulu ainult tühjendatakse. Paneel lõpetab seejärel väljavõetu ajaloo kuvamise; statistika ise jääb alles.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Võta need energiaseadetest välja",
+                            "manage": "Las ma teen ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib nendest olemitest nüüdsest peale.",
+                    "manage": "Saad neid ise uuendada või eemaldada [energiaseadetes](/config/energy).",
+                    "nothing_to_remove": "Ükski neist pole enam tundmatu, nii et midagi ei võetud välja. Need võivad olla tagasi või keegi muutis energiaseadeid juba ära."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "Tundmatud grupi liikmed: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tundmatud grupi liikmed: {group}",
+                        "description": "Spook leidis su gruppidest kummituse 👻\n\nGrupil {group} (`{entity_id}`) on liikmeid, mida Home Assistant ei tunne:\n\n{entities}\n\nEemalda need grupist või jäta alles, siis Spook lõpetab neile osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda need liikmed",
+                            "manage": "Las ma parandan ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest grupist nüüdsest peale.",
+                    "not_editable": "See grupp on seadistatud YAML-is, nii et Spook ei saa seda muuta. Uuenda gruppi hoopis oma konfiguratsioonis.",
+                    "manage": "Saad seda gruppi ise hallata [abimeeste lehel](/config/helpers).",
+                    "changed": "Selles paranduses loetletud liikmed on pärast Spooki vaatamist tagasi või muutunud, nii et grupist ei eemaldatud midagi. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook leidis su HomeKiti sillast kummituse 👻\n\nRingi hõljudes sattus Spook järgmise HomeKiti silla otsa:\n\n{bridge}\n\nSee sild nimetab järgmisi olemeid, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nHomeKit ei järgi ümbernimetatud olemit. Kaasatud olem, mis nimetati ümber või eemaldati, on rakendusest Kodu kadunud; välistatud olem, mis nimetati ümber, ilmub sinna uuesti.\n\nVea parandamiseks mine [HomeKit Bridge sidumise juurde](/config/integrations/integration/homekit), vali selle silla juures **Seadista** ja vali olemid uuesti.\n\nSpook 👻 Sinu semu.",
+            "title": "HomeKiti sillas kasutatud tundmatud olemid: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook leidis su HomeKiti sillast kummituse 👻\n\nRingi hõljudes sattus Spook järgmise HomeKiti silla otsa:\n\n{bridge}\n\nSee sild nimetab järgmisi olemeid, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nHomeKit ei järgi ümbernimetatud olemit. Kaasatud olem, mis nimetati ümber või eemaldati, on rakendusest Kodu kadunud; välistatud olem, mis nimetati ümber, ilmub sinna uuesti.\n\nSee sild on seadistatud sinu YAML-konfiguratsioonis. Vea parandamiseks muuda selle silla `filter` jaotises `homekit:` ning eemalda või paranda need olemid.\n\nSpook 👻 Sinu semu.",
+            "title": "HomeKiti sillas kasutatud tundmatud olemid: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nJärgmised vaadete ressursid osutavad failidele, mida pole olemas:\n\n{resources}\n\n\n\nTavaliselt juhtub see siis, kui kohandatud kaart või selle failid eemaldati, aga ressurss jäi maha. Vea parandamiseks ava [ressursside leht](/config/lovelace/resources) ning eemalda või paranda need ressursid. Sellel pole oma vahelehte: vaadete lehel on see kolme punkti taga, üleval paremal.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaadete ressursid osutavad puuduvatele failidele"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nJärgmised vaadete ressursid osutavad failidele, mida pole olemas:\n\n{resources}\n\n\n\nTavaliselt juhtub see siis, kui kohandatud kaart või selle failid eemaldati, aga ressurss jäi maha.\n\nNeed ressursid on kirjas sinu YAML-konfiguratsioonis, nii et ressursside leht ei saa neid muuta. Muuda oma Lovelace'i konfiguratsiooni jaotist `resources:` ning eemalda või paranda need kirjed.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaadete ressursid osutavad puuduvatele failidele"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Vaate ressurss on kirjas mitu korda: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Vaate ressurss on kirjas mitu korda: {resource}",
+                        "description": "Spook leidis su vaadetest kummituse 👻\n\nSee vaate ressurss on kirjas {count} korda:\n\n{resources}\n\nTavaliselt juhtub see siis, kui kohandatud kaarti uuendati uue versiooni jaoks ressursi lisamisega, selle asemel et olemasolevat muuta. Brauser laadib mõlemad, kaart proovib end kaks korda registreerida ja teine katse nurjub, mis paistab nagu katkine kaart, mitte topeltressurss.\n\nSpook saab lisakoopiad eemaldada ja jätta alles kõige viimati lisatud.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda lisakoopiad, jäta viimane alles",
+                            "ignore": "Jäta need, ära enam ütle",
+                            "manage": "Las ma parandan ise"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest ressursist nüüdsest peale.",
+                    "manage": "Saad oma vaadete ressursse ise hallata [ressursside lehel](/config/lovelace/resources).",
+                    "yaml": "Need ressursid on kirjas sinu YAML-konfiguratsioonis, nii et Spook ei saa neid sinu eest muuta. Muuda oma Lovelace'i konfiguratsiooni jaotist `resources:` ja eemalda need `{resource}` koopiad, mida sul enam vaja pole."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n{dashboard}\n\nSee vaade viitab järgmistele aladele, mida Home Assistant ei tunne:\n\n{areas}\n\n\n\nSee juhtub sageli siis, kui ala nimetati ümber või eemaldati. Vea parandamiseks [muuda vaadet]({edit}) ja eemalda nende olematute alade kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaates kasutatud tundmatud alad: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {dashboard}"
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n[{dashboard}]({edit})\n\nSee vaade viitab järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nVea parandamiseks [muuda vaadet]({edit}) ja eemalda nende olematute olemite kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud olemid kasutusel: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook leidis su vaadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise vaate otsa:\n\n[{dashboard}]({edit})\n\nSee vaade teeb järgmisi toiminguid, mida Home Assistant ei tunne:\n\n{services}\n\n\n\nNupp või kaart, mis kasutab mõnda neist, ei tee puudutamisel midagi. See juhtub sageli siis, kui skript nimetati ümber või eemaldati või sidumine eemaldati. Vea parandamiseks [muuda vaadet]({edit}) ning eemalda või asenda need olematud toimingud.\n\nSpook 👻 Sinu semu.",
+            "title": "Vaates kasutatud tundmatud toimingud: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Min/max abilises kasutatud tundmatud liikmed: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Min/max abilises kasutatud tundmatud liikmed: {helper}",
+                        "description": "Spook leidis su abimeestest kummituse 👻\n\nMin/max abiline {helper} (`{entity_id}`) ühendab järgmisi liikmeid, mida Home Assistant ei tunne:\n\n{sources}\n\nEemalda need, et abiline jätkaks allesjäänud liikmetega, või jäta alles, siis Spook lõpetab neile osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda need liikmed",
+                            "manage": "Las ma parandan ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest abilisest nüüdsest peale.",
+                    "manage": "Saad seda abilist ise hallata [abimeeste lehel](/config/helpers).",
+                    "changed": "Selles paranduses loetletud liikmed on pärast Spooki vaatamist tagasi või muutunud, nii et abilisest ei eemaldatud midagi. Spook vaatab ise uuesti ja uuendab seda parandust.",
+                    "too_few_members": "Min/max abiline vajab vähemalt kahte liiget, nii et puuduvate eemaldamine jätaks neid liiga vähe. Seadista abiline ümber või eemalda see ise [abimeeste lehel](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook leidis su teavitusgruppidest kummituse 👻\n\nTeavitusgrupp `{group}` edastab järgmistele toimingutele, mida Home Assistant ei tunne:\n\n{members}\n\nGrupp edastab ikka ülejäänud liikmetele ja teatab ikka edust sellele, kes teda kutsus, nii et keegi ülesvoolu ei märka midagi. Nurjumine tuleb välja ainult üksiku \"Task exception was never retrieved\" kirjena logis, mis ei nimeta ühtegi gruppi ja paistab nagu viga. Kes iganes selle liikme taga oli, lihtsalt ei saa enam teavitusi.\n\nVea parandamiseks muuda oma konfiguratsioonis selle grupi loendit `services:` ning eemalda või paranda need kirjed.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud liikmed teavitusgrupis: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Leiti orvuks jäänud pikaajaline statistika",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Leiti orvuks jäänud pikaajaline statistika",
+                        "description": "Spook leidis su salvestist kummituse 👻\n\nHome Assistant hoiab pikaajalist statistikat järgmiste kohta, aga neile pole enam vastavat olemit:\n\n{statistics}\n\nTavaliselt juhtub see siis, kui andur eemaldati, aga selle statistika jäeti alles. Tühjendamine viskab selle ajaloo lõplikult minema, nii et Spook vaatab enne uuesti üle ja jätab rahule kõik, mis on vahepeal tagasi tulnud.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Tühjenda see statistika",
+                            "manage": "Las ma teen ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest statistikast nüüdsest peale.",
+                    "manage": "Saad neid ise tühjendada [statistika lehel](/config/tools/statistics).",
+                    "nothing_to_clear": "Selles loendis pole enam midagi tühjendada, nii et midagi ei visatud minema. Kas statistika taga on jälle olem või on see juba kadunud.",
+                    "clearing_took_too_long": "Spook palus statistika tühjendada ja salvesti pole veel öelnud, et on valmis. Töö on järjekorras ja jõuab suure tõenäosusega kohale, nii et see parandus jääb üles, kuni Spook on uuesti vaadanud."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Tundmatud seadme jälgijad, mida jälgib: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tundmatud seadme jälgijad, mida jälgib: {person}",
+                        "description": "Spook leidis su inimestest kummituse 👻\n\n{person} jälgib järgmisi seadme jälgijaid, mida Home Assistant ei tunne:\n\n{device_trackers}\n\nSee juhtub sageli siis, kui seadme jälgija nimetati ümber või selle sidumine eemaldati.\n\nEemalda need isikult {person} või jäta alles, siis Spook lõpetab neile osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda need seadme jälgijad",
+                            "ignore": "Jäta alles, ära enam ütle",
+                            "manage": "Las ma parandan ise"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest isikust nüüdsest peale.",
+                    "not_editable": "See isik on seadistatud YAML-is, nii et Spook ei saa seda muuta. Uuenda isikut hoopis oma konfiguratsioonis.",
+                    "manage": "Saad seda isikut ise hallata [inimeste lehel](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook leidis su läheduse seadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise läheduse seadistuse otsa:\n\n{name}\n\nSee seadistus eirab tsoone, mida Home Assistant ei tunne:\n\n{zones}\n\n\n\nVea parandamiseks muuda seadistust ja eemalda need tsoonid.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud eiratud tsoonid: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook leidis su läheduse seadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise läheduse seadistuse otsa:\n\n{name}\n\nSee seadistus jälgib isikuid või seadme jälgijaid, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nVea parandamiseks muuda seadistust ja eemalda need olemid.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud jälgitavad olemid: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook leidis su läheduse seadetest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise läheduse seadistuse otsa:\n\n{name}\n\nSee seadistus põhineb tsoonil, mida Home Assistant ei tunne:\n\n`{zone}`\n\n\n\nKuna läheduse seadistuse tsooni ei saa muuta, on vea parandamiseks ainus võimalus eemaldada see konkreetne läheduse sidumise eksemplar.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatu tsoon: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spook leidis su stseenidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise stseeni otsa:\n\n[{scene}]({edit})\n\nSee stseen viitab järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nVea parandamiseks [muuda stseeni]({edit}) ja eemalda nende olematute olemite kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud olemid kasutusel: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {script}"
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript viitab järgmistele aladele, mida Home Assistant ei tunne:\n\n{areas}\n\n\n\nVea parandamiseks [muuda skripti]({edit}) ja eemalda nende olematute alade kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud alad kasutusel: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript kasutab järgmisi tingimusi, mida ükski Home Assistantile saadaolev sidumine ei paku:\n\n{conditions}\n\n\n\nSee juhtub sageli siis, kui tingimust pakkuv sidumine eemaldati. Vea parandamiseks [muuda skripti]({edit}) ja eemalda nende kättesaamatute tingimuste kasutamine või taasta neid pakkuv sidumine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud tingimused kasutusel: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {script}"
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript viitab järgmistele seadmetele, mida Home Assistant ei tunne:\n\n{devices}\n\n\n\nVea parandamiseks [muuda skripti]({edit}) ja eemalda nende olematute seadmete kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud seadmed kasutusel: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {script}"
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript viitab järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nVea parandamiseks [muuda skripti]({edit}) ja eemalda nende olematute olemite kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud olemid kasutusel: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript viitab järgmistele korrustele, mida Home Assistant ei tunne:\n\n{floors}\n\n\n\nVea parandamiseks [muuda skripti]({edit}) ja eemalda nende olematute korruste kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud korrused kasutusel: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript viitab järgmistele siltidele, mida Home Assistant ei tunne:\n\n{labels}\n\n\n\nVea parandamiseks [muuda skripti]({edit}) ja eemalda nende olematute siltide kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud sildid kasutusel: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript viitab järgmistele toimingutele, mida Home Assistant ei tunne:\n\n{services}\n\n\n\nVea parandamiseks [muuda skripti]({edit}) ja eemalda nende olematute toimingute kasutamine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud toimingud kasutusel: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook leidis su skriptidest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise skripti otsa:\n\n[{script}]({edit}) (`{entity_id}`)\n\nSee skript kasutab järgmisi päästikuid, mida ükski Home Assistantile saadaolev sidumine ei paku:\n\n{triggers}\n\n\n\nSee juhtub sageli siis, kui päästikut pakkuv sidumine eemaldati. Vea parandamiseks [muuda skripti]({edit}) ja eemalda nende kättesaamatute päästikute kasutamine või taasta neid pakkuv sidumine.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud päästikud kasutusel: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook leidis su mallipõhistest abilistest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise mallipõhise abilise otsa:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSelle seadistus viitab järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nSee juhtub sageli siis, kui olem nimetati ümber või eemaldati. Vea parandamiseks seadista mallipõhine abiline ümber nii, et see viitaks olemasolevatele olemitele.\n\nSpook 👻 Sinu semu.",
+            "title": "Mallipõhises abilises kasutatud tundmatud olemid: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook leidis su mallipõhistest abilistest kummituse 👻\n\nRingi hõljudes sattus Spook järgmise mallipõhise abilise otsa:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nSee viitab järgmistele toimingutele, mida Home Assistant ei tunne:\n\n{services}\n\n\n\nSee juhtub sageli siis, kui toimingu pakkuja eemaldati või skript nimetati ümber või kustutati. Vea parandamiseks seadista mallipõhine abiline ümber nii, et see kasutaks olemasolevaid toiminguid.\n\nSpook 👻 Sinu semu.",
+            "title": "Mallipõhises abilises kasutatud tundmatud toimingud: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Tundmatu {sensors} andur alal: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tundmatu {sensors} andur alal: {area}",
+                        "description": "Spook leidis su aladest kummituse 👻\n\nAla {area} kasutab {sensors} andurit, mida Home Assistant ei tunne:\n\n{entities}\n\nHome Assistant kontrollib seda andurit ainult valimise hetkel, nii et kui see eemaldati või ümber nimetati, jäi ala osutama tühjusele. Häälabiline ja alakaardid ei saa sellelt enam näitu.\n\nTühjenda säte, et saaksid uuesti anduri valida, või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Tühjenda säte",
+                            "manage": "Las ma parandan ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest alast nüüdsest peale.",
+                    "manage": "Saad valida teise anduri selle ala sätetes [alade lehel](/config/areas/dashboard).",
+                    "changed": "Need andurid on pärast Spooki vaatamist tagasi või osutavad sätted nüüd mujale. Seega ei tühjendatud midagi. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook leidis su kohandustest kummituse 👻\n\nJaotis `customize:` kinnitab atribuute järgmistele olemitele, mida Home Assistant ei tunne:\n\n{entities}\n\n\n\nSee juhtub sageli siis, kui olem nimetati ümber või eemaldati, aga selle kohandus jäi maha. Vea parandamiseks muuda oma konfiguratsioonis jaotist `customize:` ja eemalda need olemid.\n\nSpook 👻 Sinu semu.",
+            "title": "Tundmatud olemid sinu kohandustes"
+        },
+        "unknown_engines": {
+            "title": "Assisti konveier kasutab kadunud mootoreid: {pipeline}",
+            "description": "Spook leidis su häälassistentidest kummituse 👻\n\nAssisti konveier {pipeline} kasutab järgmist, mida Home Assistant ei tunne:\n\n{engines}\n\nTavaliselt tähendab see, et selle taga olnud sidumine eemaldati. Konveierile seda ei öeldud, nii et järgmine kord, kui seda kasutatakse, nurjub see veaga puuduva pakkuja või agendi kohta ja miski enne seda ei osuta siia.\n\nParandamiseks ava selle assistendi sätted jaotises [Häälassistendid](/config/voice-assistants/assistants) ja vali igaühe jaoks mootor, mis on veel olemas.\n\nSpook 👻 Sinu semu."
+        },
+        "unknown_helper_source_references": {
+            "title": "Abilises kasutatud tundmatud lähteolemid: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Abilises kasutatud tundmatud lähteolemid: {helper}",
+                        "description": "Spook leidis su abimeestest kummituse 👻\n\nAbiline {helper} (`{domain}`, `{entity_id}`) viitab järgmistele lähteolemitele, mida Home Assistant ei tunne:\n\n{sources}\n\nIlma oma allikateta see abiline töötada ei saa. {usage}\n\nEemalda abiline või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda see abiline",
+                            "manage": "Las ma parandan ise",
+                            "ignore": "Jäta alles, ära enam ütle"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest abilisest nüüdsest peale.",
+                    "manage": "Saad seda abilist ise hallata [abimeeste lehel](/config/helpers).",
+                    "changed": "Selle abilise allikad on pärast Spooki vaatamist muutunud, nii et abiline jäeti rahule. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Kasutamata kavand: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Kasutamata kavand: {blueprint}",
+                        "description": "Kavandit {blueprint} ei kasuta ükski {domain}.\n\nEemalda see või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda see kasutamata kavand",
+                            "ignore": "Jäta alles, ära enam ütle",
+                            "manage": "Las ma parandan ise"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest kavandist nüüdsest peale.",
+                    "manage": "Saad seda kavandit ise hallata [kavandite lehel](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Kasutamata silt: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Kasutamata silt: {label}",
+                        "description": "Silti {label} pole lisatud ühelegi olemile, seadmele ega alale ning ükski automatiseering ega skript ei sihi seda.\n\nEemalda see või jäta alles, siis Spook lõpetab sellele osutamise.\n\nSpook 👻 Sinu semu.",
+                        "menu_options": {
+                            "remove": "Eemalda see kasutamata silt",
+                            "ignore": "Jäta alles, ära enam ütle",
+                            "manage": "Las ma parandan ise"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook vaikib sellest sildist nüüdsest peale.",
+                    "manage": "Saad seda silti ise hallata [siltide lehel](/config/labels).",
+                    "changed": "See silt on pärast Spooki vaatamist jälle kasutusel: miski kannab seda või kasutab seda automatiseering või skript. Seega jäeti see rahule. Spook vaatab ise uuesti ja uuendab seda parandust."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -297,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "Restart required",
+            "title": "Vajalik on taaskäivitus",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "Restart required",
-                        "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+                        "title": "Vajalik on taaskäivitus",
+                        "description": "Et Spook 👻 saaks seadistamise lõpetada, tuleb Home Assistant taaskäivitada.\n\nVali esita, et Home Assistant kohe taaskäivitada.\n\nSpook 👻 Sinu semu."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Versioon",
+            "ghosts_found": "Leitud kummitused",
+            "ghosts_ignored": "Eiratud kummitused",
+            "helpers_linked": "Seotud abilised"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Lisa gruppi liikmeid",
+            "description": "Lisab olemeid liidese kaudu loodud gruppi, Home Assistanti töötamise ajal. Juba grupis olevad olemid jäävad oma kohale.",
+            "fields": {
+                "group": {
+                    "name": "Grupp",
+                    "description": "Grupp, kuhu lisada."
+                },
+                "members": {
+                    "name": "Liikmed",
+                    "description": "Gruppi lisatavad olemid."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Eemalda grupist liikmeid",
+            "description": "Võtab olemeid liidese kaudu loodud grupist välja, Home Assistanti töötamise ajal. Millegi nimetamine, mida grupis pole, ei tee midagi, nii et nii saad ka eemaldada liikme, mida enam pole olemas.",
+            "fields": {
+                "group": {
+                    "name": "Grupp",
+                    "description": "Grupp, kust need välja võtta."
+                },
+                "members": {
+                    "name": "Liikmed",
+                    "description": "Grupist eemaldatavad olemid."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Määra grupi liikmed",
+            "description": "Asendab liidese kaudu loodud grupi liikmed antud liikmetega, Home Assistanti töötamise ajal.",
+            "fields": {
+                "group": {
+                    "name": "Grupp",
+                    "description": "Muudetav grupp."
+                },
+                "members": {
+                    "name": "Liikmed",
+                    "description": "Olemid, mida grupp peaks nüüdsest sisaldama."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Oota tingimust",
+            "description": "Ootab, kuni tingimus on tõene. Naaseb kohe, kui see juba on.",
+            "fields": {
+                "condition": {
+                    "name": "Tingimus",
+                    "description": "Tingimus, mida oodata."
+                },
+                "timeout": {
+                    "name": "Ajalõpp",
+                    "description": "Kui kaua oodata, enne kui alla anda. Kui see puudub, ootab lõputult."
+                }
+            }
+        },
+        "boo": {
+            "name": "Põõ!",
+            "description": "Selle toimingu kutsumine hirmutab Home Assistanti. Selle toimingu sooritamine nurjub alati."
+        },
+        "random_fail": {
+            "name": "Juhuslik nurjumine",
+            "description": "Selle toimingu sooritamine nurjub juhuslikult."
+        },
+        "blueprint_import": {
+            "name": "Impordi kavand",
+            "description": "Impordib kavandi.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "URL, kust kavand importida."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Uinuta",
+            "description": "Lülitab automatiseeringu mõneks ajaks välja ja lülitab selle aja möödudes uuesti sisse.",
+            "fields": {
+                "duration": {
+                    "name": "Kestus",
+                    "description": "Kui kaua automatiseering väljas püsib. See lülitub aja möödudes ise uuesti sisse, ka siis, kui Home Assistant vahepeal taaskäivitub."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Lülita sisse ajaks",
+            "description": "Lülitab automatiseeringu mõneks ajaks sisse ja lülitab selle aja möödudes uuesti välja.",
+            "fields": {
+                "duration": {
+                    "name": "Kestus",
+                    "description": "Kui kaua automatiseering sees püsib. See lülitub aja möödudes ise uuesti välja, ka siis, kui Home Assistant vahepeal taaskäivitub."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Määra heledus",
+            "description": "Määrab juba põlevate tulede heleduse ja jätab väljalülitatud rahule.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Heledus",
+                    "description": "Määratav heledus protsentides. Gruppe reguleeritakse tule kaupa, nii et väljalülitatud tuli jääb välja."
+                },
+                "transition": {
+                    "name": "Üleminek",
+                    "description": "Kui kaua muutus peaks kestma, sekundites."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Suurenda heledust",
+            "description": "Muudab juba põlevad tuled heledamaks ja jätab väljalülitatud rahule.",
+            "fields": {
+                "step_pct": {
+                    "name": "Samm",
+                    "description": "Kui palju heledamaks minna, protsentides. Iga tuli liigub oma tasemelt, nii et grupp säilitab oma kuju, selle asemel et ühtlustuda."
+                },
+                "transition": {
+                    "name": "Üleminek",
+                    "description": "Kui kaua muutus peaks kestma, sekundites."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Vähenda heledust",
+            "description": "Muudab juba põlevad tuled tuhmimaks ja peatub kõige tuhmimal tasemel, selle asemel et neid välja lülitada.",
+            "fields": {
+                "step_pct": {
+                    "name": "Samm",
+                    "description": "Kui palju tuhmimaks minna, protsentides. Iga tuli liigub oma tasemelt, nii et grupp säilitab oma kuju, selle asemel et ühtlustuda."
+                },
+                "transition": {
+                    "name": "Üleminek",
+                    "description": "Kui kaua muutus peaks kestma, sekundites."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Määra värv",
+            "description": "Määrab juba põlevate tulede värvi ja jätab rahule need, mis on väljas või värvi ei oska.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Värv",
+                    "description": "Määratav värv. Tuled, mis värvi ei oska, jäetakse vahele, selle asemel et neid valgeks muuta."
+                },
+                "transition": {
+                    "name": "Üleminek",
+                    "description": "Kui kaua muutus peaks kestma, sekundites."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Määra värvitemperatuur",
+            "description": "Määrab juba põlevate tulede värvitemperatuuri, igaühe puhul vahemikus, mida see tegelikult saavutada suudab.",
+            "fields": {
+                "kelvin": {
+                    "name": "Värvitemperatuur",
+                    "description": "Määratav värvitemperatuur. Iga tuli hoitakse oma vahemikus, sest ühe lambi soe valge on number, milleni teine ei ulatu."
+                },
+                "transition": {
+                    "name": "Üleminek",
+                    "description": "Kui kaua muutus peaks kestma, sekundites."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Määra efekt",
+            "description": "Määrab efekti tuledele, mis juba põlevad ja millel see efekt tegelikult on.",
+            "fields": {
+                "effect": {
+                    "name": "Efekt",
+                    "description": "Määratava efekti nimi. Efektide nimed erinevad tootjati, nii et tuled, millel seda pole, jäetakse nii, nagu nad on."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Kustuta sündmus",
+            "description": "Kustutab kalendrist sündmused, mis leitakse pealkirja või uid järgi teatud ajavahemikus. Tagastab kustutatu, koos uid-ga.",
+            "fields": {
+                "summary": {
+                    "name": "Kokkuvõte",
+                    "description": "Kustutatavate sündmuste pealkiri, täpselt nagu see kalendris on."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Kustutatava sündmuse identifikaator, kui see sul olemas on."
+                },
+                "start_date_time": {
+                    "name": "Alguse kuupäev ja kellaaeg",
+                    "description": "Kust otsimist alustada. Vaikimisi praegu."
+                },
+                "end_date_time": {
+                    "name": "Lõpu kuupäev ja kellaaeg",
+                    "description": "Kus otsimine lõpetada. Anna see või kestus."
+                },
+                "duration": {
+                    "name": "Kestus",
+                    "description": "Kui kaugele algusest otsida. Anna see või lõpu kuupäev ja kellaaeg."
+                },
+                "whole_series": {
+                    "name": "Kogu seeria",
+                    "description": "Korduva sündmuse puhul kustuta kogu seeria, mitte ainult leitud kordus."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Uuenda sündmust",
+            "description": "Muudab kalendris sündmusi, mis leitakse pealkirja või uid järgi teatud ajavahemikus. Tagastab muudetu, koos uid-ga.",
+            "fields": {
+                "summary": {
+                    "name": "Kokkuvõte",
+                    "description": "Muudetavate sündmuste pealkiri, täpselt nagu see kalendris on."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Muudetava sündmuse identifikaator, kui see sul olemas on."
+                },
+                "start_date_time": {
+                    "name": "Alguse kuupäev ja kellaaeg",
+                    "description": "Kust otsimist alustada. Vaikimisi praegu."
+                },
+                "end_date_time": {
+                    "name": "Lõpu kuupäev ja kellaaeg",
+                    "description": "Kus otsimine lõpetada. Anna see või kestus."
+                },
+                "duration": {
+                    "name": "Kestus",
+                    "description": "Kui kaugele algusest otsida. Anna see või lõpu kuupäev ja kellaaeg."
+                },
+                "new_summary": {
+                    "name": "Uus kokkuvõte",
+                    "description": "Pealkiri, mis sündmustele anda."
+                },
+                "description": {
+                    "name": "Kirjeldus",
+                    "description": "Kirjeldus, mis sündmustele anda."
+                },
+                "location": {
+                    "name": "Asukoht",
+                    "description": "Asukoht, mis sündmustele anda."
+                },
+                "new_start": {
+                    "name": "Uus algus",
+                    "description": "Millal sündmused hoopis algavad. Need säilitavad oma pikkuse, kui just ei anta ka uut lõppu."
+                },
+                "new_end": {
+                    "name": "Uus lõpp",
+                    "description": "Millal sündmused hoopis lõpevad."
+                },
+                "shift": {
+                    "name": "Nihe",
+                    "description": "Nihuta sündmusi nii palju hilisemaks või negatiivse väärtuse korral varasemaks. Uue alguse või lõpu asemel."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Tõsta temperatuuri",
+            "description": "Tõstab termostaadi seadeväärtust sammu võrra, kütva ja jahutava puhul mõlemat seadeväärtust. Väljalülitatud termostaat jääb välja.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Kui palju muuta. Jäta tühjaks, et kasutada termostaadi enda sammu, või pool kraadi (Fahrenheiti puhul üks), kui sellel sammu pole."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Langeta temperatuuri",
+            "description": "Langetab termostaadi seadeväärtust sammu võrra, kütva ja jahutava puhul mõlemat seadeväärtust. Väljalülitatud termostaat jääb välja.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Kui palju muuta. Jäta tühjaks, et kasutada termostaadi enda sammu, või pool kraadi (Fahrenheiti puhul üks), kui sellel sammu pole."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Loo ala",
+            "description": "Loob käigu pealt uue ala.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Loodava ala nimi."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Ala jaoks kasutatav ikoon."
+                },
+                "aliases": {
+                    "name": "Aliased",
+                    "description": "Ala aliaste loend. Kasulik, kui tahad ala kasutada teises keeles või teise hüüdnimega."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Lisa alale alias",
+            "description": "Lisab alale aliase.",
+            "fields": {
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala ID, kuhu alias lisada."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Alale lisatav alias (või aliaste loend)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Eemalda alalt alias",
+            "description": "Eemaldab alalt aliase.",
+            "fields": {
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala ID, kust alias eemaldada."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Alalt eemaldatav alias (või aliaste loend)."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Määra ala aliased",
+            "description": "Määrab ala aliased. Kirjutab üle ja eemaldab kõik olemasolevad aliased, asendades need täielikult uutega.",
+            "fields": {
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala ID, mille aliased määrata."
+                },
+                "aliases": {
+                    "name": "Aliased",
+                    "description": "Alale määratavad aliased."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Lisa seade alale",
+            "description": "Lisab seadme alale. Pane tähele: kui seade on juba mõnel alal, eemaldatakse see eelmiselt alalt.",
+            "fields": {
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala ID, kuhu seade lisada."
+                },
+                "device_id": {
+                    "name": "Seadme ID",
+                    "description": "Alale lisatava(te) seadme(te) ID."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Eemalda seade alalt",
+            "description": "Eemaldab seadme alalt. Kuna seade saab olla ainult ühel alal, ei pea see kutse ala määrama.",
+            "fields": {
+                "device_id": {
+                    "name": "Seadme ID",
+                    "description": "Selle seadme ID, millelt ala eemaldada."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Lisa olem alale",
+            "description": "Lisab olemi alale. Pane tähele: kui olem on juba mõnel alal, eemaldatakse see eelmiselt alalt. See kirjutab üle ala, kus asub seda olemit pakkuv seade.",
+            "fields": {
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala ID, kuhu olem lisada."
+                },
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Alale lisatava olemi (või olemite) ID."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Eemalda olem alalt",
+            "description": "Eemaldab olemi alalt. Kuna olem saab olla ainult ühel alal, ei pea see kutse ala määrama. Pane tähele: pärast seda kutset on olem endiselt seda pakkuva seadme alal.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Selle olemi (või olemite) ID, millelt ala eemaldada."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Kustuta ala",
+            "description": "Kustutab ala käigu pealt.",
+            "fields": {
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Kustutatava ala ID."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Keela sidumine",
+            "description": "Keelab sidumise kirjed, kirje kaupa või sidumise kõik kirjed korraga.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Sidumise kirje",
+                    "description": "Keelatav sidumise kirje."
+                },
+                "domain": {
+                    "name": "Sidumine",
+                    "description": "Keela nende sidumiste kõik kirjed, ka hiljem lisatud."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Luba sidumine",
+            "description": "Lubab sidumise kirjed, kirje kaupa või sidumise kõik kirjed korraga.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Sidumise kirje",
+                    "description": "Lubatav sidumise kirje."
+                },
+                "domain": {
+                    "name": "Sidumine",
+                    "description": "Luba nende sidumiste kõik kirjed, ka hiljem lisatud."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Keela seade",
+            "description": "Keelab seadme käigu pealt.",
+            "fields": {
+                "device_id": {
+                    "name": "Seade",
+                    "description": "Keelatav(ad) seade(d)."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Luba seade",
+            "description": "Lubab seadme käigu pealt.",
+            "fields": {
+                "device_id": {
+                    "name": "Seadme ID",
+                    "description": "Lubatava seadme toores ID. Home Assistanti seadmevalija ei näita keelatud seadmeid. Mitu ID-d saab anda YAML-loendina."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Keela kasutaja",
+            "description": "Keelab kasutajakonto, nii et ta ei saa sisse logida.",
+            "fields": {
+                "user_id": {
+                    "name": "Kasutaja ID",
+                    "description": "Keelatava(te) kasutaja(te) ID(-d)."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Luba kasutaja",
+            "description": "Lubab kasutajakonto, nii et ta saab sisse logida.",
+            "fields": {
+                "user_id": {
+                    "name": "Kasutaja ID",
+                    "description": "Lubatava(te) kasutaja(te) ID(-d)."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Uuenda olemi ID-d",
+            "description": "Uuendab olemi ID-d käigu pealt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Uuendatav(ad) olem(id)."
+                },
+                "new_entity_id": {
+                    "name": "Uus olemi ID",
+                    "description": "Olemi uus ID."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Keela olem",
+            "description": "Keelab olemi (või olemid) käigu pealt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Keelatav(ad) olem(id)."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Luba olem",
+            "description": "Lubab olemi (või olemid) käigu pealt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Lubatav(ad) olem(id)."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Avalda olem assistentidele",
+            "description": "Avaldab olemi (või olemid) häälassistentidele.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Avaldatav(ad) olem(id)."
+                },
+                "assistants": {
+                    "name": "Assistendid",
+                    "description": "Assistent (või assistendid), millele seda rakendada."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Peida olem",
+            "description": "Peidab olemi (või olemid) käigu pealt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Peidetav(ad) olem(id)."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Nimeta olem ümber",
+            "description": "Nimetab olemi (või olemid) käigu pealt ümber.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Ümbernimetatav(ad) olem(id)."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Olemi (või olemite) uus nimi."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Määra olemi ikoon",
+            "description": "Määrab olemi (või olemite) ikooni käigu pealt. Määra see väärtuseks null, et minna tagasi ikoonile, mille sidumine sellele annab.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Olem(id), mille ikoon määrata."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uus ikoon või null sidumise enda ikooni jaoks."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Lisa olemile alias",
+            "description": "Lisab olemile (või olemitele) ühe või mitu aliast, mille järgi häälassistendid seda kutsuda saavad.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Olem(id), millele alias(ed) lisada."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Lisatav(ad) alias(ed)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Eemalda olemilt alias",
+            "description": "Eemaldab olemilt (või olemitelt) ühe või mitu aliast.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Olem(id), millelt alias(ed) eemaldada."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Eemaldatav(ad) alias(ed)."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Määra olemi aliased",
+            "description": "Asendab olemi (või olemite) aliased. See, kas olemi enda nimi loetakse aliaseks, jääb samaks.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Olem(id), mille aliased määrata."
+                },
+                "aliases": {
+                    "name": "Aliased",
+                    "description": "Määratavad aliased."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Lõpeta olemi avaldamine assistentidele",
+            "description": "Lõpetab olemi (või olemite) avaldamise häälassistentidele.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Olem(id), mille avaldamine lõpetada."
+                },
+                "assistants": {
+                    "name": "Assistendid",
+                    "description": "Assistent (või assistendid), millele seda rakendada."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Too olem peidust välja",
+            "description": "Toob olemi (või olemid) käigu pealt peidust välja.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Olem(id), mis peidust välja tuua."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Loo korrus",
+            "description": "Loob käigu pealt uue korruse.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Loodava korruse nimi."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Korruse jaoks kasutatav ikoon."
+                },
+                "level": {
+                    "name": "Tase",
+                    "description": "Tase, millel korrus sinu kodus asub."
+                },
+                "aliases": {
+                    "name": "Aliased",
+                    "description": "Korruse aliaste loend. Kasulik, kui tahad korrust kasutada teises keeles või teise hüüdnimega."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Lisa korrusele alias",
+            "description": "Lisab korrusele aliase.",
+            "fields": {
+                "floor_id": {
+                    "name": "Korruse ID",
+                    "description": "Selle korruse ID, kuhu alias lisada."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Korrusele lisatav alias (või aliaste loend)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Eemalda korruselt alias",
+            "description": "Eemaldab korruselt aliase.",
+            "fields": {
+                "floor_id": {
+                    "name": "Korruse ID",
+                    "description": "Selle korruse ID, kust alias eemaldada."
+                },
+                "alias": {
+                    "name": "Alias",
+                    "description": "Korruselt eemaldatav alias (või aliaste loend)."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Määra korruse aliased",
+            "description": "Määrab korruse aliased. Kirjutab üle ja eemaldab kõik olemasolevad aliased, asendades need täielikult uutega.",
+            "fields": {
+                "floor_id": {
+                    "name": "Korruse ID",
+                    "description": "Selle korruse ID, mille aliased määrata."
+                },
+                "aliases": {
+                    "name": "Aliased",
+                    "description": "Korrusele määratavad aliased."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Lisa ala korrusele",
+            "description": "Lisab ala korrusele. Pane tähele: kui ala on juba mõnel korrusel, eemaldatakse see eelmiselt korruselt.",
+            "fields": {
+                "floor_id": {
+                    "name": "Korruse ID",
+                    "description": "Selle korruse ID, kuhu ala lisada."
+                },
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Korrusele lisatava(te) ala(de) ID."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Eemalda ala korruselt",
+            "description": "Eemaldab ala korruselt. Kuna ala saab olla ainult ühel korrusel, ei pea see kutse korrust määrama.",
+            "fields": {
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala ID, millelt korrus eemaldada."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Kustuta korrus",
+            "description": "Kustutab korruse käigu pealt.",
+            "fields": {
+                "floor_id": {
+                    "name": "Korruse ID",
+                    "description": "Kustutatava korruse ID."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Loo silt",
+            "description": "Loob käigu pealt uue sildi.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Loodava sildi nimi."
+                },
+                "description": {
+                    "name": "Kirjeldus",
+                    "description": "Sildi kirjeldus."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Sildi jaoks kasutatav ikoon."
+                },
+                "color": {
+                    "name": "Värv",
+                    "description": "Sildi jaoks kasutatav värv. Võib olla värvinimi loendist või kuueteistkümnendsüsteemis värvikood (näiteks #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Uuenda silti",
+            "description": "Uuendab olemasolevat silti käigu pealt. Kõik, mille välja jätad, säilitab oma praeguse väärtuse. Kirjelduse, ikooni ja värvi saab tühjendada, määrates need väärtuseks null.",
+            "fields": {
+                "label_id": {
+                    "name": "Sildi ID",
+                    "description": "Uuendatava sildi ID."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Sildi uus nimi."
+                },
+                "description": {
+                    "name": "Kirjeldus",
+                    "description": "Sildi uus kirjeldus."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Sildi jaoks kasutatav uus ikoon."
+                },
+                "color": {
+                    "name": "Värv",
+                    "description": "Sildi jaoks kasutatav värv. Võib olla värvinimi loendist või kuueteistkümnendsüsteemis värvikood (näiteks #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Lisa alale silt",
+            "description": "Lisab alale sildi. Kui antakse mitu silti või mitu ala, lisatakse kõik kombinatsioonid.",
+            "fields": {
+                "label_id": {
+                    "name": "Sildi ID",
+                    "description": "Ala(de)le lisatava(te) sildi (siltide) ID(-d)."
+                },
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala (alade) ID(-d), millele silt (sildid) lisada."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Lisa seadmele silt",
+            "description": "Lisab seadmele sildi. Kui antakse mitu silti või mitu seadet, lisatakse kõik kombinatsioonid.",
+            "fields": {
+                "label_id": {
+                    "name": "Sildi ID",
+                    "description": "Seadme(te)le lisatava(te) sildi (siltide) ID(-d)."
+                },
+                "device_id": {
+                    "name": "Seadme ID",
+                    "description": "Selle seadme (seadmete) ID(-d), millele silt (sildid) lisada."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Lisa olemile silt",
+            "description": "Lisab olemile sildi. Kui antakse mitu silti või mitu olemit, lisatakse kõik kombinatsioonid.",
+            "fields": {
+                "label_id": {
+                    "name": "Sildi ID",
+                    "description": "Olemi(te)le lisatava(te) sildi (siltide) ID(-d)."
+                },
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Selle olemi (olemite) ID(-d), millele silt (sildid) lisada."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Eemalda alalt silt",
+            "description": "Eemaldab alalt sildi. Kui antakse mitu silti või mitu ala, eemaldatakse kõik kombinatsioonid.",
+            "fields": {
+                "label_id": {
+                    "name": "Sildi ID",
+                    "description": "Ala(de)lt eemaldatava(te) sildi (siltide) ID(-d)."
+                },
+                "area_id": {
+                    "name": "Ala ID",
+                    "description": "Selle ala (alade) ID(-d), millelt silt (sildid) eemaldada."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Eemalda seadmelt silt",
+            "description": "Eemaldab seadmelt sildi. Kui antakse mitu silti või mitu seadet, eemaldatakse kõik kombinatsioonid.",
+            "fields": {
+                "label_id": {
+                    "name": "Sildi ID",
+                    "description": "Seadme(te)lt eemaldatava(te) sildi (siltide) ID(-d)."
+                },
+                "device_id": {
+                    "name": "Seadme ID",
+                    "description": "Selle seadme (seadmete) ID(-d), millelt silt (sildid) eemaldada."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Eemalda olemilt silt",
+            "description": "Eemaldab olemilt sildi. Kui antakse mitu silti või mitu olemit, eemaldatakse kõik kombinatsioonid.",
+            "fields": {
+                "label_id": {
+                    "name": "Sildi ID",
+                    "description": "Olemi(te)lt eemaldatava(te) sildi (siltide) ID(-d)."
+                },
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Selle olemi (olemite) ID(-d), millelt silt (sildid) eemaldada."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Loo kategooria",
+            "description": "Loob käigu pealt uue kategooria automatiseeringute, skriptide, stseenide või abiliste jaoks. Tagastab uue kategooria ID.",
+            "fields": {
+                "scope": {
+                    "name": "Ulatus",
+                    "description": "Kus kategooriat kasutatakse."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Loodava kategooria nimi."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Kategooria jaoks kasutatav ikoon."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Uuenda kategooriat",
+            "description": "Uuendab olemasolevat kategooriat käigu pealt. Kõik, mille välja jätad, säilitab oma praeguse väärtuse. Ikooni saab tühjendada, määrates selle väärtuseks null.",
+            "fields": {
+                "scope": {
+                    "name": "Ulatus",
+                    "description": "Kus kategooriat kasutatakse."
+                },
+                "category_id": {
+                    "name": "Kategooria",
+                    "description": "Uuendatava kategooria ID või nimi."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Kategooria uus nimi."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Kategooria uus ikoon."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Kustuta kategooria",
+            "description": "Kustutab kategooria. Kõik, mis selles oli, jääb kategooriata.",
+            "fields": {
+                "scope": {
+                    "name": "Ulatus",
+                    "description": "Kus kategooriat kasutatakse."
+                },
+                "category_id": {
+                    "name": "Kategooria",
+                    "description": "Kustutatava kategooria ID või nimi."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Lisa olemile kategooria",
+            "description": "Paneb automatiseeringu, skripti, stseeni või abilise kategooriasse. See asendab kategooria, milles see varem oli, sest igaüks saab olla ainult ühes.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategooria",
+                    "description": "Kategooria ID või nimi."
+                },
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kategooriasse pandavad automatiseeringud, skriptid, stseenid või abilised."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Eemalda olemilt kategooria",
+            "description": "Võtab automatiseeringu, skripti, stseeni või abilise kategooriast välja. Kõik, mis on mõnes teises kategoorias, jäetakse rahule.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategooria",
+                    "description": "Kategooria ID või nimi."
+                },
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kategooriast välja võetavad automatiseeringud, skriptid, stseenid või abilised."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Kustuta silt",
+            "description": "Kustutab sildi käigu pealt.",
+            "fields": {
+                "label_id": {
+                    "name": "Sildi ID",
+                    "description": "Kustutatava sildi ID."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Eira kõiki praegu avastatud seadmeid",
+            "description": "Eira kõiki praegu avastatud seadmeid, mida sidumiste lehel näidatakse. Pärast seda avastatud seadmeid see ei eira.",
+            "fields": {
+                "domain": {
+                    "name": "Sidumise domeen",
+                    "description": "Sidumise domeen, mille kõiki avastatud seadmeid eirata. Kui seda pole antud, loetakse eiratavaks kõik domeenid."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Keela värskenduste pärimine",
+            "description": "Keelab sidumise kirje jaoks värskenduste pärimise.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Sidumise kirje",
+                    "description": "Sidumise kirje, mille pärimine keelata."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Luba värskenduste pärimine",
+            "description": "Lubab sidumise kirje jaoks värskenduste pärimise.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Sidumise kirje",
+                    "description": "Sidumise kirje, mille pärimine lubada."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Kustuta kõik orvuks jäänud olemid",
+            "description": "Kustutab kõik orvuks jäänud olemid, millel pole enam sidumist, mis neid omaks või pakuks. Pane tähele: kui sidumine just eemaldati, võib Home Assistant vajada taaskäivitust, et aru saada, et need on orvuks jäänud.\n**HOIATUS** Olemid võivad olla märgitud orvuks jäänuks, kuna sidumine on võrguühenduseta või pole Home Assistanti käivitumisest saadik töötanud. Selle toimingu kutsumine kustutab ka need olemid."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Loetle kõik orvuks jäänud andmebaasi olemid",
+            "description": "Loetleb kõik orvuks jäänud andmebaasi olemid, mida ükski sidumine ei oma."
+        },
+        "homeassistant_restart": {
+            "name": "Taaskäivita",
+            "description": "Taaskäivitab Home Assistanti.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Turvarežiim",
+                    "description": "Kas taaskäivitus tehakse turvarežiimis. See keelab kõik kohandatud sidumised ja kasutajaliidese moodulid."
+                },
+                "force": {
+                    "name": "Sunnitud taaskäivitus",
+                    "description": "Sunni taaskäivitus. HOIATUS! See ei sulge Home Assistanti viisakalt, jätab konfiguratsiooni kontrollid vahele ja eirab käimasolevaid andmebaasi migratsioone. Kasuta seda ainult siis, kui tead, mida teed."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Impordi statistika",
+            "description": "Impordib pikaajalise statistika.",
+            "fields": {
+                "statistic_id": {
+                    "name": "Statistika ID",
+                    "description": "Statistika ID (olemi ID), mille jaoks importida."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Statistika nimi."
+                },
+                "source": {
+                    "name": "Allikas",
+                    "description": "Statistikaandmete allikas."
+                },
+                "unit_of_measurement": {
+                    "name": "Mõõtühik",
+                    "description": "Statistika mõõtühik."
+                },
+                "has_mean": {
+                    "name": "On keskmine",
+                    "description": "Kas statistikal on keskmine väärtus."
+                },
+                "has_sum": {
+                    "name": "On summa",
+                    "description": "Kas statistikal on summaväärtus."
+                },
+                "stats": {
+                    "name": "Statistika",
+                    "description": "Imporditava statistikaga vastenduste/sõnastike loend. Sõnastikud peavad sisaldama võtit \"start\" kuupäeva-kellaaja stringiga; muud lubatud valikud on \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" ja \"state\". Kõik need on valikulised ning kas täisarvud või ujukomaarvud, välja arvatud \"last_reset\", mis on kuupäeva-kellaaja string."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Vali juhuslik valik",
+            "description": "Valib valikuolemile juhusliku valiku.",
+            "fields": {
+                "options": {
+                    "name": "Valikud",
+                    "description": "Piirab valikuid, mille seast valida. Kui pole antud, arvestatakse kõiki valikuid."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Loo valikmenüü abiline",
+            "description": "Loob käigu pealt uue valikmenüü (rippmenüü) abilise. Tagastab uue valikmenüü abilise olemi ID.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue valikmenüü abilise nimi."
+                },
+                "input_select_id": {
+                    "name": "Valikmenüü abilise olemi ID",
+                    "description": "Uue valikmenüü abilise olemi ID. Eesliide input_select. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "options": {
+                    "name": "Valikud",
+                    "description": "Valikud, mille seast valida. Iga valik saab seal olla ainult üks kord."
+                },
+                "initial": {
+                    "name": "Algvalik",
+                    "description": "Valik, millelt see alustab ja mis peab olema üks valikutest. Kui see puudub, säilitab see valiku, mis tal enne Home Assistanti taaskäivitust oli."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uue valikmenüü abilise ikoon."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Kustuta valikmenüü abiline",
+            "description": "Kustutab valikmenüü abilised, mis on loodud kasutajaliideses või toiminguga loo valikmenüü abiline. YAML-is seadistatud valikmenüü abilisi Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) valikmenüü abiline (abilised)."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Vali juhuslik valik",
+            "description": "Valib input_select olemile juhusliku valiku.",
+            "fields": {
+                "options": {
+                    "name": "Valikud",
+                    "description": "Piirab valikuid, mille seast valida. Kui pole antud, arvestatakse kõiki valikuid."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Pööra valikud ümber",
+            "description": "Pöörab `input_select` olemi valitavate valikute järjekorra tagurpidi. See pole püsiv ja tühistatakse uuesti laadimisel või Home Assistanti taaskäivitumisel."
+        },
+        "input_select_shuffle": {
+            "name": "Sega valikud",
+            "description": "Segab `input_select` olemi valitavate valikute loendi. See pole püsiv ja tühistatakse uuesti laadimisel või Home Assistanti taaskäivitumisel."
+        },
+        "input_select_sort": {
+            "name": "Sorteeri valikud",
+            "description": "Sorteerib `input_select` olemi valitavate valikute loendi. See pole püsiv ja tühistatakse uuesti laadimisel või Home Assistanti taaskäivitumisel."
+        },
+        "number_decrement": {
+            "name": "Vähenda väärtust",
+            "description": "Vähendab numbriolemi väärtust teatud koguse võrra.",
+            "fields": {
+                "amount": {
+                    "name": "Kogus",
+                    "description": "Kogus, mille võrra numbrit vähendada. Kui pole antud, kasutatakse numbriolemi sammu."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Suurenda väärtust",
+            "description": "Suurendab numbriolemi väärtust teatud koguse võrra.",
+            "fields": {
+                "amount": {
+                    "name": "Kogus",
+                    "description": "Kogus, mille võrra numbrit suurendada. Kui pole antud, kasutatakse numbriolemi sammu."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Määra maksimumväärtus",
+            "description": "Määrab numbriolemi maksimumväärtusele."
+        },
+        "number_min": {
+            "name": "Määra miinimumväärtus",
+            "description": "Määrab numbriolemi miinimumväärtusele."
+        },
+        "input_number_decrement": {
+            "name": "Vähenda väärtust",
+            "description": "Vähendab arvväärtuse abilise väärtust teatud koguse võrra.",
+            "fields": {
+                "amount": {
+                    "name": "Kogus",
+                    "description": "Kogus, mille võrra arvväärtuse abilist vähendada. Kui pole antud, kasutatakse numbriolemi sammu."
+                },
+                "cycle": {
+                    "name": "Ringi",
+                    "description": "Jätka vahemiku teisest otsast, selle asemel et siin peatuda, samamoodi nagu järgmise valiku valimine käib valikuolemi puhul ringi."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Suurenda väärtust",
+            "description": "Suurendab arvväärtuse abilise väärtust teatud koguse võrra.",
+            "fields": {
+                "amount": {
+                    "name": "Kogus",
+                    "description": "Kogus, mille võrra arvväärtuse abilist suurendada. Kui pole antud, kasutatakse numbriolemi sammu."
+                },
+                "cycle": {
+                    "name": "Ringi",
+                    "description": "Jätka vahemiku teisest otsast, selle asemel et siin peatuda, samamoodi nagu järgmise valiku valimine käib valikuolemi puhul ringi."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Määra maksimumväärtus",
+            "description": "Määrab arvväärtuse abilise maksimumväärtusele."
+        },
+        "input_number_min": {
+            "name": "Määra miinimumväärtus",
+            "description": "Määrab arvväärtuse abilise miinimumväärtusele."
+        },
+        "input_number_set_range": {
+            "name": "Määra vahemik",
+            "description": "Muudab kasutajaliideses loodud arvväärtuse abilise miinimumi, maksimumi või sammu, samamoodi nagu selle muutmine. Uuest vahemikust väljas olev väärtus tuuakse selle sisse.",
+            "fields": {
+                "min": {
+                    "name": "Miinimum",
+                    "description": "Uus miinimumväärtus."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Uus maksimumväärtus."
+                },
+                "step": {
+                    "name": "Samm",
+                    "description": "Uus sammu suurus."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Loo loendur",
+            "description": "Loob käigu pealt uue loenduri abilise. Tagastab uue loenduri olemi ID.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue loenduri nimi."
+                },
+                "counter_id": {
+                    "name": "Loenduri olemi ID",
+                    "description": "Uue loenduri olemi ID. Eesliide counter. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "initial": {
+                    "name": "Algväärtus",
+                    "description": "Väärtus, millelt loendur alustab ja millele see lähtestamisel naaseb."
+                },
+                "minimum": {
+                    "name": "Miinimum",
+                    "description": "Madalaim väärtus, milleni loendur langeda saab. Jäta tühjaks, kui piirangut pole."
+                },
+                "maximum": {
+                    "name": "Maksimum",
+                    "description": "Kõrgeim väärtus, milleni loendur tõusta saab. Jäta tühjaks, kui piirangut pole."
+                },
+                "step": {
+                    "name": "Samm",
+                    "description": "Kui palju loendur iga kord tõuseb või langeb."
+                },
+                "restore": {
+                    "name": "Taasta",
+                    "description": "Taasta loenduri väärtus Home Assistanti käivitumisel, selle asemel et alustada uuesti algväärtusest."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uue loenduri ikoon."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Kustuta loendur",
+            "description": "Kustutab loenduri abilised, mis on loodud kasutajaliideses või toiminguga loo loendur. YAML-is seadistatud loendureid Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) loendur(id)."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Loo tõeväärtuse abiline",
+            "description": "Loob käigu pealt uue tõeväärtuse (lüliti) abilise. Tagastab uue tõeväärtuse abilise olemi ID.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue tõeväärtuse abilise nimi."
+                },
+                "input_boolean_id": {
+                    "name": "Tõeväärtuse abilise olemi ID",
+                    "description": "Uue tõeväärtuse abilise olemi ID. Eesliide input_boolean. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "initial": {
+                    "name": "Algväärtus",
+                    "description": "Väärtus, millega see alustab. Kui see puudub, säilitab see väärtuse, mis tal enne Home Assistanti taaskäivitust oli."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uue tõeväärtuse abilise ikoon."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Kustuta tõeväärtuse abiline",
+            "description": "Kustutab tõeväärtuse abilised, mis on loodud kasutajaliideses või toiminguga loo tõeväärtuse abiline. YAML-is seadistatud tõeväärtuse abilisi Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) tõeväärtuse abiline (abilised)."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Loo tekstisisestuse abiline",
+            "description": "Loob käigu pealt uue tekstisisestuse abilise. Tagastab uue tekstisisestuse abilise olemi ID.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue tekstisisestuse abilise nimi."
+                },
+                "input_text_id": {
+                    "name": "Tekstisisestuse abilise olemi ID",
+                    "description": "Uue tekstisisestuse abilise olemi ID. Eesliide input_text. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "initial": {
+                    "name": "Algväärtus",
+                    "description": "Tekst, millega see alustab. Kui see puudub, säilitab see teksti, mis tal enne Home Assistanti taaskäivitust oli."
+                },
+                "min": {
+                    "name": "Minimaalne pikkus",
+                    "description": "Kõige lühem, mis tekst olla võib."
+                },
+                "max": {
+                    "name": "Maksimaalne pikkus",
+                    "description": "Kõige pikem, mis tekst olla võib."
+                },
+                "pattern": {
+                    "name": "Muster",
+                    "description": "Regulaaravaldis, millele tekst peab vastama."
+                },
+                "mode": {
+                    "name": "Režiim",
+                    "description": "Näita teksti sellisena, nagu see on, või peida see nagu parool."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uue tekstisisestuse abilise ikoon."
+                },
+                "unit_of_measurement": {
+                    "name": "Mõõtühik",
+                    "description": "Ühik, mida teksti kõrval näidata."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Kustuta tekstisisestuse abiline",
+            "description": "Kustutab tekstisisestuse abilised, mis on loodud kasutajaliideses või toiminguga loo tekstisisestuse abiline. YAML-is seadistatud tekstisisestuse abilisi Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) tekstisisestuse abiline (abilised)."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Loo sisestusnupp",
+            "description": "Loob käigu pealt uue sisestusnupu abilise. Tagastab uue sisestusnupu olemi ID.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue sisestusnupu nimi."
+                },
+                "input_button_id": {
+                    "name": "Sisestusnupu olemi ID",
+                    "description": "Uue sisestusnupu olemi ID. Eesliide input_button. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uue sisestusnupu ikoon."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Kustuta sisestusnupp",
+            "description": "Kustutab sisestusnupu abilised, mis on loodud kasutajaliideses või toiminguga loo sisestusnupp. YAML-is seadistatud sisestusnuppe Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) sisestusnupp (sisestusnupud)."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Loo kuupäeva ja kellaaja abiline",
+            "description": "Loob käigu pealt uue kuupäeva ja kellaaja abilise, mis hoiab kuupäeva, kellaaega või mõlemat. Tagastab uue kuupäeva ja kellaaja abilise olemi ID.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue kuupäeva ja kellaaja abilise nimi."
+                },
+                "input_datetime_id": {
+                    "name": "Kuupäeva ja kellaaja abilise olemi ID",
+                    "description": "Uue kuupäeva ja kellaaja abilise olemi ID. Eesliide input_datetime. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "has_date": {
+                    "name": "On kuupäev",
+                    "description": "Kas see hoiab kuupäeva. Vähemalt üks kuupäevast ja kellaajast peab olema sees."
+                },
+                "has_time": {
+                    "name": "On kellaaeg",
+                    "description": "Kas see hoiab kellaaega. Vähemalt üks kuupäevast ja kellaajast peab olema sees."
+                },
+                "initial": {
+                    "name": "Algväärtus",
+                    "description": "Kuupäev ja/või kellaaeg, millega see alustab, näiteks 2026-12-31, 08:30:00 või 2026-12-31 08:30:00. Kui see puudub, säilitab see väärtuse, mis tal enne Home Assistanti taaskäivitust oli."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uue kuupäeva ja kellaaja abilise ikoon."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Kustuta kuupäeva ja kellaaja abiline",
+            "description": "Kustutab kuupäeva ja kellaaja abilised, mis on loodud kasutajaliideses või toiminguga loo kuupäeva ja kellaaja abiline. YAML-is seadistatud kuupäeva ja kellaaja abilisi Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) kuupäeva ja kellaaja abiline (abilised)."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "Loo arvväärtuse abiline",
+            "description": "Loob käigu pealt uue arvväärtuse abilise. Tagastab uue arvväärtuse abilise olemi ID.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue arvväärtuse abilise nimi."
+                },
+                "input_number_id": {
+                    "name": "Arvväärtuse abilise olemi ID",
+                    "description": "Uue arvväärtuse abilise olemi ID. Eesliide input_number. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "min": {
+                    "name": "Miinimum",
+                    "description": "Arvväärtuse abilise miinimumväärtus."
+                },
+                "max": {
+                    "name": "Maksimum",
+                    "description": "Arvväärtuse abilise maksimumväärtus."
+                },
+                "initial": {
+                    "name": "Algväärtus",
+                    "description": "Arvväärtuse abilise algväärtus Home Assistanti käivitumisel."
+                },
+                "step": {
+                    "name": "Sammu suurus",
+                    "description": "Arvväärtuse abilise sammu suurus."
+                },
+                "mode": {
+                    "name": "Kuvarežiim",
+                    "description": "Arvväärtuse abilise kuvarežiim, mis võib olla kas liugur või sisestuskast."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Arvväärtuse abilise jaoks kasutatav ikoon."
+                },
+                "unit_of_measurement": {
+                    "name": "Mõõtühik",
+                    "description": "Arvväärtuse abilise mõõtühik."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Kustuta arvväärtuse abiline",
+            "description": "Kustutab arvväärtuse abilised, mis on loodud kasutajaliideses või toiminguga loo arvväärtuse abiline. YAML-is seadistatud arvväärtuse abilisi Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) arvväärtuse abiline (abilised)."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Lisa seadme jälgija",
+            "description": "Lisab isikule seadme jälgija.",
+            "fields": {
+                "entity_id": {
+                    "name": "Isik",
+                    "description": "Isiku olemi ID, kellele seadme jälgija lisada."
+                },
+                "device_tracker": {
+                    "name": "Seadme jälgija",
+                    "description": "Isikule lisatava seadme jälgija olemi ID."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Eemalda seadme jälgija",
+            "description": "Eemaldab isikult seadme jälgija.",
+            "fields": {
+                "entity_id": {
+                    "name": "Isik",
+                    "description": "Isiku olemi ID, kellelt seadme jälgija eemaldada."
+                },
+                "device_tracker": {
+                    "name": "Seadme jälgija",
+                    "description": "Isikult eemaldatava seadme jälgija olemi ID."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Loo probleem",
+            "description": "Loo ja tõsta käsitsi probleem Home Assistanti parandustesse.",
+            "fields": {
+                "title": {
+                    "name": "Pealkiri",
+                    "description": "Probleemi pealkiri."
+                },
+                "description": {
+                    "name": "Kirjeldus",
+                    "description": "Probleemi kirjeldus. Toetab Markdowni."
+                },
+                "issue_id": {
+                    "name": "Probleemi ID",
+                    "description": "Probleemil võib olla identifikaator, mis võimaldab sul selle vajadusel hiljem selle ID abil tühistada. See takistab ka topeltprobleemide loomist. Kui pole antud, luuakse juhuslik ID."
+                },
+                "domain": {
+                    "name": "Domeen",
+                    "description": "Selle väljaga saab määrata probleemi domeeni. Näiteks vaikimisi (kui pole määratud) kasutatakse \"spook\". Siis näidatakse probleemi logol/pildil Spooki. Kui määrad selle väärtuseks \"homeassistant\", kasutatakse Home Assistanti logo, või kasuta \"hue\", \"zwave_js\", \"mqtt\" ja nii edasi, et kasutada selle sidumise logo."
+                },
+                "severity": {
+                    "name": "Tõsidus",
+                    "description": "Probleemi tõsidus. Selle järgi määratakse probleemi prioriteet. Kui pole määratud, kasutatakse \"warning\"."
+                },
+                "persistent": {
+                    "name": "Püsiv",
+                    "description": "Kas probleem peaks olema püsiv, mis tähendab, et see elab üle Home Assistanti taaskäivitused. Vaikimisi pole probleemid püsivad."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Eira kõiki probleeme",
+            "description": "Eira kõiki Home Assistanti parandustes praegu tõstatatud probleeme või ainult neid, mille on tõstatanud kindlad sidumised.",
+            "fields": {
+                "domain": {
+                    "name": "Domeen",
+                    "description": "Eira ainult nende sidumiste tõstatatud probleeme."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Loetle probleemid",
+            "description": "Loetleb Home Assistanti parandustes praegu tõstatatud probleemid koos pealkirjadega, et automatiseering saaks nende põhjal tegutseda või vaade neid näidata.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Kaasa eiratud",
+                    "description": "Loetle ka eiratud probleemid."
+                },
+                "domain": {
+                    "name": "Domeen",
+                    "description": "Loetle ainult nende sidumiste tõstatatud probleemid."
+                },
+                "severity": {
+                    "name": "Tõsidus",
+                    "description": "Loetle ainult nende tõsidustega probleemid."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Eemalda probleem",
+            "description": "Eemaldab käsitsi loodud Home Assistanti paranduste probleemi. See toiming saab eemaldada ainult toiminguga `repairs_create` loodud probleeme.",
+            "fields": {
+                "issue_id": {
+                    "name": "Probleemi ID",
+                    "description": "Eemaldatava probleemi ID."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Lõpeta kõigi probleemide eiramine",
+            "description": "Lõpeta kõigi Home Assistanti parandustes praegu tõstatatud probleemide eiramine või ainult nende, mille on tõstatanud kindlad sidumised.",
+            "fields": {
+                "domain": {
+                    "name": "Domeen",
+                    "description": "Lõpeta ainult nende sidumiste tõstatatud probleemide eiramine."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Määra kuvatäpsus",
+            "description": "Määrab ühe või mitme anduri jaoks näidatavate komakohtade arvu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olem",
+                    "description": "Uuendatav(ad) anduri olem(id)."
+                },
+                "display_precision": {
+                    "name": "Kuvatäpsus",
+                    "description": "Anduri jaoks näidatavate komakohtade arv."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Loo taimer",
+            "description": "Loob käigu pealt uue taimeri abilise. Tagastab uue taimeri olemi ID.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Uue taimeri nimi."
+                },
+                "timer_id": {
+                    "name": "Taimeri olemi ID",
+                    "description": "Uue taimeri olemi ID. Eesliide timer. lisatakse automaatselt. Kui pole antud, luuakse olemi ID nime põhjal."
+                },
+                "duration": {
+                    "name": "Kestus",
+                    "description": "Kui kaua taimer käivitamisel töötab."
+                },
+                "restore": {
+                    "name": "Taasta",
+                    "description": "Taasta taimeri olek Home Assistanti käivitumisel, nii et töötav taimer jätkab taaskäivitusest hoolimata."
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Uue taimeri ikoon."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Kustuta taimer",
+            "description": "Kustutab taimeri abilised, mis on loodud kasutajaliideses või toiminguga loo taimer. YAML-is seadistatud taimereid Spook kustutada ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Kustutatav(ad) taimer(id)."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Määra kestus",
+            "description": "Määrab olemasoleva taimeri kestuse.",
+            "fields": {
+                "duration": {
+                    "name": "Kestus",
+                    "description": "Taimeri uus kestus timedelta-stringina."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Loo tsoon",
+            "description": "Loob käigu pealt Home Assistantis uue tsooni.",
+            "fields": {
+                "name": {
+                    "name": "Nimi",
+                    "description": "Tsooni nimi"
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Tsooni jaoks kasutatav ikoon"
+                },
+                "latitude": {
+                    "name": "Laiuskraad",
+                    "description": "Tsooni laiuskraad. See võib olla mall."
+                },
+                "longitude": {
+                    "name": "Pikkuskraad",
+                    "description": "Tsooni pikkuskraad. See võib olla mall."
+                },
+                "radius": {
+                    "name": "Raadius",
+                    "description": "Tsooni raadius"
+                },
+                "passive": {
+                    "name": "Passiivne",
+                    "description": "Passiivne tsoon on olemas ainult automatiseeringute jaoks: seda ei näidata kaardil ja see ei muuda, kus inimesed ja seadme jälgijad asuvad."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Uuenda tsooni",
+            "description": "Uuendab tsooni omadusi käigu pealt.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Uuendatava olemi (või olemite) ID."
+                },
+                "name": {
+                    "name": "Nimi",
+                    "description": "Tsooni nimi"
+                },
+                "icon": {
+                    "name": "Ikoon",
+                    "description": "Tsooni jaoks kasutatav ikoon"
+                },
+                "latitude": {
+                    "name": "Laiuskraad",
+                    "description": "Tsooni laiuskraad. See võib olla mall."
+                },
+                "longitude": {
+                    "name": "Pikkuskraad",
+                    "description": "Tsooni pikkuskraad. See võib olla mall."
+                },
+                "radius": {
+                    "name": "Raadius",
+                    "description": "Tsooni raadius"
+                },
+                "passive": {
+                    "name": "Passiivne",
+                    "description": "Passiivne tsoon on olemas ainult automatiseeringute jaoks: seda ei näidata kaardil ja see ei muuda, kus inimesed ja seadme jälgijad asuvad."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Kustuta tsoon",
+            "description": "Kustutab tsooni. See töötab ainult kasutajaliidese kaudu loodud ja hallatud tsoonidega. YAML-is loodud ja hallatud tsoone Spook hallata ei saa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Olemi ID",
+                    "description": "Eemaldatava olemi (või olemite) ID."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Tõsta temperatuuri",
+            "description": "Tõstab veesoojendi seadeväärtust sammu võrra, selle piirides.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Kui palju muuta. Jäta tühjaks, et kasutada veesoojendi enda sammu, või pool kraadi (Fahrenheiti puhul üks), kui sellel sammu pole."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Langeta temperatuuri",
+            "description": "Langetab veesoojendi seadeväärtust sammu võrra, selle piirides.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Kui palju muuta. Jäta tühjaks, et kasutada veesoojendi enda sammu, või pool kraadi (Fahrenheiti puhul üks), kui sellel sammu pole."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Suurenda niiskust",
+            "description": "Tõstab niisutaja sihtniiskust sammu võrra, selle piirides.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Mitu protsenti muuta. Jäta tühjaks, et kasutada niisutaja enda sammu, või üks protsent, kui sellel sammu pole."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Vähenda niiskust",
+            "description": "Langetab niisutaja sihtniiskust sammu võrra, selle piirides.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Mitu protsenti muuta. Jäta tühjaks, et kasutada niisutaja enda sammu, või üks protsent, kui sellel sammu pole."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Suurenda asendit",
+            "description": "Liigutab kardinat sammu võrra rohkem lahti, peatudes täiesti avatud asendis.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Mitu protsenti liigutada. Kui see puudub, kümme protsenti."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Vähenda asendit",
+            "description": "Liigutab kardinat sammu võrra rohkem kinni, peatudes täiesti suletud asendis.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Mitu protsenti liigutada. Kui see puudub, kümme protsenti."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Suurenda asendit",
+            "description": "Liigutab ventiili sammu võrra rohkem lahti, peatudes täiesti avatud asendis.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Mitu protsenti liigutada. Kui see puudub, kümme protsenti."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Vähenda asendit",
+            "description": "Liigutab ventiili sammu võrra rohkem kinni, peatudes täiesti suletud asendis.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Mitu protsenti liigutada. Kui see puudub, kümme protsenti."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Suurenda helitugevust",
+            "description": "Suurendab meediamängija helitugevust antud sammu võrra, peatudes täisvaljusel.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Mitu protsenti helitugevust muuta."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Vähenda helitugevust",
+            "description": "Vähendab meediamängija helitugevust antud sammu võrra, peatudes vaikusel.",
+            "fields": {
+                "step": {
+                    "name": "Samm",
+                    "description": "Mitu protsenti helitugevust muuta."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Liiguta kirjet",
+            "description": "Liigutab ülesannete loendi kirje üles, alla või teise kirje järele.",
+            "fields": {
+                "item": {
+                    "name": "Kirje",
+                    "description": "Liigutatava kirje pealkiri või uid."
+                },
+                "after": {
+                    "name": "Järele",
+                    "description": "Selle kirje pealkiri või uid, mille järele see panna. Anna see või asukoht."
+                },
+                "position": {
+                    "name": "Asend",
+                    "description": "Liiguta see loendi algusesse või lõppu. Anna see või kirje, mille järele see panna."
                 }
             }
         }

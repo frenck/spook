@@ -1,27 +1,365 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Automatització desactivada",
+            "description": "Es dispara quan algú, o alguna cosa, desactiva una automatització. Deixa l'objectiu buit per vigilar totes les automatitzacions."
+        },
+        "debounce": {
+            "name": "Quan s'hagi calmat",
+            "description": "Es dispara quan un disparador ha deixat de disparar-se durant una estona, de manera que una ràfega arriba com una de sola. Un sensor de moviment no avisa del moviment una vegada, n'avisa vint.",
+            "fields": {
+                "triggers": {
+                    "name": "Disparadors",
+                    "description": "Els disparadors que cal esperar que callin. Qualsevol d'ells que es dispari comença una ràfega i qualsevol que es torni a disparar la manté viva, així que diversos disparadors es tracten junts en lloc d'un en un."
+                },
+                "for": {
+                    "name": "Durant",
+                    "description": "Quanta estona hi ha d'haver silenci abans que es dispari. Cada nou dispar torna a començar l'espera, així que una cosa que no para mai de disparar-se no s'avisa mai."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Han passat totes aquestes",
+            "description": "Es dispara quan tots i cadascun de diversos disparadors s'han disparat dins la mateixa finestra de temps, en qualsevol ordre. Els disparadors propis de Home Assistant són una llista on n'hi ha prou amb un; aquest és l'altre.",
+            "fields": {
+                "triggers": {
+                    "name": "Disparadors",
+                    "description": "Els disparadors que s'han d'haver disparat tots. L'ordre no importa, i un disparador que es torna a disparar substitueix el seu torn anterior en lloc de comptar dues vegades."
+                },
+                "within": {
+                    "name": "Dins de",
+                    "description": "Com de junts han de ser. La finestra es desplaça, així que un disparador que es va disparar fa més d'aquest temps s'oblida mentre els altres continuen comptant."
+                }
+            }
+        },
+        "recovered": {
+            "name": "L'entitat ha tornat",
+            "description": "Es dispara quan una entitat torna després d'haver estat no disponible durant una estona, perquè un encaminador que es reinicia no sembli que tota la casa s'està recuperant.",
+            "fields": {
+                "for": {
+                    "name": "Durant",
+                    "description": "Quanta estona ha d'haver estat fora l'entitat perquè la tornada compti. Qualsevol cosa més curta és un parpelleig: recarregar una integració fa passar totes les seves entitats per no disponible i tornar en menys d'un segon."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Dispositiu afegit",
+            "description": "Es dispara quan s'afegeix un dispositiu nou a Home Assistant, com un endoll que acabes de vincular."
+        },
+        "sequence": {
+            "name": "Disparadors en ordre",
+            "description": "Es dispara quan diversos disparadors passen l'un darrere l'altre, en l'ordre indicat.",
+            "fields": {
+                "steps": {
+                    "name": "Passos",
+                    "description": "Els disparadors que han de passar, en ordre. Només escolta el que s'està esperant, així que un pas posterior que es dispara abans d'hora no compta."
+                },
+                "timeout": {
+                    "name": "Temps d'espera",
+                    "description": "Quant pot durar tota la seqüència, comptant des del primer pas. Si no s'indica, espera indefinidament."
+                },
+                "reset": {
+                    "name": "Reinicia",
+                    "description": "Disparadors que abandonen una seqüència ja en marxa i la tornen a deixar esperant el primer pas."
+                }
+            }
+        },
+        "while": {
+            "name": "Mentre es compleixi una condició",
+            "description": "Es dispara quan una condició passa a ser certa, i es continua disparant a intervals mentre segueixi sent certa.",
+            "fields": {
+                "condition": {
+                    "name": "Condició",
+                    "description": "La condició a vigilar. Comença a disparar-se quan passa a ser certa i para quan deixa de ser-ho."
+                },
+                "every": {
+                    "name": "Cada",
+                    "description": "Quanta estona esperar entre un dispar i el següent, mentre es compleixi la condició."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Vigilant",
+            "description": "Es dispara quan una cosa que s'esperava que passés no passa a temps.",
+            "fields": {
+                "arm": {
+                    "name": "Arma",
+                    "description": "El que comença la vigilància. L'espera es compta des d'aquí, i tornar a armar mentre ja s'espera torna a començar l'espera."
+                },
+                "expect": {
+                    "name": "Espera",
+                    "description": "El que s'espera que vingui després. Si arriba a temps, s'anul·la la vigilància i no es dispara res."
+                },
+                "within": {
+                    "name": "Dins de",
+                    "description": "Quanta estona té el que s'espera per arribar. Es dispara quan passa aquest temps i no ha arribat."
+                }
+            }
+        },
+        "flapping": {
+            "name": "L'entitat no s'està quieta",
+            "description": "Es dispara quan una entitat canvia d'estat més sovint del que hauria dins d'un període de temps.",
+            "fields": {
+                "changes": {
+                    "name": "Canvis",
+                    "description": "Quants canvis d'estat calen perquè es dispari. Els canvis d'atribut no compten, i tampoc una entitat que apareix o desapareix."
+                },
+                "within": {
+                    "name": "Dins de",
+                    "description": "El període de temps dins del qual han de caure aquests canvis. Es va desplaçant, així que sempre es tracta dels canvis més recents."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "La condició ha passat a ser certa",
+            "description": "Es dispara quan una condició passa de falsa a certa, amb les mateixes peces de condició que a qualsevol altre lloc.",
+            "fields": {
+                "condition": {
+                    "name": "Condició",
+                    "description": "La condició a vigilar."
+                }
+            }
+        },
+        "cron": {
+            "name": "Programació cron",
+            "description": "Es dispara segons una programació crontab, per als moments que els disparadors de temps de Home Assistant no poden expressar, com cada dia feiner a les set o l'últim divendres del mes.",
+            "fields": {
+                "schedule": {
+                    "name": "Programació",
+                    "description": "Una expressió crontab amb cinc camps: minut, hora, dia del mes, mes, dia de la setmana. Admet intervals i passos, i les extensions de dia de la setmana, així que \"MON#2\" és el segon dilluns i \"5L\" l'últim divendres. Els sobrenoms com \"@daily\" no s'admeten."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Dispositiu descobert",
+            "description": "Es dispara quan Home Assistant descobreix alguna cosa nova que podria configurar, com un dispositiu que acaba d'aparèixer a la teva xarxa."
+        },
+        "integration_added": {
+            "name": "Integració afegida",
+            "description": "Es dispara quan s'afegeix una integració a Home Assistant, sigui qui sigui o sigui el que sigui que l'hagi afegit."
+        },
+        "integration_failed": {
+            "name": "La integració no s'ha pogut configurar",
+            "description": "Es dispara quan una entrada de configuració fa una estona que no aconsegueix configurar-se, més enllà del punt en què els reintents propis de Home Assistant ho haurien resolt.",
+            "fields": {
+                "for": {
+                    "name": "Durant",
+                    "description": "Quanta estona ha de seguir fallant una entrada perquè es dispari. Home Assistant reintenta una entrada que falla cada deu minuts com a molt tard, així que qualsevol cosa més curta avisa d'un problema que encara es pot resoldre sol."
+                },
+                "entry_id": {
+                    "name": "Entrades",
+                    "description": "Limita-ho a entrades de configuració concretes. Deixa-ho buit per vigilar-les totes."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Problema de reparació creat",
+            "description": "Es dispara quan apareix un problema de reparació nou, perquè te n'assabentis sense haver de visitar la pàgina de reparacions.",
+            "fields": {
+                "domain": {
+                    "name": "Integracions",
+                    "description": "Limita-ho a problemes notificats per integracions concretes, pel seu domini. Deixa-ho buit per a totes."
+                },
+                "severity": {
+                    "name": "Gravetat",
+                    "description": "Limita-ho a problemes d'una gravetat concreta. Deixa-ho buit per a totes."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Problema de reparació resolt",
+            "description": "Es dispara quan un problema de reparació desapareix, sigui perquè s'ha arreglat o perquè ja no es notifica.",
+            "fields": {
+                "domain": {
+                    "name": "Integracions",
+                    "description": "Limita-ho a problemes notificats per integracions concretes, pel seu domini. Deixa-ho buit per a totes."
+                }
+            }
+        },
+        "stale": {
+            "name": "L'entitat ha emmudit",
+            "description": "Es dispara quan res no ha escrit a una entitat durant una estona, cosa que detecta un dispositiu que ha mort en silenci en lloc de quedar no disponible.",
+            "fields": {
+                "for": {
+                    "name": "Durant",
+                    "description": "Quanta estona ha d'estar en silenci una entitat perquè es dispari. Una entitat que continua informant del mateix valor no està en silenci."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Temperatura objectiu assolida",
+            "description": "Es dispara quan la temperatura d'un termòstat o escalfador d'aigua arriba al seu objectiu, o el supera de cop. Canviar l'objectiu no compta, i tampoc un dispositiu apagat.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolerància",
+                    "description": "Com d'a prop de l'objectiu encara compta com a assolit, en la unitat del dispositiu. Per a un termòstat que s'estabilitza just abans del seu punt de consigna. Zero vol dir l'objectiu exacte."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Actualització instal·lada",
+            "description": "Es dispara quan una entitat d'actualització informa d'una versió instal·lada diferent, tant si algú ha premut instal·lar, com si el dispositiu s'ha actualitzat sol o s'ha actualitzat fora de Home Assistant."
+        },
+        "position_reached": {
+            "name": "Posició assolida",
+            "description": "Es dispara quan una coberta o vàlvula arriba a una posició, o la passa. Una que ja hi és, o que torna de no disponible en aquesta posició, no compta.",
+            "fields": {
+                "position": {
+                    "name": "Posició",
+                    "description": "La posició a assolir, de 0 (tancat) a 100 (obert)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Script iniciat",
+            "description": "Es dispara quan un script comença una execució. Una execució que l'script rebutja, perquè ja s'està executant, no compta. Deixa l'objectiu buit per vigilar tots els scripts."
+        },
+        "user_added": {
+            "name": "Usuari afegit",
+            "description": "Es dispara quan algú rep un accés a Home Assistant. Els usuaris que Home Assistant crea per a les seves pròpies integracions queden fora."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Crític",
+                "error": "Error",
+                "warning": "Avís"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Al final",
+                "top": "Al principi"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Temperatura a l'objectiu",
+            "description": "Es compleix quan la temperatura d'un termòstat o escalfador d'aigua és a l'objectiu. Un dispositiu apagat no és a l'objectiu, i un de no disponible queda fora.",
+            "fields": {
+                "behavior": {
+                    "name": "Comportament",
+                    "description": "Si n'hi ha prou que hi sigui qualsevol dels dispositius, o hi han de ser tots."
+                },
+                "tolerance": {
+                    "name": "Tolerància",
+                    "description": "Com d'a prop de l'objectiu encara compta com a assolit, en la unitat del dispositiu. Per a un termòstat que s'estabilitza just abans del seu punt de consigna. Zero vol dir l'objectiu exacte."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Problema de reparació pendent",
+            "description": "Es compleix mentre hi ha un problema de reparació pendent. Els problemes que algú ha ignorat no compten.",
+            "fields": {
+                "domain": {
+                    "name": "Integracions",
+                    "description": "Limita-ho a problemes notificats per integracions concretes, pel seu domini. Deixa-ho buit per a totes."
+                },
+                "severity": {
+                    "name": "Gravetat",
+                    "description": "Limita-ho a problemes d'una gravetat concreta. Deixa-ho buit per a totes."
+                }
+            }
+        },
+        "quota": {
+            "name": "Queden execucions disponibles",
+            "description": "Es compleix mentre aquesta automatització s'ha executat menys d'un nombre determinat de vegades dins d'un període determinat. Els scripts no es compten.",
+            "fields": {
+                "limit": {
+                    "name": "Límit",
+                    "description": "Quantes execucions es permeten dins del període."
+                },
+                "period": {
+                    "name": "Període",
+                    "description": "La finestra a la qual s'aplica el límit. És mòbil, així que un dia vol dir qualsevol període de vint-i-quatre hores i no de mitjanit a mitjanit."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Disparat per una automatització",
+            "description": "Es compleix quan una altra automatització ha engegat aquesta execució, tant si ho ha fet directament com a través d'un script.",
+            "fields": {
+                "automation": {
+                    "name": "Automatitzacions",
+                    "description": "Limita-ho a automatitzacions concretes. Deixa-ho buit per acceptar-ne qualsevol."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Disparat per un usuari",
+            "description": "Es compleix quan hi ha una persona darrere del que ho ha engegat: un canvi d'estat o un esdeveniment que ha causat, inclòs un que ha fet que un disparador de plantilla passi a ser cert. Una programació, el sol o una integració que actua pel seu compte no porten ningú al darrere, i tampoc forçar una execució amb el botó Executa.",
+            "fields": {
+                "person": {
+                    "name": "Persones",
+                    "description": "Només es compleix quan ho ha iniciat una d'aquestes persones. Deixa-ho buit perquè es compleixi per a qualsevol. Una persona ha de tenir un compte d'usuari vinculat, si no, no hi ha res amb què comparar."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "No disparat per un usuari",
+            "description": "Es compleix quan no es pot fer responsable ningú d'aquesta execució: una programació, el sol, una integració que actua pel seu compte o el botó Executa. No té opcions a propòsit. Per excloure persones concretes, posa \"Disparat per un usuari\" dins d'una condició No."
+        },
+        "chance": {
+            "name": "Atzar",
+            "description": "Es compleix un percentatge determinat de les vegades, a l'atzar en cada comprovació. Pràctic per afegir una mica de varietat a les teves automatitzacions.",
+            "fields": {
+                "percentage": {
+                    "name": "Percentatge",
+                    "description": "Amb quina freqüència s'ha de complir aquesta condició, en percentatge."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Temps de refredament",
+            "description": "Només es compleix si aquesta automatització o script no s'ha executat dins del temps indicat (o no s'ha executat mai). Un temps de refredament integrat, perquè no es torni a disparar massa sovint.",
+            "fields": {
+                "duration": {
+                    "name": "Durada",
+                    "description": "Quanta estona esperar després de l'última execució abans que aquesta condició es torni a complir."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Sí... bé... núm. K, thx, adeu!"
+            "already_spooked": "Spook ja ronda per aquí 👻\n\nAmb un fantasma per casa n'hi ha prou. Trobaràs Spook a [Dispositius i serveis](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook torna a estar despert 👻\n\nDona-li un moment per mirar al voltant. El que trobi apareixerà a [Reparacions](/config/repairs).",
+            "enable_failed": "Spook no s'ha volgut despertar 👻\n\nProva de tornar-lo a activar tu mateix a [Dispositius i serveis](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook continua dormint 👻\n\nEl trobes a faltar? El pots despertar quan vulguis a [Dispositius i serveis](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Spook ja voleteja per aquí 👻\n\nDona-li un moment per mirar al voltant. El que trobi apareixerà a [Reparacions](/config/repairs).\n\nLes accions, disparadors i condicions extra t'esperen als editors d'automatitzacions i scripts. Tens curiositat per saber què més pot fer Spook? La [documentació]({documentation_url}) ho té tot.\n\nT'agrada Spook? 👻 Una ⭐ a [GitHub]({repository_url}) fa saber als altres que Spook és força genial. [Patrocinar en Frenck]({sponsor_url}) manté aquest fantasma ben alimentat. I el seu [butlletí]({newsletter_url}) gratuït quinzenal manté ben alimentat el teu fantasma interior."
         },
         "step": {
             "user": {
-                "description": "Vas llegir el readme? Vas llegir la llicència? T'és molt segur?"
+                "title": "Bu! Et presento Spook, el teu col·lega 👻",
+                "description": "Spook sura pel teu Home Assistant buscant fantasmes: referències a coses que ja no existeixen i restes que ningú no ha netejat. Tot el que troba ho informa a Reparacions.\n\nA més, amplia el que poden fer les teves automatitzacions i scripts, amb accions, disparadors, condicions i ajudants addicionals, per a automatitzacions encara més potents.\n\nAvís per endavant: Spook no forma part de Home Assistant. És una integració personalitzada que arriba a llocs on mai no l'han convidat. Si passa alguna cosa estranya, sospita primer de Spook i [fes-nos-ho saber]({issue_tracker_url}).\n\nA punt per a l'esglai?"
+            },
+            "already_configured": {
+                "title": "Spook està dormint 👻",
+                "description": "Spook ja està configurat, però algú l'ha desactivat. El despertem?",
+                "menu_options": {
+                    "enable_existing": "Desperta Spook",
+                    "keep_sleeping": "Deixa'l dormir"
+                }
             }
         }
     },
     "entity": {
         "button": {
             "homeassistant_reload": {
-                "name": "Reload"
+                "name": "Recarrega"
             },
             "homeassistant_restart": {
-                "name": "Reprèn"
+                "name": "Reinicia"
             },
             "repairs_ignore_all": {
-                "name": "Ignora tot"
+                "name": "Ignora-ho tot"
             },
             "repairs_unignore_all": {
-                "name": "Unignore tot"
+                "name": "Deixa d'ignorar-ho tot"
             }
         },
         "event": {
@@ -29,26 +367,26 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "L'assumpte creat",
-                            "remove": "L'assumpte va treure",
-                            "update": "L'assumpte actualitzat"
+                            "create": "Problema creat",
+                            "remove": "Problema eliminat",
+                            "update": "Problema actualitzat"
                         }
                     },
                     "domain": {
-                        "name": "Assumpte issuer"
+                        "name": "Origen del problema"
                     },
                     "issue_id": {
-                        "name": "Assumpte ID"
+                        "name": "ID del problema"
                     }
                 }
             }
         },
         "sensor": {
             "homeassistant_air_quality": {
-                "name": "Qualitat d'aire"
+                "name": "Qualitat de l'aire"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Plafons de control de l'alarma"
+                "name": "Panells de control d'alarma"
             },
             "homeassistant_area": {
                 "name": "Àrees"
@@ -66,34 +404,40 @@
                 "name": "Calendaris"
             },
             "homeassistant_camera": {
-                "name": "Cambres"
+                "name": "Càmeres"
             },
             "homeassistant_climate": {
-                "name": "Clima"
+                "name": "Climatització"
+            },
+            "homeassistant_counter": {
+                "name": "Comptadors"
             },
             "homeassistant_cover": {
                 "name": "Cobertes"
             },
             "homeassistant_custom_component": {
-                "name": "Integracions fetes per encàrrec"
+                "name": "Integracions personalitzades"
             },
             "homeassistant_date": {
                 "name": "Dates"
             },
             "homeassistant_datetime": {
-                "name": "Temps/de data"
+                "name": "Dates/hores"
             },
             "homeassistant_device": {
                 "name": "Dispositius"
             },
             "homeassistant_device_tracker": {
-                "name": "Rastrejadors de dispositiu"
+                "name": "Seguiment de dispositius"
             },
             "homeassistant_entities": {
                 "name": "Entitats"
             },
             "homeassistant_fan": {
-                "name": "Ventalls"
+                "name": "Ventiladors"
+            },
+            "homeassistant_group": {
+                "name": "Grups"
             },
             "homeassistant_humidifier": {
                 "name": "Humidificadors"
@@ -102,22 +446,22 @@
                 "name": "Imatges"
             },
             "homeassistant_input_boolean": {
-                "name": "Entrada booleans"
+                "name": "Entrades booleanes"
             },
             "homeassistant_input_button": {
-                "name": "Botons d'entrada"
+                "name": "Entrades de botó"
             },
             "homeassistant_input_datetime": {
-                "name": "L'entrada datar/temps"
+                "name": "Entrades de data i hora"
             },
             "homeassistant_input_number": {
-                "name": "Números d'entrada"
+                "name": "Entrades numèriques"
             },
             "homeassistant_input_select": {
-                "name": "L'entrada selecciona"
+                "name": "Entrades de selecció"
             },
             "homeassistant_input_text": {
-                "name": "Textos d'entrada"
+                "name": "Entrades de text"
             },
             "homeassistant_integration": {
                 "name": "Integracions"
@@ -129,7 +473,7 @@
                 "name": "Panys"
             },
             "homeassistant_media_player": {
-                "name": "Jugadors de mitjans de comunicació"
+                "name": "Reproductors multimèdia"
             },
             "homeassistant_number": {
                 "name": "Números"
@@ -141,16 +485,16 @@
                 "name": "Persones"
             },
             "homeassistant_remote": {
-                "name": "Remotes"
+                "name": "Comandaments"
             },
             "homeassistant_scene": {
                 "name": "Escenes"
             },
             "homeassistant_script": {
-                "name": "Guions"
+                "name": "Programes (scripts)"
             },
             "homeassistant_select": {
-                "name": "Selecciona"
+                "name": "Selectors"
             },
             "homeassistant_sensor": {
                 "name": "Sensors"
@@ -159,28 +503,34 @@
                 "name": "Sirenes"
             },
             "homeassistant_stt": {
-                "name": "Parlar-a-text"
+                "name": "Veu-a-text"
             },
             "homeassistant_sun": {
-                "name": "Sun"
+                "name": "Sols"
             },
             "homeassistant_switch": {
-                "name": "Canvis"
+                "name": "Interruptors"
             },
             "homeassistant_text": {
                 "name": "Textos"
             },
             "homeassistant_time": {
-                "name": "Temps"
+                "name": "Hores"
+            },
+            "homeassistant_timer": {
+                "name": "Temporitzadors"
+            },
+            "homeassistant_todo": {
+                "name": "Llistes de tasques"
             },
             "homeassistant_tts": {
-                "name": "Text-a-parlar"
+                "name": "Text-a-veu"
             },
             "homeassistant_update": {
                 "name": "Actualització"
             },
             "homeassistant_vacuum": {
-                "name": "Buits"
+                "name": "Aspiradors"
             },
             "homeassistant_water_heater": {
                 "name": "Escalfadors d'aigua"
@@ -195,95 +545,605 @@
                 "name": "Total"
             },
             "repairs_ignored_issues": {
-                "name": "Ignorat"
+                "name": "Ignorats"
             },
             "repairs_active_issues": {
-                "name": "Actiu"
+                "name": "Actius"
             }
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa estat reportar"
+                "name": "Informes d'estat d'Alexa"
             },
             "cloud_google_report_state": {
-                "name": "estat d'Assistent del Google reportar"
+                "name": "Informes d'estat de Google Assistant"
             },
             "cloud_remote": {
                 "name": "Remot"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "No s'han pogut connectar tots els disparadors d'un disparador de tipus tots alhora."
+        },
+        "area_not_found": {
+            "message": "No s'ha trobat l'àrea {area_id}."
+        },
+        "blueprint_backup_failed": {
+            "message": "No s'ha pogut desar una còpia de {path}: {error}. No s'ha escrit res."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} no es pot executar aquí: {errors}. No s'ha escrit res."
+        },
+        "blueprint_could_not_write": {
+            "message": "No s'ha pogut escriure {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Domini no compatible: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Error en obtenir el blueprint de l'URL."
+        },
+        "blueprint_file_exists": {
+            "message": "El fitxer ja existeix."
+        },
+        "blueprint_gone": {
+            "message": "{name} ja no hi és, així que no hi ha res a actualitzar. No s'ha escrit res."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Aquest URL no és compatible."
+        },
+        "blueprint_write_failed": {
+            "message": "Error en escriure el fitxer."
+        },
+        "blueprints_not_loaded": {
+            "message": "Ara mateix no hi ha blueprints de {domain} carregats."
+        },
+        "calendar_events_which": {
+            "message": "Digues quins esdeveniments: indica un resum, un uid o tots dos."
+        },
+        "calendar_range_backwards": {
+            "message": "El final del període on buscar ha de ser posterior al començament."
+        },
+        "calendar_range_required": {
+            "message": "Digues fins on buscar: indica una data i hora de final, o una durada."
+        },
+        "cannot_disable_system_user": {
+            "message": "No es pot desactivar un usuari generat pel sistema: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "No es pot activar un usuari generat pel sistema: {user_id}."
+        },
+        "category_not_found": {
+            "message": "No s'ha trobat la categoria {category} per a {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "No hi ha res a actualitzar a la categoria {category}: indica com a mínim un de {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Una plantilla d'aquesta condició ja no conté Jinja, així que és una constant i no pot canviar mai. Normalment vol dir que un script l'ha renderitzat abans que s'executés aquesta acció, cosa que passa amb totes les plantilles de les dades d'una acció. Fes servir una condició sense plantilles, o espera la plantilla mateixa amb 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "No s'ha trobat l'entrada d'integració {config_entry_id}."
+        },
+        "debounce_attach_failed": {
+            "message": "No s'han pogut connectar tots els disparadors d'un disparador de calma."
+        },
+        "device_not_found": {
+            "message": "No s'ha trobat el dispositiu {device_id}."
+        },
+        "entity_id_taken": {
+            "message": "L'ID d'entitat {entity_id} ja està agafat."
+        },
+        "entity_not_found": {
+            "message": "No s'ha trobat l'entitat {entity_id}."
+        },
+        "entity_without_unique_id": {
+            "message": "L'entitat {entity_id} no té ID únic, així que Home Assistant no li pot guardar una icona ni àlies."
+        },
+        "event_cannot_change": {
+            "message": "{summary} no es pot canviar així: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Digues què vols canviar: un resum nou, un lloc o noves hores."
+        },
+        "event_shift_or_times": {
+            "message": "Mou un esdeveniment amb un desplaçament, o dona-li noves hores, però no les dues coses."
+        },
+        "event_whole_days": {
+            "message": "{summary} dura dies sencers, així que només es pot moure per dies sencers."
+        },
+        "floor_not_found": {
+            "message": "No s'ha trobat la planta {floor_id}."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} no es pot unir a aquest grup: conté entitats de {domains}."
+        },
+        "group_not_found_behind": {
+            "message": "No s'ha trobat el grup darrere de {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "No s'ha pogut accedir als ajudants de {domain} que manté Home Assistant."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "No es pot mantenir {entity_id} fins a una hora que no existeix."
+        },
+        "home_zone_radius": {
+            "message": "La zona de casa admet el radi en metres sencers, zero o més."
+        },
+        "home_zone_unsupported": {
+            "message": "La zona de casa només admet latitud, longitud i radi, no: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Aquesta entrada numèrica no és editable: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Indica les entrades d'integració que vols canviar, o la seva integració."
+        },
+        "integration_without_entries": {
+            "message": "La integració {domain} no té entrades."
+        },
+        "label_not_found": {
+            "message": "No s'ha trobat l'etiqueta {label_id}."
+        },
+        "label_nothing_to_update": {
+            "message": "No hi ha res a actualitzar a l'etiqueta {label_id}: indica com a mínim un de {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "El màxim ({maximum}) ha de ser superior al mínim ({minimum})."
+        },
+        "no_max_value": {
+            "message": "L'entitat {entity_id} no té valor màxim."
+        },
+        "no_min_value": {
+            "message": "L'entitat {entity_id} no té valor mínim."
+        },
+        "not_a_group": {
+            "message": "{entity_id} no és un grup."
+        },
+        "person_not_editable": {
+            "message": "Aquesta persona no és editable: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook ha trobat un error en reiniciar Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "No s'ha pogut connectar el primer pas d'un disparador de seqüència."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Indica un mínim, un màxim o un pas per canviar."
+        },
+        "spooked": {
+            "message": "Espantat! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Aquest temporitzador no és editable: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Un element no es pot moure després de si mateix."
+        },
+        "todo_item_not_found": {
+            "message": "No hi ha cap element {item} a {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "No es pot moure res després de l'últim element de {entity_id}."
+        },
+        "todo_move_where": {
+            "message": "Digues on: després d'un altre element, o al principi o al final."
+        },
+        "user_not_found": {
+            "message": "No s'ha trobat l'usuari: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "El valor {value} de {entity_id} no és un número."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "No s'han pogut connectar els disparadors d'armat d'un disparador vigilant."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "No s'han pogut connectar els disparadors esperats d'un disparador vigilant."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} és un grup de la teva configuració YAML, que Spook no pot canviar. Edita'l a la configuració, o fes servir group.set, que encara funciona amb aquest tipus de grup."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} està configurat en YAML i no es pot eliminar."
+        },
+        "zone_not_editable": {
+            "message": "Aquesta zona no és editable: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Entitat desconeguda vigilada per l'alerta: {alert}",
+            "description": "Spook ha trobat un fantasma a les teves alertes 👻\n\nL'alerta {alert} (`{entity_id}`) vigila una entitat que Home Assistant no coneix:\n\n{entities}\n\nUna alerta només es pot disparar per l'entitat que vigila, així que aquesta no es tornarà a disparar mai. Té el mateix aspecte que una alerta que no té res a dir.\n\nPer corregir aquest error, edita la secció `alert:` de la teva configuració i fes que aquesta alerta apunti a una entitat que existeixi.\n\nSpook 👻 El teu col·lega."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Notificadors desconeguts utilitzats per l'alerta: {alert}",
+            "description": "Spook ha trobat un fantasma a les teves alertes 👻\n\nL'alerta {alert} (`{entity_id}`) notifica a través de les accions següents, que Home Assistant no coneix:\n\n{notifiers}\n\nL'alerta encara es dispara i encara fa les seves rondes, però aquestes notificacions no arriben enlloc. Home Assistant només ho registra en el moment que l'alerta es dispara, que és un mal moment per descobrir que no t'escolta ningú.\n\nPer corregir aquest error, edita la llista `notifiers:` d'aquesta alerta a la teva configuració i elimina o corregeix aquestes entrades.\n\nSpook 👻 El teu col·lega."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie.",
-            "title": "Les àrees desconegudes van utilitzar dins: {automation}"
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 El teu col·lega.",
+            "title": "Àrees desconegudes utilitzades a: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització fa servir les condicions següents, que cap integració disponible a Home Assistant no pot proporcionar:\n\n{conditions}\n\n\n\nAixò passa sovint quan s'ha eliminat la integració que proporcionava una condició. Per corregir aquest error, [edita l'automatització]({edit}) i treu aquestes condicions no disponibles, o restaura la integració que les proporciona.\n\nSpook 👻 El teu col·lega.",
+            "title": "Condicions desconegudes utilitzades a: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie.",
-            "title": "Els dispositius desconeguts van utilitzar dins: {automation}"
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 El teu col·lega.",
+            "title": "Dispositius desconeguts utilitzats a: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
-            "title": "Les entitats desconegudes van utilitzar dins: {automation}"
+            "description": "Spook ha trobat un fantasma en les vostres automatitzacions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar l'automatització]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes utilitzades a: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització fa referència a les plantes següents, que Home Assistant no coneix:\n\n{floors}\n\n\n\nPer corregir aquest error, [edita l'automatització]({edit}) i treu aquestes plantes que no existeixen.\n\nSpook 👻 El teu col·lega.",
+            "title": "Plantes desconegudes utilitzades a: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització fa referència a les etiquetes següents, que Home Assistant no coneix:\n\n{labels}\n\n\n\nPer corregir aquest error, [edita l'automatització]({edit}) i treu aquestes etiquetes que no existeixen.\n\nSpook 👻 El teu col·lega.",
+            "title": "Etiquetes desconegudes utilitzades a: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització fa referència a les accions següents, que Home Assistant no coneix:\n\n{services}\n\n\n\nPer corregir aquest error, [edita l'automatització]({edit}) i treu aquestes accions que no existeixen.\n\nSpook 👻 El teu col·lega.",
+            "title": "Accions desconegudes utilitzades a: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook ha trobat un fantasma a les teves automatitzacions 👻\n\nMentre voletejava, Spook s'ha creuat amb l'automatització següent:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAquesta automatització fa servir els disparadors següents, que cap integració disponible a Home Assistant no pot proporcionar:\n\n{triggers}\n\n\n\nAixò passa sovint quan s'ha eliminat la integració que proporcionava un disparador. Per corregir aquest error, [edita l'automatització]({edit}) i treu aquests disparadors no disponibles, o restaura la integració que els proporciona.\n\nSpook 👻 El teu col·lega.",
+            "title": "Disparadors desconeguts utilitzats a: {automation}"
+        },
+        "empty_areas": {
+            "title": "Àrea buida: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Àrea buida: {area}",
+                        "description": "L'àrea {area} no té dispositius, ni entitats, ni cap automatització o script que la tingui com a objectiu.\n\nElimina-la, o conserva-la i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Elimina aquesta àrea buida",
+                            "ignore": "Conserva-la, deixa d'avisar-me",
+                            "manage": "Ja ho arreglaré jo"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta àrea.",
+                    "manage": "Pots gestionar aquesta àrea tu mateix a la [pàgina d'Àrees](/config/areas/dashboard).",
+                    "changed": "Aquesta àrea torna a estar en ús des que Spook la va mirar: hi ha alguna cosa a dins, o una automatització o script la fa servir. Així que no s'ha tocat. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Planta buida: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Planta buida: {floor}",
+                        "description": "La planta {floor} no té àrees, ni cap automatització o script que la tingui com a objectiu.\n\nElimina-la, o conserva-la i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Elimina aquesta planta buida",
+                            "ignore": "Conserva-la, deixa d'avisar-me",
+                            "manage": "Ja ho arreglaré jo"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta planta.",
+                    "manage": "Pots gestionar aquesta planta tu mateix a la [pàgina d'Àrees](/config/areas/dashboard).",
+                    "changed": "Aquesta planta torna a estar en ús des que Spook la va mirar: hi ha una àrea, o una automatització o script la fa servir. Així que no s'ha tocat. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Entitats desconegudes utilitzades al panell d'energia",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Entitats desconegudes utilitzades al panell d'energia",
+                        "description": "Spook ha trobat un fantasma al teu panell d'energia 👻\n\nEl panell d'energia fa referència a les entitats següents, que Home Assistant no coneix:\n\n{entities}\n\nAixò sol passar quan s'ha canviat el nom d'una entitat utilitzada a la configuració d'energia o s'ha eliminat. Li has canviat el nom? Aleshores obre [Configuració > Panells > Energia](/config/energy) i tria la nova, perquè el seu historial es quedi al panell.\n\nL'has eliminat per sempre? Spook les pot treure de la configuració d'energia per tu. Un comptador que falta s'emporta la seva font o dispositiu, un preu o cost que falta només s'esborra. Aleshores el panell deixa de mostrar l'historial del que s'ha tret; les estadístiques en si es queden.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Treu-les de la configuració d'energia",
+                            "manage": "Ja ho faré jo",
+                            "ignore": "Conserva-les, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquestes entitats.",
+                    "manage": "Pots actualitzar o eliminar aquestes entitats tu mateix a la [configuració d'energia](/config/energy).",
+                    "nothing_to_remove": "Cap d'aquestes continua sent desconeguda, així que no s'ha tret res. Potser han tornat, o algú ja ha canviat la configuració d'energia."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Membres de grup desconegut dins: {group}"
+            "title": "Membres de grup desconeguts a: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Membres de grup desconeguts a: {group}",
+                        "description": "Spook ha trobat un fantasma als teus grups 👻\n\nEl grup {group} (`{entity_id}`) té membres que Home Assistant no coneix:\n\n{entities}\n\nTreu-los del grup, o conserva'ls i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Treu aquests membres",
+                            "manage": "Ja ho arreglaré jo",
+                            "ignore": "Conserva-les, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquest grup.",
+                    "not_editable": "Aquest grup està configurat en YAML, així que Spook no el pot editar. Actualitza el grup a la teva configuració.",
+                    "manage": "Pots gestionar aquest grup tu mateix a la [pàgina d'Ajudants](/config/helpers).",
+                    "changed": "Els membres que llistava aquesta reparació han tornat, o han canviat, des que Spook va mirar, així que no s'ha tret res del grup. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook ha trobat un fantasma al teu pont HomeKit 👻\n\nMentre voletejava, Spook s'ha creuat amb el pont HomeKit següent:\n\n{bridge}\n\nAquest pont esmenta les entitats següents, que Home Assistant no coneix:\n\n{entities}\n\n\n\nHomeKit no segueix una entitat a la qual es canvia el nom. Una entitat inclosa a la qual s'ha canviat el nom o que s'ha eliminat desapareix de l'app Casa; una entitat exclosa a la qual s'ha canviat el nom hi torna a aparèixer.\n\nPer corregir aquest error, ves a [la integració HomeKit Bridge](/config/integrations/integration/homekit), selecciona **Configura** en aquest pont i torna a triar les entitats.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes utilitzades al pont HomeKit: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook ha trobat un fantasma al teu pont HomeKit 👻\n\nMentre voletejava, Spook s'ha creuat amb el pont HomeKit següent:\n\n{bridge}\n\nAquest pont esmenta les entitats següents, que Home Assistant no coneix:\n\n{entities}\n\n\n\nHomeKit no segueix una entitat a la qual es canvia el nom. Una entitat inclosa a la qual s'ha canviat el nom o que s'ha eliminat desapareix de l'app Casa; una entitat exclosa a la qual s'ha canviat el nom hi torna a aparèixer.\n\nAquest pont està configurat a la teva configuració YAML. Per corregir aquest error, edita el `filter` d'aquest pont a `homekit:` i elimina o corregeix aquestes entitats.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes utilitzades al pont HomeKit: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nEls recursos de panell següents apunten a fitxers que no existeixen:\n\n{resources}\n\n\n\nAixò sol passar quan s'ha eliminat una targeta personalitzada o els seus fitxers però el recurs s'ha quedat. Per corregir aquest error, obre la [pàgina de Recursos](/config/lovelace/resources) i elimina o corregeix aquests recursos. No té pestanya pròpia: a la pàgina de Panells és darrere dels tres punts, a dalt a la dreta.\n\nSpook 👻 El teu col·lega.",
+            "title": "Recursos de panell que apunten a fitxers que falten"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nEls recursos de panell següents apunten a fitxers que no existeixen:\n\n{resources}\n\n\n\nAixò sol passar quan s'ha eliminat una targeta personalitzada o els seus fitxers però el recurs s'ha quedat.\n\nAquests recursos estan a la teva configuració YAML, així que la pàgina de Recursos no els pot canviar. Edita la secció `resources:` de la teva configuració de Lovelace i elimina o corregeix aquestes entrades.\n\nSpook 👻 El teu col·lega.",
+            "title": "Recursos de panell que apunten a fitxers que falten"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Recurs de panell llistat més d'una vegada: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Recurs de panell llistat més d'una vegada: {resource}",
+                        "description": "Spook ha trobat un fantasma als teus panells 👻\n\nAquest recurs de panell està llistat {count} vegades:\n\n{resources}\n\nAixò sol passar quan una targeta personalitzada s'ha actualitzat afegint un recurs per a la nova versió en lloc d'editar el que ja hi havia. El navegador carrega tots dos, la targeta intenta registrar-se dues vegades i el segon intent falla, cosa que sembla una targeta trencada més que no pas un recurs duplicat.\n\nSpook pot esborrar les còpies sobrants i quedar-se amb la que s'ha afegit més recentment.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Esborra les còpies sobrants, conserva la més recent",
+                            "ignore": "Deixa-les, deixa d'avisar-me",
+                            "manage": "Ja ho arreglaré jo"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquest recurs.",
+                    "manage": "Pots gestionar els recursos del panell tu mateix a la [pàgina de Recursos](/config/lovelace/resources).",
+                    "yaml": "Aquests recursos estan a la teva configuració YAML, així que Spook no te'ls pot canviar. Edita la secció `resources:` de la teva configuració de Lovelace i elimina les còpies de `{resource}` que ja no necessitis."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nMentre voletejava, Spook s'ha creuat amb el panell següent:\n\n{dashboard}\n\nAquest panell fa referència a les àrees següents, que Home Assistant no coneix:\n\n{areas}\n\n\n\nAixò passa sovint quan s'ha canviat el nom d'una àrea o s'ha eliminat. Per corregir aquest error, [edita el panell]({edit}) i treu aquestes àrees que no existeixen.\n\nSpook 👻 El teu col·lega.",
+            "title": "Àrees desconegudes utilitzades al panell: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook ha trobat un fantasma en els vostres quadres de comandament 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el quadre de comandament següent:\n\n[{dashboard}]({edit})\n\nAquest quadre de comandament referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el quadre de comandament]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
-            "title": "Les entitats desconegudes van utilitzar dins: {dashboard}"
+            "description": "Spook ha trobat un fantasma en els vostres quadres de comandament 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el quadre de comandament següent:\n\n[{dashboard}]({edit})\n\nAquest quadre de comandament referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el quadre de comandament]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes utilitzades a: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook ha trobat un fantasma als teus panells 👻\n\nMentre voletejava, Spook s'ha creuat amb el panell següent:\n\n[{dashboard}]({edit})\n\nAquest panell executa les accions següents, que Home Assistant no coneix:\n\n{services}\n\n\n\nUn botó o targeta que en faci servir una no fa res quan el toques. Això passa sovint quan s'ha canviat el nom d'un script o s'ha eliminat, o s'ha eliminat una integració. Per corregir aquest error, [edita el panell]({edit}) i treu o substitueix aquestes accions que no existeixen.\n\nSpook 👻 El teu col·lega.",
+            "title": "Accions desconegudes utilitzades al panell: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Membres desconeguts utilitzats a l'ajudant mín./màx.: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Membres desconeguts utilitzats a l'ajudant mín./màx.: {helper}",
+                        "description": "Spook ha trobat un fantasma als teus ajudants 👻\n\nL'ajudant mín./màx. {helper} (`{entity_id}`) combina els membres següents, que Home Assistant no coneix:\n\n{sources}\n\nTreu-los perquè l'ajudant continuï amb els membres que queden, o conserva'ls i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Treu aquests membres",
+                            "manage": "Ja ho arreglaré jo",
+                            "ignore": "Conserva-les, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquest ajudant.",
+                    "manage": "Pots gestionar aquest ajudant tu mateix a la [pàgina d'Ajudants](/config/helpers).",
+                    "changed": "Els membres que llistava aquesta reparació han tornat, o han canviat, des que Spook va mirar, així que no s'ha tret res de l'ajudant. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació.",
+                    "too_few_members": "Un ajudant mín./màx. necessita com a mínim dos membres, així que treure els que falten en deixaria massa pocs. Reconfigura o elimina l'ajudant tu mateix a la [pàgina d'Ajudants](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook ha trobat un fantasma als teus grups de notificació 👻\n\nEl grup de notificació `{group}` reenvia a les accions següents, que Home Assistant no coneix:\n\n{members}\n\nEl grup continua enviant a la resta de membres, i continua informant d'èxit a qui l'hagi cridat, així que ningú no se n'adona. L'error només surt com un \"Task exception was never retrieved\" perdut al registre, que no esmenta cap grup i sembla un bug. Qui hi hagués darrere d'aquell membre simplement deixa de rebre notificacions.\n\nPer corregir aquest error, edita la llista `services:` d'aquest grup a la teva configuració i elimina o corregeix aquestes entrades.\n\nSpook 👻 El teu col·lega.",
+            "title": "Membres desconeguts al grup de notificació: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "S'han trobat estadístiques a llarg termini òrfenes",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "S'han trobat estadístiques a llarg termini òrfenes",
+                        "description": "Spook ha trobat un fantasma a l'enregistrador 👻\n\nHome Assistant guarda estadístiques a llarg termini del següent, però ja no hi ha cap entitat que hi correspongui:\n\n{statistics}\n\nAixò sol passar quan s'ha eliminat un sensor i se n'han conservat les estadístiques. Esborrar-les llença aquest historial per sempre, així que Spook torna a mirar abans de fer-ho, i no toca res que hagi tornat mentrestant.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Esborra aquestes estadístiques",
+                            "manage": "Ja ho faré jo",
+                            "ignore": "Conserva-les, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquestes estadístiques.",
+                    "manage": "Pots esborrar-les tu mateix a la [pàgina d'Estadístiques](/config/tools/statistics).",
+                    "nothing_to_clear": "No queda res d'aquesta llista per esborrar, així que no s'ha llençat res. O bé les estadístiques tornen a tenir una entitat al darrere, o bé ja no hi són.",
+                    "clearing_took_too_long": "Spook ha demanat que s'esborrin les estadístiques i l'enregistrador encara no ha dit que hagi acabat. La feina està a la cua i el més probable és que es faci, així que aquesta reparació es queda fins que Spook torni a mirar."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Seguiments de dispositiu desconeguts seguits per: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Seguiments de dispositiu desconeguts seguits per: {person}",
+                        "description": "Spook ha trobat un fantasma a les teves persones 👻\n\n{person} segueix els seguiments de dispositiu següents, que Home Assistant no coneix:\n\n{device_trackers}\n\nAixò passa sovint quan s'ha canviat el nom d'un seguiment de dispositiu o s'ha eliminat la seva integració.\n\nTreu-los de {person}, o conserva'ls i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Treu aquests seguiments de dispositiu",
+                            "ignore": "Conserva-les, deixa d'avisar-me",
+                            "manage": "Ja ho arreglaré jo"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta persona.",
+                    "not_editable": "Aquesta persona està configurada en YAML, així que Spook no la pot editar. Actualitza la persona a la teva configuració.",
+                    "manage": "Pots gestionar aquesta persona tu mateix a la [pàgina de Persones](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook ha trobat un fantasma a la teva configuració de proximitat 👻\n\nMentre voletejava, Spook s'ha creuat amb la configuració de proximitat següent:\n\n{name}\n\nAquesta configuració ignora zones que Home Assistant no coneix:\n\n{zones}\n\n\n\nPer corregir aquest error, edita la configuració i treu aquesta o aquestes zones.\n\nSpook 👻 El teu col·lega.",
+            "title": "Zones ignorades desconegudes: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook ha trobat un fantasma a la teva configuració de proximitat 👻\n\nMentre voletejava, Spook s'ha creuat amb la configuració de proximitat següent:\n\n{name}\n\nAquesta configuració segueix persones o seguiments de dispositiu que Home Assistant no coneix:\n\n{entities}\n\n\n\nPer corregir aquest error, edita la configuració i treu aquesta o aquestes entitats.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats seguides desconegudes: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook ha trobat un fantasma a la teva configuració de proximitat 👻\n\nMentre voletejava, Spook s'ha creuat amb la configuració de proximitat següent:\n\n{name}\n\nAquesta configuració es basa en una zona que Home Assistant no coneix:\n\n`{zone}`\n\n\n\nCom que no es pot canviar la zona d'una configuració de proximitat, l'única manera de corregir aquest error és eliminar aquesta instància concreta de la integració de proximitat.\n\nSpook 👻 El teu col·lega.",
+            "title": "Zona desconeguda: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spook ha trobat un fantasma a les teves escenes 👻\n\nMentre voletejava, Spook s'ha creuat amb l'escena següent:\n\n[{scene}]({edit})\n\nAquesta escena fa referència a les entitats següents, que Home Assistant no coneix:\n\n{entities}\n\n\n\nPer corregir aquest error, [edita l'escena]({edit}) i treu aquestes entitats que no existeixen.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes utilitzades a: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 No el vostre homie.",
-            "title": "Les àrees desconegudes van utilitzar dins: {script}"
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les àrees següents, els quals són desconeguts a Assistent de Casa:\n\n{areas}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests àreesnoexistents.\n\nSpook 👻 El teu col·lega.",
+            "title": "Àrees desconegudes utilitzades a: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script fa servir les condicions següents, que cap integració disponible a Home Assistant no pot proporcionar:\n\n{conditions}\n\n\n\nAixò passa sovint quan s'ha eliminat la integració que proporcionava una condició. Per corregir aquest error, [edita l'script]({edit}) i treu aquestes condicions no disponibles, o restaura la integració que les proporciona.\n\nSpook 👻 El teu col·lega.",
+            "title": "Condicions desconegudes utilitzades a: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 No el vostre homie.",
-            "title": "Els dispositius desconeguts van utilitzar dins: {script}"
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia els dispositius següents, els quals són desconeguts a Assistent de Casa:\n\n{devices}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests dispositiusnoexistents.\n\nSpook 👻 El teu col·lega.",
+            "title": "Dispositius desconeguts utilitzats a: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 No el vostre homie.",
-            "title": "Les entitats desconegudes van utilitzar dins: {script}"
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest guió referencia les entitats següents, els quals són desconeguts a Assistent de Casa:\n\n{entities}\n\n\n\nper fixar aquest error, [editar el guió]({edit}) i treure l'ús d'aquests entitatsnoexistents.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes utilitzades a: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script fa referència a les plantes següents, que Home Assistant no coneix:\n\n{floors}\n\n\n\nPer corregir aquest error, [edita l'script]({edit}) i treu aquestes plantes que no existeixen.\n\nSpook 👻 El teu col·lega.",
+            "title": "Plantes desconegudes utilitzades a: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script fa referència a les etiquetes següents, que Home Assistant no coneix:\n\n{labels}\n\n\n\nPer corregir aquest error, [edita l'script]({edit}) i treu aquestes etiquetes que no existeixen.\n\nSpook 👻 El teu col·lega.",
+            "title": "Etiquetes desconegudes utilitzades a: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 No el vostre homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spook ha trobat un fantasma en els vostres guions 👻\n\nMentre flotant al voltant, Spook va creuar camí amb el guió següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 El teu col·lega.",
+            "title": "Accions desconegudes utilitzades a: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook ha trobat un fantasma als teus scripts 👻\n\nMentre voletejava, Spook s'ha creuat amb l'script següent:\n\n[{script}]({edit}) (`{entity_id}`)\n\nAquest script fa servir els disparadors següents, que cap integració disponible a Home Assistant no pot proporcionar:\n\n{triggers}\n\n\n\nAixò passa sovint quan s'ha eliminat la integració que proporcionava un disparador. Per corregir aquest error, [edita l'script]({edit}) i treu aquests disparadors no disponibles, o restaura la integració que els proporciona.\n\nSpook 👻 El teu col·lega.",
+            "title": "Disparadors desconeguts utilitzats a: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook ha trobat un fantasma als teus ajudants de plantilla 👻\n\nMentre voletejava, Spook s'ha creuat amb l'ajudant de plantilla següent:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nLa seva configuració fa referència a les entitats següents, que Home Assistant no coneix:\n\n{entities}\n\n\n\nAixò passa sovint quan s'ha canviat el nom d'una entitat o s'ha eliminat. Per corregir aquest error, reconfigura l'ajudant de plantilla perquè faci referència a entitats que existeixin.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes utilitzades a l'ajudant de plantilla: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook ha trobat un fantasma als teus ajudants de plantilla 👻\n\nMentre voletejava, Spook s'ha creuat amb l'ajudant de plantilla següent:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nFa referència a les accions següents, que Home Assistant no coneix:\n\n{services}\n\n\n\nAixò passa sovint quan s'ha eliminat el proveïdor d'una acció, o s'ha canviat el nom d'un script o s'ha esborrat. Per corregir aquest error, reconfigura l'ajudant de plantilla perquè faci servir accions que existeixin.\n\nSpook 👻 El teu col·lega.",
+            "title": "Accions desconegudes utilitzades a l'ajudant de plantilla: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Sensor de {sensors} desconegut per a l'àrea: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Sensor de {sensors} desconegut per a l'àrea: {area}",
+                        "description": "Spook ha trobat un fantasma a les teves àrees 👻\n\nL'àrea {area} fa servir un sensor de {sensors} que Home Assistant no coneix:\n\n{entities}\n\nHome Assistant només comprova aquest sensor quan es tria, així que quan es va eliminar o se li va canviar el nom, l'àrea va continuar apuntant al no-res. Assist i les targetes d'àrea ja no n'obtenen cap lectura.\n\nEsborra el paràmetre perquè puguis tornar a triar un sensor, o conserva'l i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Esborra el paràmetre",
+                            "manage": "Ja ho arreglaré jo",
+                            "ignore": "Conserva-la, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta àrea.",
+                    "manage": "Pots triar un altre sensor a la configuració d'aquesta àrea a la [pàgina d'Àrees](/config/areas/dashboard).",
+                    "changed": "Aquests sensors han tornat, o la configuració ara apunta a un altre lloc, des que Spook va mirar. Així que no s'ha esborrat res. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook ha trobat un fantasma a les teves personalitzacions 👻\n\nLa secció `customize:` fixa atributs a les entitats següents, que Home Assistant no coneix:\n\n{entities}\n\n\n\nAixò passa sovint quan s'ha canviat el nom d'una entitat o s'ha eliminat mentre la seva personalització es quedava. Per corregir aquest error, edita la secció `customize:` de la teva configuració i treu aquestes entitats.\n\nSpook 👻 El teu col·lega.",
+            "title": "Entitats desconegudes a les teves personalitzacions"
+        },
+        "unknown_engines": {
+            "title": "El procés d'Assist fa servir motors que ja no hi són: {pipeline}",
+            "description": "Spook ha trobat un fantasma als teus assistents de veu 👻\n\nEl procés d'Assist {pipeline} fa servir el següent, que Home Assistant no coneix:\n\n{engines}\n\nNormalment vol dir que s'ha eliminat la integració que hi havia al darrere. Ningú no ho ha dit al procés, així que la propera vegada que es faci servir fallarà amb un error sobre un proveïdor o agent que falta, i res abans d'això no apunta aquí.\n\nPer corregir-ho, obre la configuració d'aquest assistent a [Assistents de veu](/config/voice-assistants/assistants) i tria per a cadascun un motor que encara existeixi.\n\nSpook 👻 El teu col·lega."
+        },
+        "unknown_helper_source_references": {
+            "title": "Entitats d'origen desconegudes utilitzades a l'ajudant: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Entitats d'origen desconegudes utilitzades a l'ajudant: {helper}",
+                        "description": "Spook ha trobat un fantasma als teus ajudants 👻\n\nL'ajudant {helper} (`{domain}`, `{entity_id}`) fa referència a les entitats d'origen següents, que Home Assistant no coneix:\n\n{sources}\n\nSense les seves fonts aquest ajudant no pot funcionar. {usage}\n\nElimina l'ajudant, o conserva'l i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Elimina aquest ajudant",
+                            "manage": "Ja ho arreglaré jo",
+                            "ignore": "Conserva-la, deixa d'avisar-me"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquest ajudant.",
+                    "manage": "Pots gestionar aquest ajudant tu mateix a la [pàgina d'Ajudants](/config/helpers).",
+                    "changed": "Les fonts d'aquest ajudant han canviat des que Spook va mirar, així que no s'ha tocat l'ajudant. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Blueprint sense utilitzar: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Blueprint sense utilitzar: {blueprint}",
+                        "description": "El blueprint {blueprint} no el fa servir cap {domain}.\n\nElimina'l, o conserva'l i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Elimina aquest blueprint sense utilitzar",
+                            "ignore": "Conserva-la, deixa d'avisar-me",
+                            "manage": "Ja ho arreglaré jo"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquest blueprint.",
+                    "manage": "Pots gestionar aquest blueprint tu mateix a la [pàgina de Blueprints](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Etiqueta sense utilitzar: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Etiqueta sense utilitzar: {label}",
+                        "description": "L'etiqueta {label} no està aplicada a cap entitat, dispositiu ni àrea, i cap automatització o script la té com a objectiu.\n\nElimina-la, o conserva-la i Spook deixarà d'avisar-te'n.\n\nSpook 👻 El teu col·lega.",
+                        "menu_options": {
+                            "remove": "Elimina aquesta etiqueta sense utilitzar",
+                            "ignore": "Conserva-la, deixa d'avisar-me",
+                            "manage": "Ja ho arreglaré jo"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "A partir d'ara Spook no dirà res més d'aquesta etiqueta.",
+                    "manage": "Pots gestionar aquesta etiqueta tu mateix a la [pàgina d'Etiquetes](/config/labels).",
+                    "changed": "Aquesta etiqueta torna a estar en ús des que Spook la va mirar: alguna cosa la porta, o una automatització o script la fa servir. Així que no s'ha tocat. Spook hi tornarà a mirar pel seu compte i actualitzarà aquesta reparació."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -297,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "Reprendre requerit",
+            "title": "Cal reiniciar",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "Reprendre requerit",
-                        "description": "En ordre per Spook 👻 a l'acabat que munta, necessitats d'Assistent de la Casa per ser reprès.\n\nSelecciona lliurar per reprendre Assistent de Casa ara."
+                        "title": "Cal reiniciar",
+                        "description": "Perquè Spook 👻 acabi de configurar-se, cal reiniciar Home Assistant.\n\nSelecciona Envia per reiniciar Home Assistant ara.\n\nSpook 👻 El teu col·lega."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Versió",
+            "ghosts_found": "Fantasmes trobats",
+            "ghosts_ignored": "Fantasmes ignorats",
+            "helpers_linked": "Ajudants vinculats"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Afegeix membres a un grup",
+            "description": "Afegeix entitats a un grup creat des de la interfície, mentre Home Assistant està en marxa. Les entitats que ja són al grup es queden on són.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "El grup al qual afegir."
+                },
+                "members": {
+                    "name": "Membres",
+                    "description": "Les entitats a afegir al grup."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Treu membres d'un grup",
+            "description": "Treu entitats d'un grup creat des de la interfície, mentre Home Assistant està en marxa. Indicar una cosa que no és al grup no fa res, així que també és la manera de treure un membre que ja no existeix.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "El grup del qual treure-les."
+                },
+                "members": {
+                    "name": "Membres",
+                    "description": "Les entitats a treure del grup."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Defineix els membres d'un grup",
+            "description": "Substitueix els membres d'un grup creat des de la interfície pels indicats, mentre Home Assistant està en marxa.",
+            "fields": {
+                "group": {
+                    "name": "Grup",
+                    "description": "El grup a canviar."
+                },
+                "members": {
+                    "name": "Membres",
+                    "description": "Les entitats que ha de contenir el grup a partir d'ara."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Espera una condició",
+            "description": "Espera fins que una condició sigui certa. Torna immediatament si ja ho és.",
+            "fields": {
+                "condition": {
+                    "name": "Condició",
+                    "description": "La condició a esperar."
+                },
+                "timeout": {
+                    "name": "Temps d'espera",
+                    "description": "Quanta estona esperar abans de rendir-se. Si no s'indica, espera indefinidament."
+                }
+            }
+        },
+        "boo": {
+            "name": "Bu!",
+            "description": "Cridar aquesta acció espanta Home Assistant. Executar aquesta acció sempre fallarà."
+        },
+        "random_fail": {
+            "name": "Error aleatori",
+            "description": "Executar aquesta acció fallarà a l'atzar."
+        },
+        "blueprint_import": {
+            "name": "Importa un blueprint",
+            "description": "Importa un blueprint.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "L'URL des d'on importar el blueprint."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Posposa",
+            "description": "Desactiva una automatització durant una estona, i la torna a activar quan s'acaba el temps.",
+            "fields": {
+                "duration": {
+                    "name": "Durada",
+                    "description": "Quanta estona es queda desactivada l'automatització. Es torna a activar sola quan s'acaba, encara que Home Assistant s'hagi reiniciat entremig."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Activa durant",
+            "description": "Activa una automatització durant una estona, i la torna a desactivar quan s'acaba el temps.",
+            "fields": {
+                "duration": {
+                    "name": "Durada",
+                    "description": "Quanta estona es queda activada l'automatització. Es torna a desactivar sola quan s'acaba, encara que Home Assistant s'hagi reiniciat entremig."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Defineix la brillantor",
+            "description": "Defineix la brillantor dels llums que ja estan encesos, i no toca els que estan apagats.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Brillantor",
+                    "description": "La brillantor a definir, en percentatge. Els grups s'ajusten llum per llum, així que un llum apagat es queda apagat."
+                },
+                "transition": {
+                    "name": "Transició",
+                    "description": "Quanta estona ha de durar el canvi, en segons."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Augmenta la brillantor",
+            "description": "Apuja els llums que ja estan encesos, i no toca els que estan apagats.",
+            "fields": {
+                "step_pct": {
+                    "name": "Pas",
+                    "description": "Quant més brillant, en percentatge. Cada llum puja des del seu propi nivell, així que un grup manté la seva forma en lloc d'igualar-se."
+                },
+                "transition": {
+                    "name": "Transició",
+                    "description": "Quanta estona ha de durar el canvi, en segons."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Redueix la brillantor",
+            "description": "Abaixa els llums que ja estan encesos, aturant-se al mínim que permeten en lloc d'apagar-los.",
+            "fields": {
+                "step_pct": {
+                    "name": "Pas",
+                    "description": "Quant més tènue, en percentatge. Cada llum baixa des del seu propi nivell, així que un grup manté la seva forma en lloc d'igualar-se."
+                },
+                "transition": {
+                    "name": "Transició",
+                    "description": "Quanta estona ha de durar el canvi, en segons."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Defineix el color",
+            "description": "Defineix el color dels llums que ja estan encesos, i no toca els que estan apagats o que no admeten color.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Color",
+                    "description": "El color a definir. Els llums que no admeten color se salten en lloc de posar-se en blanc."
+                },
+                "transition": {
+                    "name": "Transició",
+                    "description": "Quanta estona ha de durar el canvi, en segons."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Defineix la temperatura de color",
+            "description": "Defineix la temperatura de color dels llums que ja estan encesos, cadascun dins del rang que realment pot assolir.",
+            "fields": {
+                "kelvin": {
+                    "name": "Temperatura de color",
+                    "description": "La temperatura de color a definir. Cada llum es manté dins del seu propi rang, perquè el blanc càlid d'una làmpada és un número que una altra no pot assolir."
+                },
+                "transition": {
+                    "name": "Transició",
+                    "description": "Quanta estona ha de durar el canvi, en segons."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Defineix l'efecte",
+            "description": "Defineix un efecte als llums que ja estan encesos i que realment el tenen.",
+            "fields": {
+                "effect": {
+                    "name": "Efecte",
+                    "description": "El nom de l'efecte a definir. Els noms d'efecte canvien segons el fabricant, així que els llums que no tenen aquest es queden com estan."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Elimina un esdeveniment",
+            "description": "Elimina esdeveniments d'un calendari, trobats pel títol o l'uid dins d'un període de temps. Retorna el que ha eliminat, uid inclòs.",
+            "fields": {
+                "summary": {
+                    "name": "Resum",
+                    "description": "El títol dels esdeveniments a eliminar, exactament com apareix al calendari."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "L'identificador de l'esdeveniment a eliminar, per quan el tens."
+                },
+                "start_date_time": {
+                    "name": "Data i hora d'inici",
+                    "description": "On començar a buscar. Per defecte, ara."
+                },
+                "end_date_time": {
+                    "name": "Data i hora de final",
+                    "description": "On deixar de buscar. Indica això o una durada."
+                },
+                "duration": {
+                    "name": "Durada",
+                    "description": "Fins on buscar des de l'inici. Indica això o una data i hora de final."
+                },
+                "whole_series": {
+                    "name": "Tota la sèrie",
+                    "description": "Per a un esdeveniment periòdic, elimina tota la sèrie en lloc de només l'ocurrència trobada."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Actualitza un esdeveniment",
+            "description": "Canvia esdeveniments d'un calendari, trobats pel títol o l'uid dins d'un període de temps. Retorna el que ha canviat, uid inclòs.",
+            "fields": {
+                "summary": {
+                    "name": "Resum",
+                    "description": "El títol dels esdeveniments a canviar, exactament com apareix al calendari."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "L'identificador de l'esdeveniment a canviar, per quan el tens."
+                },
+                "start_date_time": {
+                    "name": "Data i hora d'inici",
+                    "description": "On començar a buscar. Per defecte, ara."
+                },
+                "end_date_time": {
+                    "name": "Data i hora de final",
+                    "description": "On deixar de buscar. Indica això o una durada."
+                },
+                "duration": {
+                    "name": "Durada",
+                    "description": "Fins on buscar des de l'inici. Indica això o una data i hora de final."
+                },
+                "new_summary": {
+                    "name": "Nou resum",
+                    "description": "El títol a donar als esdeveniments."
+                },
+                "description": {
+                    "name": "Descripció",
+                    "description": "La descripció a donar als esdeveniments."
+                },
+                "location": {
+                    "name": "Ubicació",
+                    "description": "La ubicació a donar als esdeveniments."
+                },
+                "new_start": {
+                    "name": "Nou inici",
+                    "description": "Quan comencen els esdeveniments a partir d'ara. Mantenen la seva durada, tret que també s'indiqui un nou final."
+                },
+                "new_end": {
+                    "name": "Nou final",
+                    "description": "Quan acaben els esdeveniments a partir d'ara."
+                },
+                "shift": {
+                    "name": "Desplaçament",
+                    "description": "Mou els esdeveniments aquesta quantitat, més tard, o més d'hora si és negatiu. En lloc d'un nou inici o final."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Augmenta la temperatura",
+            "description": "Puja un pas el punt de consigna d'un termòstat, tots dos punts de consigna en un que escalfa i refreda. Un termòstat apagat es queda apagat.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quant canviar-lo. Si no s'indica, es fa servir el pas propi del termòstat, o mig grau (un en Fahrenheit) si no en té."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Redueix la temperatura",
+            "description": "Baixa un pas el punt de consigna d'un termòstat, tots dos punts de consigna en un que escalfa i refreda. Un termòstat apagat es queda apagat.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quant canviar-lo. Si no s'indica, es fa servir el pas propi del termòstat, o mig grau (un en Fahrenheit) si no en té."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Crea una àrea",
+            "description": "Crea una àrea nova sobre la marxa.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de l'àrea a crear."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Icona a utilitzar per a l'àrea."
+                },
+                "aliases": {
+                    "name": "Àlies",
+                    "description": "Una llista d'àlies per a l'àrea. És útil si vols fer servir l'àrea en un altre idioma o amb un altre sobrenom."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Afegeix un àlies a una àrea",
+            "description": "Afegeix un àlies a una àrea.",
+            "fields": {
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID de l'àrea a la qual afegir l'àlies."
+                },
+                "alias": {
+                    "name": "Àlies",
+                    "description": "L'àlies (o llista d'àlies) a afegir a l'àrea."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Treu un àlies d'una àrea",
+            "description": "Treu un àlies d'una àrea.",
+            "fields": {
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID de l'àrea de la qual treure l'àlies."
+                },
+                "alias": {
+                    "name": "Àlies",
+                    "description": "L'àlies (o llista d'àlies) a treure de l'àrea."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Defineix els àlies d'una àrea",
+            "description": "Defineix els àlies d'una àrea. Sobreescriu i elimina els àlies existents, i els substitueix completament pels nous.",
+            "fields": {
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID de l'àrea per a la qual definir els àlies."
+                },
+                "aliases": {
+                    "name": "Àlies",
+                    "description": "Els àlies a definir per a l'àrea."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Afegeix un dispositiu a una àrea",
+            "description": "Afegeix un dispositiu a una àrea. Tingues en compte que, si el dispositiu ja és en una àrea, es traurà de l'àrea anterior.",
+            "fields": {
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID de l'àrea a la qual afegir el dispositiu."
+                },
+                "device_id": {
+                    "name": "ID de dispositiu",
+                    "description": "L'ID del dispositiu o dispositius a afegir a l'àrea."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Treu un dispositiu d'una àrea",
+            "description": "Treu un dispositiu d'una àrea. Com que un dispositiu només pot ser en una àrea, aquesta crida no necessita indicar l'àrea.",
+            "fields": {
+                "device_id": {
+                    "name": "ID de dispositiu",
+                    "description": "L'ID del dispositiu del qual treure l'àrea."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Afegeix una entitat a una àrea",
+            "description": "Afegeix una entitat a una àrea. Tingues en compte que, si l'entitat ja és en una àrea, es traurà de l'àrea anterior. Això té prioritat sobre l'àrea on és el dispositiu que proporciona aquesta entitat.",
+            "fields": {
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID de l'àrea a la qual afegir l'entitat."
+                },
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'ID de l'entitat (o entitats) a afegir a l'àrea."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Treu una entitat d'una àrea",
+            "description": "Treu una entitat d'una àrea. Com que una entitat només pot ser en una àrea, aquesta crida no necessita indicar l'àrea. Tingues en compte que, després d'aquesta crida, l'entitat continuarà a l'àrea del dispositiu que la proporciona.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'ID de l'entitat (o entitats) de la qual treure l'àrea."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Elimina una àrea",
+            "description": "Elimina una àrea sobre la marxa.",
+            "fields": {
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID de l'àrea a eliminar."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Desactiva una integració",
+            "description": "Desactiva entrades d'integració, per entrada o totes les entrades d'una integració.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entrada d'integració",
+                    "description": "L'entrada d'integració a desactivar."
+                },
+                "domain": {
+                    "name": "Integració",
+                    "description": "Desactiva totes les entrades d'aquestes integracions, incloses les que s'afegeixin més endavant."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Activa una integració",
+            "description": "Activa entrades d'integració, per entrada o totes les entrades d'una integració.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entrada d'integració",
+                    "description": "L'entrada d'integració a activar."
+                },
+                "domain": {
+                    "name": "Integració",
+                    "description": "Activa totes les entrades d'aquestes integracions, incloses les que s'afegeixin més endavant."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Desactiva un dispositiu",
+            "description": "Desactiva un dispositiu sobre la marxa.",
+            "fields": {
+                "device_id": {
+                    "name": "Dispositiu",
+                    "description": "El dispositiu o dispositius a desactivar."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Activa un dispositiu",
+            "description": "Activa un dispositiu sobre la marxa.",
+            "fields": {
+                "device_id": {
+                    "name": "ID de dispositiu",
+                    "description": "L'ID de dispositiu en brut a activar. El selector de dispositius de Home Assistant no mostra els dispositius desactivats. Es poden indicar diversos ID com a llista YAML."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Desactiva un usuari",
+            "description": "Desactiva un compte d'usuari, i li impedeix iniciar la sessió.",
+            "fields": {
+                "user_id": {
+                    "name": "ID d'usuari",
+                    "description": "L'ID o els ID dels usuaris a desactivar."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Activa un usuari",
+            "description": "Activa un compte d'usuari, i li permet iniciar la sessió.",
+            "fields": {
+                "user_id": {
+                    "name": "ID d'usuari",
+                    "description": "L'ID o els ID dels usuaris a activar."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Actualitza l'ID d'una entitat",
+            "description": "Actualitza l'ID d'una entitat sobre la marxa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a actualitzar."
+                },
+                "new_entity_id": {
+                    "name": "Nou ID d'entitat",
+                    "description": "El nou ID de l'entitat."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Desactiva una entitat",
+            "description": "Desactiva una entitat (o entitats) sobre la marxa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a desactivar."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Activa una entitat",
+            "description": "Activa una entitat (o entitats) sobre la marxa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a activar."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Exposa una entitat als assistents",
+            "description": "Exposa una entitat (o entitats) als assistents de veu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a exposar."
+                },
+                "assistants": {
+                    "name": "Assistents",
+                    "description": "L'assistent o assistents als quals aplicar-ho."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Amaga una entitat",
+            "description": "Amaga una entitat (o entitats) sobre la marxa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a amagar."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Canvia el nom d'una entitat",
+            "description": "Canvia el nom d'una entitat (o entitats) sobre la marxa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a les quals canviar el nom."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "El nou nom de l'entitat o entitats."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Defineix la icona d'una entitat",
+            "description": "Defineix la icona d'una entitat (o entitats) sobre la marxa. Posa-la a null per tornar a la icona que li dona la integració.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a les quals definir la icona."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La nova icona, o null per a la icona pròpia de la integració."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Afegeix un àlies a una entitat",
+            "description": "Afegeix un o més àlies a una entitat (o entitats), amb els quals els assistents de veu la poden anomenar.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a les quals afegir els àlies."
+                },
+                "alias": {
+                    "name": "Àlies",
+                    "description": "L'àlies o àlies a afegir."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Treu un àlies d'una entitat",
+            "description": "Treu un o més àlies d'una entitat (o entitats).",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats de les quals treure els àlies."
+                },
+                "alias": {
+                    "name": "Àlies",
+                    "description": "L'àlies o àlies a treure."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Defineix els àlies d'una entitat",
+            "description": "Substitueix els àlies d'una entitat (o entitats). Si el nom propi de l'entitat compta com a àlies es queda com estava.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a les quals definir els àlies."
+                },
+                "aliases": {
+                    "name": "Àlies",
+                    "description": "Els àlies a definir."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Deixa d'exposar una entitat als assistents",
+            "description": "Deixa d'exposar una entitat (o entitats) als assistents de veu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats que es deixaran d'exposar."
+                },
+                "assistants": {
+                    "name": "Assistents",
+                    "description": "L'assistent o assistents als quals aplicar-ho."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Mostra una entitat",
+            "description": "Torna a mostrar una entitat (o entitats) amagada sobre la marxa.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats a tornar a mostrar."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Crea una planta",
+            "description": "Crea una planta nova sobre la marxa.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de la planta a crear."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Icona a utilitzar per a la planta."
+                },
+                "level": {
+                    "name": "Nivell",
+                    "description": "El nivell on es troba la planta a casa teva."
+                },
+                "aliases": {
+                    "name": "Àlies",
+                    "description": "Una llista d'àlies per a la planta. És útil si vols fer servir la planta en un altre idioma o amb un altre sobrenom."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Afegeix un àlies a una planta",
+            "description": "Afegeix un àlies a una planta.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID de planta",
+                    "description": "L'ID de la planta a la qual afegir l'àlies."
+                },
+                "alias": {
+                    "name": "Àlies",
+                    "description": "L'àlies (o llista d'àlies) a afegir a la planta."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Treu un àlies d'una planta",
+            "description": "Treu un àlies d'una planta.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID de planta",
+                    "description": "L'ID de la planta de la qual treure l'àlies."
+                },
+                "alias": {
+                    "name": "Àlies",
+                    "description": "L'àlies (o llista d'àlies) a treure de la planta."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Defineix els àlies d'una planta",
+            "description": "Defineix els àlies d'una planta. Sobreescriu i elimina els àlies existents, i els substitueix completament pels nous.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID de planta",
+                    "description": "L'ID de la planta per a la qual definir els àlies."
+                },
+                "aliases": {
+                    "name": "Àlies",
+                    "description": "Els àlies a definir per a la planta."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Afegeix una àrea a una planta",
+            "description": "Afegeix una àrea a una planta. Tingues en compte que, si l'àrea ja és en una planta, es traurà de la planta anterior.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID de planta",
+                    "description": "L'ID de la planta on afegir l'àrea."
+                },
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID de l'àrea o àrees a afegir a la planta."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Treu una àrea d'una planta",
+            "description": "Treu una àrea d'una planta. Com que una àrea només pot ser en una planta, aquesta crida no necessita indicar la planta.",
+            "fields": {
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID de l'àrea de la qual treure la planta."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Elimina una planta",
+            "description": "Elimina una planta sobre la marxa.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID de planta",
+                    "description": "L'ID de la planta a eliminar."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Crea una etiqueta",
+            "description": "Crea una etiqueta nova sobre la marxa.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de l'etiqueta a crear."
+                },
+                "description": {
+                    "name": "Descripció",
+                    "description": "Descripció de l'etiqueta."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Icona a utilitzar per a l'etiqueta."
+                },
+                "color": {
+                    "name": "Color",
+                    "description": "Color a utilitzar per a l'etiqueta. Pot ser un nom de color de la llista, o un codi de color hexadecimal (com #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Actualitza una etiqueta",
+            "description": "Actualitza una etiqueta existent sobre la marxa. El que no indiquis conserva el valor que ja tenia. La descripció, la icona i el color es poden esborrar posant-los a null.",
+            "fields": {
+                "label_id": {
+                    "name": "ID d'etiqueta",
+                    "description": "L'ID de l'etiqueta a actualitzar."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "Nou nom de l'etiqueta."
+                },
+                "description": {
+                    "name": "Descripció",
+                    "description": "Nova descripció de l'etiqueta."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Nova icona a utilitzar per a l'etiqueta."
+                },
+                "color": {
+                    "name": "Color",
+                    "description": "Color a utilitzar per a l'etiqueta. Pot ser un nom de color de la llista, o un codi de color hexadecimal (com #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Afegeix una etiqueta a una àrea",
+            "description": "Afegeix una etiqueta a una àrea. Si s'indiquen diverses etiquetes o diverses àrees, s'afegiran totes les combinacions.",
+            "fields": {
+                "label_id": {
+                    "name": "ID d'etiqueta",
+                    "description": "L'ID o els ID de les etiquetes a afegir a les àrees."
+                },
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID o els ID de les àrees a les quals afegir les etiquetes."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Afegeix una etiqueta a un dispositiu",
+            "description": "Afegeix una etiqueta a un dispositiu. Si s'indiquen diverses etiquetes o diversos dispositius, s'afegiran totes les combinacions.",
+            "fields": {
+                "label_id": {
+                    "name": "ID d'etiqueta",
+                    "description": "L'ID o els ID de les etiquetes a afegir als dispositius."
+                },
+                "device_id": {
+                    "name": "ID de dispositiu",
+                    "description": "L'ID o els ID dels dispositius als quals afegir les etiquetes."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Afegeix una etiqueta a una entitat",
+            "description": "Afegeix una etiqueta a una entitat. Si s'indiquen diverses etiquetes o diverses entitats, s'afegiran totes les combinacions.",
+            "fields": {
+                "label_id": {
+                    "name": "ID d'etiqueta",
+                    "description": "L'ID o els ID de les etiquetes a afegir a les entitats."
+                },
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'ID o els ID de les entitats a les quals afegir les etiquetes."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Treu una etiqueta d'una àrea",
+            "description": "Treu una etiqueta d'una àrea. Si s'indiquen diverses etiquetes o diverses àrees, es trauran totes les combinacions.",
+            "fields": {
+                "label_id": {
+                    "name": "ID d'etiqueta",
+                    "description": "L'ID o els ID de les etiquetes a treure de les àrees."
+                },
+                "area_id": {
+                    "name": "ID d'àrea",
+                    "description": "L'ID o els ID de les àrees de les quals treure les etiquetes."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Treu una etiqueta d'un dispositiu",
+            "description": "Treu una etiqueta d'un dispositiu. Si s'indiquen diverses etiquetes o diversos dispositius, es trauran totes les combinacions.",
+            "fields": {
+                "label_id": {
+                    "name": "ID d'etiqueta",
+                    "description": "L'ID o els ID de les etiquetes a treure dels dispositius."
+                },
+                "device_id": {
+                    "name": "ID de dispositiu",
+                    "description": "L'ID o els ID dels dispositius dels quals treure les etiquetes."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Treu una etiqueta d'una entitat",
+            "description": "Treu una etiqueta d'una entitat. Si s'indiquen diverses etiquetes o diverses entitats, es trauran totes les combinacions.",
+            "fields": {
+                "label_id": {
+                    "name": "ID d'etiqueta",
+                    "description": "L'ID o els ID de les etiquetes a treure de les entitats."
+                },
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'ID o els ID de les entitats de les quals treure les etiquetes."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Crea una categoria",
+            "description": "Crea una categoria nova sobre la marxa, per a automatitzacions, scripts, escenes o ajudants. Retorna l'ID de la nova categoria.",
+            "fields": {
+                "scope": {
+                    "name": "Àmbit",
+                    "description": "On es fa servir la categoria."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de la categoria a crear."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Icona a utilitzar per a la categoria."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Actualitza una categoria",
+            "description": "Actualitza una categoria existent sobre la marxa. El que no indiquis conserva el valor que ja tenia. La icona es pot esborrar posant-la a null.",
+            "fields": {
+                "scope": {
+                    "name": "Àmbit",
+                    "description": "On es fa servir la categoria."
+                },
+                "category_id": {
+                    "name": "Categoria",
+                    "description": "L'ID o el nom de la categoria a actualitzar."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "El nou nom de la categoria."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La nova icona de la categoria."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Elimina una categoria",
+            "description": "Elimina una categoria. Tot el que hi havia a dins es queda sense categoria.",
+            "fields": {
+                "scope": {
+                    "name": "Àmbit",
+                    "description": "On es fa servir la categoria."
+                },
+                "category_id": {
+                    "name": "Categoria",
+                    "description": "L'ID o el nom de la categoria a eliminar."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Afegeix una categoria a una entitat",
+            "description": "Posa una automatització, script, escena o ajudant en una categoria. Substitueix la categoria on era abans, ja que cadascun només pot ser en una.",
+            "fields": {
+                "category_id": {
+                    "name": "Categoria",
+                    "description": "L'ID o el nom de la categoria."
+                },
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "Les automatitzacions, scripts, escenes o ajudants a posar a la categoria."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Treu una categoria d'una entitat",
+            "description": "Treu una automatització, script, escena o ajudant d'una categoria. El que sigui en una altra categoria no es toca.",
+            "fields": {
+                "category_id": {
+                    "name": "Categoria",
+                    "description": "L'ID o el nom de la categoria."
+                },
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "Les automatitzacions, scripts, escenes o ajudants a treure de la categoria."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Elimina una etiqueta",
+            "description": "Elimina una etiqueta sobre la marxa.",
+            "fields": {
+                "label_id": {
+                    "name": "ID d'etiqueta",
+                    "description": "L'ID de l'etiqueta a eliminar."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Ignora tots els dispositius descoberts actualment",
+            "description": "Ignora tots els dispositius descoberts actualment que es mostren al panell d'integracions. No ignorarà els dispositius que es descobreixin després.",
+            "fields": {
+                "domain": {
+                    "name": "Domini de la integració",
+                    "description": "El domini de la integració per al qual ignorar tots els dispositius descoberts. Si no s'indica, s'ignoraran tots els dominis."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Desactiva el sondeig per obtenir actualitzacions",
+            "description": "Desactiva el sondeig per obtenir actualitzacions d'una entrada d'integració.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entrada d'integració",
+                    "description": "L'entrada d'integració per a la qual desactivar el sondeig."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Activa el sondeig per obtenir actualitzacions",
+            "description": "Activa el sondeig per obtenir actualitzacions d'una entrada d'integració.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Entrada d'integració",
+                    "description": "L'entrada d'integració per a la qual activar el sondeig."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Elimina totes les entitats òrfenes",
+            "description": "Elimina totes les entitats òrfenes que ja no tenen cap integració que les reclami o proporcioni. Tingues en compte que, si s'acaba d'eliminar la integració, pot caldre un reinici perquè Home Assistant s'adoni que són òrfenes.\n**AVÍS** És possible que algunes entitats s'hagin marcat com a òrfenes perquè una integració està fora de línia o no funciona des que Home Assistant es va iniciar. Cridar aquesta acció també eliminarà aquestes entitats."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Llista totes les entitats òrfenes de la base de dades",
+            "description": "Llista totes les entitats òrfenes de la base de dades que cap integració reclama."
+        },
+        "homeassistant_restart": {
+            "name": "Reinicia",
+            "description": "L'acció de reiniciar Home Assistant.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Mode segur",
+                    "description": "Si el reinici s'ha de fer en mode segur. Això desactivarà totes les integracions personalitzades i els mòduls de la interfície."
+                },
+                "force": {
+                    "name": "Força el reinici",
+                    "description": "Força el reinici. AVÍS! Això no aturarà Home Assistant de manera ordenada, se saltarà les comprovacions de configuració i ignorarà les migracions de base de dades en curs. Fes-ho servir només si saps el que fas."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Importa estadístiques",
+            "description": "Importa estadístiques a llarg termini.",
+            "fields": {
+                "statistic_id": {
+                    "name": "ID d'estadística",
+                    "description": "L'ID d'estadística (ID d'entitat) per al qual importar."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de les estadístiques."
+                },
+                "source": {
+                    "name": "Font",
+                    "description": "La font de les dades estadístiques."
+                },
+                "unit_of_measurement": {
+                    "name": "Unitat de mesura",
+                    "description": "La unitat de mesura de les estadístiques."
+                },
+                "has_mean": {
+                    "name": "Té mitjana",
+                    "description": "Si les estadístiques tenen un valor mitjà."
+                },
+                "has_sum": {
+                    "name": "Té suma",
+                    "description": "Si les estadístiques tenen un valor de suma."
+                },
+                "stats": {
+                    "name": "Estadístiques",
+                    "description": "Una llista de mapes/diccionaris amb estadístiques a importar. Els diccionaris han de contenir una clau \"start\" amb una cadena de data i hora; altres opcions vàlides són \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" i \"state\". Totes són opcionals i poden ser un enter o un decimal, excepte \"last_reset\", que és una cadena de data i hora."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Selecciona una opció aleatòria",
+            "description": "Selecciona una opció aleatòria per a una entitat de selecció.",
+            "fields": {
+                "options": {
+                    "name": "Opcions",
+                    "description": "Limita les opcions entre les quals triar. Si no s'indica, es tindran en compte totes les opcions."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Crea una entrada de selecció",
+            "description": "Crea un ajudant d'entrada de selecció (desplegable) nou sobre la marxa. Retorna l'ID d'entitat de la nova entrada de selecció.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de la nova entrada de selecció."
+                },
+                "input_select_id": {
+                    "name": "ID d'entitat de l'entrada de selecció",
+                    "description": "L'ID d'entitat de la nova entrada de selecció. El prefix input_select. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "options": {
+                    "name": "Opcions",
+                    "description": "Les opcions entre les quals triar. Cada opció només hi pot ser una vegada."
+                },
+                "initial": {
+                    "name": "Opció inicial",
+                    "description": "L'opció amb què comença, que ha de ser una de les opcions. Si no s'indica, conserva l'opció que tenia abans que Home Assistant es reiniciés."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona de la nova entrada de selecció."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Elimina una entrada de selecció",
+            "description": "Elimina ajudants d'entrada de selecció creats a la interfície o amb l'acció de crear una entrada de selecció. Spook no pot eliminar les entrades de selecció configurades en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'entrada o entrades de selecció a eliminar."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Selecciona una opció aleatòria",
+            "description": "Selecciona una opció aleatòria per a una entitat input_select.",
+            "fields": {
+                "options": {
+                    "name": "Opcions",
+                    "description": "Limita les opcions entre les quals triar. Si no s'indica, es tindran en compte totes les opcions."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Inverteix les opcions",
+            "description": "Inverteix l'ordre de les opcions seleccionables d'una entitat `input_select`, del final al principi. No és persistent i es desfarà en recarregar o quan Home Assistant es reiniciï."
+        },
+        "input_select_shuffle": {
+            "name": "Barreja les opcions",
+            "description": "Barreja la llista d'opcions seleccionables d'una entitat `input_select`. No és persistent i es desfarà en recarregar o quan Home Assistant es reiniciï."
+        },
+        "input_select_sort": {
+            "name": "Ordena les opcions",
+            "description": "Ordena la llista d'opcions seleccionables d'una entitat `input_select`. No és persistent i es desfarà en recarregar o quan Home Assistant es reiniciï."
+        },
+        "number_decrement": {
+            "name": "Redueix el valor",
+            "description": "Redueix el valor d'una entitat numèrica una quantitat determinada.",
+            "fields": {
+                "amount": {
+                    "name": "Quantitat",
+                    "description": "La quantitat a reduir el número. Si no s'indica, es farà servir el pas de l'entitat numèrica."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Augmenta el valor",
+            "description": "Augmenta el valor d'una entitat numèrica una quantitat determinada.",
+            "fields": {
+                "amount": {
+                    "name": "Quantitat",
+                    "description": "La quantitat a augmentar el número. Si no s'indica, es farà servir el pas de l'entitat numèrica."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Defineix el valor màxim",
+            "description": "Posa una entitat numèrica al seu valor màxim."
+        },
+        "number_min": {
+            "name": "Defineix el valor mínim",
+            "description": "Posa una entitat numèrica al seu valor mínim."
+        },
+        "input_number_decrement": {
+            "name": "Redueix el valor",
+            "description": "Redueix el valor d'una entitat d'entrada numèrica una quantitat determinada.",
+            "fields": {
+                "amount": {
+                    "name": "Quantitat",
+                    "description": "La quantitat a reduir l'entrada numèrica. Si no s'indica, es farà servir el pas de l'entitat numèrica."
+                },
+                "cycle": {
+                    "name": "Cíclic",
+                    "description": "Continua des de l'altre extrem del rang en lloc d'aturar-se en aquest, de la mateixa manera que seleccionar l'opció següent dona la volta en una selecció."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Augmenta el valor",
+            "description": "Augmenta el valor d'una entitat d'entrada numèrica una quantitat determinada.",
+            "fields": {
+                "amount": {
+                    "name": "Quantitat",
+                    "description": "La quantitat a augmentar l'entrada numèrica. Si no s'indica, es farà servir el pas de l'entitat numèrica."
+                },
+                "cycle": {
+                    "name": "Cíclic",
+                    "description": "Continua des de l'altre extrem del rang en lloc d'aturar-se en aquest, de la mateixa manera que seleccionar l'opció següent dona la volta en una selecció."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Defineix el valor màxim",
+            "description": "Posa una entitat d'entrada numèrica al seu valor màxim."
+        },
+        "input_number_min": {
+            "name": "Defineix el valor mínim",
+            "description": "Posa una entitat d'entrada numèrica al seu valor mínim."
+        },
+        "input_number_set_range": {
+            "name": "Defineix el rang",
+            "description": "Canvia el mínim, el màxim o el pas d'una entrada numèrica creada a la interfície, igual que si l'editessis. Un valor fora del nou rang s'hi mou a dins.",
+            "fields": {
+                "min": {
+                    "name": "Mínim",
+                    "description": "El nou valor mínim."
+                },
+                "max": {
+                    "name": "Màxim",
+                    "description": "El nou valor màxim."
+                },
+                "step": {
+                    "name": "Pas",
+                    "description": "La nova mida del pas."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Crea un comptador",
+            "description": "Crea un ajudant de comptador nou sobre la marxa. Retorna l'ID d'entitat del nou comptador.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom del nou comptador."
+                },
+                "counter_id": {
+                    "name": "ID d'entitat del comptador",
+                    "description": "L'ID d'entitat del nou comptador. El prefix counter. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "El valor amb què comença el comptador, i al qual torna en reiniciar-lo."
+                },
+                "minimum": {
+                    "name": "Mínim",
+                    "description": "El valor més baix al qual pot baixar el comptador. Si no s'indica, no hi ha límit."
+                },
+                "maximum": {
+                    "name": "Màxim",
+                    "description": "El valor més alt al qual pot pujar el comptador. Si no s'indica, no hi ha límit."
+                },
+                "step": {
+                    "name": "Pas",
+                    "description": "Quant puja o baixa el comptador cada vegada."
+                },
+                "restore": {
+                    "name": "Restaura",
+                    "description": "Restaura el valor del comptador quan Home Assistant s'inicia, en lloc de tornar a començar des del valor inicial."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona del nou comptador."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Elimina un comptador",
+            "description": "Elimina ajudants de comptador creats a la interfície o amb l'acció de crear un comptador. Spook no pot eliminar els comptadors configurats en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "El comptador o comptadors a eliminar."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Crea una entrada booleana",
+            "description": "Crea un ajudant d'entrada booleana (interruptor) nou sobre la marxa. Retorna l'ID d'entitat de la nova entrada booleana.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de la nova entrada booleana."
+                },
+                "input_boolean_id": {
+                    "name": "ID d'entitat de l'entrada booleana",
+                    "description": "L'ID d'entitat de la nova entrada booleana. El prefix input_boolean. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "El valor amb què comença. Si no s'indica, conserva el valor que tenia abans que Home Assistant es reiniciés."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona de la nova entrada booleana."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Elimina una entrada booleana",
+            "description": "Elimina ajudants d'entrada booleana creats a la interfície o amb l'acció de crear una entrada booleana. Spook no pot eliminar les entrades booleanes configurades en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'entrada o entrades booleanes a eliminar."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Crea una entrada de text",
+            "description": "Crea un ajudant d'entrada de text nou sobre la marxa. Retorna l'ID d'entitat de la nova entrada de text.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de la nova entrada de text."
+                },
+                "input_text_id": {
+                    "name": "ID d'entitat de l'entrada de text",
+                    "description": "L'ID d'entitat de la nova entrada de text. El prefix input_text. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "El text amb què comença. Si no s'indica, conserva el text que tenia abans que Home Assistant es reiniciés."
+                },
+                "min": {
+                    "name": "Longitud mínima",
+                    "description": "La longitud mínima que pot tenir el text."
+                },
+                "max": {
+                    "name": "Longitud màxima",
+                    "description": "La longitud màxima que pot tenir el text."
+                },
+                "pattern": {
+                    "name": "Patró",
+                    "description": "Una expressió regular que el text ha de complir."
+                },
+                "mode": {
+                    "name": "Mode",
+                    "description": "Mostra el text tal com és, o amaga'l com una contrasenya."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona de la nova entrada de text."
+                },
+                "unit_of_measurement": {
+                    "name": "Unitat de mesura",
+                    "description": "La unitat a mostrar al costat del text."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Elimina una entrada de text",
+            "description": "Elimina ajudants d'entrada de text creats a la interfície o amb l'acció de crear una entrada de text. Spook no pot eliminar les entrades de text configurades en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'entrada o entrades de text a eliminar."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Crea una entrada de botó",
+            "description": "Crea un ajudant d'entrada de botó nou sobre la marxa. Retorna l'ID d'entitat de la nova entrada de botó.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de la nova entrada de botó."
+                },
+                "input_button_id": {
+                    "name": "ID d'entitat de l'entrada de botó",
+                    "description": "L'ID d'entitat de la nova entrada de botó. El prefix input_button. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona de la nova entrada de botó."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Elimina una entrada de botó",
+            "description": "Elimina ajudants d'entrada de botó creats a la interfície o amb l'acció de crear una entrada de botó. Spook no pot eliminar les entrades de botó configurades en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'entrada o entrades de botó a eliminar."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Crea una entrada de data i hora",
+            "description": "Crea un ajudant d'entrada de data i hora nou sobre la marxa, que conté una data, una hora o totes dues. Retorna l'ID d'entitat de la nova entrada de data i hora.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom de la nova entrada de data i hora."
+                },
+                "input_datetime_id": {
+                    "name": "ID d'entitat de l'entrada de data i hora",
+                    "description": "L'ID d'entitat de la nova entrada de data i hora. El prefix input_datetime. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "has_date": {
+                    "name": "Té data",
+                    "description": "Si conté una data. Com a mínim una de data i hora ha d'estar activada."
+                },
+                "has_time": {
+                    "name": "Té hora",
+                    "description": "Si conté una hora. Com a mínim una de data i hora ha d'estar activada."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "La data i/o hora amb què comença, com 2026-12-31, 08:30:00 o 2026-12-31 08:30:00. Si no s'indica, conserva el valor que tenia abans que Home Assistant es reiniciés."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona de la nova entrada de data i hora."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Elimina una entrada de data i hora",
+            "description": "Elimina ajudants d'entrada de data i hora creats a la interfície o amb l'acció de crear una entrada de data i hora. Spook no pot eliminar les entrades de data i hora configurades en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'entrada o entrades de data i hora a eliminar."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "Crea una entrada numèrica",
+            "description": "Crea un ajudant d'entrada numèrica nou sobre la marxa. Retorna l'ID d'entitat de la nova entrada numèrica.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom del nou ajudant d'entrada numèrica."
+                },
+                "input_number_id": {
+                    "name": "ID d'entitat de l'entrada numèrica",
+                    "description": "L'ID d'entitat del nou ajudant d'entrada numèrica. El prefix input_number. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "min": {
+                    "name": "Mínim",
+                    "description": "El valor mínim de l'entrada numèrica."
+                },
+                "max": {
+                    "name": "Màxim",
+                    "description": "El valor màxim de l'entrada numèrica."
+                },
+                "initial": {
+                    "name": "Valor inicial",
+                    "description": "El valor inicial de l'entrada numèrica quan Home Assistant s'inicia."
+                },
+                "step": {
+                    "name": "Mida del pas",
+                    "description": "La mida del pas de l'entrada numèrica."
+                },
+                "mode": {
+                    "name": "Mode de visualització",
+                    "description": "El mode de visualització de l'entrada numèrica, que pot ser una barra lliscant o un quadre d'entrada."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona a utilitzar per a l'ajudant d'entrada numèrica."
+                },
+                "unit_of_measurement": {
+                    "name": "Unitat de mesura",
+                    "description": "La unitat de mesura de l'entrada numèrica."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Elimina una entrada numèrica",
+            "description": "Elimina ajudants d'entrada numèrica creats a la interfície o amb l'acció de crear una entrada numèrica. Spook no pot eliminar les entrades numèriques configurades en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'entrada o entrades numèriques a eliminar."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Afegeix un seguiment de dispositiu",
+            "description": "Afegeix un seguiment de dispositiu a una persona.",
+            "fields": {
+                "entity_id": {
+                    "name": "Persona",
+                    "description": "L'ID d'entitat de la persona a la qual afegir el seguiment de dispositiu."
+                },
+                "device_tracker": {
+                    "name": "Seguiment de dispositiu",
+                    "description": "L'ID d'entitat del seguiment de dispositiu a afegir a la persona."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Treu un seguiment de dispositiu",
+            "description": "Treu un seguiment de dispositiu d'una persona.",
+            "fields": {
+                "entity_id": {
+                    "name": "Persona",
+                    "description": "L'ID d'entitat de la persona de la qual treure el seguiment de dispositiu."
+                },
+                "device_tracker": {
+                    "name": "Seguiment de dispositiu",
+                    "description": "L'ID d'entitat del seguiment de dispositiu a treure de la persona."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Crea un problema",
+            "description": "Crea i notifica manualment un problema a les reparacions de Home Assistant.",
+            "fields": {
+                "title": {
+                    "name": "Títol",
+                    "description": "El títol del problema."
+                },
+                "description": {
+                    "name": "Descripció",
+                    "description": "La descripció del problema. Admet Markdown."
+                },
+                "issue_id": {
+                    "name": "ID del problema",
+                    "description": "El problema pot tenir un identificador, que et permet cancel·lar-lo més endavant amb aquest ID si cal. També evita que es creïn problemes duplicats. Si no s'indica, es generarà un ID aleatori."
+                },
+                "domain": {
+                    "name": "Domini",
+                    "description": "Aquest camp serveix per definir el domini del problema. Per exemple, per defecte (si no s'indica), farà servir \"spook\". Això fa que es mostri Spook al logotip o imatge del problema. Si el poses a \"homeassistant\", es farà servir el logotip de Home Assistant, o fes servir \"hue\", \"zwave_js\", \"mqtt\", i així successivament, per fer servir el logotip d'aquella integració."
+                },
+                "severity": {
+                    "name": "Gravetat",
+                    "description": "La gravetat del problema. Es fa servir per determinar la prioritat del problema. Si no s'indica, es farà servir \"warning\"."
+                },
+                "persistent": {
+                    "name": "Persistent",
+                    "description": "Si el problema ha de ser persistent, és a dir, si ha de sobreviure als reinicis de Home Assistant. Per defecte, els problemes no són persistents."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Ignora tots els problemes",
+            "description": "Ignora tots els problemes notificats actualment a les reparacions de Home Assistant, o només els notificats per integracions concretes.",
+            "fields": {
+                "domain": {
+                    "name": "Domini",
+                    "description": "Només ignora els problemes notificats per aquestes integracions."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Llista els problemes",
+            "description": "Llista els problemes notificats actualment a les reparacions de Home Assistant, amb els seus títols, perquè una automatització hi actuï o un panell els mostri.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Inclou els ignorats",
+                    "description": "Llista també els problemes que s'han ignorat."
+                },
+                "domain": {
+                    "name": "Domini",
+                    "description": "Només llista els problemes notificats per aquestes integracions."
+                },
+                "severity": {
+                    "name": "Gravetat",
+                    "description": "Només llista els problemes amb aquestes gravetats."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Elimina un problema",
+            "description": "Elimina un problema de reparació de Home Assistant creat manualment. Aquesta acció només pot eliminar problemes creats amb l'acció `repairs_create`.",
+            "fields": {
+                "issue_id": {
+                    "name": "ID del problema",
+                    "description": "L'ID del problema a eliminar."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Deixa d'ignorar tots els problemes",
+            "description": "Deixa d'ignorar tots els problemes notificats actualment a les reparacions de Home Assistant, o només els notificats per integracions concretes.",
+            "fields": {
+                "domain": {
+                    "name": "Domini",
+                    "description": "Només deixa d'ignorar els problemes notificats per aquestes integracions."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Defineix la precisió de visualització",
+            "description": "Defineix el nombre de decimals que es mostren en un o més sensors.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitat",
+                    "description": "L'entitat o entitats de sensor a actualitzar."
+                },
+                "display_precision": {
+                    "name": "Precisió de visualització",
+                    "description": "El nombre de decimals a mostrar per al sensor."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Crea un temporitzador",
+            "description": "Crea un ajudant de temporitzador nou sobre la marxa. Retorna l'ID d'entitat del nou temporitzador.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "El nom del nou temporitzador."
+                },
+                "timer_id": {
+                    "name": "ID d'entitat del temporitzador",
+                    "description": "L'ID d'entitat del nou temporitzador. El prefix timer. s'afegeix automàticament. Si no s'indica, l'ID d'entitat es generarà a partir del nom."
+                },
+                "duration": {
+                    "name": "Durada",
+                    "description": "Quanta estona funciona el temporitzador quan s'engega."
+                },
+                "restore": {
+                    "name": "Restaura",
+                    "description": "Restaura l'estat del temporitzador quan Home Assistant s'inicia, perquè un temporitzador en marxa continuï funcionant després d'un reinici."
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "La icona del nou temporitzador."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Elimina un temporitzador",
+            "description": "Elimina ajudants de temporitzador creats a la interfície o amb l'acció de crear un temporitzador. Spook no pot eliminar els temporitzadors configurats en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "El temporitzador o temporitzadors a eliminar."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Defineix la durada",
+            "description": "Defineix la durada d'un temporitzador existent.",
+            "fields": {
+                "duration": {
+                    "name": "Durada",
+                    "description": "Nova durada del temporitzador, com a cadena timedelta."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Crea una zona",
+            "description": "Crea una zona nova a Home Assistant sobre la marxa.",
+            "fields": {
+                "name": {
+                    "name": "Nom",
+                    "description": "Nom de la zona"
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Icona a utilitzar per a la zona"
+                },
+                "latitude": {
+                    "name": "Latitud",
+                    "description": "Latitud de la zona. Pot ser una plantilla."
+                },
+                "longitude": {
+                    "name": "Longitud",
+                    "description": "Longitud de la zona. Pot ser una plantilla."
+                },
+                "radius": {
+                    "name": "Radi",
+                    "description": "Radi de la zona"
+                },
+                "passive": {
+                    "name": "Passiva",
+                    "description": "Una zona passiva només existeix per a les automatitzacions: no es mostra al mapa i no canvia on són les persones i els seguiments de dispositiu."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Actualitza una zona",
+            "description": "Actualitza les propietats d'una zona sobre la marxa.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'ID de l'entitat (o entitats) a actualitzar."
+                },
+                "name": {
+                    "name": "Nom",
+                    "description": "Nom de la zona"
+                },
+                "icon": {
+                    "name": "Icona",
+                    "description": "Icona a utilitzar per a la zona"
+                },
+                "latitude": {
+                    "name": "Latitud",
+                    "description": "Latitud de la zona. Pot ser una plantilla."
+                },
+                "longitude": {
+                    "name": "Longitud",
+                    "description": "Longitud de la zona. Pot ser una plantilla."
+                },
+                "radius": {
+                    "name": "Radi",
+                    "description": "Radi de la zona"
+                },
+                "passive": {
+                    "name": "Passiva",
+                    "description": "Una zona passiva només existeix per a les automatitzacions: no es mostra al mapa i no canvia on són les persones i els seguiments de dispositiu."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Elimina una zona",
+            "description": "Elimina una zona. Només funciona amb zones creades i gestionades des de la interfície. Spook no pot gestionar les zones creades i gestionades en YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID d'entitat",
+                    "description": "L'ID de l'entitat (o entitats) a eliminar."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Augmenta la temperatura",
+            "description": "Puja un pas el punt de consigna d'un escalfador d'aigua, dins dels seus límits.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quant canviar-lo. Si no s'indica, es fa servir el pas propi de l'escalfador d'aigua, o mig grau (un en Fahrenheit) si no en té."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Redueix la temperatura",
+            "description": "Baixa un pas el punt de consigna d'un escalfador d'aigua, dins dels seus límits.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quant canviar-lo. Si no s'indica, es fa servir el pas propi de l'escalfador d'aigua, o mig grau (un en Fahrenheit) si no en té."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Augmenta la humitat",
+            "description": "Puja un pas la humitat objectiu d'un humidificador, dins dels seus límits.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quants punts percentuals canviar-la. Si no s'indica, es fa servir el pas propi de l'humidificador, o un per cent si no en té."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Redueix la humitat",
+            "description": "Baixa un pas la humitat objectiu d'un humidificador, dins dels seus límits.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quants punts percentuals canviar-la. Si no s'indica, es fa servir el pas propi de l'humidificador, o un per cent si no en té."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Augmenta la posició",
+            "description": "Obre una coberta un pas més, i s'atura quan està del tot oberta.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quants punts percentuals moure-la. Un deu per cent si no s'indica."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Redueix la posició",
+            "description": "Tanca una coberta un pas més, i s'atura quan està del tot tancada.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quants punts percentuals moure-la. Un deu per cent si no s'indica."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Augmenta la posició",
+            "description": "Obre una vàlvula un pas més, i s'atura quan està del tot oberta.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quants punts percentuals moure-la. Un deu per cent si no s'indica."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Redueix la posició",
+            "description": "Tanca una vàlvula un pas més, i s'atura quan està del tot tancada.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quants punts percentuals moure-la. Un deu per cent si no s'indica."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Apuja el volum",
+            "description": "Apuja el volum d'un reproductor multimèdia el pas que indiquis, i s'atura al volum màxim.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quants punts percentuals canviar el volum."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Abaixa el volum",
+            "description": "Abaixa el volum d'un reproductor multimèdia el pas que indiquis, i s'atura en silenci.",
+            "fields": {
+                "step": {
+                    "name": "Pas",
+                    "description": "Quants punts percentuals canviar el volum."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Mou un element",
+            "description": "Mou un element d'una llista de tasques al principi, al final o després d'un altre element.",
+            "fields": {
+                "item": {
+                    "name": "Element",
+                    "description": "El títol o l'uid de l'element a moure."
+                },
+                "after": {
+                    "name": "Després de",
+                    "description": "El títol o l'uid de l'element després del qual posar-lo. Indica això o una posició."
+                },
+                "position": {
+                    "name": "Posició",
+                    "description": "Mou-lo al principi o al final de la llista. Indica això o un element després del qual posar-lo."
                 }
             }
         }

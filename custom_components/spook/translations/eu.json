@@ -1,11 +1,349 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Automatizazioa itzalita",
+            "description": "Norbaitek, edo zerbaitek, automatizazio bat itzaltzen duenean abiarazten da. Utzi helburua hutsik automatizazio guztiak zaintzeko."
+        },
+        "debounce": {
+            "name": "Lasaitu ondoren",
+            "description": "Abiarazle bat denbora batez abiarazteari utzi dionean abiarazten da, eta horrela segida oso bat bakar gisa iristen da. Mugimendu-sentsore batek ez du mugimendua behin jakinarazten, hogei aldiz baizik.",
+            "fields": {
+                "triggers": {
+                    "name": "Abiarazleak",
+                    "description": "Itxaron beharreko abiarazleak. Edozeinek abiarazteak segida bat hasten du eta edozeinek berriro abiarazteak segidari eusten dio; beraz, hainbat abiarazle batera biltzen dira, ez banan-banan."
+                },
+                "for": {
+                    "name": "Iraupena",
+                    "description": "Zenbat denboraz egon behar duen isilik hau abiarazi aurretik. Abiaraztze bakoitzak itxaronaldia hasieratik hasten du, beraz inoiz gelditzen ez den zerbait ez da inoiz jakinaraziko."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Hauek guztiak gertatu dira",
+            "description": "Hainbat abiarazleetako bakoitza denbora-leiho berean abiarazi denean abiarazten da, edozein ordenatan. Home Assistant-en abiarazleak zerrenda bat dira, non edozein bat nahikoa den; hau beste hura da.",
+            "fields": {
+                "triggers": {
+                    "name": "Abiarazleak",
+                    "description": "Denek abiarazita egon behar duten abiarazleak. Ordenak ez du axola, eta berriro abiarazten den abiarazle batek bere aurreko txanda ordezkatzen du, ez da bi aldiz zenbatzen."
+                },
+                "within": {
+                    "name": "Epean",
+                    "description": "Zein gertu egon behar duten elkarrengandik. Leihoa irristatu egiten da, beraz hau baino lehenago abiarazi zen abiarazlea ahaztu egiten da, besteek zenbatzen jarraitzen duten bitartean."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Entitatea itzuli da",
+            "description": "Entitate bat denbora batez eskuragarri egon ez ondoren itzultzen denean abiarazten da; horrela, bideratzaile bat berrabiarazteak ez du etxeko guztia berreskuratzen ari dela ematen.",
+            "fields": {
+                "for": {
+                    "name": "Iraupena",
+                    "description": "Zenbat denboraz egon behar duen entitateak kanpoan itzulera kontuan har dadin. Laburragoa dena dir-dir hutsa da: integrazio bat birkargatzeak bere entitate guztiak eskuragarri ez egotetik eta bueltan eramaten ditu segundo batean."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Gailua gehituta",
+            "description": "Gailu berri bat Home Assistant-i gehitzen zaionean abiarazten da, adibidez parekatu berri den entxufe bat."
+        },
+        "sequence": {
+            "name": "Abiarazleak ordenan",
+            "description": "Hainbat abiarazle bata bestearen atzetik gertatzen direnean abiarazten da, emandako ordenan.",
+            "fields": {
+                "steps": {
+                    "name": "Urratsak",
+                    "description": "Gertatu behar diren abiarazleak, ordenan. Itxaroten ari den hura bakarrik dago entzuten, beraz geroko urrats bat goizegi abiarazteak ez du balio."
+                },
+                "timeout": {
+                    "name": "Denbora-muga",
+                    "description": "Zenbat iraun dezakeen sekuentzia osoak, lehen urratsetik zenbatuta. Ezarri ezean, mugarik gabe itxarongo du."
+                },
+                "reset": {
+                    "name": "Berrezarri",
+                    "description": "Abian dagoen sekuentzia bat bertan behera uzten duten abiarazleak, lehen urratsaren zain jarriz berriro."
+                }
+            }
+        },
+        "while": {
+            "name": "Baldintza betetzen den bitartean",
+            "description": "Baldintza bat egia bihurtzen denean abiarazten da, eta tarte jakin batean abiarazten jarraitzen du egia den bitartean.",
+            "fields": {
+                "condition": {
+                    "name": "Baldintza",
+                    "description": "Zaindu beharreko baldintza. Egia bihurtzean hasten da abiarazten eta egia izateari uztean gelditzen da."
+                },
+                "every": {
+                    "name": "Maiztasuna",
+                    "description": "Zenbat itxaron abiaraztze batetik hurrengora, baldintza betetzen den bitartean."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Zaintzailea",
+            "description": "Gertatzea espero zen zerbait garaiz gertatzen ez denean abiarazten da.",
+            "fields": {
+                "arm": {
+                    "name": "Armatu",
+                    "description": "Zaintza zerk hasten duen. Itxaronaldia hemendik neurtzen da, eta dagoeneko itxaroten ari dela berriro armatzeak itxaronaldia hasieratik hasten du."
+                },
+                "expect": {
+                    "name": "Espero",
+                    "description": "Ondoren etortzea espero dena. Garaiz iristen bada, zaintza bertan behera geratzen da eta ez da ezer abiarazten."
+                },
+                "within": {
+                    "name": "Epean",
+                    "description": "Zenbat denbora duen esperotakoak iristeko. Denbora hori igarotzean eta iritsi ez bada abiarazten da."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Entitatea ez da lasaitzen",
+            "description": "Entitate batek denbora-tarte batean behar baino maizago egoera aldatzen duenean abiarazten da.",
+            "fields": {
+                "changes": {
+                    "name": "Aldaketak",
+                    "description": "Zenbat egoera-aldaketa behar diren hau abiarazteko. Atributu-aldaketak ez dira zenbatzen, ezta entitate bat agertzea edo desagertzea ere."
+                },
+                "within": {
+                    "name": "Epean",
+                    "description": "Aldaketa horiek barruan izan behar dituzten denbora-tartea. Irristatu egiten da, beraz beti azken aldaketei buruzkoa da."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Baldintza egia bihurtu da",
+            "description": "Baldintza bat faltsutik egiara pasatzen denean abiarazten da, beste edozein lekutan bezalako baldintza-osagaiak erabiliz.",
+            "fields": {
+                "condition": {
+                    "name": "Baldintza",
+                    "description": "Zaindu beharreko baldintza."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron programazioa",
+            "description": "Crontab programazio baten arabera abiarazten da, Home Assistant-en ordu-abiarazleek adierazi ezin dituzten orduetarako, adibidez astegun guztietan zazpietan edo hileko azken ostiralean.",
+            "fields": {
+                "schedule": {
+                    "name": "Programazioa",
+                    "description": "Bost eremuko crontab adierazpena: minutua, ordua, hileko eguna, hilabetea, asteko eguna. Barrutiak eta urratsak onartzen ditu, baita asteko egunaren luzapenak ere, beraz \"MON#2\" bigarren astelehena da eta \"5L\" azken ostirala. \"@daily\" bezalako ezizenak ez dira onartzen."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Gailua aurkituta",
+            "description": "Home Assistant-ek konfigura dezakeen zerbait berria aurkitzen duenean abiarazten da, adibidez zure sarean agertu berri den gailu bat."
+        },
+        "integration_added": {
+            "name": "Integrazioa gehituta",
+            "description": "Integrazio bat Home Assistant-i gehitzen zaionean abiarazten da, nork edo zerk gehitu duen kontuan hartu gabe."
+        },
+        "integration_failed": {
+            "name": "Integrazioak ezin izan du konfiguratu",
+            "description": "Konfigurazio-sarrera bat denbora batez bere burua konfiguratu ezinik egon denean abiarazten da, Home Assistant-en berriro saiatzeek konponduko zuketen unetik harago.",
+            "fields": {
+                "for": {
+                    "name": "Iraupena",
+                    "description": "Zenbat denboraz egon behar duen sarrera bat huts egiten hau abiarazi aurretik. Home Assistant-ek huts egiten duen sarrera bat gehienez hamar minuturo saiatzen du berriro, beraz hori baino laburragoa dena bere kabuz konpon daitekeen arazo bat jakinarazten ari da."
+                },
+                "entry_id": {
+                    "name": "Sarrerak",
+                    "description": "Mugatu hau konfigurazio-sarrera jakin batzuetara. Utzi hutsik guztiak zaintzeko."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Konponketa-arazoa sortuta",
+            "description": "Konponketa-arazo berri bat agertzen denean abiarazten da, konponketen orrira joan gabe horren berri izan dezazun.",
+            "fields": {
+                "domain": {
+                    "name": "Integrazioak",
+                    "description": "Mugatu hau integrazio jakin batzuek jakinarazitako arazoetara, beren domeinuaren arabera. Utzi hutsik denetarako."
+                },
+                "severity": {
+                    "name": "Larritasuna",
+                    "description": "Mugatu hau larritasun jakin bateko arazoetara. Utzi hutsik denetarako."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Konponketa-arazoa konponduta",
+            "description": "Konponketa-arazo bat desagertzen denean abiarazten da, konpondu delako edo jada jakinarazten ez delako.",
+            "fields": {
+                "domain": {
+                    "name": "Integrazioak",
+                    "description": "Mugatu hau integrazio jakin batzuek jakinarazitako arazoetara, beren domeinuaren arabera. Utzi hutsik denetarako."
+                }
+            }
+        },
+        "stale": {
+            "name": "Entitatea isildu da",
+            "description": "Denbora batez inork entitate batean ezer idatzi ez duenean abiarazten da; horrela, eskuragarri ez egotera pasa beharrean isilean hil den gailu bat harrapatzen du.",
+            "fields": {
+                "for": {
+                    "name": "Iraupena",
+                    "description": "Zenbat denboraz egon behar duen entitate bat isilik hau abiarazi aurretik. Balio bera jakinarazten jarraitzen duen entitate bat ez dago isilik."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Helburuko tenperatura lortuta",
+            "description": "Termostato edo ur-berogailu baten tenperatura bere helburura iristen denean, edo jauzi batean gainditzen duenean, abiarazten da. Helburua aldatzeak ez du balio, ezta itzalita dagoen gailu batek ere.",
+            "fields": {
+                "tolerance": {
+                    "name": "Tolerantzia",
+                    "description": "Helburutik zein gertu jotzen den oraindik iritsitzat, gailuaren unitatean. Bere ezarpen-puntutik apur bat behera geratzen den termostato baterako. Zeroak helburua bera esan nahi du."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Eguneraketa instalatuta",
+            "description": "Eguneraketa-entitate batek instalatutako bertsio desberdin bat jakinarazten duenean abiarazten da, norbaitek instalatu sakatu duelako, gailua bere kabuz eguneratu delako edo Home Assistant-etik kanpo eguneratu delako."
+        },
+        "position_reached": {
+            "name": "Posizioa lortuta",
+            "description": "Estalki edo balbula bat posizio batera iristen denean, edo hura gainditzen duenean, abiarazten da. Dagoeneko bertan dagoenak, edo eskuragarri ez egotetik bertan itzultzen denak, ez du balio.",
+            "fields": {
+                "position": {
+                    "name": "Posizioa",
+                    "description": "Lortu beharreko posizioa, 0tik (itxita) 100era (irekita)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Scripta abiatuta",
+            "description": "Script bat exekuzio bat hasten duenean abiarazten da. Scriptak baztertzen duen exekuzio batek, dagoeneko martxan dagoelako, ez du balio. Utzi helburua hutsik script guztiak zaintzeko."
+        },
+        "user_added": {
+            "name": "Erabiltzailea gehituta",
+            "description": "Norbaiti Home Assistant-en saioa hasteko kontu bat ematen zaionean abiarazten da. Home Assistant-ek bere integrazioetarako sortzen dituen erabiltzaileak kanpoan geratzen dira."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritikoa",
+                "error": "Errorea",
+                "warning": "Abisua"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Behean",
+                "top": "Goian"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Tenperatura bere helburuan",
+            "description": "Termostato edo ur-berogailu baten tenperatura bere helburuan dagoenean betetzen da. Itzalita dagoen gailu bat ez dago bere helburuan, eta eskuragarri ez dagoena kanpoan geratzen da.",
+            "fields": {
+                "behavior": {
+                    "name": "Portaera",
+                    "description": "Gailuetako bat bertan egotea nahikoa den, ala guztiek egon behar duten."
+                },
+                "tolerance": {
+                    "name": "Tolerantzia",
+                    "description": "Helburutik zein gertu jotzen den oraindik iritsitzat, gailuaren unitatean. Bere ezarpen-puntutik apur bat behera geratzen den termostato baterako. Zeroak helburua bera esan nahi du."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Konponketa-arazoa zain",
+            "description": "Konponketa-arazo bat zain dagoen bitartean betetzen da. Norbaitek baztertutako arazoak ez dira kontuan hartzen.",
+            "fields": {
+                "domain": {
+                    "name": "Integrazioak",
+                    "description": "Mugatu hau integrazio jakin batzuek jakinarazitako arazoetara, beren domeinuaren arabera. Utzi hutsik denetarako."
+                },
+                "severity": {
+                    "name": "Larritasuna",
+                    "description": "Mugatu hau larritasun jakin bateko arazoetara. Utzi hutsik denetarako."
+                }
+            }
+        },
+        "quota": {
+            "name": "Exekuzio-kupoa geratzen da",
+            "description": "Automatizazio hau aldi jakin batean kopuru jakin bat baino gutxiagotan exekutatu den bitartean betetzen da. Scriptak ez dira zenbatzen.",
+            "fields": {
+                "limit": {
+                    "name": "Muga",
+                    "description": "Zenbat exekuzio onartzen diren aldian."
+                },
+                "period": {
+                    "name": "Aldia",
+                    "description": "Mugak aplikatzen duen leihoa. Irristakorra da, beraz egun batek edozein hogeita lau ordu esan nahi du, ez gauerdi batetik bestera."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Automatizazio batek abiarazita",
+            "description": "Beste automatizazio batek exekuzio hau martxan jarri duenean betetzen da, zuzenean edo script baten bidez.",
+            "fields": {
+                "automation": {
+                    "name": "Automatizazioak",
+                    "description": "Mugatu hau automatizazio jakin batzuetara. Utzi hutsik edozein onartzeko."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Erabiltzaile batek abiarazita",
+            "description": "Hau abiarazi duenaren atzean pertsona bat dagoenean betetzen da: berak eragindako egoera-aldaketa edo gertaera bat, txantiloi-abiarazle bat egia bihurtu duena barne. Programazio batek, eguzkiak edo bere kabuz jarduten duen integrazio batek ez dute inor eramaten, ezta Exekutatu botoiarekin exekuzio bat behartzeak ere.",
+            "fields": {
+                "person": {
+                    "name": "Pertsonak",
+                    "description": "Pertsona hauetako batek hasi duenean bakarrik bete. Utzi hutsik edonorentzat betetzeko. Pertsona batek erabiltzaile-kontu bat lotuta izan behar du; bestela, ez dago ezer alderatzeko."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Erabiltzaile batek abiarazi gabe",
+            "description": "Exekuzio honen erantzule inor ezin denean jo betetzen da: programazio bat, eguzkia, bere kabuz jarduten duen integrazio bat edo Exekutatu botoia. Nahita ez du aukerarik hartzen. Pertsona jakin batzuk baztertzeko, jarri \"Erabiltzaile batek abiarazita\" Ez baldintza baten barruan."
+        },
+        "chance": {
+            "name": "Zoria",
+            "description": "Denboraren ehuneko jakin batean betetzen da, egiaztapen bakoitzean ausaz aukeratuta. Zure automatizazioei aldakortasun pixka bat emateko ondo dago.",
+            "fields": {
+                "percentage": {
+                    "name": "Ehunekoa",
+                    "description": "Zenbatetan bete behar den baldintza hau, ehunekotan."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Atsedenaldia",
+            "description": "Automatizazio edo script hau emandako denboran exekutatu ez bada (edo inoiz exekutatu ez bada) bakarrik betetzen da. Atsedenaldi integratua, maizegi berriro abiarazi ez dadin.",
+            "fields": {
+                "duration": {
+                    "name": "Iraupena",
+                    "description": "Zenbat itxaron azken exekuzioaren ondoren baldintza hau berriro bete dadin."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Bai... ondo... ez. Ados, eskerrik asko, agur!"
+            "already_spooked": "Spook dagoeneko hemen dabil mamuka 👻\n\nEtxe bakoitzeko mamu bat nahikoa da. Spook [Gailuak eta zerbitzuak](/config/integrations/integration/spook) atalean aurki dezakezu.",
+            "enabled_existing": "Spook esna dago berriro 👻\n\nUtzi une bat inguruan begiratzeko. Aurkitzen duen guztia [Konponketak](/config/repairs) atalean agertuko da.",
+            "enable_failed": "Spookek ez du esnatu nahi izan 👻\n\nSaiatu zuk zeuk berriro pizten [Gailuak eta zerbitzuak](/config/integrations/integration/spook) atalean.",
+            "kept_sleeping": "Spook lo geratzen da 👻\n\nFaltan botatzen duzu? Edozein unetan esna dezakezu [Gailuak eta zerbitzuak](/config/integrations/integration/spook) atalean."
+        },
+        "create_entry": {
+            "spooked": "Spook hegan dabil 👻\n\nUtzi une bat inguruan begiratzeko. Aurkitzen duen guztia [Konponketak](/config/repairs) atalean agertuko da.\n\nEkintza, abiarazle eta baldintza gehigarriak automatizazio eta script editoreetan zain dituzu. Spookek beste zer egin dezakeen jakin-mina? [Dokumentazioan]({documentation_url}) dena dago.\n\nSpook gustuko duzu? 👻 [GitHub]({repository_url})-en ⭐ batek besteei jakinarazten die Spook benetan nahiko ona dela. [Frencki babesa emateak]({sponsor_url}) mamu hau ondo elikatuta mantentzen du. Eta bere hamabostean behingo [buletin]({newsletter_url}) doakoak zure barneko mamua ondo elikatuta mantentzen du."
         },
         "step": {
             "user": {
-                "description": "Readme irakurri duzu? Lizentzia irakurri duzu? Benetan ziur zaude?"
+                "title": "Bu! Hona Spook, zure laguna 👻",
+                "description": "Spook zure Home Assistant-en barrena dabil hegaka, mamuen bila: jada existitzen ez diren gauzetarako erreferentziak, eta inork garbitu ez dituen hondarrak. Aurkitzen duen guztia Konponketak atalean jakinarazten du.\n\nGainera, zure automatizazioek eta scriptek egin dezaketena zabaltzen du, ekintza, abiarazle, baldintza eta laguntzaile gehigarriekin, automatizazio are indartsuagoetarako.\n\nAbisatuta zaude: Spook ez da Home Assistant-en parte. Integrazio pertsonalizatua da, inork gonbidatu ez duen lekuetara iristen dena. Zerbait arraroa gertatzen bada, susmatu lehenik Spook-ez, eta [jakinarazi iezaguzu]({issue_tracker_url}).\n\nBeldurtzeko prest?"
+            },
+            "already_configured": {
+                "title": "Spook lotan dago 👻",
+                "description": "Spook dagoeneko konfiguratuta dago, baina norbaitek itzali egin du. Esnatu?",
+                "menu_options": {
+                    "enable_existing": "Esnatu Spook",
+                    "keep_sleeping": "Utzi lo egiten"
+                }
             }
         }
     },
@@ -18,10 +356,10 @@
                 "name": "Berrabiarazi"
             },
             "repairs_ignore_all": {
-                "name": "Dena ezikusi"
+                "name": "Guztiak baztertu"
             },
             "repairs_unignore_all": {
-                "name": "Ez ezikusi ezer"
+                "name": "Guztiak berreskuratu"
             }
         },
         "event": {
@@ -29,261 +367,783 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Issue created",
-                            "remove": "Issue removed",
-                            "update": "Issue updated"
+                            "create": "Arazoa sortuta",
+                            "remove": "Arazoa kenduta",
+                            "update": "Arazoa eguneratuta"
                         }
                     },
                     "domain": {
-                        "name": "Issue issuer"
+                        "name": "Arazoaren jatorria"
                     },
                     "issue_id": {
-                        "name": "Issue ID"
+                        "name": "Arazoaren IDa"
                     }
                 }
             }
         },
         "sensor": {
             "homeassistant_air_quality": {
-                "name": "Air quality"
+                "name": "Airearen kalitatea"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Alarm control panels"
+                "name": "Alarmen kontrol panelak"
             },
             "homeassistant_area": {
-                "name": "Eremuak"
+                "name": "Guneak"
             },
             "homeassistant_automation": {
                 "name": "Automatizazioak"
             },
             "homeassistant_binary_sensor": {
-                "name": "Binary sensors"
+                "name": "Sentsore bitarrak"
             },
             "homeassistant_button": {
-                "name": "Buttons"
+                "name": "Botoiak"
             },
             "homeassistant_calendar": {
-                "name": "Calendars"
+                "name": "Egutegiak"
             },
             "homeassistant_camera": {
-                "name": "Cameras"
+                "name": "Kamerak"
             },
             "homeassistant_climate": {
-                "name": "Climate"
+                "name": "Klimatizazioa"
+            },
+            "homeassistant_counter": {
+                "name": "Kontagailuak"
             },
             "homeassistant_cover": {
-                "name": "Covers"
+                "name": "Estalkiak"
             },
             "homeassistant_custom_component": {
-                "name": "Custom integrations"
+                "name": "Integrazio pertsonalizatuak"
             },
             "homeassistant_date": {
-                "name": "Dates"
+                "name": "Datak"
             },
             "homeassistant_datetime": {
-                "name": "Date/times"
+                "name": "Data/orduak"
             },
             "homeassistant_device": {
                 "name": "Gailuak"
             },
             "homeassistant_device_tracker": {
-                "name": "Device trackers"
+                "name": "Gailu-jarraitzaileak"
             },
             "homeassistant_entities": {
                 "name": "Entitateak"
             },
             "homeassistant_fan": {
-                "name": "Fans"
+                "name": "Haizagailuak"
+            },
+            "homeassistant_group": {
+                "name": "Taldeak"
             },
             "homeassistant_humidifier": {
-                "name": "Humidifiers"
+                "name": "Hezegailuak"
             },
             "homeassistant_image": {
-                "name": "Images"
+                "name": "Irudiak"
             },
             "homeassistant_input_boolean": {
-                "name": "Input booleans"
+                "name": "Sarrerako boolearrak"
             },
             "homeassistant_input_button": {
-                "name": "Input buttons"
+                "name": "Sarrerako botoiak"
             },
             "homeassistant_input_datetime": {
-                "name": "Input date/times"
+                "name": "Sarrerako data/orduak"
             },
             "homeassistant_input_number": {
-                "name": "Input numbers"
+                "name": "Sarrerako zenbakiak"
             },
             "homeassistant_input_select": {
-                "name": "Input selects"
+                "name": "Sarrerako hautaketak"
             },
             "homeassistant_input_text": {
-                "name": "Input texts"
+                "name": "Sarrerako testuak"
             },
             "homeassistant_integration": {
-                "name": "Integrations"
+                "name": "Integrazioak"
             },
             "homeassistant_light": {
                 "name": "Argiak"
             },
             "homeassistant_lock": {
-                "name": "Locks"
+                "name": "Sarrailak"
             },
             "homeassistant_media_player": {
-                "name": "Media players"
+                "name": "Multimedia erreproduzitzaileak"
             },
             "homeassistant_number": {
-                "name": "Numbers"
+                "name": "Zenbakiak"
             },
             "homeassistant_persistent_notification": {
-                "name": "Persistent notifications"
+                "name": "Jakinarazpen iraunkorrak"
             },
             "homeassistant_person": {
-                "name": "Persons"
+                "name": "Pertsonak"
             },
             "homeassistant_remote": {
-                "name": "Remotes"
+                "name": "Urruneko agintea"
             },
             "homeassistant_scene": {
-                "name": "Scenes"
+                "name": "Eszenak"
             },
             "homeassistant_script": {
-                "name": "Scripts"
+                "name": "Scriptak"
             },
             "homeassistant_select": {
-                "name": "Selects"
+                "name": "Hautaketak"
             },
             "homeassistant_sensor": {
                 "name": "Sentsoreak"
             },
             "homeassistant_siren": {
-                "name": "Sirens"
+                "name": "Sirenak"
             },
             "homeassistant_stt": {
-                "name": "Speech-to-text"
+                "name": "Ahotsatik testura"
             },
             "homeassistant_sun": {
-                "name": "Suns"
+                "name": "Eguzkiak"
             },
             "homeassistant_switch": {
                 "name": "Etengailuak"
             },
             "homeassistant_text": {
-                "name": "Texts"
+                "name": "Testuak"
             },
             "homeassistant_time": {
-                "name": "Times"
+                "name": "Orduak"
+            },
+            "homeassistant_timer": {
+                "name": "Tenporizadoreak"
+            },
+            "homeassistant_todo": {
+                "name": "Egitekoen zerrendak"
             },
             "homeassistant_tts": {
-                "name": "Text-to-speech"
+                "name": "Testutik ahotsera"
             },
             "homeassistant_update": {
-                "name": "Update"
+                "name": "Eguneraketak"
             },
             "homeassistant_vacuum": {
-                "name": "Vacuums"
+                "name": "Xurgagailuak"
             },
             "homeassistant_water_heater": {
-                "name": "Water heaters"
+                "name": "Ur-berogailuak"
             },
             "homeassistant_weather": {
-                "name": "Weather"
+                "name": "Eguraldia"
             },
             "homeassistant_zone": {
-                "name": "Zones"
+                "name": "Tokiak"
             },
             "repairs_total_issues": {
                 "name": "Guztira"
             },
             "repairs_ignored_issues": {
-                "name": "Ezikusita"
+                "name": "Baztertuta"
             },
             "repairs_active_issues": {
-                "name": "Aktiboa"
+                "name": "Aktiboak"
             }
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa state reporting"
+                "name": "Alexa egoera-jakinarazpena"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistant state reporting"
+                "name": "Google Assistant egoera-jakinarazpena"
             },
             "cloud_remote": {
-                "name": "Remote"
+                "name": "Urruneko sarbidea"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Ezin izan da all-of abiarazle baten abiarazle guztiak lotu."
+        },
+        "area_not_found": {
+            "message": "Ez da {area_id} gunea aurkitu."
+        },
+        "blueprint_backup_failed": {
+            "message": "Ezin izan da {path}(r)en kopia bat alde batera utzi: {error}. Ez da ezer idatzi."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} ezin da hemen exekutatu: {errors}. Ez da ezer idatzi."
+        },
+        "blueprint_could_not_write": {
+            "message": "Ezin izan da {path} idatzi."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Domeinu ez onartua: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Errorea URLtik mapa eskuratzean."
+        },
+        "blueprint_file_exists": {
+            "message": "Fitxategia dagoeneko badago."
+        },
+        "blueprint_gone": {
+            "message": "{name} jada ez dago hemen, beraz ez dago ezer eguneratzeko. Ez da ezer idatzi."
+        },
+        "blueprint_url_not_supported": {
+            "message": "URL hau ez da onartzen."
+        },
+        "blueprint_write_failed": {
+            "message": "Errorea fitxategia idaztean."
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain} mapak ez daude kargatuta une honetan."
+        },
+        "calendar_events_which": {
+            "message": "Esan zein gertaera: eman laburpen bat, uid bat edo biak."
+        },
+        "calendar_range_backwards": {
+            "message": "Bilaketaren amaierak bere hasieraren ondoren egon behar du."
+        },
+        "calendar_range_required": {
+            "message": "Esan noraino begiratu: eman amaierako data eta ordua, edo iraupen bat."
+        },
+        "cannot_disable_system_user": {
+            "message": "Ezin da sistemak sortutako erabiltzaile bat desgaitu: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Ezin da sistemak sortutako erabiltzaile bat gaitu: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Ez da {category} kategoria aurkitu {scope}(e)rako."
+        },
+        "category_nothing_to_update": {
+            "message": "Ez dago ezer eguneratzeko {category} kategorian: eman gutxienez hauetako bat: {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Baldintza honetako txantiloi batek ez du Jinjarik geratzen, beraz konstante bat da eta ezin da inoiz aldatu. Normalean horrek esan nahi du script batek errendatu duela ekintza hau exekutatu aurretik, ekintza-datuetako txantiloi guztiei gertatzen zaien bezala. Erabili txantiloirik gabeko baldintza bat, edo itxaron txantiloiari berari 'wait_template' erabiliz."
+        },
+        "config_entry_not_found": {
+            "message": "Ez da {config_entry_id} integrazio-sarrera aurkitu."
+        },
+        "debounce_attach_failed": {
+            "message": "Ezin izan dira debounce abiarazle baten abiarazle guztiak lotu."
+        },
+        "device_not_found": {
+            "message": "Ez da {device_id} gailua aurkitu."
+        },
+        "entity_id_taken": {
+            "message": "{entity_id} entitate IDa dagoeneko hartuta dago."
+        },
+        "entity_not_found": {
+            "message": "Ez da {entity_id} entitatea aurkitu."
+        },
+        "entity_without_unique_id": {
+            "message": "{entity_id} entitateak ez du ID bakarrik, beraz Home Assistant-ek ezin dio ikonorik edo ezizenik gorde."
+        },
+        "event_cannot_change": {
+            "message": "{summary} ezin da horrela aldatu: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Esan zer aldatu: laburpen berri bat, leku bat edo ordu berriak."
+        },
+        "event_shift_or_times": {
+            "message": "Mugitu gertaera bat desplazamendu batez, edo eman ordu berriak, ez biak."
+        },
+        "event_whole_days": {
+            "message": "{summary} egun osoak irauten ditu, beraz egun osoka bakarrik mugi daiteke."
+        },
+        "floor_not_found": {
+            "message": "Ez da {floor_id} solairua aurkitu."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} ezin da talde honetara batu: {domains} entitateak ditu."
+        },
+        "group_not_found_behind": {
+            "message": "Ezin izan da {entity_id}(r)en atzeko taldea aurkitu."
+        },
+        "helpers_unreachable": {
+            "message": "Ezin izan da Home Assistant-ek gordetzen dituen {domain} laguntzaileetara iritsi."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Ezin da {entity_id} existitzen ez den ordu bat arte mantendu."
+        },
+        "home_zone_radius": {
+            "message": "Etxeko tokiak bere erradioa metro osotan hartzen du, zero edo gehiago."
+        },
+        "home_zone_unsupported": {
+            "message": "Etxeko tokiak latitudea, longitudea eta erradioa bakarrik hartzen ditu, ez hauek: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Sarrerako zenbaki hau ez da editagarria: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Izendatu aldatu beharreko integrazio-sarrerak, edo haien integrazioa."
+        },
+        "integration_without_entries": {
+            "message": "{domain} integrazioak ez du sarrerarik."
+        },
+        "label_not_found": {
+            "message": "Ez da {label_id} etiketa aurkitu."
+        },
+        "label_nothing_to_update": {
+            "message": "Ez dago ezer eguneratzeko {label_id} etiketan: eman gutxienez hauetako bat: {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Maximoak ({maximum}) minimoa ({minimum}) baino handiagoa izan behar du."
+        },
+        "no_max_value": {
+            "message": "{entity_id} entitateak ez du balio maximorik."
+        },
+        "no_min_value": {
+            "message": "{entity_id} entitateak ez du balio minimorik."
+        },
+        "not_a_group": {
+            "message": "{entity_id} ez da talde bat."
+        },
+        "person_not_editable": {
+            "message": "Pertsona hau ez da editagarria: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spookek errore bat aurkitu du Home Assistant berrabiaraztean."
+        },
+        "sequence_attach_failed": {
+            "message": "Ezin izan da sekuentzia-abiarazle baten lehen urratsa lotu."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Eman aldatu beharreko minimo, maximo edo urrats bat."
+        },
+        "spooked": {
+            "message": "Spooked! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Tenporizadore hau ez da editagarria: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Elementu bat ezin da bere buruaren ondoren mugitu."
+        },
+        "todo_item_not_found": {
+            "message": "Ez dago {item} elementurik {entity_id}(e)n."
+        },
+        "todo_last_item_after": {
+            "message": "Ezin da ezer mugitu {entity_id}(e)ko azken elementuaren ondoren."
+        },
+        "todo_move_where": {
+            "message": "Esan nora: beste elementu baten ondoren, edo goira edo behera."
+        },
+        "user_not_found": {
+            "message": "Ezin izan da erabiltzailea aurkitu: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "{entity_id}(r)en {value} balioa ez da zenbaki bat."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Ezin izan dira zaintzaile-abiarazle baten armatze-abiarazleak lotu."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Ezin izan dira zaintzaile-abiarazle baten esperotako abiarazleak lotu."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} zure YAML konfigurazioko talde bat da, eta Spookek ezin du aldatu. Editatu zure konfigurazioan, edo erabili group.set, mota horretako taldeetan oraindik funtzionatzen baitu."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} YAMLen konfiguratuta dago eta ezin da ezabatu."
+        },
+        "zone_not_editable": {
+            "message": "Toki hau ez da editagarria: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Alerta batek zaintzen duen entitate ezezaguna: {alert}",
+            "description": "Spookek mamu bat aurkitu du zure alertetan 👻\n\n{alert} (`{entity_id}`) alertak Home Assistant-ek ezagutzen ez duen entitate bat zaintzen du:\n\n{entities}\n\nAlerta bat zaintzen duen entitatearen gainean bakarrik abiarazi daiteke, beraz hau ez da inoiz berriro abiaraziko. Jakinarazteko ezer ez duen alerta baten itxura bera du.\n\nErrore hau konpontzeko, editatu zure konfigurazioko `alert:` atala eta zuzendu alerta hau existitzen den entitate batera.\n\nSpook 👻 Zure laguna."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Alerta batek erabilitako jakinarazle ezezagunak: {alert}",
+            "description": "Spookek mamu bat aurkitu du zure alertetan 👻\n\n{alert} (`{entity_id}`) alertak ekintza hauen bidez jakinarazten du, eta Home Assistant-ek ez ditu ezagutzen:\n\n{notifiers}\n\nAlertak abiarazten eta bere txandak egiten jarraitzen du, baina jakinarazpen hauek ez doaz inora. Home Assistant-ek hori alerta abiarazten den unean bakarrik erregistratzen du, eta une txarra da inor entzuten ari ez dela jakiteko.\n\nErrore hau konpontzeko, editatu alerta honen `notifiers:` zerrenda zure konfigurazioan eta kendu edo zuzendu sarrera hauek.\n\nSpook 👻 Zure laguna."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {automation}"
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek gune hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{areas}\n\n\n\nErrore hau konpontzeko, [editatu automatizazioa]({edit}) eta kendu existitzen ez diren gune hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Gune ezezagunak hemen erabilita: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek baldintza hauek erabiltzen ditu, eta Home Assistant-en eskuragarri dagoen integrazio batek ere ezin ditu eman:\n\n{conditions}\n\n\n\nHau askotan gertatzen da baldintza bat ematen zuen integrazioa kendu denean. Errore hau konpontzeko, [editatu automatizazioa]({edit}) eta kendu eskuragarri ez dauden baldintza hauen erabilera, edo berrezarri haiek ematen dituen integrazioa.\n\nSpook 👻 Zure laguna.",
+            "title": "Baldintza ezezagunak hemen erabilita: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {automation}"
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek gailu hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{devices}\n\n\n\nErrore hau konpontzeko, [editatu automatizazioa]({edit}) eta kendu existitzen ez diren gailu hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Gailu ezezagunak hemen erabilita: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {automation}"
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek entitate hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nErrore hau konpontzeko, [editatu automatizazioa]({edit}) eta kendu existitzen ez diren entitate hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak hemen erabilita: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek solairu hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{floors}\n\n\n\nErrore hau konpontzeko, [editatu automatizazioa]({edit}) eta kendu existitzen ez diren solairu hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Solairu ezezagunak hemen erabilita: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek etiketa hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{labels}\n\n\n\nErrore hau konpontzeko, [editatu automatizazioa]({edit}) eta kendu existitzen ez diren etiketa hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Etiketa ezezagunak hemen erabilita: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek ekintza hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{services}\n\n\n\nErrore hau konpontzeko, [editatu automatizazioa]({edit}) eta kendu existitzen ez diren ekintza hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Ekintza ezezagunak hemen erabilita: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spookek mamu bat aurkitu du zure automatizazioetan 👻\n\nHegan zebilela, Spookek automatizazio honekin egin du topo:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nAutomatizazio honek abiarazle hauek erabiltzen ditu, eta Home Assistant-en eskuragarri dagoen integrazio batek ere ezin ditu eman:\n\n{triggers}\n\n\n\nHau askotan gertatzen da abiarazle bat ematen zuen integrazioa kendu denean. Errore hau konpontzeko, [editatu automatizazioa]({edit}) eta kendu eskuragarri ez dauden abiarazle hauen erabilera, edo berrezarri haiek ematen dituen integrazioa.\n\nSpook 👻 Zure laguna.",
+            "title": "Abiarazle ezezagunak hemen erabilita: {automation}"
+        },
+        "empty_areas": {
+            "title": "Gune hutsa: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Gune hutsa: {area}",
+                        "description": "{area} guneak ez du gailurik, ez entitaterik, ezta hura helburu duen automatizazio edo scriptik ere.\n\nKendu, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu gune huts hau",
+                            "ignore": "Mantendu, ez esan gehiago",
+                            "manage": "Utzi nik neuk konpontzen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da gune honi buruz hemendik aurrera.",
+                    "manage": "Gune hau zuk zeuk kudea dezakezu [Guneak orrian](/config/areas/dashboard).",
+                    "changed": "Gune hau berriro erabiltzen ari da Spookek begiratu zuenetik: zerbait dago bertan, edo automatizazio edo script batek erabiltzen du. Beraz, bere horretan utzi da. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Solairu hutsa: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Solairu hutsa: {floor}",
+                        "description": "{floor} solairuak ez du gunerik, ezta hura helburu duen automatizazio edo scriptik ere.\n\nKendu, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu solairu huts hau",
+                            "ignore": "Mantendu, ez esan gehiago",
+                            "manage": "Utzi nik neuk konpontzen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da solairu honi buruz hemendik aurrera.",
+                    "manage": "Solairu hau zuk zeuk kudea dezakezu [Guneak orrian](/config/areas/dashboard).",
+                    "changed": "Solairu hau berriro erabiltzen ari da Spookek begiratu zuenetik: gune bat dago bertan, edo automatizazio edo script batek erabiltzen du. Beraz, bere horretan utzi da. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Entitate ezezagunak energia-panelean erabilita",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Entitate ezezagunak energia-panelean erabilita",
+                        "description": "Spookek mamu bat aurkitu du zure energia-panelean 👻\n\nEnergia-panelak entitate hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\nHau normalean energia-konfigurazioan erabilitako entitate bat izenez aldatu edo kendu denean gertatzen da. Izenez aldatu da? Orduan ireki [Ezarpenak > Aginte-panelak > Energia](/config/energy) eta aukeratu berria, bere historia panelean gera dadin.\n\nBetiko kendu da? Spookek energia-konfiguraziotik kendu ditzake zure partez. Falta den neurgailu batek bere iturria edo gailua eramaten ditu berarekin; falta den prezio edo kostu bat garbitu baino ez da egiten. Ondoren, panelak ez du kendutakoaren historia erakusten; estatistikak berak geratu egiten dira.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu hauek energia-konfiguraziotik",
+                            "manage": "Utzi nik neuk egiten",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da entitate hauei buruz hemendik aurrera.",
+                    "manage": "Hauek zuk zeuk egunera edo kendu ditzakezu [energia-konfigurazioan](/config/energy).",
+                    "nothing_to_remove": "Hauetako bat ere ez da oraindik ezezaguna, beraz ez da ezer kendu. Agian itzuli dira, edo norbaitek dagoeneko aldatu du energia-konfigurazioa."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "Talde-kide ezezagunak hemen: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Talde-kide ezezagunak hemen: {group}",
+                        "description": "Spookek mamu bat aurkitu du zure taldeetan 👻\n\n{group} (`{entity_id}`) taldeak Home Assistant-ek ezagutzen ez dituen kideak ditu:\n\n{entities}\n\nKendu taldetik, edo mantendu eta Spookek ez ditu gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu kide hauek",
+                            "manage": "Utzi nik neuk konpontzen",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da talde honi buruz hemendik aurrera.",
+                    "not_editable": "Talde hau YAMLen konfiguratuta dago, beraz Spookek ezin du editatu. Eguneratu taldea zure konfigurazioan.",
+                    "manage": "Talde hau zuk zeuk kudea dezakezu [Laguntzaileak orrian](/config/helpers).",
+                    "changed": "Konponketa honek zerrendatutako kideak itzuli dira, edo aldatu egin dira, Spookek begiratu zuenetik; beraz, ez da ezer kendu taldetik. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spookek mamu bat aurkitu du zure HomeKit zubian 👻\n\nHegan zebilela, Spookek HomeKit zubi honekin egin du topo:\n\n{bridge}\n\nZubi honek entitate hauek izendatzen ditu, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nHomeKit-ek ez dio izenez aldatutako entitate bati jarraitzen. Izenez aldatu edo kendu den entitate barneratu bat Home aplikaziotik desagertu da; izenez aldatu den entitate baztertu bat berriro agertzen da bertan.\n\nErrore hau konpontzeko, joan [HomeKit Bridge integraziora](/config/integrations/integration/homekit), hautatu **Konfiguratu** zubi honetan, eta aukeratu entitateak berriro.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak HomeKit zubian erabilita: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spookek mamu bat aurkitu du zure HomeKit zubian 👻\n\nHegan zebilela, Spookek HomeKit zubi honekin egin du topo:\n\n{bridge}\n\nZubi honek entitate hauek izendatzen ditu, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nHomeKit-ek ez dio izenez aldatutako entitate bati jarraitzen. Izenez aldatu edo kendu den entitate barneratu bat Home aplikaziotik desagertu da; izenez aldatu den entitate baztertu bat berriro agertzen da bertan.\n\nZubi hau zure YAML konfigurazioan dago konfiguratuta. Errore hau konpontzeko, editatu zubi honen `filter` `homekit:` atalaren barruan eta kendu edo zuzendu entitate hauek.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak HomeKit zubian erabilita: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nAginte-panelaren baliabide hauek existitzen ez diren fitxategiak seinalatzen dituzte:\n\n{resources}\n\n\n\nHau normalean txartel pertsonalizatu bat edo bere fitxategiak kendu direnean gertatzen da, baliabidea atzean geratu den bitartean. Errore hau konpontzeko, ireki [Baliabideak orria](/config/lovelace/resources) eta kendu edo zuzendu baliabide hauek. Ez du bere fitxarik: Aginte-panelak orrian hiru puntuen atzean dago, goian eskuinean.\n\nSpook 👻 Zure laguna.",
+            "title": "Aginte-panelaren baliabideek falta diren fitxategiak seinalatzen dituzte"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nAginte-panelaren baliabide hauek existitzen ez diren fitxategiak seinalatzen dituzte:\n\n{resources}\n\n\n\nHau normalean txartel pertsonalizatu bat edo bere fitxategiak kendu direnean gertatzen da, baliabidea atzean geratu den bitartean.\n\nBaliabide hauek zure YAML konfigurazioan daude zerrendatuta, beraz Baliabideak orriak ezin ditu aldatu. Editatu zure Lovelace konfigurazioko `resources:` atala eta kendu edo zuzendu sarrera hauek.\n\nSpook 👻 Zure laguna.",
+            "title": "Aginte-panelaren baliabideek falta diren fitxategiak seinalatzen dituzte"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Aginte-panelaren baliabidea behin baino gehiagotan zerrendatuta: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Aginte-panelaren baliabidea behin baino gehiagotan zerrendatuta: {resource}",
+                        "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nAginte-panelaren baliabide hau {count} aldiz dago zerrendatuta:\n\n{resources}\n\nHau normalean txartel pertsonalizatu bat eguneratzean gertatzen da, bertsio berriarentzat baliabide bat gehituz lehendik zegoena editatu beharrean. Nabigatzaileak biak kargatzen ditu, txartela bi aldiz erregistratzen saiatzen da, eta bigarren saiakerak huts egiten du; horrek txartel hautsi baten itxura du, ez bikoiztutako baliabide batena.\n\nSpookek kopia gehigarriak garbi ditzake eta azken gehitutakoa mantendu.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Garbitu kopia gehigarriak, mantendu azkena",
+                            "ignore": "Utzi horrela, ez esan gehiago",
+                            "manage": "Utzi nik neuk konpontzen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da baliabide honi buruz hemendik aurrera.",
+                    "manage": "Zure aginte-panelaren baliabideak zuk zeuk kudea ditzakezu [Baliabideak orrian](/config/lovelace/resources).",
+                    "yaml": "Baliabide hauek zure YAML konfigurazioan daude zerrendatuta, beraz Spookek ezin ditu zure partez aldatu. Editatu zure Lovelace konfigurazioko `resources:` atala eta kendu jada behar ez dituzun `{resource}`(r)en kopiak."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n{dashboard}\n\nAginte-panel honek gune hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{areas}\n\n\n\nHau askotan gune bat izenez aldatu edo kendu denean gertatzen da. Errore hau konpontzeko, [editatu aginte-panela]({edit}) eta kendu existitzen ez diren gune hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Gune ezezagunak aginte-panelean erabilita: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {dashboard}"
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n[{dashboard}]({edit})\n\nAginte-panel honek entitate hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nErrore hau konpontzeko, [editatu aginte-panela]({edit}) eta kendu existitzen ez diren entitate hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak hemen erabilita: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spookek mamu bat aurkitu du zure aginte-paneletan 👻\n\nHegan zebilela, Spookek aginte-panel honekin egin du topo:\n\n[{dashboard}]({edit})\n\nAginte-panel honek ekintza hauek exekutatzen ditu, eta Home Assistant-ek ez ditu ezagutzen:\n\n{services}\n\n\n\nHauetako bat erabiltzen duen botoi edo txartel batek ez du ezer egiten sakatzean. Hau askotan script bat izenez aldatu edo kendu denean, edo integrazio bat kendu denean gertatzen da. Errore hau konpontzeko, [editatu aginte-panela]({edit}) eta kendu edo ordeztu existitzen ez diren ekintza hauek.\n\nSpook 👻 Zure laguna.",
+            "title": "Ekintza ezezagunak aginte-panelean erabilita: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Kide ezezagunak min/max laguntzailean erabilita: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Kide ezezagunak min/max laguntzailean erabilita: {helper}",
+                        "description": "Spookek mamu bat aurkitu du zure laguntzaileetan 👻\n\n{helper} (`{entity_id}`) min/max laguntzaileak kide hauek konbinatzen ditu, eta Home Assistant-ek ez ditu ezagutzen:\n\n{sources}\n\nKendu, laguntzaileak geratzen diren kideekin jarrai dezan, edo mantendu eta Spookek ez ditu gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu kide hauek",
+                            "manage": "Utzi nik neuk konpontzen",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da laguntzaile honi buruz hemendik aurrera.",
+                    "manage": "Laguntzaile hau zuk zeuk kudea dezakezu [Laguntzaileak orrian](/config/helpers).",
+                    "changed": "Konponketa honek zerrendatutako kideak itzuli dira, edo aldatu egin dira, Spookek begiratu zuenetik; beraz, ez da ezer kendu laguntzailetik. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du.",
+                    "too_few_members": "Min/max laguntzaile batek gutxienez bi kide behar ditu, beraz falta direnak kentzeak gutxiegi utziko lituzke. Birkonfiguratu edo kendu laguntzailea zuk zeuk [Laguntzaileak orrian](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spookek mamu bat aurkitu du zure jakinarazpen-taldeetan 👻\n\n`{group}` jakinarazpen-taldeak ekintza hauetara birbidaltzen du, eta Home Assistant-ek ez ditu ezagutzen:\n\n{members}\n\nTaldeak bere gainerako kideei bidaltzen jarraitzen du, eta deitu dionari arrakasta jakinarazten dio oraindik, beraz aurretik inork ez du ezer nabaritzen. Hutsegitea erregistroan \"Task exception was never retrieved\" galdu batean bakarrik agertzen da, inongo talderik izendatzen ez duena eta akats baten itxura duena. Kide horren atzean zegoena, besterik gabe, jakinarazpenak jasotzeari uzten dio.\n\nErrore hau konpontzeko, editatu talde honen `services:` zerrenda zure konfigurazioan eta kendu edo zuzendu sarrera hauek.\n\nSpook 👻 Zure laguna.",
+            "title": "Kide ezezagunak jakinarazpen-taldean: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Epe luzeko estatistika umezurtzak aurkitu dira",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Epe luzeko estatistika umezurtzak aurkitu dira",
+                        "description": "Spookek mamu bat aurkitu du zure erregistratzailean 👻\n\nHome Assistant-ek epe luzeko estatistikak gordetzen ditu hauentzat, baina jada ez dago haiei dagokien entitaterik:\n\n{statistics}\n\nHau normalean sentsore bat kendu denean gertatzen da, bere estatistikak gorde diren bitartean. Garbitzeak historia hori betiko botatzen du; beraz, Spookek berriro begiratzen du egin aurretik, eta bitartean itzuli dena bere horretan uzten du.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Garbitu estatistika hauek",
+                            "manage": "Utzi nik neuk egiten",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da estatistika hauei buruz hemendik aurrera.",
+                    "manage": "Hauek zuk zeuk garbi ditzakezu [Estatistikak orrian](/config/tools/statistics).",
+                    "nothing_to_clear": "Zerrenda horretako ezerk ez du garbitu beharrik oraindik, beraz ez da ezer bota. Edo estatistikek berriro entitate bat dute atzean, edo dagoeneko desagertu dira.",
+                    "clearing_took_too_long": "Spookek estatistikak garbitzeko eskatu du eta erregistratzaileak ez du esan amaitu duenik. Lana ilaran dago eta ziurrenik beteko da; beraz, konponketa hau zabalik geratzen da Spookek berriro begiratu arte."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Gailu-jarraitzaile ezezagunak honek jarraituta: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Gailu-jarraitzaile ezezagunak honek jarraituta: {person}",
+                        "description": "Spookek mamu bat aurkitu du zure pertsonetan 👻\n\n{person}(e)k gailu-jarraitzaile hauek jarraitzen ditu, eta Home Assistant-ek ez ditu ezagutzen:\n\n{device_trackers}\n\nHau askotan gailu-jarraitzaile bat izenez aldatu edo bere integrazioa kendu denean gertatzen da.\n\nKendu {person}(e)tik, edo mantendu eta Spookek ez ditu gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu gailu-jarraitzaile hauek",
+                            "ignore": "Mantendu, ez esan gehiago",
+                            "manage": "Utzi nik neuk konpontzen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da pertsona honi buruz hemendik aurrera.",
+                    "not_editable": "Pertsona hau YAMLen konfiguratuta dago, beraz Spookek ezin du editatu. Eguneratu pertsona zure konfigurazioan.",
+                    "manage": "Pertsona hau zuk zeuk kudea dezakezu [Pertsonak orrian](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spookek mamu bat aurkitu du zure hurbiltasun-konfigurazioan 👻\n\nHegan zebilela, Spookek hurbiltasun-konfigurazio honekin egin du topo:\n\n{name}\n\nKonfigurazio honek Home Assistant-ek ezagutzen ez dituen tokiak baztertzen ditu:\n\n{zones}\n\n\n\nErrore hau konpontzeko, editatu konfigurazioa eta kendu toki hau(ek).\n\nSpook 👻 Zure laguna.",
+            "title": "Baztertutako toki ezezagunak: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spookek mamu bat aurkitu du zure hurbiltasun-konfigurazioan 👻\n\nHegan zebilela, Spookek hurbiltasun-konfigurazio honekin egin du topo:\n\n{name}\n\nKonfigurazio honek Home Assistant-ek ezagutzen ez dituen pertsonak edo gailu-jarraitzaileak jarraitzen ditu:\n\n{entities}\n\n\n\nErrore hau konpontzeko, editatu konfigurazioa eta kendu entitate hau(ek).\n\nSpook 👻 Zure laguna.",
+            "title": "Jarraitutako entitate ezezagunak: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spookek mamu bat aurkitu du zure hurbiltasun-konfigurazioan 👻\n\nHegan zebilela, Spookek hurbiltasun-konfigurazio honekin egin du topo:\n\n{name}\n\nKonfigurazio hau Home Assistant-ek ezagutzen ez duen toki batean oinarritzen da:\n\n`{zone}`\n\n\n\nErrore hau konpontzeko, hurbiltasun-konfigurazio baten tokia ezin denez aldatu, aukera bakarra hurbiltasun-integrazioaren instantzia zehatz hau kentzea da.\n\nSpook 👻 Zure laguna.",
+            "title": "Toki ezezaguna: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spookek mamu bat aurkitu du zure eszenetan 👻\n\nHegan zebilela, Spookek eszena honekin egin du topo:\n\n[{scene}]({edit})\n\nEszena honek entitate hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nErrore hau konpontzeko, [editatu eszena]({edit}) eta kendu existitzen ez diren entitate hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak hemen erabilita: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {script}"
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek gune hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{areas}\n\n\n\nErrore hau konpontzeko, [editatu scripta]({edit}) eta kendu existitzen ez diren gune hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Gune ezezagunak hemen erabilita: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek baldintza hauek erabiltzen ditu, eta Home Assistant-en eskuragarri dagoen integrazio batek ere ezin ditu eman:\n\n{conditions}\n\n\n\nHau askotan gertatzen da baldintza bat ematen zuen integrazioa kendu denean. Errore hau konpontzeko, [editatu scripta]({edit}) eta kendu eskuragarri ez dauden baldintza hauen erabilera, edo berrezarri haiek ematen dituen integrazioa.\n\nSpook 👻 Zure laguna.",
+            "title": "Baldintza ezezagunak hemen erabilita: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {script}"
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek gailu hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{devices}\n\n\n\nErrore hau konpontzeko, [editatu scripta]({edit}) eta kendu existitzen ez diren gailu hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Gailu ezezagunak hemen erabilita: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {script}"
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek entitate hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nErrore hau konpontzeko, [editatu scripta]({edit}) eta kendu existitzen ez diren entitate hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak hemen erabilita: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek solairu hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{floors}\n\n\n\nErrore hau konpontzeko, [editatu scripta]({edit}) eta kendu existitzen ez diren solairu hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Solairu ezezagunak hemen erabilita: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek etiketa hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{labels}\n\n\n\nErrore hau konpontzeko, [editatu scripta]({edit}) eta kendu existitzen ez diren etiketa hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Etiketa ezezagunak hemen erabilita: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek ekintza hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{services}\n\n\n\nErrore hau konpontzeko, [editatu scripta]({edit}) eta kendu existitzen ez diren ekintza hauen erabilera.\n\nSpook 👻 Zure laguna.",
+            "title": "Ekintza ezezagunak hemen erabilita: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spookek mamu bat aurkitu du zure scriptetan 👻\n\nHegan zebilela, Spookek script honekin egin du topo:\n\n[{script}]({edit}) (`{entity_id}`)\n\nScript honek abiarazle hauek erabiltzen ditu, eta Home Assistant-en eskuragarri dagoen integrazio batek ere ezin ditu eman:\n\n{triggers}\n\n\n\nHau askotan gertatzen da abiarazle bat ematen zuen integrazioa kendu denean. Errore hau konpontzeko, [editatu scripta]({edit}) eta kendu eskuragarri ez dauden abiarazle hauen erabilera, edo berrezarri haiek ematen dituen integrazioa.\n\nSpook 👻 Zure laguna.",
+            "title": "Abiarazle ezezagunak hemen erabilita: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spookek mamu bat aurkitu du zure txantiloi-laguntzaileetan 👻\n\nHegan zebilela, Spookek txantiloi-laguntzaile honekin egin du topo:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nBere konfigurazioak entitate hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nHau askotan entitate bat izenez aldatu edo kendu denean gertatzen da. Errore hau konpontzeko, birkonfiguratu txantiloi-laguntzailea existitzen diren entitateei erreferentzia egin diezaien.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak txantiloi-laguntzailean erabilita: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spookek mamu bat aurkitu du zure txantiloi-laguntzaileetan 👻\n\nHegan zebilela, Spookek txantiloi-laguntzaile honekin egin du topo:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nEkintza hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{services}\n\n\n\nHau askotan ekintza-hornitzaile bat kendu denean, edo script bat izenez aldatu edo ezabatu denean gertatzen da. Errore hau konpontzeko, birkonfiguratu txantiloi-laguntzailea existitzen diren ekintzak erabil ditzan.\n\nSpook 👻 Zure laguna.",
+            "title": "Ekintza ezezagunak txantiloi-laguntzailean erabilita: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "{sensors} sentsore ezezaguna gune honetarako: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "{sensors} sentsore ezezaguna gune honetarako: {area}",
+                        "description": "Spookek mamu bat aurkitu du zure guneetan 👻\n\n{area} guneak Home Assistant-ek ezagutzen ez duen {sensors} sentsore bat erabiltzen du:\n\n{entities}\n\nHome Assistant-ek sentsore hau aukeratzen denean bakarrik egiaztatzen du; beraz, kendu edo izenez aldatu zenean, guneak ezer ez seinalatzen jarraitu zuen. Assist-ek eta gune-txartelek jada ez dute irakurketarik jasotzen hartatik.\n\nGarbitu ezarpena berriro sentsore bat aukeratu ahal izateko, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Garbitu ezarpena",
+                            "manage": "Utzi nik neuk konpontzen",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da gune honi buruz hemendik aurrera.",
+                    "manage": "Beste sentsore bat aukera dezakezu gune honen ezarpenetan, [Guneak orrian](/config/areas/dashboard).",
+                    "changed": "Sentsore hauek itzuli dira, edo ezarpenek beste nonbait seinalatzen dute orain, Spookek begiratu zuenetik. Beraz, ez da ezer garbitu. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spookek mamu bat aurkitu du zure pertsonalizazioetan 👻\n\n`customize:` atalak atributuak finkatzen ditu entitate hauetan, eta Home Assistant-ek ez ditu ezagutzen:\n\n{entities}\n\n\n\nHau askotan entitate bat izenez aldatu edo kendu denean gertatzen da, bere pertsonalizazioa atzean geratu den bitartean. Errore hau konpontzeko, editatu zure konfigurazioko `customize:` atala eta kendu entitate hauek.\n\nSpook 👻 Zure laguna.",
+            "title": "Entitate ezezagunak zure pertsonalizazioetan"
+        },
+        "unknown_engines": {
+            "title": "Assist-en prozesu-kateak desagertutako motorrak erabiltzen ditu: {pipeline}",
+            "description": "Spookek mamu bat aurkitu du zure ahots-laguntzaileetan 👻\n\nAssist-en {pipeline} prozesu-kateak hauek erabiltzen ditu, eta Home Assistant-ek ez ditu ezagutzen:\n\n{engines}\n\nHorrek normalean esan nahi du atzean zegoen integrazioa kendu dela. Prozesu-kateari ez zitzaion esan; beraz, erabiltzen den hurrengo aldian huts egingo du falta den hornitzaile edo agente bati buruzko errore batekin, eta aurretik ezerk ez du hona seinalatzen.\n\nHau konpontzeko, ireki laguntzaile honen ezarpenak [Ahots-laguntzaileak](/config/voice-assistants/assistants) atalean eta aukeratu oraindik dagoen motor bat hauetako bakoitzerako.\n\nSpook 👻 Zure laguna."
+        },
+        "unknown_helper_source_references": {
+            "title": "Iturburu-entitate ezezagunak laguntzailean erabilita: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Iturburu-entitate ezezagunak laguntzailean erabilita: {helper}",
+                        "description": "Spookek mamu bat aurkitu du zure laguntzaileetan 👻\n\n{helper} laguntzaileak (`{domain}`, `{entity_id}`) iturburu-entitate hauei egiten die erreferentzia, eta Home Assistant-ek ez ditu ezagutzen:\n\n{sources}\n\nBere iturburuak gabe laguntzaile honek ezin du funtzionatu. {usage}\n\nKendu laguntzailea, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu laguntzaile hau",
+                            "manage": "Utzi nik neuk konpontzen",
+                            "ignore": "Mantendu, ez esan gehiago"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da laguntzaile honi buruz hemendik aurrera.",
+                    "manage": "Laguntzaile hau zuk zeuk kudea dezakezu [Laguntzaileak orrian](/config/helpers).",
+                    "changed": "Laguntzaile honen iturburuak aldatu egin dira Spookek begiratu zuenetik, beraz laguntzailea bere horretan utzi da. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Erabili gabeko mapa: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Erabili gabeko mapa: {blueprint}",
+                        "description": "{blueprint} mapa ez du inongo {domain}(e)k erabiltzen.\n\nKendu, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu erabili gabeko mapa hau",
+                            "ignore": "Mantendu, ez esan gehiago",
+                            "manage": "Utzi nik neuk konpontzen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da mapa honi buruz hemendik aurrera.",
+                    "manage": "Mapa hau zuk zeuk kudea dezakezu [Mapak orrian](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Erabili gabeko etiketa: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Erabili gabeko etiketa: {label}",
+                        "description": "{label} etiketa ez zaio inongo entitate, gailu edo guneri aplikatzen, eta ez du automatizazio edo script batek ere helburu.\n\nKendu, edo mantendu eta Spookek ez du gehiago aipatuko.\n\nSpook 👻 Zure laguna.",
+                        "menu_options": {
+                            "remove": "Kendu erabili gabeko etiketa hau",
+                            "ignore": "Mantendu, ez esan gehiago",
+                            "manage": "Utzi nik neuk konpontzen"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Spook isilik egongo da etiketa honi buruz hemendik aurrera.",
+                    "manage": "Etiketa hau zuk zeuk kudea dezakezu [Etiketak orrian](/config/labels).",
+                    "changed": "Etiketa hau berriro erabiltzen ari da Spookek begiratu zuenetik: zerbaitek darama, edo automatizazio edo script batek erabiltzen du. Beraz, bere horretan utzi da. Spookek bere kabuz begiratuko du berriro eta konponketa hau eguneratuko du."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -297,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "Restart required",
+            "title": "Berrabiaraztea beharrezkoa",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "Restart required",
-                        "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+                        "title": "Berrabiaraztea beharrezkoa",
+                        "description": "Spook 👻 konfiguratzen amaitu dadin, Home Assistant berrabiarazi behar da.\n\nHautatu bidali Home Assistant orain berrabiarazteko.\n\nSpook 👻 Zure laguna."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Bertsioa",
+            "ghosts_found": "Aurkitutako mamuak",
+            "ghosts_ignored": "Baztertutako mamuak",
+            "helpers_linked": "Lotutako laguntzaileak"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Kideak gehitu talde bati",
+            "description": "Interfazearen bidez egindako talde bati entitateak gehitzen dizkio, Home Assistant martxan dagoen bitartean. Dagoeneko taldean dauden entitateak dauden lekuan geratzen dira.",
+            "fields": {
+                "group": {
+                    "name": "Taldea",
+                    "description": "Gehitu beharreko taldea."
+                },
+                "members": {
+                    "name": "Kideak",
+                    "description": "Taldeari gehitu beharreko entitateak."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Kideak kendu talde batetik",
+            "description": "Interfazearen bidez egindako talde batetik entitateak ateratzen ditu, Home Assistant martxan dagoen bitartean. Taldean ez dagoen zerbait izendatzeak ez du ezer egiten, beraz horrela garbitzen da jada existitzen ez den kide bat ere.",
+            "fields": {
+                "group": {
+                    "name": "Taldea",
+                    "description": "Zein taldetatik atera."
+                },
+                "members": {
+                    "name": "Kideak",
+                    "description": "Taldetik kendu beharreko entitateak."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Talde baten kideak ezarri",
+            "description": "Interfazearen bidez egindako talde baten kideak emandakoekin ordezten ditu, Home Assistant martxan dagoen bitartean.",
+            "fields": {
+                "group": {
+                    "name": "Taldea",
+                    "description": "Aldatu beharreko taldea."
+                },
+                "members": {
+                    "name": "Kideak",
+                    "description": "Taldeak hemendik aurrera izan behar dituen entitateak."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Baldintza baten zain egon",
+            "description": "Itxaron baldintza bat egia izan arte. Dagoeneko egia bada, berehala itzultzen da.",
+            "fields": {
+                "condition": {
+                    "name": "Baldintza",
+                    "description": "Zain egoteko baldintza."
+                },
+                "timeout": {
+                    "name": "Denbora-muga",
+                    "description": "Zenbat itxaron etsi aurretik. Ezarri ezean, mugarik gabe itxarongo du."
+                }
+            }
+        },
+        "boo": {
+            "name": "Bu!",
+            "description": "Ekintza honi deitzeak Home Assistant izutzen du. Ekintza hau exekutatzeak beti huts egingo du."
+        },
+        "random_fail": {
+            "name": "Ausazko hutsegitea",
+            "description": "Ekintza hau exekutatzeak ausaz huts egingo du."
+        },
+        "blueprint_import": {
+            "name": "Mapa inportatu",
+            "description": "Mapa bat inportatu.",
+            "fields": {
+                "url": {
+                    "name": "URLa",
+                    "description": "Mapa inportatzeko URLa."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Atzeratu",
+            "description": "Automatizazio bat denbora batez itzaltzen du, eta denbora amaitzean berriro pizten du.",
+            "fields": {
+                "duration": {
+                    "name": "Iraupena",
+                    "description": "Zenbat denboraz egongo den automatizazioa itzalita. Denbora amaitzean bere kabuz pizten da berriro, tartean Home Assistant berrabiarazten bada ere."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Denbora batez piztu",
+            "description": "Automatizazio bat denbora batez pizten du, eta denbora amaitzean berriro itzaltzen du.",
+            "fields": {
+                "duration": {
+                    "name": "Iraupena",
+                    "description": "Zenbat denboraz egongo den automatizazioa piztuta. Denbora amaitzean bere kabuz itzaltzen da berriro, tartean Home Assistant berrabiarazten bada ere."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Distira ezarri",
+            "description": "Dagoeneko piztuta dauden argien distira ezartzen du, eta itzalita daudenak bakean uzten ditu.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Distira",
+                    "description": "Ezarri beharreko distira, ehunekotan. Taldeak argiz argi doitzen dira, beraz itzalita dagoen argi bat itzalita geratzen da."
+                },
+                "transition": {
+                    "name": "Trantsizioa",
+                    "description": "Zenbat iraun behar duen aldaketak, segundotan."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Distira handitu",
+            "description": "Dagoeneko piztuta dauden argiak indartzen ditu, eta itzalita daudenak bakean uzten ditu.",
+            "fields": {
+                "step_pct": {
+                    "name": "Urratsa",
+                    "description": "Zenbat argiago, ehunekotan. Argi bakoitza bere mailatik igotzen da, beraz talde batek bere forma mantentzen du berdindu beharrean."
+                },
+                "transition": {
+                    "name": "Trantsizioa",
+                    "description": "Zenbat iraun behar duen aldaketak, segundotan."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Distira txikitu",
+            "description": "Dagoeneko piztuta dauden argiak ahultzen ditu, iristen diren ahulenean geldituz itzali beharrean.",
+            "fields": {
+                "step_pct": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ilunago, ehunekotan. Argi bakoitza bere mailatik jaisten da, beraz talde batek bere forma mantentzen du berdindu beharrean."
+                },
+                "transition": {
+                    "name": "Trantsizioa",
+                    "description": "Zenbat iraun behar duen aldaketak, segundotan."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Kolorea ezarri",
+            "description": "Dagoeneko piztuta dauden argien kolorea ezartzen du, eta itzalita daudenak edo kolorerik egin ezin dutenak bakean uzten ditu.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Kolorea",
+                    "description": "Ezarri beharreko kolorea. Kolorerik egin ezin duten argiak saltatu egiten dira, zuri bihurtu beharrean."
+                },
+                "transition": {
+                    "name": "Trantsizioa",
+                    "description": "Zenbat iraun behar duen aldaketak, segundotan."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Kolore-tenperatura ezarri",
+            "description": "Dagoeneko piztuta dauden argien kolore-tenperatura ezartzen du, bakoitza benetan irits daitekeen tartearen barruan.",
+            "fields": {
+                "kelvin": {
+                    "name": "Kolore-tenperatura",
+                    "description": "Ezarri beharreko kolore-tenperatura. Argi bakoitza bere tartean mantentzen da, lanpara bateko zuri epela beste batek irits ezin dezakeen zenbakia baita."
+                },
+                "transition": {
+                    "name": "Trantsizioa",
+                    "description": "Zenbat iraun behar duen aldaketak, segundotan."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Efektua ezarri",
+            "description": "Dagoeneko piztuta dauden eta benetan efektu hori duten argietan efektu bat ezartzen du.",
+            "fields": {
+                "effect": {
+                    "name": "Efektua",
+                    "description": "Ezarri beharreko efektuaren izena. Efektuen izenak fabrikatzailearen arabera aldatzen dira, beraz hau ez duten argiak dauden bezala geratzen dira."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Gertaera ezabatu",
+            "description": "Egutegi bateko gertaerak ezabatzen ditu, denbora-tarte batean beren izenburu edo uid-aren arabera aurkituta. Ezabatu duena itzultzen du, uid-a barne.",
+            "fields": {
+                "summary": {
+                    "name": "Laburpena",
+                    "description": "Ezabatu beharreko gertaeren izenburua, egutegian dagoen bezala zehatz-mehatz."
+                },
+                "uid": {
+                    "name": "UIDa",
+                    "description": "Ezabatu beharreko gertaeraren identifikatzailea, baduzunean."
+                },
+                "start_date_time": {
+                    "name": "Hasiera-data eta ordua",
+                    "description": "Non hasi bilatzen. Lehenespenez, orain."
+                },
+                "end_date_time": {
+                    "name": "Amaiera-data eta ordua",
+                    "description": "Non utzi bilatzeari. Eman hau edo iraupen bat."
+                },
+                "duration": {
+                    "name": "Iraupena",
+                    "description": "Hasieratik zenbat begiratu. Eman hau edo amaiera-data eta ordua."
+                },
+                "whole_series": {
+                    "name": "Serie osoa",
+                    "description": "Errepikatzen den gertaera baterako, ezabatu serie osoa, aurkitutako agerraldia bakarrik ezabatu beharrean."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Gertaera eguneratu",
+            "description": "Egutegi bateko gertaerak aldatzen ditu, denbora-tarte batean beren izenburu edo uid-aren arabera aurkituta. Aldatu duena itzultzen du, uid-a barne.",
+            "fields": {
+                "summary": {
+                    "name": "Laburpena",
+                    "description": "Aldatu beharreko gertaeren izenburua, egutegian dagoen bezala zehatz-mehatz."
+                },
+                "uid": {
+                    "name": "UIDa",
+                    "description": "Aldatu beharreko gertaeraren identifikatzailea, baduzunean."
+                },
+                "start_date_time": {
+                    "name": "Hasiera-data eta ordua",
+                    "description": "Non hasi bilatzen. Lehenespenez, orain."
+                },
+                "end_date_time": {
+                    "name": "Amaiera-data eta ordua",
+                    "description": "Non utzi bilatzeari. Eman hau edo iraupen bat."
+                },
+                "duration": {
+                    "name": "Iraupena",
+                    "description": "Hasieratik zenbat begiratu. Eman hau edo amaiera-data eta ordua."
+                },
+                "new_summary": {
+                    "name": "Laburpen berria",
+                    "description": "Gertaerei emango zaien izenburua."
+                },
+                "description": {
+                    "name": "Deskribapena",
+                    "description": "Gertaerei emango zaien deskribapena."
+                },
+                "location": {
+                    "name": "Kokapena",
+                    "description": "Gertaerei emango zaien kokapena."
+                },
+                "new_start": {
+                    "name": "Hasiera berria",
+                    "description": "Gertaerak noiz hasiko diren horren ordez. Beren iraupena mantentzen dute, amaiera berri bat ere ematen ez bada."
+                },
+                "new_end": {
+                    "name": "Amaiera berria",
+                    "description": "Gertaerak noiz amaituko diren horren ordez."
+                },
+                "shift": {
+                    "name": "Desplazamendua",
+                    "description": "Mugitu gertaerak hainbeste, geroago, edo lehenago negatiboa denean. Hasiera edo amaiera berri baten ordez."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Tenperatura igo",
+            "description": "Termostato baten ezarpen-puntua urrats bat igotzen du; berotu eta hozten duenean, bi ezarpen-puntuak. Itzalita dagoen termostato bat itzalita geratzen da.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat aldatu. Ezarri ezean, termostatoaren beraren urratsa erabiltzen da, edo gradu erdia (bat Fahrenheitetan) ez badu."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Tenperatura jaitsi",
+            "description": "Termostato baten ezarpen-puntua urrats bat jaisten du; berotu eta hozten duenean, bi ezarpen-puntuak. Itzalita dagoen termostato bat itzalita geratzen da.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat aldatu. Ezarri ezean, termostatoaren beraren urratsa erabiltzen da, edo gradu erdia (bat Fahrenheitetan) ez badu."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Gune bat sortu",
+            "description": "Gune berri bat sortzen du bat-batean.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sortu beharreko gunearen izena."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Gunerako erabili beharreko ikonoa."
+                },
+                "aliases": {
+                    "name": "Ezizenak",
+                    "description": "Gunearen ezizenen zerrenda. Erabilgarria da gunea beste hizkuntza batean edo beste ezizen batekin erabili nahi baduzu."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Ezizen bat gehitu gune bati",
+            "description": "Ezizen bat gehitzen dio gune bati.",
+            "fields": {
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Ezizena gehituko zaion gunearen IDa."
+                },
+                "alias": {
+                    "name": "Ezizena",
+                    "description": "Guneari gehitu beharreko ezizena (edo ezizenen zerrenda)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Ezizen bat kendu gune batetik",
+            "description": "Ezizen bat kentzen dio gune bati.",
+            "fields": {
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Ezizena kenduko zaion gunearen IDa."
+                },
+                "alias": {
+                    "name": "Ezizena",
+                    "description": "Gunetik kendu beharreko ezizena (edo ezizenen zerrenda)."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Gune baten ezizenak ezarri",
+            "description": "Gune baten ezizenak ezartzen ditu. Lehendik dauden ezizenak gainidatzi eta kentzen ditu, berriekin guztiz ordeztuz.",
+            "fields": {
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Ezizenak ezarriko zaizkion gunearen IDa."
+                },
+                "aliases": {
+                    "name": "Ezizenak",
+                    "description": "Guneari ezarri beharreko ezizenak."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Gailu bat gehitu gune bati",
+            "description": "Gailu bat gehitzen dio gune bati. Kontuan izan: gailua dagoeneko gune batean badago, aurreko gunetik kenduko da.",
+            "fields": {
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Gailua gehituko zaion gunearen IDa."
+                },
+                "device_id": {
+                    "name": "Gailuaren IDa",
+                    "description": "Guneari gehitu beharreko gailuaren (edo gailuen) IDa."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Gailu bat kendu gune batetik",
+            "description": "Gailu bat kentzen du gune batetik. Gailu bat gune bakar batean bakarrik egon daitekeenez, dei honek ez du gunea zehaztu beharrik.",
+            "fields": {
+                "device_id": {
+                    "name": "Gailuaren IDa",
+                    "description": "Gunea kenduko zaion gailuaren IDa."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Entitate bat gehitu gune bati",
+            "description": "Entitate bat gehitzen dio gune bati. Kontuan izan: entitatea dagoeneko gune batean badago, aurreko gunetik kenduko da. Honek entitate hau ematen duen gailua dagoen gunea gainidazten du.",
+            "fields": {
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Entitatea gehituko zaion gunearen IDa."
+                },
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Guneari gehitu beharreko entitatearen (edo entitateen) IDa."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Entitate bat kendu gune batetik",
+            "description": "Entitate bat kentzen du gune batetik. Entitate bat gune bakar batean bakarrik egon daitekeenez, dei honek ez du gunea zehaztu beharrik. Kontuan izan: dei honen ondoren, entitatea hura ematen duen gailuaren gunean egongo da oraindik.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Gunea kenduko zaion entitatearen (edo entitateen) IDa."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Gune bat ezabatu",
+            "description": "Gune bat ezabatzen du bat-batean.",
+            "fields": {
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Ezabatu beharreko gunearen IDa."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Integrazio bat desgaitu",
+            "description": "Integrazio-sarrerak desgaitzen ditu, sarreraka edo integrazio baten sarrera guztiak.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integrazio-sarrera",
+                    "description": "Desgaitu beharreko integrazio-sarrera."
+                },
+                "domain": {
+                    "name": "Integrazioa",
+                    "description": "Desgaitu integrazio hauen sarrera guztiak, geroago gehitzen direnak barne."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Integrazio bat gaitu",
+            "description": "Integrazio-sarrerak gaitzen ditu, sarreraka edo integrazio baten sarrera guztiak.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integrazio-sarrera",
+                    "description": "Gaitu beharreko integrazio-sarrera."
+                },
+                "domain": {
+                    "name": "Integrazioa",
+                    "description": "Gaitu integrazio hauen sarrera guztiak, geroago gehitzen direnak barne."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Gailu bat desgaitu",
+            "description": "Gailu bat desgaitzen du bat-batean.",
+            "fields": {
+                "device_id": {
+                    "name": "Gailua",
+                    "description": "Desgaitu beharreko gailua(k)."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Gailu bat gaitu",
+            "description": "Gailu bat gaitzen du bat-batean.",
+            "fields": {
+                "device_id": {
+                    "name": "Gailuaren IDa",
+                    "description": "Gaitu beharreko gailuaren ID gordina. Home Assistant-en gailu-hautatzaileak ez ditu desgaitutako gailuak erakusten. ID bat baino gehiago YAML zerrenda gisa eman daitezke."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Erabiltzaile bat desgaitu",
+            "description": "Erabiltzaile-kontu bat desgaitzen du, saioa hastea eragotziz.",
+            "fields": {
+                "user_id": {
+                    "name": "Erabiltzailearen IDa",
+                    "description": "Desgaitu beharreko erabiltzailearen(en) IDa(k)."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Erabiltzaile bat gaitu",
+            "description": "Erabiltzaile-kontu bat gaitzen du, saioa hastea ahalbidetuz.",
+            "fields": {
+                "user_id": {
+                    "name": "Erabiltzailearen IDa",
+                    "description": "Gaitu beharreko erabiltzailearen(en) IDa(k)."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Entitate baten IDa eguneratu",
+            "description": "Entitate baten IDa eguneratzen du bat-batean.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Eguneratu beharreko entitatea(k)."
+                },
+                "new_entity_id": {
+                    "name": "Entitatearen ID berria",
+                    "description": "Entitatearen ID berria."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Entitate bat desgaitu",
+            "description": "Entitate bat (edo entitateak) desgaitzen ditu bat-batean.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Desgaitu beharreko entitatea(k)."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Entitate bat gaitu",
+            "description": "Entitate bat (edo entitateak) gaitzen ditu bat-batean.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Gaitu beharreko entitatea(k)."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Entitate bat laguntzaileei agerian utzi",
+            "description": "Entitate bat (edo entitateak) ahots-laguntzaileei agerian uzten ditu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Agerian utzi beharreko entitatea(k)."
+                },
+                "assistants": {
+                    "name": "Laguntzaileak",
+                    "description": "Hau aplikatu beharreko laguntzailea(k)."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Entitate bat ezkutatu",
+            "description": "Entitate bat (edo entitateak) ezkutatzen ditu bat-batean.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Ezkutatu beharreko entitatea(k)."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Entitate bati izena aldatu",
+            "description": "Entitate bati (edo entitateei) izena aldatzen die bat-batean.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Izena aldatu beharreko entitatea(k)."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Entitatearen (edo entitateen) izen berria."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Entitate baten ikonoa ezarri",
+            "description": "Entitate baten (edo entitateen) ikonoa ezartzen du bat-batean. Ezarri null integrazioak ematen dion ikonora itzultzeko.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Ikonoa ezarri beharreko entitatea(k)."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Ikono berria, edo null integrazioaren beraren ikonorako."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Ezizen bat gehitu entitate bati",
+            "description": "Ezizen bat edo gehiago gehitzen dizkio entitate bati (edo entitateei), ahots-laguntzaileek horiekin dei diezaioten.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Ezizena(k) gehituko zaizkion entitatea(k)."
+                },
+                "alias": {
+                    "name": "Ezizena",
+                    "description": "Gehitu beharreko ezizena(k)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Ezizen bat kendu entitate batetik",
+            "description": "Ezizen bat edo gehiago kentzen dizkio entitate bati (edo entitateei).",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Ezizena(k) kenduko zaizkion entitatea(k)."
+                },
+                "alias": {
+                    "name": "Ezizena",
+                    "description": "Kendu beharreko ezizena(k)."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Entitate baten ezizenak ezarri",
+            "description": "Entitate baten (edo entitateen) ezizenak ordezten ditu. Entitatearen izena bera ezizen gisa zenbatzen den ala ez, lehen zegoen bezala geratzen da.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Ezizenak ezarriko zaizkion entitatea(k)."
+                },
+                "aliases": {
+                    "name": "Ezizenak",
+                    "description": "Ezarri beharreko ezizenak."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Entitate bat laguntzaileei agerian uzteari utzi",
+            "description": "Entitate bat (edo entitateak) ahots-laguntzaileei agerian uzteari uzten dio.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Agerian uzteari utzi beharreko entitatea(k)."
+                },
+                "assistants": {
+                    "name": "Laguntzaileak",
+                    "description": "Hau aplikatu beharreko laguntzailea(k)."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Entitate bat erakutsi berriro",
+            "description": "Entitate bat (edo entitateak) berriro erakusten ditu bat-batean.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Berriro erakutsi beharreko entitatea(k)."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Solairu bat sortu",
+            "description": "Solairu berri bat sortzen du bat-batean.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sortu beharreko solairuaren izena."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Solairurako erabili beharreko ikonoa."
+                },
+                "level": {
+                    "name": "Maila",
+                    "description": "Solairuak zure etxean duen maila."
+                },
+                "aliases": {
+                    "name": "Ezizenak",
+                    "description": "Solairuaren ezizenen zerrenda. Erabilgarria da solairua beste hizkuntza batean edo beste ezizen batekin erabili nahi baduzu."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Ezizen bat gehitu solairu bati",
+            "description": "Ezizen bat gehitzen dio solairu bati.",
+            "fields": {
+                "floor_id": {
+                    "name": "Solairu IDa",
+                    "description": "Ezizena gehituko zaion solairuaren IDa."
+                },
+                "alias": {
+                    "name": "Ezizena",
+                    "description": "Solairuari gehitu beharreko ezizena (edo ezizenen zerrenda)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Ezizen bat kendu solairu batetik",
+            "description": "Ezizen bat kentzen dio solairu bati.",
+            "fields": {
+                "floor_id": {
+                    "name": "Solairu IDa",
+                    "description": "Ezizena kenduko zaion solairuaren IDa."
+                },
+                "alias": {
+                    "name": "Ezizena",
+                    "description": "Solairutik kendu beharreko ezizena (edo ezizenen zerrenda)."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Solairu baten ezizenak ezarri",
+            "description": "Solairu baten ezizenak ezartzen ditu. Lehendik dauden ezizenak gainidatzi eta kentzen ditu, berriekin guztiz ordeztuz.",
+            "fields": {
+                "floor_id": {
+                    "name": "Solairu IDa",
+                    "description": "Ezizenak ezarriko zaizkion solairuaren IDa."
+                },
+                "aliases": {
+                    "name": "Ezizenak",
+                    "description": "Solairuari ezarri beharreko ezizenak."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Gune bat gehitu solairu bati",
+            "description": "Gune bat gehitzen dio solairu bati. Kontuan izan: gunea dagoeneko solairu batean badago, aurreko solairutik kenduko da.",
+            "fields": {
+                "floor_id": {
+                    "name": "Solairu IDa",
+                    "description": "Gunea gehituko zaion solairuaren IDa."
+                },
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Solairuari gehitu beharreko gunearen (edo guneen) IDa."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Gune bat kendu solairu batetik",
+            "description": "Gune bat kentzen du solairu batetik. Gune bat solairu bakar batean bakarrik egon daitekeenez, dei honek ez du solairua zehaztu beharrik.",
+            "fields": {
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Solairua kenduko zaion gunearen IDa."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Solairu bat ezabatu",
+            "description": "Solairu bat ezabatzen du bat-batean.",
+            "fields": {
+                "floor_id": {
+                    "name": "Solairu IDa",
+                    "description": "Ezabatu beharreko solairuaren IDa."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Etiketa bat sortu",
+            "description": "Etiketa berri bat sortzen du bat-batean.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sortu beharreko etiketaren izena."
+                },
+                "description": {
+                    "name": "Deskribapena",
+                    "description": "Etiketaren deskribapena."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Etiketarako erabili beharreko ikonoa."
+                },
+                "color": {
+                    "name": "Kolorea",
+                    "description": "Etiketarako erabili beharreko kolorea. Zerrendako kolore-izen bat izan daiteke, edo kolore-kode hamaseitar bat (adibidez #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Etiketa bat eguneratu",
+            "description": "Lehendik dagoen etiketa bat eguneratzen du bat-batean. Ematen ez duzun guztiak lehendik duen balioa mantentzen du. Deskribapena, ikonoa eta kolorea garbitu daitezke null ezarriz.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketa IDa",
+                    "description": "Eguneratu beharreko etiketaren IDa."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Etiketaren izen berria."
+                },
+                "description": {
+                    "name": "Deskribapena",
+                    "description": "Etiketaren deskribapen berria."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Etiketarako erabili beharreko ikono berria."
+                },
+                "color": {
+                    "name": "Kolorea",
+                    "description": "Etiketarako erabili beharreko kolorea. Zerrendako kolore-izen bat izan daiteke, edo kolore-kode hamaseitar bat (adibidez #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Etiketa bat gehitu gune bati",
+            "description": "Etiketa bat gehitzen dio gune bati. Etiketa edo gune bat baino gehiago ematen badira, konbinazio guztiak gehituko dira.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketa IDa",
+                    "description": "Gune(ei) gehitu beharreko etiketaren(en) IDa(k)."
+                },
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Etiketa(k) gehituko zaizkion gunearen(en) IDa(k)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Etiketa bat gehitu gailu bati",
+            "description": "Etiketa bat gehitzen dio gailu bati. Etiketa edo gailu bat baino gehiago ematen badira, konbinazio guztiak gehituko dira.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketa IDa",
+                    "description": "Gailu(ei) gehitu beharreko etiketaren(en) IDa(k)."
+                },
+                "device_id": {
+                    "name": "Gailuaren IDa",
+                    "description": "Etiketa(k) gehituko zaizkion gailuaren(en) IDa(k)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Etiketa bat gehitu entitate bati",
+            "description": "Etiketa bat gehitzen dio entitate bati. Etiketa edo entitate bat baino gehiago ematen badira, konbinazio guztiak gehituko dira.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketa IDa",
+                    "description": "Entitate(ei) gehitu beharreko etiketaren(en) IDa(k)."
+                },
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Etiketa(k) gehituko zaizkion entitatearen(en) IDa(k)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Etiketa bat kendu gune batetik",
+            "description": "Etiketa bat kentzen dio gune bati. Etiketa edo gune bat baino gehiago ematen badira, konbinazio guztiak kenduko dira.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketa IDa",
+                    "description": "Gune(et)atik kendu beharreko etiketaren(en) IDa(k)."
+                },
+                "area_id": {
+                    "name": "Gune IDa",
+                    "description": "Etiketa(k) kenduko zaizkion gunearen(en) IDa(k)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Etiketa bat kendu gailu batetik",
+            "description": "Etiketa bat kentzen dio gailu bati. Etiketa edo gailu bat baino gehiago ematen badira, konbinazio guztiak kenduko dira.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketa IDa",
+                    "description": "Gailu(et)atik kendu beharreko etiketaren(en) IDa(k)."
+                },
+                "device_id": {
+                    "name": "Gailuaren IDa",
+                    "description": "Etiketa(k) kenduko zaizkion gailuaren(en) IDa(k)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Etiketa bat kendu entitate batetik",
+            "description": "Etiketa bat kentzen dio entitate bati. Etiketa edo entitate bat baino gehiago ematen badira, konbinazio guztiak kenduko dira.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketa IDa",
+                    "description": "Entitate(et)atik kendu beharreko etiketaren(en) IDa(k)."
+                },
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Etiketa(k) kenduko zaizkion entitatearen(en) IDa(k)."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Kategoria bat sortu",
+            "description": "Kategoria berri bat sortzen du bat-batean, automatizazio, script, eszena edo laguntzaileentzat. Kategoria berriaren IDa itzultzen du.",
+            "fields": {
+                "scope": {
+                    "name": "Esparrua",
+                    "description": "Kategoria non erabiltzen den."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Sortu beharreko kategoriaren izena."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Kategoriarako erabili beharreko ikonoa."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Kategoria bat eguneratu",
+            "description": "Lehendik dagoen kategoria bat eguneratzen du bat-batean. Ematen ez duzun guztiak lehendik duen balioa mantentzen du. Ikonoa garbitu daiteke null ezarriz.",
+            "fields": {
+                "scope": {
+                    "name": "Esparrua",
+                    "description": "Kategoria non erabiltzen den."
+                },
+                "category_id": {
+                    "name": "Kategoria",
+                    "description": "Eguneratu beharreko kategoriaren IDa edo izena."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Kategoriaren izen berria."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Kategoriaren ikono berria."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Kategoria bat ezabatu",
+            "description": "Kategoria bat ezabatzen du. Bertan zegoen guztia kategoriarik gabe geratzen da.",
+            "fields": {
+                "scope": {
+                    "name": "Esparrua",
+                    "description": "Kategoria non erabiltzen den."
+                },
+                "category_id": {
+                    "name": "Kategoria",
+                    "description": "Ezabatu beharreko kategoriaren IDa edo izena."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Kategoria bat gehitu entitate bati",
+            "description": "Automatizazio, script, eszena edo laguntzaile bat kategoria batean jartzen du. Lehen zegoen kategoria ordezten du, bakoitza bakar batean bakarrik egon baitaiteke.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategoria",
+                    "description": "Kategoriaren IDa edo izena."
+                },
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Kategorian jarri beharreko automatizazioa(k), scripta(k), eszena(k) edo laguntzailea(k)."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Kategoria bat kendu entitate batetik",
+            "description": "Automatizazio, script, eszena edo laguntzaile bat kategoria batetik ateratzen du. Beste kategoria batean dagoena bakean uzten da.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategoria",
+                    "description": "Kategoriaren IDa edo izena."
+                },
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Kategoriatik atera beharreko automatizazioa(k), scripta(k), eszena(k) edo laguntzailea(k)."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Etiketa bat ezabatu",
+            "description": "Etiketa bat ezabatzen du bat-batean.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketa IDa",
+                    "description": "Ezabatu beharreko etiketaren IDa."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Une honetan aurkitutako gailu guztiak baztertu",
+            "description": "Baztertu integrazioen panelean agertzen diren une honetan aurkitutako gailu guztiak. Honek ez ditu hemendik aurrera aurkitzen diren gailuak baztertuko.",
+            "fields": {
+                "domain": {
+                    "name": "Integrazioaren domeinua",
+                    "description": "Aurkitutako gailu guztiak baztertu beharreko integrazio-domeinua. Ematen ez bada, domeinu guztiak baztertuko dira."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Eguneraketen galdeketa desgaitu",
+            "description": "Integrazio-sarrera baten eguneraketen galdeketa desgaitzen du.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integrazio-sarrera",
+                    "description": "Galdeketa desgaitu beharreko integrazio-sarrera."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Eguneraketen galdeketa gaitu",
+            "description": "Integrazio-sarrera baten eguneraketen galdeketa gaitzen du.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integrazio-sarrera",
+                    "description": "Galdeketa gaitu beharreko integrazio-sarrera."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Entitate umezurtz guztiak ezabatu",
+            "description": "Jada haiek eskatzen edo ematen dituen integraziorik ez duten entitate umezurtz guztiak ezabatzen ditu. Kontuan izan: integrazioa kendu berri bada, baliteke Home Assistant berrabiarazi behar izatea umezurtzak direla konturatzeko.\n**KONTUZ** Baliteke entitateak umezurtz gisa markatu izana integrazio bat lineaz kanpo dagoelako edo Home Assistant abiarazi zenetik funtzionatzen ez duelako. Ekintza honi deitzeak entitate horiek ere ezabatuko ditu."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Datu-baseko entitate umezurtz guztiak zerrendatu",
+            "description": "Inongo integraziok eskatzen ez dituen datu-baseko entitate umezurtz guztiak zerrendatzen ditu."
+        },
+        "homeassistant_restart": {
+            "name": "Berrabiarazi",
+            "description": "Home Assistant berrabiarazteko ekintza.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Modu segurua",
+                    "description": "Berrabiaraztea modu seguruan egin behar den. Honek integrazio pertsonalizatu eta frontend modulu guztiak desgaituko ditu."
+                },
+                "force": {
+                    "name": "Berrabiaraztea behartu",
+                    "description": "Behartu berrabiaraztea. KONTUZ! Honek ez du Home Assistant txukun itzaliko: konfigurazio-egiaztapenak saltatuko ditu eta martxan dauden datu-baseko migrazioei ez die kasurik egingo. Erabili zertan ari zaren badakizu bakarrik."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Estatistikak inportatu",
+            "description": "Epe luzeko estatistikak inportatu.",
+            "fields": {
+                "statistic_id": {
+                    "name": "Estatistiken IDa",
+                    "description": "Inportatu beharreko estatistiken IDa (entitatearen IDa)."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Estatistiken izena."
+                },
+                "source": {
+                    "name": "Iturburua",
+                    "description": "Estatistiken datuen iturburua."
+                },
+                "unit_of_measurement": {
+                    "name": "Neurri-unitatea",
+                    "description": "Estatistiken neurri-unitatea."
+                },
+                "has_mean": {
+                    "name": "Batez bestekoa du",
+                    "description": "Estatistikek batez besteko balio bat duten."
+                },
+                "has_sum": {
+                    "name": "Batura du",
+                    "description": "Estatistikek batura-balio bat duten."
+                },
+                "stats": {
+                    "name": "Estatistikak",
+                    "description": "Inportatu beharreko estatistikak dituzten mapaketa/hiztegien zerrenda. Hiztegiek \"start\" gako bat izan behar dute data-ordu kate batekin; beste aukera baliodunak \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" eta \"state\" dira. Horiek guztiak aukerakoak dira eta osoko zenbaki edo zenbaki hamartar bat dira, \"last_reset\" izan ezik, data-ordu kate bat baita."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Ausazko aukera hautatu",
+            "description": "Hautaketa-entitate baterako ausazko aukera bat hautatu.",
+            "fields": {
+                "options": {
+                    "name": "Aukerak",
+                    "description": "Hautatu daitezkeen aukerak mugatzen ditu. Ematen ez bada, aukera guztiak hartuko dira kontuan."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Sarrerako hautaketa bat sortu",
+            "description": "Sarrerako hautaketa (zabalgarria) laguntzaile berri bat sortzen du bat-batean. Sarrerako hautaketa berriaren entitate IDa itzultzen du.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sarrerako hautaketa berriaren izena."
+                },
+                "input_select_id": {
+                    "name": "Sarrerako hautaketaren entitate IDa",
+                    "description": "Sarrerako hautaketa berriaren entitate IDa. input_select. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "options": {
+                    "name": "Aukerak",
+                    "description": "Aukeratzeko aukerak. Aukera bakoitza behin bakarrik egon daiteke."
+                },
+                "initial": {
+                    "name": "Hasierako aukera",
+                    "description": "Hasten den aukera, aukeretako bat izan behar duena. Ezarri ezean, Home Assistant berrabiarazi aurretik zuen aukera mantentzen du."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Sarrerako hautaketa berriaren ikonoa."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Sarrerako hautaketa bat ezabatu",
+            "description": "Interfazean edo sarrerako hautaketa bat sortzeko ekintzarekin egindako sarrerako hautaketa laguntzaileak ezabatzen ditu. YAMLen konfiguratutako sarrerako hautaketak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko sarrerako hautaketa(k)."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Ausazko aukera hautatu",
+            "description": "input_select entitate baterako ausazko aukera bat hautatu.",
+            "fields": {
+                "options": {
+                    "name": "Aukerak",
+                    "description": "Hautatu daitezkeen aukerak mugatzen ditu. Ematen ez bada, aukera guztiak hartuko dira kontuan."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Aukeren ordena alderantzikatu",
+            "description": "`input_select` entitate baten aukera hautagarrien ordena alderantzikatzen du, atzetik aurrera. Hau ez da iraunkorra, eta birkargatzean edo Home Assistant berrabiaraztean desegingo da."
+        },
+        "input_select_shuffle": {
+            "name": "Aukerak nahastu",
+            "description": "`input_select` entitate baten aukera hautagarrien zerrenda nahasten du. Hau ez da iraunkorra, eta birkargatzean edo Home Assistant berrabiaraztean desegingo da."
+        },
+        "input_select_sort": {
+            "name": "Aukerak ordenatu",
+            "description": "`input_select` entitate baten aukera hautagarrien zerrenda ordenatzen du. Hau ez da iraunkorra, eta birkargatzean edo Home Assistant berrabiaraztean desegingo da."
+        },
+        "number_decrement": {
+            "name": "Balioa txikitu",
+            "description": "Zenbaki-entitate baten balioa kopuru jakin batean txikitu.",
+            "fields": {
+                "amount": {
+                    "name": "Kopurua",
+                    "description": "Zenbakia zenbat txikitu. Ematen ez bada, zenbaki-entitatearen urratsa erabiliko da."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Balioa handitu",
+            "description": "Zenbaki-entitate baten balioa kopuru jakin batean handitu.",
+            "fields": {
+                "amount": {
+                    "name": "Kopurua",
+                    "description": "Zenbakia zenbat handitu. Ematen ez bada, zenbaki-entitatearen urratsa erabiliko da."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Balio maximoa ezarri",
+            "description": "Zenbaki-entitate bat bere balio maximoan ezarri."
+        },
+        "number_min": {
+            "name": "Balio minimoa ezarri",
+            "description": "Zenbaki-entitate bat bere balio minimoan ezarri."
+        },
+        "input_number_decrement": {
+            "name": "Balioa txikitu",
+            "description": "Sarrerako zenbaki-entitate baten balioa kopuru jakin batean txikitu.",
+            "fields": {
+                "amount": {
+                    "name": "Kopurua",
+                    "description": "Sarrerako zenbakia zenbat txikitu. Ematen ez bada, zenbaki-entitatearen urratsa erabiliko da."
+                },
+                "cycle": {
+                    "name": "Zikloa",
+                    "description": "Jarraitu tartearen beste muturretik mutur honetan gelditu beharrean, hautaketa batean hurrengo aukera hautatzeak zikloan jarraitzen duen bezala."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Balioa handitu",
+            "description": "Sarrerako zenbaki-entitate baten balioa kopuru jakin batean handitu.",
+            "fields": {
+                "amount": {
+                    "name": "Kopurua",
+                    "description": "Sarrerako zenbakia zenbat handitu. Ematen ez bada, zenbaki-entitatearen urratsa erabiliko da."
+                },
+                "cycle": {
+                    "name": "Zikloa",
+                    "description": "Jarraitu tartearen beste muturretik mutur honetan gelditu beharrean, hautaketa batean hurrengo aukera hautatzeak zikloan jarraitzen duen bezala."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Balio maximoa ezarri",
+            "description": "Sarrerako zenbaki-entitate bat bere balio maximoan ezarri."
+        },
+        "input_number_min": {
+            "name": "Balio minimoa ezarri",
+            "description": "Sarrerako zenbaki-entitate bat bere balio minimoan ezarri."
+        },
+        "input_number_set_range": {
+            "name": "Tartea ezarri",
+            "description": "Interfazean egindako sarrerako zenbaki baten minimoa, maximoa edo urratsa aldatzen ditu, editatzea bezala. Tarte berritik kanpo dagoen balio bat haren barrura eramaten da.",
+            "fields": {
+                "min": {
+                    "name": "Minimoa",
+                    "description": "Balio minimo berria."
+                },
+                "max": {
+                    "name": "Maximoa",
+                    "description": "Balio maximo berria."
+                },
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Urratsaren tamaina berria."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Kontagailu bat sortu",
+            "description": "Kontagailu laguntzaile berri bat sortzen du bat-batean. Kontagailu berriaren entitate IDa itzultzen du.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Kontagailu berriaren izena."
+                },
+                "counter_id": {
+                    "name": "Kontagailuaren entitate IDa",
+                    "description": "Kontagailu berriaren entitate IDa. counter. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "initial": {
+                    "name": "Hasierako balioa",
+                    "description": "Kontagailuak hasieran duen balioa, eta berrezartzean itzultzen den balioa."
+                },
+                "minimum": {
+                    "name": "Minimoa",
+                    "description": "Kontagailua jaitsi daitekeen baliorik txikiena. Ezarri gabe utzi mugarik ez izateko."
+                },
+                "maximum": {
+                    "name": "Maximoa",
+                    "description": "Kontagailua igo daitekeen baliorik handiena. Ezarri gabe utzi mugarik ez izateko."
+                },
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Kontagailua aldi bakoitzean zenbat igotzen edo jaisten den."
+                },
+                "restore": {
+                    "name": "Leheneratu",
+                    "description": "Leheneratu kontagailuaren balioa Home Assistant abiaraztean, hasierako baliotik berriro hasi beharrean."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Kontagailu berriaren ikonoa."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Kontagailu bat ezabatu",
+            "description": "Interfazean edo kontagailu bat sortzeko ekintzarekin egindako kontagailu laguntzaileak ezabatzen ditu. YAMLen konfiguratutako kontagailuak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko kontagailua(k)."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Sarrerako boolear bat sortu",
+            "description": "Sarrerako boolear (txandakatzaile) laguntzaile berri bat sortzen du bat-batean. Sarrerako boolear berriaren entitate IDa itzultzen du.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sarrerako boolear berriaren izena."
+                },
+                "input_boolean_id": {
+                    "name": "Sarrerako boolearraren entitate IDa",
+                    "description": "Sarrerako boolear berriaren entitate IDa. input_boolean. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "initial": {
+                    "name": "Hasierako balioa",
+                    "description": "Hasierako balioa. Ezarri ezean, Home Assistant berrabiarazi aurretik zuen balioa mantentzen du."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Sarrerako boolear berriaren ikonoa."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Sarrerako boolear bat ezabatu",
+            "description": "Interfazean edo sarrerako boolear bat sortzeko ekintzarekin egindako sarrerako boolear laguntzaileak ezabatzen ditu. YAMLen konfiguratutako sarrerako boolearrak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko sarrerako boolearra(k)."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Sarrerako testu bat sortu",
+            "description": "Sarrerako testu laguntzaile berri bat sortzen du bat-batean. Sarrerako testu berriaren entitate IDa itzultzen du.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sarrerako testu berriaren izena."
+                },
+                "input_text_id": {
+                    "name": "Sarrerako testuaren entitate IDa",
+                    "description": "Sarrerako testu berriaren entitate IDa. input_text. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "initial": {
+                    "name": "Hasierako balioa",
+                    "description": "Hasierako testua. Ezarri ezean, Home Assistant berrabiarazi aurretik zuen testua mantentzen du."
+                },
+                "min": {
+                    "name": "Luzera minimoa",
+                    "description": "Testuak izan dezakeen luzerarik txikiena."
+                },
+                "max": {
+                    "name": "Luzera maximoa",
+                    "description": "Testuak izan dezakeen luzerarik handiena."
+                },
+                "pattern": {
+                    "name": "Eredua",
+                    "description": "Testuak bete behar duen adierazpen erregular bat."
+                },
+                "mode": {
+                    "name": "Modua",
+                    "description": "Erakutsi testua dagoen bezala, edo ezkutatu pasahitz bat bezala."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Sarrerako testu berriaren ikonoa."
+                },
+                "unit_of_measurement": {
+                    "name": "Neurri-unitatea",
+                    "description": "Testuaren ondoan erakutsi beharreko unitatea."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Sarrerako testu bat ezabatu",
+            "description": "Interfazean edo sarrerako testu bat sortzeko ekintzarekin egindako sarrerako testu laguntzaileak ezabatzen ditu. YAMLen konfiguratutako sarrerako testuak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko sarrerako testua(k)."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Sarrerako botoi bat sortu",
+            "description": "Sarrerako botoi laguntzaile berri bat sortzen du bat-batean. Sarrerako botoi berriaren entitate IDa itzultzen du.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sarrerako botoi berriaren izena."
+                },
+                "input_button_id": {
+                    "name": "Sarrerako botoiaren entitate IDa",
+                    "description": "Sarrerako botoi berriaren entitate IDa. input_button. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Sarrerako botoi berriaren ikonoa."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Sarrerako botoi bat ezabatu",
+            "description": "Interfazean edo sarrerako botoi bat sortzeko ekintzarekin egindako sarrerako botoi laguntzaileak ezabatzen ditu. YAMLen konfiguratutako sarrerako botoiak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko sarrerako botoia(k)."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Sarrerako data/ordu bat sortu",
+            "description": "Sarrerako data/ordu laguntzaile berri bat sortzen du bat-batean, data bat, ordu bat edo biak gordetzen dituena. Sarrerako data/ordu berriaren entitate IDa itzultzen du.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sarrerako data/ordu berriaren izena."
+                },
+                "input_datetime_id": {
+                    "name": "Sarrerako data/orduaren entitate IDa",
+                    "description": "Sarrerako data/ordu berriaren entitate IDa. input_datetime. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "has_date": {
+                    "name": "Data du",
+                    "description": "Data bat gordetzen duen. Data eta orduetako bat gutxienez aktibatuta egon behar da."
+                },
+                "has_time": {
+                    "name": "Ordua du",
+                    "description": "Ordu bat gordetzen duen. Data eta orduetako bat gutxienez aktibatuta egon behar da."
+                },
+                "initial": {
+                    "name": "Hasierako balioa",
+                    "description": "Hasierako data eta/edo ordua, adibidez 2026-12-31, 08:30:00 edo 2026-12-31 08:30:00. Ezarri ezean, Home Assistant berrabiarazi aurretik zuen balioa mantentzen du."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Sarrerako data/ordu berriaren ikonoa."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Sarrerako data/ordu bat ezabatu",
+            "description": "Interfazean edo sarrerako data/ordu bat sortzeko ekintzarekin egindako sarrerako data/ordu laguntzaileak ezabatzen ditu. YAMLen konfiguratutako sarrerako data/orduak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko sarrerako data/ordua(k)."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "Sarrerako zenbaki bat sortu",
+            "description": "Sarrerako zenbaki laguntzaile berri bat sortu bat-batean. Sarrerako zenbaki berriaren entitate IDa itzultzen du.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Sarrerako zenbaki laguntzaile berriaren izena."
+                },
+                "input_number_id": {
+                    "name": "Sarrerako zenbakiaren entitate IDa",
+                    "description": "Sarrerako zenbaki laguntzaile berriaren entitate IDa. input_number. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "min": {
+                    "name": "Minimoa",
+                    "description": "Sarrerako zenbakiaren balio minimoa."
+                },
+                "max": {
+                    "name": "Maximoa",
+                    "description": "Sarrerako zenbakiaren balio maximoa."
+                },
+                "initial": {
+                    "name": "Hasierako balioa",
+                    "description": "Sarrerako zenbakiaren hasierako balioa Home Assistant abiaraztean."
+                },
+                "step": {
+                    "name": "Urratsaren tamaina",
+                    "description": "Sarrerako zenbakiaren urratsaren tamaina."
+                },
+                "mode": {
+                    "name": "Bistaratze modua",
+                    "description": "Sarrerako zenbakiaren bistaratze modua: graduatzailea edo sarrera-koadroa."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Sarrerako zenbaki laguntzailerako erabili beharreko ikonoa."
+                },
+                "unit_of_measurement": {
+                    "name": "Neurri-unitatea",
+                    "description": "Sarrerako zenbakiaren neurri-unitatea."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Sarrerako zenbaki bat ezabatu",
+            "description": "Interfazean edo sarrerako zenbaki bat sortzeko ekintzarekin egindako sarrerako zenbaki laguntzaileak ezabatzen ditu. YAMLen konfiguratutako sarrerako zenbakiak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko sarrerako zenbakia(k)."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Gailu-jarraitzaile bat gehitu",
+            "description": "Gailu-jarraitzaile bat gehitu pertsona bati.",
+            "fields": {
+                "entity_id": {
+                    "name": "Pertsona",
+                    "description": "Gailu-jarraitzailea gehituko zaion pertsonaren entitate IDa."
+                },
+                "device_tracker": {
+                    "name": "Gailu-jarraitzailea",
+                    "description": "Pertsonari gehitu beharreko gailu-jarraitzailearen entitate IDa."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Gailu-jarraitzaile bat kendu",
+            "description": "Gailu-jarraitzaile bat kendu pertsona bati.",
+            "fields": {
+                "entity_id": {
+                    "name": "Pertsona",
+                    "description": "Gailu-jarraitzailea kenduko zaion pertsonaren entitate IDa."
+                },
+                "device_tracker": {
+                    "name": "Gailu-jarraitzailea",
+                    "description": "Pertsonari kendu beharreko gailu-jarraitzailearen entitate IDa."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Arazoa sortu",
+            "description": "Eskuz sortu eta jakinarazi arazo bat Home Assistant-en konponketetan.",
+            "fields": {
+                "title": {
+                    "name": "Izenburua",
+                    "description": "Arazoaren izenburua."
+                },
+                "description": {
+                    "name": "Deskribapena",
+                    "description": "Arazoaren deskribapena. Markdown onartzen du."
+                },
+                "issue_id": {
+                    "name": "Arazoaren IDa",
+                    "description": "Arazoak identifikatzaile bat izan dezake, eta horri esker gero ID horrekin bertan behera utz dezakezu behar izanez gero. Arazo bikoiztuak sortzea ere eragozten du. Ematen ez bada, ausazko ID bat sortuko da."
+                },
+                "domain": {
+                    "name": "Domeinua",
+                    "description": "Eremu hau arazoaren domeinua ezartzeko erabil daiteke. Adibidez, lehenespenez (ezartzen ez bada) \"spook\" erabiliko du. Horrek Spook arazoaren logoan/irudian agertzea eragiten du. \"homeassistant\" ezartzen baduzu, Home Assistant-en logoa erabiliko da; edo erabili \"hue\", \"zwave_js\", \"mqtt\" eta abar integrazio horren logoa erabiltzeko."
+                },
+                "severity": {
+                    "name": "Larritasuna",
+                    "description": "Arazoaren larritasuna. Arazoaren lehentasuna zehazteko erabiliko da. Ezartzen ez bada, \"warning\" erabiliko da."
+                },
+                "persistent": {
+                    "name": "Iraunkorra",
+                    "description": "Arazoak iraunkorra izan behar duen, hau da, Home Assistant-en berrabiaraztei eutsiko dien. Lehenespenez, arazoak ez dira iraunkorrak."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Arazo guztiak baztertu",
+            "description": "Baztertu Home Assistant-en Konponketetan une honetan dauden arazo guztiak, edo integrazio jakin batzuek jakinarazitakoak bakarrik.",
+            "fields": {
+                "domain": {
+                    "name": "Domeinua",
+                    "description": "Baztertu integrazio hauek jakinarazitako arazoak bakarrik."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Arazoak zerrendatu",
+            "description": "Home Assistant-en Konponketetan une honetan dauden arazoak zerrendatzen ditu, beren izenburuekin, automatizazio batek horien arabera jardun dezan edo aginte-panel batek erakuts ditzan.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Baztertutakoak barne",
+                    "description": "Zerrendatu baztertu diren arazoak ere."
+                },
+                "domain": {
+                    "name": "Domeinua",
+                    "description": "Zerrendatu integrazio hauek jakinarazitako arazoak bakarrik."
+                },
+                "severity": {
+                    "name": "Larritasuna",
+                    "description": "Zerrendatu larritasun hauetako arazoak bakarrik."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Arazoa kendu",
+            "description": "Eskuz sortutako Home Assistant-en konponketa-arazo bat kentzen du. Ekintza honek `repairs_create` ekintzarekin sortutako arazoak bakarrik ken ditzake.",
+            "fields": {
+                "issue_id": {
+                    "name": "Arazoaren IDa",
+                    "description": "Kendu beharreko arazoaren IDa."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Arazo guztiak berreskuratu",
+            "description": "Berreskuratu Home Assistant-en Konponketetan une honetan dauden baztertutako arazo guztiak, edo integrazio jakin batzuek jakinarazitakoak bakarrik.",
+            "fields": {
+                "domain": {
+                    "name": "Domeinua",
+                    "description": "Berreskuratu integrazio hauek jakinarazitako arazoak bakarrik."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Bistaratze-zehaztasuna ezarri",
+            "description": "Sentsore bat edo gehiagorentzat erakusten den hamartar kopurua ezartzen du.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatea",
+                    "description": "Eguneratu beharreko sentsore-entitatea(k)."
+                },
+                "display_precision": {
+                    "name": "Bistaratze-zehaztasuna",
+                    "description": "Sentsorearentzat erakutsi beharreko hamartar kopurua."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Tenporizadore bat sortu",
+            "description": "Tenporizadore laguntzaile berri bat sortzen du bat-batean. Tenporizadore berriaren entitate IDa itzultzen du.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Tenporizadore berriaren izena."
+                },
+                "timer_id": {
+                    "name": "Tenporizadorearen entitate IDa",
+                    "description": "Tenporizadore berriaren entitate IDa. timer. aurrizkia automatikoki gehitzen da. Ematen ez bada, entitate IDa izenaren arabera sortuko da."
+                },
+                "duration": {
+                    "name": "Iraupena",
+                    "description": "Tenporizadoreak zenbat irauten duen abiarazten denean."
+                },
+                "restore": {
+                    "name": "Leheneratu",
+                    "description": "Leheneratu tenporizadorearen egoera Home Assistant abiaraztean, martxan dagoen tenporizadore batek berrabiarazte batean zehar martxan jarrai dezan."
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Tenporizadore berriaren ikonoa."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Tenporizadore bat ezabatu",
+            "description": "Interfazean edo tenporizadore bat sortzeko ekintzarekin egindako tenporizadore laguntzaileak ezabatzen ditu. YAMLen konfiguratutako tenporizadoreak ezin ditu Spookek ezabatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Ezabatu beharreko tenporizadorea(k)."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Iraupena ezarri",
+            "description": "Lehendik dagoen tenporizadore baten iraupena ezarri.",
+            "fields": {
+                "duration": {
+                    "name": "Iraupena",
+                    "description": "Tenporizadorearen iraupen berria, timedelta kate gisa."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Toki bat sortu",
+            "description": "Toki berri bat sortu Home Assistant-en bat-batean.",
+            "fields": {
+                "name": {
+                    "name": "Izena",
+                    "description": "Tokiaren izena"
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Tokirako erabili beharreko ikonoa"
+                },
+                "latitude": {
+                    "name": "Latitudea",
+                    "description": "Tokiaren latitudea. Txantiloi bat izan daiteke."
+                },
+                "longitude": {
+                    "name": "Longitudea",
+                    "description": "Tokiaren longitudea. Txantiloi bat izan daiteke."
+                },
+                "radius": {
+                    "name": "Erradioa",
+                    "description": "Tokiaren erradioa"
+                },
+                "passive": {
+                    "name": "Pasiboa",
+                    "description": "Toki pasibo bat automatizazioetarako bakarrik dago: ez da mapan erakusten, eta ez du aldatzen pertsonak eta gailu-jarraitzaileak non dauden."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Toki bat eguneratu",
+            "description": "Toki baten propietateak eguneratu bat-batean.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Eguneratu beharreko entitatearen (edo entitateen) IDa."
+                },
+                "name": {
+                    "name": "Izena",
+                    "description": "Tokiaren izena"
+                },
+                "icon": {
+                    "name": "Ikonoa",
+                    "description": "Tokirako erabili beharreko ikonoa"
+                },
+                "latitude": {
+                    "name": "Latitudea",
+                    "description": "Tokiaren latitudea. Txantiloi bat izan daiteke."
+                },
+                "longitude": {
+                    "name": "Longitudea",
+                    "description": "Tokiaren longitudea. Txantiloi bat izan daiteke."
+                },
+                "radius": {
+                    "name": "Erradioa",
+                    "description": "Tokiaren erradioa"
+                },
+                "passive": {
+                    "name": "Pasiboa",
+                    "description": "Toki pasibo bat automatizazioetarako bakarrik dago: ez da mapan erakusten, eta ez du aldatzen pertsonak eta gailu-jarraitzaileak non dauden."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Toki bat ezabatu",
+            "description": "Toki bat ezabatu. Interfazearen bidez sortu eta kudeatutako tokiekin bakarrik funtzionatzen du. YAMLen sortu eta kudeatutako tokiak ezin ditu Spookek kudeatu.",
+            "fields": {
+                "entity_id": {
+                    "name": "Entitatearen IDa",
+                    "description": "Kendu beharreko entitatearen (edo entitateen) IDa."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Tenperatura igo",
+            "description": "Ur-berogailu baten ezarpen-puntua urrats bat igotzen du, bere mugen barruan.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat aldatu. Ezarri ezean, ur-berogailuaren beraren urratsa erabiltzen da, edo gradu erdia (bat Fahrenheitetan) ez badu."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Tenperatura jaitsi",
+            "description": "Ur-berogailu baten ezarpen-puntua urrats bat jaisten du, bere mugen barruan.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat aldatu. Ezarri ezean, ur-berogailuaren beraren urratsa erabiltzen da, edo gradu erdia (bat Fahrenheitetan) ez badu."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Hezetasuna igo",
+            "description": "Hezegailu baten helburuko hezetasuna urrats bat igotzen du, bere mugen barruan.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ehuneko aldatu. Ezarri ezean, hezegailuaren beraren urratsa erabiltzen da, edo ehuneko bat ez badu."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Hezetasuna jaitsi",
+            "description": "Hezegailu baten helburuko hezetasuna urrats bat jaisten du, bere mugen barruan.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ehuneko aldatu. Ezarri ezean, hezegailuaren beraren urratsa erabiltzen da, edo ehuneko bat ez badu."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Posizioa handitu",
+            "description": "Estalki bat urrats bat gehiago irekitzen du, guztiz irekita dagoenean geldituz.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ehuneko mugitu. Ehuneko hamar, ezarri ezean."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Posizioa txikitu",
+            "description": "Estalki bat urrats bat gehiago ixten du, guztiz itxita dagoenean geldituz.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ehuneko mugitu. Ehuneko hamar, ezarri ezean."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Posizioa handitu",
+            "description": "Balbula bat urrats bat gehiago irekitzen du, guztiz irekita dagoenean geldituz.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ehuneko mugitu. Ehuneko hamar, ezarri ezean."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Posizioa txikitu",
+            "description": "Balbula bat urrats bat gehiago ixten du, guztiz itxita dagoenean geldituz.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ehuneko mugitu. Ehuneko hamar, ezarri ezean."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Bolumena igo",
+            "description": "Multimedia erreproduzitzaile baten bolumena ematen duzun urratsean igotzen du, bolumen osoan geldituz.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ehuneko aldatu bolumena."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Bolumena jaitsi",
+            "description": "Multimedia erreproduzitzaile baten bolumena ematen duzun urratsean jaisten du, isiltasunean geldituz.",
+            "fields": {
+                "step": {
+                    "name": "Urratsa",
+                    "description": "Zenbat ehuneko aldatu bolumena."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Elementua mugitu",
+            "description": "Egitekoen zerrenda bateko elementu bat goira, behera edo beste elementu baten ondoren mugitzen du.",
+            "fields": {
+                "item": {
+                    "name": "Elementua",
+                    "description": "Mugitu beharreko elementuaren izenburua edo uid-a."
+                },
+                "after": {
+                    "name": "Ondoren",
+                    "description": "Zein elementuren ondoren jarri, haren izenburua edo uid-a. Eman hau edo posizio bat."
+                },
+                "position": {
+                    "name": "Posizioa",
+                    "description": "Mugitu zerrendaren goira edo behera. Eman hau edo zein elementuren ondoren jarri."
                 }
             }
         }

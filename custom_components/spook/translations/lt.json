@@ -1,27 +1,365 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Automatizacija išjungta",
+            "description": "Suveikia, kai kas nors (žmogus ar kas kita) išjungia automatizaciją. Palikite tikslą tuščią, kad būtų stebimos visos automatizacijos."
+        },
+        "debounce": {
+            "name": "Kai nurims",
+            "description": "Suveikia, kai sukėliklis kurį laiką nebesuveikia, todėl visa jų virtinė atkeliauja kaip vienas. Judesio jutiklis apie judesį praneša ne kartą, o dvidešimt kartų.",
+            "fields": {
+                "triggers": {
+                    "name": "Sukėlikliai",
+                    "description": "Sukėlikliai, kurių reikia palaukti. Bet kuriam iš jų suveikus prasideda virtinė, o bet kuriam suveikus vėl ji tęsiasi, todėl keli sukėlikliai sujungiami kartu, o ne po vieną."
+                },
+                "for": {
+                    "name": "Trukmė",
+                    "description": "Kiek laiko turi būti ramu, kad tai suveiktų. Kiekvienas suveikimas laukimą pradeda iš naujo, todėl apie tai, kas niekada nenustoja suveikti, niekada ir nepranešama."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Įvyko visa tai",
+            "description": "Suveikia, kai kiekvienas iš kelių sukėliklių suveikė per tą patį laiko langą, bet kokia tvarka. Paties Home Assistant sukėlikliai yra sąrašas, kuriame pakanka bet kurio vieno; šis veikia atvirkščiai.",
+            "fields": {
+                "triggers": {
+                    "name": "Sukėlikliai",
+                    "description": "Sukėlikliai, kurie visi turi būti suveikę. Tvarka nesvarbi, o vėl suveikęs sukėliklis pakeičia ankstesnį savo kartą, o ne skaičiuojamas dukart."
+                },
+                "within": {
+                    "name": "Per",
+                    "description": "Kaip arti vienas kito jie turi būti. Langas slenka, todėl sukėliklis, suveikęs anksčiau nei prieš tiek laiko, pamirštamas, o kiti skaičiuojami toliau."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Subjektas grįžo",
+            "description": "Suveikia, kai subjektas grįžta po to, kai kurį laiką buvo nepasiekiamas, todėl maršrutizatoriaus perkrovimas neatrodo kaip viso namo atsigavimas.",
+            "fields": {
+                "for": {
+                    "name": "Trukmė",
+                    "description": "Kiek laiko subjektas turi būti dingęs, kad grįžimas būtų skaičiuojamas. Kas trumpiau, tas tik mirktelėjimas: perkraunant integraciją kiekvienas jos subjektas per sekundę tampa nepasiekiamas ir vėl grįžta."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Prietaisas pridėtas",
+            "description": "Suveikia, kai į Home Assistant pridedamas naujas prietaisas, pavyzdžiui, ką tik susietas kištukas."
+        },
+        "sequence": {
+            "name": "Sukėlikliai iš eilės",
+            "description": "Suveikia, kai keli sukėlikliai įvyksta vienas po kito, nurodyta tvarka.",
+            "fields": {
+                "steps": {
+                    "name": "Žingsniai",
+                    "description": "Sukėlikliai, kurie turi įvykti, iš eilės. Klausomasi tik to, kurio laukiama, todėl per anksti suveikęs vėlesnis žingsnis nesiskaito."
+                },
+                "timeout": {
+                    "name": "Laukimo laikas",
+                    "description": "Kiek laiko gali užtrukti visa seka, skaičiuojant nuo pirmojo žingsnio. Jei nenurodyta, laukiama neribotai."
+                },
+                "reset": {
+                    "name": "Atstatymas",
+                    "description": "Sukėlikliai, kurie nutraukia jau vykstančią seką ir vėl grąžina ją prie pirmojo žingsnio laukimo."
+                }
+            }
+        },
+        "while": {
+            "name": "Kol sąlyga galioja",
+            "description": "Suveikia, kai sąlyga tampa teisinga, ir toliau suveikinėja tam tikru intervalu tol, kol ji išlieka teisinga.",
+            "fields": {
+                "condition": {
+                    "name": "Sąlyga",
+                    "description": "Stebima sąlyga. Suveikinėti pradedama, kai ji tampa teisinga, ir baigiama, kai ji nustoja būti teisinga."
+                },
+                "every": {
+                    "name": "Kas",
+                    "description": "Kiek laiko laukti tarp vieno suveikimo ir kito, kol sąlyga galioja."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Sargas",
+            "description": "Suveikia, kai tai, kas turėjo įvykti, laiku neįvyksta.",
+            "fields": {
+                "arm": {
+                    "name": "Užtaisymas",
+                    "description": "Kas pradeda stebėjimą. Laukimas skaičiuojamas nuo čia, o užtaisius vėl laukimo metu laukimas pradedamas iš naujo."
+                },
+                "expect": {
+                    "name": "Laukiama",
+                    "description": "Kas turėtų įvykti po to. Jei tai įvyksta laiku, stebėjimas atšaukiamas ir niekas nesuveikia."
+                },
+                "within": {
+                    "name": "Per",
+                    "description": "Per kiek laiko laukiamas dalykas turi įvykti. Tai suveikia, kai šis laikas praeina, o jis taip ir neįvyko."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Subjektas nenurimsta",
+            "description": "Suveikia, kai subjektas per tam tikrą laiko tarpą keičia būseną dažniau, nei turėtų.",
+            "fields": {
+                "changes": {
+                    "name": "Pokyčiai",
+                    "description": "Kiek būsenos pokyčių reikia, kad tai suveiktų. Atributų pokyčiai nesiskaito, kaip ir subjekto atsiradimas ar dingimas."
+                },
+                "within": {
+                    "name": "Per",
+                    "description": "Laiko tarpas, į kurį turi patekti tie pokyčiai. Jis slenka, todėl visada kalbama apie naujausius pokyčius."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Sąlyga tapo teisinga",
+            "description": "Suveikia, kai sąlyga iš klaidingos tampa teisinga, naudojant tuos pačius sąlygų blokus kaip ir visur kitur.",
+            "fields": {
+                "condition": {
+                    "name": "Sąlyga",
+                    "description": "Stebima sąlyga."
+                }
+            }
+        },
+        "cron": {
+            "name": "Cron tvarkaraštis",
+            "description": "Suveikia pagal crontab tvarkaraštį, tiems laikams, kurių paties Home Assistant laiko sukėlikliai negali išreikšti, pavyzdžiui, kiekvieną darbo dieną septintą ar paskutinį mėnesio penktadienį.",
+            "fields": {
+                "schedule": {
+                    "name": "Tvarkaraštis",
+                    "description": "Crontab išraiška su penkiais laukais: minutė, valanda, mėnesio diena, mėnuo, savaitės diena. Palaikomi intervalai, žingsniai ir savaitės dienų plėtiniai, todėl „MON#2“ yra antrasis pirmadienis, o „5L“ paskutinis penktadienis. Slapyvardžiai, tokie kaip „@daily“, nepalaikomi."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Prietaisas aptiktas",
+            "description": "Suveikia, kai Home Assistant aptinka ką nors naujo, ką galėtų nustatyti, pavyzdžiui, prietaisą, ką tik atsiradusį jūsų tinkle."
+        },
+        "integration_added": {
+            "name": "Integracija pridėta",
+            "description": "Suveikia, kai į Home Assistant pridedama integracija, nesvarbu, kas ją pridėjo."
+        },
+        "integration_failed": {
+            "name": "Integracijos nepavyko nustatyti",
+            "description": "Suveikia, kai konfigūracijos įrašas jau kurį laiką negali pasileisti, ilgiau, nei paties Home Assistant pakartotiniai bandymai būtų tai sutvarkę.",
+            "fields": {
+                "for": {
+                    "name": "Trukmė",
+                    "description": "Kiek laiko įrašas turi nuolat strigti, kad tai suveiktų. Home Assistant strigusį įrašą bando iš naujo ne rečiau nei kas dešimt minučių, todėl trumpesnis laikas praneš apie bėdą, kuri dar gali išsispręsti pati."
+                },
+                "entry_id": {
+                    "name": "Įrašai",
+                    "description": "Apribokite tai konkrečiais konfigūracijos įrašais. Palikite tuščią, kad būtų stebimi visi."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Sukurta remonto problema",
+            "description": "Suveikia, kai atsiranda nauja remonto problema, todėl apie ją sužinosite neužsukę į remontų puslapį.",
+            "fields": {
+                "domain": {
+                    "name": "Integracijos",
+                    "description": "Apribokite tai problemomis, apie kurias praneša konkrečios integracijos, pagal jų domeną. Palikite tuščią, kad būtų įtrauktos visos."
+                },
+                "severity": {
+                    "name": "Sunkumas",
+                    "description": "Apribokite tai tam tikro sunkumo problemomis. Palikite tuščią, kad būtų įtrauktos visos."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Remonto problema išspręsta",
+            "description": "Suveikia, kai remonto problema dingsta: sutvarkyta arba apie ją nebepranešama.",
+            "fields": {
+                "domain": {
+                    "name": "Integracijos",
+                    "description": "Apribokite tai problemomis, apie kurias praneša konkrečios integracijos, pagal jų domeną. Palikite tuščią, kad būtų įtrauktos visos."
+                }
+            }
+        },
+        "stale": {
+            "name": "Subjektas nutilo",
+            "description": "Suveikia, kai į subjektą kurį laiką niekas nerašė. Taip pagaunamas prietaisas, kuris tyliai numirė, o ne tapo nepasiekiamas.",
+            "fields": {
+                "for": {
+                    "name": "Trukmė",
+                    "description": "Kiek laiko subjektas turi tylėti, kad tai suveiktų. Subjektas, kuris vis praneša tą pačią reikšmę, netyli."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Pasiekta tikslinė temperatūra",
+            "description": "Suveikia, kai termostato ar vandens šildytuvo temperatūra pasiekia tikslinę arba peršoka ją. Tikslo keitimas nesiskaito, kaip ir išjungtas prietaisas.",
+            "fields": {
+                "tolerance": {
+                    "name": "Leistinas nuokrypis",
+                    "description": "Kaip arti tikslo dar laikoma, kad jis pasiektas, prietaiso vienetais. Termostatui, kuris nusistovi kiek žemiau nustatytos vertės. Nulis reiškia patį tikslą."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Atnaujinimas įdiegtas",
+            "description": "Suveikia, kai atnaujinimo subjektas praneša kitą įdiegtą versiją, nesvarbu, ar kas nors paspaudė įdiegti, ar prietaisas atsinaujino pats, ar buvo atnaujintas ne per Home Assistant."
+        },
+        "position_reached": {
+            "name": "Padėtis pasiekta",
+            "description": "Suveikia, kai uždanga ar vožtuvas pasiekia padėtį arba ją peržengia. Jau esantis toje padėtyje ar į ją grįžęs iš nepasiekiamumo nesiskaito.",
+            "fields": {
+                "position": {
+                    "name": "Padėtis",
+                    "description": "Padėtis, kurią reikia pasiekti, nuo 0 (uždaryta) iki 100 (atidaryta)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Scenarijus paleistas",
+            "description": "Suveikia, kai scenarijus pradeda vykdymą. Vykdymas, kurio scenarijus atsisako, nes jau veikia, nesiskaito. Palikite tikslą tuščią, kad būtų stebimi visi scenarijai."
+        },
+        "user_added": {
+            "name": "Naudotojas pridėtas",
+            "description": "Suveikia, kai kam nors suteikiamas prisijungimas prie Home Assistant. Naudotojai, kuriuos Home Assistant sukuria savo integracijoms, neįtraukiami."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Kritinis",
+                "error": "Klaida",
+                "warning": "Įspėjimas"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Apačia",
+                "top": "Viršus"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Temperatūra pasiekė tikslą",
+            "description": "Tenkinama, kai termostato ar vandens šildytuvo temperatūra yra tikslinė. Išjungtas prietaisas tikslo nepasiekęs, o nepasiekiamas neįtraukiamas.",
+            "fields": {
+                "behavior": {
+                    "name": "Elgesys",
+                    "description": "Ar pakanka, kad tikslą pasiektų bet kuris prietaisas, ar turi visi."
+                },
+                "tolerance": {
+                    "name": "Leistinas nuokrypis",
+                    "description": "Kaip arti tikslo dar laikoma, kad jis pasiektas, prietaiso vienetais. Termostatui, kuris nusistovi kiek žemiau nustatytos vertės. Nulis reiškia patį tikslą."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Neišspręsta remonto problema",
+            "description": "Tenkinama, kol yra neišspręsta remonto problema. Problemos, kurias kas nors ignoravo, nesiskaito.",
+            "fields": {
+                "domain": {
+                    "name": "Integracijos",
+                    "description": "Apribokite tai problemomis, apie kurias praneša konkrečios integracijos, pagal jų domeną. Palikite tuščią, kad būtų įtrauktos visos."
+                },
+                "severity": {
+                    "name": "Sunkumas",
+                    "description": "Apribokite tai tam tikro sunkumo problemomis. Palikite tuščią, kad būtų įtrauktos visos."
+                }
+            }
+        },
+        "quota": {
+            "name": "Liko leistinų vykdymų",
+            "description": "Tenkinama, kol ši automatizacija per nurodytą laikotarpį buvo vykdyta mažiau nei nurodytą kartų skaičių. Scenarijai neskaičiuojami.",
+            "fields": {
+                "limit": {
+                    "name": "Riba",
+                    "description": "Kiek vykdymų leidžiama per laikotarpį."
+                },
+                "period": {
+                    "name": "Laikotarpis",
+                    "description": "Langas, kuriam taikoma riba. Jis slenka, todėl diena reiškia bet kurias dvidešimt keturias valandas, o ne laiką tarp vidurnakčių."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Sukėlė automatizacija",
+            "description": "Tenkinama, kai šį vykdymą paleido kita automatizacija, tiesiogiai ar per scenarijų.",
+            "fields": {
+                "automation": {
+                    "name": "Automatizacijos",
+                    "description": "Apribokite tai konkrečiomis automatizacijomis. Palikite tuščią, kad tiktų bet kuri."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Sukėlė naudotojas",
+            "description": "Tenkinama, kai už to, kas tai paleido, stovi žmogus: jo sukeltas būsenos pokytis ar įvykis, įskaitant tokį, dėl kurio šablono sukėliklis tapo teisingas. Tvarkaraštis, saulė ar savarankiškai veikianti integracija nieko neneša, kaip ir priverstinis paleidimas mygtuku Vykdyti.",
+            "fields": {
+                "person": {
+                    "name": "Asmenys",
+                    "description": "Tenkinama tik tada, kai paleido vienas iš šių asmenų. Palikite tuščią, kad tiktų bet kas. Asmuo turi turėti susietą naudotojo paskyrą, kitaip nėra su kuo lyginti."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Sukėlė ne naudotojas",
+            "description": "Tenkinama, kai už šį vykdymą niekas negali būti atsakingas: tvarkaraštis, saulė, savarankiškai veikianti integracija ar mygtukas Vykdyti. Parinkčių neturi tyčia. Norėdami vietoj to atmesti konkrečius asmenis, įdėkite „Sukėlė naudotojas“ į sąlygą Ne."
+        },
+        "chance": {
+            "name": "Tikimybė",
+            "description": "Tenkinama nustatytu procentu atvejų, kiekvieną kartą tikrinant atsitiktinai. Patogu norint įnešti į automatizacijas šiek tiek įvairovės.",
+            "fields": {
+                "percentage": {
+                    "name": "Procentas",
+                    "description": "Kaip dažnai ši sąlyga turėtų būti tenkinama, procentais."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Atvėsimas",
+            "description": "Tenkinama tik tada, jei ši automatizacija ar scenarijus nebuvo vykdyti per nurodytą laiką (arba niekada nebuvo vykdyti). Įtaisytas atvėsimas, kad nesuveiktų per dažnai.",
+            "fields": {
+                "duration": {
+                    "name": "Trukmė",
+                    "description": "Kiek laiko palaukti po paskutinio vykdymo, kol ši sąlyga vėl bus tenkinama."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Yeah... well... no. K, thx, bye!"
+            "already_spooked": "Spook jau vaidenasi šioje vietoje 👻\n\nVieno vaiduoklio namams visiškai pakanka. Spook rasite skiltyje [Prietaisai ir paslaugos](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook vėl pabudo 👻\n\nDuokite jam akimirką apsidairyti. Viskas, ką jis randa, atsiranda skiltyje [Remontai](/config/repairs).",
+            "enable_failed": "Spook nenorėjo pabusti 👻\n\nPabandykite jį vėl įjungti patys skiltyje [Prietaisai ir paslaugos](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook toliau miega 👻\n\nPasiilgote? Pažadinti jį galite bet kada skiltyje [Prietaisai ir paslaugos](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Spook sklando aplink 👻\n\nDuokite jam akimirką apsidairyti. Viskas, ką jis randa, atsiranda skiltyje [Remontai](/config/repairs).\n\nPapildomi veiksmai, sukėlikliai ir sąlygos jūsų laukia automatizacijų ir scenarijų redaktoriuose. Įdomu, ką dar moka Spook? [Dokumentacijoje]({documentation_url}) rasite viską.\n\nPatinka Spook? 👻 ⭐ [GitHub]({repository_url}) parodo kitiems, kad Spook iš tiesų visai neblogas. [Remdami Frenck]({sponsor_url}) padėsite šiam vaiduokliui būti sočiam. O jo nemokamas kas dvi savaites išeinantis [naujienlaiškis]({newsletter_url}) pamaitins jūsų vidinį vaiduoklį."
         },
         "step": {
             "user": {
-                "description": "Did you read the readme? Did you read the license? Are you really sure?"
+                "title": "Bū! Susipažinkite su Spook, jūsų bičiuliu 👻",
+                "description": "Spook sklando po jūsų Home Assistant ieškodamas vaiduoklių: nuorodų į dalykus, kurių nebėra, ir likučių, kurių niekas nesutvarkė. Viską, ką randa, jis praneša skiltyje Remontai.\n\nBe to, jis išplečia jūsų automatizacijų ir scenarijų galimybes papildomais veiksmais, sukėlikliais, sąlygomis ir pagalbininkais, kad automatizacijos būtų dar galingesnės.\n\nĮspėjame iš anksto: Spook nėra Home Assistant dalis. Tai pasirinktinė integracija, kuri lenda ten, kur jos niekas nekvietė. Jei nutinka kas nors keista, pirmiausia įtarkite Spook ir [praneškite mums]({issue_tracker_url}).\n\nPasiruošę išgąsčiui?"
+            },
+            "already_configured": {
+                "title": "Spook miega 👻",
+                "description": "Spook jau nustatytas, bet kažkas jį išjungė. Pažadinti?",
+                "menu_options": {
+                    "enable_existing": "Pažadinti Spook",
+                    "keep_sleeping": "Tegul miega"
+                }
             }
         }
     },
     "entity": {
         "button": {
             "homeassistant_reload": {
-                "name": "Reload"
+                "name": "Perkrauti"
             },
             "homeassistant_restart": {
-                "name": "Restart"
+                "name": "Paleisti iš naujo"
             },
             "repairs_ignore_all": {
-                "name": "Ignore all"
+                "name": "Ignoruoti viską"
             },
             "repairs_unignore_all": {
-                "name": "Unignore all"
+                "name": "Nebeignoruoti visų"
             }
         },
         "event": {
@@ -29,16 +367,16 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Issue created",
-                            "remove": "Issue removed",
-                            "update": "Issue updated"
+                            "create": "Problema sukurta",
+                            "remove": "Problema pašalinta",
+                            "update": "Problema atnaujinta"
                         }
                     },
                     "domain": {
-                        "name": "Issue issuer"
+                        "name": "Problemos šaltinis"
                     },
                     "issue_id": {
-                        "name": "Issue ID"
+                        "name": "Problemos ID"
                     }
                 }
             }
@@ -51,7 +389,7 @@
                 "name": "Apsaugos sistemos valdymo skydeliai"
             },
             "homeassistant_area": {
-                "name": "Zonos"
+                "name": "Sritys"
             },
             "homeassistant_automation": {
                 "name": "Automatizacijos"
@@ -70,6 +408,9 @@
             },
             "homeassistant_climate": {
                 "name": "Klimatas"
+            },
+            "homeassistant_counter": {
+                "name": "Skaitikliai"
             },
             "homeassistant_cover": {
                 "name": "Žaliuzės"
@@ -90,115 +431,124 @@
                 "name": "Įrenginių sekikliai"
             },
             "homeassistant_entities": {
-                "name": "Entities"
+                "name": "Subjektai"
             },
             "homeassistant_fan": {
-                "name": "Fans"
+                "name": "Ventiliatoriai"
+            },
+            "homeassistant_group": {
+                "name": "Grupės"
             },
             "homeassistant_humidifier": {
-                "name": "Humidifiers"
+                "name": "Drėkintuvai"
             },
             "homeassistant_image": {
-                "name": "Images"
+                "name": "Vaizdai"
             },
             "homeassistant_input_boolean": {
-                "name": "Input booleans"
+                "name": "Įvesties loginės reikšmės"
             },
             "homeassistant_input_button": {
-                "name": "Input buttons"
+                "name": "Įvesties mygtukai"
             },
             "homeassistant_input_datetime": {
-                "name": "Input date/times"
+                "name": "Įvesties data / laikas"
             },
             "homeassistant_input_number": {
-                "name": "Input numbers"
+                "name": "Įvesties skaičiai"
             },
             "homeassistant_input_select": {
-                "name": "Input selects"
+                "name": "Įvesties pasirinkimai"
             },
             "homeassistant_input_text": {
-                "name": "Input texts"
+                "name": "Įvesties tekstai"
             },
             "homeassistant_integration": {
-                "name": "Integrations"
+                "name": "Integracijos"
             },
             "homeassistant_light": {
-                "name": "Lights"
+                "name": "Šviestuvai"
             },
             "homeassistant_lock": {
-                "name": "Locks"
+                "name": "Užraktai"
             },
             "homeassistant_media_player": {
-                "name": "Media players"
+                "name": "Medijos leistuvai"
             },
             "homeassistant_number": {
-                "name": "Numbers"
+                "name": "Skaičiai"
             },
             "homeassistant_persistent_notification": {
-                "name": "Persistent notifications"
+                "name": "Nuolatiniai pranešimai"
             },
             "homeassistant_person": {
-                "name": "Persons"
+                "name": "Asmenys"
             },
             "homeassistant_remote": {
-                "name": "Remotes"
+                "name": "Nuotolinio valdymo pultai"
             },
             "homeassistant_scene": {
-                "name": "Scenes"
+                "name": "Scenos"
             },
             "homeassistant_script": {
-                "name": "Scripts"
+                "name": "Scenarijai"
             },
             "homeassistant_select": {
-                "name": "Selects"
+                "name": "Pasirinkimai"
             },
             "homeassistant_sensor": {
-                "name": "Sensors"
+                "name": "Jutikliai"
             },
             "homeassistant_siren": {
-                "name": "Sirens"
+                "name": "Sirenos"
             },
             "homeassistant_stt": {
-                "name": "Speech-to-text"
+                "name": "Kalba į tekstą"
             },
             "homeassistant_sun": {
-                "name": "Suns"
+                "name": "Saulės"
             },
             "homeassistant_switch": {
-                "name": "Switches"
+                "name": "Jungikliai"
             },
             "homeassistant_text": {
-                "name": "Texts"
+                "name": "Tekstai"
             },
             "homeassistant_time": {
-                "name": "Times"
+                "name": "Laikai"
+            },
+            "homeassistant_timer": {
+                "name": "Laikmačiai"
+            },
+            "homeassistant_todo": {
+                "name": "Užduočių sąrašai"
             },
             "homeassistant_tts": {
-                "name": "Text-to-speech"
+                "name": "Tekstas į kalbą"
             },
             "homeassistant_update": {
-                "name": "Update"
+                "name": "Atnaujinimai"
             },
             "homeassistant_vacuum": {
-                "name": "Vacuums"
+                "name": "Dulkių siurbliai"
             },
             "homeassistant_water_heater": {
-                "name": "Water heaters"
+                "name": "Vandens šildytuvai"
             },
             "homeassistant_weather": {
-                "name": "Weather"
+                "name": "Orai"
             },
             "homeassistant_zone": {
-                "name": "Zones"
+                "name": "Zonos"
             },
             "repairs_total_issues": {
-                "name": "Total"
+                "name": "Iš viso"
             },
             "repairs_ignored_issues": {
-                "name": "Ignored"
+                "name": "Ignoruojamos"
             },
             "repairs_active_issues": {
-                "name": "Aktyvus"
+                "name": "Aktyvios"
             }
         },
         "switch": {
@@ -206,84 +556,594 @@
                 "name": "Alexa būsenos pranešimas"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistant state reporting"
+                "name": "Google Assistant būsenos pranešimas"
             },
             "cloud_remote": {
-                "name": "Remote"
+                "name": "Nuotolinė prieiga"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Nepavyko prijungti visų „visi šie“ sukėliklio sukėliklių."
+        },
+        "area_not_found": {
+            "message": "Sritis {area_id} nerasta."
+        },
+        "blueprint_backup_failed": {
+            "message": "Nepavyko atidėti {path} kopijos: {error}. Niekas neįrašyta."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} čia negali veikti: {errors}. Niekas neįrašyta."
+        },
+        "blueprint_could_not_write": {
+            "message": "Nepavyko įrašyti {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Nepalaikomas domenas: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Klaida gaunant brėžinį iš URL."
+        },
+        "blueprint_file_exists": {
+            "message": "Failas jau yra."
+        },
+        "blueprint_gone": {
+            "message": "{name} čia nebėra, todėl nėra ką atnaujinti. Niekas neįrašyta."
+        },
+        "blueprint_url_not_supported": {
+            "message": "Šis URL nepalaikomas."
+        },
+        "blueprint_write_failed": {
+            "message": "Klaida rašant failą."
+        },
+        "blueprints_not_loaded": {
+            "message": "{domain} brėžiniai šiuo metu neįkelti."
+        },
+        "calendar_events_which": {
+            "message": "Nurodykite, kurie įvykiai: pateikite santrauką, uid arba abu."
+        },
+        "calendar_range_backwards": {
+            "message": "Paieškos pabaiga turi būti po jos pradžios."
+        },
+        "calendar_range_required": {
+            "message": "Nurodykite, kaip toli ieškoti: pateikite pabaigos datą ir laiką arba trukmę."
+        },
+        "cannot_disable_system_user": {
+            "message": "Negalima išjungti sistemos sukurto naudotojo: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Negalima įjungti sistemos sukurto naudotojo: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Kategorija {category} nerasta ({scope})."
+        },
+        "category_nothing_to_update": {
+            "message": "Kategorijoje {category} nėra ką atnaujinti: pateikite bent vieną iš {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Šioje sąlygoje esančiame šablone nebeliko Jinja, todėl jis yra konstanta ir niekada nepasikeis. Paprastai tai reiškia, kad scenarijus jį apdorojo dar prieš paleidžiant šį veiksmą, o taip nutinka kiekvienam veiksmo duomenyse esančiam šablonui. Naudokite sąlygą be šablonų arba laukite paties šablono su 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Integracijos įrašas {config_entry_id} nerastas."
+        },
+        "debounce_attach_failed": {
+            "message": "Nepavyko prijungti visų „kai nurims“ sukėliklio sukėliklių."
+        },
+        "device_not_found": {
+            "message": "Prietaisas {device_id} nerastas."
+        },
+        "entity_id_taken": {
+            "message": "Subjekto ID {entity_id} jau užimtas."
+        },
+        "entity_not_found": {
+            "message": "Subjektas {entity_id} nerastas."
+        },
+        "entity_without_unique_id": {
+            "message": "Subjektas {entity_id} neturi unikalaus ID, todėl Home Assistant negali išsaugoti jam piktogramos ar slapyvardžių."
+        },
+        "event_cannot_change": {
+            "message": "{summary} negalima taip pakeisti: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Nurodykite, ką keisti: naują santrauką, vietą ar naujus laikus."
+        },
+        "event_shift_or_times": {
+            "message": "Perkelkite įvykį poslinkiu arba nurodykite naujus laikus, bet ne abu."
+        },
+        "event_whole_days": {
+            "message": "{summary} trunka ištisas dienas, todėl jį galima perkelti tik ištisomis dienomis."
+        },
+        "floor_not_found": {
+            "message": "Aukštas {floor_id} nerastas."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} negali prisijungti prie šios grupės: joje yra {domains} subjektai."
+        },
+        "group_not_found_behind": {
+            "message": "Nepavyko rasti grupės, esančios už {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "Nepavyko pasiekti Home Assistant saugomų {domain} pagalbininkų."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Negalima išlaikyti {entity_id} iki laiko, kurio nėra."
+        },
+        "home_zone_radius": {
+            "message": "Namų zonos spindulys nurodomas sveikais metrais, nulis arba daugiau."
+        },
+        "home_zone_unsupported": {
+            "message": "Namų zonai galima nurodyti tik platumą, ilgumą ir spindulį, bet ne: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Šio įvesties skaičiaus redaguoti negalima: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Nurodykite keistinus integracijos įrašus arba jų integraciją."
+        },
+        "integration_without_entries": {
+            "message": "Integracija {domain} neturi įrašų."
+        },
+        "label_not_found": {
+            "message": "Etiketė {label_id} nerasta."
+        },
+        "label_nothing_to_update": {
+            "message": "Etiketėje {label_id} nėra ką atnaujinti: pateikite bent vieną iš {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Maksimumas ({maximum}) turi būti didesnis už minimumą ({minimum})."
+        },
+        "no_max_value": {
+            "message": "Subjektas {entity_id} neturi maksimalios vertės."
+        },
+        "no_min_value": {
+            "message": "Subjektas {entity_id} neturi minimalios vertės."
+        },
+        "not_a_group": {
+            "message": "{entity_id} nėra grupė."
+        },
+        "person_not_editable": {
+            "message": "Šio asmens redaguoti negalima: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook susidūrė su klaida perkraunant Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "Nepavyko prijungti pirmojo sekos sukėliklio žingsnio."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Nurodykite keistiną minimumą, maksimumą arba žingsnį."
+        },
+        "spooked": {
+            "message": "Išgąsdinta! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Šio laikmačio redaguoti negalima: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Elemento negalima perkelti po juo pačiu."
+        },
+        "todo_item_not_found": {
+            "message": "{entity_id} nėra elemento {item}."
+        },
+        "todo_last_item_after": {
+            "message": "Po paskutinio {entity_id} elemento nieko negalima perkelti."
+        },
+        "todo_move_where": {
+            "message": "Nurodykite kur: po kito elemento, į viršų ar į apačią."
+        },
+        "user_not_found": {
+            "message": "Nepavyko rasti naudotojo: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "{entity_id} reikšmė {value} nėra skaičius."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Nepavyko prijungti sargo sukėliklio užtaisymo sukėliklių."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Nepavyko prijungti sargo sukėliklio laukiamų sukėliklių."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} yra grupė iš jūsų YAML konfigūracijos, kurios Spook pakeisti negali. Redaguokite ją savo konfigūracijoje arba naudokite group.set, kuris tokiai grupei vis dar veikia."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} nustatytas YAML ir negali būti ištrintas."
+        },
+        "zone_not_editable": {
+            "message": "Šios zonos redaguoti negalima: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Įspėjimas stebi nežinomą subjektą: {alert}",
+            "description": "Spook rado vaiduoklį jūsų įspėjimuose 👻\n\nĮspėjimas {alert} (`{entity_id}`) stebi subjektą, kurio Home Assistant nežino:\n\n{entities}\n\nĮspėjimas gali suveikti tik dėl stebimo subjekto, todėl šis daugiau niekada nebesuveiks. Jis atrodo lygiai taip pat kaip įspėjimas, kuriam nėra apie ką pranešti.\n\nNorėdami ištaisyti šią klaidą, redaguokite `alert:` skiltį savo konfigūracijoje ir nukreipkite šį įspėjimą į esamą subjektą.\n\nSpook 👻 Jūsų bičiulis."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Įspėjimas naudoja nežinomus pranešėjus: {alert}",
+            "description": "Spook rado vaiduoklį jūsų įspėjimuose 👻\n\nĮspėjimas {alert} (`{entity_id}`) praneša per šiuos veiksmus, kurių Home Assistant nežino:\n\n{notifiers}\n\nĮspėjimas vis tiek suveikia ir daro savo ratus, bet šie pranešimai niekur nenukeliauja. Home Assistant tai užregistruoja žurnale tik tą akimirką, kai įspėjimas suveikia, o tai prastas metas sužinoti, kad niekas nesiklauso.\n\nNorėdami ištaisyti šią klaidą, redaguokite šio įspėjimo `notifiers:` sąrašą savo konfigūracijoje ir pašalinkite arba pataisykite šiuos įrašus.\n\nSpook 👻 Jūsų bičiulis."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {automation}"
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija nurodo šias sritis, kurių Home Assistant nežino:\n\n{areas}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pašalinkite šių neegzistuojančių sričių naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos sritys: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija naudoja šias sąlygas, kurių negali pateikti jokia Home Assistant prieinama integracija:\n\n{conditions}\n\n\n\nTaip dažnai nutinka, kai pašalinama sąlygą teikianti integracija. Norėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pašalinkite šių nepasiekiamų sąlygų naudojimą arba atkurkite jas teikiančią integraciją.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos sąlygos: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {automation}"
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija nurodo šiuos prietaisus, kurių Home Assistant nežino:\n\n{devices}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pašalinkite šių neegzistuojančių prietaisų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi prietaisai: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {automation}"
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pašalinkite šių neegzistuojančių subjektų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi subjektai: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija nurodo šiuos aukštus, kurių Home Assistant nežino:\n\n{floors}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pašalinkite šių neegzistuojančių aukštų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi aukštai: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija nurodo šias etiketes, kurių Home Assistant nežino:\n\n{labels}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pašalinkite šių neegzistuojančių etikečių naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos etiketės: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija nurodo šiuos veiksmus, kurių Home Assistant nežino:\n\n{services}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pašalinkite šių neegzistuojančių veiksmų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi veiksmai: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook rado vaiduoklį jūsų automatizacijose 👻\n\nSklandydamas aplink, Spook susidūrė su šia automatizacija:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nŠi automatizacija naudoja šiuos sukėliklius, kurių negali pateikti jokia Home Assistant prieinama integracija:\n\n{triggers}\n\n\n\nTaip dažnai nutinka, kai pašalinama sukėliklį teikianti integracija. Norėdami ištaisyti šią klaidą, [redaguokite automatizaciją]({edit}) ir pašalinkite šių nepasiekiamų sukėliklių naudojimą arba atkurkite juos teikiančią integraciją.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi sukėlikliai: {automation}"
+        },
+        "empty_areas": {
+            "title": "Tuščia sritis: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tuščia sritis: {area}",
+                        "description": "Sritis {area} neturi nei prietaisų, nei subjektų, ir į ją nesitaiko jokia automatizacija ar scenarijus.\n\nPašalinkite ją arba palikite, ir Spook liausis apie ją priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Pašalinti šią tuščią sritį",
+                            "ignore": "Palikti, nebeprimink",
+                            "manage": "Sutvarkysiu savarankiškai"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šią sritį tylės.",
+                    "manage": "Šią sritį galite tvarkyti patys [Sričių puslapyje](/config/areas/dashboard).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, ši sritis vėl naudojama: joje kažkas yra arba ją naudoja automatizacija ar scenarijus. Todėl ji palikta ramybėje. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Tuščias aukštas: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tuščias aukštas: {floor}",
+                        "description": "Aukštas {floor} neturi sričių, ir į jį nesitaiko jokia automatizacija ar scenarijus.\n\nPašalinkite jį arba palikite, ir Spook liausis apie jį priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Pašalinti šį tuščią aukštą",
+                            "ignore": "Palikti, nebeprimink",
+                            "manage": "Sutvarkysiu savarankiškai"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šį aukštą tylės.",
+                    "manage": "Šį aukštą galite tvarkyti patys [Sričių puslapyje](/config/areas/dashboard).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, šis aukštas vėl naudojamas: jame yra sritis arba jį naudoja automatizacija ar scenarijus. Todėl jis paliktas ramybėje. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Energijos prietaisų skydelyje naudojami nežinomi subjektai",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Energijos prietaisų skydelyje naudojami nežinomi subjektai",
+                        "description": "Spook rado vaiduoklį jūsų energijos prietaisų skydelyje 👻\n\nEnergijos prietaisų skydelis nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\nPaprastai taip nutinka, kai energijos konfigūracijoje naudotas subjektas buvo pervadintas arba pašalintas. Pervadintas? Tada atidarykite [Nustatymai > Prietaisų skydeliai > Energija](/config/energy) ir pasirinkite naująjį, kad jo istorija liktų skydelyje.\n\nPašalintas visam laikui? Spook gali juos už jus išimti iš energijos konfigūracijos. Dingęs skaitiklis išsineša ir savo šaltinį ar prietaisą, o dingusi kaina ar išlaidos tik išvalomos. Tada skydelis neberodo to, kas išimta, istorijos; pati statistika lieka.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Išimti juos iš energijos konfigūracijos",
+                            "manage": "Padarysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šiuos subjektus tylės.",
+                    "manage": "Juos atnaujinti ar pašalinti galite patys [energijos konfigūracijoje](/config/energy).",
+                    "nothing_to_remove": "Nė vienas iš jų nebėra nežinomas, todėl niekas neišimta. Galbūt jie grįžo, o gal kažkas jau pakeitė energijos konfigūraciją."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "Nežinomi grupės nariai: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nežinomi grupės nariai: {group}",
+                        "description": "Spook rado vaiduoklį jūsų grupėse 👻\n\nGrupė {group} (`{entity_id}`) turi narių, kurių Home Assistant nežino:\n\n{entities}\n\nPašalinkite juos iš grupės arba palikite, ir Spook liausis apie juos priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Pašalinti šiuos narius",
+                            "manage": "Sutvarkysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šią grupę tylės.",
+                    "not_editable": "Ši grupė nustatyta YAML, todėl Spook negali jos redaguoti. Verčiau atnaujinkite grupę savo konfigūracijoje.",
+                    "manage": "Šią grupę galite tvarkyti patys [Pagalbininkų puslapyje](/config/helpers).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, šiame remonte išvardyti nariai grįžo arba pasikeitė, todėl iš grupės niekas nepašalinta. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook rado vaiduoklį jūsų HomeKit tilte 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo HomeKit tiltu:\n\n{bridge}\n\nŠis tiltas nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nHomeKit neseka pervadinto subjekto. Įtrauktas subjektas, kuris buvo pervadintas ar pašalintas, dingsta iš programėlės Home; neįtrauktas subjektas, kuris buvo pervadintas, joje vėl atsiranda.\n\nNorėdami ištaisyti šią klaidą, eikite į [HomeKit Bridge integraciją](/config/integrations/integration/homekit), šiame tilte pasirinkite **Konfigūruoti** ir iš naujo pasirinkite subjektus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "HomeKit tilte naudojami nežinomi subjektai: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook rado vaiduoklį jūsų HomeKit tilte 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo HomeKit tiltu:\n\n{bridge}\n\nŠis tiltas nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nHomeKit neseka pervadinto subjekto. Įtrauktas subjektas, kuris buvo pervadintas ar pašalintas, dingsta iš programėlės Home; neįtrauktas subjektas, kuris buvo pervadintas, joje vėl atsiranda.\n\nŠis tiltas nustatytas jūsų YAML konfigūracijoje. Norėdami ištaisyti šią klaidą, redaguokite šio tilto `filter` skiltyje `homekit:` ir pašalinkite arba pataisykite šiuos subjektus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "HomeKit tilte naudojami nežinomi subjektai: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nŠie prietaisų skydelių ištekliai rodo į failus, kurių nėra:\n\n{resources}\n\n\n\nPaprastai taip nutinka, kai pasirinktinė kortelė ar jos failai buvo pašalinti, bet išteklius liko. Norėdami ištaisyti šią klaidą, atidarykite [Išteklių puslapį](/config/lovelace/resources) ir pašalinkite arba pataisykite šiuos išteklius. Atskiros kortelės jis neturi: prietaisų skydelių puslapyje jis slepiasi po trimis taškais viršuje dešinėje.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelių ištekliai rodo į trūkstamus failus"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nŠie prietaisų skydelių ištekliai rodo į failus, kurių nėra:\n\n{resources}\n\n\n\nPaprastai taip nutinka, kai pasirinktinė kortelė ar jos failai buvo pašalinti, bet išteklius liko.\n\nŠie ištekliai išvardyti jūsų YAML konfigūracijoje, todėl Išteklių puslapis jų pakeisti negali. Redaguokite savo Lovelace konfigūracijos skiltį `resources:` ir pašalinkite arba pataisykite šiuos įrašus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelių ištekliai rodo į trūkstamus failus"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Prietaisų skydelio išteklius nurodytas daugiau nei kartą: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Prietaisų skydelio išteklius nurodytas daugiau nei kartą: {resource}",
+                        "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nŠis prietaisų skydelio išteklius nurodytas {count} kartus:\n\n{resources}\n\nPaprastai taip nutinka, kai pasirinktinė kortelė atnaujinama pridedant išteklių naujai versijai, užuot redagavus jau esamą. Naršyklė įkelia abu, kortelė bando užsiregistruoti dukart, o antras bandymas nepavyksta. Tai atrodo kaip sugedusi kortelė, o ne pasikartojantis išteklius.\n\nSpook gali išvalyti papildomas kopijas ir palikti naujausiai pridėtą.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Išvalyti papildomas kopijas, palikti naujausią",
+                            "ignore": "Palikti, nebeprimink",
+                            "manage": "Sutvarkysiu savarankiškai"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šį išteklių tylės.",
+                    "manage": "Prietaisų skydelių išteklius galite tvarkyti patys [Išteklių puslapyje](/config/lovelace/resources).",
+                    "yaml": "Šie ištekliai išvardyti jūsų YAML konfigūracijoje, todėl Spook negali jų už jus pakeisti. Redaguokite savo Lovelace konfigūracijos skiltį `resources:` ir pašalinkite nebereikalingas `{resource}` kopijas."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n{dashboard}\n\nŠis prietaisų skydelis nurodo šias sritis, kurių Home Assistant nežino:\n\n{areas}\n\n\n\nTaip dažnai nutinka, kai sritis buvo pervadinta arba pašalinta. Norėdami ištaisyti šią klaidą, [redaguokite prietaisų skydelį]({edit}) ir pašalinkite šių neegzistuojančių sričių naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelyje naudojamos nežinomos sritys: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {dashboard}"
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n[{dashboard}]({edit})\n\nŠis prietaisų skydelis nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite prietaisų skydelį]({edit}) ir pašalinkite šių neegzistuojančių subjektų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi subjektai: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook rado vaiduoklį jūsų prietaisų skydeliuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo prietaisų skydeliu:\n\n[{dashboard}]({edit})\n\nŠis prietaisų skydelis atlieka šiuos veiksmus, kurių Home Assistant nežino:\n\n{services}\n\n\n\nJuos naudojantis mygtukas ar kortelė paspaudus nieko nedaro. Taip dažnai nutinka, kai scenarijus buvo pervadintas ar pašalintas arba buvo pašalinta integracija. Norėdami ištaisyti šią klaidą, [redaguokite prietaisų skydelį]({edit}) ir pašalinkite arba pakeiskite šiuos neegzistuojančius veiksmus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Prietaisų skydelyje naudojami nežinomi veiksmai: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Min/max pagalbininke naudojami nežinomi nariai: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Min/max pagalbininke naudojami nežinomi nariai: {helper}",
+                        "description": "Spook rado vaiduoklį jūsų pagalbininkuose 👻\n\nMin/max pagalbininkas {helper} (`{entity_id}`) jungia šiuos narius, kurių Home Assistant nežino:\n\n{sources}\n\nPašalinkite juos, kad pagalbininkas toliau veiktų su likusiais nariais, arba palikite, ir Spook liausis apie juos priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Pašalinti šiuos narius",
+                            "manage": "Sutvarkysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šį pagalbininką tylės.",
+                    "manage": "Šį pagalbininką galite tvarkyti patys [Pagalbininkų puslapyje](/config/helpers).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, šiame remonte išvardyti nariai grįžo arba pasikeitė, todėl iš pagalbininko niekas nepašalinta. Spook pats pažiūrės dar kartą ir atnaujins šį remontą.",
+                    "too_few_members": "Min/max pagalbininkui reikia bent dviejų narių, todėl pašalinus trūkstamus jų liktų per mažai. Perkonfigūruokite arba pašalinkite pagalbininką patys [Pagalbininkų puslapyje](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook rado vaiduoklį jūsų pranešimų grupėse 👻\n\nPranešimų grupė `{group}` persiunčia šiems veiksmams, kurių Home Assistant nežino:\n\n{members}\n\nGrupė vis tiek pristato kitiems savo nariams ir vis tiek praneša apie sėkmę tam, kas ją iškvietė, todėl aukščiau niekas nieko nepastebi. Nesėkmė išlenda tik kaip pasiklydęs „Task exception was never retrieved“ žurnale, kuriame neminima jokia grupė ir kuris atrodo kaip klaida programoje. Tas, kas buvo už to nario, tiesiog nustoja gauti pranešimus.\n\nNorėdami ištaisyti šią klaidą, redaguokite šios grupės `services:` sąrašą savo konfigūracijoje ir pašalinkite arba pataisykite šiuos įrašus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Nežinomi pranešimų grupės nariai: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Rasta našlaičių ilgalaikės statistikos",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Rasta našlaičių ilgalaikės statistikos",
+                        "description": "Spook rado vaiduoklį jūsų įrašymo įrenginyje 👻\n\nHome Assistant saugo ilgalaikę statistiką šiems dalykams, bet atitinkamo subjekto jiems nebėra:\n\n{statistics}\n\nPaprastai taip nutinka, kai jutiklis buvo pašalintas, o jo statistika palikta. Ją išvalius ta istorija prarandama visam laikui, todėl Spook prieš tai pažiūri dar kartą ir nekliudo to, kas per tą laiką sugrįžo.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Išvalyti šią statistiką",
+                            "manage": "Padarysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šią statistiką tylės.",
+                    "manage": "Ją išvalyti galite patys [Statistikos puslapyje](/config/tools/statistics).",
+                    "nothing_to_clear": "Nieko iš to sąrašo nebereikia valyti, todėl niekas neišmesta. Arba statistika vėl turi už savęs subjektą, arba jos jau nebėra.",
+                    "clearing_took_too_long": "Spook paprašė išvalyti statistiką, o įrašymo įrenginys dar nepranešė, kad baigė. Darbas eilėje ir greičiausiai bus atliktas, todėl šis remontas lieka, kol Spook pažiūrės dar kartą."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Asmuo seka nežinomus įrenginių sekiklius: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Asmuo seka nežinomus įrenginių sekiklius: {person}",
+                        "description": "Spook rado vaiduoklį tarp jūsų asmenų 👻\n\n{person} seka šiuos įrenginių sekiklius, kurių Home Assistant nežino:\n\n{device_trackers}\n\nTaip dažnai nutinka, kai įrenginio sekiklis buvo pervadintas arba jo integracija pašalinta.\n\nPašalinkite juos iš {person} arba palikite, ir Spook liausis apie juos priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Pašalinti šiuos įrenginių sekiklius",
+                            "ignore": "Palikti, nebeprimink",
+                            "manage": "Sutvarkysiu savarankiškai"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šį asmenį tylės.",
+                    "not_editable": "Šis asmuo nustatytas YAML, todėl Spook negali jo redaguoti. Verčiau atnaujinkite asmenį savo konfigūracijoje.",
+                    "manage": "Šį asmenį galite tvarkyti patys [Asmenų puslapyje](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook rado vaiduoklį jūsų artumo konfigūracijoje 👻\n\nSklandydamas aplink, Spook susidūrė su šia artumo konfigūracija:\n\n{name}\n\nŠi konfigūracija ignoruoja zonas, kurių Home Assistant nežino:\n\n{zones}\n\n\n\nNorėdami ištaisyti šią klaidą, redaguokite konfigūraciją ir pašalinkite šią (šias) zoną (-as).\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Nežinomos ignoruojamos zonos: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook rado vaiduoklį jūsų artumo konfigūracijoje 👻\n\nSklandydamas aplink, Spook susidūrė su šia artumo konfigūracija:\n\n{name}\n\nŠi konfigūracija seka asmenis ar įrenginių sekiklius, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nNorėdami ištaisyti šią klaidą, redaguokite konfigūraciją ir pašalinkite šį (šiuos) subjektą (-us).\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Nežinomi sekami subjektai: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook rado vaiduoklį jūsų artumo konfigūracijoje 👻\n\nSklandydamas aplink, Spook susidūrė su šia artumo konfigūracija:\n\n{name}\n\nŠi konfigūracija paremta zona, kurios Home Assistant nežino:\n\n`{zone}`\n\n\n\nArtumo konfigūracijos zonos pakeisti negalima, todėl vienintelis būdas ištaisyti šią klaidą yra pašalinti šį konkretų artumo integracijos egzempliorių.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Nežinoma zona: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spook rado vaiduoklį jūsų scenose 👻\n\nSklandydamas aplink, Spook susidūrė su šia scena:\n\n[{scene}]({edit})\n\nŠi scena nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite sceną]({edit}) ir pašalinkite šių neegzistuojančių subjektų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi subjektai: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {script}"
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus nurodo šias sritis, kurių Home Assistant nežino:\n\n{areas}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pašalinkite šių neegzistuojančių sričių naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos sritys: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus naudoja šias sąlygas, kurių negali pateikti jokia Home Assistant prieinama integracija:\n\n{conditions}\n\n\n\nTaip dažnai nutinka, kai pašalinama sąlygą teikianti integracija. Norėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pašalinkite šių nepasiekiamų sąlygų naudojimą arba atkurkite jas teikiančią integraciją.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos sąlygos: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {script}"
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus nurodo šiuos prietaisus, kurių Home Assistant nežino:\n\n{devices}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pašalinkite šių neegzistuojančių prietaisų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi prietaisai: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {script}"
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pašalinkite šių neegzistuojančių subjektų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi subjektai: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus nurodo šiuos aukštus, kurių Home Assistant nežino:\n\n{floors}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pašalinkite šių neegzistuojančių aukštų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi aukštai: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus nurodo šias etiketes, kurių Home Assistant nežino:\n\n{labels}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pašalinkite šių neegzistuojančių etikečių naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojamos nežinomos etiketės: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus nurodo šiuos veiksmus, kurių Home Assistant nežino:\n\n{services}\n\n\n\nNorėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pašalinkite šių neegzistuojančių veiksmų naudojimą.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi veiksmai: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook rado vaiduoklį jūsų scenarijuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo scenarijumi:\n\n[{script}]({edit}) (`{entity_id}`)\n\nŠis scenarijus naudoja šiuos sukėliklius, kurių negali pateikti jokia Home Assistant prieinama integracija:\n\n{triggers}\n\n\n\nTaip dažnai nutinka, kai pašalinama sukėliklį teikianti integracija. Norėdami ištaisyti šią klaidą, [redaguokite scenarijų]({edit}) ir pašalinkite šių nepasiekiamų sukėliklių naudojimą arba atkurkite juos teikiančią integraciją.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Naudojami nežinomi sukėlikliai: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook rado vaiduoklį jūsų šablonų pagalbininkuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo šablono pagalbininku:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nJo konfigūracija nurodo šiuos subjektus, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nTaip dažnai nutinka, kai subjektas buvo pervadintas arba pašalintas. Norėdami ištaisyti šią klaidą, perkonfigūruokite šablono pagalbininką, kad jis nurodytų esamus subjektus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Šablono pagalbininke naudojami nežinomi subjektai: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook rado vaiduoklį jūsų šablonų pagalbininkuose 👻\n\nSklandydamas aplink, Spook susidūrė su šiuo šablono pagalbininku:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nJis nurodo šiuos veiksmus, kurių Home Assistant nežino:\n\n{services}\n\n\n\nTaip dažnai nutinka, kai veiksmą teikianti integracija buvo pašalinta arba scenarijus buvo pervadintas ar ištrintas. Norėdami ištaisyti šią klaidą, perkonfigūruokite šablono pagalbininką, kad jis naudotų esamus veiksmus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Šablono pagalbininke naudojami nežinomi veiksmai: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Nežinomas {sensors} jutiklis sričiai: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nežinomas {sensors} jutiklis sričiai: {area}",
+                        "description": "Spook rado vaiduoklį jūsų srityse 👻\n\nSritis {area} naudoja {sensors} jutiklį, kurio Home Assistant nežino:\n\n{entities}\n\nHome Assistant šį jutiklį tikrina tik tada, kai jis pasirenkamas, todėl jį pašalinus ar pervadinus sritis toliau rodė į niekur. Assist ir sričių kortelės iš jo nebegauna rodmenų.\n\nIšvalykite nustatymą, kad galėtumėte vėl pasirinkti jutiklį, arba palikite, ir Spook liausis apie jį priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Išvalyti nustatymą",
+                            "manage": "Sutvarkysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šią sritį tylės.",
+                    "manage": "Kitą jutiklį galite pasirinkti šios srities nustatymuose [Sričių puslapyje](/config/areas/dashboard).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, šie jutikliai grįžo arba nustatymai dabar rodo kitur. Todėl niekas neišvalyta. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook rado vaiduoklį jūsų pritaikymuose 👻\n\nSkiltis `customize:` prisega atributus šiems subjektams, kurių Home Assistant nežino:\n\n{entities}\n\n\n\nTaip dažnai nutinka, kai subjektas buvo pervadintas ar pašalintas, o jo pritaikymas liko. Norėdami ištaisyti šią klaidą, redaguokite `customize:` skiltį savo konfigūracijoje ir pašalinkite šiuos subjektus.\n\nSpook 👻 Jūsų bičiulis.",
+            "title": "Nežinomi subjektai jūsų pritaikymuose"
+        },
+        "unknown_engines": {
+            "title": "Assist vamzdynas naudoja nebeesančius variklius: {pipeline}",
+            "description": "Spook rado vaiduoklį jūsų balso asistentuose 👻\n\nAssist vamzdynas {pipeline} naudoja šiuos dalykus, kurių Home Assistant nežino:\n\n{engines}\n\nPaprastai tai reiškia, kad už jų stovėjusi integracija buvo pašalinta. Vamzdynui niekas apie tai nepasakė, todėl kitą kartą jį naudojant jis nepavyks su klaida apie trūkstamą teikėją ar agentą, ir niekas iki tol čia nenurodo.\n\nNorėdami tai ištaisyti, atidarykite šio asistento nustatymus skiltyje [Balso asistentai](/config/voice-assistants/assistants) ir kiekvienam iš jų pasirinkite dar esamą variklį.\n\nSpook 👻 Jūsų bičiulis."
+        },
+        "unknown_helper_source_references": {
+            "title": "Pagalbininke naudojami nežinomi šaltinio subjektai: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Pagalbininke naudojami nežinomi šaltinio subjektai: {helper}",
+                        "description": "Spook rado vaiduoklį jūsų pagalbininkuose 👻\n\nPagalbininkas {helper} (`{domain}`, `{entity_id}`) nurodo šiuos šaltinio subjektus, kurių Home Assistant nežino:\n\n{sources}\n\nBe savo šaltinių šis pagalbininkas veikti negali. {usage}\n\nPašalinkite pagalbininką arba palikite, ir Spook liausis apie jį priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Pašalinti šį pagalbininką",
+                            "manage": "Sutvarkysiu savarankiškai",
+                            "ignore": "Palikti, nebeprimink"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šį pagalbininką tylės.",
+                    "manage": "Šį pagalbininką galite tvarkyti patys [Pagalbininkų puslapyje](/config/helpers).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, šio pagalbininko šaltiniai pasikeitė, todėl pagalbininkas paliktas ramybėje. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Nenaudojamas brėžinys: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nenaudojamas brėžinys: {blueprint}",
+                        "description": "Brėžinio {blueprint} nenaudoja joks {domain}.\n\nPašalinkite jį arba palikite, ir Spook liausis apie jį priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Pašalinti šį nenaudojamą brėžinį",
+                            "ignore": "Palikti, nebeprimink",
+                            "manage": "Sutvarkysiu savarankiškai"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šį brėžinį tylės.",
+                    "manage": "Šį brėžinį galite tvarkyti patys [Brėžinių puslapyje](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Nenaudojama etiketė: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nenaudojama etiketė: {label}",
+                        "description": "Etiketė {label} nepriskirta jokiam subjektui, prietaisui ar sričiai, ir į ją nesitaiko jokia automatizacija ar scenarijus.\n\nPašalinkite ją arba palikite, ir Spook liausis apie ją priminęs.\n\nSpook 👻 Jūsų bičiulis.",
+                        "menu_options": {
+                            "remove": "Pašalinti šią nenaudojamą etiketę",
+                            "ignore": "Palikti, nebeprimink",
+                            "manage": "Sutvarkysiu savarankiškai"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Nuo šiol Spook apie šią etiketę tylės.",
+                    "manage": "Šią etiketę galite tvarkyti patys [Etikečių puslapyje](/config/labels).",
+                    "changed": "Nuo tada, kai Spook žiūrėjo, ši etiketė vėl naudojama: kažkas ją turi arba ją naudoja automatizacija ar scenarijus. Todėl ji palikta ramybėje. Spook pats pažiūrės dar kartą ir atnaujins šį remontą."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -297,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "Restart required",
+            "title": "Reikia paleisti iš naujo",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "Restart required",
-                        "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+                        "title": "Reikia paleisti iš naujo",
+                        "description": "Kad Spook 👻 galėtų baigti sąranką, Home Assistant reikia paleisti iš naujo.\n\nPasirinkite „Pateikti“, kad Home Assistant būtų paleistas iš naujo dabar.\n\nSpook 👻 Jūsų bičiulis."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Versija",
+            "ghosts_found": "Rasta vaiduoklių",
+            "ghosts_ignored": "Ignoruota vaiduoklių",
+            "helpers_linked": "Susieta pagalbininkų"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Pridėti narių į grupę",
+            "description": "Prideda subjektus į per sąsają sukurtą grupę, kol Home Assistant veikia. Jau grupėje esantys subjektai paliekami ten, kur yra.",
+            "fields": {
+                "group": {
+                    "name": "Grupė",
+                    "description": "Grupė, į kurią pridedama."
+                },
+                "members": {
+                    "name": "Nariai",
+                    "description": "Subjektai, kuriuos reikia pridėti į grupę."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Pašalinti narius iš grupės",
+            "description": "Išima subjektus iš per sąsają sukurtos grupės, kol Home Assistant veikia. Nurodžius tai, ko grupėje nėra, niekas nenutinka, todėl taip galima išvalyti ir nebeegzistuojantį narį.",
+            "fields": {
+                "group": {
+                    "name": "Grupė",
+                    "description": "Grupė, iš kurios juos išimti."
+                },
+                "members": {
+                    "name": "Nariai",
+                    "description": "Subjektai, kuriuos reikia pašalinti iš grupės."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Nustatyti grupės narius",
+            "description": "Pakeičia per sąsają sukurtos grupės narius nurodytaisiais, kol Home Assistant veikia.",
+            "fields": {
+                "group": {
+                    "name": "Grupė",
+                    "description": "Grupė, kurią reikia pakeisti."
+                },
+                "members": {
+                    "name": "Nariai",
+                    "description": "Subjektai, kuriuos grupė turėtų turėti nuo šiol."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Laukti sąlygos",
+            "description": "Laukia, kol sąlyga taps teisinga. Jei ji jau teisinga, grįžta iš karto.",
+            "fields": {
+                "condition": {
+                    "name": "Sąlyga",
+                    "description": "Sąlyga, kurios laukiama."
+                },
+                "timeout": {
+                    "name": "Laukimo laikas",
+                    "description": "Kiek laukti prieš pasiduodant. Jei nenurodyta, laukiama neribotai."
+                }
+            }
+        },
+        "boo": {
+            "name": "Bū!",
+            "description": "Šis veiksmas išgąsdina Home Assistant. Jo vykdymas visada nepavyks."
+        },
+        "random_fail": {
+            "name": "Atsitiktinė nesėkmė",
+            "description": "Šio veiksmo vykdymas atsitiktinai nepavyks."
+        },
+        "blueprint_import": {
+            "name": "Importuoti brėžinį",
+            "description": "Importuoja brėžinį.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "URL, iš kurio importuoti brėžinį."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Atidėti",
+            "description": "Kuriam laikui išjungia automatizaciją ir vėl ją įjungia, kai laikas baigiasi.",
+            "fields": {
+                "duration": {
+                    "name": "Trukmė",
+                    "description": "Kiek laiko automatizacija lieka išjungta. Kai laikas baigiasi, ji vėl įsijungia pati, net jei tarpe Home Assistant buvo paleistas iš naujo."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Įjungti tam tikram laikui",
+            "description": "Kuriam laikui įjungia automatizaciją ir vėl ją išjungia, kai laikas baigiasi.",
+            "fields": {
+                "duration": {
+                    "name": "Trukmė",
+                    "description": "Kiek laiko automatizacija lieka įjungta. Kai laikas baigiasi, ji vėl išsijungia pati, net jei tarpe Home Assistant buvo paleistas iš naujo."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Nustatyti ryškumą",
+            "description": "Nustato jau įjungtų šviestuvų ryškumą, o išjungtų neliečia.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Ryškumas",
+                    "description": "Nustatomas ryškumas procentais. Grupės reguliuojamos šviestuvas po šviestuvo, todėl išjungtas šviestuvas lieka išjungtas."
+                },
+                "transition": {
+                    "name": "Perėjimas",
+                    "description": "Kiek laiko turėtų trukti pokytis, sekundėmis."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Padidinti ryškumą",
+            "description": "Pašviesina jau įjungtus šviestuvus, o išjungtų neliečia.",
+            "fields": {
+                "step_pct": {
+                    "name": "Žingsnis",
+                    "description": "Kiek ryškiau padaryti, procentais. Kiekvienas šviestuvas žengia nuo savo lygio, todėl grupė išlaiko savo formą, o ne susilygina."
+                },
+                "transition": {
+                    "name": "Perėjimas",
+                    "description": "Kiek laiko turėtų trukti pokytis, sekundėmis."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Sumažinti ryškumą",
+            "description": "Pritemdo jau įjungtus šviestuvus ir sustoja ties blankiausiu jų lygiu, užuot juos išjungęs.",
+            "fields": {
+                "step_pct": {
+                    "name": "Žingsnis",
+                    "description": "Kiek blankiau padaryti, procentais. Kiekvienas šviestuvas žengia nuo savo lygio, todėl grupė išlaiko savo formą, o ne susilygina."
+                },
+                "transition": {
+                    "name": "Perėjimas",
+                    "description": "Kiek laiko turėtų trukti pokytis, sekundėmis."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Nustatyti spalvą",
+            "description": "Nustato jau įjungtų šviestuvų spalvą, o išjungtų ar spalvų nemokančių neliečia.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Spalva",
+                    "description": "Nustatoma spalva. Spalvų nemokantys šviestuvai praleidžiami, o ne perjungiami į baltą."
+                },
+                "transition": {
+                    "name": "Perėjimas",
+                    "description": "Kiek laiko turėtų trukti pokytis, sekundėmis."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Nustatyti spalvos temperatūrą",
+            "description": "Nustato jau įjungtų šviestuvų spalvos temperatūrą, kiekvienam jo iš tiesų pasiekiamame intervale.",
+            "fields": {
+                "kelvin": {
+                    "name": "Spalvos temperatūra",
+                    "description": "Nustatoma spalvos temperatūra. Kiekvienas šviestuvas laikomas savo intervale, nes vienos lempos šiltai balta yra skaičius, kurio kita negali pasiekti."
+                },
+                "transition": {
+                    "name": "Perėjimas",
+                    "description": "Kiek laiko turėtų trukti pokytis, sekundėmis."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Nustatyti efektą",
+            "description": "Nustato efektą jau įjungtiems šviestuvams, kurie iš tiesų jį turi.",
+            "fields": {
+                "effect": {
+                    "name": "Efektas",
+                    "description": "Nustatomo efekto pavadinimas. Efektų pavadinimai skiriasi pagal gamintoją, todėl šio efekto neturintys šviestuvai paliekami kaip yra."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Ištrinti įvykį",
+            "description": "Ištrina įvykius iš kalendoriaus, surastus pagal pavadinimą ar uid tam tikrame laiko tarpe. Grąžina tai, ką ištrynė, įskaitant uid.",
+            "fields": {
+                "summary": {
+                    "name": "Santrauka",
+                    "description": "Ištrinamų įvykių pavadinimas, tiksliai toks, koks yra kalendoriuje."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Ištrinamo įvykio identifikatorius, jei jį turite."
+                },
+                "start_date_time": {
+                    "name": "Pradžios data ir laikas",
+                    "description": "Nuo kur pradėti ieškoti. Numatytoji reikšmė: dabar."
+                },
+                "end_date_time": {
+                    "name": "Pabaigos data ir laikas",
+                    "description": "Kur baigti ieškoti. Nurodykite tai arba trukmę."
+                },
+                "duration": {
+                    "name": "Trukmė",
+                    "description": "Kaip toli ieškoti nuo pradžios. Nurodykite tai arba pabaigos datą ir laiką."
+                },
+                "whole_series": {
+                    "name": "Visa serija",
+                    "description": "Pasikartojančio įvykio atveju ištrinti visą seriją, o ne tik rastą pasikartojimą."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Atnaujinti įvykį",
+            "description": "Keičia įvykius kalendoriuje, surastus pagal pavadinimą ar uid tam tikrame laiko tarpe. Grąžina tai, ką pakeitė, įskaitant uid.",
+            "fields": {
+                "summary": {
+                    "name": "Santrauka",
+                    "description": "Keičiamų įvykių pavadinimas, tiksliai toks, koks yra kalendoriuje."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Keičiamo įvykio identifikatorius, jei jį turite."
+                },
+                "start_date_time": {
+                    "name": "Pradžios data ir laikas",
+                    "description": "Nuo kur pradėti ieškoti. Numatytoji reikšmė: dabar."
+                },
+                "end_date_time": {
+                    "name": "Pabaigos data ir laikas",
+                    "description": "Kur baigti ieškoti. Nurodykite tai arba trukmę."
+                },
+                "duration": {
+                    "name": "Trukmė",
+                    "description": "Kaip toli ieškoti nuo pradžios. Nurodykite tai arba pabaigos datą ir laiką."
+                },
+                "new_summary": {
+                    "name": "Nauja santrauka",
+                    "description": "Pavadinimas, kurį suteikti įvykiams."
+                },
+                "description": {
+                    "name": "Aprašymas",
+                    "description": "Aprašymas, kurį suteikti įvykiams."
+                },
+                "location": {
+                    "name": "Vieta",
+                    "description": "Vieta, kurią suteikti įvykiams."
+                },
+                "new_start": {
+                    "name": "Nauja pradžia",
+                    "description": "Kada įvykiai prasideda vietoj ankstesnio laiko. Jų trukmė išlieka, nebent nurodoma ir nauja pabaiga."
+                },
+                "new_end": {
+                    "name": "Nauja pabaiga",
+                    "description": "Kada įvykiai baigiasi vietoj ankstesnio laiko."
+                },
+                "shift": {
+                    "name": "Poslinkis",
+                    "description": "Perkelti įvykius tiek vėliau arba, jei reikšmė neigiama, anksčiau. Vietoj naujos pradžios ar pabaigos."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Padidinti temperatūrą",
+            "description": "Pakelia termostato nustatytą vertę vienu žingsniu, o šildančiam ir vėsinančiam termostatui abi nustatytas vertes. Išjungtas termostatas lieka išjungtas.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Kiek pakeisti. Jei nenurodyta, naudojamas paties termostato žingsnis, o jei jo nėra, pusė laipsnio (vienas Farenheito skalėje)."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Sumažinti temperatūrą",
+            "description": "Nuleidžia termostato nustatytą vertę vienu žingsniu, o šildančiam ir vėsinančiam termostatui abi nustatytas vertes. Išjungtas termostatas lieka išjungtas.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Kiek pakeisti. Jei nenurodyta, naudojamas paties termostato žingsnis, o jei jo nėra, pusė laipsnio (vienas Farenheito skalėje)."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Sukurti sritį",
+            "description": "Čia pat sukuria naują sritį.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Kuriamos srities pavadinimas."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Srities piktograma."
+                },
+                "aliases": {
+                    "name": "Slapyvardžiai",
+                    "description": "Srities slapyvardžių sąrašas. Naudinga, jei sritį norite vadinti kita kalba ar kitu vardu."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Pridėti slapyvardį sričiai",
+            "description": "Prideda slapyvardį sričiai.",
+            "fields": {
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Srities, kuriai pridedamas slapyvardis, ID."
+                },
+                "alias": {
+                    "name": "Slapyvardis",
+                    "description": "Slapyvardis (arba slapyvardžių sąrašas), kurį reikia pridėti sričiai."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Pašalinti slapyvardį iš srities",
+            "description": "Pašalina slapyvardį iš srities.",
+            "fields": {
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Srities, iš kurios šalinamas slapyvardis, ID."
+                },
+                "alias": {
+                    "name": "Slapyvardis",
+                    "description": "Slapyvardis (arba slapyvardžių sąrašas), kurį reikia pašalinti iš srities."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Nustato srities slapyvardžius",
+            "description": "Nustato srities slapyvardžius. Perrašo ir pašalina visus esamus slapyvardžius, visiškai juos pakeisdamas naujais.",
+            "fields": {
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Srities, kuriai nustatomi slapyvardžiai, ID."
+                },
+                "aliases": {
+                    "name": "Slapyvardžiai",
+                    "description": "Slapyvardžiai, kuriuos nustatyti sričiai."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Pridėti prietaisą į sritį",
+            "description": "Prideda prietaisą į sritį. Atkreipkite dėmesį: jei prietaisas jau yra kokioje nors srityje, jis bus pašalintas iš ankstesnės srities.",
+            "fields": {
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Srities, į kurią pridedamas prietaisas, ID."
+                },
+                "device_id": {
+                    "name": "Prietaiso ID",
+                    "description": "Prietaiso (-ų), kurį (-iuos) reikia pridėti į sritį, ID."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Pašalinti prietaisą iš srities",
+            "description": "Pašalina prietaisą iš srities. Kadangi prietaisas gali būti tik vienoje srityje, šiam iškvietimui sritis nurodyti nereikia.",
+            "fields": {
+                "device_id": {
+                    "name": "Prietaiso ID",
+                    "description": "Prietaiso, iš kurio šalinama sritis, ID."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Pridėti subjektą į sritį",
+            "description": "Prideda subjektą į sritį. Atkreipkite dėmesį: jei subjektas jau yra kokioje nors srityje, jis bus pašalintas iš ankstesnės srities. Tai nustelbs sritį, kurioje yra šį subjektą teikiantis prietaisas.",
+            "fields": {
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Srities, į kurią pridedamas subjektas, ID."
+                },
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Subjekto (ar subjektų), kurį reikia pridėti į sritį, ID."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Pašalinti subjektą iš srities",
+            "description": "Pašalina subjektą iš srities. Kadangi subjektas gali būti tik vienoje srityje, šiam iškvietimui sritis nurodyti nereikia. Atkreipkite dėmesį: po šio iškvietimo subjektas vis tiek bus jį teikiančio prietaiso srityje.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Subjekto (ar subjektų), iš kurio šalinama sritis, ID."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Ištrinti sritį",
+            "description": "Čia pat ištrina sritį.",
+            "fields": {
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Ištrinamos srities ID."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Išjungti integraciją",
+            "description": "Išjungia integracijos įrašus: pavienius arba visus integracijos įrašus.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integracijos įrašas",
+                    "description": "Išjungiamas integracijos įrašas."
+                },
+                "domain": {
+                    "name": "Integracija",
+                    "description": "Išjungti visus šių integracijų įrašus, įskaitant vėliau pridėtus."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Įjungti integraciją",
+            "description": "Įjungia integracijos įrašus: pavienius arba visus integracijos įrašus.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integracijos įrašas",
+                    "description": "Įjungiamas integracijos įrašas."
+                },
+                "domain": {
+                    "name": "Integracija",
+                    "description": "Įjungti visus šių integracijų įrašus, įskaitant vėliau pridėtus."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Išjungti prietaisą",
+            "description": "Čia pat išjungia prietaisą.",
+            "fields": {
+                "device_id": {
+                    "name": "Prietaisas",
+                    "description": "Išjungiamas (-i) prietaisas (-ai)."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Įjungti prietaisą",
+            "description": "Čia pat įjungia prietaisą.",
+            "fields": {
+                "device_id": {
+                    "name": "Prietaiso ID",
+                    "description": "Tikrasis įjungiamo prietaiso ID. Home Assistant prietaisų parinkiklis išjungtų prietaisų nerodo. Kelis ID galima pateikti YAML sąrašu."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Išjungti naudotoją",
+            "description": "Išjungia naudotojo paskyrą, neleisdamas jam prisijungti.",
+            "fields": {
+                "user_id": {
+                    "name": "Naudotojo ID",
+                    "description": "Išjungiamo (-ų) naudotojo (-ų) ID."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Įjungti naudotoją",
+            "description": "Įjungia naudotojo paskyrą, leisdamas jam prisijungti.",
+            "fields": {
+                "user_id": {
+                    "name": "Naudotojo ID",
+                    "description": "Įjungiamo (-ų) naudotojo (-ų) ID."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Atnaujinti subjekto ID",
+            "description": "Čia pat atnaujina subjekto ID.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Atnaujinamas (-i) subjektas (-ai)."
+                },
+                "new_entity_id": {
+                    "name": "Naujas subjekto ID",
+                    "description": "Naujas subjekto ID."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Išjungti subjektą",
+            "description": "Čia pat išjungia subjektą (ar subjektus).",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Išjungiamas (-i) subjektas (-ai)."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Įjungti subjektą",
+            "description": "Čia pat įjungia subjektą (ar subjektus).",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Įjungiamas (-i) subjektas (-ai)."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Atskleisti subjektą asistentams",
+            "description": "Atskleidžia subjektą (ar subjektus) balso asistentams.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Atskleidžiamas (-i) subjektas (-ai)."
+                },
+                "assistants": {
+                    "name": "Asistentai",
+                    "description": "Asistentas (-ai), kuriam (-iems) tai taikoma."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Paslėpti subjektą",
+            "description": "Čia pat paslepia subjektą (ar subjektus).",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Slepiamas (-i) subjektas (-ai)."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Pervadinti subjektą",
+            "description": "Čia pat pervadina subjektą (ar subjektus).",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Pervadinamas (-i) subjektas (-ai)."
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujas subjekto (-ų) pavadinimas."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Nustatyti subjekto piktogramą",
+            "description": "Čia pat nustato subjekto (ar subjektų) piktogramą. Nustatykite null, kad grįžtumėte prie integracijos suteiktos piktogramos.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Subjektas (-ai), kurio (-ių) piktograma nustatoma."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Nauja piktograma arba null, kad būtų naudojama pačios integracijos piktograma."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Pridėti slapyvardį subjektui",
+            "description": "Prideda vieną ar kelis slapyvardžius subjektui (ar subjektams), kuriais jį gali vadinti balso asistentai.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Subjektas (-ai), kuriam (-iems) pridedamas (-i) slapyvardis (-džiai)."
+                },
+                "alias": {
+                    "name": "Slapyvardis",
+                    "description": "Pridedamas (-i) slapyvardis (-džiai)."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Pašalinti slapyvardį iš subjekto",
+            "description": "Pašalina vieną ar kelis slapyvardžius iš subjekto (ar subjektų).",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Subjektas (-ai), iš kurio (-ių) šalinamas (-i) slapyvardis (-džiai)."
+                },
+                "alias": {
+                    "name": "Slapyvardis",
+                    "description": "Šalinamas (-i) slapyvardis (-džiai)."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Nustatyti subjekto slapyvardžius",
+            "description": "Pakeičia subjekto (ar subjektų) slapyvardžius. Ar paties subjekto pavadinimas laikomas slapyvardžiu, lieka kaip buvo.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Subjektas (-ai), kurio (-ių) slapyvardžiai nustatomi."
+                },
+                "aliases": {
+                    "name": "Slapyvardžiai",
+                    "description": "Nustatomi slapyvardžiai."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Nebeatskleisti subjekto asistentams",
+            "description": "Nustoja atskleisti subjektą (ar subjektus) balso asistentams.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Subjektas (-ai), kurio (-ių) nebereikia atskleisti."
+                },
+                "assistants": {
+                    "name": "Asistentai",
+                    "description": "Asistentas (-ai), kuriam (-iems) tai taikoma."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Rodyti subjektą",
+            "description": "Čia pat vėl parodo paslėptą subjektą (ar subjektus).",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Vėl rodomas (-i) subjektas (-ai)."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Sukurti aukštą",
+            "description": "Čia pat sukuria naują aukštą.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Kuriamo aukšto pavadinimas."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Aukšto piktograma."
+                },
+                "level": {
+                    "name": "Lygis",
+                    "description": "Kuriame jūsų namų lygyje yra aukštas."
+                },
+                "aliases": {
+                    "name": "Slapyvardžiai",
+                    "description": "Aukšto slapyvardžių sąrašas. Naudinga, jei aukštą norite vadinti kita kalba ar kitu vardu."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Pridėti slapyvardį aukštui",
+            "description": "Prideda slapyvardį aukštui.",
+            "fields": {
+                "floor_id": {
+                    "name": "Aukšto ID",
+                    "description": "Aukšto, kuriam pridedamas slapyvardis, ID."
+                },
+                "alias": {
+                    "name": "Slapyvardis",
+                    "description": "Slapyvardis (arba slapyvardžių sąrašas), kurį reikia pridėti aukštui."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Pašalinti slapyvardį iš aukšto",
+            "description": "Pašalina slapyvardį iš aukšto.",
+            "fields": {
+                "floor_id": {
+                    "name": "Aukšto ID",
+                    "description": "Aukšto, iš kurio šalinamas slapyvardis, ID."
+                },
+                "alias": {
+                    "name": "Slapyvardis",
+                    "description": "Slapyvardis (arba slapyvardžių sąrašas), kurį reikia pašalinti iš aukšto."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Nustato aukšto slapyvardžius",
+            "description": "Nustato aukšto slapyvardžius. Perrašo ir pašalina visus esamus slapyvardžius, visiškai juos pakeisdamas naujais.",
+            "fields": {
+                "floor_id": {
+                    "name": "Aukšto ID",
+                    "description": "Aukšto, kuriam nustatomi slapyvardžiai, ID."
+                },
+                "aliases": {
+                    "name": "Slapyvardžiai",
+                    "description": "Slapyvardžiai, kuriuos nustatyti aukštui."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Pridėti sritį į aukštą",
+            "description": "Prideda sritį į aukštą. Atkreipkite dėmesį: jei sritis jau yra kokiame nors aukšte, ji bus pašalinta iš ankstesnio aukšto.",
+            "fields": {
+                "floor_id": {
+                    "name": "Aukšto ID",
+                    "description": "Aukšto, į kurį pridedama sritis, ID."
+                },
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Srities (-čių), kurią (-ias) reikia pridėti į aukštą, ID."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Pašalinti sritį iš aukšto",
+            "description": "Pašalina sritį iš aukšto. Kadangi sritis gali būti tik viename aukšte, šiam iškvietimui aukšto nurodyti nereikia.",
+            "fields": {
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Srities, iš kurios šalinamas aukštas, ID."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Ištrinti aukštą",
+            "description": "Čia pat ištrina aukštą.",
+            "fields": {
+                "floor_id": {
+                    "name": "Aukšto ID",
+                    "description": "Ištrinamo aukšto ID."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Sukurti etiketę",
+            "description": "Čia pat sukuria naują etiketę.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Kuriamos etiketės pavadinimas."
+                },
+                "description": {
+                    "name": "Aprašymas",
+                    "description": "Etiketės aprašymas."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Etiketės piktograma."
+                },
+                "color": {
+                    "name": "Spalva",
+                    "description": "Etiketės spalva. Gali būti spalvos pavadinimas iš sąrašo arba šešioliktainis spalvos kodas (pavyzdžiui, #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Atnaujinti etiketę",
+            "description": "Čia pat atnaujina esamą etiketę. Tai, ko nenurodote, išlaiko turimą reikšmę. Aprašymą, piktogramą ir spalvą galima išvalyti nustačius juos į null.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketės ID",
+                    "description": "Atnaujinamos etiketės ID."
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujas etiketės pavadinimas."
+                },
+                "description": {
+                    "name": "Aprašymas",
+                    "description": "Naujas etiketės aprašymas."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Nauja etiketės piktograma."
+                },
+                "color": {
+                    "name": "Spalva",
+                    "description": "Etiketės spalva. Gali būti spalvos pavadinimas iš sąrašo arba šešioliktainis spalvos kodas (pavyzdžiui, #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Pridėti etiketę sričiai",
+            "description": "Prideda etiketę sričiai. Jei pateikiamos kelios etiketės ar kelios sritys, pridedami visi deriniai.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketės ID",
+                    "description": "Etikečių, kurias reikia pridėti sritims, ID (vienas ar keli)."
+                },
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Sričių, kurioms reikia pridėti etiketes, ID (vienas ar keli)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Pridėti etiketę prietaisui",
+            "description": "Prideda etiketę prietaisui. Jei pateikiamos kelios etiketės ar keli prietaisai, pridedami visi deriniai.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketės ID",
+                    "description": "Etikečių, kurias reikia pridėti prietaisams, ID (vienas ar keli)."
+                },
+                "device_id": {
+                    "name": "Prietaiso ID",
+                    "description": "Prietaisų, kuriems reikia pridėti etiketes, ID (vienas ar keli)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Pridėti etiketę subjektui",
+            "description": "Prideda etiketę subjektui. Jei pateikiamos kelios etiketės ar keli subjektai, pridedami visi deriniai.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketės ID",
+                    "description": "Etikečių, kurias reikia pridėti subjektams, ID (vienas ar keli)."
+                },
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Subjektų, kuriems reikia pridėti etiketes, ID (vienas ar keli)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Pašalinti etiketę iš srities",
+            "description": "Pašalina etiketę iš srities. Jei pateikiamos kelios etiketės ar kelios sritys, pašalinami visi deriniai.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketės ID",
+                    "description": "Etikečių, kurias reikia pašalinti iš sričių, ID (vienas ar keli)."
+                },
+                "area_id": {
+                    "name": "Srities ID",
+                    "description": "Sričių, iš kurių reikia pašalinti etiketes, ID (vienas ar keli)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Pašalinti etiketę iš prietaiso",
+            "description": "Pašalina etiketę iš prietaiso. Jei pateikiamos kelios etiketės ar keli prietaisai, pašalinami visi deriniai.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketės ID",
+                    "description": "Etikečių, kurias reikia pašalinti iš prietaisų, ID (vienas ar keli)."
+                },
+                "device_id": {
+                    "name": "Prietaiso ID",
+                    "description": "Prietaisų, iš kurių reikia pašalinti etiketes, ID (vienas ar keli)."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Pašalinti etiketę iš subjekto",
+            "description": "Pašalina etiketę iš subjekto. Jei pateikiamos kelios etiketės ar keli subjektai, pašalinami visi deriniai.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketės ID",
+                    "description": "Etikečių, kurias reikia pašalinti iš subjektų, ID (vienas ar keli)."
+                },
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Subjektų, iš kurių reikia pašalinti etiketes, ID (vienas ar keli)."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Sukurti kategoriją",
+            "description": "Čia pat sukuria naują kategoriją automatizacijoms, scenarijams, scenoms ar pagalbininkams. Grąžina naujos kategorijos ID.",
+            "fields": {
+                "scope": {
+                    "name": "Taikymo sritis",
+                    "description": "Kur naudojama kategorija."
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Kuriamos kategorijos pavadinimas."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Kategorijos piktograma."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Atnaujinti kategoriją",
+            "description": "Čia pat atnaujina esamą kategoriją. Tai, ko nenurodote, išlaiko turimą reikšmę. Piktogramą galima išvalyti nustačius ją į null.",
+            "fields": {
+                "scope": {
+                    "name": "Taikymo sritis",
+                    "description": "Kur naudojama kategorija."
+                },
+                "category_id": {
+                    "name": "Kategorija",
+                    "description": "Atnaujinamos kategorijos ID arba pavadinimas."
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujas kategorijos pavadinimas."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Nauja kategorijos piktograma."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Ištrinti kategoriją",
+            "description": "Ištrina kategoriją. Viskas, kas joje buvo, lieka be kategorijos.",
+            "fields": {
+                "scope": {
+                    "name": "Taikymo sritis",
+                    "description": "Kur naudojama kategorija."
+                },
+                "category_id": {
+                    "name": "Kategorija",
+                    "description": "Ištrinamos kategorijos ID arba pavadinimas."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Priskirti kategoriją subjektui",
+            "description": "Įdeda automatizaciją, scenarijų, sceną ar pagalbininką į kategoriją. Tai pakeičia ankstesnę kategoriją, nes kiekvienas gali būti tik vienoje.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategorija",
+                    "description": "Kategorijos ID arba pavadinimas."
+                },
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Automatizacijos, scenarijai, scenos ar pagalbininkai, kuriuos reikia įdėti į kategoriją."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Pašalinti kategoriją iš subjekto",
+            "description": "Išima automatizaciją, scenarijų, sceną ar pagalbininką iš kategorijos. Tai, kas yra kitoje kategorijoje, paliekama ramybėje.",
+            "fields": {
+                "category_id": {
+                    "name": "Kategorija",
+                    "description": "Kategorijos ID arba pavadinimas."
+                },
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Automatizacijos, scenarijai, scenos ar pagalbininkai, kuriuos reikia išimti iš kategorijos."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Ištrinti etiketę",
+            "description": "Čia pat ištrina etiketę.",
+            "fields": {
+                "label_id": {
+                    "name": "Etiketės ID",
+                    "description": "Ištrinamos etiketės ID."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Ignoruoti visus šiuo metu aptiktus prietaisus",
+            "description": "Ignoruoja visus šiuo metu aptiktus prietaisus, rodomus integracijų prietaisų skydelyje. Po to aptikti prietaisai nebus ignoruojami.",
+            "fields": {
+                "domain": {
+                    "name": "Integracijos domenas",
+                    "description": "Integracijos domenas, kurio visus aptiktus prietaisus reikia ignoruoti. Jei nenurodyta, ignoruojami visi domenai."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Išjungti atnaujinimų užklausas",
+            "description": "Išjungia integracijos įrašo periodines atnaujinimų užklausas.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integracijos įrašas",
+                    "description": "Integracijos įrašas, kuriam išjungiamos užklausos."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Įjungti atnaujinimų užklausas",
+            "description": "Įjungia integracijos įrašo periodines atnaujinimų užklausas.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Integracijos įrašas",
+                    "description": "Integracijos įrašas, kuriam įjungiamos užklausos."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Ištrinti visus našlaičius subjektus",
+            "description": "Ištrina visus našlaičius subjektus, kurių nebeteikia jokia integracija. Atkreipkite dėmesį: jei integracija ką tik pašalinta, gali reikėti paleisti Home Assistant iš naujo, kad jis suprastų, jog jie našlaičiai.\n**ĮSPĖJIMAS** Subjektai galėjo būti pažymėti kaip našlaičiai todėl, kad integracija neprisijungusi arba neveikia nuo Home Assistant paleidimo. Šis veiksmas ištrins ir tuos subjektus."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Išvardyti visus našlaičius duomenų bazės subjektus",
+            "description": "Išvardija visus našlaičius duomenų bazės subjektus, kurių nepriskiria sau jokia integracija."
+        },
+        "homeassistant_restart": {
+            "name": "Paleisti iš naujo",
+            "description": "Home Assistant paleidimo iš naujo veiksmas.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Saugusis režimas",
+                    "description": "Ar paleisti iš naujo saugiuoju režimu. Tai išjungs visas pasirinktines integracijas ir sąsajos modulius."
+                },
+                "force": {
+                    "name": "Priverstinis paleidimas iš naujo",
+                    "description": "Priverstinai paleisti iš naujo. ĮSPĖJIMAS! Home Assistant nebus tvarkingai išjungtas, bus praleisti konfigūracijos patikrinimai ir ignoruojamos vykdomos duomenų bazės migracijos. Naudokite tik tada, jei žinote, ką darote."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Importuoti statistiką",
+            "description": "Importuoja ilgalaikę statistiką.",
+            "fields": {
+                "statistic_id": {
+                    "name": "Statistikos ID",
+                    "description": "Statistikos ID (subjekto ID), kuriam importuojama."
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Statistikos pavadinimas."
+                },
+                "source": {
+                    "name": "Šaltinis",
+                    "description": "Statistikos duomenų šaltinis."
+                },
+                "unit_of_measurement": {
+                    "name": "Matavimo vienetas",
+                    "description": "Statistikos matavimo vienetas."
+                },
+                "has_mean": {
+                    "name": "Turi vidurkį",
+                    "description": "Ar statistika turi vidurkio reikšmę."
+                },
+                "has_sum": {
+                    "name": "Turi sumą",
+                    "description": "Ar statistika turi sumos reikšmę."
+                },
+                "stats": {
+                    "name": "Statistika",
+                    "description": "Importuojamos statistikos susiejimų / žodynų sąrašas. Žodynuose turi būti raktas „start“ su datos ir laiko eilute; kitos galimos parinktys yra „mean“, „sum“, „min“, „max“, „last_reset“ ir „state“. Visos jos neprivalomos ir yra sveikasis arba slankiojo kablelio skaičius, išskyrus „last_reset“, kuri yra datos ir laiko eilutė."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Pasirinkti atsitiktinę parinktį",
+            "description": "Pasirenka atsitiktinę pasirinkimo subjekto parinktį.",
+            "fields": {
+                "options": {
+                    "name": "Parinktys",
+                    "description": "Apriboja parinktis, iš kurių renkamasi. Jei nenurodyta, atsižvelgiama į visas parinktis."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Sukurti įvesties pasirinkimą",
+            "description": "Čia pat sukuria naują įvesties pasirinkimo (išskleidžiamojo meniu) pagalbininką. Grąžina naujo įvesties pasirinkimo subjekto ID.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujo įvesties pasirinkimo pavadinimas."
+                },
+                "input_select_id": {
+                    "name": "Įvesties pasirinkimo subjekto ID",
+                    "description": "Naujo įvesties pasirinkimo subjekto ID. Priešdėlis input_select. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "options": {
+                    "name": "Parinktys",
+                    "description": "Parinktys, iš kurių renkamasi. Kiekviena parinktis gali būti tik kartą."
+                },
+                "initial": {
+                    "name": "Pradinė parinktis",
+                    "description": "Parinktis, nuo kurios pradedama; ji turi būti viena iš parinkčių. Jei nenurodyta, išlaikoma parinktis, buvusi prieš Home Assistant paleidimą iš naujo."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Naujo įvesties pasirinkimo piktograma."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Ištrinti įvesties pasirinkimą",
+            "description": "Ištrina įvesties pasirinkimo pagalbininkus, sukurtus sąsajoje arba veiksmu „Sukurti įvesties pasirinkimą“. YAML nustatytų įvesties pasirinkimų Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinamas (-i) įvesties pasirinkimas (-ai)."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Pasirinkti atsitiktinę parinktį",
+            "description": "Pasirenka atsitiktinę input_select subjekto parinktį.",
+            "fields": {
+                "options": {
+                    "name": "Parinktys",
+                    "description": "Apriboja parinktis, iš kurių renkamasi. Jei nenurodyta, atsižvelgiama į visas parinktis."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Apversti parinktis",
+            "description": "Apverčia `input_select` subjekto pasirenkamų parinkčių tvarką nuo galo į priekį. Tai nėra išsaugoma ir bus atšaukta perkrovus arba paleidus Home Assistant iš naujo."
+        },
+        "input_select_shuffle": {
+            "name": "Sumaišyti parinktis",
+            "description": "Sumaišo `input_select` subjekto pasirenkamų parinkčių sąrašą. Tai nėra išsaugoma ir bus atšaukta perkrovus arba paleidus Home Assistant iš naujo."
+        },
+        "input_select_sort": {
+            "name": "Rikiuoti parinktis",
+            "description": "Surikiuoja `input_select` subjekto pasirenkamų parinkčių sąrašą. Tai nėra išsaugoma ir bus atšaukta perkrovus arba paleidus Home Assistant iš naujo."
+        },
+        "number_decrement": {
+            "name": "Sumažinti reikšmę",
+            "description": "Sumažina skaičiaus subjekto reikšmę tam tikru dydžiu.",
+            "fields": {
+                "amount": {
+                    "name": "Dydis",
+                    "description": "Dydis, kuriuo sumažinti skaičių. Jei nenurodyta, naudojamas skaičiaus subjekto žingsnis."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Padidinti reikšmę",
+            "description": "Padidina skaičiaus subjekto reikšmę tam tikru dydžiu.",
+            "fields": {
+                "amount": {
+                    "name": "Dydis",
+                    "description": "Dydis, kuriuo padidinti skaičių. Jei nenurodyta, naudojamas skaičiaus subjekto žingsnis."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Nustatyti maksimalią reikšmę",
+            "description": "Nustato skaičiaus subjektą į jo maksimalią reikšmę."
+        },
+        "number_min": {
+            "name": "Nustatyti minimalią reikšmę",
+            "description": "Nustato skaičiaus subjektą į jo minimalią reikšmę."
+        },
+        "input_number_decrement": {
+            "name": "Sumažinti reikšmę",
+            "description": "Sumažina įvesties skaičiaus subjekto reikšmę tam tikru dydžiu.",
+            "fields": {
+                "amount": {
+                    "name": "Dydis",
+                    "description": "Dydis, kuriuo sumažinti įvesties skaičių. Jei nenurodyta, naudojamas skaičiaus subjekto žingsnis."
+                },
+                "cycle": {
+                    "name": "Ciklas",
+                    "description": "Tęsti nuo kito intervalo galo, užuot sustojus ties šiuo, taip pat, kaip kitos parinkties pasirinkimas cikliškai keičia pasirinkimą."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Padidinti reikšmę",
+            "description": "Padidina įvesties skaičiaus subjekto reikšmę tam tikru dydžiu.",
+            "fields": {
+                "amount": {
+                    "name": "Dydis",
+                    "description": "Dydis, kuriuo padidinti įvesties skaičių. Jei nenurodyta, naudojamas skaičiaus subjekto žingsnis."
+                },
+                "cycle": {
+                    "name": "Ciklas",
+                    "description": "Tęsti nuo kito intervalo galo, užuot sustojus ties šiuo, taip pat, kaip kitos parinkties pasirinkimas cikliškai keičia pasirinkimą."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Nustatyti maksimalią reikšmę",
+            "description": "Nustato įvesties skaičiaus subjektą į jo maksimalią reikšmę."
+        },
+        "input_number_min": {
+            "name": "Nustatyti minimalią reikšmę",
+            "description": "Nustato įvesties skaičiaus subjektą į jo minimalią reikšmę."
+        },
+        "input_number_set_range": {
+            "name": "Nustatyti intervalą",
+            "description": "Pakeičia sąsajoje sukurto įvesties skaičiaus minimumą, maksimumą ar žingsnį, lygiai kaip jį redaguojant. Už naujo intervalo esanti reikšmė perkeliama į jį.",
+            "fields": {
+                "min": {
+                    "name": "Minimumas",
+                    "description": "Nauja minimali reikšmė."
+                },
+                "max": {
+                    "name": "Maksimumas",
+                    "description": "Nauja maksimali reikšmė."
+                },
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Naujas žingsnio dydis."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Sukurti skaitiklį",
+            "description": "Čia pat sukuria naują skaitiklio pagalbininką. Grąžina naujo skaitiklio subjekto ID.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujo skaitiklio pavadinimas."
+                },
+                "counter_id": {
+                    "name": "Skaitiklio subjekto ID",
+                    "description": "Naujo skaitiklio subjekto ID. Priešdėlis counter. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "initial": {
+                    "name": "Pradinė reikšmė",
+                    "description": "Reikšmė, nuo kurios skaitiklis pradeda ir į kurią grįžta atstatant."
+                },
+                "minimum": {
+                    "name": "Minimumas",
+                    "description": "Mažiausia reikšmė, iki kurios skaitiklis gali nusileisti. Nenurodykite, jei ribos nereikia."
+                },
+                "maximum": {
+                    "name": "Maksimumas",
+                    "description": "Didžiausia reikšmė, iki kurios skaitiklis gali pakilti. Nenurodykite, jei ribos nereikia."
+                },
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Kiek skaitiklis kaskart padidėja ar sumažėja."
+                },
+                "restore": {
+                    "name": "Atkurti",
+                    "description": "Atkurti skaitiklio reikšmę paleidžiant Home Assistant, užuot pradėjus iš naujo nuo pradinės reikšmės."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Naujo skaitiklio piktograma."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Ištrinti skaitiklį",
+            "description": "Ištrina skaitiklio pagalbininkus, sukurtus sąsajoje arba veiksmu „Sukurti skaitiklį“. YAML nustatytų skaitiklių Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinamas (-i) skaitiklis (-iai)."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Sukurti įvesties loginę reikšmę",
+            "description": "Čia pat sukuria naują įvesties loginės reikšmės (perjungiklio) pagalbininką. Grąžina naujos įvesties loginės reikšmės subjekto ID.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujos įvesties loginės reikšmės pavadinimas."
+                },
+                "input_boolean_id": {
+                    "name": "Įvesties loginės reikšmės subjekto ID",
+                    "description": "Naujos įvesties loginės reikšmės subjekto ID. Priešdėlis input_boolean. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "initial": {
+                    "name": "Pradinė reikšmė",
+                    "description": "Reikšmė, nuo kurios pradedama. Jei nenurodyta, išlaikoma reikšmė, buvusi prieš Home Assistant paleidimą iš naujo."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Naujos įvesties loginės reikšmės piktograma."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Ištrinti įvesties loginę reikšmę",
+            "description": "Ištrina įvesties loginės reikšmės pagalbininkus, sukurtus sąsajoje arba veiksmu „Sukurti įvesties loginę reikšmę“. YAML nustatytų įvesties loginių reikšmių Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinama (-os) įvesties loginė (-s) reikšmė (-s)."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Sukurti įvesties tekstą",
+            "description": "Čia pat sukuria naują įvesties teksto pagalbininką. Grąžina naujo įvesties teksto subjekto ID.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujo įvesties teksto pavadinimas."
+                },
+                "input_text_id": {
+                    "name": "Įvesties teksto subjekto ID",
+                    "description": "Naujo įvesties teksto subjekto ID. Priešdėlis input_text. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "initial": {
+                    "name": "Pradinė reikšmė",
+                    "description": "Tekstas, nuo kurio pradedama. Jei nenurodyta, išlaikomas tekstas, buvęs prieš Home Assistant paleidimą iš naujo."
+                },
+                "min": {
+                    "name": "Minimalus ilgis",
+                    "description": "Kiek trumpiausias gali būti tekstas."
+                },
+                "max": {
+                    "name": "Maksimalus ilgis",
+                    "description": "Kiek ilgiausias gali būti tekstas."
+                },
+                "pattern": {
+                    "name": "Šablonas",
+                    "description": "Reguliarusis reiškinys, kurį tekstas turi atitikti."
+                },
+                "mode": {
+                    "name": "Režimas",
+                    "description": "Rodyti tekstą tokį, koks yra, arba slėpti jį kaip slaptažodį."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Naujo įvesties teksto piktograma."
+                },
+                "unit_of_measurement": {
+                    "name": "Matavimo vienetas",
+                    "description": "Vienetas, rodomas šalia teksto."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Ištrinti įvesties tekstą",
+            "description": "Ištrina įvesties teksto pagalbininkus, sukurtus sąsajoje arba veiksmu „Sukurti įvesties tekstą“. YAML nustatytų įvesties tekstų Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinamas (-i) įvesties tekstas (-ai)."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Sukurti įvesties mygtuką",
+            "description": "Čia pat sukuria naują įvesties mygtuko pagalbininką. Grąžina naujo įvesties mygtuko subjekto ID.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujo įvesties mygtuko pavadinimas."
+                },
+                "input_button_id": {
+                    "name": "Įvesties mygtuko subjekto ID",
+                    "description": "Naujo įvesties mygtuko subjekto ID. Priešdėlis input_button. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Naujo įvesties mygtuko piktograma."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Ištrinti įvesties mygtuką",
+            "description": "Ištrina įvesties mygtuko pagalbininkus, sukurtus sąsajoje arba veiksmu „Sukurti įvesties mygtuką“. YAML nustatytų įvesties mygtukų Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinamas (-i) įvesties mygtukas (-ai)."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Sukurti įvesties datą ir laiką",
+            "description": "Čia pat sukuria naują įvesties datos ir laiko pagalbininką, saugantį datą, laiką arba abu. Grąžina naujos įvesties datos ir laiko subjekto ID.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujos įvesties datos ir laiko pavadinimas."
+                },
+                "input_datetime_id": {
+                    "name": "Įvesties datos ir laiko subjekto ID",
+                    "description": "Naujos įvesties datos ir laiko subjekto ID. Priešdėlis input_datetime. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "has_date": {
+                    "name": "Turi datą",
+                    "description": "Ar saugoma data. Bent viena iš datos ir laiko turi būti įjungta."
+                },
+                "has_time": {
+                    "name": "Turi laiką",
+                    "description": "Ar saugomas laikas. Bent viena iš datos ir laiko turi būti įjungta."
+                },
+                "initial": {
+                    "name": "Pradinė reikšmė",
+                    "description": "Data ir (arba) laikas, nuo kurių pradedama, pavyzdžiui, 2026-12-31, 08:30:00 arba 2026-12-31 08:30:00. Jei nenurodyta, išlaikoma reikšmė, buvusi prieš Home Assistant paleidimą iš naujo."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Naujos įvesties datos ir laiko piktograma."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Ištrinti įvesties datą ir laiką",
+            "description": "Ištrina įvesties datos ir laiko pagalbininkus, sukurtus sąsajoje arba veiksmu „Sukurti įvesties datą ir laiką“. YAML nustatytų įvesties datų ir laikų Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinama (-os) įvesties data ir laikas."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "Sukurti įvesties skaičių",
+            "description": "Čia pat sukuria naują įvesties skaičiaus pagalbininką. Grąžina naujo įvesties skaičiaus subjekto ID.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujo įvesties skaičiaus pagalbininko pavadinimas."
+                },
+                "input_number_id": {
+                    "name": "Įvesties skaičiaus subjekto ID",
+                    "description": "Naujo įvesties skaičiaus pagalbininko subjekto ID. Priešdėlis input_number. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "min": {
+                    "name": "Minimumas",
+                    "description": "Minimali įvesties skaičiaus reikšmė."
+                },
+                "max": {
+                    "name": "Maksimumas",
+                    "description": "Maksimali įvesties skaičiaus reikšmė."
+                },
+                "initial": {
+                    "name": "Pradinė reikšmė",
+                    "description": "Pradinė įvesties skaičiaus reikšmė paleidžiant Home Assistant."
+                },
+                "step": {
+                    "name": "Žingsnio dydis",
+                    "description": "Įvesties skaičiaus žingsnio dydis."
+                },
+                "mode": {
+                    "name": "Rodymo režimas",
+                    "description": "Įvesties skaičiaus rodymo režimas: slankiklis arba įvesties laukelis."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Įvesties skaičiaus pagalbininko piktograma."
+                },
+                "unit_of_measurement": {
+                    "name": "Matavimo vienetas",
+                    "description": "Įvesties skaičiaus matavimo vienetas."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Ištrinti įvesties skaičių",
+            "description": "Ištrina įvesties skaičiaus pagalbininkus, sukurtus sąsajoje arba veiksmu „Sukurti įvesties skaičių“. YAML nustatytų įvesties skaičių Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinamas (-i) įvesties skaičius (-iai)."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Pridėti įrenginio sekiklį",
+            "description": "Prideda įrenginio sekiklį asmeniui.",
+            "fields": {
+                "entity_id": {
+                    "name": "Asmuo",
+                    "description": "Asmens subjekto ID, kuriam pridedamas įrenginio sekiklis."
+                },
+                "device_tracker": {
+                    "name": "Įrenginio sekiklis",
+                    "description": "Įrenginio sekiklio subjekto ID, kurį reikia pridėti asmeniui."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Pašalinti įrenginio sekiklį",
+            "description": "Pašalina įrenginio sekiklį iš asmens.",
+            "fields": {
+                "entity_id": {
+                    "name": "Asmuo",
+                    "description": "Asmens subjekto ID, iš kurio šalinamas įrenginio sekiklis."
+                },
+                "device_tracker": {
+                    "name": "Įrenginio sekiklis",
+                    "description": "Įrenginio sekiklio subjekto ID, kurį reikia pašalinti iš asmens."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Sukurti problemą",
+            "description": "Rankiniu būdu sukuria ir iškelia problemą Home Assistant remontuose.",
+            "fields": {
+                "title": {
+                    "name": "Pavadinimas",
+                    "description": "Problemos pavadinimas."
+                },
+                "description": {
+                    "name": "Aprašymas",
+                    "description": "Problemos aprašymas. Palaikomas Markdown."
+                },
+                "issue_id": {
+                    "name": "Problemos ID",
+                    "description": "Problema gali turėti identifikatorių, pagal kurį prireikus vėliau galėsite ją atšaukti. Jis taip pat neleidžia sukurti pasikartojančių problemų. Jei nenurodyta, sugeneruojamas atsitiktinis ID."
+                },
+                "domain": {
+                    "name": "Domenas",
+                    "description": "Šiuo lauku galima nustatyti problemos domeną. Pavyzdžiui, numatytai (jei nenustatyta) naudojamas „spook“, todėl problemos logotipe / paveikslėlyje rodomas Spook. Jei nustatysite „homeassistant“, bus naudojamas Home Assistant logotipas, o nustatę „hue“, „zwave_js“, „mqtt“ ar kitą, gausite tos integracijos logotipą."
+                },
+                "severity": {
+                    "name": "Sunkumas",
+                    "description": "Problemos sunkumas. Pagal jį nustatomas problemos prioritetas. Jei nenustatyta, naudojamas „warning“."
+                },
+                "persistent": {
+                    "name": "Nuolatinė",
+                    "description": "Ar problema turėtų būti nuolatinė, tai yra išlikti po Home Assistant paleidimo iš naujo. Numatytai problemos nėra nuolatinės."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Ignoruoti visas problemas",
+            "description": "Ignoruoja visas šiuo metu Home Assistant remontuose iškeltas problemas arba tik tas, kurias iškėlė konkrečios integracijos.",
+            "fields": {
+                "domain": {
+                    "name": "Domenas",
+                    "description": "Ignoruoti tik šių integracijų iškeltas problemas."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Išvardyti problemas",
+            "description": "Išvardija šiuo metu Home Assistant remontuose iškeltas problemas su jų pavadinimais, kad automatizacija galėtų į jas reaguoti arba prietaisų skydelis jas parodyti.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Įtraukti ignoruotas",
+                    "description": "Išvardyti ir ignoruotas problemas."
+                },
+                "domain": {
+                    "name": "Domenas",
+                    "description": "Išvardyti tik šių integracijų iškeltas problemas."
+                },
+                "severity": {
+                    "name": "Sunkumas",
+                    "description": "Išvardyti tik tokio sunkumo problemas."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Pašalinti problemą",
+            "description": "Pašalina rankiniu būdu sukurtą Home Assistant remontų problemą. Šis veiksmas gali pašalinti tik problemas, sukurtas veiksmu `repairs_create`.",
+            "fields": {
+                "issue_id": {
+                    "name": "Problemos ID",
+                    "description": "Šalinamos problemos ID."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Nebeignoruoti visų problemų",
+            "description": "Nustoja ignoruoti visas šiuo metu Home Assistant remontuose iškeltas problemas arba tik tas, kurias iškėlė konkrečios integracijos.",
+            "fields": {
+                "domain": {
+                    "name": "Domenas",
+                    "description": "Nebeignoruoti tik šių integracijų iškeltų problemų."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Nustatyti rodymo tikslumą",
+            "description": "Nustato, kiek dešimtainių skaitmenų rodoma vienam ar keliems jutikliams.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjektas",
+                    "description": "Atnaujinamas (-i) jutiklio subjektas (-ai)."
+                },
+                "display_precision": {
+                    "name": "Rodymo tikslumas",
+                    "description": "Kiek dešimtainių skaitmenų rodyti jutikliui."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Sukurti laikmatį",
+            "description": "Čia pat sukuria naują laikmačio pagalbininką. Grąžina naujo laikmačio subjekto ID.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Naujo laikmačio pavadinimas."
+                },
+                "timer_id": {
+                    "name": "Laikmačio subjekto ID",
+                    "description": "Naujo laikmačio subjekto ID. Priešdėlis timer. pridedamas automatiškai. Jei nenurodyta, subjekto ID sugeneruojamas pagal pavadinimą."
+                },
+                "duration": {
+                    "name": "Trukmė",
+                    "description": "Kiek laiko laikmatis veikia jį paleidus."
+                },
+                "restore": {
+                    "name": "Atkurti",
+                    "description": "Atkurti laikmačio būseną paleidžiant Home Assistant, kad veikiantis laikmatis veiktų ir po paleidimo iš naujo."
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Naujo laikmačio piktograma."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Ištrinti laikmatį",
+            "description": "Ištrina laikmačio pagalbininkus, sukurtus sąsajoje arba veiksmu „Sukurti laikmatį“. YAML nustatytų laikmačių Spook ištrinti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Ištrinamas (-i) laikmatis (-čiai)."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Nustatyti trukmę",
+            "description": "Nustato esamo laikmačio trukmę.",
+            "fields": {
+                "duration": {
+                    "name": "Trukmė",
+                    "description": "Nauja laikmačio trukmė, kaip timedelta eilutė."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Sukurti zoną",
+            "description": "Čia pat sukuria naują zoną Home Assistant.",
+            "fields": {
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Zonos pavadinimas"
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Zonos piktograma"
+                },
+                "latitude": {
+                    "name": "Platuma",
+                    "description": "Zonos platuma. Gali būti šablonas."
+                },
+                "longitude": {
+                    "name": "Ilguma",
+                    "description": "Zonos ilguma. Gali būti šablonas."
+                },
+                "radius": {
+                    "name": "Spindulys",
+                    "description": "Zonos spindulys"
+                },
+                "passive": {
+                    "name": "Pasyvi",
+                    "description": "Pasyvi zona skirta tik automatizacijoms: ji nerodoma žemėlapyje ir nekeičia, kur yra asmenys ir įrenginių sekikliai."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Atnaujinti zoną",
+            "description": "Čia pat atnaujina zonos savybes.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Atnaujinamo subjekto (ar subjektų) ID."
+                },
+                "name": {
+                    "name": "Pavadinimas",
+                    "description": "Zonos pavadinimas"
+                },
+                "icon": {
+                    "name": "Piktograma",
+                    "description": "Zonos piktograma"
+                },
+                "latitude": {
+                    "name": "Platuma",
+                    "description": "Zonos platuma. Gali būti šablonas."
+                },
+                "longitude": {
+                    "name": "Ilguma",
+                    "description": "Zonos ilguma. Gali būti šablonas."
+                },
+                "radius": {
+                    "name": "Spindulys",
+                    "description": "Zonos spindulys"
+                },
+                "passive": {
+                    "name": "Pasyvi",
+                    "description": "Pasyvi zona skirta tik automatizacijoms: ji nerodoma žemėlapyje ir nekeičia, kur yra asmenys ir įrenginių sekikliai."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Ištrinti zoną",
+            "description": "Ištrina zoną. Veikia tik su sąsajoje sukurtomis ir valdomomis zonomis. YAML sukurtų ir valdomų zonų Spook valdyti negali.",
+            "fields": {
+                "entity_id": {
+                    "name": "Subjekto ID",
+                    "description": "Šalinamo subjekto (ar subjektų) ID."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Padidinti temperatūrą",
+            "description": "Pakelia vandens šildytuvo nustatytą vertę vienu žingsniu, neperžengiant jo ribų.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Kiek pakeisti. Jei nenurodyta, naudojamas paties vandens šildytuvo žingsnis, o jei jo nėra, pusė laipsnio (vienas Farenheito skalėje)."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Sumažinti temperatūrą",
+            "description": "Nuleidžia vandens šildytuvo nustatytą vertę vienu žingsniu, neperžengiant jo ribų.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Kiek pakeisti. Jei nenurodyta, naudojamas paties vandens šildytuvo žingsnis, o jei jo nėra, pusė laipsnio (vienas Farenheito skalėje)."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Padidinti drėgnumą",
+            "description": "Pakelia drėkintuvo tikslinį drėgnumą vienu žingsniu, neperžengiant jo ribų.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Keliais procentais pakeisti. Jei nenurodyta, naudojamas paties drėkintuvo žingsnis, o jei jo nėra, vienas procentas."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Sumažinti drėgnumą",
+            "description": "Nuleidžia drėkintuvo tikslinį drėgnumą vienu žingsniu, neperžengiant jo ribų.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Keliais procentais pakeisti. Jei nenurodyta, naudojamas paties drėkintuvo žingsnis, o jei jo nėra, vienas procentas."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Padidinti padėtį",
+            "description": "Atidaro uždangą vienu žingsniu daugiau ir sustoja, kai ji visiškai atidaryta.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Keliais procentais pastumti. Jei nenurodyta, dešimt procentų."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Sumažinti padėtį",
+            "description": "Uždaro uždangą vienu žingsniu daugiau ir sustoja, kai ji visiškai uždaryta.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Keliais procentais pastumti. Jei nenurodyta, dešimt procentų."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Padidinti padėtį",
+            "description": "Atidaro vožtuvą vienu žingsniu daugiau ir sustoja, kai jis visiškai atidarytas.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Keliais procentais pastumti. Jei nenurodyta, dešimt procentų."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Sumažinti padėtį",
+            "description": "Uždaro vožtuvą vienu žingsniu daugiau ir sustoja, kai jis visiškai uždarytas.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Keliais procentais pastumti. Jei nenurodyta, dešimt procentų."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Padidinti garsumą",
+            "description": "Padidina medijos leistuvo garsumą nurodytu žingsniu ir sustoja ties visu garsumu.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Keliais procentais pakeisti garsumą."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Sumažinti garsumą",
+            "description": "Sumažina medijos leistuvo garsumą nurodytu žingsniu ir sustoja ties tyla.",
+            "fields": {
+                "step": {
+                    "name": "Žingsnis",
+                    "description": "Keliais procentais pakeisti garsumą."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Perkelti elementą",
+            "description": "Perkelia užduočių sąrašo elementą į viršų, į apačią arba po kito elemento.",
+            "fields": {
+                "item": {
+                    "name": "Elementas",
+                    "description": "Perkeliamo elemento pavadinimas arba uid."
+                },
+                "after": {
+                    "name": "Po",
+                    "description": "Elemento, po kurio jį padėti, pavadinimas arba uid. Nurodykite tai arba padėtį."
+                },
+                "position": {
+                    "name": "Padėtis",
+                    "description": "Perkelti į sąrašo viršų arba apačią. Nurodykite tai arba elementą, po kurio jį padėti."
                 }
             }
         }

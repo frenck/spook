@@ -1,11 +1,349 @@
 {
+    "triggers": {
+        "automation_turned_off": {
+            "name": "Tự động hóa bị tắt",
+            "description": "Kích hoạt khi ai đó, hoặc thứ gì đó, tắt một tự động hóa. Để trống mục tiêu để theo dõi mọi tự động hóa."
+        },
+        "debounce": {
+            "name": "Khi đã lắng xuống",
+            "description": "Kích hoạt khi một bộ kích hoạt đã ngừng kích hoạt được một lúc, để cả một loạt chỉ tính là một lần. Cảm biến chuyển động không báo chuyển động một lần, nó báo hai mươi lần.",
+            "fields": {
+                "triggers": {
+                    "name": "Bộ kích hoạt",
+                    "description": "Các bộ kích hoạt cần chờ cho qua. Bất kỳ bộ nào kích hoạt sẽ bắt đầu một loạt, và bất kỳ bộ nào kích hoạt tiếp sẽ kéo dài loạt đó, nên nhiều bộ kích hoạt được gộp chung với nhau thay vì xét từng cái một."
+                },
+                "for": {
+                    "name": "Trong",
+                    "description": "Phải yên lặng bao lâu thì cái này mới kích hoạt. Mỗi lần kích hoạt sẽ bắt đầu đếm lại từ đầu, nên thứ gì không bao giờ ngừng kích hoạt thì sẽ không bao giờ được báo."
+                }
+            }
+        },
+        "all_of": {
+            "name": "Tất cả những điều này đã xảy ra",
+            "description": "Kích hoạt khi tất cả các bộ kích hoạt đều đã kích hoạt trong cùng một khoảng thời gian, theo bất kỳ thứ tự nào. Bộ kích hoạt của chính Home Assistant là một danh sách mà chỉ cần một cái là đủ; đây là kiểu ngược lại.",
+            "fields": {
+                "triggers": {
+                    "name": "Bộ kích hoạt",
+                    "description": "Các bộ kích hoạt đều phải đã kích hoạt. Thứ tự không quan trọng, và một bộ kích hoạt kích hoạt lại sẽ thay thế lượt trước của nó chứ không tính hai lần."
+                },
+                "within": {
+                    "name": "Trong vòng",
+                    "description": "Chúng phải xảy ra gần nhau đến mức nào. Khoảng thời gian này trượt theo, nên bộ kích hoạt nào đã kích hoạt lâu hơn khoảng này sẽ bị quên, trong khi các bộ khác vẫn tiếp tục được tính."
+                }
+            }
+        },
+        "recovered": {
+            "name": "Thực thể đã quay lại",
+            "description": "Kích hoạt khi một thực thể quay lại sau khi đã không khả dụng một lúc, để việc router khởi động lại không bị hiểu là mọi thứ trong nhà vừa hồi phục.",
+            "fields": {
+                "for": {
+                    "name": "Trong",
+                    "description": "Thực thể phải vắng mặt bao lâu thì việc quay lại mới được tính. Ngắn hơn thế chỉ là chập chờn: tải lại một bộ tích hợp sẽ đưa mọi thực thể của nó qua trạng thái không khả dụng rồi quay lại trong vòng một giây."
+                }
+            }
+        },
+        "device_added": {
+            "name": "Đã thêm thiết bị",
+            "description": "Kích hoạt khi một thiết bị mới được thêm vào Home Assistant, như một ổ cắm vừa được ghép nối."
+        },
+        "sequence": {
+            "name": "Bộ kích hoạt theo thứ tự",
+            "description": "Kích hoạt khi nhiều bộ kích hoạt xảy ra lần lượt, theo đúng thứ tự đã cho.",
+            "fields": {
+                "steps": {
+                    "name": "Các bước",
+                    "description": "Các bộ kích hoạt phải xảy ra, theo thứ tự. Chỉ bước đang được chờ mới lắng nghe, nên một bước sau kích hoạt sớm sẽ không được tính."
+                },
+                "timeout": {
+                    "name": "Thời gian chờ tối đa",
+                    "description": "Cả chuỗi được phép kéo dài bao lâu, tính từ bước đầu tiên. Nếu bỏ trống, nó sẽ chờ mãi."
+                },
+                "reset": {
+                    "name": "Đặt lại",
+                    "description": "Các bộ kích hoạt hủy bỏ một chuỗi đang diễn ra, đưa nó về trạng thái chờ bước đầu tiên."
+                }
+            }
+        },
+        "while": {
+            "name": "Trong khi điều kiện còn đúng",
+            "description": "Kích hoạt khi một điều kiện trở thành đúng, và tiếp tục kích hoạt theo chu kỳ chừng nào nó vẫn còn đúng.",
+            "fields": {
+                "condition": {
+                    "name": "Điều kiện",
+                    "description": "Điều kiện cần theo dõi. Bắt đầu kích hoạt khi nó trở thành đúng và dừng khi nó không còn đúng."
+                },
+                "every": {
+                    "name": "Mỗi",
+                    "description": "Chờ bao lâu giữa lần kích hoạt này và lần tiếp theo, chừng nào điều kiện vẫn còn đúng."
+                }
+            }
+        },
+        "watchdog": {
+            "name": "Canh gác",
+            "description": "Kích hoạt khi một việc được mong đợi sẽ xảy ra lại không xảy ra kịp lúc.",
+            "fields": {
+                "arm": {
+                    "name": "Kích hoạt canh gác",
+                    "description": "Điều gì bắt đầu việc canh gác. Thời gian chờ được tính từ đây, và kích hoạt canh gác lần nữa trong lúc đang chờ sẽ bắt đầu đếm lại."
+                },
+                "expect": {
+                    "name": "Mong đợi",
+                    "description": "Điều được mong đợi sẽ theo sau. Nếu nó đến kịp lúc thì việc canh gác được hủy, và không có gì kích hoạt."
+                },
+                "within": {
+                    "name": "Trong vòng",
+                    "description": "Điều được mong đợi phải đến trong bao lâu. Cái này kích hoạt khi hết thời gian đó mà nó vẫn chưa đến."
+                }
+            }
+        },
+        "flapping": {
+            "name": "Thực thể không chịu yên",
+            "description": "Kích hoạt khi một thực thể thay đổi trạng thái thường xuyên hơn mức nên có trong một khoảng thời gian.",
+            "fields": {
+                "changes": {
+                    "name": "Số lần thay đổi",
+                    "description": "Cần bao nhiêu lần thay đổi trạng thái thì cái này mới kích hoạt. Thay đổi thuộc tính không được tính, thực thể xuất hiện hay biến mất cũng vậy."
+                },
+                "within": {
+                    "name": "Trong vòng",
+                    "description": "Khoảng thời gian mà các thay đổi đó phải nằm trong. Nó trượt theo, nên luôn chỉ xét những thay đổi gần đây nhất."
+                }
+            }
+        },
+        "condition_met": {
+            "name": "Điều kiện trở thành đúng",
+            "description": "Kích hoạt khi một điều kiện chuyển từ sai sang đúng, dùng cùng các khối điều kiện như ở mọi nơi khác.",
+            "fields": {
+                "condition": {
+                    "name": "Điều kiện",
+                    "description": "Điều kiện cần theo dõi."
+                }
+            }
+        },
+        "cron": {
+            "name": "Lịch cron",
+            "description": "Kích hoạt theo lịch crontab, cho những thời điểm mà bộ kích hoạt thời gian của chính Home Assistant không diễn tả được, như mỗi ngày trong tuần lúc bảy giờ hoặc thứ Sáu cuối cùng của tháng.",
+            "fields": {
+                "schedule": {
+                    "name": "Lịch",
+                    "description": "Một biểu thức crontab gồm năm trường: phút, giờ, ngày trong tháng, tháng, ngày trong tuần. Hỗ trợ khoảng và bước nhảy, cùng các phần mở rộng cho ngày trong tuần, nên \"MON#2\" là thứ Hai thứ hai và \"5L\" là thứ Sáu cuối cùng. Các tên tắt như \"@daily\" không được hỗ trợ."
+                }
+            }
+        },
+        "device_discovered": {
+            "name": "Đã phát hiện thiết bị",
+            "description": "Kích hoạt khi Home Assistant phát hiện thứ gì đó mới mà nó có thể thiết lập, như một thiết bị vừa xuất hiện trên mạng của bạn."
+        },
+        "integration_added": {
+            "name": "Đã thêm bộ tích hợp",
+            "description": "Kích hoạt khi một bộ tích hợp được thêm vào Home Assistant, bất kể ai hay cái gì đã thêm nó."
+        },
+        "integration_failed": {
+            "name": "Bộ tích hợp thiết lập thất bại",
+            "description": "Kích hoạt khi một mục cấu hình đã không thể tự thiết lập được một thời gian, quá thời điểm mà các lần thử lại của chính Home Assistant lẽ ra đã giải quyết xong.",
+            "fields": {
+                "for": {
+                    "name": "Trong",
+                    "description": "Một mục phải tiếp tục thất bại bao lâu thì cái này mới kích hoạt. Home Assistant thử lại một mục bị lỗi chậm nhất là mười phút một lần, nên bất cứ khoảng nào ngắn hơn thế sẽ báo những sự cố có thể vẫn tự khắc phục được."
+                },
+                "entry_id": {
+                    "name": "Mục cấu hình",
+                    "description": "Giới hạn cái này cho những mục cấu hình cụ thể. Để trống để theo dõi tất cả."
+                }
+            }
+        },
+        "repair_issue_created": {
+            "name": "Đã tạo vấn đề sửa chữa",
+            "description": "Kích hoạt khi một vấn đề sửa chữa mới xuất hiện, để bạn biết mà không cần ghé trang sửa chữa.",
+            "fields": {
+                "domain": {
+                    "name": "Bộ tích hợp",
+                    "description": "Giới hạn cái này cho những vấn đề do các bộ tích hợp cụ thể báo cáo, theo tên miền của chúng. Để trống để áp dụng cho tất cả."
+                },
+                "severity": {
+                    "name": "Mức độ nghiêm trọng",
+                    "description": "Giới hạn cái này cho những vấn đề có mức độ nghiêm trọng cụ thể. Để trống để áp dụng cho tất cả."
+                }
+            }
+        },
+        "repair_issue_removed": {
+            "name": "Đã giải quyết vấn đề sửa chữa",
+            "description": "Kích hoạt khi một vấn đề sửa chữa biến mất, do đã được sửa hoặc không còn được báo cáo nữa.",
+            "fields": {
+                "domain": {
+                    "name": "Bộ tích hợp",
+                    "description": "Giới hạn cái này cho những vấn đề do các bộ tích hợp cụ thể báo cáo, theo tên miền của chúng. Để trống để áp dụng cho tất cả."
+                }
+            }
+        },
+        "stale": {
+            "name": "Thực thể im bặt",
+            "description": "Kích hoạt khi không có gì ghi vào một thực thể trong một lúc, để bắt được thiết bị đã lặng lẽ chết thay vì chuyển sang không khả dụng.",
+            "fields": {
+                "for": {
+                    "name": "Trong",
+                    "description": "Thực thể phải im lặng bao lâu thì cái này mới kích hoạt. Thực thể cứ báo mãi cùng một giá trị thì không tính là im lặng."
+                }
+            }
+        },
+        "target_temperature_reached": {
+            "name": "Đã đạt nhiệt độ mục tiêu",
+            "description": "Kích hoạt khi nhiệt độ của bộ điều nhiệt hoặc máy nước nóng đạt đến mục tiêu, hoặc vượt qua nó. Việc thay đổi mục tiêu không được tính, thiết bị đang tắt cũng vậy.",
+            "fields": {
+                "tolerance": {
+                    "name": "Dung sai",
+                    "description": "Gần mục tiêu đến mức nào thì vẫn tính là đạt, theo đơn vị của thiết bị. Dành cho bộ điều nhiệt hay dừng lại ngay dưới điểm đặt. Số không nghĩa là đúng bằng mục tiêu."
+                }
+            }
+        },
+        "update_installed": {
+            "name": "Đã cài đặt bản cập nhật",
+            "description": "Kích hoạt khi một thực thể cập nhật báo phiên bản đã cài đặt khác đi, dù là ai đó đã nhấn cài đặt, thiết bị tự cập nhật, hay nó được cập nhật bên ngoài Home Assistant."
+        },
+        "position_reached": {
+            "name": "Đã đạt vị trí",
+            "description": "Kích hoạt khi rèm, cửa cuốn hoặc van đến một vị trí, hoặc vượt qua nó. Cái nào đã ở sẵn đó, hoặc quay lại từ trạng thái không khả dụng ở đúng vị trí đó, thì không được tính.",
+            "fields": {
+                "position": {
+                    "name": "Vị trí",
+                    "description": "Vị trí cần đạt, từ 0 (đóng) đến 100 (mở)."
+                }
+            }
+        },
+        "script_started": {
+            "name": "Tập lệnh đã bắt đầu",
+            "description": "Kích hoạt khi một tập lệnh bắt đầu chạy. Lượt chạy bị tập lệnh từ chối vì nó đang chạy rồi thì không được tính. Để trống mục tiêu để theo dõi mọi tập lệnh."
+        },
+        "user_added": {
+            "name": "Đã thêm người dùng",
+            "description": "Kích hoạt khi ai đó được cấp tài khoản đăng nhập Home Assistant. Những người dùng mà Home Assistant tự tạo cho các bộ tích hợp của nó không được tính."
+        }
+    },
+    "selector": {
+        "repair_issue_severity": {
+            "options": {
+                "critical": "Nguy kịch",
+                "error": "Lỗi",
+                "warning": "Cảnh báo"
+            }
+        },
+        "todo_move_position": {
+            "options": {
+                "bottom": "Dưới cùng",
+                "top": "Trên cùng"
+            }
+        }
+    },
+    "conditions": {
+        "is_at_target_temperature": {
+            "name": "Nhiệt độ đã đạt mục tiêu",
+            "description": "Thỏa mãn khi nhiệt độ của bộ điều nhiệt hoặc máy nước nóng đang ở mức mục tiêu. Thiết bị đang tắt thì không tính là đạt mục tiêu, còn thiết bị không khả dụng thì bị bỏ qua.",
+            "fields": {
+                "behavior": {
+                    "name": "Hành vi",
+                    "description": "Chỉ cần một trong các thiết bị đạt là đủ, hay tất cả đều phải đạt."
+                },
+                "tolerance": {
+                    "name": "Dung sai",
+                    "description": "Gần mục tiêu đến mức nào thì vẫn tính là đạt, theo đơn vị của thiết bị. Dành cho bộ điều nhiệt hay dừng lại ngay dưới điểm đặt. Số không nghĩa là đúng bằng mục tiêu."
+                }
+            }
+        },
+        "repair_issue_present": {
+            "name": "Vấn đề sửa chữa còn tồn đọng",
+            "description": "Thỏa mãn khi có một vấn đề sửa chữa còn tồn đọng. Những vấn đề đã bị ai đó bỏ qua không được tính.",
+            "fields": {
+                "domain": {
+                    "name": "Bộ tích hợp",
+                    "description": "Giới hạn cái này cho những vấn đề do các bộ tích hợp cụ thể báo cáo, theo tên miền của chúng. Để trống để áp dụng cho tất cả."
+                },
+                "severity": {
+                    "name": "Mức độ nghiêm trọng",
+                    "description": "Giới hạn cái này cho những vấn đề có mức độ nghiêm trọng cụ thể. Để trống để áp dụng cho tất cả."
+                }
+            }
+        },
+        "quota": {
+            "name": "Còn lượt chạy",
+            "description": "Thỏa mãn khi tự động hóa này đã chạy ít hơn một số lần nhất định trong một khoảng thời gian nhất định. Tập lệnh không được tính.",
+            "fields": {
+                "limit": {
+                    "name": "Giới hạn",
+                    "description": "Cho phép bao nhiêu lượt chạy trong khoảng thời gian đó."
+                },
+                "period": {
+                    "name": "Khoảng thời gian",
+                    "description": "Khoảng thời gian mà giới hạn áp dụng. Nó trượt theo, nên một ngày nghĩa là bất kỳ hai mươi bốn giờ nào chứ không phải từ nửa đêm đến nửa đêm."
+                }
+            }
+        },
+        "triggered_by_automation": {
+            "name": "Được kích hoạt bởi một tự động hóa",
+            "description": "Thỏa mãn khi một tự động hóa khác đã khởi động lượt chạy này, dù trực tiếp hay thông qua một tập lệnh.",
+            "fields": {
+                "automation": {
+                    "name": "Tự động hóa",
+                    "description": "Giới hạn cái này cho những tự động hóa cụ thể. Để trống để chấp nhận bất kỳ tự động hóa nào."
+                }
+            }
+        },
+        "triggered_by_user": {
+            "name": "Được kích hoạt bởi người dùng",
+            "description": "Thỏa mãn khi có một người đứng sau việc khởi động này: một thay đổi trạng thái hoặc sự kiện do họ gây ra, kể cả thứ khiến một bộ kích hoạt bản mẫu trở thành đúng. Lịch, mặt trời, hay một bộ tích hợp tự hành động thì không mang theo ai cả, ép chạy bằng nút Chạy cũng vậy.",
+            "fields": {
+                "person": {
+                    "name": "Người",
+                    "description": "Chỉ thỏa mãn khi một trong những người này khởi động nó. Để trống để thỏa mãn với bất kỳ ai. Người đó phải được liên kết với một tài khoản người dùng, nếu không thì chẳng có gì để so khớp."
+                }
+            }
+        },
+        "not_triggered_by_user": {
+            "name": "Không được kích hoạt bởi người dùng",
+            "description": "Thỏa mãn khi không ai chịu trách nhiệm cho lượt chạy này: lịch, mặt trời, một bộ tích hợp tự hành động, hoặc nút Chạy. Cố ý không có tùy chọn nào. Muốn loại trừ những người cụ thể thì đặt \"Được kích hoạt bởi người dùng\" bên trong một điều kiện Không."
+        },
+        "chance": {
+            "name": "Xác suất",
+            "description": "Thỏa mãn trong một tỷ lệ phần trăm số lần nhất định, chọn ngẫu nhiên mỗi lần kiểm tra. Tiện để thêm chút biến tấu cho các tự động hóa của bạn.",
+            "fields": {
+                "percentage": {
+                    "name": "Phần trăm",
+                    "description": "Điều kiện này nên thỏa mãn thường xuyên đến mức nào, tính theo phần trăm."
+                }
+            }
+        },
+        "cooldown": {
+            "name": "Thời gian nghỉ",
+            "description": "Chỉ thỏa mãn nếu tự động hóa hoặc tập lệnh này chưa chạy trong khoảng thời gian đã cho (hoặc chưa từng chạy). Một khoảng nghỉ có sẵn, để nó không kích hoạt lại quá thường xuyên.",
+            "fields": {
+                "duration": {
+                    "name": "Thời lượng",
+                    "description": "Chờ bao lâu sau lượt chạy cuối cùng thì điều kiện này mới thỏa mãn lại."
+                }
+            }
+        }
+    },
     "config": {
         "abort": {
-            "already_spooked": "Có... được... không. Được rồi, cảm ơn, tạm biệt!"
+            "already_spooked": "Spook đã ám nơi này rồi 👻\n\nMỗi nhà một con ma là đủ lắm rồi. Bạn có thể tìm thấy Spook trong [Thiết bị & dịch vụ](/config/integrations/integration/spook).",
+            "enabled_existing": "Spook đã thức dậy rồi 👻\n\nCho nó chút thời gian để nhìn quanh. Bất cứ thứ gì nó tìm thấy sẽ hiện trong [Sửa chữa](/config/repairs).",
+            "enable_failed": "Spook không chịu thức dậy 👻\n\nHãy thử tự bật lại nó trong [Thiết bị & dịch vụ](/config/integrations/integration/spook).",
+            "kept_sleeping": "Spook vẫn ngủ tiếp 👻\n\nNhớ nó à? Bạn có thể đánh thức nó bất cứ lúc nào trong [Thiết bị & dịch vụ](/config/integrations/integration/spook)."
+        },
+        "create_entry": {
+            "spooked": "Spook đang lượn lờ quanh nhà 👻\n\nCho nó chút thời gian để nhìn quanh. Bất cứ thứ gì nó tìm thấy sẽ hiện trong [Sửa chữa](/config/repairs).\n\nCác hành động, bộ kích hoạt và điều kiện bổ sung đang chờ bạn trong trình chỉnh sửa tự động hóa và tập lệnh. Tò mò Spook còn làm được gì nữa? [Tài liệu]({documentation_url}) có đủ cả.\n\nThích Spook? 👻 Một ⭐ trên [GitHub]({repository_url}) cho người khác biết Spook thật ra khá tuyệt. [Tài trợ cho Frenck]({sponsor_url}) giúp con ma này được ăn no. Còn [bản tin]({newsletter_url}) miễn phí hai tuần một lần của anh ấy giúp con ma trong bạn được ăn no."
         },
         "step": {
             "user": {
-                "description": "Bạn đã đọc readme chưa? Bạn đã đọc giấy phép chưa? Bạn có chắc chắn không?"
+                "title": "Hù! Làm quen với Spook, bạn thân của bạn 👻",
+                "description": "Spook lượn lờ khắp Home Assistant của bạn để tìm ma: những tham chiếu đến thứ không còn tồn tại, và những thứ sót lại mà chẳng ai dọn dẹp. Bất cứ thứ gì tìm thấy, nó đều báo cáo trong Sửa chữa.\n\nNó cũng mở rộng những gì tự động hóa và tập lệnh của bạn có thể làm, với các hành động, bộ kích hoạt, điều kiện và biến trợ giúp bổ sung, cho những tự động hóa còn mạnh mẽ hơn nữa.\n\nNói trước cho rõ: Spook không phải là một phần của Home Assistant. Đây là một bộ tích hợp tùy chỉnh, thò tay vào những nơi nó chưa bao giờ được mời. Nếu có gì lạ xảy ra, hãy nghi ngờ Spook trước tiên và [báo cho chúng tôi biết]({issue_tracker_url}).\n\nSẵn sàng bị ma ám chưa?"
+            },
+            "already_configured": {
+                "title": "Spook đang ngủ 👻",
+                "description": "Spook đã được thiết lập rồi, nhưng ai đó đã tắt nó đi. Đánh thức nó dậy nhé?",
+                "menu_options": {
+                    "enable_existing": "Đánh thức Spook",
+                    "keep_sleeping": "Cứ để nó ngủ"
+                }
             }
         }
     },
@@ -21,7 +359,7 @@
                 "name": "Bỏ qua tất cả"
             },
             "repairs_unignore_all": {
-                "name": "Không bỏ qua gì"
+                "name": "Thôi bỏ qua tất cả"
             }
         },
         "event": {
@@ -29,26 +367,26 @@
                 "state_attributes": {
                     "event_type": {
                         "state": {
-                            "create": "Issue created",
-                            "remove": "Issue removed",
-                            "update": "Issue updated"
+                            "create": "Đã tạo vấn đề",
+                            "remove": "Đã gỡ bỏ vấn đề",
+                            "update": "Đã cập nhật vấn đề"
                         }
                     },
                     "domain": {
-                        "name": "Issue issuer"
+                        "name": "Nguồn tạo vấn đề"
                     },
                     "issue_id": {
-                        "name": "Issue ID"
+                        "name": "ID vấn đề"
                     }
                 }
             }
         },
         "sensor": {
             "homeassistant_air_quality": {
-                "name": "Air quality"
+                "name": "Chất lượng không khí"
             },
             "homeassistant_alarm_control_panel": {
-                "name": "Alarm control panels"
+                "name": "Bảng điều khiển an ninh"
             },
             "homeassistant_area": {
                 "name": "Khu vực"
@@ -57,139 +395,151 @@
                 "name": "Tự động hóa"
             },
             "homeassistant_binary_sensor": {
-                "name": "Binary sensors"
+                "name": "Cảm biến nhị phân"
             },
             "homeassistant_button": {
-                "name": "Buttons"
+                "name": "Nút bấm"
             },
             "homeassistant_calendar": {
-                "name": "Calendars"
+                "name": "Lịch"
             },
             "homeassistant_camera": {
-                "name": "Cameras"
+                "name": "Máy ảnh"
             },
             "homeassistant_climate": {
-                "name": "Climate"
+                "name": "Điều hòa"
+            },
+            "homeassistant_counter": {
+                "name": "Bộ đếm"
             },
             "homeassistant_cover": {
-                "name": "Covers"
+                "name": "Rèm, cửa cuốn"
             },
             "homeassistant_custom_component": {
-                "name": "Custom integrations"
+                "name": "Bộ tích hợp tùy chỉnh"
             },
             "homeassistant_date": {
-                "name": "Dates"
+                "name": "Ngày"
             },
             "homeassistant_datetime": {
-                "name": "Date/times"
+                "name": "Ngày/giờ"
             },
             "homeassistant_device": {
                 "name": "Thiết bị"
             },
             "homeassistant_device_tracker": {
-                "name": "Device trackers"
+                "name": "Bộ theo dõi thiết bị"
             },
             "homeassistant_entities": {
                 "name": "Thực thể"
             },
             "homeassistant_fan": {
-                "name": "Fans"
+                "name": "Quạt"
+            },
+            "homeassistant_group": {
+                "name": "Nhóm"
             },
             "homeassistant_humidifier": {
-                "name": "Humidifiers"
+                "name": "Máy tạo ẩm"
             },
             "homeassistant_image": {
-                "name": "Images"
+                "name": "Hình ảnh"
             },
             "homeassistant_input_boolean": {
-                "name": "Input booleans"
+                "name": "Đầu nhập luận lý"
             },
             "homeassistant_input_button": {
-                "name": "Input buttons"
+                "name": "Đầu nhập nút nhấn"
             },
             "homeassistant_input_datetime": {
-                "name": "Input date/times"
+                "name": "Đầu nhập ngày giờ"
             },
             "homeassistant_input_number": {
-                "name": "Input numbers"
+                "name": "Đầu nhập số"
             },
             "homeassistant_input_select": {
-                "name": "Input selects"
+                "name": "Đầu nhập lựa chọn"
             },
             "homeassistant_input_text": {
-                "name": "Input texts"
+                "name": "Đầu nhập văn bản"
             },
             "homeassistant_integration": {
-                "name": "Integrations"
+                "name": "Bộ tích hợp"
             },
             "homeassistant_light": {
                 "name": "Đèn"
             },
             "homeassistant_lock": {
-                "name": "Locks"
+                "name": "Khóa"
             },
             "homeassistant_media_player": {
-                "name": "Media players"
+                "name": "Trình phát đa phương tiện"
             },
             "homeassistant_number": {
-                "name": "Numbers"
+                "name": "Số"
             },
             "homeassistant_persistent_notification": {
-                "name": "Persistent notifications"
+                "name": "Thông báo liên tục"
             },
             "homeassistant_person": {
-                "name": "Persons"
+                "name": "Người"
             },
             "homeassistant_remote": {
-                "name": "Remotes"
+                "name": "Điều khiển từ xa"
             },
             "homeassistant_scene": {
-                "name": "Scenes"
+                "name": "Cảnh"
             },
             "homeassistant_script": {
-                "name": "Scripts"
+                "name": "Tập lệnh"
             },
             "homeassistant_select": {
-                "name": "Selects"
+                "name": "Lựa chọn"
             },
             "homeassistant_sensor": {
                 "name": "Cảm biến"
             },
             "homeassistant_siren": {
-                "name": "Sirens"
+                "name": "Còi báo động"
             },
             "homeassistant_stt": {
-                "name": "Speech-to-text"
+                "name": "Chuyển giọng nói thành văn bản"
             },
             "homeassistant_sun": {
-                "name": "Suns"
+                "name": "Mặt trời"
             },
             "homeassistant_switch": {
                 "name": "Công tắc"
             },
             "homeassistant_text": {
-                "name": "Texts"
+                "name": "Văn bản"
             },
             "homeassistant_time": {
-                "name": "Times"
+                "name": "Thời gian"
+            },
+            "homeassistant_timer": {
+                "name": "Bộ đếm giờ"
+            },
+            "homeassistant_todo": {
+                "name": "Danh sách việc cần làm"
             },
             "homeassistant_tts": {
-                "name": "Text-to-speech"
+                "name": "Chuyển văn bản thành giọng nói"
             },
             "homeassistant_update": {
-                "name": "Update"
+                "name": "Cập nhật"
             },
             "homeassistant_vacuum": {
-                "name": "Vacuums"
+                "name": "Máy hút bụi"
             },
             "homeassistant_water_heater": {
-                "name": "Water heaters"
+                "name": "Máy nước nóng"
             },
             "homeassistant_weather": {
-                "name": "Weather"
+                "name": "Thời tiết"
             },
             "homeassistant_zone": {
-                "name": "Zones"
+                "name": "Vùng"
             },
             "repairs_total_issues": {
                 "name": "Tổng cộng"
@@ -203,87 +553,597 @@
         },
         "switch": {
             "cloud_alexa_report_state": {
-                "name": "Alexa state reporting"
+                "name": "Báo cáo trạng thái cho Alexa"
             },
             "cloud_google_report_state": {
-                "name": "Google Assistant state reporting"
+                "name": "Báo cáo trạng thái cho Google Assistant"
             },
             "cloud_remote": {
-                "name": "Remote"
+                "name": "Truy cập từ xa"
             }
         }
     },
+    "exceptions": {
+        "all_of_attach_failed": {
+            "message": "Không thể gắn mọi bộ kích hoạt của một bộ kích hoạt \"tất cả\"."
+        },
+        "area_not_found": {
+            "message": "Không tìm thấy khu vực {area_id}."
+        },
+        "blueprint_backup_failed": {
+            "message": "Không thể cất một bản sao của {path} sang một bên: {error}. Chưa có gì được ghi."
+        },
+        "blueprint_cannot_run": {
+            "message": "{name} không thể chạy ở đây: {errors}. Chưa có gì được ghi."
+        },
+        "blueprint_could_not_write": {
+            "message": "Không thể ghi {path}."
+        },
+        "blueprint_domain_not_supported": {
+            "message": "Tên miền không được hỗ trợ: {domain}."
+        },
+        "blueprint_fetch_failed": {
+            "message": "Lỗi khi tải bản thiết kế từ URL."
+        },
+        "blueprint_file_exists": {
+            "message": "Tệp đã tồn tại."
+        },
+        "blueprint_gone": {
+            "message": "{name} không còn ở đây nữa, nên không có gì để cập nhật. Chưa có gì được ghi."
+        },
+        "blueprint_url_not_supported": {
+            "message": "URL này không được hỗ trợ."
+        },
+        "blueprint_write_failed": {
+            "message": "Lỗi khi ghi tệp."
+        },
+        "blueprints_not_loaded": {
+            "message": "Bản thiết kế {domain} hiện chưa được tải."
+        },
+        "calendar_events_which": {
+            "message": "Hãy nói rõ những sự kiện nào: cho một tóm tắt, một uid, hoặc cả hai."
+        },
+        "calendar_range_backwards": {
+            "message": "Điểm kết thúc của khoảng tìm kiếm phải nằm sau điểm bắt đầu."
+        },
+        "calendar_range_required": {
+            "message": "Hãy nói rõ tìm xa đến đâu: cho một ngày giờ kết thúc, hoặc một thời lượng."
+        },
+        "cannot_disable_system_user": {
+            "message": "Không thể vô hiệu hóa người dùng do hệ thống tạo: {user_id}."
+        },
+        "cannot_enable_system_user": {
+            "message": "Không thể bật người dùng do hệ thống tạo: {user_id}."
+        },
+        "category_not_found": {
+            "message": "Không tìm thấy danh mục {category} cho {scope}."
+        },
+        "category_nothing_to_update": {
+            "message": "Không có gì để cập nhật cho danh mục {category}: hãy cho ít nhất một trong {fields}."
+        },
+        "condition_template_is_constant": {
+            "message": "Một bản mẫu trong điều kiện này không còn chút Jinja nào, nên nó là hằng số và không bao giờ thay đổi được. Thường thì điều đó có nghĩa là một tập lệnh đã kết xuất nó trước khi hành động này chạy, chuyện xảy ra với mọi bản mẫu trong dữ liệu hành động. Hãy dùng điều kiện không có bản mẫu, hoặc chờ chính bản mẫu đó bằng 'wait_template'."
+        },
+        "config_entry_not_found": {
+            "message": "Không tìm thấy mục bộ tích hợp {config_entry_id}."
+        },
+        "debounce_attach_failed": {
+            "message": "Không thể gắn mọi bộ kích hoạt của một bộ kích hoạt chống dội."
+        },
+        "device_not_found": {
+            "message": "Không tìm thấy thiết bị {device_id}."
+        },
+        "entity_id_taken": {
+            "message": "ID thực thể {entity_id} đã được sử dụng."
+        },
+        "entity_not_found": {
+            "message": "Không tìm thấy thực thể {entity_id}."
+        },
+        "entity_without_unique_id": {
+            "message": "Thực thể {entity_id} không có ID duy nhất, nên Home Assistant không thể lưu biểu tượng hay biệt hiệu cho nó."
+        },
+        "event_cannot_change": {
+            "message": "{summary} không thể thay đổi như vậy: {error}."
+        },
+        "event_nothing_to_change": {
+            "message": "Hãy nói rõ cần thay đổi gì: một tóm tắt mới, một địa điểm, hoặc thời gian mới."
+        },
+        "event_shift_or_times": {
+            "message": "Dời một sự kiện bằng một khoảng dịch chuyển, hoặc cho nó thời gian mới, chứ không phải cả hai."
+        },
+        "event_whole_days": {
+            "message": "{summary} kéo dài trọn ngày, nên chỉ có thể dời theo trọn ngày."
+        },
+        "floor_not_found": {
+            "message": "Không tìm thấy tầng {floor_id}."
+        },
+        "group_member_not_allowed": {
+            "message": "{entity_id} không thể tham gia nhóm này: nhóm chứa các thực thể {domains}."
+        },
+        "group_not_found_behind": {
+            "message": "Không tìm thấy nhóm đứng sau {entity_id}."
+        },
+        "helpers_unreachable": {
+            "message": "Không thể truy cập các biến trợ giúp {domain} mà Home Assistant lưu giữ."
+        },
+        "hold_until_nonexistent_time": {
+            "message": "Không thể giữ {entity_id} cho đến một thời điểm không tồn tại."
+        },
+        "home_zone_radius": {
+            "message": "Vùng nhà nhận bán kính theo số mét nguyên, từ không trở lên."
+        },
+        "home_zone_unsupported": {
+            "message": "Vùng nhà chỉ nhận vĩ độ, kinh độ và bán kính, không nhận: {fields}."
+        },
+        "input_number_not_editable": {
+            "message": "Đầu nhập số này không thể chỉnh sửa: {entity_id}."
+        },
+        "integration_entries_required": {
+            "message": "Hãy chỉ ra các mục bộ tích hợp cần thay đổi, hoặc bộ tích hợp của chúng."
+        },
+        "integration_without_entries": {
+            "message": "Bộ tích hợp {domain} không có mục nào."
+        },
+        "label_not_found": {
+            "message": "Không tìm thấy nhãn {label_id}."
+        },
+        "label_nothing_to_update": {
+            "message": "Không có gì để cập nhật cho nhãn {label_id}: hãy cho ít nhất một trong {fields}."
+        },
+        "maximum_not_above_minimum": {
+            "message": "Giá trị tối đa ({maximum}) phải lớn hơn giá trị tối thiểu ({minimum})."
+        },
+        "no_max_value": {
+            "message": "Thực thể {entity_id} không có giá trị tối đa."
+        },
+        "no_min_value": {
+            "message": "Thực thể {entity_id} không có giá trị tối thiểu."
+        },
+        "not_a_group": {
+            "message": "{entity_id} không phải là một nhóm."
+        },
+        "person_not_editable": {
+            "message": "Người này không thể chỉnh sửa: {entity_id}."
+        },
+        "restart_failed": {
+            "message": "Spook gặp lỗi khi khởi động lại Home Assistant."
+        },
+        "sequence_attach_failed": {
+            "message": "Không thể gắn bước đầu tiên của một bộ kích hoạt theo thứ tự."
+        },
+        "set_range_nothing_to_change": {
+            "message": "Hãy cho một giá trị tối thiểu, tối đa hoặc bước nhảy cần thay đổi."
+        },
+        "spooked": {
+            "message": "Hù! 👻"
+        },
+        "timer_not_editable": {
+            "message": "Bộ đếm giờ này không thể chỉnh sửa: {entity_id}."
+        },
+        "todo_item_after_itself": {
+            "message": "Không thể di chuyển một mục ra sau chính nó."
+        },
+        "todo_item_not_found": {
+            "message": "Không có mục {item} trong {entity_id}."
+        },
+        "todo_last_item_after": {
+            "message": "Không thể di chuyển gì ra sau mục cuối cùng trong {entity_id}."
+        },
+        "todo_move_where": {
+            "message": "Hãy nói rõ chuyển đến đâu: sau một mục khác, hoặc lên trên cùng hay xuống dưới cùng."
+        },
+        "user_not_found": {
+            "message": "Không tìm thấy người dùng: {user_id}."
+        },
+        "value_not_a_number": {
+            "message": "Giá trị {value} của {entity_id} không phải là một số."
+        },
+        "watchdog_arming_attach_failed": {
+            "message": "Không thể gắn các bộ kích hoạt canh gác của một bộ kích hoạt canh gác."
+        },
+        "watchdog_expected_attach_failed": {
+            "message": "Không thể gắn các bộ kích hoạt mong đợi của một bộ kích hoạt canh gác."
+        },
+        "yaml_group_not_editable": {
+            "message": "{entity_id} là một nhóm từ cấu hình YAML của bạn, thứ mà Spook không thể thay đổi. Hãy chỉnh sửa nó trong cấu hình của bạn, hoặc dùng group.set, vẫn hoạt động với loại nhóm đó."
+        },
+        "yaml_helper_cannot_be_deleted": {
+            "message": "{entity_id} được thiết lập trong YAML và không thể xóa."
+        },
+        "zone_not_editable": {
+            "message": "Vùng này không thể chỉnh sửa: {entity_id}."
+        }
+    },
     "issues": {
+        "alert_unknown_entity_references": {
+            "title": "Thực thể không xác định được cảnh báo theo dõi: {alert}",
+            "description": "Spook đã tìm thấy một con ma trong các cảnh báo của bạn 👻\n\nCảnh báo {alert} (`{entity_id}`) theo dõi một thực thể mà Home Assistant không biết đến:\n\n{entities}\n\nMột cảnh báo chỉ có thể kích hoạt dựa trên thực thể mà nó theo dõi, nên cảnh báo này sẽ không bao giờ kích hoạt nữa. Trông nó y hệt một cảnh báo chẳng có gì để báo.\n\nĐể sửa lỗi này, hãy chỉnh sửa phần `alert:` trong cấu hình của bạn và trỏ cảnh báo này đến một thực thể có tồn tại.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "alert_unknown_notifiers": {
+            "title": "Trình thông báo không xác định được cảnh báo sử dụng: {alert}",
+            "description": "Spook đã tìm thấy một con ma trong các cảnh báo của bạn 👻\n\nCảnh báo {alert} (`{entity_id}`) gửi thông báo qua các hành động sau, những thứ mà Home Assistant không biết đến:\n\n{notifiers}\n\nCảnh báo vẫn kích hoạt và vẫn lặp lại đều đặn, nhưng các thông báo này chẳng đi đến đâu cả. Home Assistant chỉ ghi nhật ký điều đó vào đúng lúc cảnh báo kích hoạt, một thời điểm khá tệ để phát hiện ra chẳng ai đang nghe.\n\nĐể sửa lỗi này, hãy chỉnh sửa danh sách `notifiers:` của cảnh báo này trong cấu hình của bạn và xóa hoặc sửa lại các mục này.\n\nSpook 👻 Bạn thân của bạn."
+        },
         "automation_unknown_area_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {automation}"
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này tham chiếu đến các khu vực sau, những thứ mà Home Assistant không biết đến:\n\n{areas}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và bỏ việc sử dụng các khu vực không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Khu vực không xác định được dùng trong: {automation}"
+        },
+        "automation_unknown_condition_references": {
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này dùng các điều kiện sau, những thứ mà không bộ tích hợp nào hiện có trong Home Assistant cung cấp được:\n\n{conditions}\n\n\n\nChuyện này thường xảy ra khi bộ tích hợp cung cấp điều kiện đó đã bị gỡ bỏ. Để sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và bỏ việc sử dụng các điều kiện không khả dụng này, hoặc khôi phục bộ tích hợp cung cấp chúng.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Điều kiện không xác định được dùng trong: {automation}"
         },
         "automation_unknown_device_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {automation}"
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này tham chiếu đến các thiết bị sau, những thứ mà Home Assistant không biết đến:\n\n{devices}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và bỏ việc sử dụng các thiết bị không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thiết bị không xác định được dùng trong: {automation}"
         },
         "automation_unknown_entity_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {automation}"
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này tham chiếu đến các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và bỏ việc sử dụng các thực thể không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể không xác định được dùng trong: {automation}"
         },
         "automation_unknown_floor_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {automation}"
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này tham chiếu đến các tầng sau, những thứ mà Home Assistant không biết đến:\n\n{floors}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và bỏ việc sử dụng các tầng không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Tầng không xác định được dùng trong: {automation}"
         },
         "automation_unknown_label_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {automation}"
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này tham chiếu đến các nhãn sau, những thứ mà Home Assistant không biết đến:\n\n{labels}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và bỏ việc sử dụng các nhãn không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Nhãn không xác định được dùng trong: {automation}"
         },
         "automation_unknown_service_references": {
-            "description": "Spook has found a ghost in your automations 👻\n\nWhile floating around, Spook crossed path with the following automation:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nThis automation references the following actions, which are unknown to Home Assistant:\n\n{services}\n\n\n\nTo fix this error, [edit the automation]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {automation}"
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này tham chiếu đến các hành động sau, những thứ mà Home Assistant không biết đến:\n\n{services}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và bỏ việc sử dụng các hành động không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Hành động không xác định được dùng trong: {automation}"
+        },
+        "automation_unknown_trigger_references": {
+            "description": "Spook đã tìm thấy một con ma trong tự động hóa của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tự động hóa sau:\n\n[{automation}]({edit}) (`{entity_id}`)\n\nTự động hóa này dùng các bộ kích hoạt sau, những thứ mà không bộ tích hợp nào hiện có trong Home Assistant cung cấp được:\n\n{triggers}\n\n\n\nChuyện này thường xảy ra khi bộ tích hợp cung cấp bộ kích hoạt đó đã bị gỡ bỏ. Để sửa lỗi này, hãy [chỉnh sửa tự động hóa]({edit}) và bỏ việc sử dụng các bộ kích hoạt không khả dụng này, hoặc khôi phục bộ tích hợp cung cấp chúng.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Bộ kích hoạt không xác định được dùng trong: {automation}"
+        },
+        "empty_areas": {
+            "title": "Khu vực trống: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Khu vực trống: {area}",
+                        "description": "Khu vực {area} không có thiết bị, không có thực thể, và không có tự động hóa hay tập lệnh nào nhắm đến nó.\n\nXóa nó đi, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa khu vực trống này",
+                            "ignore": "Giữ lại, đừng nhắc nữa",
+                            "manage": "Để tôi tự sửa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về khu vực này.",
+                    "manage": "Bạn có thể tự quản lý khu vực này trên [trang Khu vực](/config/areas/dashboard).",
+                    "changed": "Khu vực này đã được dùng lại kể từ lúc Spook xem: có thứ gì đó trong đó, hoặc một tự động hóa hay tập lệnh đang dùng nó. Vì vậy nó được để yên. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
+        },
+        "empty_floors": {
+            "title": "Tầng trống: {floor}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tầng trống: {floor}",
+                        "description": "Tầng {floor} không có khu vực nào, và không có tự động hóa hay tập lệnh nào nhắm đến nó.\n\nXóa nó đi, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa tầng trống này",
+                            "ignore": "Giữ lại, đừng nhắc nữa",
+                            "manage": "Để tôi tự sửa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về tầng này.",
+                    "manage": "Bạn có thể tự quản lý tầng này trên [trang Khu vực](/config/areas/dashboard).",
+                    "changed": "Tầng này đã được dùng lại kể từ lúc Spook xem: có một khu vực trên đó, hoặc một tự động hóa hay tập lệnh đang dùng nó. Vì vậy nó được để yên. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
+        },
+        "energy_unknown_references": {
+            "title": "Thực thể không xác định được dùng trong bảng điều khiển năng lượng",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Thực thể không xác định được dùng trong bảng điều khiển năng lượng",
+                        "description": "Spook đã tìm thấy một con ma trong bảng điều khiển năng lượng của bạn 👻\n\nBảng điều khiển năng lượng tham chiếu đến các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\nChuyện này thường xảy ra khi một thực thể dùng trong cấu hình năng lượng đã bị đổi tên hoặc gỡ bỏ. Đổi tên ư? Vậy hãy mở [Cài đặt > Bảng điều khiển > Năng lượng](/config/energy) và chọn thực thể mới, để lịch sử của nó vẫn ở trên bảng điều khiển.\n\nĐã gỡ bỏ hẳn? Spook có thể lấy chúng ra khỏi cấu hình năng lượng giúp bạn. Một đồng hồ đo bị thiếu sẽ kéo theo nguồn hoặc thiết bị của nó, còn giá hoặc chi phí bị thiếu thì chỉ bị xóa trống. Sau đó bảng điều khiển sẽ thôi hiển thị lịch sử của những gì bị lấy ra; bản thân dữ liệu thống kê vẫn được giữ lại.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Lấy chúng ra khỏi cấu hình năng lượng",
+                            "manage": "Để tôi tự làm",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về các thực thể này.",
+                    "manage": "Bạn có thể tự cập nhật hoặc xóa chúng trong [cấu hình năng lượng](/config/energy).",
+                    "nothing_to_remove": "Không thực thể nào trong số này còn là không xác định, nên chẳng có gì bị lấy ra. Có thể chúng đã quay lại, hoặc ai đó đã thay đổi cấu hình năng lượng rồi."
+                }
+            }
         },
         "group_unknown_members": {
-            "title": "Unknown group members in: {group}"
+            "title": "Thành viên nhóm không xác định trong: {group}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Thành viên nhóm không xác định trong: {group}",
+                        "description": "Spook đã tìm thấy một con ma trong các nhóm của bạn 👻\n\nNhóm {group} (`{entity_id}`) có các thành viên mà Home Assistant không biết đến:\n\n{entities}\n\nXóa chúng khỏi nhóm, hoặc giữ lại và Spook sẽ thôi nhắc về chúng.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa các thành viên này",
+                            "manage": "Để tôi tự sửa",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về nhóm này.",
+                    "not_editable": "Nhóm này được thiết lập trong YAML, nên Spook không thể chỉnh sửa nó. Thay vào đó hãy cập nhật nhóm trong cấu hình của bạn.",
+                    "manage": "Bạn có thể tự quản lý nhóm này trên [trang Biến trợ giúp](/config/helpers).",
+                    "changed": "Các thành viên mà sửa chữa này liệt kê đã quay lại, hoặc đã thay đổi, kể từ lúc Spook xem, nên chưa có gì bị xóa khỏi nhóm. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
+        },
+        "homekit_unknown_entity_references": {
+            "description": "Spook đã tìm thấy một con ma trong cầu nối HomeKit của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp cầu nối HomeKit sau:\n\n{bridge}\n\nCầu nối này nêu tên các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nHomeKit không theo dõi một thực thể khi nó bị đổi tên. Một thực thể được bao gồm mà bị đổi tên hoặc gỡ bỏ sẽ biến mất khỏi ứng dụng Nhà; một thực thể bị loại trừ mà bị đổi tên sẽ lại xuất hiện trong đó.\n\nĐể sửa lỗi này, hãy vào [bộ tích hợp HomeKit Bridge](/config/integrations/integration/homekit), chọn **Cấu hình** trên cầu nối này, và chọn lại các thực thể.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể không xác định được dùng trong cầu nối HomeKit: {bridge}"
+        },
+        "homekit_unknown_entity_references_yaml": {
+            "description": "Spook đã tìm thấy một con ma trong cầu nối HomeKit của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp cầu nối HomeKit sau:\n\n{bridge}\n\nCầu nối này nêu tên các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nHomeKit không theo dõi một thực thể khi nó bị đổi tên. Một thực thể được bao gồm mà bị đổi tên hoặc gỡ bỏ sẽ biến mất khỏi ứng dụng Nhà; một thực thể bị loại trừ mà bị đổi tên sẽ lại xuất hiện trong đó.\n\nCầu nối này được thiết lập trong cấu hình YAML của bạn. Để sửa lỗi này, hãy chỉnh sửa `filter` của cầu nối này dưới `homekit:` và xóa hoặc sửa lại các thực thể này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể không xác định được dùng trong cầu nối HomeKit: {bridge}"
+        },
+        "lovelace_missing_resources": {
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nCác tài nguyên bảng điều khiển sau trỏ đến những tệp không tồn tại:\n\n{resources}\n\n\n\nChuyện này thường xảy ra khi một thẻ tùy chỉnh hoặc các tệp của nó đã bị gỡ bỏ nhưng tài nguyên thì vẫn nằm lại. Để sửa lỗi này, hãy mở [trang Tài nguyên](/config/lovelace/resources) và xóa hoặc sửa lại các tài nguyên này. Trang này không có thẻ riêng: trên trang Bảng điều khiển, nó nằm sau dấu ba chấm ở góc trên bên phải.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Tài nguyên bảng điều khiển trỏ đến tệp bị thiếu"
+        },
+        "lovelace_missing_resources_yaml": {
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nCác tài nguyên bảng điều khiển sau trỏ đến những tệp không tồn tại:\n\n{resources}\n\n\n\nChuyện này thường xảy ra khi một thẻ tùy chỉnh hoặc các tệp của nó đã bị gỡ bỏ nhưng tài nguyên thì vẫn nằm lại.\n\nCác tài nguyên này được liệt kê trong cấu hình YAML của bạn, nên trang Tài nguyên không thể thay đổi chúng. Hãy chỉnh sửa phần `resources:` trong cấu hình Lovelace của bạn và xóa hoặc sửa lại các mục này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Tài nguyên bảng điều khiển trỏ đến tệp bị thiếu"
+        },
+        "lovelace_duplicate_resources": {
+            "title": "Tài nguyên bảng điều khiển được liệt kê nhiều lần: {resource}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tài nguyên bảng điều khiển được liệt kê nhiều lần: {resource}",
+                        "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTài nguyên bảng điều khiển này được liệt kê {count} lần:\n\n{resources}\n\nChuyện này thường xảy ra khi một thẻ tùy chỉnh được cập nhật bằng cách thêm một tài nguyên cho phiên bản mới thay vì chỉnh sửa tài nguyên đã có. Trình duyệt tải cả hai, thẻ cố đăng ký chính nó hai lần, và lần thứ hai thất bại, trông giống một thẻ bị hỏng hơn là một tài nguyên bị trùng.\n\nSpook có thể dọn các bản thừa và giữ lại bản được thêm gần đây nhất.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Dọn các bản thừa, giữ bản gần đây nhất",
+                            "ignore": "Cứ để đó, đừng nhắc nữa",
+                            "manage": "Để tôi tự sửa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về tài nguyên này.",
+                    "manage": "Bạn có thể tự quản lý các tài nguyên bảng điều khiển trên [trang Tài nguyên](/config/lovelace/resources).",
+                    "yaml": "Các tài nguyên này được liệt kê trong cấu hình YAML của bạn, nên Spook không thể thay đổi chúng giúp bạn. Hãy chỉnh sửa phần `resources:` trong cấu hình Lovelace của bạn và xóa các bản sao của `{resource}` mà bạn không còn cần."
+                }
+            }
+        },
+        "lovelace_unknown_area_references": {
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n{dashboard}\n\nBảng điều khiển này tham chiếu đến các khu vực sau, những thứ mà Home Assistant không biết đến:\n\n{areas}\n\n\n\nChuyện này thường xảy ra khi một khu vực đã bị đổi tên hoặc gỡ bỏ. Để sửa lỗi này, hãy [chỉnh sửa bảng điều khiển]({edit}) và bỏ việc sử dụng các khu vực không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Khu vực không xác định được dùng trong bảng điều khiển: {dashboard}"
         },
         "lovelace_unknown_entity_references": {
-            "description": "Spook has found a ghost in your dashboards 👻\n\nWhile floating around, Spook crossed path with the following dashboard:\n\n[{dashboard}]({edit})\n\nThis dashboard references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the dashboard]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {dashboard}"
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n[{dashboard}]({edit})\n\nBảng điều khiển này tham chiếu đến các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa bảng điều khiển]({edit}) và bỏ việc sử dụng các thực thể không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể không xác định được dùng trong: {dashboard}"
+        },
+        "lovelace_unknown_service_references": {
+            "description": "Spook đã tìm thấy một con ma trong các bảng điều khiển của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp bảng điều khiển sau:\n\n[{dashboard}]({edit})\n\nBảng điều khiển này thực hiện các hành động sau, những thứ mà Home Assistant không biết đến:\n\n{services}\n\n\n\nMột nút hoặc thẻ dùng một trong số này sẽ chẳng làm gì khi được nhấn. Chuyện này thường xảy ra khi một tập lệnh đã bị đổi tên hoặc gỡ bỏ, hoặc một bộ tích hợp đã bị gỡ bỏ. Để sửa lỗi này, hãy [chỉnh sửa bảng điều khiển]({edit}) và xóa hoặc thay thế các hành động không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Hành động không xác định được dùng trong bảng điều khiển: {dashboard}"
+        },
+        "min_max_unknown_sources": {
+            "title": "Thành viên không xác định được dùng trong biến trợ giúp tối thiểu/tối đa: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Thành viên không xác định được dùng trong biến trợ giúp tối thiểu/tối đa: {helper}",
+                        "description": "Spook đã tìm thấy một con ma trong các biến trợ giúp của bạn 👻\n\nBiến trợ giúp tối thiểu/tối đa {helper} (`{entity_id}`) kết hợp các thành viên sau, những thứ mà Home Assistant không biết đến:\n\n{sources}\n\nXóa chúng đi để biến trợ giúp tiếp tục với các thành viên còn lại, hoặc giữ lại và Spook sẽ thôi nhắc về chúng.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa các thành viên này",
+                            "manage": "Để tôi tự sửa",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về biến trợ giúp này.",
+                    "manage": "Bạn có thể tự quản lý biến trợ giúp này trên [trang Biến trợ giúp](/config/helpers).",
+                    "changed": "Các thành viên mà sửa chữa này liệt kê đã quay lại, hoặc đã thay đổi, kể từ lúc Spook xem, nên chưa có gì bị xóa khỏi biến trợ giúp. Spook sẽ tự xem lại và cập nhật sửa chữa này.",
+                    "too_few_members": "Biến trợ giúp tối thiểu/tối đa cần ít nhất hai thành viên, nên xóa các thành viên bị thiếu sẽ để lại quá ít. Hãy tự cấu hình lại hoặc xóa biến trợ giúp trên [trang Biến trợ giúp](/config/helpers)."
+                }
+            }
+        },
+        "notify_unknown_group_members": {
+            "description": "Spook đã tìm thấy một con ma trong các nhóm thông báo của bạn 👻\n\nNhóm thông báo `{group}` chuyển tiếp đến các hành động sau, những thứ mà Home Assistant không biết đến:\n\n{members}\n\nNhóm vẫn gửi đến các thành viên còn lại, và vẫn báo thành công cho bất cứ thứ gì đã gọi nó, nên phía trên không ai nhận ra. Lỗi chỉ lộ ra dưới dạng một dòng \"Task exception was never retrieved\" lạc lõng trong nhật ký, không nêu tên nhóm nào và đọc như một lỗi phần mềm. Người đứng sau thành viên đó đơn giản là không còn nhận được thông báo nữa.\n\nĐể sửa lỗi này, hãy chỉnh sửa danh sách `services:` của nhóm này trong cấu hình của bạn và xóa hoặc sửa lại các mục này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thành viên không xác định trong nhóm thông báo: {group}"
+        },
+        "orphaned_statistics": {
+            "title": "Tìm thấy thống kê dài hạn mồ côi",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Tìm thấy thống kê dài hạn mồ côi",
+                        "description": "Spook đã tìm thấy một con ma trong bộ ghi dữ liệu của bạn 👻\n\nHome Assistant đang lưu thống kê dài hạn cho những thứ sau, nhưng không còn thực thể nào tương ứng với chúng nữa:\n\n{statistics}\n\nChuyện này thường xảy ra khi một cảm biến đã bị gỡ bỏ trong khi thống kê của nó vẫn được giữ lại. Xóa chúng sẽ vứt bỏ lịch sử đó vĩnh viễn, nên Spook xem lại một lần nữa trước khi làm, và để yên bất cứ thứ gì đã quay lại trong lúc đó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa các thống kê này",
+                            "manage": "Để tôi tự làm",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về các thống kê này.",
+                    "manage": "Bạn có thể tự xóa chúng trên [trang Thống kê](/config/tools/statistics).",
+                    "nothing_to_clear": "Không còn gì trong danh sách đó cần xóa, nên chưa có gì bị vứt bỏ. Hoặc là các thống kê đã có thực thể đứng sau trở lại, hoặc là chúng đã biến mất rồi.",
+                    "clearing_took_too_long": "Spook đã yêu cầu xóa các thống kê và bộ ghi dữ liệu vẫn chưa báo là xong. Công việc đã được xếp hàng và nhiều khả năng sẽ hoàn tất, nên sửa chữa này vẫn hiện cho đến khi Spook xem lại."
+                }
+            }
+        },
+        "person_unknown_device_trackers": {
+            "title": "Trình theo dõi thiết bị không xác định được theo dõi bởi: {person}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Trình theo dõi thiết bị không xác định được theo dõi bởi: {person}",
+                        "description": "Spook đã tìm thấy một con ma trong danh sách người của bạn 👻\n\n{person} theo dõi các trình theo dõi thiết bị sau, những thứ mà Home Assistant không biết đến:\n\n{device_trackers}\n\nChuyện này thường xảy ra khi một trình theo dõi thiết bị đã bị đổi tên hoặc bộ tích hợp của nó đã bị gỡ bỏ.\n\nXóa chúng khỏi {person}, hoặc giữ lại và Spook sẽ thôi nhắc về chúng.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa các trình theo dõi thiết bị này",
+                            "ignore": "Giữ lại, đừng nhắc nữa",
+                            "manage": "Để tôi tự sửa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về người này.",
+                    "not_editable": "Người này được thiết lập trong YAML, nên Spook không thể chỉnh sửa. Thay vào đó hãy cập nhật người này trong cấu hình của bạn.",
+                    "manage": "Bạn có thể tự quản lý người này trên [trang Người](/config/person)."
+                }
+            }
         },
         "proximity_unknown_ignored_zones": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is ignoring zones that are unknown to Home Assistant:\n\n{zones}\n\n\n\nTo fix this error, edit the configuration and remove this/these zones.\n\nSpook 👻 Your homie.",
-            "title": "Unknown ignored zones: {name}"
+            "description": "Spook đã tìm thấy một con ma trong cấu hình khoảng cách của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp cấu hình khoảng cách sau:\n\n{name}\n\nCấu hình này đang bỏ qua các vùng mà Home Assistant không biết đến:\n\n{zones}\n\n\n\nĐể sửa lỗi này, hãy chỉnh sửa cấu hình và xóa (các) vùng này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Vùng bị bỏ qua không xác định: {name}"
         },
         "proximity_unknown_tracked_entities": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is tracking persons or devices trackers that are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, edit the configuration and remove this/these entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown tracked entities: {name}"
+            "description": "Spook đã tìm thấy một con ma trong cấu hình khoảng cách của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp cấu hình khoảng cách sau:\n\n{name}\n\nCấu hình này đang theo dõi những người hoặc trình theo dõi thiết bị mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nĐể sửa lỗi này, hãy chỉnh sửa cấu hình và xóa (các) thực thể này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể được theo dõi không xác định: {name}"
         },
         "proximity_unknown_zone": {
-            "description": "Spook has found a ghost in your proximity configuration 👻\n\nWhile floating around, Spook crossed path with the following proximity configuration:\n\n{name}\n\nThis configuration is based on a zone that is unknown to Home Assistant:\n\n`{zone}`\n\n\n\nTo fix this error, as you can't change the zone of a proximity configuration, the only option is to remove this specific proximity integration instance.\n\nSpook 👻 Your homie.",
-            "title": "Unknown zone: {zone}"
+            "description": "Spook đã tìm thấy một con ma trong cấu hình khoảng cách của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp cấu hình khoảng cách sau:\n\n{name}\n\nCấu hình này dựa trên một vùng mà Home Assistant không biết đến:\n\n`{zone}`\n\n\n\nĐể sửa lỗi này, vì bạn không thể thay đổi vùng của một cấu hình khoảng cách, cách duy nhất là xóa phiên bản bộ tích hợp khoảng cách cụ thể này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Vùng không xác định: {zone}"
         },
         "scene_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scenes 👻\n\nWhile floating around, Spook crossed path with the following scene:\n\n[{scene}]({edit})\n\nThis scene references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the scene]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {scene}"
+            "description": "Spook đã tìm thấy một con ma trong các cảnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp cảnh sau:\n\n[{scene}]({edit})\n\nCảnh này tham chiếu đến các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa cảnh]({edit}) và bỏ việc sử dụng các thực thể không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể không xác định được dùng trong: {scene}"
         },
         "script_unknown_area_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following areas, which are unknown to Home Assistant:\n\n{areas}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing areas.\n\nSpook 👻 Your homie.",
-            "title": "Unknown areas used in: {script}"
+            "description": "Spook đã tìm thấy một con ma trong tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này tham chiếu đến các khu vực sau, những thứ mà Home Assistant không biết đến:\n\n{areas}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và bỏ việc sử dụng các khu vực không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Khu vực không xác định được dùng trong: {script}"
+        },
+        "script_unknown_condition_references": {
+            "description": "Spook đã tìm thấy một con ma trong tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này dùng các điều kiện sau, những thứ mà không bộ tích hợp nào hiện có trong Home Assistant cung cấp được:\n\n{conditions}\n\n\n\nChuyện này thường xảy ra khi bộ tích hợp cung cấp điều kiện đó đã bị gỡ bỏ. Để sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và bỏ việc sử dụng các điều kiện không khả dụng này, hoặc khôi phục bộ tích hợp cung cấp chúng.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Điều kiện không xác định được dùng trong: {script}"
         },
         "script_unknown_device_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following devices, which are unknown to Home Assistant:\n\n{devices}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing devices.\n\nSpook 👻 Your homie.",
-            "title": "Unknown devices used in: {script}"
+            "description": "Spook đã tìm thấy một con ma trong tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này tham chiếu đến các thiết bị sau, những thứ mà Home Assistant không biết đến:\n\n{devices}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và bỏ việc sử dụng các thiết bị không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thiết bị không xác định được dùng trong: {script}"
         },
         "script_unknown_entity_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following entities, which are unknown to Home Assistant:\n\n{entities}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing entities.\n\nSpook 👻 Your homie.",
-            "title": "Unknown entities used in: {script}"
+            "description": "Spook đã tìm thấy một con ma trong tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này tham chiếu đến các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và bỏ việc sử dụng các thực thể không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể không xác định được dùng trong: {script}"
         },
         "script_unknown_floor_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following floors, which are unknown to Home Assistant:\n\n{floors}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing floors.\n\nSpook 👻 Your homie.",
-            "title": "Unknown floors used in: {script}"
+            "description": "Spook đã tìm thấy một con ma trong tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này tham chiếu đến các tầng sau, những thứ mà Home Assistant không biết đến:\n\n{floors}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và bỏ việc sử dụng các tầng không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Tầng không xác định được dùng trong: {script}"
         },
         "script_unknown_label_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following labels, which are unknown to Home Assistant:\n\n{labels}\n\n\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing labels.\n\nSpook 👻 Your homie.",
-            "title": "Unknown labels used in: {script}"
+            "description": "Spook đã tìm thấy một con ma trong tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này tham chiếu đến các nhãn sau, những thứ mà Home Assistant không biết đến:\n\n{labels}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và bỏ việc sử dụng các nhãn không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Nhãn không xác định được dùng trong: {script}"
         },
         "script_unknown_service_references": {
-            "description": "Spook has found a ghost in your scripts 👻\n\nWhile floating around, Spook crossed path with the following script:\n\n[{script}]({edit}) (`{entity_id}`)\n\nThis script references the following actions, which are unknown to Home Assistant:\n\n{services}\n\nTo fix this error, [edit the script]({edit}) and remove the use of these non-existing actions.\n\nSpook 👻 Your homie.",
-            "title": "Unknown actions used in: {script}"
+            "description": "Spook đã tìm thấy một con ma trong tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này tham chiếu đến các hành động sau, những thứ mà Home Assistant không biết đến:\n\n{services}\n\n\n\nĐể sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và bỏ việc sử dụng các hành động không tồn tại này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Hành động không xác định được dùng trong: {script}"
+        },
+        "script_unknown_trigger_references": {
+            "description": "Spook đã tìm thấy một con ma trong tập lệnh của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp tập lệnh sau:\n\n[{script}]({edit}) (`{entity_id}`)\n\nTập lệnh này dùng các bộ kích hoạt sau, những thứ mà không bộ tích hợp nào hiện có trong Home Assistant cung cấp được:\n\n{triggers}\n\n\n\nChuyện này thường xảy ra khi bộ tích hợp cung cấp bộ kích hoạt đó đã bị gỡ bỏ. Để sửa lỗi này, hãy [chỉnh sửa tập lệnh]({edit}) và bỏ việc sử dụng các bộ kích hoạt không khả dụng này, hoặc khôi phục bộ tích hợp cung cấp chúng.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Bộ kích hoạt không xác định được dùng trong: {script}"
+        },
+        "template_unknown_entity_references": {
+            "description": "Spook đã tìm thấy một con ma trong các biến trợ giúp bản mẫu của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp biến trợ giúp bản mẫu sau:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nCấu hình của nó tham chiếu đến các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nChuyện này thường xảy ra khi một thực thể đã bị đổi tên hoặc gỡ bỏ. Để sửa lỗi này, hãy cấu hình lại biến trợ giúp bản mẫu để tham chiếu đến các thực thể có tồn tại.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể không xác định được dùng trong biến trợ giúp bản mẫu: {helper}"
+        },
+        "template_unknown_service_references": {
+            "description": "Spook đã tìm thấy một con ma trong các biến trợ giúp bản mẫu của bạn 👻\n\nTrong lúc lượn lờ, Spook tình cờ gặp biến trợ giúp bản mẫu sau:\n\n[{helper}]({edit}) (`{entity_id}`)\n\nNó tham chiếu đến các hành động sau, những thứ mà Home Assistant không biết đến:\n\n{services}\n\n\n\nChuyện này thường xảy ra khi thứ cung cấp hành động đã bị gỡ bỏ, hoặc một tập lệnh đã bị đổi tên hay xóa. Để sửa lỗi này, hãy cấu hình lại biến trợ giúp bản mẫu để dùng các hành động có tồn tại.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Hành động không xác định được dùng trong biến trợ giúp bản mẫu: {helper}"
+        },
+        "unknown_area_sensors": {
+            "title": "Cảm biến {sensors} không xác định cho khu vực: {area}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Cảm biến {sensors} không xác định cho khu vực: {area}",
+                        "description": "Spook đã tìm thấy một con ma trong các khu vực của bạn 👻\n\nKhu vực {area} dùng một cảm biến {sensors} mà Home Assistant không biết đến:\n\n{entities}\n\nHome Assistant chỉ kiểm tra cảm biến này lúc nó được chọn, nên khi nó bị gỡ bỏ hoặc đổi tên, khu vực vẫn trỏ vào khoảng không. Assist và các thẻ khu vực không còn nhận được số đo từ nó nữa.\n\nXóa trống thiết lập để bạn có thể chọn lại cảm biến, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa trống thiết lập",
+                            "manage": "Để tôi tự sửa",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về khu vực này.",
+                    "manage": "Bạn có thể chọn một cảm biến khác trong phần cài đặt của khu vực này trên [trang Khu vực](/config/areas/dashboard).",
+                    "changed": "Các cảm biến này đã quay lại, hoặc thiết lập giờ đã trỏ đi nơi khác, kể từ lúc Spook xem. Vì vậy chưa có gì bị xóa. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
+        },
+        "unknown_customized_entities": {
+            "description": "Spook đã tìm thấy một con ma trong các tùy chỉnh của bạn 👻\n\nPhần `customize:` gắn cố định thuộc tính cho các thực thể sau, những thứ mà Home Assistant không biết đến:\n\n{entities}\n\n\n\nChuyện này thường xảy ra khi một thực thể đã bị đổi tên hoặc gỡ bỏ trong khi phần tùy chỉnh của nó vẫn nằm lại. Để sửa lỗi này, hãy chỉnh sửa phần `customize:` trong cấu hình của bạn và xóa các thực thể này.\n\nSpook 👻 Bạn thân của bạn.",
+            "title": "Thực thể không xác định trong các tùy chỉnh của bạn"
+        },
+        "unknown_engines": {
+            "title": "Quy trình Assist dùng các công cụ đã không còn: {pipeline}",
+            "description": "Spook đã tìm thấy một con ma trong các trợ lý giọng nói của bạn 👻\n\nQuy trình Assist {pipeline} dùng những thứ sau, những thứ mà Home Assistant không biết đến:\n\n{engines}\n\nĐiều này thường có nghĩa là bộ tích hợp đứng sau nó đã bị gỡ bỏ. Quy trình không được báo, nên lần tới khi được dùng nó sẽ thất bại với lỗi về một nhà cung cấp hoặc tác tử bị thiếu, và trước đó chẳng có gì chỉ về đây.\n\nĐể sửa, hãy mở phần cài đặt của trợ lý này trong [Trợ lý giọng nói](/config/voice-assistants/assistants) và chọn một công cụ vẫn còn tồn tại cho từng mục này.\n\nSpook 👻 Bạn thân của bạn."
+        },
+        "unknown_helper_source_references": {
+            "title": "Thực thể nguồn không xác định được dùng trong biến trợ giúp: {helper}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Thực thể nguồn không xác định được dùng trong biến trợ giúp: {helper}",
+                        "description": "Spook đã tìm thấy một con ma trong các biến trợ giúp của bạn 👻\n\nBiến trợ giúp {helper} (`{domain}`, `{entity_id}`) tham chiếu đến các thực thể nguồn sau, những thứ mà Home Assistant không biết đến:\n\n{sources}\n\nKhông có nguồn thì biến trợ giúp này không thể hoạt động. {usage}\n\nXóa biến trợ giúp này, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa biến trợ giúp này",
+                            "manage": "Để tôi tự sửa",
+                            "ignore": "Giữ lại, đừng nhắc nữa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về biến trợ giúp này.",
+                    "manage": "Bạn có thể tự quản lý biến trợ giúp này trên [trang Biến trợ giúp](/config/helpers).",
+                    "changed": "Nguồn của biến trợ giúp này đã thay đổi kể từ lúc Spook xem, nên biến trợ giúp được để yên. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
+        },
+        "unused_blueprints": {
+            "title": "Bản thiết kế không được dùng: {blueprint}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Bản thiết kế không được dùng: {blueprint}",
+                        "description": "Bản thiết kế {blueprint} không được dùng bởi bất kỳ {domain} nào.\n\nXóa nó đi, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa bản thiết kế không được dùng này",
+                            "ignore": "Giữ lại, đừng nhắc nữa",
+                            "manage": "Để tôi tự sửa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về bản thiết kế này.",
+                    "manage": "Bạn có thể tự quản lý bản thiết kế này trên [trang Bản thiết kế](/config/blueprint/dashboard)."
+                }
+            }
+        },
+        "unused_labels": {
+            "title": "Nhãn không được dùng: {label}",
+            "fix_flow": {
+                "step": {
+                    "init": {
+                        "title": "Nhãn không được dùng: {label}",
+                        "description": "Nhãn {label} không được gắn cho thực thể, thiết bị hay khu vực nào, và không có tự động hóa hay tập lệnh nào nhắm đến nó.\n\nXóa nó đi, hoặc giữ lại và Spook sẽ thôi nhắc về nó.\n\nSpook 👻 Bạn thân của bạn.",
+                        "menu_options": {
+                            "remove": "Xóa nhãn không được dùng này",
+                            "ignore": "Giữ lại, đừng nhắc nữa",
+                            "manage": "Để tôi tự sửa"
+                        }
+                    }
+                },
+                "abort": {
+                    "issue_ignored": "Từ giờ Spook sẽ im lặng về nhãn này.",
+                    "manage": "Bạn có thể tự quản lý nhãn này trên [trang Nhãn](/config/labels).",
+                    "changed": "Nhãn này đã được dùng lại kể từ lúc Spook xem: có thứ gì đó mang nó, hoặc một tự động hóa hay tập lệnh đang dùng nó. Vì vậy nó được để yên. Spook sẽ tự xem lại và cập nhật sửa chữa này."
+                }
+            }
         },
         "user_issue": {
             "fix_flow": {
@@ -297,13 +1157,1803 @@
             "title": "{title}"
         },
         "restart_required": {
-            "title": "Restart required",
+            "title": "Cần khởi động lại",
             "fix_flow": {
                 "step": {
                     "confirm_restart": {
-                        "title": "Restart required",
-                        "description": "In order for Spook 👻 to finish setting up, Home Assistant needs to be restarted.\n\nSelect submit to restart Home Assistant now."
+                        "title": "Cần khởi động lại",
+                        "description": "Để Spook 👻 hoàn tất việc thiết lập, Home Assistant cần được khởi động lại.\n\nChọn gửi để khởi động lại Home Assistant ngay bây giờ.\n\nSpook 👻 Bạn thân của bạn."
                     }
+                }
+            }
+        }
+    },
+    "system_health": {
+        "info": {
+            "version": "Phiên bản",
+            "ghosts_found": "Số ma tìm thấy",
+            "ghosts_ignored": "Số ma bỏ qua",
+            "helpers_linked": "Biến trợ giúp được liên kết"
+        }
+    },
+    "services": {
+        "group_add_members": {
+            "name": "Thêm thành viên vào nhóm",
+            "description": "Thêm thực thể vào một nhóm được tạo qua giao diện, trong khi Home Assistant đang chạy. Các thực thể đã có trong nhóm được giữ nguyên chỗ.",
+            "fields": {
+                "group": {
+                    "name": "Nhóm",
+                    "description": "Nhóm cần thêm vào."
+                },
+                "members": {
+                    "name": "Thành viên",
+                    "description": "Các thực thể cần thêm vào nhóm."
+                }
+            }
+        },
+        "group_remove_members": {
+            "name": "Xóa thành viên khỏi nhóm",
+            "description": "Lấy thực thể ra khỏi một nhóm được tạo qua giao diện, trong khi Home Assistant đang chạy. Nêu tên thứ không có trong nhóm sẽ chẳng làm gì cả, nên đây cũng là cách dọn một thành viên không còn tồn tại.",
+            "fields": {
+                "group": {
+                    "name": "Nhóm",
+                    "description": "Nhóm cần lấy chúng ra."
+                },
+                "members": {
+                    "name": "Thành viên",
+                    "description": "Các thực thể cần xóa khỏi nhóm."
+                }
+            }
+        },
+        "group_set_members": {
+            "name": "Đặt thành viên cho nhóm",
+            "description": "Thay thế thành viên của một nhóm được tạo qua giao diện bằng những thành viên đã cho, trong khi Home Assistant đang chạy.",
+            "fields": {
+                "group": {
+                    "name": "Nhóm",
+                    "description": "Nhóm cần thay đổi."
+                },
+                "members": {
+                    "name": "Thành viên",
+                    "description": "Các thực thể mà nhóm sẽ chứa từ giờ trở đi."
+                }
+            }
+        },
+        "wait_for_condition": {
+            "name": "Chờ một điều kiện",
+            "description": "Chờ cho đến khi một điều kiện đúng. Trả về ngay nếu nó đã đúng sẵn.",
+            "fields": {
+                "condition": {
+                    "name": "Điều kiện",
+                    "description": "Điều kiện cần chờ."
+                },
+                "timeout": {
+                    "name": "Thời gian chờ tối đa",
+                    "description": "Chờ bao lâu trước khi bỏ cuộc. Nếu bỏ trống thì chờ mãi."
+                }
+            }
+        },
+        "boo": {
+            "name": "Hù!",
+            "description": "Gọi hành động này sẽ hù dọa Home Assistant. Thực hiện hành động này sẽ luôn thất bại."
+        },
+        "random_fail": {
+            "name": "Thất bại ngẫu nhiên",
+            "description": "Thực hiện hành động này sẽ thất bại một cách ngẫu nhiên."
+        },
+        "blueprint_import": {
+            "name": "Nhập bản thiết kế",
+            "description": "Nhập một bản thiết kế.",
+            "fields": {
+                "url": {
+                    "name": "URL",
+                    "description": "URL để nhập bản thiết kế."
+                }
+            }
+        },
+        "automation_snooze": {
+            "name": "Tạm hoãn",
+            "description": "Tắt một tự động hóa trong một lúc, rồi bật lại khi hết giờ.",
+            "fields": {
+                "duration": {
+                    "name": "Thời lượng",
+                    "description": "Tự động hóa tắt trong bao lâu. Nó tự bật lại khi hết thời gian này, kể cả khi Home Assistant khởi động lại giữa chừng."
+                }
+            }
+        },
+        "automation_turn_on_for": {
+            "name": "Bật trong một lúc",
+            "description": "Bật một tự động hóa trong một lúc, rồi tắt lại khi hết giờ.",
+            "fields": {
+                "duration": {
+                    "name": "Thời lượng",
+                    "description": "Tự động hóa bật trong bao lâu. Nó tự tắt lại khi hết thời gian này, kể cả khi Home Assistant khởi động lại giữa chừng."
+                }
+            }
+        },
+        "light_set_brightness": {
+            "name": "Đặt độ sáng",
+            "description": "Đặt độ sáng cho những đèn đang bật, và để yên những đèn đang tắt.",
+            "fields": {
+                "brightness_pct": {
+                    "name": "Độ sáng",
+                    "description": "Độ sáng cần đặt, tính theo phần trăm. Nhóm được điều chỉnh từng đèn một, nên đèn nào đang tắt thì vẫn tắt."
+                },
+                "transition": {
+                    "name": "Chuyển tiếp",
+                    "description": "Thay đổi nên kéo dài bao lâu, tính bằng giây."
+                }
+            }
+        },
+        "light_increase_brightness": {
+            "name": "Tăng độ sáng",
+            "description": "Tăng sáng những đèn đang bật, và để yên những đèn đang tắt.",
+            "fields": {
+                "step_pct": {
+                    "name": "Bước",
+                    "description": "Sáng thêm bao nhiêu, tính theo phần trăm. Mỗi đèn tăng từ mức của riêng nó, nên một nhóm vẫn giữ được tương quan thay vì bị san bằng."
+                },
+                "transition": {
+                    "name": "Chuyển tiếp",
+                    "description": "Thay đổi nên kéo dài bao lâu, tính bằng giây."
+                }
+            }
+        },
+        "light_decrease_brightness": {
+            "name": "Giảm độ sáng",
+            "description": "Giảm sáng những đèn đang bật, dừng ở mức tối nhất của chúng thay vì tắt hẳn.",
+            "fields": {
+                "step_pct": {
+                    "name": "Bước",
+                    "description": "Tối đi bao nhiêu, tính theo phần trăm. Mỗi đèn giảm từ mức của riêng nó, nên một nhóm vẫn giữ được tương quan thay vì bị san bằng."
+                },
+                "transition": {
+                    "name": "Chuyển tiếp",
+                    "description": "Thay đổi nên kéo dài bao lâu, tính bằng giây."
+                }
+            }
+        },
+        "light_set_color": {
+            "name": "Đặt màu",
+            "description": "Đặt màu cho những đèn đang bật, và để yên những đèn đang tắt hoặc không đổi được màu.",
+            "fields": {
+                "rgb_color": {
+                    "name": "Màu",
+                    "description": "Màu cần đặt. Đèn không đổi được màu sẽ bị bỏ qua chứ không bị chuyển sang trắng."
+                },
+                "transition": {
+                    "name": "Chuyển tiếp",
+                    "description": "Thay đổi nên kéo dài bao lâu, tính bằng giây."
+                }
+            }
+        },
+        "light_set_color_temperature": {
+            "name": "Đặt nhiệt độ màu",
+            "description": "Đặt nhiệt độ màu cho những đèn đang bật, mỗi đèn trong phạm vi mà nó thực sự đạt được.",
+            "fields": {
+                "kelvin": {
+                    "name": "Nhiệt độ màu",
+                    "description": "Nhiệt độ màu cần đặt. Mỗi đèn được giữ trong phạm vi của riêng nó, vì trắng ấm trên đèn này là một con số mà đèn khác không đạt tới được."
+                },
+                "transition": {
+                    "name": "Chuyển tiếp",
+                    "description": "Thay đổi nên kéo dài bao lâu, tính bằng giây."
+                }
+            }
+        },
+        "light_set_effect": {
+            "name": "Đặt hiệu ứng",
+            "description": "Đặt hiệu ứng cho những đèn đang bật và thực sự có hiệu ứng đó.",
+            "fields": {
+                "effect": {
+                    "name": "Hiệu ứng",
+                    "description": "Tên của hiệu ứng cần đặt. Tên hiệu ứng khác nhau tùy nhà sản xuất, nên những đèn không có hiệu ứng này được giữ nguyên."
+                }
+            }
+        },
+        "calendar_delete_event": {
+            "name": "Xóa sự kiện",
+            "description": "Xóa sự kiện khỏi lịch, tìm theo tiêu đề hoặc uid trong một khoảng thời gian. Trả về những gì đã xóa, kèm cả uid.",
+            "fields": {
+                "summary": {
+                    "name": "Tóm tắt",
+                    "description": "Tiêu đề của các sự kiện cần xóa, đúng y như trong lịch."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Mã định danh của sự kiện cần xóa, nếu bạn có."
+                },
+                "start_date_time": {
+                    "name": "Ngày giờ bắt đầu",
+                    "description": "Bắt đầu tìm từ đâu. Mặc định là bây giờ."
+                },
+                "end_date_time": {
+                    "name": "Ngày giờ kết thúc",
+                    "description": "Dừng tìm ở đâu. Cho cái này hoặc một thời lượng."
+                },
+                "duration": {
+                    "name": "Thời lượng",
+                    "description": "Tìm xa bao nhiêu tính từ lúc bắt đầu. Cho cái này hoặc một ngày giờ kết thúc."
+                },
+                "whole_series": {
+                    "name": "Cả chuỗi",
+                    "description": "Với sự kiện lặp lại, xóa cả chuỗi thay vì chỉ lần xuất hiện được tìm thấy."
+                }
+            }
+        },
+        "calendar_update_event": {
+            "name": "Cập nhật sự kiện",
+            "description": "Thay đổi sự kiện trong lịch, tìm theo tiêu đề hoặc uid trong một khoảng thời gian. Trả về những gì đã thay đổi, kèm cả uid.",
+            "fields": {
+                "summary": {
+                    "name": "Tóm tắt",
+                    "description": "Tiêu đề của các sự kiện cần thay đổi, đúng y như trong lịch."
+                },
+                "uid": {
+                    "name": "UID",
+                    "description": "Mã định danh của sự kiện cần thay đổi, nếu bạn có."
+                },
+                "start_date_time": {
+                    "name": "Ngày giờ bắt đầu",
+                    "description": "Bắt đầu tìm từ đâu. Mặc định là bây giờ."
+                },
+                "end_date_time": {
+                    "name": "Ngày giờ kết thúc",
+                    "description": "Dừng tìm ở đâu. Cho cái này hoặc một thời lượng."
+                },
+                "duration": {
+                    "name": "Thời lượng",
+                    "description": "Tìm xa bao nhiêu tính từ lúc bắt đầu. Cho cái này hoặc một ngày giờ kết thúc."
+                },
+                "new_summary": {
+                    "name": "Tóm tắt mới",
+                    "description": "Tiêu đề mới cho các sự kiện."
+                },
+                "description": {
+                    "name": "Mô tả",
+                    "description": "Mô tả mới cho các sự kiện."
+                },
+                "location": {
+                    "name": "Vị trí",
+                    "description": "Vị trí mới cho các sự kiện."
+                },
+                "new_start": {
+                    "name": "Bắt đầu mới",
+                    "description": "Thời điểm bắt đầu mới của các sự kiện. Chúng giữ nguyên độ dài, trừ khi cũng có thời điểm kết thúc mới."
+                },
+                "new_end": {
+                    "name": "Kết thúc mới",
+                    "description": "Thời điểm kết thúc mới của các sự kiện."
+                },
+                "shift": {
+                    "name": "Dịch chuyển",
+                    "description": "Dời các sự kiện đi một khoảng bằng này, về sau, hoặc về trước nếu là số âm. Dùng thay cho thời điểm bắt đầu hoặc kết thúc mới."
+                }
+            }
+        },
+        "climate_increase_temperature": {
+            "name": "Tăng nhiệt độ",
+            "description": "Tăng điểm đặt của bộ điều nhiệt lên một bước, cả hai điểm đặt với loại vừa sưởi vừa làm mát. Bộ điều nhiệt đang tắt thì vẫn tắt.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Thay đổi bao nhiêu. Bỏ trống để dùng bước của chính bộ điều nhiệt, hoặc nửa độ (một độ với Fahrenheit) khi nó không có."
+                }
+            }
+        },
+        "climate_decrease_temperature": {
+            "name": "Giảm nhiệt độ",
+            "description": "Giảm điểm đặt của bộ điều nhiệt xuống một bước, cả hai điểm đặt với loại vừa sưởi vừa làm mát. Bộ điều nhiệt đang tắt thì vẫn tắt.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Thay đổi bao nhiêu. Bỏ trống để dùng bước của chính bộ điều nhiệt, hoặc nửa độ (một độ với Fahrenheit) khi nó không có."
+                }
+            }
+        },
+        "homeassistant_create_area": {
+            "name": "Tạo khu vực",
+            "description": "Tạo một khu vực mới ngay lập tức.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của khu vực cần tạo."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng dùng cho khu vực."
+                },
+                "aliases": {
+                    "name": "Biệt hiệu",
+                    "description": "Danh sách biệt hiệu cho khu vực. Hữu ích nếu bạn muốn gọi khu vực bằng một ngôn ngữ khác hoặc một biệt danh khác."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_area": {
+            "name": "Thêm biệt hiệu cho khu vực",
+            "description": "Thêm một biệt hiệu cho khu vực.",
+            "fields": {
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực cần thêm biệt hiệu."
+                },
+                "alias": {
+                    "name": "Biệt hiệu",
+                    "description": "Biệt hiệu (hoặc danh sách biệt hiệu) cần thêm cho khu vực."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_area": {
+            "name": "Xóa biệt hiệu khỏi khu vực",
+            "description": "Xóa một biệt hiệu khỏi khu vực.",
+            "fields": {
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực cần xóa biệt hiệu."
+                },
+                "alias": {
+                    "name": "Biệt hiệu",
+                    "description": "Biệt hiệu (hoặc danh sách biệt hiệu) cần xóa khỏi khu vực."
+                }
+            }
+        },
+        "homeassistant_set_area_aliases": {
+            "name": "Đặt biệt hiệu cho khu vực",
+            "description": "Đặt biệt hiệu cho khu vực. Ghi đè và xóa mọi biệt hiệu hiện có, thay thế hoàn toàn bằng biệt hiệu mới.",
+            "fields": {
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực cần đặt biệt hiệu."
+                },
+                "aliases": {
+                    "name": "Biệt hiệu",
+                    "description": "Các biệt hiệu cần đặt cho khu vực."
+                }
+            }
+        },
+        "homeassistant_add_device_to_area": {
+            "name": "Thêm thiết bị vào khu vực",
+            "description": "Thêm một thiết bị vào khu vực. Lưu ý, nếu thiết bị đã ở trong một khu vực, nó sẽ bị xóa khỏi khu vực trước đó.",
+            "fields": {
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực cần thêm thiết bị vào."
+                },
+                "device_id": {
+                    "name": "ID thiết bị",
+                    "description": "ID của (các) thiết bị cần thêm vào khu vực."
+                }
+            }
+        },
+        "homeassistant_remove_device_from_area": {
+            "name": "Xóa thiết bị khỏi khu vực",
+            "description": "Xóa một thiết bị khỏi khu vực. Vì một thiết bị chỉ có thể ở trong một khu vực, lệnh gọi này không cần chỉ định khu vực.",
+            "fields": {
+                "device_id": {
+                    "name": "ID thiết bị",
+                    "description": "ID của thiết bị cần xóa khỏi khu vực."
+                }
+            }
+        },
+        "homeassistant_add_entity_to_area": {
+            "name": "Thêm thực thể vào khu vực",
+            "description": "Thêm một thực thể vào khu vực. Lưu ý, nếu thực thể đã ở trong một khu vực, nó sẽ bị xóa khỏi khu vực trước đó. Việc này sẽ ghi đè khu vực của thiết bị cung cấp thực thể này.",
+            "fields": {
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực cần thêm thực thể vào."
+                },
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "ID của (các) thực thể cần thêm vào khu vực."
+                }
+            }
+        },
+        "homeassistant_remove_entity_from_area": {
+            "name": "Xóa thực thể khỏi khu vực",
+            "description": "Xóa một thực thể khỏi khu vực. Vì một thực thể chỉ có thể ở trong một khu vực, lệnh gọi này không cần chỉ định khu vực. Lưu ý, sau lệnh gọi này thực thể vẫn sẽ ở trong khu vực của thiết bị cung cấp nó.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "ID của (các) thực thể cần xóa khỏi khu vực."
+                }
+            }
+        },
+        "homeassistant_delete_area": {
+            "name": "Xóa khu vực",
+            "description": "Xóa một khu vực ngay lập tức.",
+            "fields": {
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực cần xóa."
+                }
+            }
+        },
+        "homeassistant_disable_config_entry": {
+            "name": "Vô hiệu hóa bộ tích hợp",
+            "description": "Vô hiệu hóa các mục bộ tích hợp, theo từng mục hoặc mọi mục của một bộ tích hợp.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Mục bộ tích hợp",
+                    "description": "Mục bộ tích hợp cần vô hiệu hóa."
+                },
+                "domain": {
+                    "name": "Bộ tích hợp",
+                    "description": "Vô hiệu hóa mọi mục của các bộ tích hợp này, kể cả những mục được thêm sau."
+                }
+            }
+        },
+        "homeassistant_enable_config_entry": {
+            "name": "Bật bộ tích hợp",
+            "description": "Bật các mục bộ tích hợp, theo từng mục hoặc mọi mục của một bộ tích hợp.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Mục bộ tích hợp",
+                    "description": "Mục bộ tích hợp cần bật."
+                },
+                "domain": {
+                    "name": "Bộ tích hợp",
+                    "description": "Bật mọi mục của các bộ tích hợp này, kể cả những mục được thêm sau."
+                }
+            }
+        },
+        "homeassistant_disable_device": {
+            "name": "Vô hiệu hóa thiết bị",
+            "description": "Vô hiệu hóa một thiết bị ngay lập tức.",
+            "fields": {
+                "device_id": {
+                    "name": "Thiết bị",
+                    "description": "(Các) thiết bị cần vô hiệu hóa."
+                }
+            }
+        },
+        "homeassistant_enable_device": {
+            "name": "Bật thiết bị",
+            "description": "Bật một thiết bị ngay lập tức.",
+            "fields": {
+                "device_id": {
+                    "name": "ID thiết bị",
+                    "description": "ID thiết bị thô cần bật. Bộ chọn thiết bị của Home Assistant không hiển thị các thiết bị đã bị vô hiệu hóa. Có thể cung cấp nhiều ID dưới dạng danh sách YAML."
+                }
+            }
+        },
+        "homeassistant_disable_user": {
+            "name": "Vô hiệu hóa người dùng",
+            "description": "Vô hiệu hóa một tài khoản người dùng, ngăn họ đăng nhập.",
+            "fields": {
+                "user_id": {
+                    "name": "ID người dùng",
+                    "description": "ID của (các) người dùng cần vô hiệu hóa."
+                }
+            }
+        },
+        "homeassistant_enable_user": {
+            "name": "Bật người dùng",
+            "description": "Bật một tài khoản người dùng, cho phép họ đăng nhập.",
+            "fields": {
+                "user_id": {
+                    "name": "ID người dùng",
+                    "description": "ID của (các) người dùng cần bật."
+                }
+            }
+        },
+        "homeassistant_update_entity_id": {
+            "name": "Cập nhật ID thực thể",
+            "description": "Cập nhật ID của một thực thể ngay lập tức.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần cập nhật."
+                },
+                "new_entity_id": {
+                    "name": "ID thực thể mới",
+                    "description": "ID mới cho thực thể."
+                }
+            }
+        },
+        "homeassistant_disable_entity": {
+            "name": "Vô hiệu hóa thực thể",
+            "description": "Vô hiệu hóa một (hoặc nhiều) thực thể ngay lập tức.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần vô hiệu hóa."
+                }
+            }
+        },
+        "homeassistant_enable_entity": {
+            "name": "Bật thực thể",
+            "description": "Bật một (hoặc nhiều) thực thể ngay lập tức.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần bật."
+                }
+            }
+        },
+        "homeassistant_expose_entity": {
+            "name": "Lộ diện thực thể cho trợ lý",
+            "description": "Lộ diện một (hoặc nhiều) thực thể cho các trợ lý giọng nói.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần lộ diện."
+                },
+                "assistants": {
+                    "name": "Trợ lý",
+                    "description": "(Các) trợ lý áp dụng."
+                }
+            }
+        },
+        "homeassistant_hide_entity": {
+            "name": "Ẩn thực thể",
+            "description": "Ẩn một (hoặc nhiều) thực thể ngay lập tức.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần ẩn."
+                }
+            }
+        },
+        "homeassistant_rename_entity": {
+            "name": "Đổi tên thực thể",
+            "description": "Đổi tên một (hoặc nhiều) thực thể ngay lập tức.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần đổi tên."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên mới cho (các) thực thể."
+                }
+            }
+        },
+        "homeassistant_set_entity_icon": {
+            "name": "Đặt biểu tượng cho thực thể",
+            "description": "Đặt biểu tượng cho một (hoặc nhiều) thực thể ngay lập tức. Đặt thành null để quay về biểu tượng mà bộ tích hợp cung cấp.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần đặt biểu tượng."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng mới, hoặc null để dùng biểu tượng của chính bộ tích hợp."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_entity": {
+            "name": "Thêm biệt hiệu cho thực thể",
+            "description": "Thêm một hoặc nhiều biệt hiệu cho một (hoặc nhiều) thực thể, để trợ lý giọng nói có thể gọi nó bằng tên đó.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần thêm biệt hiệu."
+                },
+                "alias": {
+                    "name": "Biệt hiệu",
+                    "description": "(Các) biệt hiệu cần thêm."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_entity": {
+            "name": "Xóa biệt hiệu khỏi thực thể",
+            "description": "Xóa một hoặc nhiều biệt hiệu khỏi một (hoặc nhiều) thực thể.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần xóa biệt hiệu."
+                },
+                "alias": {
+                    "name": "Biệt hiệu",
+                    "description": "(Các) biệt hiệu cần xóa."
+                }
+            }
+        },
+        "homeassistant_set_entity_aliases": {
+            "name": "Đặt biệt hiệu cho thực thể",
+            "description": "Thay thế biệt hiệu của một (hoặc nhiều) thực thể. Việc tên riêng của thực thể có được tính là biệt hiệu hay không vẫn giữ như cũ.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần đặt biệt hiệu."
+                },
+                "aliases": {
+                    "name": "Biệt hiệu",
+                    "description": "Các biệt hiệu cần đặt."
+                }
+            }
+        },
+        "homeassistant_unexpose_entity": {
+            "name": "Ngừng lộ diện thực thể cho trợ lý",
+            "description": "Ngừng lộ diện một (hoặc nhiều) thực thể cho các trợ lý giọng nói.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần ngừng lộ diện."
+                },
+                "assistants": {
+                    "name": "Trợ lý",
+                    "description": "(Các) trợ lý áp dụng."
+                }
+            }
+        },
+        "homeassistant_unhide_entity": {
+            "name": "Bỏ ẩn thực thể",
+            "description": "Bỏ ẩn một (hoặc nhiều) thực thể ngay lập tức.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cần bỏ ẩn."
+                }
+            }
+        },
+        "homeassistant_create_floor": {
+            "name": "Tạo tầng",
+            "description": "Tạo một tầng mới ngay lập tức.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của tầng cần tạo."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng dùng cho tầng."
+                },
+                "level": {
+                    "name": "Cấp tầng",
+                    "description": "Tầng này nằm ở cấp nào trong nhà bạn."
+                },
+                "aliases": {
+                    "name": "Biệt hiệu",
+                    "description": "Danh sách biệt hiệu cho tầng. Hữu ích nếu bạn muốn gọi tầng bằng một ngôn ngữ khác hoặc một biệt danh khác."
+                }
+            }
+        },
+        "homeassistant_add_alias_to_floor": {
+            "name": "Thêm biệt hiệu cho tầng",
+            "description": "Thêm một biệt hiệu cho tầng.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID tầng",
+                    "description": "ID của tầng cần thêm biệt hiệu."
+                },
+                "alias": {
+                    "name": "Biệt hiệu",
+                    "description": "Biệt hiệu (hoặc danh sách biệt hiệu) cần thêm cho tầng."
+                }
+            }
+        },
+        "homeassistant_remove_alias_from_floor": {
+            "name": "Xóa biệt hiệu khỏi tầng",
+            "description": "Xóa một biệt hiệu khỏi tầng.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID tầng",
+                    "description": "ID của tầng cần xóa biệt hiệu."
+                },
+                "alias": {
+                    "name": "Biệt hiệu",
+                    "description": "Biệt hiệu (hoặc danh sách biệt hiệu) cần xóa khỏi tầng."
+                }
+            }
+        },
+        "homeassistant_set_floor_aliases": {
+            "name": "Đặt biệt hiệu cho tầng",
+            "description": "Đặt biệt hiệu cho tầng. Ghi đè và xóa mọi biệt hiệu hiện có, thay thế hoàn toàn bằng biệt hiệu mới.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID tầng",
+                    "description": "ID của tầng cần đặt biệt hiệu."
+                },
+                "aliases": {
+                    "name": "Biệt hiệu",
+                    "description": "Các biệt hiệu cần đặt cho tầng."
+                }
+            }
+        },
+        "homeassistant_add_area_to_floor": {
+            "name": "Thêm khu vực vào tầng",
+            "description": "Thêm một khu vực vào tầng. Lưu ý, nếu khu vực đã ở trên một tầng, nó sẽ bị xóa khỏi tầng trước đó.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID tầng",
+                    "description": "ID của tầng cần thêm khu vực vào."
+                },
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của (các) khu vực cần thêm vào tầng."
+                }
+            }
+        },
+        "homeassistant_remove_area_from_floor": {
+            "name": "Xóa khu vực khỏi tầng",
+            "description": "Xóa một khu vực khỏi tầng. Vì một khu vực chỉ có thể ở trên một tầng, lệnh gọi này không cần chỉ định tầng.",
+            "fields": {
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của khu vực cần xóa khỏi tầng."
+                }
+            }
+        },
+        "homeassistant_delete_floor": {
+            "name": "Xóa tầng",
+            "description": "Xóa một tầng ngay lập tức.",
+            "fields": {
+                "floor_id": {
+                    "name": "ID tầng",
+                    "description": "ID của tầng cần xóa."
+                }
+            }
+        },
+        "homeassistant_create_label": {
+            "name": "Tạo nhãn",
+            "description": "Tạo một nhãn mới ngay lập tức.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của nhãn cần tạo."
+                },
+                "description": {
+                    "name": "Mô tả",
+                    "description": "Mô tả cho nhãn."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng dùng cho nhãn."
+                },
+                "color": {
+                    "name": "Màu",
+                    "description": "Màu dùng cho nhãn. Có thể là tên màu trong danh sách, hoặc mã màu hex (như #FF0000)."
+                }
+            }
+        },
+        "homeassistant_update_label": {
+            "name": "Cập nhật nhãn",
+            "description": "Cập nhật một nhãn có sẵn ngay lập tức. Những gì bạn bỏ trống sẽ giữ giá trị hiện có. Mô tả, biểu tượng và màu có thể được xóa trống bằng cách đặt thành null.",
+            "fields": {
+                "label_id": {
+                    "name": "ID nhãn",
+                    "description": "ID của nhãn cần cập nhật."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên mới cho nhãn."
+                },
+                "description": {
+                    "name": "Mô tả",
+                    "description": "Mô tả mới cho nhãn."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng mới dùng cho nhãn."
+                },
+                "color": {
+                    "name": "Màu",
+                    "description": "Màu dùng cho nhãn. Có thể là tên màu trong danh sách, hoặc mã màu hex (như #FF0000)."
+                }
+            }
+        },
+        "homeassistant_add_label_to_area": {
+            "name": "Gắn nhãn cho khu vực",
+            "description": "Gắn một nhãn cho khu vực. Nếu cung cấp nhiều nhãn hoặc nhiều khu vực, mọi tổ hợp sẽ được gắn.",
+            "fields": {
+                "label_id": {
+                    "name": "ID nhãn",
+                    "description": "ID của (các) nhãn cần gắn cho (các) khu vực."
+                },
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của (các) khu vực cần gắn (các) nhãn."
+                }
+            }
+        },
+        "homeassistant_add_label_to_device": {
+            "name": "Gắn nhãn cho thiết bị",
+            "description": "Gắn một nhãn cho thiết bị. Nếu cung cấp nhiều nhãn hoặc nhiều thiết bị, mọi tổ hợp sẽ được gắn.",
+            "fields": {
+                "label_id": {
+                    "name": "ID nhãn",
+                    "description": "ID của (các) nhãn cần gắn cho (các) thiết bị."
+                },
+                "device_id": {
+                    "name": "ID thiết bị",
+                    "description": "ID của (các) thiết bị cần gắn (các) nhãn."
+                }
+            }
+        },
+        "homeassistant_add_label_to_entity": {
+            "name": "Gắn nhãn cho thực thể",
+            "description": "Gắn một nhãn cho thực thể. Nếu cung cấp nhiều nhãn hoặc nhiều thực thể, mọi tổ hợp sẽ được gắn.",
+            "fields": {
+                "label_id": {
+                    "name": "ID nhãn",
+                    "description": "ID của (các) nhãn cần gắn cho (các) thực thể."
+                },
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "ID của (các) thực thể cần gắn (các) nhãn."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_area": {
+            "name": "Gỡ nhãn khỏi khu vực",
+            "description": "Gỡ một nhãn khỏi khu vực. Nếu cung cấp nhiều nhãn hoặc nhiều khu vực, mọi tổ hợp sẽ được gỡ.",
+            "fields": {
+                "label_id": {
+                    "name": "ID nhãn",
+                    "description": "ID của (các) nhãn cần gỡ khỏi (các) khu vực."
+                },
+                "area_id": {
+                    "name": "ID khu vực",
+                    "description": "ID của (các) khu vực cần gỡ (các) nhãn."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_device": {
+            "name": "Gỡ nhãn khỏi thiết bị",
+            "description": "Gỡ một nhãn khỏi thiết bị. Nếu cung cấp nhiều nhãn hoặc nhiều thiết bị, mọi tổ hợp sẽ được gỡ.",
+            "fields": {
+                "label_id": {
+                    "name": "ID nhãn",
+                    "description": "ID của (các) nhãn cần gỡ khỏi (các) thiết bị."
+                },
+                "device_id": {
+                    "name": "ID thiết bị",
+                    "description": "ID của (các) thiết bị cần gỡ (các) nhãn."
+                }
+            }
+        },
+        "homeassistant_remove_label_from_entity": {
+            "name": "Gỡ nhãn khỏi thực thể",
+            "description": "Gỡ một nhãn khỏi thực thể. Nếu cung cấp nhiều nhãn hoặc nhiều thực thể, mọi tổ hợp sẽ được gỡ.",
+            "fields": {
+                "label_id": {
+                    "name": "ID nhãn",
+                    "description": "ID của (các) nhãn cần gỡ khỏi (các) thực thể."
+                },
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "ID của (các) thực thể cần gỡ (các) nhãn."
+                }
+            }
+        },
+        "homeassistant_create_category": {
+            "name": "Tạo danh mục",
+            "description": "Tạo một danh mục mới ngay lập tức, cho tự động hóa, tập lệnh, cảnh hoặc biến trợ giúp. Trả về ID của danh mục mới.",
+            "fields": {
+                "scope": {
+                    "name": "Phạm vi",
+                    "description": "Nơi danh mục được sử dụng."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của danh mục cần tạo."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng dùng cho danh mục."
+                }
+            }
+        },
+        "homeassistant_update_category": {
+            "name": "Cập nhật danh mục",
+            "description": "Cập nhật một danh mục có sẵn ngay lập tức. Những gì bạn bỏ trống sẽ giữ giá trị hiện có. Biểu tượng có thể được xóa trống bằng cách đặt thành null.",
+            "fields": {
+                "scope": {
+                    "name": "Phạm vi",
+                    "description": "Nơi danh mục được sử dụng."
+                },
+                "category_id": {
+                    "name": "Danh mục",
+                    "description": "ID hoặc tên của danh mục cần cập nhật."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên mới cho danh mục."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng mới cho danh mục."
+                }
+            }
+        },
+        "homeassistant_delete_category": {
+            "name": "Xóa danh mục",
+            "description": "Xóa một danh mục. Mọi thứ từng nằm trong đó sẽ không còn danh mục nào.",
+            "fields": {
+                "scope": {
+                    "name": "Phạm vi",
+                    "description": "Nơi danh mục được sử dụng."
+                },
+                "category_id": {
+                    "name": "Danh mục",
+                    "description": "ID hoặc tên của danh mục cần xóa."
+                }
+            }
+        },
+        "homeassistant_add_category_to_entity": {
+            "name": "Đặt danh mục cho thực thể",
+            "description": "Đưa một tự động hóa, tập lệnh, cảnh hoặc biến trợ giúp vào một danh mục. Nó thay thế danh mục cũ, vì mỗi thứ chỉ có thể nằm trong một danh mục.",
+            "fields": {
+                "category_id": {
+                    "name": "Danh mục",
+                    "description": "ID hoặc tên của danh mục."
+                },
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) tự động hóa, tập lệnh, cảnh hoặc biến trợ giúp cần đưa vào danh mục."
+                }
+            }
+        },
+        "homeassistant_remove_category_from_entity": {
+            "name": "Gỡ danh mục khỏi thực thể",
+            "description": "Lấy một tự động hóa, tập lệnh, cảnh hoặc biến trợ giúp ra khỏi danh mục. Những thứ nằm trong danh mục khác được để yên.",
+            "fields": {
+                "category_id": {
+                    "name": "Danh mục",
+                    "description": "ID hoặc tên của danh mục."
+                },
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) tự động hóa, tập lệnh, cảnh hoặc biến trợ giúp cần lấy ra khỏi danh mục."
+                }
+            }
+        },
+        "homeassistant_delete_label": {
+            "name": "Xóa nhãn",
+            "description": "Xóa một nhãn ngay lập tức.",
+            "fields": {
+                "label_id": {
+                    "name": "ID nhãn",
+                    "description": "ID của nhãn cần xóa."
+                }
+            }
+        },
+        "homeassistant_ignore_all_discovered": {
+            "name": "Bỏ qua tất cả thiết bị đang được phát hiện",
+            "description": "Bỏ qua tất cả thiết bị đang được phát hiện hiển thị trên bảng điều khiển bộ tích hợp. Việc này sẽ không bỏ qua các thiết bị được phát hiện sau đó.",
+            "fields": {
+                "domain": {
+                    "name": "Tên miền bộ tích hợp",
+                    "description": "Tên miền bộ tích hợp cần bỏ qua mọi thiết bị được phát hiện. Nếu không cung cấp, mọi tên miền đều sẽ được bỏ qua."
+                }
+            }
+        },
+        "homeassistant_disable_polling": {
+            "name": "Tắt thăm dò cập nhật",
+            "description": "Tắt việc thăm dò cập nhật cho một mục bộ tích hợp.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Mục bộ tích hợp",
+                    "description": "Mục bộ tích hợp cần tắt thăm dò."
+                }
+            }
+        },
+        "homeassistant_enable_polling": {
+            "name": "Bật thăm dò cập nhật",
+            "description": "Bật việc thăm dò cập nhật cho một mục bộ tích hợp.",
+            "fields": {
+                "config_entry_id": {
+                    "name": "Mục bộ tích hợp",
+                    "description": "Mục bộ tích hợp cần bật thăm dò."
+                }
+            }
+        },
+        "homeassistant_delete_all_orphaned_entities": {
+            "name": "Xóa tất cả thực thể mồ côi",
+            "description": "Xóa tất cả thực thể mồ côi không còn bộ tích hợp nào nhận hoặc cung cấp chúng. Lưu ý, nếu bộ tích hợp vừa mới bị gỡ bỏ, có thể cần khởi động lại để Home Assistant nhận ra chúng đã mồ côi.\n**CẢNH BÁO** Thực thể có thể bị đánh dấu là mồ côi vì một bộ tích hợp đang ngoại tuyến hoặc không hoạt động kể từ khi Home Assistant khởi động. Gọi hành động này cũng sẽ xóa luôn những thực thể đó."
+        },
+        "homeassistant_list_orphaned_database_entities": {
+            "name": "Liệt kê tất cả thực thể mồ côi trong cơ sở dữ liệu",
+            "description": "Liệt kê tất cả thực thể mồ côi trong cơ sở dữ liệu mà không bộ tích hợp nào nhận."
+        },
+        "homeassistant_restart": {
+            "name": "Khởi động lại",
+            "description": "Hành động khởi động lại Home Assistant.",
+            "fields": {
+                "safe_mode": {
+                    "name": "Chế độ an toàn",
+                    "description": "Có khởi động lại ở chế độ an toàn hay không. Việc này sẽ tắt mọi bộ tích hợp tùy chỉnh và mô-đun giao diện."
+                },
+                "force": {
+                    "name": "Buộc khởi động lại",
+                    "description": "Buộc khởi động lại. CẢNH BÁO! Việc này sẽ không tắt Home Assistant một cách êm ái, nó sẽ bỏ qua kiểm tra cấu hình và phớt lờ các lần di chuyển cơ sở dữ liệu đang chạy. Chỉ dùng nếu bạn biết mình đang làm gì."
+                }
+            }
+        },
+        "recorder_import_statistics": {
+            "name": "Nhập thống kê",
+            "description": "Nhập thống kê dài hạn.",
+            "fields": {
+                "statistic_id": {
+                    "name": "ID thống kê",
+                    "description": "ID thống kê (ID thực thể) cần nhập."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của thống kê."
+                },
+                "source": {
+                    "name": "Nguồn",
+                    "description": "Nguồn của dữ liệu thống kê."
+                },
+                "unit_of_measurement": {
+                    "name": "Đơn vị đo lường",
+                    "description": "Đơn vị đo lường của thống kê."
+                },
+                "has_mean": {
+                    "name": "Có giá trị trung bình",
+                    "description": "Thống kê có giá trị trung bình hay không."
+                },
+                "has_sum": {
+                    "name": "Có giá trị tổng",
+                    "description": "Thống kê có giá trị tổng hay không."
+                },
+                "stats": {
+                    "name": "Thống kê",
+                    "description": "Danh sách các ánh xạ/từ điển chứa thống kê cần nhập. Mỗi từ điển phải chứa khóa \"start\" với một chuỗi ngày giờ; các tùy chọn hợp lệ khác là \"mean\", \"sum\", \"min\", \"max\", \"last_reset\" và \"state\". Tất cả đều không bắt buộc và là số nguyên hoặc số thực, trừ \"last_reset\" là một chuỗi ngày giờ."
+                }
+            }
+        },
+        "select_random": {
+            "name": "Chọn tùy chọn ngẫu nhiên",
+            "description": "Chọn một tùy chọn ngẫu nhiên cho thực thể lựa chọn.",
+            "fields": {
+                "options": {
+                    "name": "Tùy chọn",
+                    "description": "Giới hạn các tùy chọn để chọn. Nếu không cung cấp, mọi tùy chọn đều được xét."
+                }
+            }
+        },
+        "input_select_create": {
+            "name": "Tạo đầu nhập lựa chọn",
+            "description": "Tạo một biến trợ giúp đầu nhập lựa chọn (danh sách thả xuống) mới ngay lập tức. Trả về ID thực thể của đầu nhập lựa chọn mới.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của đầu nhập lựa chọn mới."
+                },
+                "input_select_id": {
+                    "name": "ID thực thể đầu nhập lựa chọn",
+                    "description": "ID thực thể cho đầu nhập lựa chọn mới. Tiền tố input_select. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "options": {
+                    "name": "Tùy chọn",
+                    "description": "Các tùy chọn để chọn. Mỗi tùy chọn chỉ được xuất hiện một lần."
+                },
+                "initial": {
+                    "name": "Tùy chọn ban đầu",
+                    "description": "Tùy chọn mà nó bắt đầu, phải là một trong các tùy chọn. Nếu bỏ trống, nó giữ tùy chọn đã có trước khi Home Assistant khởi động lại."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng cho đầu nhập lựa chọn mới."
+                }
+            }
+        },
+        "input_select_delete": {
+            "name": "Xóa đầu nhập lựa chọn",
+            "description": "Xóa các biến trợ giúp đầu nhập lựa chọn được tạo trong giao diện hoặc bằng hành động tạo đầu nhập lựa chọn. Spook không thể xóa đầu nhập lựa chọn được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) đầu nhập lựa chọn cần xóa."
+                }
+            }
+        },
+        "input_select_random": {
+            "name": "Chọn tùy chọn ngẫu nhiên",
+            "description": "Chọn một tùy chọn ngẫu nhiên cho thực thể input_select.",
+            "fields": {
+                "options": {
+                    "name": "Tùy chọn",
+                    "description": "Giới hạn các tùy chọn để chọn. Nếu không cung cấp, mọi tùy chọn đều được xét."
+                }
+            }
+        },
+        "input_select_reverse": {
+            "name": "Đảo ngược tùy chọn",
+            "description": "Đảo ngược thứ tự các tùy chọn có thể chọn của thực thể `input_select`, từ sau ra trước. Việc này không được lưu lại và sẽ bị hoàn tác khi tải lại hoặc khi Home Assistant khởi động lại."
+        },
+        "input_select_shuffle": {
+            "name": "Xáo trộn tùy chọn",
+            "description": "Xáo trộn danh sách các tùy chọn có thể chọn của thực thể `input_select`. Việc này không được lưu lại và sẽ bị hoàn tác khi tải lại hoặc khi Home Assistant khởi động lại."
+        },
+        "input_select_sort": {
+            "name": "Sắp xếp tùy chọn",
+            "description": "Sắp xếp danh sách các tùy chọn có thể chọn của thực thể `input_select`. Việc này không được lưu lại và sẽ bị hoàn tác khi tải lại hoặc khi Home Assistant khởi động lại."
+        },
+        "number_decrement": {
+            "name": "Giảm giá trị",
+            "description": "Giảm giá trị của thực thể số đi một lượng nhất định.",
+            "fields": {
+                "amount": {
+                    "name": "Lượng",
+                    "description": "Lượng cần giảm. Nếu không cung cấp, bước của thực thể số sẽ được dùng."
+                }
+            }
+        },
+        "number_increment": {
+            "name": "Tăng giá trị",
+            "description": "Tăng giá trị của thực thể số lên một lượng nhất định.",
+            "fields": {
+                "amount": {
+                    "name": "Lượng",
+                    "description": "Lượng cần tăng. Nếu không cung cấp, bước của thực thể số sẽ được dùng."
+                }
+            }
+        },
+        "number_max": {
+            "name": "Đặt giá trị tối đa",
+            "description": "Đặt thực thể số về giá trị tối đa của nó."
+        },
+        "number_min": {
+            "name": "Đặt giá trị tối thiểu",
+            "description": "Đặt thực thể số về giá trị tối thiểu của nó."
+        },
+        "input_number_decrement": {
+            "name": "Giảm giá trị",
+            "description": "Giảm giá trị của thực thể đầu nhập số đi một lượng nhất định.",
+            "fields": {
+                "amount": {
+                    "name": "Lượng",
+                    "description": "Lượng cần giảm cho đầu nhập số. Nếu không cung cấp, bước của thực thể số sẽ được dùng."
+                },
+                "cycle": {
+                    "name": "Xoay vòng",
+                    "description": "Tiếp tục từ đầu kia của phạm vi thay vì dừng lại ở đầu này, giống như cách chọn tùy chọn kế tiếp xoay vòng một lựa chọn."
+                }
+            }
+        },
+        "input_number_increment": {
+            "name": "Tăng giá trị",
+            "description": "Tăng giá trị của thực thể đầu nhập số lên một lượng nhất định.",
+            "fields": {
+                "amount": {
+                    "name": "Lượng",
+                    "description": "Lượng cần tăng cho đầu nhập số. Nếu không cung cấp, bước của thực thể số sẽ được dùng."
+                },
+                "cycle": {
+                    "name": "Xoay vòng",
+                    "description": "Tiếp tục từ đầu kia của phạm vi thay vì dừng lại ở đầu này, giống như cách chọn tùy chọn kế tiếp xoay vòng một lựa chọn."
+                }
+            }
+        },
+        "input_number_max": {
+            "name": "Đặt giá trị tối đa",
+            "description": "Đặt thực thể đầu nhập số về giá trị tối đa của nó."
+        },
+        "input_number_min": {
+            "name": "Đặt giá trị tối thiểu",
+            "description": "Đặt thực thể đầu nhập số về giá trị tối thiểu của nó."
+        },
+        "input_number_set_range": {
+            "name": "Đặt phạm vi",
+            "description": "Thay đổi giá trị tối thiểu, tối đa hoặc bước của một đầu nhập số được tạo trong giao diện, giống như khi chỉnh sửa nó. Giá trị nằm ngoài phạm vi mới sẽ được đưa vào trong.",
+            "fields": {
+                "min": {
+                    "name": "Tối thiểu",
+                    "description": "Giá trị tối thiểu mới."
+                },
+                "max": {
+                    "name": "Tối đa",
+                    "description": "Giá trị tối đa mới."
+                },
+                "step": {
+                    "name": "Bước",
+                    "description": "Kích thước bước mới."
+                }
+            }
+        },
+        "counter_create": {
+            "name": "Tạo bộ đếm",
+            "description": "Tạo một biến trợ giúp bộ đếm mới ngay lập tức. Trả về ID thực thể của bộ đếm mới.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của bộ đếm mới."
+                },
+                "counter_id": {
+                    "name": "ID thực thể bộ đếm",
+                    "description": "ID thực thể cho bộ đếm mới. Tiền tố counter. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "initial": {
+                    "name": "Giá trị ban đầu",
+                    "description": "Giá trị mà bộ đếm bắt đầu, và quay về khi đặt lại."
+                },
+                "minimum": {
+                    "name": "Tối thiểu",
+                    "description": "Giá trị thấp nhất mà bộ đếm có thể giảm xuống. Bỏ trống nếu không giới hạn."
+                },
+                "maximum": {
+                    "name": "Tối đa",
+                    "description": "Giá trị cao nhất mà bộ đếm có thể tăng lên. Bỏ trống nếu không giới hạn."
+                },
+                "step": {
+                    "name": "Bước",
+                    "description": "Mỗi lần bộ đếm tăng hoặc giảm bao nhiêu."
+                },
+                "restore": {
+                    "name": "Khôi phục",
+                    "description": "Khôi phục giá trị của bộ đếm khi Home Assistant khởi động, thay vì bắt đầu lại từ giá trị ban đầu."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng cho bộ đếm mới."
+                }
+            }
+        },
+        "counter_delete": {
+            "name": "Xóa bộ đếm",
+            "description": "Xóa các biến trợ giúp bộ đếm được tạo trong giao diện hoặc bằng hành động tạo bộ đếm. Spook không thể xóa bộ đếm được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) bộ đếm cần xóa."
+                }
+            }
+        },
+        "input_boolean_create": {
+            "name": "Tạo đầu nhập luận lý",
+            "description": "Tạo một biến trợ giúp đầu nhập luận lý (công tắc) mới ngay lập tức. Trả về ID thực thể của đầu nhập luận lý mới.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của đầu nhập luận lý mới."
+                },
+                "input_boolean_id": {
+                    "name": "ID thực thể đầu nhập luận lý",
+                    "description": "ID thực thể cho đầu nhập luận lý mới. Tiền tố input_boolean. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "initial": {
+                    "name": "Giá trị ban đầu",
+                    "description": "Giá trị mà nó bắt đầu. Nếu bỏ trống, nó giữ giá trị đã có trước khi Home Assistant khởi động lại."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng cho đầu nhập luận lý mới."
+                }
+            }
+        },
+        "input_boolean_delete": {
+            "name": "Xóa đầu nhập luận lý",
+            "description": "Xóa các biến trợ giúp đầu nhập luận lý được tạo trong giao diện hoặc bằng hành động tạo đầu nhập luận lý. Spook không thể xóa đầu nhập luận lý được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) đầu nhập luận lý cần xóa."
+                }
+            }
+        },
+        "input_text_create": {
+            "name": "Tạo đầu nhập văn bản",
+            "description": "Tạo một biến trợ giúp đầu nhập văn bản mới ngay lập tức. Trả về ID thực thể của đầu nhập văn bản mới.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của đầu nhập văn bản mới."
+                },
+                "input_text_id": {
+                    "name": "ID thực thể đầu nhập văn bản",
+                    "description": "ID thực thể cho đầu nhập văn bản mới. Tiền tố input_text. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "initial": {
+                    "name": "Giá trị ban đầu",
+                    "description": "Văn bản mà nó bắt đầu. Nếu bỏ trống, nó giữ văn bản đã có trước khi Home Assistant khởi động lại."
+                },
+                "min": {
+                    "name": "Độ dài tối thiểu",
+                    "description": "Văn bản ngắn nhất có thể là bao nhiêu."
+                },
+                "max": {
+                    "name": "Độ dài tối đa",
+                    "description": "Văn bản dài nhất có thể là bao nhiêu."
+                },
+                "pattern": {
+                    "name": "Mẫu",
+                    "description": "Một biểu thức chính quy mà văn bản phải khớp."
+                },
+                "mode": {
+                    "name": "Chế độ",
+                    "description": "Hiển thị văn bản như bình thường, hoặc ẩn nó đi như mật khẩu."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng cho đầu nhập văn bản mới."
+                },
+                "unit_of_measurement": {
+                    "name": "Đơn vị đo lường",
+                    "description": "Đơn vị hiển thị bên cạnh văn bản."
+                }
+            }
+        },
+        "input_text_delete": {
+            "name": "Xóa đầu nhập văn bản",
+            "description": "Xóa các biến trợ giúp đầu nhập văn bản được tạo trong giao diện hoặc bằng hành động tạo đầu nhập văn bản. Spook không thể xóa đầu nhập văn bản được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) đầu nhập văn bản cần xóa."
+                }
+            }
+        },
+        "input_button_create": {
+            "name": "Tạo đầu nhập nút nhấn",
+            "description": "Tạo một biến trợ giúp đầu nhập nút nhấn mới ngay lập tức. Trả về ID thực thể của đầu nhập nút nhấn mới.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của đầu nhập nút nhấn mới."
+                },
+                "input_button_id": {
+                    "name": "ID thực thể đầu nhập nút nhấn",
+                    "description": "ID thực thể cho đầu nhập nút nhấn mới. Tiền tố input_button. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng cho đầu nhập nút nhấn mới."
+                }
+            }
+        },
+        "input_button_delete": {
+            "name": "Xóa đầu nhập nút nhấn",
+            "description": "Xóa các biến trợ giúp đầu nhập nút nhấn được tạo trong giao diện hoặc bằng hành động tạo đầu nhập nút nhấn. Spook không thể xóa đầu nhập nút nhấn được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) đầu nhập nút nhấn cần xóa."
+                }
+            }
+        },
+        "input_datetime_create": {
+            "name": "Tạo đầu nhập ngày giờ",
+            "description": "Tạo một biến trợ giúp đầu nhập ngày giờ mới ngay lập tức, chứa ngày, giờ, hoặc cả hai. Trả về ID thực thể của đầu nhập ngày giờ mới.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của đầu nhập ngày giờ mới."
+                },
+                "input_datetime_id": {
+                    "name": "ID thực thể đầu nhập ngày giờ",
+                    "description": "ID thực thể cho đầu nhập ngày giờ mới. Tiền tố input_datetime. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "has_date": {
+                    "name": "Có ngày",
+                    "description": "Có chứa ngày hay không. Ít nhất một trong ngày và giờ phải được bật."
+                },
+                "has_time": {
+                    "name": "Có giờ",
+                    "description": "Có chứa giờ hay không. Ít nhất một trong ngày và giờ phải được bật."
+                },
+                "initial": {
+                    "name": "Giá trị ban đầu",
+                    "description": "Ngày và/hoặc giờ mà nó bắt đầu, như 2026-12-31, 08:30:00, hoặc 2026-12-31 08:30:00. Nếu bỏ trống, nó giữ giá trị đã có trước khi Home Assistant khởi động lại."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng cho đầu nhập ngày giờ mới."
+                }
+            }
+        },
+        "input_datetime_delete": {
+            "name": "Xóa đầu nhập ngày giờ",
+            "description": "Xóa các biến trợ giúp đầu nhập ngày giờ được tạo trong giao diện hoặc bằng hành động tạo đầu nhập ngày giờ. Spook không thể xóa đầu nhập ngày giờ được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) đầu nhập ngày giờ cần xóa."
+                }
+            }
+        },
+        "input_number_create": {
+            "name": "Tạo đầu nhập số",
+            "description": "Tạo một biến trợ giúp đầu nhập số mới ngay lập tức. Trả về ID thực thể của đầu nhập số mới.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của biến trợ giúp đầu nhập số mới."
+                },
+                "input_number_id": {
+                    "name": "ID thực thể đầu nhập số",
+                    "description": "ID thực thể cho biến trợ giúp đầu nhập số mới. Tiền tố input_number. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "min": {
+                    "name": "Tối thiểu",
+                    "description": "Giá trị tối thiểu của đầu nhập số."
+                },
+                "max": {
+                    "name": "Tối đa",
+                    "description": "Giá trị tối đa của đầu nhập số."
+                },
+                "initial": {
+                    "name": "Giá trị ban đầu",
+                    "description": "Giá trị ban đầu của đầu nhập số khi Home Assistant khởi động."
+                },
+                "step": {
+                    "name": "Kích thước bước",
+                    "description": "Kích thước bước của đầu nhập số."
+                },
+                "mode": {
+                    "name": "Chế độ hiển thị",
+                    "description": "Chế độ hiển thị của đầu nhập số, có thể là thanh trượt hoặc trường nhập liệu."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng dùng cho biến trợ giúp đầu nhập số."
+                },
+                "unit_of_measurement": {
+                    "name": "Đơn vị đo lường",
+                    "description": "Đơn vị đo lường của đầu nhập số."
+                }
+            }
+        },
+        "input_number_delete": {
+            "name": "Xóa đầu nhập số",
+            "description": "Xóa các biến trợ giúp đầu nhập số được tạo trong giao diện hoặc bằng hành động tạo đầu nhập số. Spook không thể xóa đầu nhập số được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) đầu nhập số cần xóa."
+                }
+            }
+        },
+        "person_add_device_tracker": {
+            "name": "Thêm trình theo dõi thiết bị",
+            "description": "Thêm một trình theo dõi thiết bị cho một người.",
+            "fields": {
+                "entity_id": {
+                    "name": "Người",
+                    "description": "ID thực thể của người cần thêm trình theo dõi thiết bị."
+                },
+                "device_tracker": {
+                    "name": "Trình theo dõi thiết bị",
+                    "description": "ID thực thể của trình theo dõi thiết bị cần thêm cho người đó."
+                }
+            }
+        },
+        "person_remove_device_tracker": {
+            "name": "Xóa trình theo dõi thiết bị",
+            "description": "Xóa một trình theo dõi thiết bị khỏi một người.",
+            "fields": {
+                "entity_id": {
+                    "name": "Người",
+                    "description": "ID thực thể của người cần xóa trình theo dõi thiết bị."
+                },
+                "device_tracker": {
+                    "name": "Trình theo dõi thiết bị",
+                    "description": "ID thực thể của trình theo dõi thiết bị cần xóa khỏi người đó."
+                }
+            }
+        },
+        "repairs_create": {
+            "name": "Tạo vấn đề",
+            "description": "Tạo và nêu một vấn đề thủ công trong mục sửa chữa của Home Assistant.",
+            "fields": {
+                "title": {
+                    "name": "Tiêu đề",
+                    "description": "Tiêu đề của vấn đề."
+                },
+                "description": {
+                    "name": "Mô tả",
+                    "description": "Mô tả của vấn đề. Hỗ trợ Markdown."
+                },
+                "issue_id": {
+                    "name": "ID vấn đề",
+                    "description": "Vấn đề có thể có một mã định danh, cho phép bạn hủy nó sau này bằng ID đó nếu cần. Nó cũng ngăn việc tạo vấn đề trùng lặp. Nếu không cung cấp, một ID ngẫu nhiên sẽ được tạo."
+                },
+                "domain": {
+                    "name": "Tên miền",
+                    "description": "Trường này có thể dùng để đặt tên miền của vấn đề. Ví dụ, mặc định (nếu không đặt) nó sẽ dùng \"spook\". Điều này khiến Spook hiện trong logo/hình ảnh của vấn đề. Nếu bạn đặt là \"homeassistant\", logo Home Assistant sẽ được dùng, hoặc dùng \"hue\", \"zwave_js\", \"mqtt\", v.v. để dùng logo của bộ tích hợp đó."
+                },
+                "severity": {
+                    "name": "Mức độ nghiêm trọng",
+                    "description": "Mức độ nghiêm trọng của vấn đề. Nó sẽ được dùng để xác định mức ưu tiên của vấn đề. Nếu không đặt, \"warning\" sẽ được dùng."
+                },
+                "persistent": {
+                    "name": "Lưu bền",
+                    "description": "Vấn đề có nên được lưu bền hay không, nghĩa là nó sẽ còn lại sau khi Home Assistant khởi động lại. Mặc định, vấn đề không được lưu bền."
+                }
+            }
+        },
+        "repairs_ignore_all": {
+            "name": "Bỏ qua tất cả vấn đề",
+            "description": "Bỏ qua tất cả vấn đề hiện đang được nêu trong mục Sửa chữa của Home Assistant, hoặc chỉ những vấn đề do các bộ tích hợp cụ thể nêu.",
+            "fields": {
+                "domain": {
+                    "name": "Tên miền",
+                    "description": "Chỉ bỏ qua những vấn đề do các bộ tích hợp này nêu."
+                }
+            }
+        },
+        "repairs_list": {
+            "name": "Liệt kê vấn đề",
+            "description": "Liệt kê các vấn đề hiện đang được nêu trong mục Sửa chữa của Home Assistant, kèm tiêu đề, để một tự động hóa xử lý hoặc một bảng điều khiển hiển thị.",
+            "fields": {
+                "include_ignored": {
+                    "name": "Bao gồm vấn đề đã bỏ qua",
+                    "description": "Liệt kê cả những vấn đề đã bị bỏ qua."
+                },
+                "domain": {
+                    "name": "Tên miền",
+                    "description": "Chỉ liệt kê những vấn đề do các bộ tích hợp này nêu."
+                },
+                "severity": {
+                    "name": "Mức độ nghiêm trọng",
+                    "description": "Chỉ liệt kê những vấn đề có các mức độ nghiêm trọng này."
+                }
+            }
+        },
+        "repairs_remove": {
+            "name": "Gỡ bỏ vấn đề",
+            "description": "Gỡ bỏ một vấn đề sửa chữa được tạo thủ công trong Home Assistant. Hành động này chỉ có thể gỡ bỏ những vấn đề được tạo bằng hành động `repairs_create`.",
+            "fields": {
+                "issue_id": {
+                    "name": "ID vấn đề",
+                    "description": "ID của vấn đề cần gỡ bỏ."
+                }
+            }
+        },
+        "repairs_unignore_all": {
+            "name": "Thôi bỏ qua tất cả vấn đề",
+            "description": "Thôi bỏ qua tất cả vấn đề hiện đang được nêu trong mục Sửa chữa của Home Assistant, hoặc chỉ những vấn đề do các bộ tích hợp cụ thể nêu.",
+            "fields": {
+                "domain": {
+                    "name": "Tên miền",
+                    "description": "Chỉ thôi bỏ qua những vấn đề do các bộ tích hợp này nêu."
+                }
+            }
+        },
+        "sensor_set_display_precision": {
+            "name": "Đặt độ chính xác hiển thị",
+            "description": "Đặt số chữ số thập phân hiển thị cho một hoặc nhiều cảm biến.",
+            "fields": {
+                "entity_id": {
+                    "name": "Thực thể",
+                    "description": "(Các) thực thể cảm biến cần cập nhật."
+                },
+                "display_precision": {
+                    "name": "Độ chính xác hiển thị",
+                    "description": "Số chữ số thập phân hiển thị cho cảm biến."
+                }
+            }
+        },
+        "timer_create": {
+            "name": "Tạo bộ đếm giờ",
+            "description": "Tạo một biến trợ giúp bộ đếm giờ mới ngay lập tức. Trả về ID thực thể của bộ đếm giờ mới.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của bộ đếm giờ mới."
+                },
+                "timer_id": {
+                    "name": "ID thực thể bộ đếm giờ",
+                    "description": "ID thực thể cho bộ đếm giờ mới. Tiền tố timer. được thêm tự động. Nếu không cung cấp, ID thực thể sẽ được tạo dựa trên tên."
+                },
+                "duration": {
+                    "name": "Thời lượng",
+                    "description": "Bộ đếm giờ chạy trong bao lâu khi được khởi động."
+                },
+                "restore": {
+                    "name": "Khôi phục",
+                    "description": "Khôi phục trạng thái của bộ đếm giờ khi Home Assistant khởi động, để bộ đếm giờ đang chạy vẫn tiếp tục chạy qua lần khởi động lại."
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng cho bộ đếm giờ mới."
+                }
+            }
+        },
+        "timer_delete": {
+            "name": "Xóa bộ đếm giờ",
+            "description": "Xóa các biến trợ giúp bộ đếm giờ được tạo trong giao diện hoặc bằng hành động tạo bộ đếm giờ. Spook không thể xóa bộ đếm giờ được thiết lập trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "(Các) bộ đếm giờ cần xóa."
+                }
+            }
+        },
+        "timer_set_duration": {
+            "name": "Đặt thời lượng",
+            "description": "Đặt thời lượng cho một bộ đếm giờ có sẵn.",
+            "fields": {
+                "duration": {
+                    "name": "Thời lượng",
+                    "description": "Thời lượng mới cho bộ đếm giờ, dưới dạng chuỗi timedelta."
+                }
+            }
+        },
+        "zone_create": {
+            "name": "Tạo vùng",
+            "description": "Tạo một vùng mới trong Home Assistant ngay lập tức.",
+            "fields": {
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của vùng"
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng dùng cho vùng"
+                },
+                "latitude": {
+                    "name": "Vĩ độ",
+                    "description": "Vĩ độ của vùng. Có thể là một bản mẫu."
+                },
+                "longitude": {
+                    "name": "Kinh độ",
+                    "description": "Kinh độ của vùng. Có thể là một bản mẫu."
+                },
+                "radius": {
+                    "name": "Bán kính",
+                    "description": "Bán kính của vùng"
+                },
+                "passive": {
+                    "name": "Thụ động",
+                    "description": "Vùng thụ động chỉ dành cho tự động hóa: nó không hiển thị trên bản đồ, và không thay đổi vị trí của người và trình theo dõi thiết bị."
+                }
+            }
+        },
+        "zone_update": {
+            "name": "Cập nhật vùng",
+            "description": "Cập nhật thuộc tính của một vùng ngay lập tức.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "ID của (các) thực thể cần cập nhật."
+                },
+                "name": {
+                    "name": "Tên",
+                    "description": "Tên của vùng"
+                },
+                "icon": {
+                    "name": "Biểu tượng",
+                    "description": "Biểu tượng dùng cho vùng"
+                },
+                "latitude": {
+                    "name": "Vĩ độ",
+                    "description": "Vĩ độ của vùng. Có thể là một bản mẫu."
+                },
+                "longitude": {
+                    "name": "Kinh độ",
+                    "description": "Kinh độ của vùng. Có thể là một bản mẫu."
+                },
+                "radius": {
+                    "name": "Bán kính",
+                    "description": "Bán kính của vùng"
+                },
+                "passive": {
+                    "name": "Thụ động",
+                    "description": "Vùng thụ động chỉ dành cho tự động hóa: nó không hiển thị trên bản đồ, và không thay đổi vị trí của người và trình theo dõi thiết bị."
+                }
+            }
+        },
+        "zone_delete": {
+            "name": "Xóa vùng",
+            "description": "Xóa một vùng. Chỉ hoạt động với các vùng được tạo và quản lý qua giao diện. Spook không thể quản lý các vùng được tạo và quản lý trong YAML.",
+            "fields": {
+                "entity_id": {
+                    "name": "ID thực thể",
+                    "description": "ID của (các) thực thể cần xóa."
+                }
+            }
+        },
+        "water_heater_increase_temperature": {
+            "name": "Tăng nhiệt độ",
+            "description": "Tăng điểm đặt của máy nước nóng lên một bước, trong giới hạn của nó.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Thay đổi bao nhiêu. Bỏ trống để dùng bước của chính máy nước nóng, hoặc nửa độ (một độ với Fahrenheit) khi nó không có."
+                }
+            }
+        },
+        "water_heater_decrease_temperature": {
+            "name": "Giảm nhiệt độ",
+            "description": "Giảm điểm đặt của máy nước nóng xuống một bước, trong giới hạn của nó.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Thay đổi bao nhiêu. Bỏ trống để dùng bước của chính máy nước nóng, hoặc nửa độ (một độ với Fahrenheit) khi nó không có."
+                }
+            }
+        },
+        "humidifier_increase_humidity": {
+            "name": "Tăng độ ẩm",
+            "description": "Tăng độ ẩm mục tiêu của máy tạo ẩm lên một bước, trong giới hạn của nó.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Thay đổi bao nhiêu phần trăm. Bỏ trống để dùng bước của chính máy tạo ẩm, hoặc một phần trăm khi nó không có."
+                }
+            }
+        },
+        "humidifier_decrease_humidity": {
+            "name": "Giảm độ ẩm",
+            "description": "Giảm độ ẩm mục tiêu của máy tạo ẩm xuống một bước, trong giới hạn của nó.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Thay đổi bao nhiêu phần trăm. Bỏ trống để dùng bước của chính máy tạo ẩm, hoặc một phần trăm khi nó không có."
+                }
+            }
+        },
+        "cover_increase_position": {
+            "name": "Tăng vị trí",
+            "description": "Mở rèm, cửa cuốn thêm một bước, dừng lại khi đã mở hoàn toàn.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Di chuyển bao nhiêu phần trăm. Mười phần trăm nếu bỏ trống."
+                }
+            }
+        },
+        "cover_decrease_position": {
+            "name": "Giảm vị trí",
+            "description": "Đóng rèm, cửa cuốn thêm một bước, dừng lại khi đã đóng hoàn toàn.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Di chuyển bao nhiêu phần trăm. Mười phần trăm nếu bỏ trống."
+                }
+            }
+        },
+        "valve_increase_position": {
+            "name": "Tăng vị trí",
+            "description": "Mở van thêm một bước, dừng lại khi đã mở hoàn toàn.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Di chuyển bao nhiêu phần trăm. Mười phần trăm nếu bỏ trống."
+                }
+            }
+        },
+        "valve_decrease_position": {
+            "name": "Giảm vị trí",
+            "description": "Đóng van thêm một bước, dừng lại khi đã đóng hoàn toàn.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Di chuyển bao nhiêu phần trăm. Mười phần trăm nếu bỏ trống."
+                }
+            }
+        },
+        "media_player_increase_volume": {
+            "name": "Tăng âm lượng",
+            "description": "Tăng âm lượng của trình phát đa phương tiện theo bước bạn đưa ra, dừng lại ở âm lượng tối đa.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Thay đổi âm lượng bao nhiêu phần trăm."
+                }
+            }
+        },
+        "media_player_decrease_volume": {
+            "name": "Giảm âm lượng",
+            "description": "Giảm âm lượng của trình phát đa phương tiện theo bước bạn đưa ra, dừng lại khi im lặng.",
+            "fields": {
+                "step": {
+                    "name": "Bước",
+                    "description": "Thay đổi âm lượng bao nhiêu phần trăm."
+                }
+            }
+        },
+        "todo_move_item": {
+            "name": "Di chuyển mục",
+            "description": "Di chuyển một mục trong danh sách việc cần làm lên trên cùng, xuống dưới cùng, hoặc ra sau một mục khác.",
+            "fields": {
+                "item": {
+                    "name": "Mục",
+                    "description": "Tiêu đề hoặc uid của mục cần di chuyển."
+                },
+                "after": {
+                    "name": "Sau",
+                    "description": "Tiêu đề hoặc uid của mục mà nó sẽ được đặt phía sau. Cho cái này hoặc một vị trí."
+                },
+                "position": {
+                    "name": "Vị trí",
+                    "description": "Di chuyển nó lên trên cùng hoặc xuống dưới cùng danh sách. Cho cái này hoặc một mục để đặt nó phía sau."
                 }
             }
         }
