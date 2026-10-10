@@ -646,3 +646,33 @@ async def test_a_made_up_entity_elsewhere_on_a_logbook_card_is_reported(
     }
 
     assert await _reported_for_card(repair, monkeypatch, card) == [{"log.visible_when"}]
+
+
+@pytest.mark.parametrize(
+    "element",
+    [
+        {
+            "type": "service-button",
+            "service": "light.turn_on",
+            "service_data": {"entity_id": "light.gone"},
+        },
+        {
+            "type": "service-button",
+            "action": "light.turn_on",
+            "data": {"entity_id": ["light.gone"]},
+        },
+        {
+            "type": "action-button",
+            "action": "light.turn_on",
+            "target": {"entity_id": "light.gone"},
+        },
+    ],
+    ids=["service_data", "data", "target"],
+)
+async def test_an_entity_a_button_element_acts_on_is_checked(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, element: dict[str, Any]
+) -> None:
+    """Test the entity a picture-elements button hands its action is checked."""
+    card = {"type": "picture-elements", "image": "/local/x.png", "elements": [element]}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [{"light.gone"}]
