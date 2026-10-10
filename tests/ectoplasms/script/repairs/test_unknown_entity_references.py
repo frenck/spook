@@ -383,9 +383,9 @@ async def test_an_integration_event_payload_is_still_reported(
 async def test_event_fields_in_action_data_are_still_read(
     hass: HomeAssistant,
 ) -> None:
-    """Test `event_type` and `event_data` in action data are no event trigger.
+    """Test action data shaped like an event trigger is no event trigger.
 
-    They are whatever the called action takes, so an entity in there is read
+    It is whatever the called action takes, so an entity in there is read
     like any other in action data.
     """
     scripts = {
@@ -394,6 +394,7 @@ async def test_event_fields_in_action_data_are_still_read(
                 {
                     "action": "script.forward",
                     "data": {
+                        "trigger": "event",
                         "event_type": "my_remote_pressed",
                         "event_data": {"entity_id": "light.from_the_remote"},
                     },

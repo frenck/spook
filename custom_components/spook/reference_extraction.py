@@ -129,8 +129,10 @@ def custom_event_payload_entities(config: Any) -> set[str]:
         if isinstance(entity_id, str) and valid_entity_id(entity_id):
             found.add(entity_id)
 
+    # Action data is whatever the action takes, never a trigger, whatever
+    # its shape.
     for key, value in config.items():
-        if key not in payload_keys:
+        if key not in payload_keys and key not in _PAYLOAD_KEYS:
             found |= custom_event_payload_entities(value)
     return found
 

@@ -287,9 +287,12 @@ async def _extract_entities_from_nested_configs(
 
     The payload of somebody's own event waited for in a step is left alone:
     it is whatever the sender puts there, not something this one needs.
+    Inside action data nothing is a trigger, whatever its shape.
     """
     entities = set()
-    payload_keys = event_payload_keys_to_leave_alone(config)
+    payload_keys = (
+        frozenset() if in_payload else event_payload_keys_to_leave_alone(config)
+    )
     for key, value in config.items():
         if key in payload_keys:
             continue
