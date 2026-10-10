@@ -13,6 +13,7 @@ from ....entity_filtering import async_get_all_entity_ids, async_get_all_service
 from ....reference_extraction import (
     custom_event_payload_entities,
     without_disabled_steps,
+    without_never_rendered,
 )
 from ....repairs import AbstractSpookEntityComponentUnknownReferencesRepair
 from ....template_extraction import (
@@ -56,7 +57,11 @@ async def extract_template_entities_from_script_entity(
     if not (config := getattr(entity, "raw_config", None)):
         return set()
 
-    return await async_extract_entities_from_config(hass, config, known_services)
+    # A description, a name or a field example is shown, never rendered: an
+    # entity in an example template there is not one the script uses.
+    return await async_extract_entities_from_config(
+        hass, without_never_rendered(config), known_services
+    )
 
 
 class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
@@ -107,7 +112,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             known_services=self._known_services,
         )
         named |= await async_extract_entities_from_config(
-            self.hass, config, self._known_services
+            self.hass, without_never_rendered(config), self._known_services
         )
         return named
 

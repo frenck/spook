@@ -444,3 +444,54 @@ async def test_event_fields_in_old_style_action_data_are_still_read(
     }
 
     assert await _unknown_in_script(hass, scripts, "relay") == {"light.from_the_remote"}
+
+
+async def test_a_field_example_names_no_entity(hass: HomeAssistant) -> None:
+    """Test an example template in a field or a step name is not read.
+
+    Home Assistant shows those, it never renders them.
+    """
+    scripts = {
+        "announce": {
+            "fields": {
+                "message": {
+                    "example": "{{ states('sensor.field_example_ghost') }}",
+                    "selector": {"text": {}},
+                }
+            },
+            "sequence": [
+                {
+                    "alias": "Was {{ states('sensor.step_name_example') }}",
+                    "delay": 1,
+                }
+            ],
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "announce") == set()
+
+
+async def test_repeat_items_are_rendered_whatever_their_keys(
+    hass: HomeAssistant,
+) -> None:
+    """Test the items a repeat goes over are read, also a `description` there.
+
+    Home Assistant renders each item as a whole, so it is no name or
+    description of the script, whatever its keys are called.
+    """
+    scripts = {
+        "rounds": {
+            "sequence": [
+                {
+                    "repeat": {
+                        "for_each": [
+                            {"description": "{{ states('sensor.repeat_ghost') }}"}
+                        ],
+                        "sequence": [{"delay": 0}],
+                    }
+                }
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "rounds") == {"sensor.repeat_ghost"}

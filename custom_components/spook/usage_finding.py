@@ -45,7 +45,7 @@ from .helper_sources import (
     async_helper_sources,
     min_max_members,
 )
-from .reference_extraction import extract_targets_from_config
+from .reference_extraction import extract_targets_from_config, without_never_rendered
 from .repairs import INSPECTION_YIELD_INTERVAL
 from .template_extraction import async_extract_entities_from_config
 
@@ -136,7 +136,9 @@ async def _async_named_by_automation(
             | await extract_entities_from_automation_config(
                 hass, raw_config, known_services
             )
-            | await async_extract_entities_from_config(hass, raw_config, known_services)
+            | await async_extract_entities_from_config(
+                hass, without_never_rendered(raw_config), known_services
+            )
         )
 
     # One that failed to load has no script to read the actions off.
@@ -170,7 +172,9 @@ async def _async_named_by_script(
                 [steps] if isinstance(steps, dict) else steps,
                 known_services=known_services,
             )
-            | await async_extract_entities_from_config(hass, raw_config, known_services)
+            | await async_extract_entities_from_config(
+                hass, without_never_rendered(raw_config), known_services
+            )
         )
 
     if "action" in wanted and loaded:

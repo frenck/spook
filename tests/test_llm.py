@@ -634,6 +634,63 @@ async def test_find_usages(hass: HomeAssistant, hass_admin_user: MockUser) -> No
     assert by_id["lovelace"]["matched_as"] == "entity"
 
 
+async def test_find_usages_skips_what_is_never_rendered(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a mention in a description, a name or a field is no usage.
+
+    Home Assistant shows those, it never renders them. A template in action
+    data is rendered, so that one still is a usage.
+    """
+    mention = "{{ states('sensor.mentioned') }}"
+    used = "{{ states('sensor.used') }}"
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": {
+                "id": "morning",
+                "alias": "Morning",
+                "description": f"Uses {mention}",
+                "triggers": [{"trigger": "homeassistant", "event": "start"}],
+                "actions": [
+                    {"alias": mention, "delay": 1},
+                    {"action": "notify.notify", "data": {"message": used}},
+                ],
+            }
+        },
+    )
+    assert await async_setup_component(
+        hass,
+        "script",
+        {
+            "script": {
+                "announce": {
+                    "alias": "Announce",
+                    "fields": {"text": {"example": mention, "selector": {"text": {}}}},
+                    "sequence": [
+                        {"action": "notify.notify", "data": {"message": used}}
+                    ],
+                }
+            }
+        },
+    )
+    hass.data["lovelace"] = SimpleNamespace(dashboards={})
+
+    mentioned = await _call(
+        hass, "spook__find_usages", hass_admin_user, reference="sensor.mentioned"
+    )
+    assert mentioned.data["usages"] == []
+
+    used_in = await _call(
+        hass, "spook__find_usages", hass_admin_user, reference="sensor.used"
+    )
+    assert {usage["id"] for usage in used_in.data["usages"]} == {
+        "automation.morning",
+        "script.announce",
+    }
+
+
 async def test_find_usages_of_an_action(
     hass: HomeAssistant, hass_admin_user: MockUser
 ) -> None:
