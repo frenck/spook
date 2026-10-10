@@ -10,6 +10,7 @@ from custom_components.spook.template_extraction import extract_device_ids_from_
 from custom_components.spook.reference_extraction import (
     extract_platform_keys_from_config,
     extract_targets_from_config,
+    mentioned_only_in_disabled_steps,
     numeric_state_threshold_entities,
     only_in_disabled_steps,
     without_disabled_steps,
@@ -360,9 +361,54 @@ def test_only_in_disabled_steps() -> None:
         {"action": "light.turn_off", "target": {"area_id": "hall"}},
     ]
 
-    assert only_in_disabled_steps(
+    left_out = only_in_disabled_steps(
         config, lambda found: extract_targets_from_config(found).area_ids
-    ) == {"attic"}
+    )
+
+    assert "attic" in left_out
+    assert "hall" not in left_out
+
+
+def test_mentioned_only_in_disabled_steps_ignores_what_the_key_means() -> None:
+    """Whatever key a parked step holds a string under, it is parked.
+
+    Home Assistant reads keys Spook's walkers do not, and both read disabled
+    steps. A string that only shows up in those cannot be named by anything
+    that runs.
+    """
+    config = {
+        "triggers": [
+            {"enabled": False, "trigger": "time", "at": "input_datetime.parked"},
+            {"enabled": "{{ false }}", "trigger": "time", "at": "input_datetime.maybe"},
+            {"trigger": "time", "at": "input_datetime.both"},
+        ],
+        "actions": [
+            {"enabled": False, "scene": "scene.parked"},
+            {"enabled": False, "scene": "input_datetime.both"},
+        ],
+    }
+
+    parked = mentioned_only_in_disabled_steps(config)
+
+    assert {"input_datetime.parked", "scene.parked"} <= parked
+    assert "input_datetime.maybe" not in parked
+    assert "input_datetime.both" not in parked
+
+
+def test_mentioned_only_in_disabled_steps_reads_running_steps_like_core() -> None:
+    """Home Assistant lowercases an entity ID and splits a comma separated list.
+
+    A running step that names `scene.parked` that way still names it.
+    """
+    config = [
+        {"enabled": False, "scene": "scene.parked"},
+        {
+            "action": "scene.turn_on",
+            "target": {"entity_id": "light.kitchen, Scene.Parked"},
+        },
+    ]
+
+    assert "scene.parked" not in mentioned_only_in_disabled_steps(config)
 
 
 def test_without_disabled_steps_leaves_out_a_single_parked_step() -> None:
@@ -427,3 +473,17 @@ def test_a_numeric_state_threshold_that_is_no_entity_is_left_alone(
 ) -> None:
     """Test a threshold that is no entity, or no threshold, is not read."""
     assert numeric_state_threshold_entities(config) == set()
+
+
+def test_mentioned_only_in_disabled_steps_reads_parked_steps_like_core() -> None:
+    """A parked step writing an entity ID with capitals is read lowercased too.
+
+    Home Assistant's own list holds `scene.parked` for `Scene.Parked`, and that
+    is what has to drop out.
+    """
+    config = [
+        {"enabled": False, "scene": "Scene.Parked"},
+        {"action": "light.turn_on", "target": {"entity_id": "light.kitchen"}},
+    ]
+
+    assert "scene.parked" in mentioned_only_in_disabled_steps(config)

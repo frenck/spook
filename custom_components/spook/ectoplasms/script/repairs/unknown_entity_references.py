@@ -12,6 +12,7 @@ from ....action_extraction import async_extract_entities_from_action_config
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
     harmless_entity_mentions,
+    mentioned_only_in_disabled_steps,
     without_disabled_steps,
     without_never_rendered,
 )
@@ -155,8 +156,13 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             # nothing, so what only it names is left out: whatever this repair
             # finds in the configuration, and no longer finds once those are
             # pruned.
+            # Home Assistant's own list also reads keys this repair does not,
+            # like the `zone` of a zone trigger. Whatever only a disabled part
+            # holds goes as well, whichever key it sits under.
             still_named = await self._async_named_in(without_disabled_steps(raw_config))
-            all_entities -= named - still_named
+            all_entities -= (
+                named | mentioned_only_in_disabled_steps(raw_config)
+            ) - still_named
 
         return await async_filter_known_entity_ids_with_templates(
             self.hass,

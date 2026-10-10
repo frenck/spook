@@ -396,14 +396,47 @@ def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:
     return config
 
 
+def mentioned_only_in_disabled_steps(config: Any) -> set[str]:
+    """Return every string ``config`` holds only in disabled steps.
+
+    Home Assistant's own ``referenced_*`` lists read disabled steps too, and
+    they read keys Spook's walkers do not, like the ``at`` of a time trigger
+    or the ``zone`` of a zone trigger. Teaching Spook every such key would
+    always lag behind core. So this does not ask what a string means: one
+    that only shows up in disabled steps is not named by anything that runs.
+
+    Both sides are also read the way Home Assistant reads an entity ID: it
+    lowercases one and splits a comma separated list, so a step can name
+    ``light.kitchen`` as ``Light.Kitchen, light.hall``. A piece a running step
+    holds counts as named, which errs towards reporting.
+    """
+    running = _strings_and_pieces(without_disabled_steps(config))
+    return _strings_and_pieces(config) - running
+
+
+def _strings_and_pieces(config: Any) -> set[str]:
+    """Return every string in ``config``, and its lowercased comma pieces."""
+    strings: set[str] = set()
+    _collect_every_string(config, strings)
+    for value in list(strings):
+        strings.update(piece.strip().lower() for piece in value.split(","))
+    return strings
+
+
 def only_in_disabled_steps(config: Any, extract: Callable[[Any], set[str]]) -> set[str]:
-    """Return what ``extract`` finds in ``config`` only in disabled steps.
+    """Return what to leave out of the references ``config`` makes.
 
     A disabled step does nothing, and people disable one on purpose to park
     it. What only such a step names cannot break a run, so it is not worth a
     repair; what a step that runs names as well still is.
+
+    That covers what ``extract`` finds, and anything Home Assistant's own
+    lists may have taken from a disabled step, whichever key it sat under.
+    The second part is every string only disabled steps hold, so the result
+    is for subtracting from references, not a list of references itself.
     """
-    return extract(config) - extract(without_disabled_steps(config))
+    still_named = extract(without_disabled_steps(config))
+    return (extract(config) | mentioned_only_in_disabled_steps(config)) - still_named
 
 
 # Additional keys whose subtree carries payload or opaque data when
