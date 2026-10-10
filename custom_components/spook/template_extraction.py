@@ -2072,12 +2072,16 @@ def _listed_devices(expressions: list[list[_Token]], local: set[str]) -> set[str
                 continue
 
             # As a filter, the value right in front of it is the device, unless
-            # it is glued to a string before it. Handed anything more, the
-            # filter fails, so that is not a working reference.
+            # it is glued to a string before it. Empty parentheses add nothing,
+            # but handed anything more the filter fails, so that is not a
+            # working reference.
             if _is(tokens, index - 1, "pipe"):
                 value = index - 2
                 if (
-                    not _is(tokens, index + 1, "lparen")
+                    (
+                        _shaped(tokens, index + 1, ("lparen", "rparen"))
+                        or not _is(tokens, index + 1, "lparen")
+                    )
                     and _is(tokens, value, "string")
                     and not _is(tokens, value - 1, "string")
                 ):

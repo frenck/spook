@@ -131,6 +131,10 @@ async def _unknown_devices(
         f"{{{{ device_entities('{_GHOST_DEVICE}') }}}}",
         f"{{{{ device_entities ( '{_GHOST_DEVICE}' ) | list }}}}",
         f"{{{{ '{_GHOST_DEVICE}' | device_entities }}}}",
+        # Empty parentheses on a filter hand it nothing more.
+        f"{{{{ '{_GHOST_DEVICE}' | device_entities() }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' | device_entities ( ) | list }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' | device_name() }}}}",
         f"{{% set device_entities = 1 %}}{{{{ '{_GHOST_DEVICE}' | device_entities }}}}",
     ],
 )
@@ -187,8 +191,9 @@ async def test_device_lookup_with_a_device_id_is_detected(
         ),
         f"{{{{ device_entities('{_GHOST_DEVICE}' ~ '_x') }}}}",
         f"{{{{ 'x' '{_GHOST_DEVICE}' | device_entities }}}}",
-        # It takes the device and nothing more, so this call fails.
+        # It takes the device and nothing more, so these fail.
         f"{{{{ device_entities('{_GHOST_DEVICE}', 'x') }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' | device_entities('x') }}}}",
     ],
 )
 async def test_device_lookup_without_an_unknown_device_id_is_not_read(
