@@ -76,6 +76,11 @@ async def spook_translations(hass: HomeAssistant) -> None:
     hass.config.components.add(DOMAIN)
 
 
+# What every sub-integration Spook brings is called, and so every link the
+# sub-integration tests make into a config dir.
+_SUB_INTEGRATION_PREFIX = "spook_"
+
+
 @pytest.fixture(scope="session")
 def private_config_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     """Return a test config dir of this test process alone.
@@ -88,12 +93,20 @@ def private_config_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
     halfway through a test, or load somebody else's code.
 
     The links left behind by earlier runs are not copied: they point at
-    whatever checkout made them, which may not even be around anymore.
+    whatever checkout made them, which may not even be around anymore. Left
+    out by name, not by what they are at the moment of copying: another
+    checkout can swap a link for a fresh one right then, and the copy would
+    follow it into that checkout's code.
     """
     config_dir = tmp_path_factory.mktemp("config")
 
     def _skip_links(directory: str, names: list[str]) -> set[str]:
-        return {name for name in names if (Path(directory) / name).is_symlink()}
+        return {
+            name
+            for name in names
+            if name.startswith(_SUB_INTEGRATION_PREFIX)
+            or (Path(directory) / name).is_symlink()
+        }
 
     shutil.copytree(
         get_test_config_dir(),
