@@ -20,10 +20,43 @@ from ....repairs import AbstractSpookRepair
 from ..dashboards import async_dashboard_configs
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from homeassistant.components.lovelace.dashboard import (
         LovelaceStorage,
         LovelaceYAML,
     )
+    from homeassistant.core import HomeAssistant
+
+
+@callback
+def _async_miscased_entity_ids(
+    hass: HomeAssistant, entity_ids: Iterable[str]
+) -> set[str]:
+    """Return the entity IDs written with capitals, exactly as written.
+
+    The frontend looks an entity up exactly as the card names it, and every
+    entity Home Assistant has is lower case. So `light.Kitchen` is never
+    found, not even when `light.kitchen` exists, and the card shows it as
+    unavailable. Reported as written, so the repair shows what was typed.
+
+    Only one that is an entity ID once lower cased counts, and it passes the
+    same checks as any other; anything else was never meant as one.
+    """
+    written_as: dict[str, set[str]] = {}
+    for entity_id in entity_ids:
+        if (lower_cased := entity_id.lower()) != entity_id:
+            written_as.setdefault(lower_cased, set()).add(entity_id)
+
+    # Nothing counts as known here: whether the lower case one exists or
+    # not, the card names something that does not.
+    return {
+        entity_id
+        for lower_cased in async_filter_known_entity_ids(
+            hass, entity_ids=written_as, known_entity_ids=set()
+        )
+        for entity_id in written_as[lower_cased]
+    }
 
 
 class SpookRepair(AbstractSpookRepair):
@@ -64,11 +97,12 @@ class SpookRepair(AbstractSpookRepair):
                 continue
 
             extracted_entities = self.__async_extract_entities(config)
-            if unknown_entities := async_filter_known_entity_ids(
+            unknown_entities = async_filter_known_entity_ids(
                 self.hass,
                 entity_ids=set(extracted_entities.keys()),
                 known_entity_ids=known_entity_ids,
-            ):
+            ) | _async_miscased_entity_ids(self.hass, extracted_entities)
+            if unknown_entities:
                 # Get the view path of the first unknown entity (by view order)
                 first_view_path = next(
                     path

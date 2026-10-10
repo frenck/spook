@@ -676,3 +676,90 @@ async def test_an_entity_a_button_element_acts_on_is_checked(
     card = {"type": "picture-elements", "image": "/local/x.png", "elements": [element]}
 
     assert await _reported_for_card(repair, monkeypatch, card) == [{"light.gone"}]
+
+
+async def _issue_for_card(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> dict[str, Any]:
+    """Inspect a dashboard holding just this card, and return the issue raised."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {"views": [{"path": "home", "cards": [card]}]}
+
+    issue: dict[str, Any] = {}
+
+    def async_create_issue(**kwargs: Any) -> None:
+        issue.update(kwargs)
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": SimpleNamespace(
+            url_path="lovelace", config={"title": "Overview"}, async_load=_loads
+        )
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+    return issue
+
+
+async def test_a_missing_entity_written_with_capitals_is_reported_as_written(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test an entity ID with capitals is reported exactly as the card has it."""
+    card = {"type": "tile", "entity": "binary_sensor.Car_Charger_Dispatching"}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [
+        {"binary_sensor.Car_Charger_Dispatching"}
+    ]
+
+
+async def test_an_existing_entity_written_with_capitals_is_reported(
+    hass: HomeAssistant, repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test capitals break a card on an entity that exists, and say which one.
+
+    The frontend looks the entity up exactly as written, so the card shows it
+    as unavailable. The repair suggests the lower case one, even when the
+    capitals put it too far away for the fuzzy comparison.
+    """
+    hass.states.async_set("light.kitchen", "on")
+    card = {"type": "tile", "entity": "light.KITCHEN"}
+
+    issue = await _issue_for_card(repair, monkeypatch, card)
+
+    assert issue["references"] == {"light.KITCHEN"}
+    assert issue["translation_placeholders"]["entities"] == (
+        "- `light.KITCHEN` (did you mean `light.kitchen`?)"
+    )
+
+
+async def test_an_existing_entity_written_in_lower_case_is_fine(
+    hass: HomeAssistant, repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test the same card naming the entity as Home Assistant has it is clean."""
+    hass.states.async_set("light.kitchen", "on")
+    card = {"type": "tile", "entity": "light.kitchen"}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+@pytest.mark.parametrize(
+    "entity",
+    ["Kitchen Light", "light.Kitchen-Lamp", "This.Entity_id", "LIGHT.TURN_ON"],
+)
+async def test_capitals_on_something_that_is_no_entity_id_are_ignored(
+    hass: HomeAssistant,
+    repair: SpookRepair,
+    monkeypatch: pytest.MonkeyPatch,
+    entity: str,
+) -> None:
+    """Test only what is an entity ID once lower cased is read.
+
+    A name, a malformed ID, a placeholder and an action are not entities that
+    went missing, whatever their case.
+    """
+    hass.services.async_register("light", "turn_on", lambda _call: None)
+    card = {"type": "tile", "entity": entity}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == []

@@ -118,10 +118,18 @@ def _closest_known_entity_id(
     known_by_domain: dict[str, list[str]],
 ) -> str | None:
     """Return the known entity ID most like this one, if any is close enough."""
-    domain = entity_id.split(".", 1)[0]
+    lower_cased = entity_id.lower()
+    known = known_by_domain.get(lower_cased.split(".", 1)[0], ())
+
+    # Written with capitals, like `light.KITCHEN`. Entity IDs are all lower
+    # case, so the one it was meant to be is plain to see, however far the
+    # fuzzy comparison below would put it.
+    if lower_cased != entity_id and lower_cased in known:
+        return lower_cased
+
     matches = difflib.get_close_matches(
         entity_id,
-        known_by_domain.get(domain, ()),
+        known,
         n=1,
         cutoff=_RENAME_SIMILARITY_CUTOFF,
     )
