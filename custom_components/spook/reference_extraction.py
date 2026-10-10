@@ -538,11 +538,25 @@ def _literal_entity_ids(value: Any) -> list[str]:
 
 
 @dataclass(frozen=True, slots=True)
+class AttributeValue:
+    """A value somebody named for an attribute, in place of a state.
+
+    Taken as it was written: an attribute keeps whatever its integration
+    puts in it, so a trigger compares it with the number or the boolean
+    YAML made of the text, not with the text.
+    """
+
+    attribute: str
+    value: str | int | float | bool
+
+
+@dataclass(frozen=True, slots=True)
 class NamedReferences:
     """The attributes, or states, a configuration names, and of which entities."""
 
     # Written out: the entity, or a registry ID, and the attribute or state.
-    pairs: frozenset[tuple[str, str]]
+    # For states, that can also be a value of one of the entity's attributes.
+    pairs: frozenset[tuple[str, str | AttributeValue]]
     # Spook's own state triggers, and the attribute or state each names.
     # Which entities that is depends on the house as it is right now, so it
     # is left to the caller to resolve, the way the trigger does.
@@ -752,27 +766,60 @@ def _literal_states(value: Any, *, in_condition: bool = False) -> list[str]:
     ]
 
 
-def _state_reference(config: dict[str, Any]) -> tuple[Any, list[str]] | None:
-    """Return the entity IDs and states a state trigger or condition names.
+def _literal_attribute_values(
+    value: Any, *, in_condition: bool = False
+) -> list[str | int | float | bool]:
+    """Return the attribute values written out in a config value, one or a list.
 
-    Only when it is about the state itself: with an `attribute:`, the values
-    are that attribute's, which is another check.
+    Not only text: with an `attribute:`, Home Assistant takes the value as
+    YAML read it and compares it with the attribute as it is. So a `to: off`
+    waits for the boolean false. Text is read the way a state is. Anything
+    else, like a mapping, is nothing an attribute in a fixed set ever is.
     """
-    if "attribute" in config:
-        return None
+    values = value if isinstance(value, list) else [value]
+    others = [item for item in values if isinstance(item, int | float)]
+    return [*others, *_literal_states(values, in_condition=in_condition)]
 
+
+def _state_values(
+    config: dict[str, Any], keys: tuple[str, ...], *, in_condition: bool = False
+) -> list[str | AttributeValue]:
+    """Return what a state trigger or condition waits for under these keys.
+
+    States, or with an `attribute:` written out, values of that attribute.
+    One worked out by a template names nothing to check.
+    """
+    if "attribute" not in config:
+        return [
+            state
+            for key in keys
+            for state in _literal_states(config.get(key), in_condition=in_condition)
+        ]
+
+    attribute = config["attribute"]
+    if not _is_literal_attribute(attribute):
+        return []
+    return [
+        AttributeValue(attribute, value)
+        for key in keys
+        for value in _literal_attribute_values(
+            config.get(key), in_condition=in_condition
+        )
+    ]
+
+
+def _state_reference(
+    config: dict[str, Any],
+) -> tuple[Any, list[str | AttributeValue]] | None:
+    """Return the entity IDs and states a state trigger or condition names."""
     if config.get("condition") == "state":
-        return config.get("entity_id"), _literal_states(
-            config.get("state"), in_condition=True
+        return config.get("entity_id"), _state_values(
+            config, ("state",), in_condition=True
         )
 
     trigger = config.get("trigger") or config.get("platform")
     if trigger == "state" and "condition" not in config:
-        return config.get("entity_id"), [
-            state
-            for key in _STATE_TRIGGER_KEYS
-            for state in _literal_states(config.get(key))
-        ]
+        return config.get("entity_id"), _state_values(config, _STATE_TRIGGER_KEYS)
 
     return None
 
@@ -798,7 +845,7 @@ def _followed_states(config: dict[str, Any]) -> list[str]:
 
 def _walk_state_references(
     config: Any,
-    found: set[tuple[str, str]],
+    found: set[tuple[str, str | AttributeValue]],
     followed: list[tuple[dict[str, Any], str]],
 ) -> None:
     """Recursively collect the states triggers and conditions wait for."""
@@ -830,10 +877,10 @@ def extract_state_references_from_config(config: Any) -> NamedReferences:
     """Return the states a raw configuration names, and of which entities.
 
     The `to`, `from`, `not_to` and `not_from` of every state trigger and the
-    `state` of every state condition, wherever they nest, as long as they
-    are about the state rather than an attribute. Spook's own state trigger
-    is handed back as it is, with each state it names. In templates, only a
-    literal `is_state`.
+    `state` of every state condition, wherever they nest. With an
+    `attribute:`, each is a value of that attribute instead. Spook's own
+    state trigger is handed back as it is, with each state it names. In
+    templates, only a literal `is_state` and a state compared to text.
 
     Disabled steps, triggers and conditions are left out, and an entity can
     be a registry ID, and a call by a name the configuration gives a meaning
@@ -842,7 +889,7 @@ def extract_state_references_from_config(config: Any) -> NamedReferences:
     pruned = without_disabled_steps(config)
     shadowed = names_given_to_templates(config)
 
-    found: set[tuple[str, str]] = set()
+    found: set[tuple[str, str | AttributeValue]] = set()
     followed: list[tuple[dict[str, Any], str]] = []
     _walk_state_references(pruned, found, followed)
 
