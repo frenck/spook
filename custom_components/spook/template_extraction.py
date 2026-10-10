@@ -483,29 +483,36 @@ _STATE_LOOKUPS = frozenset(
 )
 
 
-def _looked_up_in_any_case(template_str: str, match: re.Match[str]) -> bool:
-    """Return whether the match is a state lookup that ignores case.
+@lru_cache(maxsize=1024)
+def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
+    """Return the entity IDs a template looks a state up for, as written.
 
-    Only the entity ID's case is forgiven. Jinja's own names are not:
-    `STATES('sensor.x')` is no lookup at all, although the patterns match
-    it, as they match without regard to case. Nor is a name that only ends
-    in one, like `my_states(...)` or `obj.states(...)`, or one the template
-    defines itself.
+    Read with Jinja's own lexer, so only a real call counts: inside an
+    expression, not in a string or in the text around it, by the very name
+    (`STATES(...)`, `my_states(...)` and `obj.states(...)` are no lookups),
+    and not a name the template defines itself. These are the ones Home
+    Assistant tries in lower case too.
     """
-    if len(match.groups()) == _STATES_DOMAIN_ENTITY_GROUPS:
-        name = "states"
-        if not match.group(0).startswith("states."):
-            return False
-    else:
-        name, paren, _ = match.group(0).partition("(")
-        name = name.strip()
-        if not paren or name not in _STATE_LOOKUPS:
-            return False
+    expressions = _expressions(template_str)
+    local = _named_locally(expressions)
 
-    start = match.start()
-    if start and (template_str[start - 1].isalnum() or template_str[start - 1] in "_."):
-        return False
-    return name not in _named_locally(_expressions(template_str))
+    found: set[str] = set()
+    for tokens in expressions:
+        for index, (kind, name) in enumerate(tokens):
+            if (
+                kind != "name"
+                or name not in _STATE_LOOKUPS
+                or name in local
+                or _is(tokens, index - 1, "dot")
+            ):
+                continue
+            if _shaped(tokens, index + 1, ("lparen", "string")):
+                found.add(tokens[index + 2][1])
+            elif name == "states" and _shaped(
+                tokens, index + 1, ("dot", "name", "dot", "name")
+            ):
+                found.add(f"{tokens[index + 2][1]}.{tokens[index + 4][1]}")
+    return frozenset(found)
 
 
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
@@ -545,8 +552,8 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
                 continue
 
             entity_id = _entity_id_from_template_match(match)
-            if not entity_id.islower() and _looked_up_in_any_case(
-                template_without_comments, match
+            if not entity_id.islower() and entity_id in _looked_up_in_any_case(
+                template_without_comments
             ):
                 entity_id = entity_id.lower()
 

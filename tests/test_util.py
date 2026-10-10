@@ -217,6 +217,9 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ STATES('sensor.Pump') }}", set()),
         ("{{ States.sensor.Pump.state }}", set()),
         ("{{ 'Sensor.Status' }}", set()),
+        # Nor a lookup written in a string, or in the text around expressions.
+        ("{{ \"states('Sensor.Pump')\" }}", set()),
+        ("text states('Sensor.Pump') {{ 1 }}", set()),
         # Nor a name that only ends in one, or one the template defines.
         ("{{ my_states('Sensor.Pump') }}", set()),
         ("{{ obj.states('Sensor.Pump') }}", set()),
