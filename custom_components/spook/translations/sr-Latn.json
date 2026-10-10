@@ -2755,6 +2755,16 @@
             },
             "name": "Temperatura je na ciljnoj vrednosti",
             "description": "Odobrava se kada je temperatura termostata ili bojlera na ciljnoj vrednosti. Za uređaj koji je isključen smatra se da nije na cilju, dok se nedostupni uređaji izuzimaju."
+        },
+        "is_available": {
+            "fields": {
+                "behavior": {
+                    "name": "Ponašanje",
+                    "description": "Određuje da li je dovoljno da bilo koji od entiteta bude prisutan, ili moraju svi."
+                }
+            },
+            "name": "Entitet je dostupan",
+            "description": "Prolazi kada je entitet dostupan za komunikaciju: bilo šta osim nedostupnog ili nepoznatog stanja. Korisno za zvučnik ili pametnu utičnicu koji nisu uvek pod naponom."
         }
     },
     "triggers": {
@@ -2975,6 +2985,92 @@
                 }
             },
             "name": "Ciljna temperatura je dostignuta"
+        },
+        "state_changed": {
+            "fields": {
+                "attribute_changes": {
+                    "description": "Takođe se aktivira kada se promeni samo atribut, a stanje ostane isto. Nema efekta kada se već prati određeni atribut.",
+                    "name": "Brojanje promena atributa"
+                },
+                "attribute": {
+                    "name": "Atribut",
+                    "description": "Prati ovaj atribut umesto stanja."
+                },
+                "behavior": {
+                    "name": "Ponašanje",
+                    "description": "Aktivira se za svaki entitet, za prvi entitet iz ciljne grupe koji stigne tamo, ili kada svi stignu. Za prvu opciju i za opciju „Svi“ potrebno je podesiti uslov „Na stanje“ ili „Bilo koje stanje osim“. Iako se nedostupna i nepoznata stanja ignorišu, entiteti u tim stanjima ne učestvuju u brojanju."
+                },
+                "delay": {
+                    "name": "Kašnjenje",
+                    "description": "Sačekaj ovoliko dugo pre aktiviranja, bez obzira na to šta se u međuvremenu dogodi. Slično kao kašnjenje na početku akcija."
+                },
+                "device_class": {
+                    "name": "Klase uređaja",
+                    "description": "Samo entiteti ovih klasa uređaja, poput vrata ili prozora. Ako je cilj prazan, bira ih iz celog sistema."
+                },
+                "domain": {
+                    "name": "Domeni",
+                    "description": "Samo entiteti ovih domena, poput binary_sensor ili cover. Ako je cilj prazan, bira ih iz celog sistema."
+                },
+                "exclude_target": {
+                    "description": "Entiteti, uređaji, prostorije, spratovi ili oznake koje treba izuzeti. Sve što se nalazi u njima biće izuzeto, uključujući i dijagnostičke entitete.",
+                    "name": "Izuzmi"
+                },
+                "exclude_device_class": {
+                    "name": "Izuzmi klase uređaja",
+                    "description": "Izuzmi entitete ovih klasa uređaja."
+                },
+                "exclude_domain": {
+                    "name": "Izuzmi domene",
+                    "description": "Izuzmi entitete ovih domena. Ako je polje za izuzimanje prazno, ovo se primenjuje na sve što cilj obuhvata."
+                },
+                "exclude_integration": {
+                    "description": "Izuzmi entitete koje pružaju ove integracije.",
+                    "name": "Izuzmi integracije"
+                },
+                "exclude_config_entry": {
+                    "name": "Izuzmi stavku integracije",
+                    "description": "Izuzmi entitete ove stavke integracije."
+                },
+                "blip_tolerance": {
+                    "description": "Dok se odbrojava vreme u trajanju, ako stanje postane nedostupno ili nepoznato i vrati se na prethodnu vrednost unutar ovog vremenskog perioda, odbrojavanje se neće pokrenuti ispočetka. Radi samo u kombinaciji sa opcijom „U trajanju od“",
+                    "name": "Tolerancija na kratkotrajne prekide signala"
+                },
+                "for": {
+                    "name": "U trajanju od",
+                    "description": "Aktivira se tek kada novo stanje potraje ovoliko dugo. Bilo koja druga promena u međuvremenu poništava pokretanje."
+                },
+                "from": {
+                    "name": "Sa stanja",
+                    "description": "Samo promene koje dolaze sa jednog od ovih stanja."
+                },
+                "ignore_unavailable": {
+                    "name": "Zanemari nedostupna i nepoznata stanja",
+                    "description": "Izostavi promene sa nedostupnih i nepoznatih stanja ili na njih, kako ponovno pokretanje sistema ili rutera ne bi aktiviralo akcije za sve stavke. Isključite ovu opciju ako želite da ih koristite u poljima „Sa stanja“ ili „Na stanje“."
+                },
+                "config_entry": {
+                    "name": "Stavka integracije",
+                    "description": "Samo entiteti ove stavke integracije. Ako je cilj prazan, bira ih iz celog sistema."
+                },
+                "integration": {
+                    "name": "Integracije",
+                    "description": "Samo entiteti koje pružaju ove integracije, poput zha ili hue. Ako je cilj prazan, bira ih iz celog sistema."
+                },
+                "not_from": {
+                    "name": "Bilo koje stanje osim",
+                    "description": "Samo promene koje ne dolaze sa jednog od ovih stanja."
+                },
+                "not_to": {
+                    "name": "Bilo koje stanje osim",
+                    "description": "Samo promene koje ne idu na jedno od ovih stanja."
+                },
+                "to": {
+                    "description": "Samo promene које idu na jedno od ovih stanja.",
+                    "name": "Na stanje"
+                }
+            },
+            "description": "Aktivira se kada entitet promeni stanje, i to za sve što cilj obuhvata: entitete, uređaje, prostorije, spratove i oznake. Možete ga suziti po domenu, integraciji ili klasi uređaja, ili ostaviti cilj praznim i dozvoliti tim filterima da izaberu entitete iz celog sistema. Takođe možete ponovo izuzeti određene stavke i odlučiti koliko dugo promena mora da traje da bi se uračunala.",
+            "name": "Spook pokretač stanja"
         }
     },
     "selector": {
