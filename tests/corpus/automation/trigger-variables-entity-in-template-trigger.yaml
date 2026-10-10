@@ -3,6 +3,12 @@ note: >-
   trigger_variables names the entity once and the template trigger reads it
   through a variable; the for duration also tries a variable. The entity only
   appears as a plain variable value.
+out_of_scope: >-
+  A plain value under somebody's own variable is data until a template uses
+  it, and what a template does with a variable is only known while running.
+expect:
+  entities:
+    not_find: [binary_sensor.back_door]
 ---
 alias: Back door left open
 trigger_variables:

@@ -4,9 +4,12 @@ note: >-
   (with entity IDs inside a Jinja dict), placed with card_param. The filter is
   a matcher, so nothing inside it is read; the configuration it builds only
   exists at runtime.
+out_of_scope: >-
+  Dashboard templates are rendered by the frontend or the card, not by
+  Home Assistant's template engine, so what they produce is not read.
 expect:
   entities:
-    not_find: [sensor.power_demand]
+    not_find: [sensor.power_demand, input_number.power_warning]
 ---
 type: custom:auto-entities
 card:
