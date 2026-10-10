@@ -521,6 +521,26 @@ _STATE_LOOKUP_TESTS = frozenset({"has_value", "is_state", "is_state_attr"})
 # and `closest`, which hands its entities to `expand`.
 _EXPANDING_LOOKUPS = frozenset({"closest", "expand"})
 
+# The parameters of the other lookups, in order, and how many of them have
+# no default. Python checks a call against them before the lookup runs, so
+# with any other arguments it fails without looking anything up.
+_LOOKUP_PARAMETERS: dict[str, tuple[tuple[str, ...], int]] = {
+    "has_value": (("entity_id",), 1),
+    "is_state": (("entity_id", "state"), 2),
+    "is_state_attr": (("entity_id", "name", "value"), 3),
+    "state_attr": (("entity_id", "name"), 2),
+    "state_attr_translated": (("entity_id", "attribute"), 2),
+    "state_translated": (("entity_id",), 1),
+    "states": (("entity_id", "rounded", "with_unit"), 1),
+}
+
+# What Jinja takes for the one argument of a test without parentheses,
+# `is is_state 'on'`, unless the name is one of these.
+_TEST_ARGUMENT_STARTS = frozenset(
+    {"float", "integer", "lbrace", "lbracket", "lparen", "name", "string"}
+)
+_NO_TEST_ARGUMENT = frozenset({"and", "else", "or"})
+
 _SIGNS = frozenset({"add", "sub"})
 
 # What a value can end with. A `+` or `-` right after one adds or subtracts,
@@ -539,6 +559,10 @@ _CLOSEST_WITH_COORDINATES = 3
 
 _OPENERS = frozenset({"lbrace", "lbracket", "lparen"})
 _CLOSERS = frozenset({"rbrace", "rbracket", "rparen"})
+
+# The literals that are no text. `expand` passes over them.
+_NUMBERS = frozenset({"float", "integer"})
+_CONSTANT_NAMES = frozenset({"False", "None", "True", "false", "none", "true"})
 
 
 def _call_arguments(tokens: list[_Token], start: int) -> list[list[_Token]] | None:
@@ -609,17 +633,84 @@ def _literal(argument: list[_Token]) -> list[str]:
 def _expanded(argument: list[_Token]) -> list[str]:
     """Return the entity IDs `expand` looks up from one argument.
 
-    A literal, or a list or a tuple of nothing but literals, which `expand`
-    looks into: it goes through anything it can iterate over.
+    It goes through anything it can iterate over, at any depth: a literal,
+    or a list, a tuple or a mapping of nothing but literals. A mapping gives
+    its keys; its values are not looked up.
     """
-    if literal := _literal(argument):
-        return literal
+    return _literal_entries(argument) or []
 
-    argument = _ungrouped(argument)
-    listed = _literals_listed(argument, 0)
-    if listed is None or listed[1] != len(argument):
+
+def _literal_entries(value: list[_Token]) -> list[str] | None:
+    """Return the texts `expand` finds in a value made of literals only.
+
+    None when anything in it is not a literal: a name, a call, a filter or
+    maths could make the value something else, or fail before `expand` runs.
+    """
+    value = _ungrouped(value)
+    if len(value) == 1:
+        return _constant_entries(value[0])
+
+    if (items := _items(value)) is None:
+        return None
+
+    entries: list[str] = []
+    for item in items:
+        if (found := _item_entries(item, mapping=value[0][0] == "lbrace")) is None:
+            return None
+        entries += found
+    return entries
+
+
+def _constant_entries(token: _Token) -> list[str] | None:
+    """Return the text a single literal is, nothing for any other constant."""
+    kind, text = token
+    if kind == "string":
+        return [text]
+    if kind in _NUMBERS or (kind == "name" and text in _CONSTANT_NAMES):
         return []
-    return listed[0]
+    return None
+
+
+def _item_entries(item: list[_Token], *, mapping: bool) -> list[str] | None:
+    """Return the texts `expand` finds in one item of a list, tuple or mapping.
+
+    In a mapping, it iterates over the keys. A key is one literal, and only
+    a text key is looked up; the value only has to be a literal too.
+    """
+    if not mapping:
+        return _literal_entries(item)
+
+    if not _is(item, 1, "colon") or _literal_entries(item[2:]) is None:
+        return None
+    return _constant_entries(item[0])
+
+
+def _items(value: list[_Token]) -> list[list[_Token]] | None:
+    """Return the items of the list, tuple or mapping that is the whole value.
+
+    Split on its own commas; one inside a nested one belongs to that.
+    """
+    if (
+        not value
+        or value[0][0] not in _OPENERS
+        or _opening_of(value, len(value) - 1) != 0
+    ):
+        return None
+
+    items: list[list[_Token]] = [[]]
+    depth = 0
+    for kind, text in value[1:-1]:
+        if kind in _OPENERS:
+            depth += 1
+        elif kind in _CLOSERS:
+            depth -= 1
+        elif kind == "comma" and depth == 0:
+            items.append([])
+            continue
+        items[-1].append((kind, text))
+
+    # A trailing comma leaves nothing after it.
+    return [item for item in items if item]
 
 
 def _is_keyword(argument: list[_Token]) -> bool:
@@ -664,6 +755,31 @@ def _closest_arguments(arguments: list[list[_Token]]) -> list[str]:
     return found
 
 
+def _fits(name: str, arguments: list[list[_Token]], *, in_front: int = 0) -> bool:
+    """Return whether the lookup can be called with these arguments.
+
+    `in_front` counts the positions taken before them: the value in front
+    of a filter, or the one tested. A keyword must name a parameter no
+    position took, and what has no default must be given, unless a `*` or
+    `**` can still fill it.
+    """
+    parameters, required = _LOOKUP_PARAMETERS[name]
+    positions = in_front + sum(_is_positional(argument) for argument in arguments)
+    keywords = {
+        argument[0][1]
+        for argument in arguments
+        if _shaped(argument, 0, ("name", "assign"))
+    }
+    if positions > len(parameters) or not keywords <= set(parameters[positions:]):
+        return False
+
+    if any(
+        _is(argument, 0, "mul") or _is(argument, 0, "pow") for argument in arguments
+    ):
+        return True
+    return set(parameters[positions:required]) <= keywords
+
+
 def _called_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
     """Return what a lookup called by its name, `states(...)`, looks up."""
     if name in _EXPANDING_LOOKUPS:
@@ -673,26 +789,27 @@ def _called_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
             return _closest_arguments(arguments)
         return _expand_arguments(arguments)
 
-    # Only a whole argument: `'sensor.Pump' + '_interval'` and two strings
-    # side by side are pieces of one.
-    if _shaped(tokens, index + 1, ("lparen", "string")) and _ends_argument(
-        tokens, index + 3
-    ):
-        return [tokens[index + 2][1]]
     if name == "states" and _shaped(tokens, index + 1, ("dot", "name", "dot", "name")):
         return [f"{tokens[index + 2][1]}.{tokens[index + 4][1]}"]
-    return []
+
+    # Only a whole argument: `'sensor.Pump' + '_interval'` and two strings
+    # side by side are pieces of one.
+    arguments = _call_arguments(tokens, index + 1)
+    if not arguments or not _fits(name, arguments):
+        return []
+    return _literal(arguments[0]) if _is_positional(arguments[0]) else []
 
 
 def _value_in_front(tokens: list[_Token], end: int, *, lists: bool) -> list[str]:
-    """Return the literal, or the list of literals, right before this index.
+    """Return the literal, or what `expand` finds, right before this index.
 
+    With `lists`, that is a list, a tuple or a mapping of literals as well.
     Parentheses that only group it change nothing. Only when it is all that
     a filter or a test there applies to.
     """
     if _is(tokens, end - 1, "string"):
         start = end - 1
-    elif tokens[end - 1 : end] and tokens[end - 1][0] in {"rbracket", "rparen"}:
+    elif tokens[end - 1 : end] and tokens[end - 1][0] in _CLOSERS:
         if (opened := _opening_of(tokens, end - 1)) is None:
             return []
         start = opened
@@ -763,13 +880,16 @@ def _filtered_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
     if name not in _STATE_LOOKUP_FILTERS or _is(tokens, index + 1, "dot"):
         return []
 
+    # Without parentheses, the filter has no arguments of its own. The value
+    # in front is passed before them.
+    arguments = _call_arguments(tokens, index + 1) or []
     if name not in _EXPANDING_LOOKUPS:
+        if not _fits(name, arguments, in_front=1):
+            return []
         return _value_in_front(tokens, index - 1, lists=False)
 
-    # Without parentheses, the filter has no arguments of its own. The value
-    # in front is passed with them, so a keyword, which neither takes, makes
-    # the call fail before it looks up anything.
-    arguments = _call_arguments(tokens, index + 1) or []
+    # Neither takes a keyword, so one makes the call fail before it looks up
+    # anything.
     if any(_is_keyword(argument) for argument in arguments):
         return []
 
@@ -799,11 +919,33 @@ def _tested_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
 
     A dotted name, `is has_value.x`, is another test.
     """
-    if name not in _STATE_LOOKUP_TESTS or _is(tokens, index + 1, "dot"):
+    if (
+        name not in _STATE_LOOKUP_TESTS
+        or _is(tokens, index + 1, "dot")
+        or not _fits(name, _test_arguments(tokens, index), in_front=1)
+    ):
         return []
 
     is_index = index - 2 if _is(tokens, index - 1, "name", "not") else index - 1
     return _value_in_front(tokens, is_index, lists=False)
+
+
+def _test_arguments(tokens: list[_Token], index: int) -> list[list[_Token]]:
+    """Return the arguments of the test named at this index.
+
+    In parentheses, or one value right after the name without them, the
+    way Jinja's `parse_test` reads it: `is is_state 'on'`.
+    """
+    if _is(tokens, index + 1, "lparen"):
+        return _call_arguments(tokens, index + 1) or []
+
+    if index + 1 < len(tokens):
+        kind, value = tokens[index + 1]
+        if kind in _TEST_ARGUMENT_STARTS and not (
+            kind == "name" and value in _NO_TEST_ARGUMENT
+        ):
+            return [[tokens[index + 1]]]
+    return []
 
 
 @lru_cache(maxsize=1024)
