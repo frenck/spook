@@ -746,11 +746,10 @@ def async_find_services_in_sequence(  # noqa: C901
 
         action = cv.determine_script_action(step)
 
-        if action == cv.SCRIPT_ACTION_CALL_SERVICE and CONF_SERVICE in step:
-            called_services.add(step[CONF_SERVICE])
-
-        if action == cv.SCRIPT_ACTION_CALL_SERVICE and "action" in step:
-            called_services.add(step["action"])
+        if action == cv.SCRIPT_ACTION_CALL_SERVICE:
+            called_services.update(
+                step[key] for key in (CONF_SERVICE, "action") if key in step
+            )
 
         if action == cv.SCRIPT_ACTION_CHOOSE:
             for choice in step[CONF_CHOOSE]:
@@ -780,6 +779,13 @@ def async_find_services_in_sequence(  # noqa: C901
         if action == cv.SCRIPT_ACTION_REPEAT:
             called_services |= async_find_services_in_sequence(
                 step[CONF_REPEAT][CONF_SEQUENCE], include_disabled=include_disabled
+            )
+
+        # The editor's "sequence" building block: a step that is nothing but
+        # a nested list of steps, run in order like any other.
+        if action == cv.SCRIPT_ACTION_SEQUENCE:
+            called_services |= async_find_services_in_sequence(
+                step[CONF_SEQUENCE], include_disabled=include_disabled
             )
 
     return called_services
