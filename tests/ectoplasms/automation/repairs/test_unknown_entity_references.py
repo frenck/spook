@@ -1302,6 +1302,66 @@ async def test_a_mixed_case_lookup_of_an_existing_entity_is_fine(
     assert await _async_unknown_in_automation(hass, _PUMP_CHECK) == set()
 
 
+_PUMP_LOOKUPS = pytest.mark.parametrize(
+    "template",
+    [
+        "{{ 'sensor.Pump_Interval' | states }}",
+        "{{ 'sensor.Pump_Interval' is has_value }}",
+        "{{ expand('sensor.pump_speed', ['sensor.Pump_Interval']) | count }}",
+    ],
+)
+
+
+def _pump_check(template: str) -> dict[str, Any]:
+    """Return the pump automation, checking this template instead."""
+    return {
+        **_PUMP_CHECK,
+        "conditions": [{"condition": "template", "value_template": template}],
+    }
+
+
+@_PUMP_LOOKUPS
+async def test_a_mixed_case_lookup_in_any_form_of_a_missing_entity_is_reported(
+    hass: HomeAssistant, template: str
+) -> None:
+    """Test a mixed case lookup as a filter, a test or a later argument.
+
+    Each reads `sensor.pump_interval`, the same as `states(...)` does.
+    """
+    hass.states.async_set("sensor.pump_speed", "1")
+
+    assert await _async_unknown_in_automation(hass, _pump_check(template)) == {
+        "sensor.pump_interval"
+    }
+
+
+@_PUMP_LOOKUPS
+async def test_a_mixed_case_lookup_in_any_form_of_an_existing_entity_is_fine(
+    hass: HomeAssistant, template: str
+) -> None:
+    """Test those same lookups are clean when the entity is there."""
+    hass.states.async_set("sensor.pump_speed", "1")
+    hass.states.async_set("sensor.pump_interval", "30")
+
+    assert await _async_unknown_in_automation(hass, _pump_check(template)) == set()
+
+
+async def test_a_mixed_case_key_in_front_of_a_lookup_filter_is_no_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test a key looked up in a mapping before `expand` is not the entity.
+
+    `expand` gets what is stored under the key, not the key itself.
+    """
+    hass.states.async_set("sensor.pump_speed", "1")
+    template = (
+        "{% set pumps = {'sensor.Pump_Interval': ['sensor.pump_speed']} %}"
+        "{{ pumps['sensor.Pump_Interval'] | expand | count }}"
+    )
+
+    assert await _async_unknown_in_automation(hass, _pump_check(template)) == set()
+
+
 @pytest.mark.parametrize(
     "event_type",
     ["state_changed", "state_reported", "automation_triggered", "script_started"],
