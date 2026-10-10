@@ -355,7 +355,15 @@ _BUTTON_ELEMENT_TYPES = frozenset({"service-button", "action-button"})
 # well. It turns that into a tap action, which a `tap_action` of the row's own
 # replaces outright, and a row without a `name` is an error card: neither one
 # runs it. The entities card hands a `perform-action` row over as this one.
+#
+# Only read in the rows of an entities card, the one place the frontend builds
+# them, and in a conditional row's `row` there. That one goes to the frontend
+# as is, so only under its own name. The same shape anywhere else is whatever
+# that card says it is.
+_ENTITIES_CARD = "entities"
 _CALL_SERVICE_ROW_TYPES = frozenset({"call-service", "perform-action"})
+_CALL_SERVICE_ROW_TYPE = "call-service"
+_CONDITIONAL_ROW_TYPE = "conditional"
 
 
 def _collect_action(name: Any, actions: set[str], card_domain: str | None) -> None:
@@ -384,13 +392,34 @@ def _call_service_row_action(node: dict[str, Any]) -> Any:
     return node.get("service")
 
 
-def _top_level_action(node: dict[str, Any], card_type: str) -> Any:
-    """Return the action a node names outside a tap action, if it is that kind."""
+def _call_service_rows(card: dict[str, Any]) -> Iterator[dict[str, Any]]:
+    """Yield the rows of an entities card the frontend builds as call-service."""
+    if not isinstance(rows := card.get("entities"), list):
+        return
+
+    for row in rows:
+        if not isinstance(row, dict) or not isinstance(
+            row_type := row.get("type"), str
+        ):
+            continue
+
+        if row_type in _CALL_SERVICE_ROW_TYPES:
+            yield row
+        elif (
+            row_type == _CONDITIONAL_ROW_TYPE
+            and isinstance(inner := row.get("row"), dict)
+            and inner.get("type") == _CALL_SERVICE_ROW_TYPE
+        ):
+            yield inner
+
+
+def _top_level_actions(node: dict[str, Any], card_type: str) -> Iterator[Any]:
+    """Yield the actions a node names outside a tap action, if it is that kind."""
     if card_type in _BUTTON_ELEMENT_TYPES:
-        return _button_element_action(node)
-    if card_type in _CALL_SERVICE_ROW_TYPES:
-        return _call_service_row_action(node)
-    return None
+        yield _button_element_action(node)
+    elif card_type == _ENTITIES_CARD:
+        for row in _call_service_rows(node):
+            yield _call_service_row_action(row)
 
 
 def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) -> None:
@@ -409,7 +438,8 @@ def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) 
     if isinstance(card_type := node.get("type"), str):
         card_domain = _CARD_OWN_ACTION_DOMAINS.get(card_type, card_domain)
 
-        _collect_action(_top_level_action(node, card_type), actions, card_domain)
+        for name in _top_level_actions(node, card_type):
+            _collect_action(name, actions, card_domain)
 
     # Read off the action itself rather than the key it sits under:
     # `tap_action`, `hold_action` and the rest are the frontend's, and custom

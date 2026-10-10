@@ -298,8 +298,24 @@ def _entities_card(*rows: dict[str, Any]) -> dict[str, Any]:
             "action": "",
             "service": "script.renamed_away",
         },
+        {
+            "type": "conditional",
+            "conditions": [],
+            "row": {
+                "type": "call-service",
+                "name": "Go",
+                "action": "script.renamed_away",
+            },
+        },
     ],
-    ids=["service", "action", "perform-action", "action-over-service", "empty-action"],
+    ids=[
+        "service",
+        "action",
+        "perform-action",
+        "action-over-service",
+        "empty-action",
+        "conditional",
+    ],
 )
 async def test_an_unknown_action_in_a_call_service_row_creates_an_issue(
     hass: HomeAssistant,
@@ -394,8 +410,48 @@ async def test_a_call_service_row_running_no_missing_action_creates_no_issue(
             "service": "script.renamed_away",
             "action": "script.renamed_away",
         },
+        # The row's shape where no entities card builds it.
+        {
+            "type": "call-service",
+            "name": "Go",
+            "action": "script.renamed_away",
+        },
+        {
+            "type": "custom:some-card",
+            "items": [
+                {
+                    "type": "call-service",
+                    "name": "Go",
+                    "service": "script.renamed_away",
+                },
+                {
+                    "type": "perform-action",
+                    "name": "Go",
+                    "action": "script.renamed_away",
+                },
+            ],
+        },
+        # A conditional row hands its `row` over as is, and the frontend
+        # knows no `perform-action` row.
+        _entities_card(
+            {
+                "type": "conditional",
+                "conditions": [],
+                "row": {
+                    "type": "perform-action",
+                    "name": "Go",
+                    "action": "script.renamed_away",
+                },
+            },
+        ),
     ],
-    ids=["other-rows", "other-card"],
+    ids=[
+        "other-rows",
+        "other-card",
+        "card-level",
+        "in-custom-card",
+        "perform-action-in-conditional",
+    ],
 )
 async def test_an_action_key_outside_a_call_service_row_creates_no_issue(
     hass: HomeAssistant,
