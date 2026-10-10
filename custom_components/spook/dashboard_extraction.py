@@ -350,6 +350,13 @@ _CARD_OWN_ACTION_DOMAINS = {"custom:floorplan-card": "floorplan"}
 # gives a new one, and the frontend builds it as the same element.
 _BUTTON_ELEMENT_TYPES = frozenset({"service-button", "action-button"})
 
+# The entities card's call-service row names its action at the top level too,
+# but reads it as `action || service`, so an empty `action` falls through as
+# well. It turns that into a tap action, which a `tap_action` of the row's own
+# replaces outright, and a row without a `name` is an error card: neither one
+# runs it. The entities card hands a `perform-action` row over as this one.
+_CALL_SERVICE_ROW_TYPES = frozenset({"call-service", "perform-action"})
+
 
 def _collect_action(name: Any, actions: set[str], card_domain: str | None) -> None:
     """Collect an action name, if it is one to look up."""
@@ -368,6 +375,24 @@ def _button_element_action(node: dict[str, Any]) -> Any:
     return node.get("service")
 
 
+def _call_service_row_action(node: dict[str, Any]) -> Any:
+    """Return what a call-service row performs, if it performs anything."""
+    if "tap_action" in node or node.get("name") in _JAVASCRIPT_FALSY:
+        return None
+    if (name := node.get("action")) not in _JAVASCRIPT_FALSY:
+        return name
+    return node.get("service")
+
+
+def _top_level_action(node: dict[str, Any], card_type: str) -> Any:
+    """Return the action a node names outside a tap action, if it is that kind."""
+    if card_type in _BUTTON_ELEMENT_TYPES:
+        return _button_element_action(node)
+    if card_type in _CALL_SERVICE_ROW_TYPES:
+        return _call_service_row_action(node)
+    return None
+
+
 def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) -> None:
     """Recursively collect the actions a configuration node performs.
 
@@ -384,8 +409,7 @@ def _walk_actions(node: Any, actions: set[str], card_domain: str | None = None) 
     if isinstance(card_type := node.get("type"), str):
         card_domain = _CARD_OWN_ACTION_DOMAINS.get(card_type, card_domain)
 
-        if card_type in _BUTTON_ELEMENT_TYPES:
-            _collect_action(_button_element_action(node), actions, card_domain)
+        _collect_action(_top_level_action(node, card_type), actions, card_domain)
 
     # Read off the action itself rather than the key it sits under:
     # `tap_action`, `hold_action` and the rest are the frontend's, and custom

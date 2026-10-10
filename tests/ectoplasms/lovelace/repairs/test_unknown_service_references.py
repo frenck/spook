@@ -273,3 +273,141 @@ async def test_a_service_key_elsewhere_creates_no_issue(
     await repair.async_inspect()
 
     assert async_issue_about(issue_registry, _ISSUE) is None
+
+
+def _entities_card(*rows: dict[str, Any]) -> dict[str, Any]:
+    """Return an entities card holding these rows."""
+    return {"type": "entities", "entities": ["light.kitchen", *rows]}
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        {"type": "call-service", "name": "Go", "service": "script.renamed_away"},
+        {"type": "call-service", "name": "Go", "action": "script.renamed_away"},
+        {"type": "perform-action", "name": "Go", "action": "script.renamed_away"},
+        {
+            "type": "call-service",
+            "name": "Go",
+            "action": "script.renamed_away",
+            "service": "script.known",
+        },
+        {
+            "type": "call-service",
+            "name": "Go",
+            "action": "",
+            "service": "script.renamed_away",
+        },
+    ],
+    ids=["service", "action", "perform-action", "action-over-service", "empty-action"],
+)
+async def test_an_unknown_action_in_a_call_service_row_creates_an_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    row: dict[str, Any],
+) -> None:
+    """Test an entities card row performing a missing action is reported.
+
+    The call-service row names its action at the top level, under `action` or
+    the older `service`, rather than in a tap action, and was never read.
+    """
+    hass.services.async_register("script", "known", lambda _: None)
+
+    repair = SpookRepair(hass)
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": _dashboard_with_card(_entities_card(row)),
+    }
+
+    await repair.async_inspect()
+
+    issue = async_issue_about(issue_registry, _ISSUE)
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["services"] == "- `script.renamed_away`"
+
+
+@pytest.mark.parametrize(
+    "row",
+    [
+        {"type": "call-service", "name": "Go", "service": "script.known"},
+        {"type": "perform-action", "name": "Go", "action": "script.known"},
+        # The frontend runs `action` and never looks at `service`.
+        {
+            "type": "call-service",
+            "name": "Go",
+            "action": "script.known",
+            "service": "script.renamed_away",
+        },
+        # A tap action of the row's own replaces the one built from `action`.
+        {
+            "type": "call-service",
+            "name": "Go",
+            "action": "script.renamed_away",
+            "tap_action": {
+                "action": "perform-action",
+                "perform_action": "script.known",
+            },
+        },
+        # Without a name the row is an error card and runs nothing.
+        {"type": "call-service", "action": "script.renamed_away"},
+    ],
+    ids=[
+        "known",
+        "known-perform-action",
+        "action-over-service",
+        "tap-action",
+        "no-name",
+    ],
+)
+async def test_a_call_service_row_running_no_missing_action_creates_no_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    row: dict[str, Any],
+) -> None:
+    """Test a call-service row is only read for the action it runs."""
+    hass.services.async_register("script", "known", lambda _: None)
+
+    repair = SpookRepair(hass)
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": _dashboard_with_card(_entities_card(row)),
+    }
+
+    await repair.async_inspect()
+
+    assert async_issue_about(issue_registry, _ISSUE) is None
+
+
+@pytest.mark.parametrize(
+    "card",
+    [
+        _entities_card(
+            {"type": "button", "name": "Go", "action": "script.renamed_away"},
+            {
+                "entity": "light.kitchen",
+                "service": "script.renamed_away",
+                "action": "script.renamed_away",
+            },
+        ),
+        {
+            "type": "custom:some-card",
+            "name": "Go",
+            "service": "script.renamed_away",
+            "action": "script.renamed_away",
+        },
+    ],
+    ids=["other-rows", "other-card"],
+)
+async def test_an_action_key_outside_a_call_service_row_creates_no_issue(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    card: dict[str, Any],
+) -> None:
+    """Test a bare `service` or `action` outside a call-service row is left alone."""
+    repair = SpookRepair(hass)
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": _dashboard_with_card(card),
+    }
+
+    await repair.async_inspect()
+
+    assert async_issue_about(issue_registry, _ISSUE) is None
