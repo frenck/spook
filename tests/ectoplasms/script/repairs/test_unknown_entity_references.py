@@ -633,6 +633,69 @@ async def test_a_missing_numeric_state_threshold_entity_is_reported(
     }
 
 
+def _brightness(kind: str, value: dict[str, Any], **extra: Any) -> dict[str, Any]:
+    """Return a light brightness trigger or condition comparing against ``value``."""
+    return {
+        kind: (
+            "light.is_brightness"
+            if kind == "condition"
+            else "light.brightness_crossed_threshold"
+        ),
+        "target": {"entity_id": "light.kitchen"},
+        "options": {"threshold": {"type": "above", "value": value}},
+        **extra,
+    }
+
+
+async def test_a_missing_threshold_entity_is_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the entity a new style threshold in a step compares against is read.
+
+    A condition step and a trigger waited for read it the same way. Only the
+    choice `active_choice` points at counts, and a parked step does nothing.
+    """
+    hass.states.async_set("light.kitchen", "on")
+    percent = {"number": 50, "unit_of_measurement": "%"}
+    scripts = {
+        "brightness": {
+            "sequence": [
+                _brightness("condition", {"entity": "input_number.condition_limit"}),
+                {
+                    "wait_for_trigger": [
+                        _brightness(
+                            "trigger",
+                            {
+                                "active_choice": "entity",
+                                "entity": "input_number.waited_limit",
+                                **percent,
+                            },
+                        )
+                    ]
+                },
+                _brightness(
+                    "condition",
+                    {
+                        "active_choice": "number",
+                        "entity": "input_number.not_chosen",
+                        **percent,
+                    },
+                ),
+                _brightness(
+                    "condition",
+                    {"entity": "input_number.parked_limit"},
+                    enabled=False,
+                ),
+            ]
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "brightness") == {
+        "input_number.condition_limit",
+        "input_number.waited_limit",
+    }
+
+
 def _logging(entity_id: str, *steps: dict[str, Any]) -> dict[str, Any]:
     """Return a script filing a logbook entry under ``entity_id``."""
     log = {
