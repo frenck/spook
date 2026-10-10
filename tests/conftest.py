@@ -2,9 +2,12 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+import shutil
 from typing import TYPE_CHECKING
 
 import pytest
+from pytest_homeassistant_custom_component.common import get_test_config_dir
 from pytest_homeassistant_custom_component.syrupy import HomeAssistantSnapshotExtension
 
 from homeassistant import config_entries, loader, setup
@@ -71,3 +74,50 @@ async def spook_translations(hass: HomeAssistant) -> None:
     """
     await translation.async_load_integrations(hass, {DOMAIN})
     hass.config.components.add(DOMAIN)
+
+
+# What every sub-integration Spook brings is called, and so every link the
+# sub-integration tests make into a config dir.
+_SUB_INTEGRATION_PREFIX = "spook_"
+
+
+@pytest.fixture(scope="session")
+def private_config_dir(tmp_path_factory: pytest.TempPathFactory) -> Path:
+    """Return a test config dir of this test process alone.
+
+    The one the plugin hands out lives in the virtual environment, shared by
+    every test process using it: the workers of one run, and every other
+    checkout testing at the same time. The sub-integration tests link their
+    code into its custom_components, and a worker relinking or another
+    checkout pointing a link at its own copy makes an integration go missing
+    halfway through a test, or load somebody else's code.
+
+    The links left behind by earlier runs are not copied: they point at
+    whatever checkout made them, which may not even be around anymore. Left
+    out by name, not by what they are at the moment of copying: another
+    checkout can swap a link for a fresh one right then, and the copy would
+    follow it into that checkout's code.
+    """
+    config_dir = tmp_path_factory.mktemp("config")
+
+    def _skip_links(directory: str, names: list[str]) -> set[str]:
+        return {
+            name
+            for name in names
+            if name.startswith(_SUB_INTEGRATION_PREFIX)
+            or (Path(directory) / name).is_symlink()
+        }
+
+    shutil.copytree(
+        get_test_config_dir(),
+        config_dir,
+        ignore=_skip_links,
+        dirs_exist_ok=True,
+    )
+    return config_dir
+
+
+@pytest.fixture
+def hass_config_dir(private_config_dir: Path) -> str:  # pylint: disable=redefined-outer-name
+    """Give Home Assistant the config dir of this test process."""
+    return str(private_config_dir)

@@ -702,12 +702,13 @@ async def test_setup_entry_does_not_restart_for_helpers_not_waiting(
     monkeypatch.setattr(hass, "async_stop", async_stop)
     monkeypatch.setattr(hass, "state", CoreState.starting)
 
-    MockConfigEntry(
+    helper = MockConfigEntry(
         domain="spook_inverse",
         data={},
         state=entry_state,
         disabled_by=disabled_by,
-    ).add_to_hass(hass)
+    )
+    helper.add_to_hass(hass)
     entry = MockConfigEntry(domain=DOMAIN, title="Your homie", data={})
     entry.add_to_hass(hass)
 
@@ -717,6 +718,11 @@ async def test_setup_entry_does_not_restart_for_helpers_not_waiting(
     async_stop.assert_not_called()
     assert ir.async_get(hass).async_get_issue(DOMAIN, "restart_required") is None
 
+    # The helper only pretends to be loaded. Left that way, the hass fixture
+    # unloads it after the stop below, and importing its code for that fails
+    # on a stopped Home Assistant. Whether it gets that far depends on the
+    # tests that ran before in the same process.
+    helper.mock_state(hass, ConfigEntryState.NOT_LOADED)
     monkeypatch.setattr(hass, "state", CoreState.running)
     await original_async_stop()
 

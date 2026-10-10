@@ -20,6 +20,8 @@ from custom_components.spook.services import (
 )
 
 if TYPE_CHECKING:
+    from collections.abc import Iterable
+
     from homeassistant.core import HomeAssistant, ServiceCall
 
 
@@ -116,12 +118,16 @@ async def test_a_component_loaded_while_spook_sets_up_gets_its_actions(
     inject = manager.async_inject_service_translations
     loaded = False
 
-    async def _todo_loads_meanwhile() -> None:
+    # Same signature as what it stands in for. Loading todo loads the
+    # translations of http, and a language loaded for the first time has
+    # Spook inject into it, by language. Whether that happens depends on the
+    # tests that ran before in the same process, as they share one cache.
+    async def _todo_loads_meanwhile(languages: Iterable[str] | None = None) -> None:
         nonlocal loaded
         if not loaded:
             loaded = True
             assert await async_setup_component(hass, "todo", {})
-        await inject()
+        await inject(languages)
 
     monkeypatch.setattr(
         manager, "async_inject_service_translations", _todo_loads_meanwhile
