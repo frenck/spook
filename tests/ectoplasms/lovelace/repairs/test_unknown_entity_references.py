@@ -757,10 +757,11 @@ async def test_capitals_on_something_that_is_no_entity_id_are_ignored(
     """Test only what is an entity ID once lower cased is read.
 
     A name, a malformed ID, a placeholder and an action are not entities that
-    went missing, whatever their case.
+    went missing, whatever their case. On a custom card, since on a core card
+    a name or a malformed ID is reported as being no entity ID at all.
     """
     hass.services.async_register("light", "turn_on", lambda _call: None)
-    card = {"type": "tile", "entity": entity}
+    card = {"type": "custom:mushroom-entity-card", "entity": entity}
 
     assert await _reported_for_card(repair, monkeypatch, card) == []
 
@@ -776,3 +777,219 @@ async def test_a_logbook_card_on_an_entity_with_capitals_is_reported(
     card = {"type": "logbook", "target": {"entity_id": ["LIGHT.KITCHEN"]}}
 
     assert await _reported_for_card(repair, monkeypatch, card) == [{"LIGHT.KITCHEN"}]
+
+
+# The forum case: an attribute tacked onto the entity ID.
+_FORUM_CARD = {
+    "type": "entity-filter",
+    "entities": ["cover.bedroom_blind.current_position"],
+    "state_filter": [0],
+    "card": {"type": "entities"},
+}
+
+
+async def test_no_entity_id_in_a_core_card_entity_field_is_reported(
+    hass: HomeAssistant, repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a core card's entity field holding no entity ID at all is reported.
+
+    The frontend looks it up as written, finds nothing, and the card stays
+    empty. Said to be no entity ID, without a guess at what was meant, even
+    with the cover it starts with right there.
+    """
+    hass.states.async_set("cover.bedroom_blind", "open")
+
+    issue = await _issue_for_card(repair, monkeypatch, _FORUM_CARD)
+
+    assert issue["references"] == {"cover.bedroom_blind.current_position"}
+    assert issue["translation_placeholders"]["entities"] == (
+        "- `cover.bedroom_blind.current_position` (not an entity ID)"
+    )
+    assert issue["translation_placeholders"]["edit"] == "/lovelace/home?edit=1"
+
+
+@pytest.mark.parametrize(
+    "card",
+    [
+        {"type": "tile", "entity": "Kitchen Light"},
+        {"type": "entities", "entities": [{"entity": "light.kitchen.brightness"}]},
+        {"type": "glance", "entities": ["light kitchen"]},
+        {"type": "logbook", "target": {"entity_id": ["light.kitchen.brightness"]}},
+        {
+            "type": "heading",
+            "badges": [{"type": "entity", "entity": "light.kitchen.brightness"}],
+        },
+        {
+            "type": "picture-elements",
+            "image": "/local/x.png",
+            "elements": [{"type": "state-label", "entity": "light.Kitchen-Lamp"}],
+        },
+        {
+            "type": "vertical-stack",
+            "cards": [
+                {
+                    "type": "conditional",
+                    "conditions": [],
+                    "card": {"type": "gauge", "entity": "sensor.power.value"},
+                }
+            ],
+        },
+    ],
+    ids=[
+        "tile",
+        "entities row",
+        "glance",
+        "logbook target",
+        "heading badge",
+        "picture element",
+        "nested card",
+    ],
+)
+async def test_no_entity_id_in_each_kind_of_core_entity_field_is_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> None:
+    """Test each kind of core entity field is read for one that is no entity ID."""
+    issue = await _issue_for_card(repair, monkeypatch, card)
+
+    assert len(issue["references"]) == 1
+    assert issue["translation_placeholders"]["entities"].endswith("(not an entity ID)")
+
+
+async def test_no_entity_id_in_a_view_badge_is_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a view badge naming no entity ID is reported, as a string or not."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {
+            "views": [
+                {
+                    "path": "home",
+                    "badges": [
+                        "sensor.outside.temperature",
+                        {"entity": "sensor.inside temperature"},
+                    ],
+                }
+            ]
+        }
+
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": SimpleNamespace(
+            url_path="lovelace", config={"title": "Overview"}, async_load=_loads
+        )
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+
+    assert reported == [{"sensor.outside.temperature", "sensor.inside temperature"}]
+
+
+async def test_the_same_value_on_a_custom_card_is_not_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a custom card's fields are its own business, its cards too."""
+    card = {
+        "type": "custom:stack-in-card",
+        "entity": "cover.bedroom_blind.current_position",
+        "cards": [_FORUM_CARD],
+    }
+
+    assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+@pytest.mark.parametrize(
+    "entity",
+    [
+        "[[entity]]",
+        "[[[ return entity ]]]",
+        "{{ states('sensor.x') }}",
+        "{% if true %}light.a{% endif %}",
+        "${entity}",
+        "light.*",
+        "this.entity_id",
+        "this.entity_id.attributes",
+        "trigger.entity_id",
+        "config.entity",
+        "all",
+        "none",
+        "",
+        "   ",
+        "group.living room",
+    ],
+)
+async def test_what_the_dashboard_walk_lets_go_is_not_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, entity: str
+) -> None:
+    """Test placeholders, templates and patterns are no entity ID gone wrong.
+
+    Something fills them in before a card sees them, or they were never meant
+    as one entity.
+    """
+    card = {"type": "entities", "entities": [entity, {"entity": entity}]}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+@pytest.mark.parametrize(
+    "card",
+    [
+        {"type": "statistic", "entity": "sensor:energy_total"},
+        {"type": "statistics-graph", "entities": ["sensor:energy_total"]},
+        {"type": "logbook", "entities": ["log.critical.messages"]},
+        {"type": "entities", "entities": [{"type": "custom:x-row", "entity": "a b"}]},
+        {"type": "markdown", "entity_ids": ["not an entity"]},
+    ],
+    ids=["statistic", "statistics graph", "made up logbook ID", "custom row", "other"],
+)
+async def test_what_is_no_core_entity_field_is_not_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> None:
+    """Test fields that take something else, or are not core, are left alone.
+
+    The statistic cards take a statistic ID, and an external one is no entity
+    ID. A logbook card's IDs under no domain Home Assistant knows are somebody's
+    own.
+    """
+    assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+async def test_a_missing_entity_next_to_one_that_is_no_entity_id(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test a missing entity is still reported as before, next to the other."""
+    card = {
+        "type": "entities",
+        "entities": ["light.gone", "cover.bedroom_blind.current_position"],
+    }
+
+    issue = await _issue_for_card(repair, monkeypatch, card)
+
+    assert issue["references"] == {
+        "light.gone",
+        "cover.bedroom_blind.current_position",
+    }
+    assert issue["translation_placeholders"]["entities"] == (
+        "- `light.gone`\n- `cover.bedroom_blind.current_position` (not an entity ID)"
+    )
+
+
+async def test_an_entity_with_capitals_is_not_reported_twice(
+    hass: HomeAssistant, repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test an entity ID with capitals is reported once, as written."""
+    hass.states.async_set("cover.bedroom_blind", "open")
+    card = {"type": "tile", "entity": "Cover.Bedroom_Blind"}
+
+    issue = await _issue_for_card(repair, monkeypatch, card)
+
+    assert issue["references"] == {"Cover.Bedroom_Blind"}
+    assert issue["translation_placeholders"]["entities"] == (
+        "- `Cover.Bedroom_Blind` (did you mean `cover.bedroom_blind`?)"
+    )

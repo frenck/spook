@@ -13,7 +13,10 @@ from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
-from ....dashboard_extraction import extract_entities_from_dashboard_node
+from ....dashboard_extraction import (
+    extract_entities_from_dashboard_node,
+    extract_not_entity_ids_from_dashboard_node,
+)
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
@@ -59,6 +62,22 @@ def _async_miscased_entity_ids(
     }
 
 
+async def _async_describe(
+    hass: HomeAssistant, unknown_entities: set[str], not_entity_ids: set[str]
+) -> str:
+    """Return the issue's list of entities, saying which are no entity ID.
+
+    No guess at what one of those was meant to be. `cover.blind.position` may
+    have meant the cover, its position or something else entirely, and a
+    wrong suggestion is worse than none.
+    """
+    lines = [
+        await async_describe_unknown_entities(hass, sorted(unknown_entities)),
+        *(f"- `{value}` (not an entity ID)" for value in sorted(not_entity_ids)),
+    ]
+    return "\n".join(line for line in lines if line)
+
+
 class SpookRepair(AbstractSpookRepair):
     """Spook repair tries to find unknown referenced entity in dashboards."""
 
@@ -97,27 +116,33 @@ class SpookRepair(AbstractSpookRepair):
                 continue
 
             extracted_entities = self.__async_extract_entities(config)
+            not_entity_ids = extract_not_entity_ids_from_dashboard_node(config)
             unknown_entities = async_filter_known_entity_ids(
                 self.hass,
                 entity_ids=set(extracted_entities.keys()),
                 known_entity_ids=known_entity_ids,
             ) | _async_miscased_entity_ids(self.hass, extracted_entities)
-            if unknown_entities:
-                # Get the view path of the first unknown entity (by view order)
+            if unknown_entities or not_entity_ids:
+                # Get the view path of the first unknown entity (by view order).
+                # Both walks read the same fields today; should they ever
+                # drift apart, the first view beats a crashed inspection.
                 first_view_path = next(
-                    path
-                    for entity_id, path in extracted_entities.items()
-                    if entity_id in unknown_entities
+                    (
+                        path
+                        for entity_id, path in extracted_entities.items()
+                        if entity_id in unknown_entities or entity_id in not_entity_ids
+                    ),
+                    0,
                 )
                 title = "Overview"
                 if dashboard.config:
                     title = dashboard.config.get("title", url_path)
                 self.async_create_issue(
                     issue_id=url_path,
-                    references=unknown_entities,
+                    references=unknown_entities | not_entity_ids,
                     translation_placeholders={
-                        "entities": await async_describe_unknown_entities(
-                            self.hass, sorted(unknown_entities)
+                        "entities": await _async_describe(
+                            self.hass, unknown_entities, not_entity_ids
                         ),
                         "dashboard": title,
                         "edit": f"/{url_path}/{first_view_path}?edit=1",
@@ -129,7 +154,7 @@ class SpookRepair(AbstractSpookRepair):
                         "and created an issue for it; Entities: %s"
                     ),
                     title,
-                    ", ".join(unknown_entities),
+                    ", ".join(unknown_entities | not_entity_ids),
                 )
 
     @callback

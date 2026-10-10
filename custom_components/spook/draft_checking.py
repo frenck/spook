@@ -22,6 +22,7 @@ from .dashboard_extraction import (
     extract_actions_from_dashboard_node,
     extract_areas_from_dashboard_node,
     extract_entities_from_dashboard_node,
+    extract_not_entity_ids_from_dashboard_node,
 )
 from .ectoplasms.automation.repairs import (
     unknown_area_references as automation_areas,
@@ -201,7 +202,9 @@ def _check_dashboard(
     """Return what a draft card, view or dashboard names that does not exist.
 
     The dashboard readers take any node, so a single card is as welcome as a
-    whole dashboard. Filtered the way the dashboard repairs filter.
+    whole dashboard. Filtered the way the dashboard repairs filter, and like
+    the repair, a core card's entity field holding something that is no
+    entity ID at all is said apart from an entity that does not exist.
     """
     checks = {
         "entities": async_filter_known_entity_ids(
@@ -209,6 +212,7 @@ def _check_dashboard(
             entity_ids=extract_entities_from_dashboard_node(config),
             known_entity_ids=async_get_all_entity_ids(hass, include_all_none=True),
         ),
+        "not_entity_ids": extract_not_entity_ids_from_dashboard_node(config),
         "areas": async_filter_known_area_ids(
             hass, area_ids=extract_areas_from_dashboard_node(config)
         ),
