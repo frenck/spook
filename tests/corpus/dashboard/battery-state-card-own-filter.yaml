@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/wth-not-able-to-list-devices/819516/7
+note: >-
+  battery-state-card with its own filter block of name and value patterns,
+  and a secondary_info format string with braces. Patterns and format strings
+  are not references.
+expect:
+  entities:
+    find: [sensor.phone_battery_level]
+    not_find: ["*_battery_level"]
+---
+type: custom:battery-state-card
+title: Batteries
+secondary_info: "{area.name} | {attributes.battery_type}"
+entities:
+  - sensor.phone_battery_level
+filter:
+  include:
+    - name: entity_id
+      value: "*_battery_level"
+    - name: attributes.device_class
+      value: battery
+  exclude:
+    - name: state
+      value: 100

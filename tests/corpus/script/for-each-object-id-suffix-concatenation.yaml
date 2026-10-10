@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/for-each-and-data-templating/581964
+note: >-
+  for_each over bare object ID suffixes, with the entity built with `+` inside
+  state_attr under the old data_template key. The quoted prefix is a fragment,
+  not an entity. The tilde and inline forms are in
+  automation/templated-entity-id-concatenation.yaml and
+  automation/partial-entity-id-with-inline-template.yaml.
+expect:
+  entities:
+    not_find: [light.template_, light.template]
+  attributes:
+    not_find:
+      - light.template_: brightness
+---
+alias: Resync bulbs from their templates
+sequence:
+  - repeat:
+      for_each:
+        - bathroom_spot_1
+        - bathroom_spot_2
+      sequence:
+        - service: light.turn_on
+          data_template:
+            entity_id: "{{ 'light.bulb_' + repeat.item }}"
+            brightness: "{{ state_attr('light.template_' + repeat.item, 'brightness') | int(0) }}"

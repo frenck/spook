@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/cheapest-energy-hours-jinja-macro-for-dynamic-energy-prices/569370/3
+note: >-
+  A macro imported from custom_templates called with an entity ID as its first
+  argument and keyword arguments after it. The import file name is not an
+  entity; the argument is.
+expect:
+  entities:
+    find: [sensor.electricity_price_today]
+    not_find: [cheapest_energy_hours.jinja]
+---
+alias: Plan dishwasher
+sequence:
+  - variables:
+      start: >-
+        {% from 'cheapest_energy_hours.jinja' import cheapest_energy_hours %}
+        {{ cheapest_energy_hours('sensor.electricity_price_today',
+           attr_today='prices_today', hours=3, mode='start') }}
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.dishwasher_start
+    data:
+      datetime: "{{ start }}"

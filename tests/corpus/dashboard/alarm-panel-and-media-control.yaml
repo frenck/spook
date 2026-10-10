@@ -1,0 +1,17 @@
+source: https://www.home-assistant.io/dashboards/alarm-panel/
+note: >-
+  Alarm panel limited to some states and a media control card; the states are
+  alarm modes, not entities.
+expect:
+  entities:
+    find: [alarm_control_panel.home, media_player.living_room]
+---
+type: horizontal-stack
+cards:
+  - type: alarm-panel
+    entity: alarm_control_panel.home
+    states:
+      - arm_home
+      - arm_away
+  - type: media-control
+    entity: media_player.living_room

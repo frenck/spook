@@ -1,0 +1,35 @@
+source: https://www.home-assistant.io/dashboards/entities/#special-row-elements
+note: >-
+  Entities card with the special rows: attribute, buttons, section, weblink,
+  conditional and cast. The weblink URL and the cast view are not entities;
+  the conditional row has its entity under `row`.
+expect:
+  entities:
+    find: [sun.sun, light.kitchen, light.hallway, binary_sensor.back_door, lock.back_door]
+---
+type: entities
+entities:
+  - type: attribute
+    entity: sun.sun
+    attribute: next_rising
+    format: time
+  - type: buttons
+    entities:
+      - light.kitchen
+      - entity: light.hallway
+        name: Hall
+  - type: section
+    label: Doors
+  - type: weblink
+    name: Router
+    url: http://router.local/
+  - type: conditional
+    conditions:
+      - entity: binary_sensor.back_door
+        state: "on"
+    row:
+      entity: lock.back_door
+  - type: cast
+    view: kitchen
+    dashboard: lovelace-cast
+    name: Cast kitchen

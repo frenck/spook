@@ -1,0 +1,36 @@
+source: https://community.home-assistant.io/t/picture-element-card-using-card-mod-for-state-based-icon-rotation-not-working-in-conditional-card/815049
+note: >-
+  State icon element on a climate entity that runs a script with its own fields
+  and an empty target, rotated by a card_mod animation keyed on the state. The
+  script field use_last_mode is data, not a reference.
+expect:
+  entities:
+    find: [climate.living_room]
+  services:
+    find: [script.toggle_air_conditioning]
+---
+type: picture-elements
+image: /local/floorplan.png
+elements:
+  - type: state-icon
+    entity: climate.living_room
+    icon: mdi:fan
+    tap_action:
+      action: call-service
+      service: script.toggle_air_conditioning
+      data:
+        entity_id: climate.living_room
+        use_last_mode: "on"
+      target: {}
+    state_color: false
+    style:
+      top: 10%
+      left: 6%
+    card_mod:
+      style: |
+        :host {
+          {% if not is_state('climate.living_room', 'off') %}
+          --card-mod-icon-color: red;
+          animation: rotation 2s linear infinite;
+          {% endif %}
+        }

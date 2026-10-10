@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/room-cleaning-not-working-xiaomi-miija-1c-dreame-mc1808-miot-integration/612376/1
+note: >-
+  xiaomi-vacuum-map-card takes its map from `map_source.camera`, and
+  `calibration_source.camera: true` is a flag. The vacuum is read; the map
+  camera is missed. The map mode calls a service under a schema of its own.
+expect:
+  entities:
+    find: [vacuum.robot_cleaner]
+---
+type: custom:xiaomi-vacuum-map-card
+entity: vacuum.robot_cleaner
+map_source:
+  camera: camera.vacuum_map
+calibration_source:
+  camera: true
+vacuum_platform: default
+map_modes:
+  - template: vacuum_clean_segment
+    predefined_selections:
+      - id: "16"
+        label:
+          text: Kitchen
+          x: 25500
+          y: 22500

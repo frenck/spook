@@ -1,0 +1,40 @@
+source: Dashboards in YAML mode, with `!include` and `!secret` (custom_components/spook/ectoplasms/lovelace/dashboards.py)
+note: >-
+  A whole dashboard in YAML mode: two views, a card pulled in with
+  `!include`, an iframe whose address is a `!secret`, and picture elements.
+  Tagged values load as plain text and are no reference. A markdown card's
+  template is free text: the dashboard readers only read keys that name an
+  entity, so the sensor in it is not read.
+expect:
+  entities:
+    find: [light.garden, switch.fountain, sensor.rain_today]
+    not_find:
+      - "!include cards/energy.yaml"
+      - "!secret camera_url"
+---
+title: Home
+views:
+  - title: Garden
+    path: garden
+    cards:
+      - type: picture-elements
+        image: /local/garden.png
+        elements:
+          - type: state-icon
+            entity: light.garden
+            style:
+              top: 20%
+              left: 30%
+          - type: state-label
+            entity: switch.fountain
+      - !include cards/energy.yaml
+  - title: Weather
+    cards:
+      - type: iframe
+        url: !secret camera_url
+      - type: markdown
+        content: >-
+          Rain today: {{ states('sensor.rain_today') }} mm,
+          wind {{ states('sensor.wind_speed') }}.
+      - type: sensor
+        entity: sensor.rain_today

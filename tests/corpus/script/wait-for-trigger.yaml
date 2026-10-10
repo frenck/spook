@@ -1,0 +1,26 @@
+source: tests/test_attribute_references.py (wait for trigger, #1880)
+note: >-
+  A script waiting on a state trigger with a list of entities and an
+  attribute, then on a template. Trigger keys inside a wait count as well.
+expect:
+  attributes:
+    find:
+      - cover.living_room: current_position
+      - cover.bedroom: current_position
+  triggers:
+    find: [state]
+  entities:
+    find: [cover.living_room, cover.bedroom, binary_sensor.window]
+---
+alias: Close and wait
+sequence:
+  - action: cover.close_cover
+    target:
+      entity_id: [cover.living_room, cover.bedroom]
+  - wait_for_trigger:
+      - trigger: state
+        entity_id: [cover.living_room, cover.bedroom]
+        attribute: current_position
+        to: 0
+    timeout: "00:01:00"
+  - wait_template: "{{ is_state('binary_sensor.window', 'off') }}"

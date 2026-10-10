@@ -1,0 +1,19 @@
+source: https://community.home-assistant.io/t/conditional-visibility-card-becomes-visible-after-some-time/878731
+note: >-
+  Entity card showing an attribute instead of the state, hidden through a
+  visibility condition while the sensor is unavailable. The card came back after
+  days of unavailability.
+expect:
+  entities:
+    find: [sensor.media_server_process]
+---
+type: entity
+entity: sensor.media_server_process
+attribute: name
+icon: mdi:server
+name: Media server
+state_color: true
+visibility:
+  - condition: state
+    entity: sensor.media_server_process
+    state_not: unavailable

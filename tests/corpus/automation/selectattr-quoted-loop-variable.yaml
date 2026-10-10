@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/using-variables-from-for-each-loop-in-a-value-template/720704
+note: >-
+  repeat for_each over dicts, with the loop variable quoted inside selectattr so it
+  compared against the literal text. integration_entities plus expand, and an
+  if/then without a list.
+expect:
+  services:
+    find: [notify.family_phones]
+---
+alias: Upcoming anniversaries
+triggers:
+  - trigger: time
+    at: "09:00:00"
+actions:
+  - repeat:
+      for_each:
+        - days: 2
+        - days: 7
+        - days: 30
+      sequence:
+        if:
+          - condition: template
+            value_template: >-
+              {{ expand(integration_entities('anniversaries')) | selectattr('state', 'eq', 'repeat.item.days') | list | count > 0 }}
+        then:
+          - service: notify.family_phones
+            data:
+              title: Anniversaries in {{ repeat.item.days }} days
+              message: >-
+                {{ expand(integration_entities('anniversaries')) | selectattr('state', 'eq', 'repeat.item.days') | map(attribute='name') | join(', ') }}

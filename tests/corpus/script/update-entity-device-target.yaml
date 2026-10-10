@@ -1,0 +1,18 @@
+source: https://community.home-assistant.io/t/why-is-my-automation-to-call-homeassistant-update-entity-failing-with-extra-keys-not-allowed-data-device-id/568200
+note: >-
+  homeassistant.update_entity aimed at devices, which the action rejects; only
+  entity_id works there. The device IDs are still literal device references.
+expect:
+  devices:
+    find: [0a1b2c3d4e5f60718293a4b5c6d7e8f9, 9f8e7d6c5b4a39281706f5e4d3c2b1a1]
+  services:
+    find: [homeassistant.update_entity]
+---
+alias: Poll the inverter
+sequence:
+  - service: homeassistant.update_entity
+    target:
+      device_id:
+        - 0a1b2c3d4e5f60718293a4b5c6d7e8f9
+        - 9f8e7d6c5b4a39281706f5e4d3c2b1a1
+    data: {}

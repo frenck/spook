@@ -1,0 +1,34 @@
+source: https://github.com/matt8707/hass-config/blob/master/popup/footer_history.yaml
+note: >-
+  An old style browser_mod popup through fire-dom-event, holding an apexcharts
+  card whose series fetches its own data with a JavaScript data_generator. The
+  popup action runs in the browser, and the JavaScript, with an entity_id in
+  the query text it sends, is code. Only the series entity is a reference.
+  The original used sensor.date as a stand-in, which Spook treats as always
+  known, so a sensor of our own here.
+expect:
+  entities:
+    find: [sensor.body_weight]
+    not_find: [sensor.weight_history]
+  services:
+    not_find: [browser_mod.popup]
+---
+type: button
+name: History
+icon: mdi:chart-bar
+tap_action:
+  action: fire-dom-event
+  browser_mod:
+    service: browser_mod.popup
+    data:
+      title: History
+      content:
+        type: custom:apexcharts-card
+        graph_span: 12months
+        series:
+          - entity: sensor.body_weight
+            name: Weight
+            data_generator: |-
+              const query = "SELECT value WHERE entity_id = 'sensor.weight_history'";
+              const response = await fetch(`/api/history?q=${encodeURIComponent(query)}`);
+              return (await response.json()).map((row) => [new Date(row[0]), row[1]]);

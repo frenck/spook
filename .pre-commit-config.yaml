@@ -30,6 +30,9 @@ repos:
         name: ✅ Check YAML files
         language: system
         types: [yaml]
+        # A corpus case is two documents with Home Assistant's own tags in
+        # them. Its own loader reads those, and a test checks every case.
+        exclude: ^tests/corpus/
         entry: uv run check-yaml
       - id: zizmor
         name: 🌈 Check GitHub Actions workflows with zizmor

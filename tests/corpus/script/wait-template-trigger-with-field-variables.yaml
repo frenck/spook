@@ -1,0 +1,35 @@
+source: https://community.home-assistant.io/t/variable-for-in-wait-for-trigger-doesnt-render/378045
+note: >-
+  A generic motion script where the sensor, lights and delays come in as variables;
+  the wait_for_trigger template uses is_state on a variable and a templated for.
+  Nothing in the script names an entity literally.
+expect:
+  entities:
+    not_find: [binary_sensor.motion_sensor]
+  states:
+    not_find:
+      - motion_sensor: "off"
+---
+alias: Generic motion handler
+mode: restart
+fields:
+  lights:
+    description: Lights to control
+  motion_sensor:
+    description: Motion sensor to watch
+  seconds_before_dimmed:
+    description: Seconds without motion before dimming
+sequence:
+  - action: light.turn_on
+    target:
+      entity_id: "{{ lights }}"
+  - wait_for_trigger:
+      - platform: template
+        value_template: "{{ is_state(motion_sensor, 'off') }}"
+        for:
+          seconds: "{{ seconds_before_dimmed | int }}"
+  - action: light.turn_on
+    target:
+      entity_id: "{{ lights }}"
+    data:
+      brightness_pct: 10

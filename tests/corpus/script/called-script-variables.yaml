@@ -1,0 +1,33 @@
+source: tests/test_state_references.py::test_variables_handed_to_a_called_script (#1881)
+note: >-
+  Variables handed to another script are that script's business. A payload
+  shaped like a state condition is data, not a condition this script checks.
+  The entity it names is still mentioned, so the entity repair may read it.
+  `script.turn_on` is no finding: the script integration is loaded in the
+  house that runs this, so its own actions always exist.
+expect:
+  states:
+    not_find:
+      - binary_sensor.garage_door: "on"
+  attributes:
+    not_find:
+      - binary_sensor.garage_door: device_class
+  entities:
+    find: [script.check_something]
+---
+alias: Hand over a check
+sequence:
+  - action: script.turn_on
+    target:
+      entity_id: script.check_something
+    data:
+      variables:
+        check:
+          condition: state
+          entity_id: binary_sensor.garage_door
+          state: "on"
+        attribute_check:
+          condition: state
+          entity_id: binary_sensor.garage_door
+          attribute: device_class
+          state: garage_door

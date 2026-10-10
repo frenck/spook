@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/will-triggers-with-not-to-be-triggered-when-attribute-changes/951061
+note: >-
+  A state trigger with not_to listing unknown, unavailable and the string "none" to
+  filter out invalid values. The "none" entry is not a state the sensor can have.
+expect:
+  entities:
+    find: [sensor.power_meter_current]
+---
+alias: Track valid power readings
+triggers:
+  - trigger: state
+    entity_id: sensor.power_meter_current
+    not_to:
+      - unknown
+      - unavailable
+      - none
+actions:
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.last_power_reading
+    data:
+      value: "{{ trigger.to_state.state | float(0) }}"

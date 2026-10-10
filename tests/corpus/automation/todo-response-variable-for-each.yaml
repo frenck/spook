@@ -1,0 +1,45 @@
+source: https://community.home-assistant.io/t/how-to-set-correctly-an-attribute-from-overdue-todo-list-with-repeat-action/1024471
+note: >-
+  todo.get_items with response_variable, then a repeat for_each over the
+  response keyed by entity ID. The subscript on the response dict and
+  repeat.item.due are data, not state or attribute lookups.
+expect:
+  entities:
+    find: [todo.household_chores]
+  services:
+    find: [todo.get_items, notify.send_message]
+  attributes:
+    not_find:
+      - todo.household_chores: items
+      - todo.household_chores: summary
+---
+alias: Overdue chores reminder
+triggers:
+  - trigger: time
+    at: "18:00:00"
+actions:
+  - action: todo.get_items
+    target:
+      entity_id: todo.household_chores
+    data:
+      status:
+        - needs_action
+    response_variable: chores
+  - action: notify.send_message
+    target:
+      entity_id: notify.phone
+    data:
+      title: Overdue chores
+      message: >-
+        {{ chores['todo.household_chores']['items'] | map(attribute='summary') | list | join(', ') }}
+  - repeat:
+      for_each: "{{ chores['todo.household_chores']['items'] }}"
+      sequence:
+        - condition: template
+          value_template: "{{ repeat.item.due | as_datetime | as_local < now() }}"
+        - action: input_text.set_value
+          target:
+            entity_id: input_text.last_overdue_chore
+          data:
+            value: "{{ repeat.item.summary }}"
+          enabled: false

@@ -1,0 +1,31 @@
+source: https://community.home-assistant.io/t/getting-creative-with-lovelace-heading-cards/778794/1
+note: >-
+  Decluttering template whose defaults are named area_id and area_name, then
+  pasted into entity IDs with [[area_id]]. The area walk reads `area_id` on any
+  node, so the default value is looked up as an area even though here it only
+  builds entity IDs. The templated entity ID itself is not valid and dropped.
+---
+decluttering_templates:
+  area_heading:
+    default:
+      - area_id: study
+      - area_name: Study
+    card:
+      type: heading
+      heading: "[[area_name]]"
+      heading_style: subtitle
+      badges:
+        - type: entity
+          entity: "sensor.climate_[[area_id]]_temperature"
+          visibility:
+            - condition: numeric_state
+              entity: "sensor.climate_[[area_id]]_temperature"
+              above: 0
+views:
+  - title: Rooms
+    cards:
+      - type: custom:decluttering-card
+        template: area_heading
+        variables:
+          - area_id: study
+          - area_name: Study

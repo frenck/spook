@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/octopus-intelligent-smart-charge-picture-elements/737700/1
+note: >-
+  Conditional card whose condition entity is written as a folded block scalar
+  (`>-`) because it is long, around picture elements with state labels.
+expect:
+  entities:
+    find:
+      - binary_sensor.car_charger_intelligent_dispatching
+      - sensor.car_charger_slot_1
+---
+type: conditional
+conditions:
+  - condition: state
+    entity: >-
+      binary_sensor.car_charger_intelligent_dispatching
+    state: "on"
+card:
+  type: picture-elements
+  image: /local/charging.png
+  elements:
+    - type: state-label
+      entity: sensor.car_charger_slot_1
+      style:
+        top: 51.8%
+        left: 10%

@@ -1,0 +1,35 @@
+source: https://github.com/pgale/HA_TSV_Dashboards/blob/main/TSV_Dashboard.yaml
+note: >-
+  Bubble Card pop-up opened by trigger_entity and closed through a close_action
+  that performs an action, next to a picture-entity card whose camera entity ID
+  starts with digits (an IP address turned into an object ID).
+expect:
+  entities:
+    find: [input_boolean.kiosk_camera_popup, camera.192_168_1_20, light.study]
+  services:
+    find: [input_boolean.turn_off]
+---
+type: vertical-stack
+cards:
+  - type: custom:bubble-card
+    card_type: pop-up
+    hash: "#cameras"
+    trigger_entity: input_boolean.kiosk_camera_popup
+    trigger_state: "on"
+    trigger_close: true
+    close_action:
+      action: call-service
+      service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.kiosk_camera_popup
+  - type: picture-entity
+    show_state: false
+    show_name: false
+    camera_view: live
+    entity: light.study
+    camera_image: camera.192_168_1_20
+    tap_action:
+      action: navigate
+      navigation_path: "#camera"
+    state_filter:
+      "off": brightness(100%)

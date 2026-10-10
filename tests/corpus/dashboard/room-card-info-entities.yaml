@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/card-rooms-show-yours/680262/3
+note: >-
+  room-card with info_entities (a list of entity rows) and a call-service tap
+  action on an entity row. Each row has `entity`, so recursion reads them even
+  though `info_entities` is not a known key.
+expect:
+  entities:
+    find: [sensor.bedroom_temperature, sensor.bedroom_humidity, cover.bedroom_blinds]
+  services:
+    find: [script.bedroom_blinds_tilt]
+---
+type: custom:room-card
+title: Bedroom
+info_entities:
+  - entity: sensor.bedroom_temperature
+    format: precision1
+  - entity: sensor.bedroom_humidity
+    format: precision0
+entities:
+  - entity: cover.bedroom_blinds
+    tap_action:
+      action: call-service
+      service: script.bedroom_blinds_tilt

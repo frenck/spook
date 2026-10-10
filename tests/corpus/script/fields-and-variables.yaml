@@ -1,0 +1,33 @@
+source: tests/ectoplasms/script/repairs/test_unknown_entity_references.py::test_templates_in_a_script_are_checked
+note: >-
+  A script with fields and variables. The example of a field is shown in the
+  editor and never rendered. The script's own variables are rendered, so a
+  lookup in there counts, and so does the light the field defaults to. The
+  entity named in the example is in the snapshot for a known issue, see
+  field-example-mentions.yaml.
+expect:
+  entities:
+    find: [light.fireplace, light.living_room_spots]
+  attributes:
+    find:
+      - light.fireplace: brightness
+    not_find:
+      - light.reading_lamp: brightness
+---
+alias: Cosy evening
+fields:
+  level:
+    name: Level
+    example: "{{ state_attr('light.reading_lamp', 'brightness') }}"
+    selector:
+      number:
+        min: 0
+        max: 255
+variables:
+  current: "{{ state_attr('light.fireplace', 'brightness') }}"
+sequence:
+  - action: light.turn_on
+    target:
+      entity_id: light.living_room_spots
+    data:
+      brightness: "{{ level | default(current) }}"

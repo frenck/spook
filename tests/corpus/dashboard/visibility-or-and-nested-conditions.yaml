@@ -1,0 +1,25 @@
+source: https://www.home-assistant.io/dashboards/conditional/
+note: >-
+  Visibility built from `or` and `and` blocks with state_not, numeric_state
+  and a user condition inside. Entities nested two levels deep in conditions
+  still count.
+expect:
+  entities:
+    find: [person.alex, sensor.outdoor_temperature, alarm_control_panel.home]
+---
+type: tile
+entity: alarm_control_panel.home
+visibility:
+  - condition: or
+    conditions:
+      - condition: and
+        conditions:
+          - condition: state
+            entity: person.alex
+            state_not: home
+          - condition: numeric_state
+            entity: sensor.outdoor_temperature
+            below: 5
+      - condition: user
+        users:
+          - e5f60718293a4b5c6d7e8f90a1b2c3d4

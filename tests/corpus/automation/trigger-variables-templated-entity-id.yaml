@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/trv-temperature-sync-automation-broken-with-2021-3/290377
+note: >-
+  Thermostats listed once under trigger_variables and the state trigger
+  entity_id a template over that list. A state trigger takes entity IDs only,
+  so Home Assistant refuses this automation and the repairs that skip
+  unavailable automations never read it.
+expect:
+  attributes:
+    not_find:
+      - climate.dining_room_trv: temperature
+  triggers:
+    find: [state]
+---
+alias: Sync room thermostats
+id: sync_room_thermostats
+trigger_variables:
+  thermostats:
+    - climate.living_room_trv_left
+    - climate.living_room_trv_right
+    - climate.dining_room_trv
+trigger:
+  - platform: state
+    entity_id: "{{ thermostats }}"
+    attribute: temperature
+action:
+  - service: climate.set_temperature
+    target:
+      entity_id: "{{ thermostats | reject('eq', trigger.entity_id) | list }}"
+    data:
+      temperature: "{{ trigger.to_state.attributes.temperature }}"

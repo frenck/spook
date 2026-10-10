@@ -1,0 +1,32 @@
+source: https://community.home-assistant.io/t/passing-multiple-choices-to-a-script/752848/2
+note: >-
+  Legacy data_template, a target entity_id with a leading space inside the
+  quotes around a template, and repeat.index arithmetic picking colours.
+expect:
+  services:
+    find: [light.turn_on]
+---
+alias: Colour loop
+fields:
+  targetid:
+    selector:
+      entity:
+        domain: light
+  counter:
+    default: 5
+variables:
+  colours:
+    - [0.7, 0.3]
+    - [0.2, 0.7]
+    - [0.15, 0.06]
+sequence:
+  - repeat:
+      count: "{{ counter }}"
+      sequence:
+        - service: light.turn_on
+          data_template:
+            xy_color: "{{ colours[repeat.index % (colours | count)] }}"
+            transition: 1
+          target:
+            entity_id: " {{ targetid }}"
+        - delay: 2

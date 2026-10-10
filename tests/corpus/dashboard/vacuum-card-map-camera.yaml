@@ -1,0 +1,20 @@
+source: https://community.home-assistant.io/t/custom-vacuum-card-works-in-browser-not-in-app/581510/1
+note: >-
+  vacuum-card with its live map camera under `map`, a key of its own. The
+  vacuum is read, the camera is missed.
+expect:
+  entities:
+    find: [vacuum.downstairs]
+---
+type: horizontal-stack
+cards:
+  - type: custom:vacuum-card
+    entity: vacuum.downstairs
+  - type: custom:vacuum-card
+    entity: vacuum.downstairs
+    map: camera.downstairs_live_map
+    map_refresh: 1
+    stats:
+      default:
+        - attribute: filter_left
+          unit: hours

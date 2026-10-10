@@ -1,0 +1,33 @@
+source: https://community.home-assistant.io/t/automation-turn-off-action-not-triggering-from-motion-sensor-off-state/944876
+note: >-
+  Two triggers with ids "on" and "off" and a single action whose name is built from
+  trigger.id, aimed at an area. Legacy keys throughout. The area is a literal target.
+expect:
+  entities:
+    find: [binary_sensor.storage_room_motion]
+  areas:
+    find: [storage_room]
+  states:
+    find:
+      - binary_sensor.storage_room_motion: "on"
+      - binary_sensor.storage_room_motion: "off"
+  services:
+    not_find: ["light.turn_{{ trigger.id }}"]
+---
+alias: Storage room motion light
+trigger:
+  - platform: state
+    entity_id: binary_sensor.storage_room_motion
+    to: "on"
+    id: "on"
+  - platform: state
+    entity_id: binary_sensor.storage_room_motion
+    to: "off"
+    for:
+      minutes: 1
+    id: "off"
+action:
+  - service: "light.turn_{{ trigger.id }}"
+    target:
+      area_id: storage_room
+    data: {}

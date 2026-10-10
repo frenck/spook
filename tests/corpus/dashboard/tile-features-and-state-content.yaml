@@ -1,0 +1,40 @@
+source: https://community.home-assistant.io/t/customize-tile-card-features/748500/2
+note: >-
+  Tile cards with features and state_content listing attribute names and
+  pseudo values like last-changed. Neither features nor state content name
+  entities; card_mod comes from an include.
+expect:
+  entities:
+    find: [light.front_door, cover.garage_door, fan.bedroom, climate.hall]
+---
+type: grid
+cards:
+  - type: tile
+    card_mod: !include /config/dashboard/card_mods/tile_light.yaml
+    entity: light.front_door
+    features:
+      - type: light-brightness
+      - type: light-color-temp
+    state_content:
+      - state
+      - last-changed
+      - brightness
+      - color_temp_kelvin
+  - type: tile
+    entity: cover.garage_door
+    features:
+      - type: cover-open-close
+      - type: cover-position
+  - type: tile
+    entity: fan.bedroom
+    features:
+      - type: fan-speed
+        style: icons
+  - type: tile
+    entity: climate.hall
+    features:
+      - type: climate-hvac-modes
+        hvac_modes:
+          - heat
+          - "off"
+      - type: target-temperature

@@ -1,0 +1,28 @@
+source: tests/template_configs.py::shadowing_configs (response variable, #1880)
+note: >-
+  A step stores its response as `states`, and a later template reads from
+  that response, not from Home Assistant's states. That is no attribute
+  lookup, and no state either.
+expect:
+  attributes:
+    not_find:
+      - weather.home: forecast
+  states:
+    not_find:
+      - weather.home: sunny
+  services:
+    find: [weather.get_forecasts, notify.notify]
+---
+alias: Forecast
+sequence:
+  - action: weather.get_forecasts
+    target:
+      entity_id: weather.home
+    data:
+      type: daily
+    response_variable: states
+  - action: notify.notify
+    data:
+      message: >-
+        {{ states.weather.home.attributes.forecast }}
+        {{ 'yes' if states.weather.home.state == 'sunny' else 'no' }}

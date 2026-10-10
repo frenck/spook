@@ -1,0 +1,31 @@
+source: https://community.home-assistant.io/t/filter-out-bad-gps-values/654886
+note: >-
+  Filtering GPS jumps by comparing trigger.to_state and trigger.from_state
+  latitude, plus a numeric_state condition on gps_accuracy. The trigger
+  payload attributes are not lookups of a named entity; the condition
+  attribute is. `device_tracker.` entities are left out of the entity repair
+  on purpose (`IGNORED_ENTITY_DOMAINS`).
+expect:
+  attributes:
+    find:
+      - device_tracker.car_gps: gps_accuracy
+    not_find:
+      - device_tracker.car_gps: latitude
+---
+alias: Car left home
+triggers:
+  - trigger: state
+    entity_id: device_tracker.car_gps
+    from: home
+conditions:
+  - condition: template
+    value_template: >-
+      {{ (trigger.to_state.attributes.latitude - trigger.from_state.attributes.latitude) | abs < 1 }}
+  - condition: numeric_state
+    entity_id: device_tracker.car_gps
+    attribute: gps_accuracy
+    below: 30
+actions:
+  - action: notify.notify
+    data:
+      message: The car left home.

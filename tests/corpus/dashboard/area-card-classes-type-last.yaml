@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/2025-7-2-update-area-card-classes-no-longer-shown-as-overlay/912024/5
+note: >-
+  Area card written by the editor in a sections view, with `type: area` as the
+  last key and lists of device classes for alerts and sensors. The classes are
+  device classes, never entities or areas.
+expect:
+  areas:
+    find: [living_room]
+    not_find: [motion, temperature]
+---
+type: sections
+title: Home
+sections:
+  - type: grid
+    cards:
+      - area: living_room
+        alert_classes:
+          - motion
+          - moisture
+        sensor_classes:
+          - temperature
+          - humidity
+        features_position: bottom
+        display_type: picture
+        type: area

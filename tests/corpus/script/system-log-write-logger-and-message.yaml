@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/helper-based-time-switch-fail-backup-strategy/649574/2
+note: >-
+  system_log.write with a logger name that looks like a dotted module path and
+  a message mentioning an entity. Both are text for system_log.
+expect:
+  entities:
+    not_find: [switch.boiler]
+---
+alias: Retry boiler off
+sequence:
+  - repeat:
+      while:
+        - condition: template
+          value_template: "{{ repeat.index <= 3 }}"
+      sequence:
+        - action: system_log.write
+          data:
+            level: warning
+            logger: script.retry_boiler
+            message: turn_off switch.boiler, attempt
+        - delay: 5

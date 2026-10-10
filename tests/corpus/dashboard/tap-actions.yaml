@@ -1,0 +1,41 @@
+source: custom_components/spook/dashboard_extraction.py (_walk_actions, floorplan and button-card notes)
+note: >-
+  Actions a tap performs: the old `call-service` with `service`, the new
+  `perform-action` with a target, a button-card action built from a template
+  and a floorplan card's own browser-side action. Only the first two are
+  actions Home Assistant would be asked to run.
+expect:
+  services:
+    find: [light.toggle, scene.turn_on]
+    not_find: ["[[[ return 'light.' + variables.mode ]]]", floorplan.class_set]
+  areas:
+    find: [living_room]
+---
+type: horizontal-stack
+cards:
+  - type: button
+    name: Toggle the kitchen
+    tap_action:
+      action: call-service
+      service: light.toggle
+      target:
+        entity_id: light.kitchen
+  - type: button
+    name: Movie time
+    tap_action:
+      action: perform-action
+      perform_action: scene.turn_on
+      target:
+        area_id: living_room
+  - type: custom:button-card
+    name: Mode
+    tap_action:
+      action: perform-action
+      perform_action: "[[[ return 'light.' + variables.mode ]]]"
+  - type: custom:floorplan-card
+    config:
+      rules:
+        - entity: light.hallway
+          tap_action:
+            action: call-service
+            service: floorplan.class_set

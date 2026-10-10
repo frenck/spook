@@ -1,0 +1,18 @@
+source: https://www.home-assistant.io/dashboards/todo-list/
+note: >-
+  To-do list card and calendar card side by side; the calendar takes a list
+  of entities, the to-do list a single one.
+expect:
+  entities:
+    find: [todo.shopping_list, calendar.family, calendar.waste_collection]
+---
+type: horizontal-stack
+cards:
+  - type: todo-list
+    entity: todo.shopping_list
+    hide_completed: true
+  - type: calendar
+    initial_view: listWeek
+    entities:
+      - calendar.family
+      - calendar.waste_collection

@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/group-multiple-remotes/588391/3
+note: >-
+  ZHA remote caught through zha_event with event_data.device_id, a device
+  registry ID. The device repair takes every event_data device ID back out on
+  purpose (see tests/ectoplasms/automation/repairs/test_unknown_device_references.py),
+  so the remote is not checked; the entity of the light is. Worth revisiting:
+  a 32 character hex device ID in an integration event is a real reference,
+  and the shape check already turns away other hardware addresses.
+expect:
+  entities:
+    find: [light.living_room]
+---
+alias: Remote off button
+triggers:
+  - trigger: event
+    event_type: zha_event
+    event_data:
+      device_id: b2c3d4e5f60718293a4b5c6d7e8f90a1
+      command: "off"
+actions:
+  - action: light.turn_off
+    target:
+      entity_id: light.living_room

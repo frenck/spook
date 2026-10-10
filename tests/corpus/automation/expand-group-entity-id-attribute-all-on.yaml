@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/binary-sensor-template-to-count-group-state/709432
+note: >-
+  All members on: expand over the group's entity_id attribute, selectattr on state,
+  count equal to the member count. entity_id is a real attribute of a group.
+expect:
+  entities:
+    find: [binary_sensor.downstairs_occupancy_group]
+  attributes:
+    find:
+      - binary_sensor.downstairs_occupancy_group: entity_id
+---
+alias: Whole downstairs occupied
+triggers:
+  - trigger: template
+    value_template: >-
+      {{ expand(state_attr('binary_sensor.downstairs_occupancy_group', 'entity_id')) | selectattr('state', 'eq', 'on') | list | count == 6 }}
+actions:
+  - action: climate.set_preset_mode
+    target:
+      entity_id: climate.downstairs
+    data:
+      preset_mode: comfort

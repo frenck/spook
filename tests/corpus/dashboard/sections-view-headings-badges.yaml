@@ -1,0 +1,33 @@
+source: tests/ectoplasms/lovelace/repairs/test_unknown_entity_references.py::test_dashboard_full_walk
+note: >-
+  A sections view with badges, a heading card with badges of its own, and a
+  tile card with features. Badges come as bare entity IDs and as mappings.
+expect:
+  entities:
+    find:
+      - sensor.power_usage
+      - person.sam
+      - sensor.solar_production
+      - cover.garage_door
+      - weather.home
+---
+type: sections
+path: energy
+badges:
+  - sensor.power_usage
+  - type: entity
+    entity: person.sam
+sections:
+  - type: grid
+    cards:
+      - type: heading
+        heading: Energy
+        badges:
+          - type: entity
+            entity: sensor.solar_production
+      - type: tile
+        entity: cover.garage_door
+        features:
+          - type: cover-open-close
+      - type: weather-forecast
+        entity: weather.home

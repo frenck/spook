@@ -1,0 +1,33 @@
+source: https://community.home-assistant.io/t/title-automation-cannot-see-entity-labels-but-developer-tools-can/927930
+note: >-
+  for_each built by looping over every state and testing labels(), without a
+  namespace so the list stays empty; then states(repeat.item).last_changed on
+  a string. The label name is compared with what labels() returns, which the
+  label repair does not read: it reads targets only.
+expect:
+  services:
+    find: [light.turn_off]
+---
+alias: Lights off after ten hours
+description: Turns off any light carrying the lights label that has been on for ten hours.
+trigger:
+  - platform: time_pattern
+    minutes: /5
+condition: []
+action:
+  - repeat:
+      for_each: >
+        {% set entities_with_label = [] %}
+        {% for entity in states %}
+          {% if 'lights' in labels(entity.entity_id) %}
+            {% set entities_with_label = entities_with_label + [entity.entity_id] %}
+          {% endif %}
+        {% endfor %}
+        {{ entities_with_label }}
+      sequence:
+        - condition: template
+          value_template: >-
+            {{ states(repeat.item) == 'on' and (now() - states(repeat.item).last_changed) > timedelta(hours=10) }}
+        - action: light.turn_off
+          target:
+            entity_id: "{{ repeat.item }}"

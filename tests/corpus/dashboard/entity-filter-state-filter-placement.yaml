@@ -1,0 +1,31 @@
+source: https://community.home-assistant.io/t/entity-filter-stopped-working-after-new-version-of-the-frontend-available/720140
+note: >-
+  Entity filter card used as a show or hide switch. A per entity state_filter
+  stopped working after a frontend update; moving state_filter to the card with
+  an operator fixed it. The inner card shows a different entity.
+expect:
+  entities:
+    find: [input_boolean.show_hidden_cards, weather.home]
+---
+type: vertical-stack
+cards:
+  - type: entity-filter
+    show_empty: false
+    entities:
+      - entity: input_boolean.show_hidden_cards
+        state_filter:
+          - value: "on"
+    card:
+      type: entity
+      entity: weather.home
+      name: Weather
+  - type: entity-filter
+    show_empty: false
+    entities:
+      - input_boolean.show_hidden_cards
+    state_filter:
+      - operator: "=="
+        value: "on"
+    card:
+      type: entities
+      title: Shown when on

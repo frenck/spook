@@ -1,0 +1,16 @@
+source: https://community.home-assistant.io/t/command-queueing-for-roborock/686779/3
+note: >-
+  Markdown content templates are not read on dashboards, so entities only
+  named in `content` are missed; the card's own entity_id option (which entity
+  changes re-render it) is read.
+expect:
+  entities:
+    find: [input_text.vacuum_queue]
+---
+type: markdown
+entity_id:
+  - input_text.vacuum_queue
+content: >-
+  {% set rooms = states('input_text.vacuum_queue') %}
+  Queue: {{ rooms.replace('button.vacuum_kitchen', 'kitchen') }},
+  battery {{ states('sensor.vacuum_battery') }}%

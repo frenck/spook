@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/trouble-with-getting-a-boolean-from-a-script-in-an-automation/830821
+note: >-
+  The script half of the same thread: picks a scene from power readings and returns
+  it with stop and response_variable. Scene IDs appear as quoted strings inside the
+  template output.
+expect:
+  entities:
+    find: [sensor.house_power_average, scene.high_power, scene.low_power]
+---
+alias: Scene selector
+mode: single
+sequence:
+  - variables:
+      result: >-
+        {% set power = states('sensor.house_power_average') | float(0) %}
+        {% if power > 3000 %}
+          {{ {'scene': 'scene.high_power', 'update': true} }}
+        {% else %}
+          {{ {'scene': 'scene.low_power', 'update': power > 100} }}
+        {% endif %}
+  - stop: Selected a scene
+    response_variable: result

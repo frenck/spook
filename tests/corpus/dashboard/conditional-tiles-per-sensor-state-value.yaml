@@ -1,0 +1,37 @@
+source: https://github.com/21cncstudio/project_aura/blob/main/docs/home_assistant/dashboard.yaml
+note: >-
+  One tile per possible text state of a sensor, each wrapped in a conditional
+  card. The states are capitalised words the sensor really reports, so a case
+  check on "Good" must not be flagged as a wrong case "on".
+expect:
+  entities:
+    find: [sensor.air_quality_status]
+---
+type: grid
+cards:
+  - type: conditional
+    conditions:
+      - condition: state
+        entity: sensor.air_quality_status
+        state: Good
+    card:
+      type: tile
+      entity: sensor.air_quality_status
+      icon: mdi:check-circle
+      color: green
+      features_position: bottom
+    grid_options:
+      columns: 6
+  - type: conditional
+    conditions:
+      - condition: state
+        entity: sensor.air_quality_status
+        state: Fair
+    card:
+      type: tile
+      entity: sensor.air_quality_status
+      icon: mdi:alert-circle-outline
+      color: amber
+      features_position: bottom
+    grid_options:
+      columns: 6

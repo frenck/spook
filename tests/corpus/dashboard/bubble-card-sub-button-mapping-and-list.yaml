@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/personal-setup-weather-adaptive-floor-aware-climate-control/961450/3
+note: >-
+  Bubble Card sub_button in both shapes: the older list of buttons with their
+  own entity, and the newer mapping of main and bottom lists (empty here).
+  A separator card has no entity at all.
+expect:
+  entities:
+    find: [weather.home, sensor.feels_like_temperature, script.night_mode]
+---
+type: vertical-stack
+cards:
+  - type: custom:bubble-card
+    card_type: button
+    entity: weather.home
+    card_layout: large-2-rows
+    sub_button:
+      - show_state: true
+        entity: sensor.feels_like_temperature
+  - type: custom:bubble-card
+    card_type: separator
+    name: Climate
+    sub_button: []
+  - type: custom:bubble-card
+    card_type: button
+    button_type: switch
+    entity: script.night_mode
+    sub_button:
+      main: []
+      bottom: []

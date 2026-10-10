@@ -1,0 +1,49 @@
+source: https://github.com/thijsputman/home-assistant-config/blob/main/automations/alarm/notify_lights.yaml
+note: >-
+  Parallel block of if branches, each gated by a door or group state, with
+  entity_id passed inside data instead of target. Group states mix on and
+  home. `group.` entities are left out of the entity repair on purpose
+  (`IGNORED_ENTITY_DOMAINS`), their states are still read.
+expect:
+  entities:
+    find:
+      - alarm_control_panel.house
+      - binary_sensor.front_door
+      - light.hallway
+      - light.kitchen
+  states:
+    find:
+      - group.family: home
+      - binary_sensor.front_door: "on"
+---
+alias: Flash lights while the alarm counts down
+triggers:
+  - trigger: state
+    entity_id: alarm_control_panel.house
+    to: pending
+conditions: []
+actions:
+  - parallel:
+      - if:
+          - condition: state
+            entity_id: binary_sensor.front_door
+            state: "on"
+        then:
+          - action: light.turn_on
+            data:
+              flash: long
+              entity_id:
+                - light.hallway
+      - if:
+          - condition: state
+            entity_id: group.hallway_motion
+            state: "on"
+          - condition: state
+            entity_id: group.family
+            state: home
+        then:
+          - action: light.turn_on
+            data:
+              flash: long
+              entity_id: light.kitchen
+mode: single

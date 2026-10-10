@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/need-help-with-calling-input-selector-value-in-automation-wled/645732
+note: >-
+  A variables mapping from input_select options to scene IDs, indexed by
+  trigger.to_state.state. Keys include None, which YAML loads as the string here
+  because it is not lowercase null.
+expect:
+  entities:
+    find: [input_select.holiday]
+---
+alias: Holiday selector sets the scene
+description: ""
+trigger:
+  - platform: state
+    entity_id:
+      - input_select.holiday
+condition: []
+action:
+  - service: scene.turn_on
+    target:
+      entity_id: "{{ holiday_mapper[trigger.to_state.state] }}"
+variables:
+  holiday_mapper:
+    None: scene.driveway_plain
+    NewYears: scene.driveway_new_year
+    Halloween: scene.driveway_halloween
+    Christmas: scene.driveway_christmas

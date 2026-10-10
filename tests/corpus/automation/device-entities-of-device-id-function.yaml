@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/creating-a-template-sensor-to-count-zha-updates/686469/1
+note: >-
+  device_entities over device_id() of an entity, and integration_entities with
+  an integration name. The entity literal is a reference; the integration name
+  is not, and neither is a device ID.
+expect:
+  entities:
+    find: [light.kitchen]
+  devices:
+    not_find: [zha]
+---
+alias: Kitchen device report
+triggers:
+  - trigger: time
+    at: "08:00:00"
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        Kitchen has {{ device_entities(device_id('light.kitchen')) | count }}
+        entities, ZHA has {{ integration_entities('zha') | count }}.

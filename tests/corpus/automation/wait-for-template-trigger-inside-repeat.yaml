@@ -1,0 +1,27 @@
+source: https://github.com/home-assistant/core/issues/40613
+note: >-
+  A wait_for_trigger with a template trigger nested in a repeat block, the
+  shape that once crashed at runtime. Triggers nested in actions still count.
+expect:
+  entities:
+    find: [binary_sensor.garage_door, light.garage]
+---
+alias: Blink the garage light until the door closes
+triggers:
+  - trigger: homeassistant
+    event: start
+actions:
+  - repeat:
+      until:
+        - condition: state
+          entity_id: binary_sensor.garage_door
+          state: "off"
+      sequence:
+        - action: light.toggle
+          target:
+            entity_id: light.garage
+        - wait_for_trigger:
+            - trigger: template
+              value_template: "{{ is_state('binary_sensor.garage_door', 'off') }}"
+          timeout: "00:00:02"
+          continue_on_timeout: true

@@ -1,0 +1,16 @@
+source: https://github.com/thomasloven/lovelace-fold-entity-row
+note: >-
+  fold-entity-row also takes the head as a bare entity ID string, like a row
+  in an entities card. `head` is not a reference key, so that entity is missed
+  while the folded rows are found.
+expect:
+  entities:
+    find: [light.porch, light.driveway]
+---
+type: entities
+entities:
+  - type: custom:fold-entity-row
+    head: light.outdoor_lights
+    entities:
+      - light.porch
+      - light.driveway

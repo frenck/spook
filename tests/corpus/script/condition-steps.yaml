@@ -1,0 +1,24 @@
+source: tests/test_state_references.py (script condition step, #1881)
+note: >-
+  Condition steps in a script: a state condition with several entities and
+  several states, which makes a pair each, and a template comparing a state.
+expect:
+  states:
+    find:
+      - lock.front_door: locked
+      - lock.back_door: locked
+      - lock.front_door: Locked
+      - vacuum.downstairs: docked
+  conditions:
+    find: [state, template]
+---
+alias: Leave the house
+sequence:
+  - condition: state
+    entity_id: [lock.front_door, lock.back_door]
+    state: [locked, Locked]
+  - condition: template
+    value_template: "{{ states('vacuum.downstairs') == 'docked' }}"
+  - action: vacuum.start
+    target:
+      entity_id: vacuum.downstairs

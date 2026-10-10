@@ -1,0 +1,22 @@
+source: https://github.com/frenck/spook/issues/1250
+note: >-
+  Entity ID glued together from a quoted prefix, a variable and a suffix with
+  the tilde operator. The quoted fragment alone is no entity.
+expect:
+  entities:
+    not_find: [switch.camera]
+---
+alias: Enable camera recording
+triggers:
+  - trigger: state
+    entity_id: input_select.camera_to_record
+variables:
+  camera_number: "{{ states('input_select.camera_to_record') }}"
+conditions:
+  - condition: template
+    value_template: "{{ is_state('switch.camera' ~ camera_number ~ '_recording', 'off') }}"
+actions:
+  - action: switch.turn_on
+    target:
+      entity_id: "{{ 'switch.camera' ~ camera_number ~ '_recording' }}"
+    data: {}

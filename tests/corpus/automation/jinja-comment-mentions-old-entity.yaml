@@ -1,0 +1,21 @@
+source: https://github.com/frenck/spook/issues/1567
+note: >-
+  A Jinja comment inside a template keeps the name of an entity that was
+  replaced. Comments are never rendered, so the old ID is no reference.
+expect:
+  entities:
+    find: [sensor.outdoor_temperature, climate.living_room]
+    not_find: [sensor.old_outdoor_temperature]
+---
+alias: Heating off when warm outside
+triggers:
+  - trigger: template
+    value_template: >-
+      {# used to read sensor.old_outdoor_temperature before the new station #}
+      {{ states('sensor.outdoor_temperature') | float(0) > 18 }}
+actions:
+  - action: climate.set_hvac_mode
+    target:
+      entity_id: climate.living_room
+    data:
+      hvac_mode: "off"

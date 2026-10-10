@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/how-to-build-an-entity-name-from-variables/862727/4
+note: >-
+  The sibling light of a motion sensor found with regex_replace on
+  trigger.entity_id; the pattern and replacement are text, not entities.
+expect:
+  entities:
+    find: [binary_sensor.hall_motion, binary_sensor.stairs_motion]
+    not_find: [light.hall]
+---
+alias: Motion turns on the matching light
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.hall_motion
+      - binary_sensor.stairs_motion
+    to: "on"
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: >-
+        {{ trigger.entity_id | regex_replace('^binary_sensor\.(\w+)_motion$', 'light.\\1') }}

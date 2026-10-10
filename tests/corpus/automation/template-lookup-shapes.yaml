@@ -1,0 +1,36 @@
+source: tests/test_attribute_references.py and tests/test_state_references.py (#1880, #1881)
+note: >-
+  The usual ways a template looks something up: state_attr, is_state_attr,
+  is_state, a comparison with states(), and the attributes of a state object,
+  in a template condition and in action data.
+expect:
+  attributes:
+    find:
+      - climate.living_room: current_temperature
+      - light.kitchen: brightness
+      - media_player.living_room: source
+  states:
+    find:
+      - person.alex: home
+      - input_select.house_mode: Away
+  entities:
+    find: [climate.living_room, person.alex, input_select.house_mode]
+---
+alias: Evening report
+triggers:
+  - trigger: time
+    at: "21:00:00"
+conditions:
+  - condition: template
+    value_template: "{{ is_state('person.alex', 'home') }}"
+  - condition: template
+    value_template: >-
+      {{ states('input_select.house_mode') != 'Away'
+         and is_state_attr('media_player.living_room', 'source', 'TV') }}
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        It is {{ state_attr('climate.living_room', 'current_temperature') }}
+        degrees, the kitchen is at
+        {{ states.light.kitchen.attributes.get('brightness', 0) }}.
