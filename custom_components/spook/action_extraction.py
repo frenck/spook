@@ -5,18 +5,28 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
-from homeassistant.const import CONF_ENABLED
+from homeassistant.const import ATTR_ENTITY_ID, CONF_ENABLED
+from homeassistant.helpers import config_validation as cv
 
 from .const import LOGGER
-from .entity_filtering import NEVER_AN_ENTITY_PREFIXES, async_get_all_services
+from .entity_filtering import (
+    NEVER_AN_ENTITY_PREFIXES,
+    async_get_all_services,
+    is_not_an_entity_id,
+    split_comma_separated_entity_ids,
+)
 from .reference_extraction import (
     VALUE_KEYS,
     event_payload_keys_to_leave_alone,
+    names_given_to_templates,
     numeric_state_threshold_entities,
+    without_disabled_steps,
+    without_never_rendered,
 )
 from .template_extraction import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_template_string,
+    extract_not_entity_ids_from_template,
     is_template_string,
 )
 
@@ -424,3 +434,140 @@ async def async_extract_entities_from_value(
         entities.add(value["entity"])
 
     return entities
+
+
+# How Home Assistant's own actions check an `entity_id` handed to them. An
+# entity action, made with `make_entity_service_schema`, checks it with
+# `comp_entity_ids`. A few others, like `homeassistant.turn_on`, ask for one
+# of these in a schema of their own.
+_ENTITY_ID_VALIDATORS = (cv.entity_id, cv.entity_ids, cv.comp_entity_ids)
+
+# The order Home Assistant merges the data in: `data_template` goes last, so
+# an `entity_id` in there is the one the action gets.
+_DATA_KEYS_LAST_FIRST = ("data_template", "data")
+
+
+def _action_checks_entity_id(hass: HomeAssistant, action: str) -> bool:
+    """Return whether this action refuses an `entity_id` that is no entity ID.
+
+    Home Assistant only checks action data when the action runs, against
+    the action's own schema. One that has no schema, or keeps `entity_id`
+    for something of its own, like a script handed it as a field, takes
+    anything. So only an action that exists right now, and checks it.
+    """
+    domain, _, service = action.lower().partition(".")
+    registered = hass.services.async_services_for_domain(domain).get(service)
+    if registered is None or (schema := registered.schema) is None:
+        return False
+
+    if cv.is_entity_service_schema(schema):
+        return True
+
+    fields = getattr(schema, "schema", None)
+    return isinstance(fields, dict) and any(
+        fields.get(ATTR_ENTITY_ID) is validator for validator in _ENTITY_ID_VALIDATORS
+    )
+
+
+def _data_entity_id(config: dict[str, Any]) -> Any:
+    """Return the `entity_id` an action takes from its data, if it gets that one.
+
+    A target and an `entity_id` on the step go over the data, as does data
+    rendered from a template: what that holds is only known when it runs.
+    """
+    target = config.get("target")
+    if ATTR_ENTITY_ID in config or (
+        target is not None
+        and (not isinstance(target, dict) or ATTR_ENTITY_ID in target)
+    ):
+        return None
+
+    for key in _DATA_KEYS_LAST_FIRST:
+        data = config.get(key)
+        if isinstance(data, str):
+            return None
+        if isinstance(data, dict) and ATTR_ENTITY_ID in data:
+            return data[ATTR_ENTITY_ID]
+    return None
+
+
+def _not_entity_ids_in_data(hass: HomeAssistant, config: dict[str, Any]) -> set[str]:
+    """Return what an action hands over as `entity_id` data that is no entity ID.
+
+    The old way of writing a target. Home Assistant takes text with commas
+    as a list, and a template in there is whatever it renders to.
+    """
+    action = _get_action_service(config)
+    if action is None or not _action_checks_entity_id(hass, action):
+        return set()
+
+    value = _data_entity_id(config)
+    values = value if isinstance(value, list) else [value]
+    return {
+        entity_id
+        for item in values
+        if not is_template_string(item)
+        # Anything but text, like a number, splits into nothing.
+        for entity_id in split_comma_separated_entity_ids(item)
+        if is_not_an_entity_id(entity_id)
+    }
+
+
+def _collect_not_entity_ids(
+    hass: HomeAssistant,
+    config: Any,
+    shadowed: frozenset[str],
+    found: set[str],
+    *,
+    in_values: bool = False,
+) -> None:
+    """Collect what a part of a configuration names that is no entity ID."""
+    if isinstance(config, str):
+        # Asked first, so plain text does not push templates out of the cache.
+        if is_template_string(config):
+            found.update(extract_not_entity_ids_from_template(config, shadowed))
+        return
+
+    if isinstance(config, list):
+        for item in config:
+            _collect_not_entity_ids(hass, item, shadowed, found, in_values=in_values)
+        return
+
+    if not isinstance(config, dict):
+        return
+
+    # Below a key that holds values, nothing is an action, whatever its shape.
+    if not in_values:
+        found.update(_not_entity_ids_in_data(hass, config))
+
+    # Somebody's own event is whatever the sender puts there.
+    payload_keys = event_payload_keys_to_leave_alone(config)
+    for key, value in config.items():
+        if key in payload_keys:
+            continue
+        _collect_not_entity_ids(
+            hass, value, shadowed, found, in_values=in_values or key in VALUE_KEYS
+        )
+
+
+def extract_not_entity_ids_from_config(hass: HomeAssistant, config: Any) -> set[str]:
+    """Return what an automation or script names as an entity that is no entity ID.
+
+    Two places only, both of which Home Assistant first looks at while
+    running. The `entity_id` an action takes as data, which the action
+    refuses then. And the literal handed to a template lookup like
+    `states()`, which finds nothing. A trigger, a condition and a target
+    are checked by Home Assistant when it loads them, and it says so itself.
+
+    Disabled steps do nothing, and text that is only shown is never
+    rendered, so neither is read. A name the configuration gives its
+    templates hides a lookup called by that name.
+    """
+    found: set[str] = set()
+    _collect_not_entity_ids(
+        hass,
+        without_never_rendered(without_disabled_steps(config)),
+        names_given_to_templates(config),
+        found,
+    )
+    return found

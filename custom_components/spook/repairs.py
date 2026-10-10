@@ -57,6 +57,7 @@ from .entity_filtering import (
     async_filter_known_entity_ids,
     async_get_all_entity_ids,
     async_name_helper_in_the_registry,
+    is_not_an_entity_id,
 )
 from .entity_suggestions import (
     async_describe_warmed_unknown_entities,
@@ -575,10 +576,26 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
 
     def _format_references(self, references: list[str]) -> str:
         """Return the bulleted reference list for the issue message."""
-        if self.references_are_entities:
+        if not self.references_are_entities:
+            return "\n".join(f"- `{reference}`" for reference in references)
+
+        # Something that is no entity ID at all comes after the entities that
+        # do not exist, said to be what it is. No guess at what was meant:
+        # `cover.blind.position` may have meant the cover, its position or
+        # something else entirely, and a wrong suggestion is worse than none.
+        lines = [
             # Warmed for the whole round in `async_inspect` already.
-            return async_describe_warmed_unknown_entities(self.hass, references)
-        return "\n".join(f"- `{reference}`" for reference in references)
+            async_describe_warmed_unknown_entities(
+                self.hass,
+                [entity for entity in references if not is_not_an_entity_id(entity)],
+            ),
+            *(
+                f"- `{value}` (not an entity ID)"
+                for value in references
+                if is_not_an_entity_id(value)
+            ),
+        ]
+        return "\n".join(line for line in lines if line)
 
     async def _async_setup_inspection(self) -> None:
         """Prepare per-inspection state (called once per inspection cycle).
@@ -670,7 +687,12 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
         if self.references_are_entities and findings:
             await async_warm_rename_suggestions(
                 self.hass,
-                {reference for _, references in findings for reference in references},
+                {
+                    reference
+                    for _, references in findings
+                    for reference in references
+                    if not is_not_an_entity_id(reference)
+                },
             )
 
         for entity, sorted_unknown in findings:

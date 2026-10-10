@@ -752,6 +752,34 @@ def split_comma_separated_entity_ids(entity_id: str) -> list[str]:
     return [entity_id]
 
 
+# Filled in by something before it is used: Jinja, or a card's own
+# placeholders. No entity ID has a brace or a bracket in it, so neither is
+# one that is wrong.
+_FILLED_IN_LATER = ("{", "[")
+
+
+def is_not_an_entity_id(value: str) -> bool:
+    """Return whether a value where an entity ID goes is no entity ID at all.
+
+    Like `cover.blind.current_position`: no lookup ever finds that. An entity
+    ID with capitals is one, since Home Assistant lower cases it first, and
+    is reported as written elsewhere. What the entity readers let go on
+    purpose is let go here too: `all` and `none`, the variables that are
+    never an entity, the domains they skip, patterns and placeholders.
+    """
+    lower_cased = value.lower()
+    return not (
+        # Left empty by an editor halfway through.
+        not value.strip()
+        or valid_entity_id(lower_cased)
+        or lower_cased in (ENTITY_MATCH_ALL, ENTITY_MATCH_NONE)
+        or lower_cased.startswith((*NEVER_AN_ENTITY_PREFIXES, *IGNORED_ENTITY_DOMAINS))
+        # A pattern, like `light.*`, is never meant as one entity.
+        or "*" in value
+        or any(mark in value for mark in _FILLED_IN_LATER)
+    )
+
+
 @callback
 def async_find_services_in_sequence(  # noqa: C901
     sequence: Sequence[dict[str, Any]],

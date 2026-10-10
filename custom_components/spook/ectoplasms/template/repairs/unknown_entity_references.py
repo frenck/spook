@@ -8,7 +8,10 @@ from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_STATE_CHANGED
 from homeassistant.core import Event, callback
 from homeassistant.helpers import entity_registry as er
 
-from ....action_extraction import async_extract_entities_from_helper_actions
+from ....action_extraction import (
+    async_extract_entities_from_helper_actions,
+    extract_not_entity_ids_from_config,
+)
 from ....const import LOGGER
 from ....entity_filtering import (
     async_filter_known_entity_ids,
@@ -96,11 +99,16 @@ class SpookRepair(AbstractSpookRepair):
                 self.hass, options, known_services=known_services
             )
 
-            if unknown_entities := async_filter_known_entity_ids(
+            unknown_entities = async_filter_known_entity_ids(
                 self.hass,
                 referenced,
                 known_entity_ids=known_entity_ids,
-            ):
+            )
+            # Where an entity ID goes, something that is no entity ID at all
+            # finds nothing, whatever exists. Listed with the rest, said apart.
+            not_entity_ids = extract_not_entity_ids_from_config(self.hass, options)
+
+            if unknown_entities or not_entity_ids:
                 unknown_active = async_filter_known_entity_ids(
                     self.hass,
                     active,
@@ -119,10 +127,11 @@ class SpookRepair(AbstractSpookRepair):
                             f"{entity_id} (disabled)"
                             for entity_id in unknown_entities - unknown_active
                         ),
+                        *not_entity_ids,
                     ],
                     translation_placeholders={
                         "entities": await self._async_describe(
-                            unknown_entities, unknown_active
+                            unknown_entities, unknown_active, not_entity_ids
                         ),
                         "helper": entry.title,
                         "entity_id": async_name_helper_in_the_registry(
@@ -132,13 +141,18 @@ class SpookRepair(AbstractSpookRepair):
                     },
                 )
 
-    async def _async_describe(self, unknown: set[str], unknown_active: set[str]) -> str:
+    async def _async_describe(
+        self, unknown: set[str], unknown_active: set[str], not_entity_ids: set[str]
+    ) -> str:
         """Describe the unknown entities, qualifying the disabled-only ones.
 
         An entity is only qualified when nothing that runs references it. A
         Jinja template inside a disabled step is still seen by the template
         extraction, so such a reference stays unqualified -- the report errs
         towards saying too much rather than calling a live problem harmless.
+
+        What is no entity ID at all comes last, without a guess at what was
+        meant: a wrong suggestion is worse than none.
         """
         described = await async_describe_unknown_entities(
             self.hass, sorted(unknown_active)
@@ -156,4 +170,14 @@ class SpookRepair(AbstractSpookRepair):
                 )
                 if part
             )
-        return described
+        return "\n".join(
+            line
+            for line in (
+                described,
+                *(
+                    f"- `{value}` (not an entity ID)"
+                    for value in sorted(not_entity_ids)
+                ),
+            )
+            if line
+        )
