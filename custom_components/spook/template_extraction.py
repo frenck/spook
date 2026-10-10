@@ -956,6 +956,8 @@ def extract_attribute_pairs_from_template(
 # The function, and test, that compare the state of one entity.
 _STATE_FUNCTION = "is_state"
 
+_SIGNS = frozenset({"add", "sub"})
+
 
 def _test_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
     """Read `'light.x' is is_state('on')` starting at its name.
@@ -967,14 +969,17 @@ def _test_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
     if _is(tokens, index - 1, "name", "not"):
         subject -= 1
 
-    if (
-        not _is(tokens, subject + 1, "name", "is")
-        or not _is(tokens, subject, "string")
-        # Jinja glues neighbouring strings into one, so a string right before
-        # is only the end of the entity ID.
-        or _is(tokens, subject - 1, "string")
-        or not _shaped(tokens, index + 1, ("lparen", "string", "rparen"))
+    if not _shaped(tokens, subject, ("string", ("name", "is"))) or not _shaped(
+        tokens, index + 1, ("lparen", "string", "rparen")
     ):
+        return None
+
+    # Jinja glues neighbouring strings into one, so a string right before is
+    # only the end of the entity ID. And a sign right before can make the
+    # test about the signed value: `-'light.x' is is_state('on')` tests the
+    # negation. Telling a sign from a minus between two values is not worth
+    # it for this.
+    if subject > 0 and tokens[subject - 1][0] in {"string", *_SIGNS}:
         return None
     return tokens[subject][1], tokens[index + 2][1]
 

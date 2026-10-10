@@ -341,6 +341,16 @@ def test_without_disabled_steps_leaves_service_data_alone() -> None:
     assert without_disabled_steps(config) == config
 
 
+def test_without_disabled_steps_leaves_trigger_variables_alone() -> None:
+    """Trigger variables are payload too: an `enabled` key there is a value."""
+    config = {
+        "trigger_variables": {"rooms": [{"enabled": False, "area_id": "kitchen"}]},
+        "triggers": [],
+    }
+
+    assert without_disabled_steps(config) == config
+
+
 def test_only_in_disabled_steps() -> None:
     """What only a parked step names, and nothing a running one names too."""
     config = [

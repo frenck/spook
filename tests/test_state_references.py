@@ -250,6 +250,11 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
         ("{{ 'light.kitchen' is is_state 'On' }}", set()),
         ("{{ 'light.kitchen' is is_state('O' ~ 'n') }}", set()),
         ("{{ ('light.' ~ room) is is_state('On') }}", set()),
+        # A test binds to the literal only, also after `~`.
+        ("{{ prefix ~ 'light.kitchen' is is_state('On') }}", PAIR),
+        # A sign before it makes the test about the signed value.
+        ("{{ -'light.kitchen' is is_state('On') }}", set()),
+        ("{{ +'light.kitchen' is is_state('On') }}", set()),
         # Not a lookup of Home Assistant's.
         ("{# is_state('light.kitchen', 'On') #}{{ 1 }}", set()),
         ("is_state('light.kitchen', 'On')", set()),
@@ -392,6 +397,28 @@ def test_other_names_leave_lookups_alone() -> None:
         "variables": {"level": 1},
         "actions": [
             {"variables": {"mode": "x"}},
+            {"wait_template": "{{ states('light.kitchen') == 'On' }}"},
+        ],
+    }
+
+    assert extract_state_references_from_config(config).pairs == PAIR
+
+
+def test_what_an_action_is_handed_names_nothing_here() -> None:
+    """Test variables handed to a called script are that script's, not ours.
+
+    A variable with a name of its own inside a variables block is not one
+    either: only the block's own keys are names.
+    """
+    config = {
+        "variables": {"level": {"states": 1}},
+        "actions": [
+            {
+                "action": "script.turn_on",
+                "target": {"entity_id": "script.other"},
+                "data": {"variables": {"states": {}}},
+            },
+            {"event": "spooky", "event_data": {"response_variable": "states"}},
             {"wait_template": "{{ states('light.kitchen') == 'On' }}"},
         ],
     }

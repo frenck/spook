@@ -379,24 +379,12 @@ def _walk_attribute_references(
 # an example template in it is documentation, not a lookup.
 _NEVER_RENDERED_KEYS = frozenset({"alias", "description", "fields"})
 
-# Keys holding what is handed on, rendered, under names of its own choosing:
-# the data of an action can have a `description` too, like a calendar event.
-_PAYLOAD_KEYS = frozenset(
-    {
-        "data",
-        "data_template",
-        "event_data",
-        "event_data_template",
-        "service_data",
-        "variables",
-    }
-)
-
 
 def _without_never_rendered(config: Any) -> Any:
     """Return the configuration without the parts that are never rendered.
 
-    Payloads are kept whole, whatever their keys are called.
+    Payloads are kept whole, whatever their keys are called: the data of an
+    action can have a `description` too, like a calendar event.
     """
     if isinstance(config, dict):
         return {
@@ -418,6 +406,33 @@ _VARIABLE_BLOCKS = frozenset({"trigger_variables", "variables"})
 _RESPONSE_VARIABLE = "response_variable"
 
 
+def _names_given_by(key: str, value: Any) -> set[str]:
+    """Return the names one key of a configuration gives its templates."""
+    if key in _VARIABLE_BLOCKS and isinstance(value, dict):
+        return {name for name in value if isinstance(name, str)}
+    if key == _RESPONSE_VARIABLE and isinstance(value, str):
+        return {value}
+    return set()
+
+
+def _collect_names(node: Any, names: set[str]) -> None:
+    """Collect the names a part of a configuration gives its templates."""
+    if isinstance(node, list):
+        for item in node:
+            _collect_names(item, names)
+        return
+    if not isinstance(node, dict):
+        return
+
+    for key, value in node.items():
+        names |= _names_given_by(key, value)
+        # A variable block's values are not names, and what is handed to an
+        # action belongs to whatever is called: `variables` in the data of
+        # `script.turn_on` are the called script's, not this one's.
+        if key not in _PAYLOAD_KEYS and key != _RESPONSE_VARIABLE:
+            _collect_names(value, names)
+
+
 def names_given_to_templates(config: Any) -> frozenset[str]:
     """Return every name a configuration gives its templates.
 
@@ -430,22 +445,7 @@ def names_given_to_templates(config: Any) -> frozenset[str]:
     if isinstance(config, dict) and isinstance(fields := config.get("fields"), dict):
         names.update(name for name in fields if isinstance(name, str))
 
-    def _walk(node: Any) -> None:
-        if isinstance(node, list):
-            for item in node:
-                _walk(item)
-            return
-        if not isinstance(node, dict):
-            return
-
-        for key, value in node.items():
-            if key in _VARIABLE_BLOCKS and isinstance(value, dict):
-                names.update(name for name in value if isinstance(name, str))
-            elif key == _RESPONSE_VARIABLE and isinstance(value, str):
-                names.add(value)
-            _walk(value)
-
-    _walk(config)
+    _collect_names(config, names)
     return frozenset(names)
 
 
