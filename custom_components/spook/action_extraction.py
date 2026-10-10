@@ -9,6 +9,7 @@ from homeassistant.const import CONF_ENABLED
 
 from .const import LOGGER
 from .entity_filtering import NEVER_AN_ENTITY_PREFIXES, async_get_all_services
+from .reference_extraction import event_payload_keys_to_leave_alone
 from .template_extraction import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_template_string,
@@ -273,6 +274,11 @@ async def _extract_entities_from_service_data(
     return entities
 
 
+# Where an action keeps the data it hands over. `data_template` is the old
+# name, which Home Assistant still takes and merges into the data.
+_ACTION_DATA_KEYS = frozenset({"data", "data_template"})
+
+
 async def _extract_entities_from_nested_configs(
     hass: HomeAssistant,
     config: dict[str, Any],
@@ -282,9 +288,19 @@ async def _extract_entities_from_nested_configs(
     in_payload: bool = False,
     _service: str | None = None,
 ) -> set[str]:
-    """Extract entities from nested configurations."""
+    """Extract entities from nested configurations.
+
+    The payload of somebody's own event waited for in a step is left alone:
+    it is whatever the sender puts there, not something this one needs.
+    Inside action data nothing is a trigger, whatever its shape.
+    """
     entities = set()
+    payload_keys = (
+        frozenset() if in_payload else event_payload_keys_to_leave_alone(config)
+    )
     for key, value in config.items():
+        if key in payload_keys:
+            continue
         if isinstance(value, (dict, list)):
             entities.update(
                 await async_extract_entities_from_action_config(
@@ -292,8 +308,8 @@ async def _extract_entities_from_nested_configs(
                     value,
                     include_disabled=include_disabled,
                     known_services=known_services,
-                    _in_payload=in_payload or key == "data",
-                    _is_payload=key == "data",
+                    _in_payload=in_payload or key in _ACTION_DATA_KEYS,
+                    _is_payload=key in _ACTION_DATA_KEYS,
                     _service=_service,
                 )
             )

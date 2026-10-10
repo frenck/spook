@@ -12,12 +12,13 @@ silently.
 from __future__ import annotations
 
 from contextlib import contextmanager
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 from types import SimpleNamespace
 from unittest.mock import patch
 
 from homeassistant.const import EVENT_STATE_CHANGED
 from homeassistant.core import ServiceRegistry, State
+from homeassistant.helpers.entity_component import DATA_INSTANCES
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.action_extraction import (
@@ -1081,9 +1082,10 @@ async def test_a_custom_event_payload_is_not_a_reference(
 ) -> None:
     """An `entity_id` in somebody's own event is data, not a dependency.
 
-    Home Assistant's own `async_extract_entities` takes nothing from a generic
-    event trigger either. Reporting it would be a repair about an automation
-    that works, which is the worst thing to get wrong.
+    Reporting it would be a repair about an automation that works, which is
+    the worst thing to get wrong. Home Assistant's own reading does take it,
+    so the repair also takes it back out of that: see
+    `test_a_custom_event_payload_is_no_unknown_entity`.
     """
     config = {
         "platform": "event",
@@ -1109,3 +1111,100 @@ async def test_an_integration_event_payload_still_is_one(
     }
 
     assert await extract_entities_from_trigger_config(hass, config) == {"timer.hot_tub"}
+
+
+async def _async_automation_entity(hass: HomeAssistant, config: dict) -> Any:
+    """Load one automation the way Home Assistant does, and return its entity."""
+    assert await async_setup_component(
+        hass, "automation", {"automation": {"id": "spooky", **config}}
+    )
+    await hass.async_block_till_done()
+    (entity,) = hass.data[DATA_INSTANCES]["automation"].entities
+    return entity
+
+
+async def test_a_custom_event_payload_is_no_unknown_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test the entity in somebody's own event is not reported.
+
+    Home Assistant's own reading takes it, from any event trigger: that is
+    the premise, so it is checked here too.
+    """
+    entity = await _async_automation_entity(
+        hass,
+        {
+            "alias": "Remote",
+            "triggers": [
+                {
+                    "trigger": "event",
+                    "event_type": "my_remote_pressed",
+                    "event_data": {"entity_id": "light.from_the_remote"},
+                }
+            ],
+            "actions": [],
+        },
+    )
+    assert "light.from_the_remote" in entity.referenced_entities
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == set()
+
+
+async def test_a_custom_event_payload_named_elsewhere_still_counts(
+    hass: HomeAssistant,
+) -> None:
+    """Test an entity in the payload that is also used for real is reported."""
+    entity = await _async_automation_entity(
+        hass,
+        {
+            "alias": "Remote",
+            "triggers": [
+                {
+                    "trigger": "event",
+                    "event_type": "my_remote_pressed",
+                    "event_data": {"entity_id": "light.from_the_remote"},
+                }
+            ],
+            "actions": [
+                {
+                    "action": "light.turn_on",
+                    "target": {"entity_id": "light.from_the_remote"},
+                }
+            ],
+        },
+    )
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {
+        "light.from_the_remote"
+    }
+
+
+async def test_an_integration_event_payload_is_still_reported(
+    hass: HomeAssistant,
+) -> None:
+    """Test the entity in an integration's own event still is a reference."""
+    entity = await _async_automation_entity(
+        hass,
+        {
+            "alias": "Timer done",
+            "triggers": [
+                {
+                    "trigger": "event",
+                    "event_type": "timer.finished",
+                    "event_data": {"entity_id": "timer.laundry"},
+                }
+            ],
+            "actions": [],
+        },
+    )
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {"timer.laundry"}
