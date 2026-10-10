@@ -9,6 +9,7 @@ from homeassistant.helpers import area_registry as ar
 
 from ....entity_filtering import async_filter_known_area_ids, async_get_all_area_ids
 from ....reference_extraction import (
+    core_references,
     extract_targets_from_config,
     only_in_disabled_steps,
 )
@@ -39,7 +40,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown area IDs referenced by ``entity``."""
-        area_ids = set(entity.script.referenced_areas)
+        area_ids = core_references(entity, "areas")
 
         # Also walk the raw configuration; the built-in extraction misses
         # references nested in some step types, like repeat sequences.

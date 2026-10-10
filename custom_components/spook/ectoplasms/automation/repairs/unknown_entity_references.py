@@ -15,6 +15,7 @@ from ....action_extraction import (
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
     VALUE_KEYS,
+    core_references,
     event_payload_keys_to_leave_alone,
     harmless_entity_mentions,
     numeric_state_threshold_entities,
@@ -314,7 +315,7 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown entity IDs referenced by ``entity`` (incl. templates)."""
-        all_entities = set(entity.referenced_entities)
+        all_entities = core_references(entity, "entities")
 
         # Also extract entities directly from raw configuration if available
         if hasattr(entity, "raw_config") and entity.raw_config:

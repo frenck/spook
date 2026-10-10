@@ -8,77 +8,16 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, Any
 
 from homeassistant.setup import async_setup_component
-import pytest
 
 from custom_components.spook.ectoplasms.script.repairs.unknown_entity_references import (
     SpookRepair,
-    extract_referenced_entities_from_script,
 )
+from custom_components.spook.reference_extraction import core_references
 
 if TYPE_CHECKING:
     from pathlib import Path
 
     from homeassistant.core import HomeAssistant
-
-
-class MockScript:  # pylint: disable=too-few-public-methods
-    """Mock script object."""
-
-    def __init__(self, referenced_entities: set[str]) -> None:
-        """Initialize the mock script."""
-        self.referenced_entities = referenced_entities
-
-
-class MockBrokenScript:  # pylint: disable=too-few-public-methods
-    """Mock script object with broken referenced entity extraction."""
-
-    @property
-    def referenced_entities(self) -> set[str]:
-        """Raise the same error Home Assistant can raise for dict entity IDs."""
-        msg = "unhashable type: 'dict'"
-        raise TypeError(msg)
-
-
-class MockUnexpectedBrokenScript:  # pylint: disable=too-few-public-methods
-    """Mock script object with an unrelated TypeError."""
-
-    @property
-    def referenced_entities(self) -> set[str]:
-        """Raise an unexpected TypeError."""
-        msg = "unexpected failure"
-        raise TypeError(msg)
-
-
-class MockScriptEntity:  # pylint: disable=too-few-public-methods
-    """Mock script entity."""
-
-    def __init__(
-        self, script: MockScript | MockBrokenScript | MockUnexpectedBrokenScript
-    ) -> None:
-        """Initialize the mock script entity."""
-        self.script = script
-
-
-def test_extract_referenced_entities_from_script() -> None:
-    """Test script referenced entities are returned as a set."""
-    entity = MockScriptEntity(MockScript({"light.kitchen"}))
-
-    assert extract_referenced_entities_from_script(entity) == {"light.kitchen"}
-
-
-def test_extract_referenced_entities_handles_home_assistant_type_error() -> None:
-    """Test broken Home Assistant referenced entity extraction is ignored."""
-    entity = MockScriptEntity(MockBrokenScript())
-
-    assert extract_referenced_entities_from_script(entity) == set()
-
-
-def test_extract_referenced_entities_reraises_unexpected_type_error() -> None:
-    """Test unrelated TypeErrors are not swallowed."""
-    entity = MockScriptEntity(MockUnexpectedBrokenScript())
-
-    with pytest.raises(TypeError, match="unexpected failure"):
-        extract_referenced_entities_from_script(entity)
 
 
 async def _unknown_in_script(
@@ -342,7 +281,7 @@ async def test_a_custom_event_payload_is_no_unknown_entity(
     )
     await hass.async_block_till_done()
     entity = hass.data["script"].get_entity("script.remote")
-    assert "light.from_the_remote" in extract_referenced_entities_from_script(entity)
+    assert "light.from_the_remote" in core_references(entity, "entities")
 
     repair = SpookRepair(hass)
     await repair._async_setup_inspection()
@@ -568,7 +507,7 @@ async def test_a_made_up_entity_to_file_a_logbook_entry_under_is_fine(
     )
     await hass.async_block_till_done()
     entity = hass.data["script"].get_entity("script.alert")
-    assert "log.critical_messages" in extract_referenced_entities_from_script(entity)
+    assert "log.critical_messages" in core_references(entity, "entities")
 
     repair = SpookRepair(hass)
     await repair._async_setup_inspection()

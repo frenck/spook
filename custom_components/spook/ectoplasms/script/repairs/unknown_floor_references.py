@@ -9,6 +9,7 @@ from homeassistant.helpers import floor_registry as fr
 
 from ....entity_filtering import async_filter_known_floor_ids, async_get_all_floor_ids
 from ....reference_extraction import (
+    core_references,
     extract_targets_from_config,
     only_in_disabled_steps,
 )
@@ -39,7 +40,7 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown floor IDs referenced by ``entity``."""
-        floor_ids = set(entity.script.referenced_floors)
+        floor_ids = core_references(entity, "floors")
 
         # Also walk the raw configuration; the built-in extraction misses
         # references nested in some step types, like repeat sequences.

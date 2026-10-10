@@ -39,30 +39,21 @@ _RAW_CONFIG = {
 
 
 @pytest.mark.parametrize(
-    ("repair_class", "entity_kwargs"),
+    "repair_class",
     [
-        pytest.param(
-            AutomationSpookRepair,
-            {"referenced_devices": set()},
-            id="automation",
-        ),
-        pytest.param(
-            ScriptSpookRepair,
-            {"script": SimpleNamespace(referenced_devices=set())},
-            id="script",
-        ),
+        pytest.param(AutomationSpookRepair, id="automation"),
+        pytest.param(ScriptSpookRepair, id="script"),
     ],
 )
 async def test_template_device_entities_reference_is_detected(
     hass: HomeAssistant,
     repair_class: type,
-    entity_kwargs: dict[str, Any],
 ) -> None:
     """Test a stale device_entities() device ID in a template is reported."""
     repair = repair_class(hass)
     repair._known_device_ids = {_KNOWN_DEVICE}
 
-    entity = SimpleNamespace(raw_config=_RAW_CONFIG, **entity_kwargs)
+    entity = SimpleNamespace(raw_config=_RAW_CONFIG, referenced_devices=set())
 
     assert await repair._async_compute_unknown_references(entity) == {_GHOST_DEVICE}
 

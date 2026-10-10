@@ -66,7 +66,7 @@ async def test_repeat_nested_reference_is_detected(
 
     entity = SimpleNamespace(
         raw_config=_raw_config_with_repeat_nested(f"{reference_type}_id", ghost_id),
-        script=SimpleNamespace(**{f"referenced_{reference_type}s": set()}),
+        **{f"referenced_{reference_type}s": set()},
     )
 
     assert await repair._async_compute_unknown_references(entity) == {ghost_id}

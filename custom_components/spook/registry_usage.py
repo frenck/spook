@@ -4,16 +4,8 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from homeassistant.components.automation import (
-    automations_with_area,
-    automations_with_floor,
-    automations_with_label,
-)
-from homeassistant.components.script import (
-    scripts_with_area,
-    scripts_with_floor,
-    scripts_with_label,
-)
+from homeassistant.components.automation import DOMAIN as AUTOMATION_DOMAIN
+from homeassistant.components.script import DOMAIN as SCRIPT_DOMAIN
 from homeassistant.components.vacuum import DOMAIN as VACUUM_DOMAIN
 from homeassistant.helpers import (
     area_registry as ar,
@@ -21,10 +13,14 @@ from homeassistant.helpers import (
     entity_registry as er,
 )
 
+from .reference_extraction import async_referencing
+
 if TYPE_CHECKING:
     from collections.abc import Container
 
     from homeassistant.core import HomeAssistant
+
+    from .reference_extraction import CoreReferenceKind
 
 # In one place because two things ask it and they must not drift: the repair
 # that offers to remove one, and the fix that does. The fix asks again right
@@ -35,6 +31,22 @@ if TYPE_CHECKING:
 # without being a target of it. That is not proof of use: it takes every
 # string it finds, and a coincidence counts the same as a reference. It is
 # enough to stop offering to delete something, which is all this decides.
+
+
+def _targeted_by_automation_or_script(
+    hass: HomeAssistant, kind: CoreReferenceKind, reference: str
+) -> bool:
+    """Return whether Home Assistant says an automation or script targets this.
+
+    Asked one automation or script at a time, rather than through
+    `automations_with_area` and its siblings. Those give up on the first
+    automation Home Assistant cannot read. What that one names as a plain
+    string is still in `mentioned`, so it keeps this in use either way.
+    """
+    return any(
+        async_referencing(hass, domain, kind, reference)
+        for domain in (AUTOMATION_DOMAIN, SCRIPT_DOMAIN)
+    )
 
 
 def _vacuum_cleans_area(hass: HomeAssistant, area_id: str) -> bool:
@@ -59,8 +71,7 @@ def async_area_in_use(
     return bool(
         dr.async_entries_for_area(dr.async_get(hass), area_id)
         or er.async_entries_for_area(er.async_get(hass), area_id)
-        or automations_with_area(hass, area_id)
-        or scripts_with_area(hass, area_id)
+        or _targeted_by_automation_or_script(hass, "areas", area_id)
         or area_id in mentioned
         or _vacuum_cleans_area(hass, area_id)
     )
@@ -74,8 +85,7 @@ def async_floor_in_use(
     """Return whether any area is on, or anything targets or names, this floor."""
     return bool(
         ar.async_entries_for_floor(ar.async_get(hass), floor_id)
-        or automations_with_floor(hass, floor_id)
-        or scripts_with_floor(hass, floor_id)
+        or _targeted_by_automation_or_script(hass, "floors", floor_id)
         or floor_id in mentioned
     )
 
@@ -90,7 +100,6 @@ def async_label_in_use(
         er.async_entries_for_label(er.async_get(hass), label_id)
         or dr.async_entries_for_label(dr.async_get(hass), label_id)
         or ar.async_entries_for_label(ar.async_get(hass), label_id)
-        or automations_with_label(hass, label_id)
-        or scripts_with_label(hass, label_id)
+        or _targeted_by_automation_or_script(hass, "labels", label_id)
         or label_id in mentioned
     )

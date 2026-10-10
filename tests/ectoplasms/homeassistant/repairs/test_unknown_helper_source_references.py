@@ -243,8 +243,10 @@ async def test_menu_warns_when_used_by_automation(
     )
     monkeypatch.setattr(
         repairs,
-        "automations_with_entity",
-        lambda _hass, eid: ["automation.a"] if eid == reg.entity_id else [],
+        "async_referencing",
+        lambda _hass, domain, _kind, eid: (
+            ["automation.a"] if (domain, eid) == ("automation", reg.entity_id) else []
+        ),
     )
 
     flow = HelperUnknownSourcesFixFlow()

@@ -13,13 +13,13 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, final
 
 from homeassistant.components import blueprint, lovelace as lovelace_const
-from homeassistant.components.automation import automations_with_entity
+from homeassistant.components.automation import DOMAIN as AUTOMATION_DOMAIN
 from homeassistant.components.energy.data import (
     async_get_manager as async_get_energy_manager,
 )
 from homeassistant.components.homeassistant import SERVICE_HOMEASSISTANT_RESTART
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
-from homeassistant.components.script import scripts_with_entity
+from homeassistant.components.script import DOMAIN as SCRIPT_DOMAIN
 from homeassistant.config_entries import (
     SIGNAL_CONFIG_ENTRY_CHANGED,
     ConfigEntry,
@@ -71,6 +71,7 @@ from .helper_sources import (
 from .reference_extraction import (
     NamedReferences,
     async_collect_mentioned_strings,
+    async_referencing,
     extract_attribute_references_from_config,
     extract_state_references_from_config,
 )
@@ -1699,8 +1700,16 @@ class HelperUnknownSourcesFixFlow(_RemoveOrIgnoreFixFlow):
         automations: set[str] = set()
         scripts: set[str] = set()
         for entity in er.async_entries_for_config_entry(entity_registry, entry_id):
-            automations.update(automations_with_entity(self.hass, entity.entity_id))
-            scripts.update(scripts_with_entity(self.hass, entity.entity_id))
+            automations.update(
+                async_referencing(
+                    self.hass, AUTOMATION_DOMAIN, "entities", entity.entity_id
+                )
+            )
+            scripts.update(
+                async_referencing(
+                    self.hass, SCRIPT_DOMAIN, "entities", entity.entity_id
+                )
+            )
 
         if not automations and not scripts:
             return "It is not used by any automation or script."

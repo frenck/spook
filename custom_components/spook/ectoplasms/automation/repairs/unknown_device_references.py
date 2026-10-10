@@ -9,6 +9,7 @@ from homeassistant.helpers import device_registry as dr
 
 from ....entity_filtering import async_filter_known_device_ids, async_get_all_device_ids
 from ....reference_extraction import (
+    core_references,
     extract_targets_from_config,
     names_given_to_templates,
     only_in_disabled_steps,
@@ -75,7 +76,7 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
 
     async def _async_compute_unknown_references(self, entity: Any) -> set[str]:
         """Return unknown device IDs referenced by ``entity``."""
-        device_ids = set(entity.referenced_devices)
+        device_ids = core_references(entity, "devices")
 
         if hasattr(entity, "raw_config") and entity.raw_config:
             # Also walk the raw configuration; the built-in extraction misses
