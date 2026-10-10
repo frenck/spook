@@ -110,6 +110,8 @@ async def _unknown_devices(hass: HomeAssistant, domain: str, template: str) -> s
         f"{{{{ '{_GHOST_DEVICE}' | device_attr('model') }}}}",
         f"{{{{ '{_GHOST_DEVICE}' | device_name }}}}",
         f"{{{{ '{_GHOST_DEVICE}' is is_device_attr('model', 'x') }}}}",
+        f"{{{{ '{_GHOST_DEVICE}' is not is_device_attr('model', 'x') }}}}",
+        f"{{{{ device_attr ( '{_GHOST_DEVICE}' , 'model') }}}}",
     ],
 )
 async def test_device_lookup_with_a_device_id_is_detected(
@@ -133,6 +135,20 @@ async def test_device_lookup_with_a_device_id_is_detected(
         "{{ device_attr('KNOWN', 'name') }}",
         # Some other function that happens to end in the same name.
         f"{{{{ my_device_attr('{_GHOST_DEVICE}', 'name') }}}}",
+        # Text around the expressions, or inside a string, is never called.
+        f"device_attr('{_GHOST_DEVICE}', 'name') {{{{ 1 }}}}",
+        f"{{{{ \"device_attr('{_GHOST_DEVICE}', 'name')\" }}}}",
+        f"{{% raw %}}{{{{ device_attr('{_GHOST_DEVICE}', 'name') }}}}{{% endraw %}}",
+        # A method of something else, spaces or not.
+        f"{{{{ this . device_attr('{_GHOST_DEVICE}', 'name') }}}}",
+        # A macro of the template's own, by the same name.
+        (
+            "{% macro device_attr(lookup, attr) %}{{ lookup }}{% endmacro %}"
+            f"{{{{ device_attr('{_GHOST_DEVICE}', 'name') }}}}"
+        ),
+        # Only a piece of what is looked up.
+        f"{{{{ device_attr('{_GHOST_DEVICE}' ~ '_x', 'name') }}}}",
+        f"{{{{ 'x' '{_GHOST_DEVICE}' | device_name }}}}",
     ],
 )
 async def test_device_lookup_without_an_unknown_device_id_is_not_read(

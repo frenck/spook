@@ -119,21 +119,6 @@ _DEVICE_ENTITIES_PATTERN = re.compile(
     re.IGNORECASE,
 )
 
-# ``device_attr``, ``is_device_attr`` and ``device_name`` take a device ID or
-# an entity ID, called directly, as a filter or (``is_device_attr``) as a
-# test. An entity ID there is an entity reference, and anything else they
-# quietly turn into nothing, so only a literal shaped like a registry ID is
-# taken as a device.
-_DEVICE_LOOKUP_PATTERNS = (
-    re.compile(
-        r"(?<![\w.])(?:is_)?device_(?:attr|name)\s*\(\s*['\"]([^'\"]+)['\"]",
-    ),
-    re.compile(
-        r"['\"]([^'\"]+)['\"]\s*(?:\|\s*device_(?:attr|name)"
-        r"|is\s+(?:not\s+)?is_device_attr)\b",
-    ),
-)
-
 
 def is_template_string(value: str) -> bool:
     """Check if a string looks like a Jinja2 template.
@@ -1258,17 +1243,62 @@ def extract_state_pairs_from_template(
     return frozenset(pairs)
 
 
+# The functions that take a device ID or an entity ID, called directly or as
+# a filter. `is_device_attr` is a test as well.
+_DEVICE_LOOKUPS = frozenset({"device_attr", "device_name", "is_device_attr"})
+_DEVICE_LOOKUP_TESTS = frozenset({"is_device_attr"})
+
+
+def _looked_up_devices(template_str: str) -> set[str]:
+    """Return the literals a template hands a device lookup, as written.
+
+    Read with Jinja's own lexer, like the state lookups: only a real call by
+    the very name, not in a string or the text around it, not a method and
+    not a name the template defines itself. An entity ID there is an entity
+    reference, and anything else the lookup quietly turns into nothing, so
+    only a literal shaped like a registry ID is a device.
+    """
+    expressions = _expressions(template_str)
+    local = _named_locally(expressions)
+
+    found: set[str] = set()
+    for tokens in expressions:
+        for index, (kind, name) in enumerate(tokens):
+            if (
+                kind != "name"
+                or name not in _DEVICE_LOOKUPS
+                or name in local
+                or _is(tokens, index - 1, "dot")
+            ):
+                continue
+
+            # As a filter or a test, the value right in front of it is the
+            # device. Two strings side by side are joined into one by Jinja,
+            # so then that one is only a piece of it.
+            if _is(tokens, index - 1, "pipe"):
+                value = index - 2
+            elif name in _DEVICE_LOOKUP_TESTS and _is_test(tokens, index):
+                value = index - (3 if _is(tokens, index - 1, "name", "not") else 2)
+            else:
+                # Called, only a whole first argument.
+                if _shaped(tokens, index + 1, ("lparen", "string")) and _ends_argument(
+                    tokens, index + 3
+                ):
+                    found.add(tokens[index + 2][1])
+                continue
+
+            if _is(tokens, value, "string") and not _is(tokens, value - 1, "string"):
+                found.add(tokens[value][1])
+
+    return {value for value in found if is_device_id_shaped(value)}
+
+
 @lru_cache(maxsize=1024)
 def _extract_device_ids_from_template(template_str: str) -> frozenset[str]:
     """Extract device IDs referenced through the device functions in a template."""
     template_without_comments = _strip_jinja_comments(template_str)
     device_ids = set(_DEVICE_ENTITIES_PATTERN.findall(template_without_comments))
-    for pattern in _DEVICE_LOOKUP_PATTERNS:
-        device_ids.update(
-            found
-            for found in pattern.findall(template_without_comments)
-            if is_device_id_shaped(found)
-        )
+    device_ids.update(_looked_up_devices(template_str))
 
     return frozenset(device_ids)
 
