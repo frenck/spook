@@ -12,6 +12,7 @@ from ....action_extraction import async_extract_entities_from_action_config
 from ....entity_filtering import async_get_all_entity_ids, async_get_all_services
 from ....reference_extraction import (
     custom_event_payload_entities,
+    made_up_logbook_entities,
     without_disabled_steps,
     without_never_rendered,
 )
@@ -148,6 +149,10 @@ class SpookRepair(AbstractSpookEntityComponentUnknownReferencesRepair):
             # own event waited for in a step, which is data from the sender.
             # Left out, unless this repair finds it named somewhere else too.
             all_entities -= custom_event_payload_entities(raw_config) - named
+
+            # It takes the made-up entity `logbook.log` files an entry under
+            # too, which does not need to exist. Same deal.
+            all_entities -= made_up_logbook_entities(raw_config) - named
 
             # It includes disabled steps too. A step parked that way does
             # nothing, so what only it names is left out: whatever this repair

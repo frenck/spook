@@ -557,3 +557,92 @@ async def test_groups_options_mean_entities_only_on_the_area_view_strategy(
     await repair.async_inspect()
 
     assert not reported
+
+
+async def _reported_for_card(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> list[set[str]]:
+    """Inspect a dashboard holding just this card, and return what is reported."""
+
+    async def _loads(*, force: bool) -> dict[str, Any]:
+        del force
+        return {"views": [{"path": "home", "cards": [card]}]}
+
+    reported: list[set[str]] = []
+
+    def async_create_issue(**kwargs: Any) -> None:
+        reported.append(set(kwargs["references"]))
+
+    repair._dashboards = {  # noqa: SLF001
+        "lovelace": SimpleNamespace(
+            url_path="lovelace", config={"title": "Overview"}, async_load=_loads
+        )
+    }
+    monkeypatch.setattr(repair, "async_create_issue", async_create_issue)
+
+    await repair.async_inspect()
+    return reported
+
+
+@pytest.mark.parametrize(
+    "card",
+    [
+        {"type": "logbook", "target": {"entity_id": ["log.critical_messages"]}},
+        {"type": "logbook", "entities": ["log.critical_messages"]},
+    ],
+    ids=["target", "entities"],
+)
+async def test_a_logbook_card_on_a_made_up_entity_is_fine(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> None:
+    """Test a logbook card filtering on an ID `logbook.log` made up is not reported.
+
+    The card shows the entries filed under it; no integration has to provide
+    the entity for that.
+    """
+    assert await _reported_for_card(repair, monkeypatch, card) == []
+
+
+@pytest.mark.parametrize(
+    "card",
+    [
+        {"type": "logbook", "target": {"entity_id": ["light.gone"]}},
+        {"type": "logbook", "entities": ["light.gone"]},
+    ],
+    ids=["target", "entities"],
+)
+async def test_a_logbook_card_on_a_removed_entity_is_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch, card: dict[str, Any]
+) -> None:
+    """Test a logbook card filtering on a real domain still checks the entity."""
+    assert await _reported_for_card(repair, monkeypatch, card) == [{"light.gone"}]
+
+
+async def test_a_made_up_entity_on_another_card_is_still_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test an ID under no entity domain is still reported outside a logbook card."""
+    card = {"type": "entities", "entities": ["log.critical_messages"]}
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [
+        {"log.critical_messages"}
+    ]
+
+
+async def test_a_made_up_entity_elsewhere_on_a_logbook_card_is_reported(
+    repair: SpookRepair, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Test only the logbook card's filter is left alone, not the whole card.
+
+    A visibility condition on it is read like on any other card, so a made-up
+    ID there is still reported.
+    """
+    card = {
+        "type": "logbook",
+        "target": {"entity_id": ["log.critical_messages"]},
+        "visibility": [
+            {"condition": "state", "entity": "log.visible_when", "state": "on"}
+        ],
+    }
+
+    assert await _reported_for_card(repair, monkeypatch, card) == [{"log.visible_when"}]

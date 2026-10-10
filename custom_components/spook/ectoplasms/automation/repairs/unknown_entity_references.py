@@ -17,6 +17,7 @@ from ....reference_extraction import (
     VALUE_KEYS,
     custom_event_payload_entities,
     event_payload_keys_to_leave_alone,
+    made_up_logbook_entities,
     numeric_state_threshold_entities,
     without_disabled_steps,
     without_never_rendered,
@@ -342,6 +343,10 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
             # own event too, which is data from the sender. Left out, unless
             # this repair finds the entity named somewhere else as well.
             all_entities -= custom_event_payload_entities(raw_config) - named
+
+            # It takes the made-up entity `logbook.log` files an entry under
+            # too, which does not need to exist. Same deal.
+            all_entities -= made_up_logbook_entities(raw_config) - named
 
             # It includes disabled steps, triggers and conditions too.
             # Something parked that way does nothing, so what only it names is

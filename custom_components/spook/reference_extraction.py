@@ -219,6 +219,74 @@ def numeric_state_threshold_entities(config: dict[str, Any]) -> set[str]:
     return entities
 
 
+_LOGBOOK_LOG = "logbook.log"
+
+
+def made_up_logbook_entities(config: Any) -> set[str]:
+    """Return the made-up entities `logbook.log` files entries under.
+
+    People file logbook entries under an entity ID no integration provides,
+    like `log.critical_messages`, and filter a logbook card on it. The action
+    only checks the shape of the ID, so that works. Core's own reading takes
+    the `entity_id` of any action's data all the same, so the repairs take
+    these back out of what core says is referenced.
+
+    Only an ID under no entity domain at all. A `light.kitchen` in there is
+    meant to be that light, and a removed one is still worth reporting. And
+    only one named nowhere else in the configuration: used as a target as
+    well, it is a reference there.
+    """
+    logged: set[str] = set()
+    elsewhere: set[str] = set()
+    _collect_made_up_logbook_entities(config, logged, elsewhere, in_payload=False)
+    return logged - elsewhere
+
+
+def _is_made_up_entity(value: Any) -> bool:
+    """Return whether a value is an entity ID under no entity domain at all."""
+    return (
+        isinstance(value, str)
+        and valid_entity_id(value)
+        and value.partition(".")[0] not in KNOWN_DOMAINS
+    )
+
+
+def _collect_made_up_logbook_entities(
+    config: Any, logged: set[str], elsewhere: set[str], *, in_payload: bool
+) -> None:
+    """Collect what `logbook.log` steps file entries under, and every other value."""
+    if isinstance(config, str):
+        elsewhere.add(config)
+        return
+    if isinstance(config, list):
+        for item in config:
+            _collect_made_up_logbook_entities(
+                item, logged, elsewhere, in_payload=in_payload
+            )
+        return
+    if not isinstance(config, dict):
+        return
+
+    # Inside action data nothing is a step, whatever its shape.
+    is_log = (
+        not in_payload and config.get("action", config.get("service")) == _LOGBOOK_LOG
+    )
+    for key, value in config.items():
+        if is_log and key in ("data", "data_template") and isinstance(value, dict):
+            for field_name, field_value in value.items():
+                if field_name == ATTR_ENTITY_ID and _is_made_up_entity(field_value):
+                    logged.add(field_value)
+                else:
+                    _collect_made_up_logbook_entities(
+                        field_value, logged, elsewhere, in_payload=True
+                    )
+            continue
+
+        _collect_made_up_logbook_entities(
+            value, logged, elsewhere, in_payload=in_payload or key in _PAYLOAD_KEYS
+        )
+
+
 @dataclass
 class ExtractedTargets:
     """Target references extracted from a raw configuration."""
