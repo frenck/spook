@@ -185,15 +185,154 @@ def _strip_jinja_comments(template_str: str) -> str:
 # strings, and nothing at all between two literals, which Jinja joins into
 # one. `'sensor.room' + suffix` is the start of an entity ID, not one.
 _GLUE = ("~", "+", "'", '"')
+_GLUE_OPERATORS = frozenset({"~", "+"})
 
 
-def _is_concatenated_template_match(template_str: str, match: re.Match[str]) -> bool:
+def _lexed(template_str: str) -> list[tuple[int, str, str]] | None:
+    """Return the tokens Jinja reads in a template, each with where it starts.
+
+    The lexer hands its tokens back raw, but not always all of the source:
+    `{{-` strips the whitespace in front of it from the text before, and a
+    final newline goes too. So each token is found back in the source, over
+    whitespace only, and checked to be really there. A template Jinja cannot
+    read, or one whose tokens do not line up, has none.
+    """
+    try:
+        tokens = list(_JINJA_LEXER.lex(template_str))
+    except TemplateSyntaxError:
+        return None
+
+    lexed: list[tuple[int, str, str]] = []
+    offset = 0
+    for _lineno, kind, value in tokens:
+        while (
+            not template_str.startswith(value, offset)
+            and offset < len(template_str)
+            and template_str[offset].isspace()
+        ):
+            offset += 1
+        if not template_str.startswith(value, offset):
+            return None
+
+        lexed.append((offset, kind, value))
+        offset += len(value)
+
+    return lexed
+
+
+def _ends_a_raw_value(tokens: list[tuple[int, str, str]], index: int) -> bool:
+    """Return whether the raw token at this index can end a value."""
+    if index < 0:
+        return False
+
+    _start, kind, value = tokens[index]
+    if kind == "name":
+        return value not in _KEYWORDS
+    if kind == "operator":
+        return value in _CLOSING_BRACKETS
+    return kind in ("float", "integer", "string")
+
+
+def _is_raw(
+    tokens: list[tuple[int, str, str]],
+    index: int,
+    kind: str,
+    values: Iterable[str] | None = None,
+) -> bool:
+    """Return whether the raw token at this index is of this kind, and value."""
+    if not 0 <= index < len(tokens):
+        return False
+
+    _start, token_kind, token_value = tokens[index]
+    return token_kind == kind and (values is None or token_value in values)
+
+
+def _is_glued(tokens: list[tuple[int, str, str]], index: int) -> bool:
+    """Return if the string literal at this index is a piece of a longer one.
+
+    It is when `~`, `+` or a string right next to it joins it to more, and
+    that join applies to the literal itself. Jinja joins strings side by
+    side before anything else. A filter or a test binds tighter than `~` and
+    `+`: in `10 + 'sensor.pump' | states` the filter gets the literal alone,
+    and the `+` adds up what comes out. Parentheses around the literal alone
+    only group it, so the join is looked for outside of them.
+
+    A `~` or `+` in front that follows no value is no join at all, and that
+    template is not one to trust: the literal stays a piece.
+    """
+    first = last = index
+    while (
+        _is_raw(tokens, first - 1, "operator", ("(",))
+        and _is_raw(tokens, last + 1, "operator", (")",))
+        and not _ends_a_raw_value(tokens, first - 2)
+    ):
+        first -= 1
+        last += 1
+
+    if _is_raw(tokens, last + 1, "operator", _GLUE_OPERATORS) or _is_raw(
+        tokens, last + 1, "string"
+    ):
+        return True
+
+    if _is_raw(tokens, first - 1, "string"):
+        return True
+
+    if not _is_raw(tokens, first - 1, "operator", _GLUE_OPERATORS):
+        return False
+
+    if not _ends_a_raw_value(tokens, first - 2):
+        return True
+
+    return not (
+        _is_raw(tokens, last + 1, "operator", ("|",))
+        or _is_raw(tokens, last + 1, "name", ("is",))
+    )
+
+
+def _glued_literals(template_str: str) -> dict[int, tuple[int, bool]]:
+    """Return each string literal in the template's expressions, read by Jinja.
+
+    Keyed by where the literal starts, with where it ends and whether it is
+    a piece of a longer string. A template Jinja cannot read has none: the
+    lexer takes `{{ 'sensor.pump' | states nonsense }}` just fine, only the
+    parser knows that is no template.
+    """
+    try:
+        _JINJA_PARSER.parse(template_str)
+    except TemplateSyntaxError:
+        return {}
+
+    lexed = _lexed(template_str)
+    if lexed is None:
+        return {}
+
+    tokens = [token for token in lexed if token[1] != "whitespace"]
+    return {
+        start: (start + len(value), _is_glued(tokens, index))
+        for index, (start, kind, value) in enumerate(tokens)
+        if kind == "string"
+    }
+
+
+def _is_concatenated_template_match(
+    template_str: str,
+    match: re.Match[str],
+    glued_literals: dict[int, tuple[int, bool]],
+) -> bool:
     """Return if a quoted entity ID literal is part of a concatenated string."""
     groups = match.groups()
     if len(groups) == _STATES_DOMAIN_ENTITY_GROUPS:
         return False
 
     entity_start, entity_end = match.span(1)
+
+    # The quotes around the capture are the literal Jinja read, if it read it.
+    literal = glued_literals.get(entity_start - 1)
+    if literal is not None and literal[0] == entity_end + 1:
+        return literal[1]
+
+    # Anything else, like a template Jinja cannot read, goes by the source
+    # around it.
     before_entity = template_str[:entity_start].rstrip()
     after_entity = template_str[entity_end:].lstrip()
 
@@ -293,6 +432,13 @@ _STRING_ATTRIBUTES = frozenset({"domain", "entity_id", "name", "object_id", "sta
 
 # Only ever used to lex, never to render, so autoescaping has nothing to do.
 _JINJA_LEXER = Environment(autoescape=True)
+
+# Only ever used to parse, with the tags Home Assistant adds to Jinja's own:
+# `{% do %}`, `{% break %}` and `{% continue %}`. Its other extensions only
+# add functions, filters and tests, which a parse never looks up.
+_JINJA_PARSER = Environment(
+    autoescape=True, extensions=["jinja2.ext.do", "jinja2.ext.loopcontrols"]
+)
 
 _OPENING_BRACKETS = frozenset("([{")
 
@@ -864,13 +1010,16 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
         "\n", _strip_jinja_comments(template_str)
     )
     text_argument_offsets = _text_argument_offsets(template_without_comments)
+    glued_literals = _glued_literals(template_without_comments)
 
     entities = set()
 
     for pattern in COMPILED_ENTITY_ID_TEMPLATE_PATTERNS:
         for match in pattern.finditer(template_without_comments):
             if (
-                _is_concatenated_template_match(template_without_comments, match)
+                _is_concatenated_template_match(
+                    template_without_comments, match, glued_literals
+                )
                 or _is_jinja_import_match(template_without_comments, match)
                 or _is_string_method_argument_match(template_without_comments, match)
                 or _is_text_argument_match(match, text_argument_offsets)

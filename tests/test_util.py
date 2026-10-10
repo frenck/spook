@@ -205,6 +205,52 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ states('sensor.room' + suffix) }}", set()),
         ("{{ states(prefix + 'sensor.room') }}", set()),
         ("{{ states('sensor.room' '_bedroom') }}", set()),
+        # A filter or a test binds tighter than `~` and `+`: it gets the
+        # literal alone, and what comes out of it is what gets glued.
+        ("{{ 10 + 'sensor.pump' | states | float }}", {"sensor.pump"}),
+        ("{{ 'prefix' ~ 'sensor.pump' | states }}", {"sensor.pump"}),
+        ("{{ 'prefix' ~ 'sensor.pump' is has_value }}", {"sensor.pump"}),
+        ("{{ 'prefix' ~ 'sensor.pump' is not has_value }}", {"sensor.pump"}),
+        ("{{ 'prefix' ~ ('sensor.pump') | states }}", {"sensor.pump"}),
+        ("{{ 10 + 'Sensor.Pump' | states | float }}", {"sensor.pump"}),
+        ("{{ 'prefix' ~ 'Sensor.Pump' | states }}", {"sensor.pump"}),
+        # Also where the lexer drops whitespace in front of `{{-`.
+        ("text   {{- 10 + 'sensor.pump' | states }}", {"sensor.pump"}),
+        # Glued all the same: the join applies to the literal itself.
+        ("{{ 'sensor.' ~ room }}", set()),
+        ("{{ prefix + 'sensor.pump' }}", set()),
+        ("{{ 'sensor.room' + suffix }}", set()),
+        ("{{ 'sensor.' 'pump' | states }}", set()),
+        ("{{ 'sensor.pump' 'x' | states }}", set()),
+        ("{{ ('sensor.' ~ room) | states }}", set()),
+        ("{{ ('sensor.pump') ~ suffix }}", set()),
+        ("{{ 'prefix' ~ 'sensor.pump'.lower() | states }}", set()),
+        ("{{ 'prefix' ~ 'sensor.pump' in rooms }}", set()),
+        # A `+` or `~` that follows no value joins nothing; not to be trusted.
+        ("{{ + 'sensor.pump' | states }}", set()),
+        # Each literal by itself: the same one twice, in either order.
+        (
+            "{{ prefix + 'sensor.pump' }}{{ 10 + 'sensor.pump' | states }}",
+            {"sensor.pump"},
+        ),
+        (
+            "{{ 10 + 'sensor.pump' | states }}{{ prefix + 'sensor.pump' }}",
+            {"sensor.pump"},
+        ),
+        ("{{ prefix + 'sensor.pump' }}{{ 'prefix' ~ 'sensor.pump' }}", set()),
+        # Nor in a template Jinja cannot parse, even where it lexes fine.
+        ("{{ 10 + 'sensor.pump' | states nonsense }}", set()),
+        ("{{ 'prefix' ~ 'sensor.pump' | states }}{% endif %}", set()),
+        # A parse knows Home Assistant's own tags.
+        (
+            (
+                "{% for x in y %}{% do z.append(x) %}{% break %}{% endfor %}"
+                "{{ 10 + 'sensor.pump' | states }}"
+            ),
+            {"sensor.pump"},
+        ),
+        # Not in an expression, where the source around it still decides.
+        ("{% raw %}{{ 10 + 'sensor.pump' | states }}{% endraw %}", set()),
         # Adding up two lookups is no gluing.
         (
             "{{ states('sensor.a') | float + states('sensor.b') | float }}",
@@ -417,9 +463,8 @@ def test_a_glued_literal_in_front_of_a_lookup_is_not_looked_up(template: str) ->
 def test_a_literal_added_to_in_front_of_a_lookup_is_looked_up() -> None:
     """Test a `+` between two values is no sign for the literal after it.
 
-    The filter binds tighter, so `states` gets the literal. The extraction
-    leaves a literal behind a `+` out on its own, so this asks the lookup
-    reader directly.
+    The filter binds tighter, so `states` gets the literal. This asks the
+    lookup reader directly.
     """
     template = "{{ 10 + 'Sensor.Pump' | states | float }}"
 

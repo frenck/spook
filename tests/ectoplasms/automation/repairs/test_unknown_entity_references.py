@@ -1430,6 +1430,42 @@ async def test_a_literal_glued_to_more_with_plus_is_no_entity(
     assert await repair._async_compute_unknown_references(entity) == set()
 
 
+async def test_a_filtered_literal_added_to_is_an_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test `10 + 'sensor.pump' | states` looks up `sensor.pump`.
+
+    The filter binds tighter than the `+`, so it gets the literal alone, and
+    the `+` adds up the number that comes out. The literal glued to a
+    variable right after it is still only the start of an entity ID.
+    """
+    hass.states.async_set("sensor.pump_bedroom", "3")
+    entity = await _async_automation_entity(
+        hass,
+        {
+            "alias": "Report",
+            "triggers": [{"trigger": "homeassistant", "event": "start"}],
+            "actions": [
+                {
+                    "action": "notify.notify",
+                    "data": {
+                        "message": (
+                            "{% set suffix = '_bedroom' %}"
+                            "{{ 10 + 'sensor.pump' | states | float(0) }}"
+                            "{{ states('sensor.pump' ~ suffix) }}"
+                        )
+                    },
+                }
+            ],
+        },
+    )
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+
+    assert await repair._async_compute_unknown_references(entity) == {"sensor.pump"}
+
+
 def _log_location(action: dict[str, Any]) -> dict[str, Any]:
     """Return an automation that hands a sensor to a script in one action."""
     return {
