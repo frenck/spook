@@ -44,4 +44,4 @@ jobs:
             'from homeassistant.const import __version__; print(f"Home Assistant {__version__}")'
 
       - name: 🚀 Run tests
-        run: uv run --no-sync pytest --no-cov
+        run: uv run --no-sync pytest --no-cov -p tests.ha_dev

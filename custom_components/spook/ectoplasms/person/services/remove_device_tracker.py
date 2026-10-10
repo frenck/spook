@@ -10,9 +10,11 @@ import voluptuous as vol
 from homeassistant.components.person import DOMAIN, Person, PersonStorageCollection
 from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
+from homeassistant.helpers.entity_component import DATA_INSTANCES
 
 from ....const import DOMAIN as SPOOK_DOMAIN
 from ....errors import entity_not_found
+from ....helper_collections import async_get_storage_collection
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -35,9 +37,12 @@ class SpookService(AbstractSpookAdminService):
 
     async def async_handle_service(self, call: ServiceCall) -> None:
         """Handle the service call."""
-        collection: PersonStorageCollection
-        entity_component: EntityComponent[Person]
-        _, collection, entity_component = self.hass.data[DOMAIN]
+        collection: PersonStorageCollection = async_get_storage_collection(
+            self.hass, DOMAIN
+        )
+        entity_component: EntityComponent[Person] = self.hass.data[DATA_INSTANCES][
+            DOMAIN
+        ]
 
         if not (entity := entity_component.get_entity(call.data["entity_id"])):
             raise entity_not_found(call.data["entity_id"])

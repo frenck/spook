@@ -18,6 +18,7 @@ from homeassistant.exceptions import HomeAssistantError
 from homeassistant.helpers import config_validation as cv
 
 from ....const import DOMAIN as SPOOK_DOMAIN
+from ....helper_collections import async_get_storage_collection
 from ....services import AbstractSpookEntityComponentService
 
 if TYPE_CHECKING:
@@ -63,13 +64,8 @@ class SpookService(AbstractSpookEntityComponentService[Timer]):
             }
         )
 
-        collection: TimerStorageCollection
-        if DOMAIN in entity.hass.data:
-            collection = entity.hass.data[DOMAIN]
-        else:
-            # Major hack borrowed from ../../zone/services/create.py:27  👻
-            collection = entity.hass.data["websocket_api"]["timer/list"][
-                0
-            ].__self__.storage_collection
+        collection: TimerStorageCollection = async_get_storage_collection(
+            entity.hass, DOMAIN
+        )
 
         await collection.async_update_item(item_id, updates)
