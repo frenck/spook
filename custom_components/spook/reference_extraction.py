@@ -180,6 +180,45 @@ def _collect_event_payload_entities(
             )
 
 
+# The domains Home Assistant takes an entity from as the `above` or `below`
+# of a numeric state trigger or condition, comparing against its state.
+_NUMERIC_STATE_THRESHOLD_DOMAINS = frozenset(
+    {"input_number", "number", "sensor", "zone"}
+)
+
+
+def numeric_state_threshold_entities(config: dict[str, Any]) -> set[str]:
+    """Return the entities a numeric state trigger or condition compares against.
+
+    `above: input_number.limit` reads the limit from that helper. Remove it
+    and the comparison fails, yet it is no `entity_id`. Only a valid entity
+    ID of a domain Home Assistant accepts there counts: a number or a
+    template is not one, and Home Assistant refuses anything else. It lower
+    cases the ID first, so this does too.
+
+    This trusts the shape, so a walker only asks it outside `VALUE_KEYS`.
+    """
+    if "numeric_state" not in (
+        config.get("condition"),
+        config.get("trigger", config.get("platform")),
+    ):
+        return set()
+
+    entities: set[str] = set()
+    for key in ("above", "below"):
+        if not isinstance(value := config.get(key), str):
+            continue
+
+        entity_id = value.lower()
+        if (
+            valid_entity_id(entity_id)
+            and entity_id.partition(".")[0] in _NUMERIC_STATE_THRESHOLD_DOMAINS
+        ):
+            entities.add(entity_id)
+
+    return entities
+
+
 @dataclass
 class ExtractedTargets:
     """Target references extracted from a raw configuration."""
@@ -276,6 +315,11 @@ def extract_targets_from_config(config: Any) -> ExtractedTargets:
 # data hold whatever somebody put there, and an `enabled: false` in them is
 # theirs, not a parked step.
 _PAYLOAD_KEYS = _EXCLUDED_KEYS | frozenset({"data", "data_template", "service_data"})
+
+# Keys whose value holds values, never a trigger or a condition: the payloads
+# above, and the items a repeat goes over. A dictionary in there shaped like a
+# numeric state condition is still only a value somebody hands over.
+VALUE_KEYS = _PAYLOAD_KEYS | frozenset({"for_each"})
 
 
 def without_disabled_steps(config: Any, *, in_payload: bool = False) -> Any:

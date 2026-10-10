@@ -9,7 +9,11 @@ from homeassistant.const import CONF_ENABLED
 
 from .const import LOGGER
 from .entity_filtering import NEVER_AN_ENTITY_PREFIXES, async_get_all_services
-from .reference_extraction import event_payload_keys_to_leave_alone
+from .reference_extraction import (
+    VALUE_KEYS,
+    event_payload_keys_to_leave_alone,
+    numeric_state_threshold_entities,
+)
 from .template_extraction import (
     ENTITY_ID_PATTERN,
     async_extract_entities_from_template_string,
@@ -35,6 +39,7 @@ async def async_extract_entities_from_action_config(
     _in_sequence: bool = False,
     _in_payload: bool = False,
     _is_payload: bool = False,
+    _in_values: bool = False,
     _service: str | None = None,
 ) -> set[str]:
     """Extract entity IDs from action configuration.
@@ -79,6 +84,7 @@ async def async_extract_entities_from_action_config(
                     _in_sequence=True,
                     _in_payload=_in_payload,
                     _is_payload=_is_payload,
+                    _in_values=_in_values,
                     _service=_service,
                 )
             )
@@ -104,6 +110,12 @@ async def async_extract_entities_from_action_config(
         await _extract_entities_from_action_fields(hass, config, known_services)
     )
 
+    # A condition or a trigger waited for in a step can compare against an
+    # entity. Below a key that holds values, like action data, event data or
+    # variables, nothing is either, whatever its shape.
+    if not _in_values:
+        entities.update(numeric_state_threshold_entities(config))
+
     # Extract entities from target configuration
     entities.update(await _extract_entities_from_target(hass, config, known_services))
 
@@ -120,6 +132,7 @@ async def async_extract_entities_from_action_config(
             known_services,
             include_disabled=include_disabled,
             in_payload=_in_payload,
+            _in_values=_in_values,
             _service=service,
         )
     )
@@ -325,6 +338,7 @@ async def _extract_entities_from_nested_configs(
     *,
     include_disabled: bool = True,
     in_payload: bool = False,
+    _in_values: bool = False,
     _service: str | None = None,
 ) -> set[str]:
     """Extract entities from nested configurations.
@@ -349,6 +363,7 @@ async def _extract_entities_from_nested_configs(
                     known_services=known_services,
                     _in_payload=in_payload or key in _ACTION_DATA_KEYS,
                     _is_payload=key in _ACTION_DATA_KEYS,
+                    _in_values=_in_values or key in VALUE_KEYS,
                     _service=_service,
                 )
             )

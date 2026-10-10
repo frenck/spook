@@ -10,6 +10,7 @@ from custom_components.spook.template_extraction import extract_device_ids_from_
 from custom_components.spook.reference_extraction import (
     extract_platform_keys_from_config,
     extract_targets_from_config,
+    numeric_state_threshold_entities,
     only_in_disabled_steps,
     without_disabled_steps,
 )
@@ -390,3 +391,39 @@ def test_without_disabled_steps_leaves_variables_alone() -> None:
         "variables": config["variables"],
         "actions": [],
     }
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        {"trigger": "numeric_state", "above": "input_number.limit"},
+        {"platform": "numeric_state", "above": "input_number.limit"},
+        {"condition": "numeric_state", "below": "input_number.limit"},
+        {"condition": "numeric_state", "below": "Input_Number.Limit"},
+    ],
+)
+def test_a_numeric_state_threshold_entity_is_found(config: dict[str, Any]) -> None:
+    """Test the entity a numeric state threshold is read from is found."""
+    assert numeric_state_threshold_entities(config) == {"input_number.limit"}
+
+
+@pytest.mark.parametrize(
+    "config",
+    [
+        # A number, or a number written as text.
+        {"condition": "numeric_state", "above": 5},
+        {"condition": "numeric_state", "above": "5"},
+        # Home Assistant refuses a template or another domain there.
+        {"condition": "numeric_state", "above": "{{ states('sensor.limit') }}"},
+        {"condition": "numeric_state", "above": "light.kitchen"},
+        # Only a numeric state trigger or condition has a threshold.
+        {"condition": "state", "above": "sensor.limit"},
+        {"trigger": "template", "below": "sensor.limit"},
+        {"above": "sensor.limit"},
+    ],
+)
+def test_a_numeric_state_threshold_that_is_no_entity_is_left_alone(
+    config: dict[str, Any],
+) -> None:
+    """Test a threshold that is no entity, or no threshold, is not read."""
+    assert numeric_state_threshold_entities(config) == set()
