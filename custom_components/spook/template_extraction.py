@@ -521,19 +521,6 @@ _STATE_LOOKUP_TESTS = frozenset({"has_value", "is_state", "is_state_attr"})
 # and `closest`, which hands its entities to `expand`.
 _EXPANDING_LOOKUPS = frozenset({"closest", "expand"})
 
-# What makes a literal in front of a filter or a test only a piece of what it
-# applies to: a string right before it, which Jinja glues on, or a sign,
-# which takes the literal before the filter does: `-'sensor.a' | states`.
-_TAKES_THE_LITERAL = frozenset({"string"})
-# And a list right after a value is a subscript of it: `x['light.a']`.
-_TAKES_THE_LIST = _TAKES_THE_LITERAL | {
-    "float",
-    "integer",
-    "name",
-    "rbrace",
-    "rbracket",
-    "rparen",
-}
 _SIGNS = frozenset({"add", "sub"})
 
 # What a value can end with. A `+` or `-` right after one adds or subtracts,
@@ -582,8 +569,38 @@ def _call_arguments(tokens: list[_Token], start: int) -> list[list[_Token]] | No
     return None
 
 
+def _group_end(tokens: list[_Token], start: int) -> int | None:
+    """Return where the parentheses opened at this index close, if they group.
+
+    With a comma of their own inside, they make a tuple instead.
+    """
+    depth = 0
+    for position in range(start, len(tokens)):
+        kind = tokens[position][0]
+        if kind in _OPENERS:
+            depth += 1
+        elif kind in _CLOSERS:
+            depth -= 1
+            if depth == 0:
+                return position
+        elif kind == "comma" and depth == 1:
+            return None
+    return None
+
+
+def _ungrouped(value: list[_Token]) -> list[_Token]:
+    """Return a value without the parentheses that only group it.
+
+    `('light.a')` is the text itself, the same as `'light.a'`.
+    """
+    while _is(value, 0, "lparen") and _group_end(value, 0) == len(value) - 1:
+        value = value[1:-1]
+    return value
+
+
 def _literal(argument: list[_Token]) -> list[str]:
     """Return the entity ID an argument is, if it is one whole literal."""
+    argument = _ungrouped(argument)
     if len(argument) == 1 and argument[0][0] == "string":
         return [argument[0][1]]
     return []
@@ -592,11 +609,13 @@ def _literal(argument: list[_Token]) -> list[str]:
 def _expanded(argument: list[_Token]) -> list[str]:
     """Return the entity IDs `expand` looks up from one argument.
 
-    A literal, or a list of nothing but literals, which `expand` looks into.
+    A literal, or a list or a tuple of nothing but literals, which `expand`
+    looks into: it goes through anything it can iterate over.
     """
-    if not _is(argument, 0, "lbracket"):
-        return _literal(argument)
+    if literal := _literal(argument):
+        return literal
 
+    argument = _ungrouped(argument)
     listed = _literals_listed(argument, 0)
     if listed is None or listed[1] != len(argument):
         return []
@@ -668,27 +687,59 @@ def _called_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
 def _value_in_front(tokens: list[_Token], end: int, *, lists: bool) -> list[str]:
     """Return the literal, or the list of literals, right before this index.
 
-    Only when it is all that a filter or a test there applies to.
+    Parentheses that only group it change nothing. Only when it is all that
+    a filter or a test there applies to.
     """
     if _is(tokens, end - 1, "string"):
-        start, literals, taken_by = end - 1, [tokens[end - 1][1]], _TAKES_THE_LITERAL
-    elif lists and _is(tokens, end - 1, "rbracket"):
-        start = end - 2
-        while start >= 0 and tokens[start][0] in {"comma", "string"}:
-            start -= 1
-        # Jinja balances brackets, so this ends at `end` if it is a list.
-        if (listed := _literals_listed(tokens, start)) is None:
+        start = end - 1
+    elif tokens[end - 1 : end] and tokens[end - 1][0] in {"rbracket", "rparen"}:
+        if (opened := _opening_of(tokens, end - 1)) is None:
             return []
-        literals, taken_by = listed[0], _TAKES_THE_LIST
+        start = opened
     else:
         return []
 
-    if start > 0 and (
-        tokens[start - 1][0] in taken_by
-        or (tokens[start - 1][0] in _SIGNS and _is_sign(tokens, start - 1))
-    ):
+    if _takes_the_value(tokens, start):
         return []
-    return literals
+
+    value = tokens[start:end]
+    if (literal := _literal(value)) or not lists:
+        return literal
+    return _expanded(value)
+
+
+def _opening_of(tokens: list[_Token], close: int) -> int | None:
+    """Return where the bracket that closes at this index was opened."""
+    depth = 0
+    for position in range(close, -1, -1):
+        kind = tokens[position][0]
+        if kind in _CLOSERS:
+            depth += 1
+        elif kind in _OPENERS:
+            depth -= 1
+            if depth == 0:
+                return position
+    return None
+
+
+def _takes_the_value(tokens: list[_Token], start: int) -> bool:
+    """Return whether what comes right before a value takes it first.
+
+    A string right before a string is glued to it. A sign takes the value
+    before a filter does: `-'sensor.a' | states`. And a bracket right after a
+    value calls it or picks from it: `f('sensor.a')`, `x['sensor.a']`.
+    """
+    if start == 0:
+        return False
+
+    kind, value = tokens[start - 1]
+    if kind in _SIGNS:
+        return _is_sign(tokens, start - 1)
+    if tokens[start][0] == "string":
+        return kind == "string"
+    if kind == "name":
+        return value not in _KEYWORDS
+    return kind in _ENDS_A_VALUE
 
 
 def _is_sign(tokens: list[_Token], index: int) -> bool:
@@ -732,12 +783,12 @@ def _closest_filtered(in_front: list[str], arguments: list[list[_Token]]) -> lis
     """Return what `closest` as a filter looks up.
 
     It moves the value in front to the end of its arguments. Behind three or
-    more, that is not the one looked up.
+    more, the third is the one looked up, and the value in front is not.
     """
-    if len(arguments) >= _CLOSEST_WITH_COORDINATES or not all(
-        _is_positional(argument) for argument in arguments
-    ):
+    if not all(_is_positional(argument) for argument in arguments):
         return []
+    if len(arguments) >= _CLOSEST_WITH_COORDINATES:
+        return _expanded(arguments[2])
     if len(arguments) == 1:
         return in_front + _literal(arguments[0])
     return in_front

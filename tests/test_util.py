@@ -343,7 +343,38 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
             {"zone.school", "group.kids"},
         ),
         ("{{ 'Group.Kids' | closest('Sensor.Lat', 'Sensor.Lon') }}", {"group.kids"}),
-        ("{{ 'Group.Kids' | closest(52, 4, 'Zone.Home') }}", set()),
+        # Behind three, `closest` takes the third for its entities.
+        ("{{ 'Group.Kids' | closest(52, 4, 'Zone.Home') }}", {"zone.home"}),
+        # A tuple goes through `expand` just like a list does.
+        (
+            "{{ expand(('light.one', 'Light.Two')) }}",
+            {"light.one", "light.two"},
+        ),
+        ("{{ expand(('Light.One',)) }}", {"light.one"}),
+        (
+            "{{ ('light.one', 'Light.Two') | expand }}",
+            {"light.one", "light.two"},
+        ),
+        (
+            "{{ closest('zone.home', ('Group.Kids', 'Group.Pets')) }}",
+            {"zone.home", "group.kids", "group.pets"},
+        ),
+        # Parentheses around one value without a comma only group it.
+        ("{{ expand(('Light.One')) }}", {"light.one"}),
+        ("{{ closest(('Zone.Home'), 'group.kids') }}", {"zone.home", "group.kids"}),
+        ("{{ ('Sensor.Pump') | states }}", {"sensor.pump"}),
+        ("{{ (('Sensor.Pump')) | states }}", {"sensor.pump"}),
+        ("{{ ('Sensor.Pump') is has_value }}", {"sensor.pump"}),
+        ("{% if ('Sensor.Pump') | has_value %}on{% endif %}", {"sensor.pump"}),
+        # But a tuple is no entity, and a point is never a tuple.
+        ("{{ ('Sensor.Pump',) | states }}", set()),
+        ("{{ expand(('Light.One', light)) }}", set()),
+        ("{{ closest(('Zone.Home', 'x'), 'group.kids') }}", {"group.kids"}),
+        # Nor a call's result, or a group a sign takes.
+        ("{{ pick('Sensor.Pump') | states }}", set()),
+        ("{{ pickers[0]('Sensor.Pump') | states }}", set()),
+        ("{{ pumps[0]['Sensor.Pump'] | expand }}", set()),
+        ("{{ -('Sensor.Pump') | states }}", set()),
         ("{{ 'Group.Kids' | closest(*point) }}", set()),
         # `distance` takes a mixed case one for a coordinate, at any position.
         ("{{ distance('zone.home', 'Sensor.Phone') }}", {"zone.home"}),
