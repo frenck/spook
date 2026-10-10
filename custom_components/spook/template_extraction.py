@@ -474,6 +474,28 @@ def _is_text_argument_match(
     return match.span(1)[0] - 1 in text_argument_offsets
 
 
+# The functions that look an entity up through `hass.states.get`, which tries
+# the entity ID in lower case too: `states('sensor.Pump')` reads
+# `sensor.pump`. The registry lookups (`device_id`, `area_id` and friends) do
+# not, so for those a mixed case ID is no entity at all.
+_STATE_LOOKUPS = frozenset(
+    {"expand", "has_value", "is_state", "is_state_attr", "state_attr", "states"}
+)
+
+
+def _looked_up_in_any_case(match: re.Match[str]) -> bool:
+    """Return whether the match is a state lookup that ignores case.
+
+    Only the entity ID's case is forgiven. Jinja's own names are not:
+    `STATES('sensor.x')` is no lookup at all, although the patterns match
+    it, as they match without regard to case.
+    """
+    if len(match.groups()) == _STATES_DOMAIN_ENTITY_GROUPS:
+        return match.group(0).startswith("states.")
+    function, paren, _ = match.group(0).partition("(")
+    return bool(paren) and function.strip() in _STATE_LOOKUPS
+
+
 def _entity_id_from_template_match(match: re.Match[str]) -> str:
     """Return the entity ID captured by a template regex match."""
     groups = match.groups()
@@ -511,6 +533,8 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
                 continue
 
             entity_id = _entity_id_from_template_match(match)
+            if _looked_up_in_any_case(match):
+                entity_id = entity_id.lower()
 
             # For each entity ID (which might be comma-separated), add all valid ones
             for individual_id in split_comma_separated_entity_ids(entity_id):

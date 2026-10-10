@@ -204,6 +204,19 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ states('unknown_domain.foo') }}", set()),
         ("{{ states('light.') }}", set()),
         ("{{ 'light.turn_on' }}", set()),
+        # A state lookup tries the entity ID in lower case too, so a mixed
+        # case one names the lower case entity.
+        ("{{ states('sensor.Pump_Interval') }}", {"sensor.pump_interval"}),
+        ("{{ is_state('Light.Kitchen', 'on') }}", {"light.kitchen"}),
+        ("{{ state_attr( 'Sensor.Pump' , 'x') }}", {"sensor.pump"}),
+        ("{{ expand('Light.Kitchen') }}", {"light.kitchen"}),
+        ("{{ states.sensor.Pump_Interval.state }}", {"sensor.pump_interval"}),
+        # A registry lookup does not, Jinja's own names never ignore case, and
+        # mixed case text is just text.
+        ("{{ device_id('sensor.Pump_Interval') }}", set()),
+        ("{{ STATES('sensor.Pump') }}", set()),
+        ("{{ States.sensor.Pump.state }}", set()),
+        ("{{ 'Sensor.Status' }}", set()),
     ],
 )
 def test_extract_entities_from_template_regex(
