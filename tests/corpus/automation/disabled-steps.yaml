@@ -3,6 +3,9 @@ note: >-
   A trigger, a condition and a step parked with `enabled: false` do nothing,
   so what only they name is left out. The cellar light is named by a parked
   step and a running one, so it still counts.
+out_of_scope: >-
+  A step, trigger or condition parked with `enabled: false` does nothing, so
+  what only it names is left out on purpose.
 expect:
   entities:
     find: [light.kitchen, light.cellar, binary_sensor.hallway_motion]

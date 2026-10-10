@@ -2,7 +2,8 @@ source: https://github.com/dwainscheeren/dwains-dashboard-addons/blob/for-dd-2.0
 note: >-
   Fan speed buttons still calling fan.set_speed with a speed in service_data,
   an action core removed years ago in favour of percentages and presets. The
-  JavaScript state template reads a speed attribute that is gone too.
+  JavaScript state template reads a speed attribute that is gone too, of
+  the same fan the card names.
 expect:
   services:
     find: [fan.set_speed, fan.turn_off]

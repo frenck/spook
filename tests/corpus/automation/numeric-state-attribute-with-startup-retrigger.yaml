@@ -4,7 +4,7 @@ note: >-
   threshold. The fix adds start and automation_reloaded triggers, and an
   action call targets a device. The original also had a device action, which
   only validates against a device registry the corpus house does not have, so
-  it is left out.
+  it is not part of the case.
 expect:
   entities:
     find: [climate.office, sensor.electricity_tariff]

@@ -4,6 +4,9 @@ note: >-
   states() before state_attr, so it looks up the state text instead. The only
   literal entity sits in a parked condition, and what only a disabled
   condition names is left out.
+out_of_scope: >-
+  A step, trigger or condition parked with `enabled: false` does nothing, so
+  what only it names is left out on purpose.
 expect:
   entities:
     not_find: [input_select.bedside_light_choice]

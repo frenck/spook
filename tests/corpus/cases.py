@@ -25,13 +25,13 @@ RULE_KEYS = frozenset({"find", "not_find"})
 
 
 class CorpusLoader(yaml.SafeLoader):  # pylint: disable=too-many-ancestors
-    """A safe loader that reads Home Assistant's own tags as plain text.
+    """A safe loader that keeps Home Assistant's own tags as opaque strings.
 
     `!secret`, `!input`, `!include` and friends need a house, a blueprint or
     a directory to mean something, and a case has none of those. Read as
-    `"!input motion_sensor"`, a reader sees a string that is no reference,
-    which is also what it gets from Home Assistant when the tag goes
-    unresolved.
+    `"!input motion_sensor"`, they make a case a parser fixture: it proves a
+    reader does not trip over the text. It is not what Home Assistant hands
+    the repairs, which see inputs filled in and files read.
     """
 
 

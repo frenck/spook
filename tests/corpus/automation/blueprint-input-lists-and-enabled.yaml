@@ -4,6 +4,8 @@ note: >-
   conditions, a for_each and a target), plus `enabled: !input` on a trigger and
   an input inside trigger_variables. Not loadable as an automation; only the
   trigger and condition readers look at it, and no tagged value may come out.
+  A parser fixture: in a house the inputs are filled in before any repair
+  reads the automation.
 expect:
   triggers:
     find: [state]

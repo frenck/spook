@@ -2,7 +2,8 @@ source: https://github.com/kloggy/HA-Irrigation-Version2/blob/master/lovelace/ga
 note: >-
   Config template card whose variables hold JavaScript that reads
   states['...'].state, an entities list it watches for redraws, and a nested
-  card whose name is a ${...} JavaScript expression using the variable.
+  card whose name is a ${...} JavaScript expression using the variable. The entity the JavaScript reads
+  is in the entities list too.
 expect:
   entities:
     find: [input_text.notify_user_name, input_boolean.notify_user]

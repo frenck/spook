@@ -2,11 +2,16 @@ source: https://community.home-assistant.io/t/list-names-of-input-number-counter
 note: >-
   Announcing low counters by name: expand a group and several input_numbers,
   compare states as strings with selectattr lt. The quoted '12' is a
-  threshold, not a state of any listed entity. `group.` entities are left out
-  of the entity repair on purpose (`IGNORED_ENTITY_DOMAINS`).
+  threshold, not a state of any listed entity.
+out_of_scope: >-
+  `group.`, `device_tracker.` and `persistent_notification.` entities are
+  left out of the unknown entity repairs on purpose
+  (`IGNORED_ENTITY_DOMAINS`): an action can create them on the fly, so one
+  that does not exist yet is not necessarily broken.
 expect:
   entities:
     find: [input_number.left_tap_counter, input_number.right_tap_counter]
+    not_find: [group.keg_counters]
   states:
     not_find:
       - group.keg_counters: "12"

@@ -1,8 +1,8 @@
 source: https://github.com/EvisHome/Home-Assistant/blob/main/dashboards/unraid/picture-elements.yaml
 note: >-
   Picture elements card hosting button cards whose state_display is a JavaScript
-  template reading an attribute through states['...']. Only the entity key is a
-  dashboard reference; the JavaScript is code run in the browser.
+  template reading an attribute through states['...']. The entity the JavaScript
+  reads is the card's own, read through its entity key.
 expect:
   entities:
     find: [binary_sensor.home_server]

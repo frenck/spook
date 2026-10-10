@@ -2,9 +2,14 @@ source: https://community.home-assistant.io/t/trv-temperature-sync-automation-br
 note: >-
   Thermostats listed once under trigger_variables and the state trigger
   entity_id a template over that list. A state trigger takes entity IDs only,
-  so Home Assistant refuses this automation and the repairs that skip
-  unavailable automations never read it.
+  so Home Assistant refuses this automation.
+out_of_scope: >-
+  The repairs leave an automation Home Assistant refuses to load to Home
+  Assistant's own issue; only the trigger and condition readers look at it,
+  so the entities in it are not read.
 expect:
+  entities:
+    not_find: [climate.living_room_trv_left, climate.dining_room_trv]
   attributes:
     not_find:
       - climate.dining_room_trv: temperature

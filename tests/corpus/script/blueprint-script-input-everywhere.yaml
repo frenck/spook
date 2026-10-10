@@ -2,7 +2,8 @@ source: https://community.home-assistant.io/t/message-malformed-expected-str-for
 note: >-
   A script blueprint body with `!input` in a device target, for_each, a delay,
   an enabled flag and a condition list. Not loadable as a script; nothing
-  tagged may come out as a reference.
+  tagged may come out as a reference. A parser fixture: in a house the inputs
+  are filled in before any repair reads the script.
 expect:
   devices:
     not_find: ["!input device_id"]

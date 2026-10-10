@@ -1,9 +1,11 @@
 """Running a corpus case through what Spook's repairs read.
 
 Layer one of the corpus: configuration in, references out. Nothing here
-reads a configuration itself. Each kind is handed to Home Assistant the way
-a house would load it, and then to the very repairs that look at that kind,
-so a reader that changes changes what the corpus sees.
+reads a configuration itself. Each kind is handed to Home Assistant's own
+setup, as written, and then to the very repairs that look at that kind, so
+a reader that changes changes what the corpus sees. Home Assistant's YAML
+tags arrive as the opaque strings the case loader made of them, never
+resolved.
 
 The house is empty: no entities, areas, devices, services or anything else,
 apart from the integration being read, whose own actions therefore exist.
@@ -120,7 +122,7 @@ async def _async_round_findings(
 async def async_load_component_entity(
     hass: HomeAssistant, domain: str, config: dict[str, Any]
 ) -> Any:
-    """Load one automation or script the way a house does, and return it.
+    """Load one automation or script through Home Assistant, and return it.
 
     Through Home Assistant's own setup, so the entity is the one the repairs
     find in a running house: validated, with its own idea of what it
