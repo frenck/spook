@@ -294,6 +294,13 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
         ("{{ my_states('Sensor.Pump') }}", set()),
         ("{{ obj.states('Sensor.Pump') }}", set()),
         ("{{ x.states.sensor.Pump.state }}", set()),
+        # Nor a dotted filter or test name, which Jinja reads whole.
+        ("{{ 'x' | states.sensor.pump.state }}", set()),
+        ("{{ 'x' |states.sensor.pump.attributes.unit }}", set()),
+        ("{{ 'x' is states.sensor.pump.state }}", set()),
+        ("{{ 'x' is not states.sensor.pump.state }}", set()),
+        ("{{ x is defined and states.sensor.pump.state }}", {"sensor.pump"}),
+        ("{{ states.sensor.pump.state | float }}", {"sensor.pump"}),
         (
             "{% macro states(x) %}{% endmacro %}{{ states('Sensor.Pump') }}",
             set(),
@@ -563,6 +570,30 @@ def test_a_literal_added_to_in_front_of_a_lookup_is_looked_up() -> None:
     looked_up = template_extraction._looked_up_in_any_case(template)  # noqa: SLF001
 
     assert looked_up == frozenset({"Sensor.Pump"})
+
+
+@pytest.mark.parametrize(
+    ("template", "expected"),
+    [
+        ("{{ 'x' | states.Light.Kitchen.state }}", frozenset()),
+        ("{{ 'x' is states.Light.Kitchen.state }}", frozenset()),
+        ("{{ 'x' is not states.Light.Kitchen.state }}", frozenset()),
+        ("{{ x is defined and states.Light.Kitchen.state }}", {"Light.Kitchen"}),
+    ],
+)
+def test_a_dotted_filter_or_test_name_is_not_looked_up(
+    template: str, expected: frozenset[str]
+) -> None:
+    """Test `states.domain.object` after a `|` or an `is` is no lookup.
+
+    Jinja reads the whole dotted name there as the name of a filter or a
+    test. The extraction drops it on its own as well, so this asks the
+    lookup reader directly.
+    """
+    # pylint: disable-next=protected-access
+    looked_up = template_extraction._looked_up_in_any_case(template)  # noqa: SLF001
+
+    assert looked_up == expected
 
 
 async def test_filter_template_entities_ignores_ignored_domains(

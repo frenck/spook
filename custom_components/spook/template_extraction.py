@@ -344,6 +344,44 @@ def _is_concatenated_template_match(
     return before_literal.endswith(_GLUE) or after_literal.startswith(_GLUE)
 
 
+def _filter_and_test_name_offsets(template_str: str) -> frozenset[int]:
+    """Return where each name Jinja reads as the name of a filter or test starts.
+
+    That is the name right after a `|`, an `is` or an `is not`. Jinja's
+    parser reads a dotted name there whole, as one filter or test name: in
+    `'x' | states.light.kitchen.state` that is a filter called
+    `states.light.kitchen.state`, which Home Assistant does not have, and
+    no lookup of `light.kitchen`.
+    """
+    lexed = _lexed(template_str)
+    if lexed is None:
+        return frozenset()
+
+    tokens = [token for token in lexed if token[1] != "whitespace"]
+    return frozenset(
+        start
+        for index, (start, kind, _value) in enumerate(tokens)
+        if kind == "name"
+        and (
+            _is_raw(tokens, index - 1, "operator", ("|",))
+            or _is_raw(tokens, index - 1, "name", ("is",))
+            or (
+                _is_raw(tokens, index - 1, "name", ("not",))
+                and _is_raw(tokens, index - 2, "name", ("is",))
+            )
+        )
+    )
+
+
+def _is_filter_or_test_name_match(
+    match: re.Match[str], filter_and_test_name_offsets: frozenset[int]
+) -> bool:
+    """Return if a `states.domain.entity` match is a filter or test name."""
+    if len(match.groups()) != _STATES_DOMAIN_ENTITY_GROUPS:
+        return False
+    return match.start() in filter_and_test_name_offsets
+
+
 def _is_jinja_import_match(template_str: str, match: re.Match[str]) -> bool:
     """Return if a quoted entity-like literal is a Jinja import filename."""
     groups = match.groups()
@@ -1225,6 +1263,9 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
     )
     text_argument_offsets = _text_argument_offsets(template_without_comments)
     glued_literals = _glued_literals(template_without_comments)
+    filter_and_test_name_offsets = _filter_and_test_name_offsets(
+        template_without_comments
+    )
 
     entities = set()
 
@@ -1237,6 +1278,7 @@ def _extract_entity_candidates_from_template(template_str: str) -> frozenset[str
                 or _is_jinja_import_match(template_without_comments, match)
                 or _is_string_method_argument_match(template_without_comments, match)
                 or _is_text_argument_match(match, text_argument_offsets)
+                or _is_filter_or_test_name_match(match, filter_and_test_name_offsets)
             ):
                 continue
 
@@ -1565,10 +1607,19 @@ def _states_pair(tokens: list[_Token], index: int) -> tuple[str, str] | None:
     """Read `states.light.x.attributes...` starting at `states`.
 
     The attribute as a name, `['brightness']` or `.get('brightness')`. A
-    method on the attributes, like `.items()`, is not an attribute.
+    method on the attributes, like `.items()`, is not an attribute. Nor
+    after a `|` or an `is`: Jinja reads the whole dotted name there as the
+    name of a filter or a test, which Home Assistant does not have.
     """
-    if _is(tokens, index - 1, "dot") or not _shaped(
-        tokens, index + 1, ("dot", "name", "dot", "name", "dot", ("name", "attributes"))
+    if (
+        _is(tokens, index - 1, "dot")
+        or _is(tokens, index - 1, "pipe")
+        or _is_test(tokens, index)
+        or not _shaped(
+            tokens,
+            index + 1,
+            ("dot", "name", "dot", "name", "dot", ("name", "attributes")),
+        )
     ):
         return None
 

@@ -374,6 +374,13 @@ def test_spook_state_trigger_is_handed_back_whole() -> None:
         ("{{ state_attr('light.' ~ room, 'brightness') }}", set()),
         # A method on the attributes is not an attribute.
         ("{{ states.light.kitchen.attributes.items() | list }}", set()),
+        # After a `|` or an `is`, Jinja reads the whole dotted name as the
+        # name of a filter or a test, which does not exist.
+        ("{{ 'x' | states.light.kitchen.attributes.brightness }}", set()),
+        ("{{ 'x' is states.light.kitchen.attributes.brightness }}", set()),
+        ("{{ 'x' is not states.light.kitchen.attributes.brightness }}", set()),
+        # A test further back is no part of it.
+        ("{{ x is defined and states.light.kitchen.attributes.brightness }}", PAIR),
         # Commented out.
         ("{# state_attr('light.kitchen', 'brightness') #}{{ 1 }}", set()),
         # Not a template at all, or outside of the expressions.
