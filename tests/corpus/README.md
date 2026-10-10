@@ -56,6 +56,9 @@ The first document says what the case is:
 - `known_issue` (optional): Spook gets this case wrong today. The `expect`
   rules say what should happen, and the test is an expected failure until they
   all hold. Once they do, the test fails until the mark is removed.
+- `out_of_scope` (optional): a reason Spook leaves something in this case
+  alone on purpose. It needs a `not_find` rule naming what is left alone, so a
+  reader that starts taking it fails the case instead of passing silently.
 
 The second document is the configuration, as Home Assistant would load it: one
 automation, one script (its body, with `sequence`), or one dashboard, view or
@@ -80,7 +83,8 @@ itself is loaded, so its own actions, like `script.turn_on`, are never
 reported.
 
 A dashboard case that is a view or a card is put in a dashboard first, since
-the repairs only read dashboards, view by view.
+the repairs only read dashboards, view by view. One with a `strategy` at its
+root stays as it is, the repairs read the strategy of such a dashboard.
 
 ## Adding a case
 
@@ -97,7 +101,23 @@ the repairs only read dashboards, view by view.
 4. Add `expect` lines for what matters, and commit the case with its snapshot.
 
 A case that shows a false finding or a miss is a bug. Fix it in the same pull
-request when it is small, otherwise mark it with `known_issue` and file it.
+request when it is small, otherwise mark it with `known_issue`, with the
+`expect` rule it should keep, and file it.
+
+Not every reference Spook does not read is a miss. These are left alone on
+purpose, and a case showing one says so with `out_of_scope`:
+
+- keys a custom card invents for itself. Spook reads the keys every card
+  shares and the custom card shapes it claims (Bubble Card, the Mushroom
+  template card's `area`);
+- templates and JavaScript on dashboards, which the frontend or a card
+  renders;
+- IDs handed to template functions, apart from the device ones Spook reads;
+- plain values in variables and `for_each` items under keys of somebody's
+  own, which are data until a template uses them.
+
+A case whose note says a real reference is not read has either a
+`known_issue` or an `out_of_scope`, never neither.
 
 ## Updating snapshots
 

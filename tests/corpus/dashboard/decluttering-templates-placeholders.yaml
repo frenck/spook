@@ -2,12 +2,16 @@ source: https://github.com/firstof9/my-ha-config/blob/master/decluttering_templa
 note: >-
   Whole dashboard with decluttering_templates using [[entity]] and [[title]]
   placeholders, and a view filling them through variables. The variable named
-  entity holds a real entity ID; the one named average does too, under a name
-  only the template knows.
+  entity holds a real entity ID and is read for its key; the one named
+  average does too, under a name only the template knows.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
 expect:
   entities:
     find: [sensor.house_power]
-    not_find: ["[[entity]]", "[[average]]"]
+    not_find: ["[[entity]]", "[[average]]", sensor.upstairs_temperature_average]
 ---
 decluttering_templates:
   usage_graph:

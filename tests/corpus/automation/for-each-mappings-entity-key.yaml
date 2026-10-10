@@ -1,7 +1,8 @@
 source: https://www.home-assistant.io/docs/scripts/#for-each
 note: >-
-  for_each over mappings where each item does call its entity `entity_id`.
-  The walk treats each item like a step and reads it, which is right here.
+  for_each over mappings where each item calls its entity `entity_id`. The
+  items are values handed to the loop, not steps, but a literal entity ID
+  under a reference key in them is still read.
 expect:
   entities:
     find: [light.kitchen, light.hallway]

@@ -1,8 +1,18 @@
 source: https://community.home-assistant.io/t/custom-button-card-how-can-label-custom-fields-height-set-automatically-to-fit-the-whole-content/614404/3
 note: >-
   button-card with entities passed in through `variables` under names of its
-  own (group_entity, scene_entity) and used from JavaScript. Real references
-  under keys no walk knows, so both are missed.
+  own (group_entity, scene_entity) and used from JavaScript.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
+  JavaScript in a custom card runs in the browser and is not read; only the
+  keys the dashboard walk knows are.
+expect:
+  services:
+    find: [scene.turn_on]
+  entities:
+    not_find: [light.living_room, scene.living_room_evening]
 ---
 type: custom:button-card
 variables:

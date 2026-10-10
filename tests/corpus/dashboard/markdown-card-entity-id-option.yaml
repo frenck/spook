@@ -1,11 +1,15 @@
 source: https://community.home-assistant.io/t/command-queueing-for-roborock/686779/3
 note: >-
-  Markdown content templates are not read on dashboards, so entities only
-  named in `content` are missed; the card's own entity_id option (which entity
-  changes re-render it) is read.
+  A markdown card with its own entity_id option (which entity changes
+  re-render it), read, and content templates naming another sensor.
+out_of_scope: >-
+  The dashboard repairs read keys that name a reference, never templates:
+  the frontend or a custom card renders those, and what they turn into is
+  not something to look up ahead of time.
 expect:
   entities:
     find: [input_text.vacuum_queue]
+    not_find: [sensor.vacuum_battery]
 ---
 type: markdown
 entity_id:

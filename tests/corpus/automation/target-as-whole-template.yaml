@@ -1,10 +1,18 @@
 source: https://community.home-assistant.io/t/custom-blinking-lights-blueprint/796494/5
 note: >-
   `target:` given as one template string instead of a mapping, handing a
-  variable through. No reader can see inside it, and nothing must break.
+  variable through. The variable holds the lights under entity_id, but only
+  as a value of a variable.
+out_of_scope: >-
+  Variables and for_each items are values somebody hands over. A literal
+  under a reference key like entity_id is read; a plain string under a key
+  of somebody's own is data until a template uses it, and Spook does not
+  follow that use.
 expect:
   services:
     find: [light.turn_on]
+  entities:
+    not_find: [light.kitchen, light.hallway]
 ---
 alias: Blink lights
 variables:

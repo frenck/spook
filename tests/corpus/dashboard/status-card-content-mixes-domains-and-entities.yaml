@@ -2,11 +2,15 @@ source: https://github.com/Wh1t3Rose/My-Home-Assistant/blob/main/cards/Phone-Das
 note: >-
   Custom status card whose content list mixes domains, an entity ID and
   domain plus device class labels, with entities named under hidden_entities
-  and extra_entities, keys only this card knows. Next to an ordinary
-  conditional card.
+  and extra_entities. Next to an ordinary conditional card.
+out_of_scope: >-
+  Spook reads the keys every card shares (entity, entities, entity_id and
+  friends) and the card shapes it claims, Bubble Card and the Mushroom
+  template card's area. Keys a custom card invents for itself are not read.
 expect:
   entities:
     find: [binary_sensor.washer_door, sensor.washer_progress]
+    not_find: [input_boolean.bathroom_fan, light.kitchen_spot_1]
 ---
 type: custom:vertical-stack-in-card
 cards:
