@@ -252,6 +252,76 @@ def test_extract_templates_appends_to_caller_supplied_list() -> None:
             "{% macro states(x) %}{% endmacro %}{{ states('Sensor.Pump') }}",
             set(),
         ),
+        # The same lookups as a filter, with the entity in front of it.
+        ("{{ 'Sensor.Pump' | states }}", {"sensor.pump"}),
+        ("{{ 'Sensor.Pump' | states(rounded=True) }}", {"sensor.pump"}),
+        ("{{ 'Sensor.Pump' | state_attr('unit') }}", {"sensor.pump"}),
+        ("{{ 'Sensor.Pump' | has_value }}", {"sensor.pump"}),
+        ("{{ 'Sensor.Pump' | state_translated }}", {"sensor.pump"}),
+        ("{{ 'Group.Pumps' | expand }}", {"group.pumps"}),
+        ("{{ ['light.one', 'Light.Two'] | expand }}", {"light.one", "light.two"}),
+        ("{{ 'Group.Kids' | closest }}", {"group.kids"}),
+        # And as a test, with the entity tested.
+        ("{{ 'Sensor.Pump' is has_value }}", {"sensor.pump"}),
+        ("{{ 'Sensor.Pump' is is_state('on') }}", {"sensor.pump"}),
+        ("{{ 'Sensor.Pump' is not is_state('on') }}", {"sensor.pump"}),
+        ("{{ 'Light.Kitchen' is is_state_attr('mode', 'x') }}", {"light.kitchen"}),
+        # Not where Home Assistant has no such filter or test.
+        ("{{ 'Sensor.Pump' | is_state('on') }}", set()),
+        ("{{ 'Sensor.Pump' is states }}", set()),
+        ("{{ 'Sensor.Pump' is state_attr('unit') }}", set()),
+        # Nor a filter or test by a dotted name, which is another one.
+        ("{{ 'Sensor.Pump' | states.x }}", set()),
+        ("{{ 'Sensor.Pump' is has_value.x }}", set()),
+        # Nor a literal that a sign takes before the filter or test does.
+        ("{{ -'Sensor.Pump' | states }}", set()),
+        ("{{ -'Sensor.Pump' is has_value }}", set()),
+        # Nor a list that is a subscript of what is in front of it.
+        ("{{ pumps['Sensor.Pump'] | expand }}", set()),
+        # Nor the name of a filter defined by the template, or in another case.
+        ("{% set states = 1 %}{{ 'Sensor.Pump' | states }}", set()),
+        ("{{ 'Sensor.Pump' | STATES }}", set()),
+        # `expand` looks up every argument, and the literals in a list.
+        (
+            "{{ expand('light.one', 'Switch.Fan') }}",
+            {"light.one", "switch.fan"},
+        ),
+        ("{{ expand(['sensor.Pump']) }}", {"sensor.pump"}),
+        (
+            "{{ expand(['light.one', 'Light.Two'], 'Switch.Fan',) }}",
+            {"light.one", "light.two", "switch.fan"},
+        ),
+        (
+            "{{ 'light.one' | expand('Switch.Fan', ['Light.Two']) }}",
+            {"light.one", "light.two", "switch.fan"},
+        ),
+        # But not a piece of an argument, or a list with more than literals.
+        ("{{ expand('light.one', 'Switch.' ~ fan) }}", {"light.one"}),
+        (
+            "{{ expand('light.one', 'Switch.Fan' | replace('Fan', 'Pump')) }}",
+            {"light.one"},
+        ),
+        ("{{ expand('light.one', pick('x', 'Switch.Fan')) }}", {"light.one"}),
+        ("{{ expand([fan, 'Switch.Fan']) }}", set()),
+        ("{{ expand(['Switch.Fan'][1:]) }}", set()),
+        ("{{ expand({'Switch.Fan': 1}) }}", set()),
+        # `closest` looks up its point and its entities, not its coordinates.
+        ("{{ closest('Zone.School', 'Group.Kids') }}", {"zone.school", "group.kids"}),
+        ("{{ closest('zone.home', ['Group.Kids']) }}", {"zone.home", "group.kids"}),
+        ("{{ closest(52, 4, 'Group.Kids') }}", {"group.kids"}),
+        ("{{ closest('Sensor.Lat', 'Sensor.Lon', 'group.kids') }}", {"group.kids"}),
+        ("{{ closest(['Zone.Home'], 'group.kids') }}", {"group.kids"}),
+        ("{{ closest(*point, 'Group.Kids') }}", set()),
+        ("{{ closest('Group.Kids', home=True) }}", set()),
+        (
+            "{{ 'Group.Kids' | closest('Zone.School') }}",
+            {"zone.school", "group.kids"},
+        ),
+        ("{{ 'Group.Kids' | closest('Sensor.Lat', 'Sensor.Lon') }}", {"group.kids"}),
+        ("{{ 'Group.Kids' | closest(52, 4, 'Zone.Home') }}", set()),
+        ("{{ 'Group.Kids' | closest(*point) }}", set()),
+        # `distance` takes a mixed case one for a coordinate, at any position.
+        ("{{ distance('zone.home', 'Sensor.Phone') }}", {"zone.home"}),
     ],
 )
 def test_extract_entities_from_template_regex(
@@ -267,6 +337,25 @@ def test_extract_entities_from_template_regex(
     )
 
     assert extract_entities_from_template_regex(hass, template) == expected
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        "{{ 'sensor.' 'Sensor.Pump' | states }}",
+        "{{ 'sensor.' 'Sensor.Pump' is has_value }}",
+    ],
+)
+def test_a_glued_literal_in_front_of_a_lookup_is_not_looked_up(template: str) -> None:
+    """Test a literal glued to the one before it is not taken as the entity.
+
+    Jinja joins the two into one string first. The extraction drops a glued
+    literal on its own as well, so this asks the lookup reader directly.
+    """
+    # pylint: disable-next=protected-access
+    looked_up = template_extraction._looked_up_in_any_case(template)  # noqa: SLF001
+
+    assert looked_up == frozenset()
 
 
 async def test_filter_template_entities_ignores_ignored_domains(

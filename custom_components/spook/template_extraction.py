@@ -500,14 +500,216 @@ _STATE_LOOKUPS = frozenset(
 )
 
 
+# The ones Home Assistant offers as a filter, where the entity is the value in
+# front of it, and as a test, where it is the value tested. `is_state` is no
+# filter, `states` no test.
+_STATE_LOOKUP_FILTERS = frozenset(
+    {"closest", "expand", "has_value", "state_attr", "state_translated", "states"}
+)
+_STATE_LOOKUP_TESTS = frozenset({"has_value", "is_state", "is_state_attr"})
+
+# The lookups that take more than one entity, and lists of them: `expand`,
+# and `closest`, which hands its entities to `expand`.
+_EXPANDING_LOOKUPS = frozenset({"closest", "expand"})
+
+# What makes a literal in front of a filter or a test only a piece of what it
+# applies to: a string right before it, which Jinja glues on, or a sign,
+# which takes the literal before the filter does. A minus between two values
+# looks the same as a sign, so that one is not read either.
+_TAKES_THE_LITERAL = frozenset({"add", "string", "sub"})
+# And a list right after a value is a subscript of it: `x['light.a']`.
+_TAKES_THE_LIST = _TAKES_THE_LITERAL | {
+    "float",
+    "integer",
+    "name",
+    "rbrace",
+    "rbracket",
+    "rparen",
+}
+
+# With this many arguments, `closest` takes the first two for a latitude and
+# a longitude, and only the third is looked up.
+_CLOSEST_WITH_COORDINATES = 3
+
+_OPENERS = frozenset({"lbrace", "lbracket", "lparen"})
+_CLOSERS = frozenset({"rbrace", "rbracket", "rparen"})
+
+
+def _call_arguments(tokens: list[_Token], start: int) -> list[list[_Token]] | None:
+    """Return the tokens of each argument of the call opened at this index.
+
+    Split on the commas of the call itself; one inside a list or a nested
+    call belongs to that.
+    """
+    if not _is(tokens, start, "lparen"):
+        return None
+
+    arguments: list[list[_Token]] = [[]]
+    depth = 0
+    for kind, value in tokens[start + 1 :]:
+        if kind in _CLOSERS and depth == 0:
+            # A trailing comma leaves nothing after it.
+            return [argument for argument in arguments if argument]
+
+        if kind in _OPENERS:
+            depth += 1
+        elif kind in _CLOSERS:
+            depth -= 1
+        elif kind == "comma" and depth == 0:
+            arguments.append([])
+            continue
+        arguments[-1].append((kind, value))
+
+    return None
+
+
+def _literal(argument: list[_Token]) -> list[str]:
+    """Return the entity ID an argument is, if it is one whole literal."""
+    if len(argument) == 1 and argument[0][0] == "string":
+        return [argument[0][1]]
+    return []
+
+
+def _expanded(argument: list[_Token]) -> list[str]:
+    """Return the entity IDs `expand` looks up from one argument.
+
+    A literal, or a list of nothing but literals, which `expand` looks into.
+    """
+    if not _is(argument, 0, "lbracket"):
+        return _literal(argument)
+
+    listed = _literals_listed(argument, 0)
+    if listed is None or listed[1] != len(argument):
+        return []
+    return listed[0]
+
+
+def _is_positional(argument: list[_Token]) -> bool:
+    """Return whether an argument takes one position: no keyword, no `*`."""
+    return not (
+        _shaped(argument, 0, ("name", "assign"))
+        or _is(argument, 0, "mul")
+        or _is(argument, 0, "pow")
+    )
+
+
+def _closest_arguments(arguments: list[list[_Token]]) -> list[str]:
+    """Return the entity IDs `closest` looks up from its arguments.
+
+    With one argument, those are the entities. With two, the first is the
+    point it measures from, which is looked up as well. With three, the
+    first two are a latitude and a longitude.
+    """
+    if not all(_is_positional(argument) for argument in arguments):
+        return []
+
+    if len(arguments) >= _CLOSEST_WITH_COORDINATES:
+        return _expanded(arguments[2])
+
+    found: list[str] = []
+    if len(arguments) == _CLOSEST_WITH_COORDINATES - 1:
+        found += _literal(arguments[0])
+    if arguments:
+        found += _expanded(arguments[-1])
+    return found
+
+
+def _called_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
+    """Return what a lookup called by its name, `states(...)`, looks up."""
+    if name in _EXPANDING_LOOKUPS:
+        if (arguments := _call_arguments(tokens, index + 1)) is None:
+            return []
+        if name == "closest":
+            return _closest_arguments(arguments)
+        return [entity for argument in arguments for entity in _expanded(argument)]
+
+    # Only a whole argument: `'sensor.Pump' + '_interval'` and two strings
+    # side by side are pieces of one.
+    if _shaped(tokens, index + 1, ("lparen", "string")) and _ends_argument(
+        tokens, index + 3
+    ):
+        return [tokens[index + 2][1]]
+    if name == "states" and _shaped(tokens, index + 1, ("dot", "name", "dot", "name")):
+        return [f"{tokens[index + 2][1]}.{tokens[index + 4][1]}"]
+    return []
+
+
+def _value_in_front(tokens: list[_Token], end: int, *, lists: bool) -> list[str]:
+    """Return the literal, or the list of literals, right before this index.
+
+    Only when it is all that a filter or a test there applies to.
+    """
+    if _is(tokens, end - 1, "string"):
+        start, literals, taken_by = end - 1, [tokens[end - 1][1]], _TAKES_THE_LITERAL
+    elif lists and _is(tokens, end - 1, "rbracket"):
+        start = end - 2
+        while start >= 0 and tokens[start][0] in {"comma", "string"}:
+            start -= 1
+        # Jinja balances brackets, so this ends at `end` if it is a list.
+        if (listed := _literals_listed(tokens, start)) is None:
+            return []
+        literals, taken_by = listed[0], _TAKES_THE_LIST
+    else:
+        return []
+
+    if start > 0 and tokens[start - 1][0] in taken_by:
+        return []
+    return literals
+
+
+def _filtered_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
+    """Return what a lookup used as a filter, `'x' | states`, looks up.
+
+    The value in front is the first argument. `expand` and `closest` take a
+    list there too, and look up arguments of the filter as well. A dotted
+    name, `| states.x`, is another filter.
+    """
+    if name not in _STATE_LOOKUP_FILTERS or _is(tokens, index + 1, "dot"):
+        return []
+
+    if name not in _EXPANDING_LOOKUPS:
+        return _value_in_front(tokens, index - 1, lists=False)
+
+    # Without parentheses, the filter has no arguments of its own.
+    arguments = _call_arguments(tokens, index + 1) or []
+    in_front = _value_in_front(tokens, index - 1, lists=True)
+    if name == "expand":
+        return in_front + [
+            entity for argument in arguments for entity in _expanded(argument)
+        ]
+
+    # As a filter, `closest` moves the value in front to the end of its
+    # arguments. Behind three or more, it is not the one looked up.
+    if len(arguments) >= _CLOSEST_WITH_COORDINATES or not all(
+        _is_positional(argument) for argument in arguments
+    ):
+        return []
+    if len(arguments) == 1:
+        return in_front + _literal(arguments[0])
+    return in_front
+
+
+def _tested_lookup(tokens: list[_Token], index: int, name: str) -> list[str]:
+    """Return what a lookup used as a test, `'x' is has_value`, looks up.
+
+    A dotted name, `is has_value.x`, is another test.
+    """
+    if name not in _STATE_LOOKUP_TESTS or _is(tokens, index + 1, "dot"):
+        return []
+
+    is_index = index - 2 if _is(tokens, index - 1, "name", "not") else index - 1
+    return _value_in_front(tokens, is_index, lists=False)
+
+
 @lru_cache(maxsize=1024)
 def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
     """Return the entity IDs a template looks a state up for, as written.
 
-    Read with Jinja's own lexer, so only a real call counts: inside an
+    Read with Jinja's own lexer, so only a real lookup counts: inside an
     expression, not in a string or in the text around it, by the very name
     (`STATES(...)`, `my_states(...)` and `obj.states(...)` are no lookups),
-    and not a name the template defines itself. These are the ones Home
+    and not a name the template defines itself. Called, as a filter or as a
+    test, wherever Home Assistant offers it as one. These are the ones Home
     Assistant tries in lower case too.
     """
     expressions = _expressions(template_str)
@@ -523,20 +725,13 @@ def _looked_up_in_any_case(template_str: str) -> frozenset[str]:
                 or _is(tokens, index - 1, "dot")
             ):
                 continue
-            # As a filter or a test, the first argument is not the entity: the
-            # value in front of it is.
-            if _is(tokens, index - 1, "pipe") or _is_test(tokens, index):
-                continue
-            # Only a whole argument: `'sensor.Pump' + '_interval'` and two
-            # strings side by side are pieces of one.
-            if _shaped(tokens, index + 1, ("lparen", "string")) and _ends_argument(
-                tokens, index + 3
-            ):
-                found.add(tokens[index + 2][1])
-            elif name == "states" and _shaped(
-                tokens, index + 1, ("dot", "name", "dot", "name")
-            ):
-                found.add(f"{tokens[index + 2][1]}.{tokens[index + 4][1]}")
+
+            if _is(tokens, index - 1, "pipe"):
+                found.update(_filtered_lookup(tokens, index, name))
+            elif _is_test(tokens, index):
+                found.update(_tested_lookup(tokens, index, name))
+            else:
+                found.update(_called_lookup(tokens, index, name))
     return frozenset(found)
 
 
