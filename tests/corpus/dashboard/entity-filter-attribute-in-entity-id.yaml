@@ -4,7 +4,8 @@ note: >-
   valid entity ID, so nothing is reported for it. The later fix with state_filter attribute is the second card.
 out_of_scope: >-
   A value that is no entity ID at all is not guessed back to the entity it
-  was meant to be.
+  was meant to be. Decided with the maintainer: guessing intent from a broken
+  value is not Spook's job.
 expect:
   entities:
     find: [cover.bedroom_blind]
