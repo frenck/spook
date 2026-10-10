@@ -17,6 +17,7 @@ from ....reference_extraction import (
     custom_event_payload_entities,
     event_payload_keys_to_leave_alone,
     without_disabled_steps,
+    without_never_rendered,
 )
 from ....template_extraction import (
     async_extract_entities_from_config,
@@ -46,7 +47,11 @@ async def extract_template_entities_from_automation_entity(
     else:
         return set()
 
-    return await async_extract_entities_from_config(hass, config, known_services)
+    # A description, a name or a field example is shown, never rendered: an
+    # entity in an example template there is not one the automation uses.
+    return await async_extract_entities_from_config(
+        hass, without_never_rendered(config), known_services
+    )
 
 
 async def extract_entities_from_automation_config(
@@ -272,7 +277,7 @@ class SpookRepair(AbstractSpookAutomationReferencesRepair):
             self.hass, config, self._known_services
         )
         named |= await async_extract_entities_from_config(
-            self.hass, config, self._known_services
+            self.hass, without_never_rendered(config), self._known_services
         )
         return named
 

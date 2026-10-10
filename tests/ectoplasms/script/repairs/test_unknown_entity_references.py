@@ -444,3 +444,28 @@ async def test_event_fields_in_old_style_action_data_are_still_read(
     }
 
     assert await _unknown_in_script(hass, scripts, "relay") == {"light.from_the_remote"}
+
+
+async def test_a_field_example_names_no_entity(hass: HomeAssistant) -> None:
+    """Test an example template in a field or a step name is not read.
+
+    Home Assistant shows those, it never renders them.
+    """
+    scripts = {
+        "announce": {
+            "fields": {
+                "message": {
+                    "example": "{{ states('sensor.field_example_ghost') }}",
+                    "selector": {"text": {}},
+                }
+            },
+            "sequence": [
+                {
+                    "alias": "Was {{ states('sensor.step_name_example') }}",
+                    "delay": 1,
+                }
+            ],
+        }
+    }
+
+    assert await _unknown_in_script(hass, scripts, "announce") == set()

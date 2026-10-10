@@ -1208,3 +1208,60 @@ async def test_an_integration_event_payload_is_still_reported(
     await repair._async_setup_inspection()
 
     assert await repair._async_compute_unknown_references(entity) == {"timer.laundry"}
+
+
+async def _async_unknown_in_automation(hass: HomeAssistant, config: dict) -> set[str]:
+    """Load one automation the way Home Assistant does, and ask the repair."""
+    assert await async_setup_component(hass, "automation", {"automation": config})
+    await hass.async_block_till_done()
+    (entity,) = hass.data[DATA_INSTANCES]["automation"].entities
+
+    repair = SpookRepair(hass)
+    await repair._async_setup_inspection()
+    return await repair._async_compute_unknown_references(entity)
+
+
+async def test_text_that_is_never_rendered_names_no_entity(
+    hass: HomeAssistant,
+) -> None:
+    """Test an example template in a description or a name is not read.
+
+    Home Assistant shows those, it never renders them. Issue #1082.
+    """
+    config: dict[str, Any] = {
+        "alias": "Porch light",
+        "description": "Uses {{ states('sensor.your_entity_last_turned_on') }}",
+        "triggers": [{"trigger": "homeassistant", "event": "start"}],
+        "actions": [
+            {
+                "alias": "Was {{ states('sensor.step_name_example') }}",
+                "delay": 1,
+            }
+        ],
+    }
+
+    assert await _async_unknown_in_automation(hass, config) == set()
+
+
+async def test_a_template_in_action_data_still_names_entities(
+    hass: HomeAssistant,
+) -> None:
+    """Test a `description` in action data is rendered, so it is still read."""
+    config: dict[str, Any] = {
+        "alias": "Calendar",
+        "triggers": [{"trigger": "homeassistant", "event": "start"}],
+        "actions": [
+            {
+                "action": "calendar.create_event",
+                "target": {"entity_id": "calendar.home"},
+                "data": {
+                    "summary": "Laundry",
+                    "description": "{{ states('sensor.washing_machine_ghost') }}",
+                },
+            }
+        ],
+    }
+
+    assert "sensor.washing_machine_ghost" in await _async_unknown_in_automation(
+        hass, config
+    )

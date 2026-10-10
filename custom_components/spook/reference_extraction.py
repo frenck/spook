@@ -475,7 +475,7 @@ def _walk_attribute_references(
 _NEVER_RENDERED_KEYS = frozenset({"alias", "description", "fields"})
 
 
-def _without_never_rendered(config: Any) -> Any:
+def without_never_rendered(config: Any) -> Any:
     """Return the configuration without the parts that are never rendered.
 
     Payloads are kept whole, whatever their keys are called: the data of an
@@ -483,12 +483,12 @@ def _without_never_rendered(config: Any) -> Any:
     """
     if isinstance(config, dict):
         return {
-            key: value if key in _PAYLOAD_KEYS else _without_never_rendered(value)
+            key: value if key in _PAYLOAD_KEYS else without_never_rendered(value)
             for key, value in config.items()
             if key not in _NEVER_RENDERED_KEYS
         }
     if isinstance(config, list):
-        return [_without_never_rendered(item) for item in config]
+        return [without_never_rendered(item) for item in config]
     return config
 
 
@@ -570,7 +570,7 @@ def extract_attribute_references_from_config(config: Any) -> NamedReferences:
     _walk_attribute_references(pruned, found, followed)
 
     for template in extract_template_strings_from_config(
-        _without_never_rendered(pruned)
+        without_never_rendered(pruned)
     ):
         found.update(extract_attribute_pairs_from_template(template, shadowed))
 
@@ -698,7 +698,7 @@ def extract_state_references_from_config(config: Any) -> NamedReferences:
     _walk_state_references(pruned, found, followed)
 
     for template in extract_template_strings_from_config(
-        _without_never_rendered(pruned)
+        without_never_rendered(pruned)
     ):
         found.update(extract_state_pairs_from_template(template, shadowed))
 
