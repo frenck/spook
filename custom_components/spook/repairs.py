@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 from datetime import timedelta
 import hashlib
 import importlib
+import json
 from pathlib import Path
 from typing import TYPE_CHECKING, Any, final
 
@@ -45,6 +46,7 @@ from homeassistant.helpers.recorder import get_instance
 from homeassistant.util.async_ import create_eager_task
 
 from .attribute_checking import async_unknown_attributes
+from .attribute_value_checking import async_unknown_attribute_values
 from .const import DOMAIN, LOGGER
 from .dashboard_resources import is_yaml_managed, redundant_item_ids
 from .dismissals import async_get_dismissals
@@ -70,6 +72,7 @@ from .helper_sources import (
     async_unknown_min_max_members,
 )
 from .reference_extraction import (
+    AttributeValue,
     NamedReferences,
     async_collect_mentioned_strings,
     async_referencing,
@@ -716,9 +719,20 @@ class AbstractSpookEntityComponentUnknownReferencesRepair(AbstractSpookRepair, A
             )
 
 
-def _finding_reference(entity_id: str, name: str) -> str:
-    """Return how an unknown attribute or state is written down in an issue."""
+def _finding_reference(entity_id: str, name: str | AttributeValue) -> str:
+    """Return how an unknown attribute or state is written down in an issue.
+
+    A value of an attribute keeps its type: `2` and `"2"` are not the same
+    thing to an attribute.
+    """
+    if isinstance(name, AttributeValue):
+        return f"{entity_id}[{name.attribute}]:{json.dumps(name.value)}"
     return f"{entity_id}:{name}"
+
+
+def _written(value: str | float) -> str:
+    """Return a value of an attribute the way it reads in YAML."""
+    return value if isinstance(value, str) else json.dumps(value)
 
 
 @dataclass(frozen=True, slots=True)
@@ -726,7 +740,7 @@ class _UnknownName:
     """Something an entity never has, named in an automation or script."""
 
     entity_id: str
-    name: str
+    name: str | AttributeValue
     suggestion: str | None
 
 
@@ -771,7 +785,9 @@ class AbstractSpookUnknownEntityNamesRepair(
         """Return what a configuration names, and of which entities."""
 
     @abstractmethod
-    async def _async_unknown(self, pairs: set[tuple[str, str]]) -> set[_UnknownName]:
+    async def _async_unknown(
+        self, pairs: set[tuple[str, str | AttributeValue]]
+    ) -> set[_UnknownName]:
         """Return the (entity ID, name) pairs the entity never has."""
 
     async def async_activate(self) -> None:
@@ -805,7 +821,9 @@ class AbstractSpookUnknownEntityNamesRepair(
             )
         )
 
-    def _named_in(self, entity: Any, config: dict[str, Any]) -> set[tuple[str, str]]:
+    def _named_in(
+        self, entity: Any, config: dict[str, Any]
+    ) -> set[tuple[str, str | AttributeValue]]:
         """Return the (entity ID, name) pairs a configuration names.
 
         Read once per configuration, remembered against the configuration
@@ -848,7 +866,7 @@ class AbstractSpookUnknownEntityNamesRepair(
         entities = list(self.hass.data[DATA_INSTANCES][self.domain].entities)
 
         configs: dict[str, Any] = {}
-        named: dict[str, set[tuple[str, str]]] = {}
+        named: dict[str, set[tuple[str, str | AttributeValue]]] = {}
         for entity in entities:
             # Reading a configuration is CPU-bound, and one can be big: the
             # event loop gets a turn after each.
@@ -912,7 +930,12 @@ class AbstractSpookUnknownEntityNamesRepair(
 
         found = []
         for finding in unknown:
-            line = _finding_reference(finding.entity_id, finding.name)
+            if isinstance(name := finding.name, AttributeValue):
+                line = (
+                    f"{name.attribute} of {finding.entity_id}: {_written(name.value)}"
+                )
+            else:
+                line = _finding_reference(finding.entity_id, name)
             if finding.suggestion is not None:
                 line += f" (did you mean {finding.suggestion}?)"
             found.append(line)
@@ -923,9 +946,13 @@ class AbstractSpookUnknownEntityNamesRepair(
         lines = []
         for reference in references:
             finding = self._unknown_by_reference[reference]
-            line = self.finding_line.format(
-                name=finding.name, entity_id=finding.entity_id
-            )
+            if isinstance(name := finding.name, AttributeValue):
+                line = (
+                    f"- `{name.attribute}` of `{finding.entity_id}`: "
+                    f"`{_written(name.value)}`"
+                )
+            else:
+                line = self.finding_line.format(name=name, entity_id=finding.entity_id)
             if finding.suggestion is not None:
                 line += f" (did you mean `{finding.suggestion}`?)"
             lines.append(line)
@@ -942,11 +969,16 @@ class AbstractSpookUnknownAttributesRepair(AbstractSpookUnknownEntityNamesRepair
         """Return the attributes a configuration names, and of which entities."""
         return extract_attribute_references_from_config(config)
 
-    async def _async_unknown(self, pairs: set[tuple[str, str]]) -> set[_UnknownName]:
+    async def _async_unknown(
+        self, pairs: set[tuple[str, str | AttributeValue]]
+    ) -> set[_UnknownName]:
         """Return the (entity ID, attribute) pairs the entity never had."""
+        attributes = {
+            (entity_id, name) for entity_id, name in pairs if isinstance(name, str)
+        }
         return {
             _UnknownName(finding.entity_id, finding.attribute, finding.suggestion)
-            for finding in await async_unknown_attributes(self.hass, pairs)
+            for finding in await async_unknown_attributes(self.hass, attributes)
         }
 
 
@@ -954,7 +986,9 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
     """Base for repairs about states an entity is never in.
 
     Only for entities whose states are a fixed set; `state_checking` says
-    which those are.
+    which those are. The values of an attribute a trigger or condition waits
+    for are in here too: the same mistake, made one level down, and fixed in
+    the same place. `attribute_value_checking` says which attributes.
     """
 
     reference_label = "states"
@@ -964,12 +998,31 @@ class AbstractSpookUnknownStatesRepair(AbstractSpookUnknownEntityNamesRepair, AB
         """Return the states a configuration names, and of which entities."""
         return extract_state_references_from_config(config)
 
-    async def _async_unknown(self, pairs: set[tuple[str, str]]) -> set[_UnknownName]:
-        """Return the (entity ID, state) pairs the entity is never in."""
-        return {
+    async def _async_unknown(
+        self, pairs: set[tuple[str, str | AttributeValue]]
+    ) -> set[_UnknownName]:
+        """Return the (entity ID, state or attribute value) pairs never there."""
+        states: set[tuple[str, str]] = set()
+        values: set[tuple[str, AttributeValue]] = set()
+        for entity_id, name in pairs:
+            if isinstance(name, AttributeValue):
+                values.add((entity_id, name))
+            else:
+                states.add((entity_id, name))
+
+        unknown = {
             _UnknownName(finding.entity_id, finding.state, finding.suggestion)
-            for finding in await async_unknown_states(self.hass, pairs)
+            for finding in await async_unknown_states(self.hass, states)
         }
+        unknown.update(
+            _UnknownName(
+                finding.entity_id,
+                AttributeValue(finding.attribute, finding.value),
+                finding.suggestion,
+            )
+            for finding in await async_unknown_attribute_values(self.hass, values)
+        )
+        return unknown
 
 
 class AbstractSpookSingleShotRepairs(AbstractSpookRepairBase, ABC):
