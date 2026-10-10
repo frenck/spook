@@ -191,3 +191,75 @@ async def test_not_before_the_recorder_settles(
     assert async_issue_about(issue_registry, ISSUE)
 
     await repair.async_deactivate()
+
+
+async def _template_automation(hass: HomeAssistant, template: str) -> None:
+    """Set up an automation with a template condition."""
+    assert await async_setup_component(
+        hass,
+        "automation",
+        {
+            "automation": [
+                {
+                    "id": "haunted",
+                    "alias": "Haunted",
+                    "triggers": [{"trigger": "event", "event_type": "boo"}],
+                    "conditions": [
+                        {"condition": "template", "value_template": template}
+                    ],
+                    "actions": [],
+                }
+            ]
+        },
+    )
+    await hass.async_block_till_done()
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        "{{ is_state('light.kitchen', ['on', 'On']) }}",
+        # Parentheses around the list only group it.
+        "{{ is_state('light.kitchen', (['on', 'On'])) }}",
+    ],
+)
+async def test_is_state_with_a_list_is_read(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    template: str,
+) -> None:
+    """Test each state in the list `is_state` is given is judged."""
+    give_entity_objects(hass, "light.kitchen", kind=LightEntity)
+    hass.states.async_set("light.kitchen", "off")
+    await _template_automation(hass, template)
+
+    await SpookRepair(hass).async_inspect()
+
+    issue = async_issue_about(issue_registry, ISSUE)
+    assert issue
+    assert issue.translation_placeholders
+    assert issue.translation_placeholders["states"] == (
+        "- `On` for `light.kitchen` (did you mean `on`?)"
+    )
+
+
+@pytest.mark.parametrize(
+    "template",
+    [
+        "{{ is_state('light.kitchen', ('on', 'On')) }}",
+        "{{ is_state('light.kitchen', (['on', 'On'],)) }}",
+    ],
+)
+async def test_is_state_with_a_tuple_is_left_alone(
+    hass: HomeAssistant,
+    issue_registry: ir.IssueRegistry,
+    template: str,
+) -> None:
+    """Test a tuple is not read: core's `is_state` only looks inside a list."""
+    give_entity_objects(hass, "light.kitchen", kind=LightEntity)
+    hass.states.async_set("light.kitchen", "off")
+    await _template_automation(hass, template)
+
+    await SpookRepair(hass).async_inspect()
+
+    assert async_issue_about(issue_registry, ISSUE) is None
