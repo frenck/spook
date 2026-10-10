@@ -272,18 +272,44 @@ async def _extract_entities_from_service_data(
                     )
                 )
 
-            # script.turn_on hands the script its fields under `variables`,
-            # where calling the script by name takes them as the data itself.
-            # Either way they become the same script variables, so read them
-            # the same way.
-            variables = data_value.get("variables")
-            if service == "script.turn_on" and isinstance(variables, dict):
-                for value in variables.values():
-                    entities.update(
-                        await async_extract_entities_from_value(
-                            hass, value, known_services=known_services
-                        )
-                    )
+    if service == "script.turn_on":
+        entities.update(
+            await _extract_entities_from_script_variables(hass, config, known_services)
+        )
+
+    return entities
+
+
+async def _extract_entities_from_script_variables(
+    hass: HomeAssistant,
+    config: dict[str, Any],
+    known_services: set[str],
+) -> set[str]:
+    """Extract entities from the variables script.turn_on hands a script.
+
+    script.turn_on hands the script its fields under `variables`, where
+    calling the script by name takes them as the data itself. Either way
+    they become the same script variables, so they are read the same way.
+    Home Assistant merges the old `data_template` into the data, so the
+    variables can sit in either.
+    """
+    entities = set()
+    for data_key in _ACTION_DATA_KEYS:
+        data_value = config.get(data_key)
+        if not isinstance(data_value, dict):
+            continue
+
+        variables = data_value.get("variables")
+        if not isinstance(variables, dict):
+            continue
+
+        for value in variables.values():
+            entities.update(
+                await async_extract_entities_from_value(
+                    hass, value, known_services=known_services
+                )
+            )
+
     return entities
 
 

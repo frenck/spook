@@ -1379,13 +1379,15 @@ def _log_location(action: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+@pytest.mark.parametrize("data_key", ["data", "data_template"])
 async def test_a_script_field_handed_over_by_turn_on_is_reported(
-    hass: HomeAssistant,
+    hass: HomeAssistant, data_key: str
 ) -> None:
     """Test an entity in the variables script.turn_on hands over is read.
 
     Home Assistant gives those to the script exactly like the data of a
-    direct call to it, so a missing entity in there is just as broken.
+    direct call to it, so a missing entity in there is just as broken. The
+    old `data_template` is merged into the data, so it counts the same.
     """
     hass.states.async_set("script.google_location", "off")
 
@@ -1393,7 +1395,7 @@ async def test_a_script_field_handed_over_by_turn_on_is_reported(
         {
             "action": "script.turn_on",
             "target": {"entity_id": "script.google_location"},
-            "data": {
+            data_key: {
                 "variables": {
                     "worksheet": "LocationLog",
                     "sensor": "sensor.member_one_address",
