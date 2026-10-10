@@ -698,7 +698,9 @@ class CheckReferencesTool(_SpookTool):
         "that do not exist, attributes an entity never has, and states an "
         "entity is never in. Missing entities come with what Spook knows, "
         "like a likely rename, and attributes and states with the one most "
-        "likely meant. An empty result means the draft is clean."
+        "likely meant. A dashboard card field that takes an entity ID but "
+        "holds something that is not one is listed under not_entity_ids. An "
+        "empty result means the draft is clean."
     )
     annotations = _READ_ONLY
     parameters = probatio.Schema(

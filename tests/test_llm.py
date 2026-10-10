@@ -893,6 +893,27 @@ async def test_check_references_on_scenes_and_cards(
     }
 
 
+async def test_check_references_on_a_card_naming_no_entity_id(
+    hass: HomeAssistant, hass_admin_user: MockUser
+) -> None:
+    """Test a draft card's entity field holding no entity ID is said apart."""
+    result = await _call(
+        hass,
+        "spook__check_references",
+        hass_admin_user,
+        kind="dashboard",
+        config={
+            "type": "entity-filter",
+            "entities": ["cover.bedroom_blind.current_position"],
+            "state_filter": [0],
+            "card": {"type": "entities"},
+        },
+    )
+    assert result.data["unknown"] == {
+        "not_entity_ids": ["cover.bedroom_blind.current_position"]
+    }
+
+
 async def test_check_references_refuses_what_it_cannot_read(
     hass: HomeAssistant, hass_admin_user: MockUser
 ) -> None:

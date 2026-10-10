@@ -13,7 +13,10 @@ from homeassistant.core import callback
 from homeassistant.helpers import entity_registry as er
 
 from ....const import LOGGER
-from ....dashboard_extraction import extract_entities_from_dashboard_node
+from ....dashboard_extraction import (
+    extract_entities_from_dashboard_node,
+    extract_not_entity_ids_from_dashboard_node,
+)
 from ....entity_filtering import async_filter_known_entity_ids, async_get_all_entity_ids
 from ....entity_suggestions import async_describe_unknown_entities
 from ....repairs import AbstractSpookRepair
@@ -59,6 +62,45 @@ def _async_miscased_entity_ids(
     }
 
 
+async def _async_describe(
+    hass: HomeAssistant, unknown_entities: set[str], not_entity_ids: set[str]
+) -> str:
+    """Return the issue's list of entities, saying which are no entity ID.
+
+    No guess at what one of those was meant to be. `cover.blind.position` may
+    have meant the cover, its position or something else entirely, and a
+    wrong suggestion is worse than none.
+    """
+    lines = [
+        await async_describe_unknown_entities(hass, sorted(unknown_entities)),
+        *(f"- `{value}` (not an entity ID)" for value in sorted(not_entity_ids)),
+    ]
+    return "\n".join(line for line in lines if line)
+
+
+def _first_view_with(
+    config: Any, unknown_entities: set[str], not_entity_ids: set[str]
+) -> int | str:
+    """Return the path of the first view holding something reported.
+
+    Each view is asked with the walk that reported it: the same malformed
+    value may sit on a custom card on an earlier view, which only the entity
+    walk reads, and that view would be the wrong one to open.
+    """
+    views = config.get("views") if isinstance(config, dict) else None
+    for view_index, view in enumerate(views if isinstance(views, list) else []):
+        if not isinstance(view, dict):
+            continue
+
+        if unknown_entities & extract_entities_from_dashboard_node(
+            view
+        ) or not_entity_ids & extract_not_entity_ids_from_dashboard_node(view):
+            return view.get("path") or view_index
+
+    # A strategy dashboard has no views stored; its views open from the first.
+    return 0
+
+
 class SpookRepair(AbstractSpookRepair):
     """Spook repair tries to find unknown referenced entity in dashboards."""
 
@@ -97,27 +139,25 @@ class SpookRepair(AbstractSpookRepair):
                 continue
 
             extracted_entities = self.__async_extract_entities(config)
+            not_entity_ids = extract_not_entity_ids_from_dashboard_node(config)
             unknown_entities = async_filter_known_entity_ids(
                 self.hass,
                 entity_ids=set(extracted_entities.keys()),
                 known_entity_ids=known_entity_ids,
             ) | _async_miscased_entity_ids(self.hass, extracted_entities)
-            if unknown_entities:
-                # Get the view path of the first unknown entity (by view order)
-                first_view_path = next(
-                    path
-                    for entity_id, path in extracted_entities.items()
-                    if entity_id in unknown_entities
+            if unknown_entities or not_entity_ids:
+                first_view_path = _first_view_with(
+                    config, unknown_entities, not_entity_ids
                 )
                 title = "Overview"
                 if dashboard.config:
                     title = dashboard.config.get("title", url_path)
                 self.async_create_issue(
                     issue_id=url_path,
-                    references=unknown_entities,
+                    references=unknown_entities | not_entity_ids,
                     translation_placeholders={
-                        "entities": await async_describe_unknown_entities(
-                            self.hass, sorted(unknown_entities)
+                        "entities": await _async_describe(
+                            self.hass, unknown_entities, not_entity_ids
                         ),
                         "dashboard": title,
                         "edit": f"/{url_path}/{first_view_path}?edit=1",
@@ -129,7 +169,7 @@ class SpookRepair(AbstractSpookRepair):
                         "and created an issue for it; Entities: %s"
                     ),
                     title,
-                    ", ".join(unknown_entities),
+                    ", ".join(unknown_entities | not_entity_ids),
                 )
 
     @callback

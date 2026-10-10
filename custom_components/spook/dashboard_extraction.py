@@ -17,7 +17,14 @@ from __future__ import annotations
 import re
 from typing import TYPE_CHECKING, Any
 
-from .entity_filtering import split_comma_separated_entity_ids
+from homeassistant.const import ENTITY_MATCH_ALL, ENTITY_MATCH_NONE
+from homeassistant.core import valid_entity_id
+
+from .entity_filtering import (
+    IGNORED_ENTITY_DOMAINS,
+    NEVER_AN_ENTITY_PREFIXES,
+    split_comma_separated_entity_ids,
+)
 from .reference_extraction import is_pattern_reference
 from .template_extraction import KNOWN_DOMAINS
 
@@ -241,6 +248,289 @@ def extract_entities_from_dashboard_node(node: Any) -> set[str]:
     entities: set[str] = set()
     _walk(node, entities)
     return entities
+
+
+# Core cards whose `entity` takes an entity ID and nothing else, as the
+# frontend has them in `src/panels/lovelace/cards/types.ts`. The card looks
+# whatever is there up in the states as written, so a value that is no entity
+# ID at all, like `cover.blind.current_position`, finds nothing and the card
+# stays empty. Nothing else on the dashboard gets this far: what a custom card
+# does with its fields is its own business.
+#
+# Not the statistic card: it takes a statistic ID, and an external one like
+# `sensor:energy_total` is no entity ID and works fine.
+_CARDS_WITH_ENTITY = frozenset(
+    {
+        "alarm-panel",
+        "alert",
+        "button",
+        "entity",
+        "entity-button",
+        "gauge",
+        "humidifier",
+        "light",
+        "media-control",
+        "picture-elements",
+        "picture-entity",
+        "picture-glance",
+        "plant-status",
+        "sensor",
+        "thermostat",
+        "tile",
+        "todo-list",
+        "weather-forecast",
+    }
+)
+
+# Core cards whose `entities` lists entity IDs, as a string or as the `entity`
+# of a row. Not the statistics graph, for the same reason as the statistic
+# card. The logbook card has its own rules, further down.
+_CARDS_WITH_ENTITIES = frozenset(
+    {
+        "calendar",
+        "distribution",
+        "entities",
+        "entity-filter",
+        "glance",
+        "history-graph",
+        "map",
+        "picture-glance",
+        "toggle-group",
+    }
+)
+
+# The heading card lists its badges under `badges`, and under `entities`
+# before that. A badge without a type is an entity badge.
+_HEADING_CARD = "heading"
+_HEADING_BADGE_KEYS = ("badges", "entities")
+
+# The picture elements that name an entity, and the one that holds more.
+_PICTURE_ELEMENTS_CARD = "picture-elements"
+_ELEMENTS_WITH_ENTITY = frozenset(
+    {"icon", "image", "state-badge", "state-icon", "state-label"}
+)
+_CONDITIONAL_ELEMENT = "conditional"
+
+# View badges. A string is an entity badge, and so is one without a type.
+_BADGES_WITH_ENTITY = frozenset({"entity", "state-label"})
+_BADGES_WITH_ENTITIES = frozenset({"entity-filter"})
+_ENTITY_BADGE = "entity"
+
+# The view types. Anything else handed over on its own is a card.
+_VIEW_TYPES = frozenset({"masonry", "panel", "sections", "sidebar"})
+
+_CUSTOM_PREFIX = "custom:"
+
+# Filled in by something before the card ever sees it: Jinja, button-card's
+# `[[[ ]]]`, decluttering-card's `[[entity]]`. No entity ID has a brace or a
+# bracket in it, so neither is one that is wrong.
+_FILLED_IN_LATER = ("{", "[")
+
+
+def _is_not_an_entity_id(value: str) -> bool:
+    """Return whether a value in an entity field is no entity ID at all.
+
+    An entity ID with capitals is one, and reported as written elsewhere.
+    Everything the entity walk lets go on purpose is let go here too.
+    """
+    lower_cased = value.lower()
+    return not (
+        # Left empty by an editor halfway through.
+        not value.strip()
+        or valid_entity_id(lower_cased)
+        or lower_cased in (ENTITY_MATCH_ALL, ENTITY_MATCH_NONE)
+        or lower_cased.startswith((*NEVER_AN_ENTITY_PREFIXES, *IGNORED_ENTITY_DOMAINS))
+        or value in _CARD_PLACEHOLDERS
+        or is_pattern_reference(value)
+        or any(mark in value for mark in _FILLED_IN_LATER)
+    )
+
+
+def _check_value(value: Any, found: set[str]) -> None:
+    """Collect a field's value if it is no entity ID."""
+    if not isinstance(value, str):
+        return
+
+    found.update(
+        item
+        for item in split_comma_separated_entity_ids(value)
+        if _is_not_an_entity_id(item)
+    )
+
+
+def _is_custom(node: dict[str, Any]) -> bool:
+    """Return whether a dashboard node is a custom one."""
+    return isinstance(node_type := node.get("type"), str) and node_type.startswith(
+        _CUSTOM_PREFIX
+    )
+
+
+def _check_entity_list(items: Any, found: set[str]) -> None:
+    """Collect what in an `entities` list is no entity ID."""
+    if not isinstance(items, list):
+        return
+
+    for item in items:
+        if isinstance(item, str):
+            _check_value(item, found)
+        elif isinstance(item, dict) and not _is_custom(item):
+            _check_value(item.get("entity"), found)
+
+
+def _check_logbook_card(card: dict[str, Any], found: set[str]) -> None:
+    """Collect what a logbook card filters on that is no entity ID.
+
+    Held to the same rule as the entity walk: only under a domain Home
+    Assistant knows, since anything else is an ID somebody made up for their
+    own entries.
+    """
+    candidates: set[str] = set()
+    _check_entity_list(card.get("entities"), candidates)
+
+    if isinstance(target := card.get("target"), dict):
+        entity_ids = target.get("entity_id")
+        for entity_id in entity_ids if isinstance(entity_ids, list) else [entity_ids]:
+            _check_value(entity_id, candidates)
+
+    found.update(
+        value
+        for value in candidates
+        if value.partition(".")[0].lower() in KNOWN_DOMAINS
+    )
+
+
+def _check_badges(badges: Any, found: set[str]) -> None:
+    """Collect what a view's badges name that is no entity ID."""
+    if not isinstance(badges, list):
+        return
+
+    for badge in badges:
+        if isinstance(badge, str):
+            _check_value(badge, found)
+            continue
+
+        if not isinstance(badge, dict):
+            continue
+
+        # Checked for a string first: a list or a dict cannot be looked up in
+        # a set.
+        if not isinstance(badge_type := badge.get("type", _ENTITY_BADGE), str):
+            continue
+
+        if badge_type in _BADGES_WITH_ENTITY:
+            _check_value(badge.get("entity"), found)
+        elif badge_type in _BADGES_WITH_ENTITIES:
+            _check_entity_list(badge.get("entities"), found)
+
+
+def _check_heading_badges(card: dict[str, Any], found: set[str]) -> None:
+    """Collect what a heading card's badges name that is no entity ID."""
+    for key in _HEADING_BADGE_KEYS:
+        if not isinstance(badges := card.get(key), list):
+            continue
+
+        for badge in badges:
+            if isinstance(badge, dict) and badge.get("type", _ENTITY_BADGE) == (
+                _ENTITY_BADGE
+            ):
+                _check_value(badge.get("entity"), found)
+
+
+def _check_elements(elements: Any, found: set[str]) -> None:
+    """Collect what picture elements name that is no entity ID."""
+    if not isinstance(elements, list):
+        return
+
+    for element in elements:
+        if not isinstance(element, dict):
+            continue
+
+        if not isinstance(element_type := element.get("type"), str):
+            continue
+
+        if element_type in _ELEMENTS_WITH_ENTITY:
+            _check_value(element.get("entity"), found)
+        elif element_type == _CONDITIONAL_ELEMENT:
+            _check_elements(element.get("elements"), found)
+
+
+def _check_card(card: Any, found: set[str]) -> None:
+    """Collect what a core card, and the cards in it, name that is no entity ID."""
+    if not isinstance(card, dict) or not isinstance(card_type := card.get("type"), str):
+        return
+
+    # Nor what a custom card holds: a stack of its own may hand its cards to
+    # the frontend as they are, or fill them in first.
+    if card_type.startswith(_CUSTOM_PREFIX):
+        return
+
+    if card_type in _CARDS_WITH_ENTITY:
+        _check_value(card.get("entity"), found)
+    if card_type in _CARDS_WITH_ENTITIES:
+        _check_entity_list(card.get("entities"), found)
+    if card_type == _LOGBOOK_CARD_TYPE:
+        _check_logbook_card(card, found)
+    if card_type == _HEADING_CARD:
+        _check_heading_badges(card, found)
+    if card_type == _PICTURE_ELEMENTS_CARD:
+        _check_elements(card.get("elements"), found)
+
+    # The stacks and the grid hold cards, the conditional and the entity
+    # filter card hold one.
+    _check_cards(card.get("cards"), found)
+    _check_card(card.get("card"), found)
+
+
+def _check_cards(cards: Any, found: set[str]) -> None:
+    """Collect what a list of cards names that is no entity ID."""
+    if not isinstance(cards, list):
+        return
+
+    for card in cards:
+        _check_card(card, found)
+
+
+def _check_view(view: dict[str, Any], found: set[str]) -> None:
+    """Collect what a view's cards and badges name that is no entity ID."""
+    if _is_custom(view):
+        return
+
+    _check_badges(view.get("badges"), found)
+
+    sections = view.get("sections")
+    for section in sections if isinstance(sections, list) else []:
+        if isinstance(section, dict) and not _is_custom(section):
+            _check_cards(section.get("cards"), found)
+
+    _check_cards(view.get("cards"), found)
+
+
+def extract_not_entity_ids_from_dashboard_node(node: Any) -> set[str]:
+    """Return what a core card's entity field holds that is no entity ID.
+
+    Accepts a whole dashboard, a view or a single card. Only the core cards,
+    and only their fields that take an entity ID and nothing else.
+    """
+    found: set[str] = set()
+
+    if isinstance(node, list):
+        for item in node:
+            found |= extract_not_entity_ids_from_dashboard_node(item)
+        return found
+
+    if not isinstance(node, dict):
+        return found
+
+    if isinstance(views := node.get("views"), list):
+        for view in views:
+            if isinstance(view, dict):
+                _check_view(view, found)
+    elif not isinstance(node_type := node.get("type"), str) or node_type in _VIEW_TYPES:
+        _check_view(node, found)
+    else:
+        _check_card(node, found)
+
+    return found
 
 
 # `area` is a reference on exactly two things, the area card and the area
