@@ -583,11 +583,15 @@ async def _async_findings(
             continue
 
         answer = _knowledge(hass, entity_id).answer
+        # An entity that changed while the recorder was asked may have passed
+        # through something the recorder has not written yet. Its history is
+        # not whole this round; the next one reads what came since.
         history_is_whole = (
             entity_id in with_history
             and answer is not None
             and answer.holds(now)
             and answer.complete
+            and look.state.last_updated == before.state.last_updated
         )
         folded = {candidate.casefold() for candidate in look.known}
         found.update(
