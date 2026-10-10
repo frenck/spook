@@ -2046,6 +2046,82 @@ def extract_state_pairs_from_template(
     return frozenset(pairs)
 
 
+# What an automation hands its templates as the trigger that started it.
+_TRIGGER = "trigger"
+
+
+def _trigger_id_lookup(tokens: list[_Token], index: int) -> int | None:
+    """Read `trigger.id` or `trigger['id']` starting at `trigger`.
+
+    Returns where the lookup ends.
+    """
+    if _shaped(tokens, index + 1, ("dot", ("name", "id"))):
+        return index + 3
+    if _shaped(tokens, index + 1, ("lbracket", ("string", "id"), "rbracket")):
+        return index + 4
+    return None
+
+
+def _compared_trigger_ids(tokens: list[_Token], index: int) -> list[str]:
+    """Read the trigger ID compared to literals, the lookup starting at `trigger`.
+
+    Read like a state compared to literals: `trigger.id == 'x'`, `!=`, `in`
+    or `not in` a list of them, and `'x' == trigger.id` the other way around.
+
+    Both need the lookup to be a whole side, which is also what keeps out
+    `wait.trigger.id`: after a dot, `trigger` is a piece of something else,
+    here the trigger a wait ended on.
+    """
+    if (after := _trigger_id_lookup(tokens, index)) is None:
+        return []
+
+    if (
+        _side_starts(tokens, index)
+        and (compared := _compared_after(tokens, after)) is not None
+    ):
+        literals, end = compared
+        if _side_ends(tokens, end):
+            return literals
+
+    literal = index - 2
+    if (
+        _is(tokens, literal, "string")
+        and tokens[index - 1][0] in _EQUALITY
+        and _side_starts(tokens, literal)
+        and _side_ends(tokens, after)
+    ):
+        return [tokens[literal][1]]
+
+    return []
+
+
+@lru_cache(maxsize=1024)
+def extract_trigger_ids_from_template(template_str: str) -> frozenset[str]:
+    """Return the trigger IDs a template compares `trigger.id` to, literally.
+
+    Only whole string literals, and only when nothing else takes part in the
+    comparison, like the state comparisons. A template that gives `trigger`
+    a meaning of its own, with `{% set %}` for example, is not read at all:
+    its `trigger` is not the one that started the automation.
+
+    Pure in its argument, so cached like the other readers.
+    """
+    if not is_template_string(template_str):
+        return frozenset()
+
+    expressions = _expressions(template_str)
+    if _TRIGGER in _named_locally(expressions):
+        return frozenset()
+
+    found: set[str] = set()
+    for tokens in expressions:
+        for index, (kind, value) in enumerate(tokens):
+            if kind == "name" and value == _TRIGGER:
+                found.update(_compared_trigger_ids(tokens, index))
+
+    return frozenset(found)
+
+
 # The functions that take a device ID or an entity ID, called directly or as
 # a filter. `is_device_attr` is a test as well.
 _DEVICE_LOOKUPS = frozenset({"device_attr", "device_name", "is_device_attr"})

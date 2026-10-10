@@ -26,6 +26,9 @@ REPAIR_DOCUMENTATION: Final = {
     "automation_unknown_label_references": "automation#unknown-referenced-labels",
     "automation_unknown_service_references": "automation#unknown-referenced-actions",
     "automation_unknown_state_references": "automation#unknown-referenced-states",
+    "automation_unknown_trigger_id_references": (
+        "automation#unknown-referenced-trigger-ids"
+    ),
     "automation_unknown_trigger_references": "automation#unknown-referenced-triggers",
     "empty_areas": "homeassistant#empty-areas",
     "empty_floors": "homeassistant#empty-floors",

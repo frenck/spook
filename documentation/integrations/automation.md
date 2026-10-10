@@ -323,6 +323,24 @@ So this is not a silent failure, it is a nameless one. Home Assistant raises a g
 
 To resolve the raised issue, you can either remove the use of these triggers or restore the integration that provides them. Spook will automatically remove the repair issue once the issue is fixed.
 
+### Unknown referenced trigger IDs
+
+Automations are inspected for the trigger IDs they check for: the `id` of every trigger condition, at the top of the automation and anywhere in its actions (in a `choose`, an `if`, a `repeat`, a condition step, nested in `and`, `or` or `not`, and so on), and in templates `trigger.id` compared to text, like `trigger.id == 'arrived'`, `trigger.id != 'left'` or `trigger.id in ['arrived', 'left']`. If an automation checks for an ID none of its own triggers has, Spook will raise a repair issue. The repairs issue raised will contain the name of the automation and the trigger IDs it checks for that no trigger has.
+
+A trigger condition asking for an ID that no trigger hands over loads fine and never passes, so whatever it guards never runs, and nothing tells you. That is the ghost this catches. It usually happens when a trigger was renamed or removed, or the ID has a typo: trigger IDs are case-sensitive.
+
+A trigger without an ID of its own goes by its position in the list of triggers, counting from `0`, so a check for `1` is fine as long as the automation has a second trigger. Triggers you disabled (`enabled: false`) still count: their IDs are not unknown, they are parked.
+
+Some things are not checked, so Spook does not guess:
+
+- An ID that is only worked out while running, from a variable or a template for example. In templates, only a comparison with nothing else taking part in it is read, and `wait.trigger.id` is the trigger a wait ended on, not the one that started the automation.
+- An automation that gives `trigger` a meaning of its own, as a variable or a response variable, and a template that does the same with `{% set %}` or the like.
+- An automation that failed to load. Home Assistant reports that one itself.
+
+An automation on a blueprint is checked with its inputs filled in, the way Home Assistant runs it. Spook looks again whenever automations are reloaded, which saving one in the editor does.
+
+To resolve the raised issue, edit the automation and use the ID of one of its triggers, or give the trigger the ID the automation checks for. Spook will automatically remove the repair issue once the issue is fixed.
+
 ## Feature requests, ideas, and support
 
 If you have an idea on how to further enhance this integration, for example, by adding a new action, entity, or repairs detection; feel free to [let us know in our discussion forums](https://github.com/frenck/spook/discussions).

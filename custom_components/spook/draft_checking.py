@@ -34,6 +34,7 @@ from .ectoplasms.automation.repairs import (
     unknown_label_references as automation_labels,
     unknown_service_references as automation_services,
     unknown_state_references as automation_states,
+    unknown_trigger_id_references as automation_trigger_ids,
     unknown_trigger_references as automation_triggers,
 )
 from .ectoplasms.script.repairs import (
@@ -85,6 +86,7 @@ DRAFT_REPAIRS: dict[str, tuple[ModuleType, ...]] = {
         automation_labels,
         automation_services,
         automation_states,
+        automation_trigger_ids,
         automation_triggers,
     ),
     script.DOMAIN: (
