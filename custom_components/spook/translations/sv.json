@@ -2755,6 +2755,16 @@
         "not_triggered_by_user": {
             "name": "Inte startad av en användare",
             "description": "Uppfylls när ingen kan hållas ansvarig för denna körning: ett schema, solen, en integration som agerar på egen hand eller Kör-knappen. Har med flit inga alternativ. Vill du utesluta bestämda personer så lägg \"Startad av en användare\" inuti ett Inte-villkor."
+        },
+        "is_available": {
+            "fields": {
+                "behavior": {
+                    "name": "Beteende",
+                    "description": "Oavsett om någon av enheterna är där är tillräckligt, eller alla måste vara det."
+                }
+            },
+            "name": "Entiteten är tillgänglig",
+            "description": "Gäller när det finns en enhet att kommunicera med: allt utom ”otillgänglig” eller ”okänd”. Till exempel en högtalare eller en smart brytare som inte alltid är strömförsörjd."
         }
     },
     "triggers": {
@@ -2975,6 +2985,92 @@
         "device_discovered": {
             "name": "Enhet upptäckt",
             "description": "Utlöses när Home Assistant upptäcker något nytt som det kan konfigurera, till exempel en enhet som just dykt upp i ditt nätverk."
+        },
+        "state_changed": {
+            "fields": {
+                "attribute_changes": {
+                    "description": "Utlös även när endast ett attribut har ändrats och tillståndet förblir oförändrat. Gör ingenting när ett attribut följs.",
+                    "name": "Räkna antalet attributändringar"
+                },
+                "attribute": {
+                    "name": "Attribut",
+                    "description": "Följ detta attribut istället för tillståndet."
+                },
+                "behavior": {
+                    "name": "Beteende",
+                    "description": "Kör för varje entitet – antingen när den första av målen når fram, eller när alla har nått fram. Första och alla kräver till eller inte till. Medan tillstånden ”otillgänglig” och ”okänd” ignoreras, deltar inte enheter i dessa tillstånd."
+                },
+                "blip_tolerance": {
+                    "name": "Bliptolerans",
+                    "description": "Medan du väntar på, blir otillgänglig eller okänd och kommer tillbaka som det var inom denna tid börjar inte väntan över. Fungerar endast tillsammans med Om."
+                },
+                "delay": {
+                    "name": "Fördröjning",
+                    "description": "Vänta så här länge innan körning, oavsett vad som händer under tiden. Som en fördröjning i början av handlingarna."
+                },
+                "device_class": {
+                    "name": "Enhetsklasser",
+                    "description": "Endast entiteter som tillhör dessa enhetsklasser, till exempel dörrar eller fönster. Om inget mål anges väljs de ut från alla objekt."
+                },
+                "domain": {
+                    "name": "Domäner",
+                    "description": "Endast entiteter som tillhör dessa enhetsklasser, till exempel binary_sensor eller täck. Om inget mål anges väljs de ut från alla objekt."
+                },
+                "exclude_target": {
+                    "description": "Entiteter, enheter, områden, våningar eller etiketter som ska uteslutas. Allt som ingår i dessa utesluts, även diagnostiska enheter.",
+                    "name": "Exkludera"
+                },
+                "exclude_device_class": {
+                    "name": "Exkludera enhetsklasser",
+                    "description": "Exkludera entiteter som tillhör dessa enhetsklasser."
+                },
+                "exclude_domain": {
+                    "name": "Exkludera domäner",
+                    "description": "Uteslut entiteter från dessa domäner. Om fältet ”Exkludera” är tomt gäller detta allt som målet omfattar."
+                },
+                "exclude_integration": {
+                    "description": "Exkludera entiteter som tillhandahålls av dessa integrationer.",
+                    "name": "Exkludera integrationer"
+                },
+                "exclude_config_entry": {
+                    "name": "Uteslut integrationsposten",
+                    "description": "Uteslut entiteterna från denna integrationspost."
+                },
+                "for": {
+                    "name": "Om",
+                    "description": "Avfyra först när det nya tillståndet har varat så här länge. Varje annan förändring under tiden avbryter processen."
+                },
+                "from": {
+                    "name": "Från",
+                    "description": "Endast ändringar som härrör från någon av dessa tillstånd."
+                },
+                "ignore_unavailable": {
+                    "name": "Ignorera otillgängligt och okänt",
+                    "description": "Uteslut ändringar från eller till ”otillgänglig” och ”okänd”, så att en omstart eller en omstart av routern inte utlöses vid varje ändring. Stäng av funktionen för att använda dem i ”Från” eller ”Till”."
+                },
+                "config_entry": {
+                    "name": "Integrationspost",
+                    "description": "Endast entiteter i denna integrationspost. Om inget mål anges hämtas de från alla poster."
+                },
+                "integration": {
+                    "name": "Integrationer",
+                    "description": "Endast entiteter som tillhandahålls av dessa integrationer, till exempel zha eller hue. Om inget mål anges hämtas de från alla tillgängliga källor."
+                },
+                "not_from": {
+                    "name": "Inte från",
+                    "description": "Endast ändringar som inte härrör från någon av dessa tillstånd."
+                },
+                "not_to": {
+                    "name": "Inte till",
+                    "description": "Endast ändringar som inte går mot någon av dessa tillstånd."
+                },
+                "to": {
+                    "description": "Endast ändringar som går mot någon av dessa tillstånd.",
+                    "name": "Till"
+                }
+            },
+            "description": "Utlöses när en entitet byter tillstånd, för allt som ett mål omfattar: enheter, entiteter, områden, våningar och etiketter. Begränsa urvalet efter domän, integration eller enhetsklass, eller lämna målet tomt och låt systemet välja enheter från hela utbudet. Uteslut objekt på nytt och bestäm hur länge en förändring måste bestå innan den räknas.",
+            "name": "Spooks tillståndsutlösare"
         }
     },
     "selector": {
