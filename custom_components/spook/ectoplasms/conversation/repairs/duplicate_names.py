@@ -10,7 +10,7 @@ from homeassistant.components.homeassistant.exposed_entities import (
     async_listen_entity_updates,
     async_should_expose,
 )
-from homeassistant.const import EVENT_HOMEASSISTANT_STARTED
+from homeassistant.const import EVENT_COMPONENT_LOADED, EVENT_HOMEASSISTANT_STARTED
 from homeassistant.core import callback
 from homeassistant.helpers import (
     area_registry as ar,
@@ -61,7 +61,9 @@ class SpookRepair(AbstractSpookRepair):
 
     domain = "conversation"
     repair = "assist_duplicate_names"
+    # Assist can be set up after Spook, and only then can anything be asked.
     inspect_events = {
+        EVENT_COMPONENT_LOADED,
         EVENT_HOMEASSISTANT_STARTED,
         ar.EVENT_AREA_REGISTRY_UPDATED,
         dr.EVENT_DEVICE_REGISTRY_UPDATED,

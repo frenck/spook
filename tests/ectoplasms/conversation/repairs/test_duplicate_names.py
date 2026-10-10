@@ -11,6 +11,7 @@ from homeassistant.components.homeassistant.exposed_entities import (
     async_expose_entity,
 )
 from homeassistant.helpers import entity_registry as er
+from homeassistant.const import EVENT_COMPONENT_LOADED
 from homeassistant.setup import async_setup_component
 
 from custom_components.spook.ectoplasms.conversation.repairs import duplicate_names
@@ -504,4 +505,31 @@ async def test_a_change_in_exposure_brings_a_look(
     async_expose_entity(hass, "conversation", "light.yaml_lamp", should_expose=False)
 
     assert len(calls) == 1
+    await repair.async_deactivate()
+
+
+async def test_assist_loading_later_brings_a_look(hass: HomeAssistant) -> None:
+    """Assist set up after Spook is heard, so names get judged after all.
+
+    Before it loads there is nothing to ask, and without this nothing else
+    would bring a look until some unrelated registry change.
+    """
+    assert await async_setup_component(hass, "homeassistant", {})
+    repair = duplicate_names.SpookRepair(hass)
+    await repair.async_activate()
+    calls: list[None] = []
+
+    async def _async_call() -> None:
+        calls.append(None)
+
+    repair.inspect_debouncer.async_call = _async_call
+
+    # Any integration loading brings a look; which one does not matter, and
+    # announcing conversation itself would have core import its platforms,
+    # which need hassil.
+    hass.config.components.add("conversation")
+    hass.bus.async_fire(EVENT_COMPONENT_LOADED, {"component": "homeassistant"})
+    await hass.async_block_till_done()
+
+    assert calls
     await repair.async_deactivate()
