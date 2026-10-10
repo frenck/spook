@@ -20,6 +20,7 @@ from homeassistant.helpers.entity_component import DATA_INSTANCES, EntityCompone
 
 from ....const import DOMAIN as SPOOK_DOMAIN
 from ....errors import entity_not_found
+from ....helper_collections import async_get_storage_collection
 from ....services import AbstractSpookAdminService
 
 if TYPE_CHECKING:
@@ -55,16 +56,9 @@ class SpookService(AbstractSpookAdminService):
         """Handle the service call."""
         entity_component: EntityComponent[Zone] = self.hass.data[DATA_INSTANCES][DOMAIN]
 
-        collection: ZoneStorageCollection
-        if DOMAIN in self.hass.data:
-            collection = self.hass.data[DOMAIN]
-        else:
-            # Home zone is set in YAML, as a result Home Assistant doesn't
-            # set the storage collection into hass data.
-            # Major hack to get around this. 👻
-            collection = self.hass.data["websocket_api"]["zone/list"][
-                0
-            ].__self__.storage_collection
+        collection: ZoneStorageCollection = async_get_storage_collection(
+            self.hass, DOMAIN
+        )
 
         if not (entity := entity_component.get_entity(call.data["entity_id"])):
             raise entity_not_found(call.data["entity_id"])
