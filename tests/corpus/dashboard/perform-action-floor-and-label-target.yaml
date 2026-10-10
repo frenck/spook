@@ -2,6 +2,9 @@ source: https://www.home-assistant.io/dashboards/actions/#perform-action
 note: >-
   Button performing an action on a floor and a label target. Dashboards have
   no floor or label repair, and neither ID is an area or entity.
+out_of_scope: >-
+  The dashboard repairs check entities, areas and actions. Floors and labels
+  on a dashboard have no repair.
 expect:
   services:
     find: [light.turn_off]

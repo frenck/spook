@@ -1,7 +1,7 @@
 source: https://community.home-assistant.io/t/setting-variables-in-choose-blocks-of-automations/256587
 note: >-
   An automation level variable overwritten inside a choose branch and used after the
-  choose, where the inner value is out of scope. Variable named message_text.
+  choose, where the inner value no longer applies. Variable named message_text.
 expect:
   services:
     find: [notify.phone_owner]

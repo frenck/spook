@@ -3,6 +3,9 @@ note: >-
   The example of a script field is shown in the editor and never rendered.
   The attribute and state readers leave it out, the entity named only there
   cannot break the script either.
+out_of_scope: >-
+  Names, descriptions and field examples are never rendered, so an entity
+  named only there is left out on purpose.
 expect:
   entities:
     find: [climate.office]

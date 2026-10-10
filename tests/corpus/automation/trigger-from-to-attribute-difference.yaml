@@ -3,9 +3,15 @@ note: >-
   Filtering GPS jumps by comparing trigger.to_state and trigger.from_state
   latitude, plus a numeric_state condition on gps_accuracy. The trigger
   payload attributes are not lookups of a named entity; the condition
-  attribute is. `device_tracker.` entities are left out of the entity repair
-  on purpose (`IGNORED_ENTITY_DOMAINS`).
+  attribute is.
+out_of_scope: >-
+  `group.`, `device_tracker.` and `persistent_notification.` entities are
+  left out of the unknown entity repairs on purpose
+  (`IGNORED_ENTITY_DOMAINS`): an action can create them on the fly, so one
+  that does not exist yet is not necessarily broken.
 expect:
+  entities:
+    not_find: [device_tracker.car_gps]
   attributes:
     find:
       - device_tracker.car_gps: gps_accuracy

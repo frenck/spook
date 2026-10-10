@@ -7,6 +7,7 @@ snapshot update. See the README next to this file.
 
 from __future__ import annotations
 
+import re
 from typing import TYPE_CHECKING, Any
 
 import pytest
@@ -37,6 +38,14 @@ if TYPE_CHECKING:
     from tests.corpus.cases import Case
 
 KINDS = ("automation", "script", "dashboard")
+
+# How a note says a reference goes unread. Such a case owes an explanation in
+# a marker, or it passes with the gap and nobody notices when it closes.
+_SAYS_NOT_READ = re.compile(
+    r"not read|missed|never (read|checked)|not checked|not looked up|no walk|"
+    r"no reader|left out|on purpose|ignored",
+    re.IGNORECASE,
+)
 
 
 def _cases(kind: str) -> Any:
@@ -175,6 +184,14 @@ def _metadata_problems(case: Case) -> list[str]:
     if "out_of_scope" in case.metadata:
         problems.extend(_out_of_scope_problems(case.metadata["out_of_scope"], expect))
 
+    note = " ".join(str(case.metadata.get("note", "")).split())
+    marked = {"known_issue", "out_of_scope"} & case.metadata.keys()
+    if not marked and (said := _SAYS_NOT_READ.search(note)):
+        problems.append(
+            f"the note says something goes unread ({said.group(0)!r}); mark it "
+            "with `known_issue` or `out_of_scope`, or say it plainer"
+        )
+
     return problems
 
 
@@ -248,6 +265,34 @@ def test_malformed_metadata_is_reported(
     problems = _metadata_problems(load_case(path))
 
     assert any(problem in line for line in problems), problems
+
+
+@pytest.mark.parametrize(
+    ("marker", "reported"),
+    [
+        pytest.param("", True, id="unmarked"),
+        pytest.param(
+            "out_of_scope: a key of the card's own\n", False, id="out of scope"
+        ),
+        pytest.param("known_issue: a miss\n", False, id="known issue"),
+    ],
+)
+def test_a_note_about_an_unread_reference_needs_a_marker(
+    tmp_path: Path, marker: str, *, reported: bool
+) -> None:
+    """Test a note saying a reference goes unread is not left without a marker."""
+    path = tmp_path / "dashboard" / "unread.yaml"
+    path.parent.mkdir()
+    path.write_text(
+        "source: here\nnote: The map camera is missed.\n"
+        f"{marker}expect:\n  entities:\n    not_find: [camera.map]\n"
+        "---\ntype: custom:vacuum-card\n",
+        encoding="utf-8",
+    )
+
+    problems = _metadata_problems(load_case(path))
+
+    assert any("goes unread" in line for line in problems) is reported, problems
 
 
 def test_every_kind_has_cases() -> None:

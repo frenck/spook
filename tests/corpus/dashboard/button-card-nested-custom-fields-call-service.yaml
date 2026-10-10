@@ -2,7 +2,8 @@ source: https://community.home-assistant.io/t/problem-with-operator-template-in-
 note: >-
   Button card with JavaScript reading entity.attributes, then the same card
   nested inside another button card's custom_fields, where entity was undefined.
-  Actions are performed from inside the nested cards.
+  Actions are performed from inside the nested cards. The JavaScript only
+  reads each card's own entity.
 expect:
   entities:
     find: [media_player.living_room_soundbar, switch.tv_antenna, media_player.living_room_tv]

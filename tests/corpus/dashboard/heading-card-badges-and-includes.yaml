@@ -2,7 +2,8 @@ source: https://github.com/jazzyisj/home-assistant-config/blob/master/ui/card/li
 note: >-
   Heading card with its own entity and an entity badge, styled through card_mod
   with a Jinja macro import, followed by a grid of cards each pulled in by
-  !include.
+  !include. The includes stay opaque strings, so the cards in those files are
+  not part of the case.
 expect:
   entities:
     find: [light.kitchen]

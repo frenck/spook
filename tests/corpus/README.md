@@ -60,15 +60,20 @@ The first document says what the case is:
   alone on purpose. It needs a `not_find` rule naming what is left alone, so a
   reader that starts taking it fails the case instead of passing silently.
 
-The second document is the configuration, as Home Assistant would load it: one
-automation, one script (its body, with `sequence`), or one dashboard, view or
-card. Home Assistant's own tags (`!secret`, `!input`, `!include` and friends)
-load as plain text, like `"!input motion_sensor"`.
+The second document is the configuration as written: one automation, one
+script (its body, with `sequence`), or one dashboard, view or card. Home
+Assistant's own tags (`!secret`, `!input`, `!include` and friends) are kept as
+opaque strings, like `"!input motion_sensor"`, and never resolved: there is no
+secrets file, blueprint or included file behind them. A case with one of those
+tags is a parser fixture, proving the readers do not trip over the text, not
+the shape a house hands the repairs after loading. In a house, a blueprint's
+inputs are filled in and secrets and includes are read from their files before
+any repair looks.
 
 ## What the result means
 
-Every case is loaded the way a house loads it, then handed to the repairs for
-its kind. The house is empty, so what a repair would report as unknown is every
+Every case is handed to Home Assistant's own setup for its kind, then to the
+repairs for that kind. The house is empty, so what a repair would report as unknown is every
 reference it reads. Three types are taken one step earlier:
 
 - `triggers` and `conditions`: every key the repair reads, because Home

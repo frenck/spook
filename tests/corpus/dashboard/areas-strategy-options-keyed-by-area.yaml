@@ -3,10 +3,14 @@ note: >-
   The areas dashboard strategy, a core strategy whose `areas_display` Spook
   already reads. `areas_options` is a mapping keyed by area ID, and its
   `groups_options` hold entity IDs under `hidden` and `order`.
-  `floors_display.order` holds floor IDs, which no dashboard repair reads.
+  `floors_display.order` holds floor IDs.
+out_of_scope: >-
+  The dashboard repairs check entities, areas and actions. Floors and labels
+  on a dashboard have no repair.
 expect:
   areas:
     find: [garage, kitchen, bedroom, office]
+    not_find: [ground_floor]
   entities:
     find: [light.office_night_light, light.office_ceiling]
 ---

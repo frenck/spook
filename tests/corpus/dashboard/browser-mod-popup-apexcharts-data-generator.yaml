@@ -6,6 +6,9 @@ note: >-
   the query text it sends, is code. Only the series entity is a reference.
   The original used sensor.date as a stand-in, which Spook treats as always
   known, so a sensor of our own here.
+out_of_scope: >-
+  JavaScript in a custom card runs in the browser and is not read; only the
+  keys the dashboard walk knows are.
 expect:
   entities:
     find: [sensor.body_weight]

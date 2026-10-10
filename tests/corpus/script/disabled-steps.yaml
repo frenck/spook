@@ -2,6 +2,9 @@ source: tests/ectoplasms/script/repairs/test_unknown_entity_references.py (parke
 note: >-
   Steps parked with `enabled: false`, including a parked wait template and a
   parked condition step. What only they name, call or check is left out.
+out_of_scope: >-
+  A step, trigger or condition parked with `enabled: false` does nothing, so
+  what only it names is left out on purpose.
 expect:
   entities:
     find: [media_player.kitchen]

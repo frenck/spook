@@ -3,7 +3,8 @@ note: >-
   A blueprint body, not an automation: every reference is an `!input`. Home
   Assistant would not load this as an automation, so it is unavailable and
   only the trigger and condition readers look at it. Nothing tagged may come
-  out as a reference.
+  out as a reference. A parser fixture: in a house the inputs are filled in
+  before any repair reads the automation.
 expect:
   entities:
     not_find: ["!input motion_entity", "!input light_target"]

@@ -3,6 +3,9 @@ note: >-
   A template in the description of an automation and in the alias of a step.
   Home Assistant never renders either, so the entity named only there cannot
   break anything. The attribute and state readers leave these out already.
+out_of_scope: >-
+  Names, descriptions and field examples are never rendered, so an entity
+  named only there is left out on purpose.
 expect:
   entities:
     find: [switch.heater]
