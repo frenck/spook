@@ -57,6 +57,7 @@ REPAIR_DOCUMENTATION: Final = {
     "script_unknown_service_references": "script#unknown-referenced-actions",
     "script_unknown_state_references": "script#unknown-referenced-states",
     "script_unknown_trigger_references": "script#unknown-referenced-triggers",
+    "template_unknown_attribute_references": "template#unknown-referenced-attributes",
     "template_unknown_entity_references": "template#unknown-referenced-entities",
     "template_unknown_service_references": "template#unknown-referenced-actions",
     "unknown_area_sensors": "homeassistant#unknown-area-sensors",
