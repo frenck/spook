@@ -1,0 +1,33 @@
+source: tests/test_attribute_references.py::test_every_entity_of_a_list_is_a_pair (#1880)
+note: >-
+  A state trigger watching a list of entities, and one watching a comma
+  separated string. Every entity counts, with its attribute and state each.
+expect:
+  entities:
+    find: [light.kitchen, light.hallway, light.attic, light.cellar]
+  attributes:
+    find:
+      - light.kitchen: brightness
+      - light.cellar: brightness
+  states:
+    find:
+      - binary_sensor.front_door: "on"
+      - binary_sensor.back_door: "on"
+---
+alias: Lights follow the doors
+triggers:
+  - trigger: state
+    entity_id:
+      - binary_sensor.front_door
+      - binary_sensor.back_door
+    to: "on"
+  - trigger: state
+    entity_id: [light.kitchen, light.hallway]
+    attribute: brightness
+  - trigger: state
+    entity_id: light.attic, light.cellar
+    attribute: brightness
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.porch

@@ -1,0 +1,18 @@
+source: https://www.home-assistant.io/dashboards/actions/#perform-action
+note: >-
+  Button performing an action on a floor and a label target. Dashboards have
+  no floor or label repair, and neither ID is an area or entity.
+expect:
+  services:
+    find: [light.turn_off]
+  areas:
+    not_find: [upstairs, night_lights]
+---
+type: button
+name: Upstairs off
+tap_action:
+  action: perform-action
+  perform_action: light.turn_off
+  target:
+    floor_id: upstairs
+    label_id: night_lights

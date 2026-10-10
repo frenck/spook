@@ -1,0 +1,26 @@
+source: https://www.home-assistant.io/integrations/calendar/#action-calendarget_events
+note: >-
+  calendar.get_events over two calendars with the response looped per
+  calendar; the response keys are the calendar entity IDs.
+expect:
+  entities:
+    find: [calendar.family, calendar.work]
+---
+alias: Today's agenda
+sequence:
+  - action: calendar.get_events
+    target:
+      entity_id:
+        - calendar.family
+        - calendar.work
+    data:
+      duration:
+        hours: 24
+    response_variable: agenda
+  - action: notify.notify
+    data:
+      message: >-
+        {% for calendar, events in agenda.items() %}
+        {{ state_attr(calendar, 'friendly_name') }}:
+        {% for event in events.events %}- {{ event.summary }}
+        {% endfor %}{% endfor %}

@@ -1,0 +1,35 @@
+source: https://community.home-assistant.io/t/accessing-fields-inside-a-script/744255/3
+note: >-
+  A field with an entity selector and a default entity, used through the
+  field variable. Home Assistant uses a field `default` only to prefill the
+  form in the frontend; a caller that leaves the field out gets no value, so
+  the default is not something the script runs with, and not a reference.
+expect:
+  services:
+    find: [climate.set_temperature]
+  entities:
+    not_find: [climate.study]
+---
+alias: Cool a room
+fields:
+  room:
+    name: room
+    description: Which room we are cooling
+    required: false
+    default: climate.study
+    selector:
+      entity:
+        domain: climate
+        multiple: false
+  upper_temp_limit:
+    default: 24
+    selector:
+      number:
+        min: 18
+        max: 30
+sequence:
+  - action: climate.set_temperature
+    target:
+      entity_id: "{{ room }}"
+    data:
+      temperature: "{{ upper_temp_limit }}"

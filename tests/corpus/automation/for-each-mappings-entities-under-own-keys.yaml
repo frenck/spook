@@ -1,0 +1,30 @@
+source: https://community.home-assistant.io/t/do-i-have-an-error/883210/1
+note: >-
+  repeat for_each over mappings that pair a sensor with the helpers that go
+  with it, used as repeat.item.sensor and friends. The entities sit under keys
+  of the person's own choosing in plain strings, so no reader sees them.
+expect:
+  services:
+    find: [input_text.set_value]
+---
+alias: Quantize light levels
+triggers:
+  - trigger: time_pattern
+    minutes: /5
+actions:
+  - repeat:
+      for_each:
+        - sensor: sensor.hallway_illuminance
+          quantized: input_text.hallway_light_level
+          dark_lux: input_number.hallway_dark_lux
+        - sensor: sensor.landing_illuminance
+          quantized: input_text.landing_light_level
+          dark_lux: input_number.landing_dark_lux
+      sequence:
+        - action: input_text.set_value
+          target:
+            entity_id: "{{ repeat.item.quantized }}"
+          data:
+            value: >-
+              {{ 'Dark' if states(repeat.item.sensor) | float(0)
+                 < states(repeat.item.dark_lux) | float(0) else 'Bright' }}

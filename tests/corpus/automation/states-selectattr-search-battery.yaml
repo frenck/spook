@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/creating-a-template-sensor-to-count-zha-updates/686469/1
+note: >-
+  Low battery sweep: states.sensor filtered with selectattr search on
+  entity_id and rejectattr on a whole entity ID. The search text is a
+  substring; the rejected entity is a real reference.
+expect:
+  entities:
+    find: [sensor.phone_battery]
+    not_find: [sensor.battery]
+---
+alias: Low batteries
+triggers:
+  - trigger: time
+    at: "10:00:00"
+actions:
+  - action: notify.notify
+    data:
+      message: >-
+        {{ states.sensor
+           | selectattr('entity_id', 'search', 'sensor.battery')
+           | rejectattr('entity_id', 'eq', 'sensor.phone_battery')
+           | selectattr('state', 'is_number')
+           | selectattr('state', 'lt', '20')
+           | map(attribute='name') | join(', ') }}

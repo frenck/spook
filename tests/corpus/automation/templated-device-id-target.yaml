@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/automation-action-device-id-template/795463
+note: >-
+  Building a device_id target from area_devices and a state filter. The result
+  rendered as a YAML text block instead of a list. Device and area are only in
+  templates, and the area and device repairs do not read area_devices(), so
+  nothing is reported for either.
+expect:
+  services:
+    find: [light.turn_on]
+  areas:
+    not_find: [lounge]
+---
+alias: Warm up the lounge lights
+triggers:
+  - trigger: sun
+    event: sunset
+actions:
+  - action: light.turn_on
+    target:
+      device_id: >-
+        {% for device in area_devices('lounge') %}
+        {%- if device_attr(device, 'manufacturer') == 'Signify' %}
+        - {{ device }}
+        {% endif -%}
+        {% endfor %}
+    data:
+      kelvin: 1800
+      brightness_pct: 100

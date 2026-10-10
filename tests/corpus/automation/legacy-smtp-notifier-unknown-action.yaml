@@ -1,0 +1,18 @@
+source: https://community.home-assistant.io/t/smtp-errors-unknown-action-python-errors-release-2024-10-4/786813
+note: >-
+  A legacy notify platform that failed to set up, so the automation reports an
+  unknown action. The action is a real reference that should be reported when the
+  notifier is missing.
+expect:
+  services:
+    find: [notify.email_me]
+---
+alias: Send a test email every morning
+triggers:
+  - trigger: time
+    at: "08:00:00"
+actions:
+  - action: notify.email_me
+    data:
+      title: Good morning
+      message: Rise and shine

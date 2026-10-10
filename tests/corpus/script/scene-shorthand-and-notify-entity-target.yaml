@@ -1,0 +1,17 @@
+source: https://www.home-assistant.io/integrations/notify/#action-notifysend_message
+note: >-
+  The `scene:` shorthand step and notify.send_message, which targets a notify
+  entity at step level. The text in message is plain text.
+expect:
+  entities:
+    find: [scene.evening, notify.living_room_display]
+    not_find: [light.kitchen]
+---
+alias: Evening mode
+sequence:
+  - scene: scene.evening
+  - action: notify.send_message
+    target:
+      entity_id: notify.living_room_display
+    data:
+      message: light.kitchen and the rest are dimmed

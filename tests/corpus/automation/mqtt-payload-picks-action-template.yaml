@@ -1,0 +1,27 @@
+source: https://github.com/aneisch/home-assistant-config/blob/master/packages/christmas.yaml
+note: >-
+  Legacy platform trigger on an MQTT topic; the action name is an if/elif
+  template over trigger.payload_json, with entity_id at step level. The code
+  values compared are payload data, not states. The templated action is
+  worked out while running, and `group.` entities are left out of the entity
+  repair on purpose (`IGNORED_ENTITY_DOMAINS`).
+expect:
+  triggers:
+    find: [mqtt]
+  entities:
+    not_find: [group.holiday_trees]
+---
+alias: Remote switches the trees
+trigger:
+  - platform: mqtt
+    topic: sensor/rf_remote
+    value_template: "{{ value_json.model }}"
+    payload: remote-a1
+action:
+  action: >
+    {% if trigger.payload_json.code == "a1b2c3" %}
+      homeassistant.turn_on
+    {% elif trigger.payload_json.code == "d4e5f6" %}
+      homeassistant.turn_off
+    {% endif %}
+  entity_id: group.holiday_trees

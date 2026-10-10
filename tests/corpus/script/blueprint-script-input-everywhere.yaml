@@ -1,0 +1,39 @@
+source: https://community.home-assistant.io/t/message-malformed-expected-str-for-dictionary-value-data-device-id/875497/1
+note: >-
+  A script blueprint body with `!input` in a device target, for_each, a delay,
+  an enabled flag and a condition list. Not loadable as a script; nothing
+  tagged may come out as a reference.
+expect:
+  devices:
+    not_find: ["!input device_id"]
+---
+blueprint:
+  name: Z-Wave command queue
+  domain: script
+  input:
+    device_id:
+      selector:
+        device:
+          filter:
+            integration: zwave_js
+    commands:
+      selector:
+        object: {}
+    gap:
+      default: 1
+    extra_conditions:
+      default: []
+sequence:
+  - condition: and
+    conditions: !input extra_conditions
+  - repeat:
+      for_each: !input commands
+      sequence:
+        - action: zwave_js.set_config_parameter
+          enabled: !input enabled
+          target:
+            device_id: !input device_id
+          data:
+            parameter: "{{ repeat.item.parameter }}"
+            value: "{{ repeat.item.value }}"
+        - delay: !input gap

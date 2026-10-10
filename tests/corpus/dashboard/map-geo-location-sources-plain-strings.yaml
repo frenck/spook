@@ -1,0 +1,16 @@
+source: https://community.home-assistant.io/t/wildfire-monitoring-with-nasa-firms-live-fire-map-proximity-alerts-zero-custom-components/1016485/1
+note: >-
+  Map card listing geo location sources as plain integration names next to a
+  zone entity. The sources are platforms, not entities, and `all` is a keyword.
+expect:
+  entities:
+    find: [zone.home]
+    not_find: [geo_json_events, all]
+---
+type: map
+geo_location_sources:
+  - geo_json_events
+  - all
+entities:
+  - zone.home
+default_zoom: 8

@@ -1,0 +1,41 @@
+source: tests/ectoplasms/automation/repairs/test_disabled_steps.py (#1804)
+note: >-
+  A trigger, a condition and a step parked with `enabled: false` do nothing,
+  so what only they name is left out. The cellar light is named by a parked
+  step and a running one, so it still counts.
+expect:
+  entities:
+    find: [light.kitchen, light.cellar, binary_sensor.hallway_motion]
+    not_find: [binary_sensor.old_motion, sun.old_sun, light.attic]
+  areas:
+    not_find: [old_shed]
+  services:
+    not_find: [switch.turn_off]
+---
+alias: Parked parts
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.hallway_motion
+    to: "on"
+  - trigger: state
+    entity_id: binary_sensor.old_motion
+    to: "on"
+    enabled: false
+conditions:
+  - condition: state
+    entity_id: sun.old_sun
+    state: below_horizon
+    enabled: false
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: [light.kitchen, light.cellar]
+  - action: switch.turn_off
+    enabled: false
+    target:
+      entity_id: light.attic
+      area_id: old_shed
+  - action: light.turn_off
+    enabled: false
+    target:
+      entity_id: light.cellar

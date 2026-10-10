@@ -1,0 +1,31 @@
+source: https://community.home-assistant.io/t/automation-play-radio-to-a-sonos-speaker-group/440662/8
+note: >-
+  media_player.join with the followers as a list in data.group_members and the
+  leader as the target; a second join builds the leader from an input_select
+  state in a template.
+expect:
+  entities:
+    find:
+      - media_player.tv_room
+      - media_player.bathroom
+      - media_player.garage_speaker
+      - input_select.sync_leader
+---
+alias: Group speakers
+triggers:
+  - trigger: state
+    entity_id: input_boolean.party_mode
+    to: "on"
+actions:
+  - action: media_player.join
+    data:
+      group_members:
+        - media_player.tv_room
+    target:
+      entity_id: media_player.bathroom
+  - action: media_player.join
+    data:
+      group_members:
+        - media_player.garage_speaker
+    target:
+      entity_id: "media_player.{{ states.input_select.sync_leader.state }}"

@@ -1,0 +1,16 @@
+source: https://www.home-assistant.io/dashboards/history-graph/
+note: >-
+  History graph with entity rows as strings and as mappings with a name, and a
+  hours_to_show option. Plain shapes, here for coverage of the card.
+expect:
+  entities:
+    find: [sensor.outdoor_temperature, sensor.indoor_temperature, climate.living_room]
+---
+type: history-graph
+title: Temperatures
+hours_to_show: 48
+entities:
+  - sensor.outdoor_temperature
+  - entity: sensor.indoor_temperature
+    name: Inside
+  - entity: climate.living_room

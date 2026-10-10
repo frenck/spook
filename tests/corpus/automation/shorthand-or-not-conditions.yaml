@@ -1,0 +1,30 @@
+source: https://www.home-assistant.io/docs/scripts/conditions/#shorthand-notation-for-condition
+note: >-
+  The shorthand `or:` and `not:` conditions, without `condition:` keys, with
+  state conditions inside.
+expect:
+  entities:
+    find: [person.alex, person.sam, input_boolean.guest_mode]
+---
+alias: Heating when someone is home
+triggers:
+  - trigger: time_pattern
+    minutes: /15
+conditions:
+  - or:
+      - condition: state
+        entity_id: person.alex
+        state: home
+      - condition: state
+        entity_id: person.sam
+        state: home
+  - not:
+      - condition: state
+        entity_id: input_boolean.guest_mode
+        state: "on"
+actions:
+  - action: climate.set_preset_mode
+    target:
+      entity_id: climate.house
+    data:
+      preset_mode: home

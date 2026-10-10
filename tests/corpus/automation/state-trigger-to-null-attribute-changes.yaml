@@ -1,0 +1,25 @@
+source: https://www.home-assistant.io/docs/automation/trigger/#state-trigger
+note: >-
+  State trigger with `to: null` to fire on attribute changes only, and one on
+  an attribute with not_from. `null` is no state to look up.
+expect:
+  entities:
+    find: [media_player.living_room]
+  states:
+    not_find:
+      - media_player.living_room: None
+---
+alias: Now playing changed
+triggers:
+  - trigger: state
+    entity_id: media_player.living_room
+    to: null
+  - trigger: state
+    entity_id: media_player.living_room
+    attribute: media_title
+    not_from:
+      - null
+actions:
+  - action: notify.notify
+    data:
+      message: "{{ state_attr('media_player.living_room', 'media_title') }}"

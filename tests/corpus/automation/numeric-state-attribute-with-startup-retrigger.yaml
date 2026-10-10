@@ -1,0 +1,48 @@
+source: https://community.home-assistant.io/t/airco-temperature-check-failing/897539
+note: >-
+  numeric_state trigger on a climate attribute only fires on crossing the
+  threshold. The fix adds start and automation_reloaded triggers, and an
+  action call targets a device. The original also had a device action, which
+  only validates against a device registry the corpus house does not have, so
+  it is left out.
+expect:
+  entities:
+    find: [climate.office, sensor.electricity_tariff]
+  attributes:
+    find:
+      - climate.office: current_temperature
+  services:
+    find: [climate.set_temperature]
+  devices:
+    find: [3e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b]
+---
+alias: Office cooling
+description: ""
+triggers:
+  - trigger: homeassistant
+    event: start
+  - trigger: event
+    event_type:
+      - automation_reloaded
+  - trigger: numeric_state
+    entity_id:
+      - climate.office
+    attribute: current_temperature
+    above: 23
+    for:
+      minutes: 5
+  - trigger: numeric_state
+    entity_id:
+      - sensor.electricity_tariff
+    below: 0
+conditions:
+  - condition: time
+    after: "08:00:00"
+    before: "20:00:00"
+actions:
+  - action: climate.set_temperature
+    target:
+      device_id: 3e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b
+    data:
+      temperature: 22
+mode: single

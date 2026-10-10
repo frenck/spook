@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/can-i-trigger-an-automation-based-on-a-media-players-source/1011386
+note: >-
+  The UI has no source trigger, so a hand written state trigger with attribute source
+  and a list of source names. Values come from source_list.
+expect:
+  entities:
+    find: [media_player.living_room_tv]
+  attributes:
+    find:
+      - media_player.living_room_tv: source
+---
+alias: Game console selected
+triggers:
+  - trigger: state
+    entity_id:
+      - media_player.living_room_tv
+    attribute: source
+    to:
+      - HDMI 1
+      - HDMI 2
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.tv_backlight
+    data:
+      color_name: purple

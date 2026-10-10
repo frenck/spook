@@ -1,0 +1,16 @@
+source: https://www.home-assistant.io/docs/scripts/#fire-an-event
+note: >-
+  An event step firing somebody's own event with an entity_id in event_data,
+  for another automation to pick up. The payload is data for the listener;
+  whether it counts as a reference here is up for debate.
+---
+alias: Ask the light manager
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.office_motion
+    to: "on"
+actions:
+  - event: light_manager_request
+    event_data:
+      entity_id: light.office
+      brightness_pct: 70

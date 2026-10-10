@@ -1,0 +1,35 @@
+source: https://community.home-assistant.io/t/conditions-in-picture-elements-to-colour-state-label-etc/351648/1
+note: >-
+  Picture elements with conditional elements keyed on an input_select state;
+  each branch shows the same state-label with a different colour.
+expect:
+  entities:
+    find: [input_select.office_heating_colour, climate.office]
+---
+type: picture-elements
+image: /local/floorplan/office.png
+elements:
+  - type: conditional
+    conditions:
+      - entity: input_select.office_heating_colour
+        state: heating
+    elements:
+      - type: state-label
+        entity: climate.office
+        attribute: current_temperature
+        style:
+          top: 90%
+          left: 30%
+          color: orange
+  - type: conditional
+    conditions:
+      - entity: input_select.office_heating_colour
+        state: "off"
+    elements:
+      - type: state-label
+        entity: climate.office
+        attribute: current_temperature
+        style:
+          top: 90%
+          left: 30%
+          color: grey

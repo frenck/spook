@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/help-for-a-automation/605710/3
+note: >-
+  Calendar trigger with an offset written as hours:minutes:seconds, and a wait
+  for the same calendar's end event inside the actions.
+expect:
+  entities:
+    find: [calendar.sports_field, switch.field_lights]
+  triggers:
+    find: [calendar]
+---
+alias: Field lights follow the bookings
+triggers:
+  - trigger: calendar
+    event: start
+    offset: "-0:5:0"
+    entity_id: calendar.sports_field
+actions:
+  - action: switch.turn_on
+    target:
+      entity_id: switch.field_lights
+  - wait_for_trigger:
+      - trigger: calendar
+        event: end
+        offset: "0:15:0"
+        entity_id: calendar.sports_field
+  - action: switch.turn_off
+    target:
+      entity_id: switch.field_lights

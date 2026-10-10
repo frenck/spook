@@ -1,0 +1,21 @@
+source: https://github.com/home-assistant/core/issues/120191
+note: >-
+  trigger_variables names the entity once and the template trigger reads it
+  through a variable; the for duration also tries a variable. The entity only
+  appears as a plain variable value.
+---
+alias: Back door left open
+trigger_variables:
+  watched: binary_sensor.back_door
+  hold_seconds: 30
+triggers:
+  - trigger: template
+    value_template: "{{ is_state(watched, 'on') }}"
+    for:
+      seconds: "{{ hold_seconds }}"
+conditions: []
+actions:
+  - action: persistent_notification.create
+    data:
+      message: The back door is still open
+mode: single

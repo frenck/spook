@@ -1,0 +1,18 @@
+source: https://www.home-assistant.io/dashboards/features/#select-options
+note: >-
+  Tile with the select-options feature limited to some options. The options
+  are option names of the select, not entities, even when one looks like a
+  scene name.
+expect:
+  entities:
+    find: [input_select.house_mode]
+    not_find: [scene.movie]
+---
+type: tile
+entity: input_select.house_mode
+features:
+  - type: select-options
+    options:
+      - Home
+      - Away
+      - scene.movie

@@ -1,0 +1,18 @@
+source: https://community.home-assistant.io/t/multiple-entity-row-use-attribute-as-name/737595
+note: >-
+  Multiple entity row trying to use a state_attr template as a sub entity name.
+  The card does not render templates there, and the first attempt was not even
+  valid YAML; this is the quoted version.
+expect:
+  entities:
+    find: [sensor.lounge_humidity, sensor.lounge_humidity_min_today]
+---
+type: entities
+entities:
+  - type: custom:multiple-entity-row
+    entity: sensor.lounge_humidity
+    name: Humidity
+    show_state: false
+    entities:
+      - entity: sensor.lounge_humidity_min_today
+        name: "{{ state_attr('sensor.lounge_humidity_min_today', 'updated_at') }}"

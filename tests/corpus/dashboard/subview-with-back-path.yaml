@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/help-subview-not-accessible-editable-after-yaml-path-edit/712079/1
+note: >-
+  A dashboard with a subview that has a back_path to the main view, and a card
+  navigating to it. Paths are URLs, never entities or areas.
+expect:
+  entities:
+    find: [light.attic]
+---
+title: Home
+views:
+  - title: Main
+    path: main
+    cards:
+      - type: button
+        name: Attic
+        tap_action:
+          action: navigate
+          navigation_path: /lovelace/attic
+  - title: Attic
+    path: attic
+    subview: true
+    back_path: /lovelace/main
+    cards:
+      - type: tile
+        entity: light.attic

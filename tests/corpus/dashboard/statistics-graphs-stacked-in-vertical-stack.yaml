@@ -1,0 +1,34 @@
+source: https://community.home-assistant.io/t/vertical-stack-card-y-axis/939484/1
+note: >-
+  Two statistics graphs of the same sensor at different periods inside a
+  vertical stack, and a bar-stack chart with two entities. Duplicates across
+  cards collapse to one reference.
+expect:
+  entities:
+    find: [sensor.rain_today, sensor.solar_morning, sensor.solar_afternoon]
+---
+type: vertical-stack
+cards:
+  - type: statistics-graph
+    chart_type: bar
+    period: day
+    entities:
+      - sensor.rain_today
+    stat_types:
+      - state
+    days_to_show: 4
+  - type: statistics-graph
+    chart_type: bar
+    period: hour
+    entities:
+      - sensor.rain_today
+    hide_legend: true
+    days_to_show: 5
+  - type: statistics-graph
+    chart_type: bar-stack
+    period: hour
+    entities:
+      - sensor.solar_morning
+      - sensor.solar_afternoon
+    stat_types:
+      - max

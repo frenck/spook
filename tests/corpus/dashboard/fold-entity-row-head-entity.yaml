@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/customize-shutter-display/947873/1
+note: >-
+  fold-entity-row nests entities under a `head` row. When the head is a
+  mapping with `entity` it is read; when it is a section header nothing is
+  there. Nested fold rows reach the leaves by recursion.
+expect:
+  entities:
+    find: [cover.ground_floor, cover.living_room, cover.toilet]
+---
+type: entities
+title: Shutters
+entities:
+  - type: custom:fold-entity-row
+    head:
+      entity: cover.ground_floor
+      name: Ground floor
+    entities:
+      - type: custom:fold-entity-row
+        head:
+          entity: cover.living_room
+      - entity: cover.toilet
+        name: Toilet
+  - type: custom:fold-entity-row
+    head:
+      type: section
+      label: Network
+    entities:
+      - switch.router_poe

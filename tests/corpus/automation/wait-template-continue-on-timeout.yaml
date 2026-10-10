@@ -1,0 +1,22 @@
+source: https://www.home-assistant.io/docs/scripts/#wait-variable
+note: >-
+  wait_template with a timeout from an input_number and continue_on_timeout,
+  then branching on wait.completed.
+expect:
+  entities:
+    find: [binary_sensor.washer_running, input_number.washer_timeout, switch.washer]
+---
+alias: Washer watchdog
+triggers:
+  - trigger: state
+    entity_id: switch.washer
+    to: "on"
+actions:
+  - wait_template: "{{ is_state('binary_sensor.washer_running', 'off') }}"
+    timeout: "{{ states('input_number.washer_timeout') | int(120) * 60 }}"
+    continue_on_timeout: true
+  - if: "{{ not wait.completed }}"
+    then:
+      - action: switch.turn_off
+        target:
+          entity_id: switch.washer

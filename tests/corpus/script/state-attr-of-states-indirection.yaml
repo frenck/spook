@@ -1,0 +1,43 @@
+source: https://community.home-assistant.io/t/using-arguments-from-automation-in-script-specifically-state-attr-calculation/710206
+note: >-
+  A script receives an entity ID as a field, but the template wraps it in
+  states() before state_attr, so it looks up the state text instead. The only
+  literal entity sits in a parked condition, and what only a disabled
+  condition names is left out.
+expect:
+  entities:
+    not_find: [input_select.bedside_light_choice]
+  attributes:
+    not_find:
+      - input_select.bedside_light_choice: brightness
+---
+alias: Dim the chosen bedside light
+mode: single
+fields:
+  entity:
+    selector:
+      entity:
+        filter:
+          domain: light
+sequence:
+  - choose:
+      - conditions:
+          - condition: template
+            value_template: >-
+              {{ state_attr(states('input_select.bedside_light_choice'), 'brightness') | int(0) * 100 // 255 > 5 }}
+            enabled: false
+          - condition: template
+            value_template: >-
+              {{ state_attr(states(entity), 'brightness') | int(0) * 100 // 255 > 5 }}
+        sequence:
+          - action: light.turn_on
+            target:
+              entity_id: "{{ entity }}"
+            data:
+              brightness_step_pct: -5
+    default:
+      - action: light.turn_on
+        target:
+          entity_id: "{{ entity }}"
+        data:
+          brightness_pct: 1

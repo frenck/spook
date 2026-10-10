@@ -1,0 +1,17 @@
+source: https://community.home-assistant.io/t/clock-weather-card-help-with-styling-needed/918616/7
+note: >-
+  clock-weather-card names its sun and sensors under keys of its own
+  (sun_entity, temperature_sensor, humidity_sensor). Only `entity` is read.
+expect:
+  entities:
+    find: [weather.home]
+---
+type: custom:clock-weather-card
+entity: weather.home
+title: null
+sun_entity: sun.sun
+temperature_sensor: sensor.outdoor_temperature
+humidity_sensor: sensor.outdoor_humidity
+weather_icon_type: line
+animated_icon: true
+forecast_rows: 5

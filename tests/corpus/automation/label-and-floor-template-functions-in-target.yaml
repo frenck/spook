@@ -1,0 +1,25 @@
+source: https://community.home-assistant.io/t/all-entities-in-all-areas-with-given-label/780314/2
+note: >-
+  Targets built from floor_areas, area_entities and label_entities with a
+  namespace loop. The label, floor and area repairs read targets, not template
+  functions, so the IDs passed to these functions are not checked.
+expect:
+  services:
+    find: [light.turn_off]
+---
+alias: Outside lights off
+triggers:
+  - trigger: time
+    at: "23:30:00"
+actions:
+  - variables:
+      outside_lights: >-
+        {% set ns = namespace(entities=[]) %}
+        {% for area in floor_areas('outside') %}
+          {% set ns.entities = ns.entities + area_entities(area) %}
+        {% endfor %}
+        {{ ns.entities | select('match', 'light\.') | list
+           + label_entities('garden_lights') }}
+  - action: light.turn_off
+    target:
+      entity_id: "{{ outside_lights }}"

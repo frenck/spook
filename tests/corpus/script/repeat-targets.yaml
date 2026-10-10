@@ -1,0 +1,41 @@
+source: tests/ectoplasms/script/repairs/test_repeat_nested_targets.py
+note: >-
+  Targets inside repeat loops: for_each, while and until. Home Assistant's
+  own extraction misses some of these, Spook walks them as written too.
+expect:
+  areas:
+    find: [kitchen, bathroom]
+  labels:
+    find: [heating]
+  floors:
+    find: [ground_floor]
+  services:
+    find: [climate.set_temperature, light.toggle, fan.turn_off]
+---
+alias: Repeat everything
+sequence:
+  - repeat:
+      for_each: [21, 19]
+      sequence:
+        - action: climate.set_temperature
+          target:
+            label_id: heating
+          data:
+            temperature: "{{ repeat.item }}"
+  - repeat:
+      while:
+        - condition: template
+          value_template: "{{ repeat.index < 3 }}"
+      sequence:
+        - action: light.toggle
+          target:
+            area_id: [kitchen, bathroom]
+  - repeat:
+      until:
+        - condition: state
+          entity_id: fan.ground_floor
+          state: "off"
+      sequence:
+        - action: fan.turn_off
+          target:
+            floor_id: ground_floor

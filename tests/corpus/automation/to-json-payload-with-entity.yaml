@@ -1,0 +1,19 @@
+source: https://community.home-assistant.io/t/need-advice-whats-the-best-way-to-handle-multiple-conditions-and-actions/381175/7
+note: >-
+  An MQTT payload built as a mapping and serialised with to_json; one value is
+  an entity ID the receiver acts on, quoted inside the template.
+expect:
+  entities:
+    find: [sensor.outdoor_temperature]
+---
+alias: Push outdoor temperature
+triggers:
+  - trigger: state
+    entity_id: sensor.outdoor_temperature
+actions:
+  - action: mqtt.publish
+    data:
+      topic: display/outdoor
+      payload: >-
+        {{ {'entity': 'sensor.outdoor_temperature',
+            'value': states('sensor.outdoor_temperature')} | to_json }}

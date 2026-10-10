@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/or-condition-not-working-in-template/863514
+note: >-
+  Template condition with states() or states(), which is truthy on any non empty
+  string; the fix compares with is_state. Two entities, one literal state.
+expect:
+  entities:
+    find: [binary_sensor.hallway_motion, input_boolean.guest_mode, media_player.living_room_tv]
+  states:
+    find:
+      - media_player.living_room_tv: "on"
+---
+alias: Hallway light when someone is around
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.hallway_motion
+conditions:
+  - condition: template
+    value_template: >-
+      {{ states('binary_sensor.hallway_motion') or states('input_boolean.guest_mode') }}
+  - condition: template
+    value_template: >-
+      {{ is_state('media_player.living_room_tv', 'on') or states('sensor.streaming_box_sessions') | int(0) >= 1 }}
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.hallway

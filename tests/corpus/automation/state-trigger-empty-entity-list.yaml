@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/blueprint-weather-forecast-alerts-tts-optional-ai-optional-iphone-alarm-integration-your-own-in-home-weatherman/941771/6
+note: >-
+  A state trigger with an empty entity_id list next to time_pattern and
+  webhook triggers. An empty list refers to nothing and must not trip a reader.
+expect:
+  triggers:
+    find: [state, time_pattern, webhook]
+---
+alias: Weather alerts
+triggers:
+  - trigger: time_pattern
+    hours: /3
+    minutes: "3"
+    id: time_based
+  - trigger: state
+    entity_id: []
+    to: "on"
+    id: sensor_trigger
+  - trigger: webhook
+    webhook_id: weather-alert-hook
+    allowed_methods:
+      - POST
+    local_only: true
+    id: webhook
+actions:
+  - action: notify.notify
+    data:
+      message: "{{ trigger.id }}"

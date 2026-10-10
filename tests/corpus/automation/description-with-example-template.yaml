@@ -1,0 +1,22 @@
+source: https://github.com/frenck/spook/issues/1082
+note: >-
+  A description that explains usage with an example template naming a
+  placeholder entity. Descriptions are never rendered, the example is not a
+  reference.
+expect:
+  entities:
+    find: [light.hallway]
+    not_find: [sensor.your_entity_last_changed]
+---
+alias: Hallway light on motion
+description: >-
+  Turns the hallway light on. To see when it last ran, add a template like
+  {{ states('sensor.your_entity_last_changed') }} to a dashboard.
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.hallway_motion
+    to: "on"
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.hallway

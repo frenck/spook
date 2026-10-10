@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/tts-not-working-on-voice-assistant-pe-after-sentence-trigger/837925/2
+note: >-
+  Silences the assistant with an empty conversation response and speaks
+  through tts.speak; the speaker is a data field (media_player_entity_id), the
+  TTS engine the target. The source used a sentence trigger; swapped for a
+  button here because the harness does not set up conversation.
+expect:
+  entities:
+    find: [media_player.kitchen_voice, tts.home_assistant_cloud]
+---
+alias: Fox sentence
+triggers:
+  - trigger: state
+    entity_id: input_button.fox
+actions:
+  - set_conversation_response: ""
+  - delay: 1
+  - action: tts.speak
+    target:
+      entity_id: tts.home_assistant_cloud
+    data:
+      cache: false
+      media_player_entity_id: media_player.kitchen_voice
+      message: Ring a ding ding

@@ -1,0 +1,25 @@
+source: tests/ectoplasms/automation/repairs/test_unknown_entity_references.py::test_a_custom_event_payload_is_not_a_reference
+note: >-
+  An `entity_id` in the data of somebody's own event is whatever the sender
+  put there, not a reference. On an event an integration fires, like
+  `timer.finished`, it is one. The event type itself is no entity either.
+expect:
+  entities:
+    find: [timer.laundry]
+    not_find: [light.from_the_remote, my_remote.pressed]
+---
+alias: Remote and timer
+triggers:
+  - trigger: event
+    event_type: my_remote.pressed
+    event_data:
+      entity_id: light.from_the_remote
+      button: 1
+  - trigger: event
+    event_type: timer.finished
+    event_data:
+      entity_id: timer.laundry
+actions:
+  - action: notify.notify
+    data:
+      message: "{{ trigger.event.data.entity_id }}"

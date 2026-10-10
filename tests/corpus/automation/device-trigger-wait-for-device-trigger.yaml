@@ -1,0 +1,42 @@
+source: https://community.home-assistant.io/t/using-variables-in-wait-trigger-statement/692624
+note: >-
+  Device humidity trigger, device switch actions and a wait_for_trigger with
+  another device trigger, with legacy platform keys. Device triggers and
+  actions only validate against a device registry, which the corpus house
+  does not have, so Home Assistant does not load this here and only the
+  trigger reader looks at it.
+expect:
+  triggers:
+    find: [device]
+---
+alias: Bathroom extractor fan
+description: Run the extractor while humidity is high
+trigger:
+  - platform: device
+    type: humidity
+    device_id: 1a2b3c4d5e6f708192a3b4c5d6e7f801
+    entity_id: sensor.0x00124b0022aa11bb_humidity
+    domain: sensor
+    above: 80
+condition: []
+action:
+  - type: turn_on
+    device_id: 9f8e7d6c5b4a39281706f5e4d3c2b1a0
+    entity_id: switch.0x540f57fffe001122
+    domain: switch
+  - wait_for_trigger:
+      - platform: device
+        type: humidity
+        device_id: 1a2b3c4d5e6f708192a3b4c5d6e7f801
+        entity_id: sensor.0x00124b0022aa11bb_humidity
+        domain: sensor
+        below: 60
+        for:
+          minutes: 1
+    timeout:
+      hours: 1
+  - type: turn_off
+    device_id: 9f8e7d6c5b4a39281706f5e4d3c2b1a0
+    entity_id: switch.0x540f57fffe001122
+    domain: switch
+mode: single

@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/custom-blinking-lights-blueprint/796494/5
+note: >-
+  `target:` given as one template string instead of a mapping, handing a
+  variable through. No reader can see inside it, and nothing must break.
+expect:
+  services:
+    find: [light.turn_on]
+---
+alias: Blink lights
+variables:
+  lights:
+    entity_id:
+      - light.kitchen
+      - light.hallway
+triggers:
+  - trigger: event
+    event_type: doorbell_pressed
+actions:
+  - repeat:
+      count: 3
+      sequence:
+        - action: light.turn_on
+          target: "{{ lights }}"
+          data:
+            flash: short
+        - delay: 1

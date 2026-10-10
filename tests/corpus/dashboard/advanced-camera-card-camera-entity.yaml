@@ -1,0 +1,14 @@
+source: https://community.home-assistant.io/t/advanced-camera-card-triggers-not-starting-live-view/986169/1
+note: >-
+  advanced-camera-card (formerly frigate-card) lists cameras by camera_entity,
+  a key no walk knows, so the cameras are missed. The frigate camera name is a
+  label for the Frigate server, not an entity.
+---
+type: custom:advanced-camera-card
+cameras:
+  - camera_entity: camera.front_door
+    frigate:
+      camera_name: front_door
+  - camera_entity: camera.backyard
+view:
+  default: live

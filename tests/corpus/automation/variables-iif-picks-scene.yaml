@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/toggle-automation/589653/4
+note: >-
+  A variables step that picks one of two scenes with iif on the sun, then
+  activates the variable. Both scene literals are references, and so is the
+  sun.
+expect:
+  entities:
+    find: [sun.sun, scene.daylight, scene.evening]
+---
+alias: Scene by daylight
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.living_room_motion
+    to: "on"
+actions:
+  - variables:
+      scene: >-
+        {{ iif(is_state('sun.sun', 'above_horizon'), 'scene.daylight', 'scene.evening') }}
+  - action: scene.turn_on
+    target:
+      entity_id: "{{ scene }}"

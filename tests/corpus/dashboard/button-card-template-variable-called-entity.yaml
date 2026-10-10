@@ -1,0 +1,14 @@
+source: https://community.home-assistant.io/t/lovelace-ui-minimalist/322687/19
+note: >-
+  button-card using a template and handing it an entity through a variable
+  that happens to be called `entity`. Read only because of the key name.
+expect:
+  entities:
+    find: [sensor.living_room_temperature]
+---
+type: custom:button-card
+template: graph
+variables:
+  entity: sensor.living_room_temperature
+  color: var(--google-blue-500)
+  name: Temperature

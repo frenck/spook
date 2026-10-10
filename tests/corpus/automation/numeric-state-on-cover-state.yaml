@@ -1,0 +1,33 @@
+source: https://community.home-assistant.io/t/if-any-cover-reaches-a-position-trigger-automation-for-that-cover/829799
+note: >-
+  numeric_state trigger on covers without attribute, so it reads the open/closed
+  state that is never numeric. The answer in a related thread uses the
+  current_position attribute as a condition. trigger.entity_id as target.
+expect:
+  entities:
+    find: [cover.office_blind, cover.meeting_room_blind]
+  attributes:
+    find:
+      - cover.office_blind: current_position
+  services:
+    find: [cover.stop_cover]
+---
+alias: Stop blinds at fifteen percent
+description: ""
+triggers:
+  - trigger: numeric_state
+    entity_id:
+      - cover.office_blind
+      - cover.meeting_room_blind
+    below: 15
+conditions:
+  - condition: numeric_state
+    entity_id: cover.office_blind
+    attribute: current_position
+    above: 0
+actions:
+  - action: cover.stop_cover
+    target:
+      entity_id: "{{ trigger.entity_id }}"
+mode: parallel
+max: 50

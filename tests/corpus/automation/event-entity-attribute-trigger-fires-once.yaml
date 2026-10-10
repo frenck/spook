@@ -1,0 +1,33 @@
+source: https://community.home-assistant.io/t/automation-trigger-including-attribute-test/831090
+note: >-
+  State trigger on an event entity attribute fires only once because
+  event_type does not change on a repeat press. The working version tests
+  trigger.to_state.attributes in a template condition, which is the trigger
+  payload, not a lookup. `to` on an attribute trigger is an attribute value,
+  not a state, and the script is called as an action, so it is a service
+  reference rather than an entity.
+expect:
+  entities:
+    find: [event.laundry_scene_controller_button_1]
+  attributes:
+    find:
+      - event.laundry_scene_controller_button_1: event_type
+  services:
+    find: [script.announce_dryer_done]
+---
+alias: Dryer done button
+id: dryer_done_button
+trigger:
+  - platform: state
+    entity_id:
+      - event.laundry_scene_controller_button_1
+    attribute: event_type
+    to: "KeyPressed"
+condition:
+  condition: template
+  value_template: >
+    {{ trigger.to_state.attributes.event_type == 'KeyPressed' }}
+action:
+  - service: script.announce_dryer_done
+    data:
+      room: laundry

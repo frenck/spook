@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/closing-more-info-dialogue-does-not-work-browser-mod/939604/1
+note: >-
+  browser_mod.more_info opening a camera on a wall tablet: the camera is plain
+  data under `entity`, and browser IDs are 32 hex characters under
+  browser_id, not device IDs.
+expect:
+  entities:
+    find: [camera.doorbell]
+  devices:
+    not_find: [c3d4e5f60718293a4b5c6d7e8f90a1b2]
+---
+alias: Doorbell on the tablet
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.doorbell
+    to: "on"
+actions:
+  - action: browser_mod.more_info
+    data:
+      browser_id:
+        - c3d4e5f60718293a4b5c6d7e8f90a1b2
+      entity: camera.doorbell
+      large: true

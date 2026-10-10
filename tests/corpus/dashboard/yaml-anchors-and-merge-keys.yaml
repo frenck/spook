@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/can-i-use-the-same-card-mod-multiple-times/613343/18
+note: >-
+  YAML anchors and merge keys reused across fold rows (`&style`, `*style`,
+  `<<: *rows`). The loader resolves them before any walk, so the merged rows
+  show up under each fold.
+expect:
+  entities:
+    find: [switch.poe_port_living_room, switch.poe_port_garden]
+---
+type: entities
+entities:
+  - type: custom:fold-entity-row
+    head:
+      type: section
+      label: Cameras
+      card_mod: &style
+        style: |
+          .label { color: var(--primary-color); }
+    entities: &rows
+      - entity: switch.poe_port_living_room
+        name: Living room
+      - entity: switch.poe_port_garden
+        name: Garden
+  - type: custom:fold-entity-row
+    head:
+      type: section
+      label: Network
+      card_mod: *style
+    <<: {entities: *rows}

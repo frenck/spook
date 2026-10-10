@@ -1,0 +1,19 @@
+source: https://www.home-assistant.io/docs/automation/trigger/#geolocation-trigger
+note: >-
+  Geolocation trigger: `source` is the platform feeding events, `zone` the
+  zone entity. Home Assistant's own reading returns the zone.
+expect:
+  entities:
+    find: [zone.home]
+    not_find: [nsw_rural_fire_service_feed]
+---
+alias: Bushfire nearby
+triggers:
+  - trigger: geo_location
+    source: nsw_rural_fire_service_feed
+    zone: zone.home
+    event: enter
+actions:
+  - action: notify.notify
+    data:
+      message: "{{ trigger.to_state.name }} entered the home zone"

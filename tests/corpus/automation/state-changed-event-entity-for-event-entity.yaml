@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/unifi-protect-g4-doorbell-pro-how-to-access-event-id-of-the-trigger/832885/1
+note: >-
+  Doorbell event entity caught with a state_changed event trigger so every
+  ring fires, even with the same state. The key order is the editor's
+  (event_type first, trigger last). The event entity is the reference, read
+  because state_changed is an event about an entity (#1886).
+expect:
+  entities:
+    find: [event.doorbell_ring, media_player.hallway_speaker]
+---
+alias: Doorbell rings
+triggers:
+  - event_type: state_changed
+    event_data:
+      entity_id: event.doorbell_ring
+    trigger: event
+conditions:
+  - condition: template
+    value_template: "{{ trigger.event.data.new_state.attributes.event_type == 'ring' }}"
+actions:
+  - action: media_player.play_media
+    target:
+      entity_id: media_player.hallway_speaker
+    data:
+      media_content_id: media-source://media_source/local/ding.mp3
+      media_content_type: music

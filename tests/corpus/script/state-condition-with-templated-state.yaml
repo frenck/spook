@@ -1,0 +1,39 @@
+source: https://community.home-assistant.io/t/why-is-fields-data-not-working-in-state-condition-what-do-i-miss/652311
+note: >-
+  A state condition with attribute and a template as the state value, inside a
+  repeat while. State conditions do not render templates, so it loops forever. The
+  template text is not a literal state.
+expect:
+  entities:
+    find: [media_player.kitchen_radio]
+  attributes:
+    find:
+      - media_player.kitchen_radio: media_channel
+  states:
+    not_find:
+      - media_player.kitchen_radio: "{{ station }}"
+---
+alias: Tune the kitchen radio
+fields:
+  station:
+    name: Station
+    required: true
+    selector:
+      text:
+sequence:
+  - repeat:
+      sequence:
+        - action: media_player.select_source
+          target:
+            entity_id: media_player.kitchen_radio
+          data:
+            source: "{{ station }}"
+        - delay:
+            seconds: 1
+      while:
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: media_player.kitchen_radio
+              attribute: media_channel
+              state: "{{ station }}"

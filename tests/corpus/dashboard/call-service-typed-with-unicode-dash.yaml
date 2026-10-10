@@ -1,0 +1,43 @@
+source: https://community.home-assistant.io/t/solved-help-request-button-card-to-control-input-select/872482
+note: >-
+  Tri state buttons over an input select where the action type was pasted with
+  a typographic dash instead of a hyphen, so the frontend never ran the action.
+  A tap would not try input_select.select_option, so it is not a performed action.
+expect:
+  entities:
+    find: [input_select.season]
+  services:
+    not_find: [input_select.select_option]
+---
+type: horizontal-stack
+cards:
+  - type: custom:button-card
+    entity: input_select.season
+    name: Winter
+    color_type: card
+    tap_action:
+      action: call—service
+      service: input_select.select_option
+      target:
+        entity_id:
+          - input_select.season
+      data:
+        option: Winter
+    state:
+      - value: Winter
+        color: green
+  - type: custom:button-card
+    entity: input_select.season
+    name: Summer
+    color_type: card
+    tap_action:
+      action: call—service
+      service: input_select.select_option
+      target:
+        entity_id:
+          - input_select.season
+      data:
+        option: Summer
+    state:
+      - value: Summer
+        color: green

@@ -1,0 +1,23 @@
+source: https://community.home-assistant.io/t/rain-delay-automation/914577
+note: >-
+  A template trigger defining a macro with a returns callback and turning it into a
+  function with as_function. The entities sit inside the macro body; unused and
+  returns are macro parameters.
+expect:
+  entities:
+    find: [sensor.outdoor_precipitation_rate, sensor.outdoor_dewpoint, sensor.outdoor_temperature, input_boolean.mower_rain_delay]
+---
+alias: Set mower rain delay
+triggers:
+  - trigger: template
+    value_template: >-
+      {% macro macro_is_wet(unused, returns) %}
+      {%- do returns(states('sensor.outdoor_precipitation_rate') | float(0) > 0.0 or
+                     states('sensor.outdoor_dewpoint') | float(0) - states('sensor.outdoor_temperature') | float(0) >= -2.0) -%}
+      {% endmacro %}
+      {% set is_wet = macro_is_wet | as_function %}
+      {{ is_wet(none) }}
+actions:
+  - action: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.mower_rain_delay

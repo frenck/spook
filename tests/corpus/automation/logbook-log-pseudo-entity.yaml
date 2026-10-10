@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/wth-dynamic-notification-in-dashboard/813351/6
+note: >-
+  logbook.log with an entity_id that no integration provides, used to file
+  entries a logbook card filters on. The action only checks the format of the
+  ID (cv.entity_id), so this works as intended.
+expect:
+  entities:
+    find: [binary_sensor.water_leak]
+    not_find: [log.critical_messages]
+---
+alias: Log critical messages
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.water_leak
+    to: "on"
+actions:
+  - action: logbook.log
+    data:
+      entity_id: log.critical_messages
+      name: Alert
+      message: Water on the floor

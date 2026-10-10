@@ -1,0 +1,51 @@
+source: https://github.com/joshsymonds/nix-config/blob/main/home-assistant/dashboards/popup-content/living-room.yaml
+note: >-
+  Auto-entities with a wildcard include and options that call an action on
+  this.entity_id, plus an area and domain matcher with an exclude. Nothing under
+  the filter names a particular thing except the action in options.
+expect:
+  services:
+    find: [scene.turn_on]
+  entities:
+    not_find: [this.entity_id, light.living_room]
+  areas:
+    not_find: [Living Room]
+---
+type: vertical-stack
+cards:
+  - type: custom:auto-entities
+    card:
+      type: grid
+      columns: 2
+      square: false
+    card_param: cards
+    filter:
+      include:
+        - entity_id: scene.living_room_*
+          options:
+            type: custom:bubble-card
+            card_type: button
+            show_name: true
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              service_data:
+                entity_id: this.entity_id
+  - type: custom:auto-entities
+    card:
+      type: vertical-stack
+    card_param: cards
+    filter:
+      include:
+        - area: Living Room
+          domain: light
+          options:
+            type: custom:bubble-card
+            card_type: button
+            button_type: slider
+            show_attribute: true
+            attribute: brightness
+      exclude:
+        - entity_id: light.living_room
+    sort:
+      method: friendly_name

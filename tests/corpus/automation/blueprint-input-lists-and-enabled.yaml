@@ -1,0 +1,50 @@
+source: https://community.home-assistant.io/t/message-malformed-expected-str-for-dictionary-value-data-device-id/875497/1
+note: >-
+  An automation blueprint body where whole lists come from inputs (triggers,
+  conditions, a for_each and a target), plus `enabled: !input` on a trigger and
+  an input inside trigger_variables. Not loadable as an automation; only the
+  trigger and condition readers look at it, and no tagged value may come out.
+expect:
+  triggers:
+    find: [state]
+    not_find: ["!input extra_triggers"]
+  conditions:
+    not_find: ["!input extra_conditions"]
+---
+blueprint:
+  name: Dimmable room
+  domain: automation
+  input:
+    room_helper:
+      selector:
+        entity:
+          filter:
+            domain: input_select
+    controllers:
+      selector:
+        device:
+          multiple: true
+    extra_triggers:
+      default: []
+    extra_conditions:
+      default: []
+    use_helper_trigger:
+      default: true
+trigger_variables:
+  helper: !input room_helper
+triggers:
+  - trigger: state
+    entity_id: !input room_helper
+    enabled: !input use_helper_trigger
+  - triggers: !input extra_triggers
+conditions: !input extra_conditions
+actions:
+  - repeat:
+      for_each: !input controllers
+      sequence:
+        - action: zwave_js.set_config_parameter
+          target:
+            device_id: "{{ repeat.item }}"
+          data:
+            parameter: 3
+            value: "{{ states(helper) }}"

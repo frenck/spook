@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/is-there-a-way-to-use-an-input-number-as-variable-for-gauge-card-segments/443167/12
+note: >-
+  auto-entities with a filter template that emits whole card configurations
+  (with entity IDs inside a Jinja dict), placed with card_param. The filter is
+  a matcher, so nothing inside it is read; the configuration it builds only
+  exists at runtime.
+expect:
+  entities:
+    not_find: [sensor.power_demand]
+---
+type: custom:auto-entities
+card:
+  type: vertical-stack
+card_param: cards
+filter:
+  template: |-
+    {{
+      [{
+        'type': 'gauge',
+        'entity': 'sensor.power_demand',
+        'segments': [
+          {'from': 0, 'color': 'green'},
+          {'from': states('input_number.power_warning') | float, 'color': 'red'}
+        ]
+      }]
+    }}

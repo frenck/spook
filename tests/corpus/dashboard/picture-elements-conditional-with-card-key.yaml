@@ -1,0 +1,19 @@
+source: https://community.home-assistant.io/t/conditional-element-inside-picture-elements-card/820386/1
+note: >-
+  A conditional element that was given a `card:` list holding a custom card,
+  the way a conditional card works, instead of `elements:`. The frontend does
+  not render it, but the entities are still on the dashboard.
+expect:
+  entities:
+    find: [switch.pool_pump, switch.pool_light]
+---
+type: picture-elements
+image: /local/garden.png
+elements:
+  - type: conditional
+    conditions:
+      - entity: switch.pool_pump
+        state: "on"
+    card:
+      - type: custom:slider-button-card
+        entity: switch.pool_light

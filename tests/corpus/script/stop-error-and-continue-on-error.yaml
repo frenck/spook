@@ -1,0 +1,22 @@
+source: https://community.home-assistant.io/t/catch-an-error-in-an-automation/367187/17
+note: >-
+  A script that calls another with continue_on_error, checks a flag the other
+  sets, and stops with an error. `stop` text is a message.
+expect:
+  services:
+    find: [script.check_ac_status]
+  entities:
+    find: [input_boolean.ac_error]
+---
+alias: Set AC status
+sequence:
+  - action: script.check_ac_status
+    continue_on_error: true
+    data: {}
+  - if:
+      - condition: state
+        entity_id: input_boolean.ac_error
+        state: "on"
+    then:
+      - stop: climate.living_room did not answer
+        error: true

@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/entity-filter-card-what-are-the-correct-states-for-heating/556019/2
+note: >-
+  entity-filter with an `in` operator over a list of hvac actions read from an
+  attribute. The values are states of an attribute, not entities.
+expect:
+  entities:
+    find: [climate.living_room, climate.bedroom]
+---
+type: entity-filter
+state_filter:
+  - operator: in
+    value:
+      - cooling
+      - heating
+    attribute: hvac_action
+entities:
+  - climate.living_room
+  - climate.bedroom
+card:
+  type: glance
+  title: Running now

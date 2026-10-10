@@ -1,0 +1,28 @@
+source: tests/test_attribute_references.py (script fields, #1880)
+note: >-
+  The example of a script field is shown in the editor and never rendered.
+  The attribute and state readers leave it out, the entity named only there
+  cannot break the script either.
+expect:
+  entities:
+    find: [climate.office]
+    not_find: [sensor.old_thermostat]
+  attributes:
+    not_find:
+      - sensor.old_thermostat: temperature
+---
+alias: Set the office temperature
+fields:
+  temperature:
+    name: Temperature
+    example: "{{ state_attr('sensor.old_thermostat', 'temperature') }}"
+    selector:
+      number:
+        min: 15
+        max: 25
+sequence:
+  - action: climate.set_temperature
+    target:
+      entity_id: climate.office
+    data:
+      temperature: "{{ temperature }}"

@@ -1,0 +1,37 @@
+source: https://github.com/kernehed/Home-Assistant_Config/blob/master/lovelace/floorplan_entreplan.yaml
+note: >-
+  Floorplan built on picture elements with the old service-button element: the
+  action sits under a bare service key without any action: call-service around
+  it, and the option payload is a plain floor name.
+expect:
+  entities:
+    find: [input_select.floorplan_floor, light.hallway]
+---
+type: picture-elements
+image: /local/floorplan/ground_floor.png
+elements:
+  - type: state-icon
+    entity: light.hallway
+    tap_action:
+      action: toggle
+    style:
+      top: 40%
+      left: 30%
+  - type: service-button
+    title: Upstairs
+    service: input_select.select_option
+    service_data:
+      entity_id: input_select.floorplan_floor
+      option: Upstairs
+    style:
+      top: 20%
+      left: 50%
+  - type: service-button
+    title: Basement
+    service: input_select.select_option
+    service_data:
+      entity_id: input_select.floorplan_floor
+      option: Basement
+    style:
+      top: 20%
+      left: 56%

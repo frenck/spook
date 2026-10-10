@@ -1,0 +1,14 @@
+source: https://community.home-assistant.io/t/wth-dynamic-notification-in-dashboard/813351/6
+note: >-
+  A logbook card targeting an entity ID that no integration provides: an
+  automation writes entries with logbook.log under that made-up ID, and the
+  card shows them. The dashboard side of automation/logbook-log-pseudo-entity.
+expect:
+  entities:
+    not_find: [log.critical_messages]
+---
+type: logbook
+hours_to_show: 48
+target:
+  entity_id:
+    - log.critical_messages

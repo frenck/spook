@@ -1,0 +1,26 @@
+source: https://community.home-assistant.io/t/seasonal-automation-management/742995/1
+note: >-
+  Good night routine turning off a whole floor, two areas and a label at once,
+  with a templated area next to plain ones. The template is skipped.
+expect:
+  floors:
+    find: [upstairs]
+  areas:
+    find: [kitchen, living_room]
+  labels:
+    find: [night_lights]
+---
+alias: Good night
+triggers:
+  - trigger: state
+    entity_id: input_boolean.good_night
+    to: "on"
+actions:
+  - action: light.turn_off
+    target:
+      floor_id: upstairs
+      area_id:
+        - kitchen
+        - living_room
+        - "{{ states('input_text.extra_area') }}"
+      label_id: night_lights

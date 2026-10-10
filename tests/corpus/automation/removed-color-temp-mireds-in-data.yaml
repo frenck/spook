@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/automation-failure/995394
+note: >-
+  A UI made motion automation that stopped when light.turn_on dropped color_temp in
+  mireds. The key is action data, not an attribute lookup on the light.
+expect:
+  entities:
+    find: [binary_sensor.closet_motion, light.closet]
+  attributes:
+    not_find:
+      - light.closet: color_temp
+---
+alias: Closet occupied
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.closet_motion
+    to: "on"
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: light.closet
+    data:
+      color_temp: 300
+      brightness_pct: 80
+mode: single

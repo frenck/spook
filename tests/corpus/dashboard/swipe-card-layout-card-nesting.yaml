@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/improved-shopping-list/608232/1
+note: >-
+  layout-card with grid options and view_layout on its children, inside a
+  swipe-card with swiper parameters. Layout keys are CSS, not references.
+expect:
+  entities:
+    find: [todo.shopping_list, sensor.shopping_list_items]
+---
+type: custom:swipe-card
+parameters:
+  pagination:
+    type: bullets
+cards:
+  - type: custom:layout-card
+    layout_type: custom:grid-layout
+    layout:
+      grid-template-columns: 70% 30%
+      grid-template-areas: '"list count"'
+    cards:
+      - type: todo-list
+        entity: todo.shopping_list
+        view_layout:
+          grid-area: list
+      - type: entity
+        entity: sensor.shopping_list_items
+        view_layout:
+          grid-area: count

@@ -1,0 +1,24 @@
+source: https://community.home-assistant.io/t/how-to-build-an-entity-name-from-variables/862727/4
+note: >-
+  Entity IDs built from the room with the format filter and with Python's
+  str.format. Neither literal is a whole entity ID, so nothing is read from
+  them; the trigger entity is the only reference.
+expect:
+  entities:
+    find: [binary_sensor.office_motion]
+    not_find: [light.office]
+---
+alias: Room light from motion
+variables:
+  room: office
+triggers:
+  - trigger: state
+    entity_id: binary_sensor.office_motion
+    to: "on"
+actions:
+  - action: light.turn_on
+    target:
+      entity_id: "{{ 'light.%s' | format(room) }}"
+  - action: switch.turn_on
+    target:
+      entity_id: "{{ 'switch.{}_fan'.format(room) }}"

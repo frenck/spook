@@ -1,0 +1,19 @@
+source: https://community.home-assistant.io/t/light-off-when-watching-tv/930965/4
+note: >-
+  Saves a light's brightness from trigger.to_state.attributes into an
+  input_number. The attribute belongs to whichever entity triggered.
+expect:
+  entities:
+    find: [light.living_room_lamp, input_number.lamp_brightness]
+---
+alias: Remember lamp brightness
+triggers:
+  - trigger: state
+    entity_id: light.living_room_lamp
+    attribute: brightness
+actions:
+  - action: input_number.set_value
+    data:
+      value: "{{ trigger.to_state.attributes.brightness }}"
+    target:
+      entity_id: input_number.lamp_brightness

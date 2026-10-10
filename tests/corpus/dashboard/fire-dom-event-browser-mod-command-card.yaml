@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/animated-washing-machine-card/897420/1
+note: >-
+  The newer browser_mod form: `command: popup` with the card inline. The card
+  inside a tap action is real configuration with entities and an action.
+expect:
+  entities:
+    find: [sensor.washer_state, switch.washer_power]
+  services:
+    find: [switch.turn_off]
+---
+type: entity
+entity: sensor.washer_state
+tap_action:
+  action: fire-dom-event
+  browser_mod:
+    command: popup
+    card:
+      type: vertical-stack
+      cards:
+        - type: markdown
+          content: "{{ states('sensor.washer_remaining') }} left"
+        - type: button
+          entity: switch.washer_power
+          tap_action:
+            action: perform-action
+            perform_action: switch.turn_off
+            target:
+              entity_id: switch.washer_power

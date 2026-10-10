@@ -1,0 +1,34 @@
+source: https://github.com/ntalekt/homeassistant/blob/master/lovelace/cards/02_server_col2.yaml
+note: >-
+  Button card colour driven by a JavaScript state template that compares its
+  own entity to a second sensor named only inside the JavaScript, with both
+  quote styles. The second sensor never appears under an entity key.
+expect:
+  entities:
+    find: [sensor.installed_version]
+---
+type: horizontal-stack
+cards:
+  - type: custom:button-card
+    icon: mdi:home-assistant
+    entity: sensor.installed_version
+    show_state: true
+    state:
+      - operator: template
+        value: >
+          [[[
+            return states['sensor.installed_version'].state != states["sensor.latest_version"].state;
+          ]]]
+        color: red
+      - operator: default
+        color: green
+    hold_action:
+      action: more-info
+  - type: custom:button-card
+    entity: sensor.pending_updates
+    name: Updates
+    show_state: true
+    state:
+      - operator: template
+        value: "[[[ return entity.state > 0; ]]]"
+        color: red

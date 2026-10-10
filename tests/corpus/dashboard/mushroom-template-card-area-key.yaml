@@ -1,0 +1,21 @@
+source: https://github.com/piitaya/lovelace-mushroom/blob/main/docs/cards/template.md
+note: >-
+  Mushroom template card with its own `area` key (an area ID the card hands to
+  its templates) plus one with a template there. The plain one is read as an
+  area; the template is skipped.
+expect:
+  areas:
+    find: [kitchen]
+  entities:
+    find: [light.kitchen]
+---
+type: vertical-stack
+cards:
+  - type: custom:mushroom-template-card
+    entity: light.kitchen
+    area: kitchen
+    primary: "{{ area_name(config.area) }}"
+    secondary: "{{ states(config.entity) }}"
+  - type: custom:mushroom-template-card
+    area: "{{ area_id('light.kitchen') }}"
+    primary: Kitchen

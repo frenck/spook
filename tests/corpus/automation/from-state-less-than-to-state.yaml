@@ -1,0 +1,43 @@
+source: https://community.home-assistant.io/t/help-with-automation-that-checks-if-a-sensor-value-increases/766381
+note: >-
+  Water still counting after the valve closed: compare trigger.from_state with
+  trigger.to_state as numbers, nested and condition with a state condition on a
+  switch. The second half adds to on to skip unavailable round trips.
+expect:
+  entities:
+    find: [sensor.sprinkler_water_total, switch.sprinkler_valve, climate.study_ac]
+  states:
+    find:
+      - switch.sprinkler_valve: "off"
+---
+alias: Unexpected watering
+description: ""
+triggers:
+  - trigger: state
+    entity_id:
+      - sensor.sprinkler_water_total
+    for:
+      seconds: 5
+  - trigger: state
+    entity_id:
+      - climate.study_ac
+    from: "off"
+    id: ac_on
+conditions:
+  - condition: or
+    conditions:
+      - condition: trigger
+        id: ac_on
+      - condition: and
+        conditions:
+          - condition: template
+            value_template: "{{ trigger.from_state.state | int(0) < trigger.to_state.state | int(0) }}"
+          - condition: state
+            entity_id: switch.sprinkler_valve
+            state: "off"
+actions:
+  - action: notify.mobile_app_phone
+    data:
+      title: Sprinkler
+      message: Unexpected watering event
+mode: single

@@ -1,0 +1,29 @@
+source: https://community.home-assistant.io/t/floor-areas-how-select-by-state/750129
+note: >-
+  Counting motion groups on the floor of a given area: floor_areas over
+  floor_id, map area_entities, a regex in select match that looks like an
+  entity ID, then select is_state. The regex is a pattern, not an entity. The
+  area and floor repairs read targets and reference keys, not template
+  functions, so the area ID in the template is out of their scope.
+expect:
+  entities:
+    not_find: [binary_sensor.motion_group]
+---
+alias: Floor goes quiet
+variables:
+  area: upstairs_landing
+triggers:
+  - trigger: time_pattern
+    minutes: /5
+conditions:
+  - condition: template
+    value_template: >-
+      {{ floor_areas(floor_id('upstairs_landing'))
+         | map('area_entities') | sum(start=[])
+         | select('match', 'binary_sensor.*_motion_group')
+         | select('is_state', 'on')
+         | list | count == 0 }}
+actions:
+  - action: light.turn_off
+    target:
+      floor_id: "{{ floor_id(area) }}"

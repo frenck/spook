@@ -1,0 +1,28 @@
+source: https://community.home-assistant.io/t/how-to-access-old-state-within-a-template/799466
+note: >-
+  Asking a light for an old_state attribute, which no entity has; the previous state
+  lives in the state_changed event. The working form reads trigger.event.data.old_state.
+expect:
+  entities:
+    find: [light.living_room, input_number.last_min_color_temp]
+  attributes:
+    find:
+      - light.living_room: old_state
+    not_find:
+      - light.living_room: min_color_temp_kelvin
+---
+alias: Remember previous color temperature range
+triggers:
+  - trigger: event
+    event_type: state_changed
+    event_data:
+      entity_id: light.living_room
+conditions:
+  - condition: template
+    value_template: "{{ state_attr('light.living_room', 'old_state') is not none }}"
+actions:
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.last_min_color_temp
+    data:
+      value: "{{ trigger.event.data.old_state.attributes.min_color_temp_kelvin | int(0) }}"

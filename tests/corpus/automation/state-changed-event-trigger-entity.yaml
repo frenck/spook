@@ -1,0 +1,21 @@
+source: https://community.home-assistant.io/t/states-for-binary-door-sensor/852629/1
+note: >-
+  An event trigger on Home Assistant's own state_changed event, filtered on
+  event_data.entity_id. That entity is a real reference: the event only fires
+  for it. state_changed has no dot in its name, so it is on the list of events
+  Home Assistant fires about an entity (#1886) rather than read as somebody's
+  own event (#1883).
+expect:
+  entities:
+    find: [binary_sensor.front_door_contact]
+---
+alias: Door opened via state_changed
+triggers:
+  - trigger: event
+    event_type: state_changed
+    event_data:
+      entity_id: binary_sensor.front_door_contact
+actions:
+  - action: notify.notify
+    data:
+      message: "{{ trigger.event.data.new_state.state }}"

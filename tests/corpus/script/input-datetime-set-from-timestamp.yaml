@@ -1,0 +1,15 @@
+source: https://www.home-assistant.io/integrations/input_datetime/#actions
+note: >-
+  input_datetime.set_datetime from a sensor timestamp with as_timestamp and an
+  offset; the helper is the target, the sensor read in the template.
+expect:
+  entities:
+    find: [input_datetime.next_wake_up, sensor.phone_next_alarm]
+---
+alias: Copy next alarm
+sequence:
+  - action: input_datetime.set_datetime
+    target:
+      entity_id: input_datetime.next_wake_up
+    data:
+      timestamp: "{{ as_timestamp(states('sensor.phone_next_alarm')) - 1800 }}"

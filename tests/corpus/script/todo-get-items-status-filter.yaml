@@ -1,0 +1,27 @@
+source: https://www.home-assistant.io/integrations/todo/#action-todoget_items
+note: >-
+  todo.get_items filtered on status, then todo.update_item per open item.
+  `needs_action` is a status value, not an entity or state of one.
+expect:
+  entities:
+    find: [todo.chores]
+  services:
+    find: [todo.get_items, todo.update_item]
+---
+alias: Mark chores done
+sequence:
+  - action: todo.get_items
+    target:
+      entity_id: todo.chores
+    data:
+      status: needs_action
+    response_variable: chores
+  - repeat:
+      for_each: "{{ chores['todo.chores']['items'] | map(attribute='summary') | list }}"
+      sequence:
+        - action: todo.update_item
+          target:
+            entity_id: todo.chores
+          data:
+            item: "{{ repeat.item }}"
+            status: completed

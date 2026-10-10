@@ -1,0 +1,27 @@
+source: https://community.home-assistant.io/t/automation-trying-to-limit-input-number-min-max/893429/1
+note: >-
+  numeric_state takes an entity as its threshold: `above: input_number.x`
+  (core accepts input_number, number, sensor and zone there). Same for a
+  numeric_state condition with `below:` an entity.
+expect:
+  entities:
+    find:
+      - input_number.alarm_temperature_min
+      - input_number.alarm_temperature_max
+      - input_number.freezer_limit
+---
+alias: Keep minimum below maximum
+triggers:
+  - trigger: numeric_state
+    entity_id: input_number.alarm_temperature_min
+    above: input_number.alarm_temperature_max
+conditions:
+  - condition: numeric_state
+    entity_id: sensor.freezer_temperature
+    below: input_number.freezer_limit
+actions:
+  - action: input_number.set_value
+    target:
+      entity_id: input_number.alarm_temperature_min
+    data:
+      value: "{{ trigger.to_state.state | float - 1 }}"

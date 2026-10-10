@@ -1,0 +1,34 @@
+source: https://community.home-assistant.io/t/automation-triggered-by-any-entity-with-a-certain-label/750297
+note: >-
+  Replacing a hand kept list of entities in an unknown/unavailable state
+  trigger by a template trigger over label_entities with reject has_value.
+  Both forms kept. The label repair reads targets, not template functions, so
+  the label in label_entities() is out of its scope.
+expect:
+  entities:
+    find: [sensor.freezer_temperature, switch.aquarium_pump]
+  states:
+    find:
+      - sensor.freezer_temperature: unavailable
+---
+alias: Critical device offline
+triggers:
+  - trigger: state
+    entity_id:
+      - sensor.freezer_temperature
+      - switch.aquarium_pump
+    to:
+      - unknown
+      - unavailable
+    for:
+      minutes: 30
+    id: listed_offline
+  - trigger: template
+    value_template: "{{ label_entities('critical') | reject('has_value') | list | count > 0 }}"
+    for:
+      minutes: 15
+    id: labelled_offline
+actions:
+  - action: notify.notify
+    data:
+      message: "A critical device went offline ({{ trigger.id }})."

@@ -1,0 +1,16 @@
+source: https://community.home-assistant.io/t/solved-height-of-horizontal-stack-in-custom-button-card-print-toner-monitoring/640904/3
+note: >-
+  button-card with a real entity and triggers_update returning it from
+  JavaScript; a variable holds a JavaScript expression over the entity state.
+expect:
+  entities:
+    find: [sensor.vibration_sensor_battery]
+---
+type: custom:button-card
+entity: sensor.vibration_sensor_battery
+triggers_update: "[[[ return entity; ]]]"
+variables:
+  tint: cyan
+  level: |
+    [[[ return entity?.state || 0; ]]]
+name: "[[[ return variables.level + '%'; ]]]"
